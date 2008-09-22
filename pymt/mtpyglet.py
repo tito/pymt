@@ -156,21 +156,12 @@ class TouchWindow(pyglet.window.Window):
 def runTouchApp():
         TouchEventLoop().run()
 
-def drawLine(points):
-       p1, p2 = points[0], points[1]
-       glLineWidth (4.0)
-       glColor3f(1.0,1.0,1.0)
-       glBegin(GL_LINES)
-       glVertex2f( p1[0], p1[1] )
-       glVertex2f( p2[0], p2[1] )
-       glEnd()
-       #glLineWidth (1.0)
+
 
 #a very simple test
 if __name__ == '__main__':
         
-	
-
+    from graphx import *
     touchPositions = {}
     crosshair = pyglet.sprite.Sprite(pyglet.image.load('crosshair.png'))
     crosshair.scale = 0.6

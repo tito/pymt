@@ -153,9 +153,9 @@ class TouchWindow(pyglet.window.Window):
 
 
 #static main function that starts the app loop 
-def runTouchApp():
-        TouchEventLoop().run()
 
+def runTouchApp():
+	TouchEventLoop().run()
 
 
 #a very simple test

@@ -23,7 +23,7 @@ class Graph(object):
               for i in range(num_verts):
                      x = randint(100,displaySize[0]-100)*1.0
                      y = randint(100,displaySize[1]-100)*1.0
-                     self.verts.append((x,y))
+                     self.verts.append([x,y])
               
               self.edges = [ [self.verts[i], self.verts[(i+1)%num_verts]] for i in range(num_verts) ]
      
@@ -39,7 +39,8 @@ class Graph(object):
                      dx = abs(x - v[0])
                      dy = abs(y - v[1])
                      if (dx < regionSize and dy < regionSize):
-                            return v
+                         print "collision"
+                         return v
               return None
 
 

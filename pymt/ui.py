@@ -2,6 +2,7 @@
 
 from pyglet import *
 from pyglet.gl import *
+from mtpyglet import TouchWindow
 
 class ColorPicker:
 	def __init__(self, width=200, height = 400):
@@ -17,3 +18,36 @@ class ColorPicker:
 
 	def draw(self):
 		self.vertex_list.draw(GL_QUADS)
+		
+		
+		
+		
+class TouchAppWindow(TouchWindow):
+	def __init__(self, widget, config=None):
+		config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True, vsync=0)
+		TouchWindow.__init__(self, config)
+		self.root_widget = widget
+		self.root_widget.window = self
+
+	def on_draw(self):
+		self.clear()
+		self.root_widget.draw()
+		
+		
+		
+		
+		
+class Widget(object):
+	def __init__(self, parent=None):
+		self.parent = parent
+		if self.parent:
+			self.window = parent.window
+
+	def draw(self):
+		pass
+
+	def show_in_window(self):
+		config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True, vsync=0)
+		self.window = TouchAppWindow(self, config=config)
+		return self.window
+		#runTouchApp()

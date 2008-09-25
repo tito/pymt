@@ -22,12 +22,12 @@ class PaintWindow(TouchWindow):
 	self.color_picker.draw()
             
     def on_touch_down(self, touches, touchID, x, y):
-	col = self.color_picker.getColorForPoint(x,y)
+		col = self.color_picker.getColorForPoint(x,y)
         self.touch_positions[touchID] = [(x,y, col)]
 
         
     def on_touch_move(self, touches, touchID, x, y):
-	col = self.color_picker.getColorForPoint(x,y)
+		col = self.color_picker.getColorForPoint(x,y)
         self.touch_positions[touchID].append((x,y,col))
 
         

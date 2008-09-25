@@ -30,8 +30,8 @@ def on_touch_up(touches, touchID,x,y):
 @w.event
 def on_touch_move(touches, touchID, x, y):
 	if touch2vertex.has_key(touchID):
-                touch2vertex[touchID].x = x
-                touch2vertex[touchID].y = y
+                touch2vertex[touchID][0] = x
+                touch2vertex[touchID][1] = y
 
 
 	

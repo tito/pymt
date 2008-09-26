@@ -43,8 +43,8 @@ class GLWindow(TouchWindow):
 
         
     def on_touch_move(self, touches, touchID, x, y):
-        self.rot_x += 100.0*(y-self.touch_position[touchID][1])/self.width
-        self.rot_y += 100.0*(x-self.touch_position[touchID][0])/self.height
+        self.rot_x += 200.0*(y-self.touch_position[touchID][1])/self.width
+        self.rot_y += 200.0*(x-self.touch_position[touchID][0])/self.height
 	self.touch_position[touchID] = (x,y)
 
         

@@ -23,7 +23,7 @@ def on_touch_up(touches, touchID,x,y):
 
 @w.event
 def on_touch_move(touches, touchID, x, y):
-                touchPositions[touchID].append((x,y))
+        touchPositions[touchID].append((x,y))
 
 
 def drawLabel(x,y, ID):

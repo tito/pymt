@@ -11,14 +11,14 @@ def drawCircle(pos=(0,0), color=(1.0,1.0,1.0)):
     glPopMatrix()
 
 
-
 def drawTriangle(points, color=(1.0,1.0,1.0)):
 	pass
 	draw(3, GL_TRIANGLES, ('v2f', points))
 
 
-def drawRectangle(points, color=(1.0,1.0,1.0)):
-	draw(4, GL_QUADS, ('v2f', points))
+def drawRectangle(pos=(0,0), size=(1.0,1.0), color=(1.0,1.0,1.0)):
+        data = ( pos[0],pos[1],   pos[0]+size[0],pos[1],   pos[0]+size[0],pos[1]+size[1],  pos[0],pos[1]+size[1] )
+	draw(4, GL_QUADS, ('v2f', data))
 
 
 def drawLine(points, width=5.0, color=(1.0,1.0,1.0)):

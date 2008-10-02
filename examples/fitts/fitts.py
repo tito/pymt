@@ -29,7 +29,8 @@ class MTWidget(Widget):
 #			parent.push_handlers([self.on_touch_down, self.on_touch_move,self.on_touch_up])
 	
 	def on_touch_down(self, touches, touchID, x, y):
-		print "touchdown"
+		#print "touchdown"
+		pass
 		
 	def on_touch_move(self, touches, touchID, x, y):
 		pass
@@ -45,13 +46,27 @@ class Container(object):
 		self.parent = parent
 		self.widgets = []
 	
-	def addWidget(self,w):
+	def add_widget(self,w):
 		self.widgets.append(w)
 		
 	def draw(self):
 		for w in self.widgets:
 			w.draw()
 
+	def on_touch_down(self, touches, touchID, x, y):
+		for w in self.widgets:
+		    if w.on_touch_down(touches, touchID, x, y):
+		        break
+		
+	def on_touch_move(self, touches, touchID, x, y):
+		for w in self.widgets:
+		    if w.on_touch_move(touches, touchID, x, y):
+		        break
+
+	def on_touch_up(self, touches, touchID, x, y):
+		for w in self.widgets:
+		    if w.on_touch_up(touches, touchID, x, y):
+		        break
 
 
 
@@ -69,7 +84,7 @@ class UIWindow(TouchWindow):
 		self.active_view.draw()
 
 	def on_touch_down(self, touches, touchID, x, y):
-		print "test", self.active_view
+		#print "test", self.active_view
 		self.active_view.on_touch_down(touches, touchID, x, y)
 	
 	def on_touch_move(self, touches, touchID, x, y):
@@ -94,11 +109,11 @@ class DragableObject(MTWidget):
 		#print x,y, self.position, self.size
 		if( x > self.position[0]  and x < self.position[0] + self.size[0] and
 		    y > self.position[1]  and y < self.position[1] + self.size[1]  ):
-			print "yeah"
+			#print "yeah"
 			self.state = ('dragging', touchID)
 			
 	def on_touch_move(self, touches, touchID, x, y):
-		print self.state ,self.position
+		#print self.state ,self.position
 		if self.state[0] == 'dragging' and self.state[1]==touchID:
 			self.position = (x - self.size[0]/2,y - self.size[1]/2)
 		
@@ -126,7 +141,7 @@ class FittsApp(MTWidget):
 
 	def on_touch_down(self, touches, touchID, x, y):
 		if self.mode == 'selecting':
-			print x,y, image_sprite.x, image_sprite.y, image_sprite.x + image_sprite.width
+			#print x,y, image_sprite.x, image_sprite.y, image_sprite.x + image_sprite.width
 			if  ( x > image_sprite.x  and x < image_sprite.x + image_sprite.width
 			  and y > image_sprite.y  and y < image_sprite.y + image_sprite.height ):
 				self.mode = 'dragging'
@@ -152,7 +167,10 @@ class FittsApp(MTWidget):
 		
 
 	
-	
-w = UIWindow(DragableObject())
+c = Container()
+c.add_widget( DragableObject(pos=(100,100)) )
+c.add_widget( DragableObject(pos=(400,200)) )
+
+w = UIWindow(c)
 w.set_fullscreen()
 runTouchApp()

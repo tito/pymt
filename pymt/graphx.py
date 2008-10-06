@@ -12,11 +12,14 @@ def drawCircle(pos=(0,0), color=(1.0,1.0,1.0)):
 
 
 def drawTriangle(points, color=(1.0,1.0,1.0)):
-	pass
+	if (color):
+            glColor3f(*color)
 	draw(3, GL_TRIANGLES, ('v2f', points))
 
 
 def drawRectangle(pos=(0,0), size=(1.0,1.0), color=(1.0,1.0,1.0)):
+    	if (color):
+	    glColor3f(*color)
         data = ( pos[0],pos[1],   pos[0]+size[0],pos[1],   pos[0]+size[0],pos[1]+size[1],  pos[0],pos[1]+size[1] )
 	draw(4, GL_QUADS, ('v2f', data))
 

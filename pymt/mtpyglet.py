@@ -27,6 +27,8 @@ tuio_event_q = Queue()
 touch_event_listeners = []
 
 
+
+
 def intersection(set1,set2): return filter(lambda s:s in set2,set1)
 def difference(set1,set2): return filter(lambda s:s not in set2,set1)
 

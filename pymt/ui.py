@@ -51,15 +51,57 @@ class UIWindow(TouchWindow):
 		self.active_view.on_touch_up(touches, touchID, x, y)
 		
 
+class Animation(object):
+	def __init__(self, widget, label, prop, to, timestep, length):
+		self.widget = widget
+		self.frame = 0.0
+		self.prop = prop
+		self.to = to
+		self.timestep = timestep
+		self.length = length
+		self.label = label
+		
+	def get_current_value(self):
+		return  (1.0-self.frame/self.length) * self.widget.__dict__[self.prop]   +  self.frame/self.length * self.to 
+		
+	def start(self):
+		#print 'calling'
+		self.reset()
+		pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
+		
+	def reset(self):
+		self.frame = 0.0
+		
+	def advance_frame(self, dt):
+		self.frame += self.timestep
+		self.widget.__dict__[self.prop] = self.get_current_value()
+		if self.frame < self.length:
+			pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
 
+		
 
 
 class Widget(object):
 	def __init__(self, parent=None):
 		self.parent = parent
+		self.animations = []
 		
 	def draw(self):
 		pass
+		
+	def add_animation(self, label, prop, to , timestep, length):
+		anim = Animation(self, label, prop, to, timestep, length)
+		self.animations.append(anim)
+		return anim
+		
+	def start_animations(self, label):
+		for anim in self.animations:
+			if anim.label == label:
+				anim.reset()
+				anim.start()
+			else:
+				anim.reset()
+		
 
 
 class MTWidget(Widget):
@@ -110,15 +152,17 @@ class Container(object):
 class RectangularWidget(MTWidget):
 	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
 		MTWidget.__init__(self,parent)
-		self.position = pos
-		self.size = size
+		self.x, self.y = pos
+		self.width, self.height = size
 		
 	def draw(self):
-		drawRectangle(self.position ,self.size)
+		drawRectangle((self.x, self.y) ,(self.width, self.height))
 		
 	def collidePoint(self, x,y):
-		if( x > self.position[0]  and x < self.position[0] + self.size[0] and
-		    y > self.position[1]  and y < self.position[1] + self.size[1]  ):
+		#print "    x:",x, " y:", y, "   pos:", self.x, self.y, self.width, self.height
+		if( x > self.x  and x < self.x + self.width and
+		    y > self.y and y < self.y + self.height  ):
+			#print "True"
 			return True
 
 
@@ -135,7 +179,7 @@ class DragableObject(RectangularWidget):
 			return True
 	def on_touch_move(self, touches, touchID, x, y):
 		if self.state[0] == 'dragging' and self.state[1]==touchID:
-			self.position = (self.position[0] + (x - self.state[2]) , self.position[1] + y - self.state[3])
+			self.x, self.y = (self.x + (x - self.state[2]) , self.y + y - self.state[3])
 			self.state = ('dragging', touchID, x, y)
                         return True
 	def on_touch_up(self, touches, touchID, x, y):
@@ -147,10 +191,10 @@ class DragableObject(RectangularWidget):
 
 class Button(RectangularWidget):
 	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
-		RectangularWidget.__init__(self,parent)
-		self.position = pos
+		RectangularWidget.__init__(self,parent, pos, size)
 		self.size = size
 		self.state = ('normal', 0)
+
 		self.clickActions = []
 
 		
@@ -170,62 +214,28 @@ class Button(RectangularWidget):
 			self.state = ('normal', 0)
                         return True
 	def on_touch_up(self, touches, touchID, x, y):
+		#print x,y , self.collidePoint(x,y)
 		if self.state[1] == touchID and self.collidePoint(x,y):
 			self.state = ('normal', 0)
+			#print "caling"
 			for callback in self.clickActions:
 				callback()
 			return True
-                        
-                        
-class ImageButton(Button):
-    def __init__(self, image_file, parent=None, pos=(0,0), size=(100,100)):
-        Button.__init__(self,parent,pos,size)
-        
-        img = pyglet.image.load(image_file)
-        img.anchor_x = img.width/2
-        img.anchor_y = img.height/2
-        
-        self.original_pos = pos
-        self.interpolator = 0.0
-        
-        self.image = pyglet.sprite.Sprite(img)
-        self.image.x, self.image.y = self.position
-        self.image.scale = 0.2
-        
-        self.target_scale = self.image.scale
-        self.target_position = self.position
-        self.size = (self.image.width, self.image.height)
-        
-    def draw(self):
-        self.image.x, self.image.y = self.position
-        self.update()
-        self.update()
-        self.image.draw()
-        
-    def setBig(self):
-        self.interpolator = 0.0
-        self.target_scale = 1.0
-        self.target_position = (900,600)
-        
-    def setSmall(self):
-        self.interpolator = 0.0
-        self.target_scale = 0.2
-        self.target_position = self.original_pos
-    
-    def collidePoint(self, x,y):
-            if( x > self.position[0]- self.size[0]/2  and x < self.position[0] + self.size[0]/2 and
-                y > self.position[1]- self.size[0]/2  and y < self.position[1] + self.size[1]/2  ):
-                    return True
-        
-    def update(self):
-        if self.target_scale > self.image.scale:
-            self.image.scale +=0.02
-        if self.target_scale < self.image.scale:
-            self.image.scale -=0.02
-           
-        self.interpolator = min(self.interpolator + 0.02, 1.0)
-        self.position = (self.target_position[0]*self.interpolator + self.position[0] * (1-self.interpolator),
-                         self.target_position[1]*self.interpolator + self.position[1] * (1-self.interpolator) )
-        
-        self.size = (self.image.width, self.image.height)
+                
 
+class TestImageButton(Button):
+    def __init__(self, image_file, parent=None, pos=(0,0), size=(1,1)):
+        Button.__init__(self,parent,pos,size)
+        img = pyglet.image.load(image_file)
+
+        self.image = pyglet.sprite.Sprite(img)
+        self.image.x, self.image.y = self.x, self.y
+        self.scale =  size[0]
+        self.image.scale = self.scale
+        self.width, self.height = (self.image.width, self.image.height)
+                       
+    def draw(self):
+        self.image.x, self.image.y = (self.x, self.y)
+        self.image.scale = self.scale
+        self.image.draw()
+       

@@ -6,32 +6,32 @@ import pyglet
 c = Container()
 #c.add_widget( DragableObject(pos=(100,100)) )
 
-
-def curry(fn, *cargs, **ckwargs):
-	def call_fn(*fargs, **fkwargs):
-		d = ckwargs.copy()
-		d.update(fkwargs)
-		return fn(*(cargs + fargs), **d)
-	return call_fn
-
-for i in range (5):
-	for j in range (5):
-		if i*5+j+1 >= 25:
-			break
-		b = ImageButton('bilder/testpic'+str(i*5+j +1)+'.jpg',parent=c, pos=(i* 300+300,j*200+200)) 
-		def myzoom(w):
-			if w.target_scale < 1.0:
-				w.setBig()
-				w.parent.widgets.append(w)
-				w.parent.widgets.remove(w)
+for i in range (20):
+		img_src = 'bilder/testpic'+str(i+1)+'.jpg'
+		b = TestImageButton(img_src, parent=c, size=(0.16,0.16), pos = (i/5*300+150,i%5 * 200 + 100))
+		b.status = 'not zoomed'
+		
+		anim = b.add_animation('zoom','x', 400, 1.0/60, 1)
+		anim = b.add_animation('zoom','y', 400, 1.0/60, 1)
+		anim = b.add_animation('zoom','scale', 0.6, 1.0/60, 1)
+		
+		anim = b.add_animation('shrink','x', i/5*300+150, 1.0/60, 1)
+		anim = b.add_animation('shrink','y', i%5 * 200 + 100, 1.0/60, 1)
+		anim = b.add_animation('shrink','scale', 0.16, 1.0/60, 1)
+		
+		def click(w):
+			if w.status == 'zoomed':
+				w.start_animations('shrink')
+				w.status = 'not_zoomed'
 			else:
-				w.setSmall()
-	
-		b.clickActions.append(curry(myzoom, b))
-		c.add_widget( b )
-
-
-
+				w.parent.widgets.remove(w)
+				w.parent.widgest.append(w)
+				w.start_animations('zoom')
+				w.status = 'zoomed'		
+				
+		b.clickActions.append(  curry(click,b)  )
+		c.add_widget(b)
+		
 
 
 

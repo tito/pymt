@@ -45,8 +45,8 @@ def on_draw():
         	touchID,x,y = touchPositions[p][0]
 
 		for pos in touchPositions[p][1:]:
-			drawLine( [(x, y), pos] )
+			drawLine( (x, y, pos[0], pos[1]) )
 			x, y = pos
-                        drawLabel(x,y, touchID)
+                drawLabel(x,y, touchID)
 
 runTouchApp()

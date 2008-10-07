@@ -57,12 +57,13 @@ class Animation(object):
 		self.frame = 0.0
 		self.prop = prop
 		self.to = to
+                self.fro = self.widget.__dict__[self.prop]
 		self.timestep = timestep
 		self.length = length
 		self.label = label
 		
 	def get_current_value(self):
-		return  (1.0-self.frame/self.length) * self.widget.__dict__[self.prop]   +  self.frame/self.length * self.to 
+		return  (1.0-self.frame/self.length) * self.fro  +  self.frame/self.length * self.to 
 		
 	def start(self):
 		#print 'calling'
@@ -70,6 +71,7 @@ class Animation(object):
 		pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
 		
 	def reset(self):
+                self.fro = self.widget.__dict__[self.prop]
 		self.frame = 0.0
 		
 	def advance_frame(self, dt):
@@ -237,5 +239,6 @@ class TestImageButton(Button):
     def draw(self):
         self.image.x, self.image.y = (self.x, self.y)
         self.image.scale = self.scale
+        self.width, self.height = (self.image.width, self.image.height)
         self.image.draw()
        

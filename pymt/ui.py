@@ -96,13 +96,11 @@ class Widget(object):
 		self.animations.append(anim)
 		return anim
 		
-	def start_animations(self, label):
+	def start_animations(self, label='all'):
 		for anim in self.animations:
-			if anim.label == label:
+			if anim.label == label or label == 'all':
 				anim.reset()
 				anim.start()
-			else:
-				anim.reset()
 		
 
 
@@ -161,10 +159,8 @@ class RectangularWidget(MTWidget):
 		drawRectangle((self.x, self.y) ,(self.width, self.height))
 		
 	def collidePoint(self, x,y):
-		#print "    x:",x, " y:", y, "   pos:", self.x, self.y, self.width, self.height
 		if( x > self.x  and x < self.x + self.width and
 		    y > self.y and y < self.y + self.height  ):
-			#print "True"
 			return True
 
 
@@ -219,7 +215,6 @@ class Button(RectangularWidget):
 		#print x,y , self.collidePoint(x,y)
 		if self.state[1] == touchID and self.collidePoint(x,y):
 			self.state = ('normal', 0)
-			#print "caling"
 			for callback in self.clickActions:
 				callback()
 			return True

@@ -16,18 +16,18 @@ class PaintWindow(TouchWindow):
 	for p in self.touch_positions:
 		x,y = self.touch_positions[p][0][0],self.touch_positions[p][0][1]
 		for pos in self.touch_positions[p][1:]:
-			drawLine( [(x, y), (pos[0],pos[1])] ,pos[2])
+			drawLine( (x, y, pos[0],pos[1]) ,pos[2])
 			x, y = pos[0],pos[1]
 
 	self.color_picker.draw()
             
     def on_touch_down(self, touches, touchID, x, y):
-		col = self.color_picker.getColorForPoint(x,y)
+	col = self.color_picker.getColorForPoint(x,y)
         self.touch_positions[touchID] = [(x,y, col)]
 
         
     def on_touch_move(self, touches, touchID, x, y):
-		col = self.color_picker.getColorForPoint(x,y)
+	col = self.color_picker.getColorForPoint(x,y)
         self.touch_positions[touchID].append((x,y,col))
 
         

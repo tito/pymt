@@ -55,5 +55,5 @@ class GLWindow(TouchWindow):
     
     
 w = GLWindow()
-w.set_fullscreen()
+#w.set_fullscreen()
 runTouchApp()

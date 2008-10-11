@@ -29,7 +29,7 @@ class Graph(object):
      
        def draw(self):
               for e in self.edges:
-                     drawLine([e[0], e[1]])
+                     drawLine((e[0][0],e[0][1], e[1][0],e[1][1]))
               for v in self.verts:
                      drawVertex(v[0],v[1])
                      

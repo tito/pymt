@@ -157,6 +157,8 @@ class RectangularWidget(MTWidget):
 		
 	def draw(self):
 		drawRectangle((self.x, self.y) ,(self.width, self.height))
+                
+        
 		
 	def collidePoint(self, x,y):
 		if( x > self.x  and x < self.x + self.width and
@@ -165,7 +167,7 @@ class RectangularWidget(MTWidget):
 
 
 		
-class DragableObject(RectangularWidget):
+class DragableWidget(RectangularWidget):
 	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
 		RectangularWidget.__init__(self,parent, pos, size)
 		self.state = ('normal', None)
@@ -190,17 +192,16 @@ class DragableObject(RectangularWidget):
 class Button(RectangularWidget):
 	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
 		RectangularWidget.__init__(self,parent, pos, size)
-		self.size = size
-		self.state = ('normal', 0)
 
+		self.state = ('normal', 0)
 		self.clickActions = []
 
 		
 	def draw(self):
 		if self.state[0] == 'down':
-			drawRectangle(self.position ,self.size, color=(0.5,0.5,0.5))
+			drawRectangle((self.x,self.y) , (self.width, self.height), color=(0.5,0.5,0.5))
 		else:
-			drawRectangle(self.position ,self.size)
+			drawRectangle((self.x,self.y) , (self.width, self.height))
 
 		
 	def on_touch_down(self, touches, touchID, x, y):
@@ -220,14 +221,14 @@ class Button(RectangularWidget):
 			return True
                 
 
-class TestImageButton(Button):
-    def __init__(self, image_file, parent=None, pos=(0,0), size=(1,1)):
+class ImageButton(Button):
+    def __init__(self, image_file, parent=None, pos=(0,0), size=(1,1), scale = 0.16):
         Button.__init__(self,parent,pos,size)
         img = pyglet.image.load(image_file)
 
         self.image = pyglet.sprite.Sprite(img)
         self.image.x, self.image.y = self.x, self.y
-        self.scale =  size[0]
+        self.scale =  scale
         self.image.scale = self.scale
         self.width, self.height = (self.image.width, self.image.height)
                        

@@ -103,7 +103,7 @@ class TouchEventLoop(pyglet.app.EventLoop):
                         else:
                                 self.blobs[blobID].move(args[2:])
                                 for l in touch_event_listeners:
-                                        print "pos:", self.blobs[blobID].xpos, self.blobs[blobID].ypos, self.blobs[blobID].xpos * l.width, l.height - l.height*self.blobs[blobID].ypos
+                                        #print "pos:", self.blobs[blobID].xpos, self.blobs[blobID].ypos, self.blobs[blobID].xpos * l.width, l.height - l.height*self.blobs[blobID].ypos
                                         l.dispatch_event('on_touch_move', self.blobs, blobID, self.blobs[blobID].xpos * l.width, l.height - l.height*self.blobs[blobID].ypos)
 
                                         

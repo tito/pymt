@@ -221,7 +221,7 @@ class Button(RectangularWidget):
 			return True
                 
 
-class ImageButton(Button):
+class TestImageButton(Button):
     def __init__(self, image_file, parent=None, pos=(0,0), size=(1,1), scale = 0.16):
         Button.__init__(self,parent,pos,size)
         img = pyglet.image.load(image_file)

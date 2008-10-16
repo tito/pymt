@@ -66,7 +66,19 @@ class SelectionTask(Button):
 from numpy import *
 import ctypes
 
+class Target(RectangularWidget):
+	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
+		RectangularWidget.__init__(self,parent, pos, size)
+                self.rotation = self._rotation = 60.0
 
+
+        def draw(self):
+                glPushMatrix()
+                glTranslatef(self.x, self.y, 0)
+                glRotatef(-1.0*self.rotation , 0, 0, 1)
+                glScalef(self.width, self.height, 1)
+                drawRectangle((-0.5, -0.5) ,(1, 1))
+                glPopMatrix()
 
 class TwoPointMappingTask(RectangularWidget):
 	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
@@ -100,14 +112,13 @@ class TwoPointMappingTask(RectangularWidget):
                                 else:         return 90
                         elif (y == 0):
                                 if(x < 0):  return 180
-                                else:       return 0;
-                        
+                                else:       return 0
                         if ( y > 0.0):
-                                if (x > 0.0): return math.atan(y/x) * math.pi;
-                                else:         return 180.0-math.atan(y/-x) * math.pi;
+                                if (x > 0.0): return math.atan(y/x) * math.pi
+                                else:         return 180.0-math.atan(y/-x) * math.pi
                         else:
-                                if (x > 0.0): return 360.0-math.atan(-y/x) * math.pi;
-                                else:         return 180.0+math.atan(-y/-x) * math.pi;
+                                if (x > 0.0): return 360.0-math.atan(-y/x) * math.pi
+                                else:         return 180.0+math.atan(-y/-x) * math.pi
                 
 		
 	def on_touch_down(self, touches, touchID, x, y):
@@ -120,7 +131,7 @@ class TwoPointMappingTask(RectangularWidget):
                 
 
 	def on_touch_move(self, touches, touchID, x, y):                
-                
+                print self.touchDict
                 if len(self.touchDict) == 1 and touchID in self.touchDict:
                         self.translation = Vector(x,y) - self.original_points[0] + self._translation
                         
@@ -140,7 +151,7 @@ class TwoPointMappingTask(RectangularWidget):
                         #rotate
                         v1 = self.original_points[1] - self.original_points[0]
                         v2 =   points[0] - points[1]
-                        self.rotation = self.getAngle(v1[0], v1[1]) - self.getAngle(v2[0], v2[1]) + self._rotation
+                        self.rotation =  self.getAngle(v1[0], v1[1]) - self.getAngle(v2[0], v2[1]) + self._rotation
                         
 
                 if touchID in self.touchDict:
@@ -155,9 +166,10 @@ class TwoPointMappingTask(RectangularWidget):
                         self.touchDict = {}
                 
                 
-                
-t = TwoPointMappingTask(pos=(300,300))       
-w = UIWindow(t)
+c = Container()
+c.add_widget( TwoPointMappingTask(pos=(300,300))  )
+c.add_widget( Target(pos=(700,500)) )
+win = UIWindow(c)
 #t.start_trials(10)
-w.set_fullscreen()
+#win.set_fullscreen()
 runTouchApp()

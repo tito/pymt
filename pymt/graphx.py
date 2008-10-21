@@ -17,6 +17,11 @@ def drawTriangle(points, color=(1.0,1.0,1.0)):
             glColor3f(*color)
 	draw(3, GL_TRIANGLES, ('v2f', points))
 
+def drawTriangle(pos, w, h, color=(1.0,1.0,1.0)):
+	if (color):
+            glColor3f(*color)
+        points = (pos[0]-w/2,pos[1], pos[0]+w/2,pos[1], pos[0],pos[1]+h,)
+	draw(3, GL_TRIANGLES, ('v2f', points))
 
 def drawRectangle(pos=(0,0), size=(1.0,1.0), color=(1.0,1.0,1.0)):
     	if (color):

@@ -77,97 +77,15 @@ class Target(RectangularWidget):
                 glTranslatef(self.x, self.y, 0)
                 glRotatef(-1.0*self.rotation , 0, 0, 1)
                 glScalef(self.width, self.height, 1)
-                drawRectangle((-0.5, -0.5) ,(1, 1))
+                drawRectangle((-0.5, -0.5) ,(1, 1),color=(0.7,0.8,0.8))
+                drawTriangle(pos=(100,100), w=100, h=200)
                 glPopMatrix()
 
-class TwoPointMappingTask(RectangularWidget):
-	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
-		RectangularWidget.__init__(self,parent, pos, size)
 
-                self.rotation = self._rotation = 0.0
-                self.translation = self._translation = Vector(pos[0],pos[1])
-                self.zoom = self._zoom = 1.0
-
-                self.touchDict = {}                
-                self.original_points = [Vector(0,0),Vector(0,0)]
-                self.originalCenter = Vector(0,0)
-                self.newCenter = Vector(0,0)
-                
-                
-        
-        def draw(self):
-                glPushMatrix()
-                glTranslatef(self.translation[0], self.translation[1], 0)
-                glRotatef(-1.0*self.rotation*18 , 0, 0, 1)
-                glScalef(self.zoom, self.zoom, 1)
-                glScalef(self.width, self.height, 1)
-                drawRectangle((-0.5, -0.5) ,(1, 1))
-                glPopMatrix()
-        
-
-                
-        def getAngle(self, x,y):
-                        if (x == 0.0):
-                                if(y < 0.0):  return 270
-                                else:         return 90
-                        elif (y == 0):
-                                if(x < 0):  return 180
-                                else:       return 0
-                        if ( y > 0.0):
-                                if (x > 0.0): return math.atan(y/x) * math.pi
-                                else:         return 180.0-math.atan(y/-x) * math.pi
-                        else:
-                                if (x > 0.0): return 360.0-math.atan(-y/x) * math.pi
-                                else:         return 180.0+math.atan(-y/-x) * math.pi
-                
-		
-	def on_touch_down(self, touches, touchID, x, y):
-                if len(self.touchDict) < 2:
-                        v = Vector(x,y)
-                        self.original_points[len(self.touchDict)] = v
-                        self.touchDict[touchID] = v
-                        
-     
-                
-
-	def on_touch_move(self, touches, touchID, x, y):                
-                print self.touchDict
-                if len(self.touchDict) == 1 and touchID in self.touchDict:
-                        self.translation = Vector(x,y) - self.original_points[0] + self._translation
-                        
-                if len(self.touchDict) == 2 and touchID in self.touchDict:
-                        points = self.touchDict.values()                       
-
-                        #scale
-                        distOld = Distance(self.original_points[0], self.original_points[1])
-                        distNew = Distance(points[0], points[1])
-                        self.zoom = distNew/distOld * self._zoom
-                
-                        #translate
-                        self.originalCenter = self.original_points[0] + (self.original_points[1] - self.original_points[0])*0.5
-                        self.newCenter = points[0] + (points[1] - points[0])*0.5
-                        self.translation = (self.newCenter - self.originalCenter)  + self._translation
-                       
-                        #rotate
-                        v1 = self.original_points[1] - self.original_points[0]
-                        v2 =   points[0] - points[1]
-                        self.rotation =  self.getAngle(v1[0], v1[1]) - self.getAngle(v2[0], v2[1]) + self._rotation
-                        
-
-                if touchID in self.touchDict:
-                        self.touchDict[touchID] = Vector(x,y)
-                
-                         
-	def on_touch_up(self, touches, touchID, x, y):
-                if touchID in self.touchDict: #end interaction 
-                        self._zoom = self.zoom
-                        self._translation += self.translation - self._translation
-                        self._rotation += self.rotation - self._rotation
-                        self.touchDict = {}
                 
                 
 c = Container()
-c.add_widget( TwoPointMappingTask(pos=(300,300))  )
+c.add_widget( ZoomableWidget(pos=(300,300))  )
 c.add_widget( Target(pos=(700,500)) )
 win = UIWindow(c)
 #t.start_trials(10)

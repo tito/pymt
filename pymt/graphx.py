@@ -2,11 +2,15 @@
 from pyglet.gl import *
 from pyglet.graphics import draw
 
-def drawCircle(pos=(0,0), color=(1.0,1.0,1.0), scale=1.0):
+RED = (1.0,0.0,0.0)
+GREEN = (0.0,1.0,0.0)
+BLUE = (0.0,0.0,1.0)
+
+def drawCircle(pos=(0,0), color=(1.0,1.0,1.0), radius=1.0):
     x, y = pos[0], pos[1]
     glPushMatrix()
     glTranslated(x,y, 0)
-    glScaled(scale, scale,1.0)
+    glScaled(radius, radius,1.0)
     glColor3d(*color)
     gluDisk(gluNewQuadric(), 0, 1, 32,1)
     glPopMatrix()

@@ -121,6 +121,25 @@ class MTWidget(Widget):
 
 
 
+class TouchDisplay(MTWidget):
+	def __init__(self, parent=None):
+		Widget.__init__(self, parent)
+		self.touches = {}
+		
+	def draw(self):
+		for id in self.touches:
+			drawCircle(pos=self.touches[id], scale=10,color=(0.5,0.5,0.5))
+	
+	def on_touch_down(self, touches, touchID, x, y):
+		self.touches[touchID] = (x,y)
+		
+	def on_touch_move(self, touches, touchID, x, y):
+		self.touches[touchID] = (x,y)
+	def on_touch_up(self, touches, touchID, x, y):
+		del self.touches[touchID]
+		
+		
+		
 class Container(object):
 	def __init__(self, parent=None):
 		self.parent = parent
@@ -239,7 +258,7 @@ class ImageButton(Button):
         self.image.draw()
 
 
-
+from math import sqrt
 class ZoomableWidget(RectangularWidget):
 	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
 		RectangularWidget.__init__(self,parent, pos, size)
@@ -256,6 +275,12 @@ class ZoomableWidget(RectangularWidget):
                 
         
         def draw(self):
+		
+		glPushMatrix()
+		radius = sqrt(self.width*self.width + self.height*self.height)/2 *self.zoom
+		drawCircle((self.translation[0], self.translation[1]) ,scale=radius, color=(1.0,.0,.0))
+		glPopMatrix()
+		
                 glPushMatrix()
                 glTranslatef(self.translation[0], self.translation[1], 0)
                 glRotatef(-1.0*self.rotation*18 , 0, 0, 1)
@@ -263,11 +288,15 @@ class ZoomableWidget(RectangularWidget):
                 glScalef(self.width, self.height, 1)
                 drawRectangle((-0.5, -0.5) ,(1, 1))
                 glPopMatrix()
-        
+
 
         def collidePoint(self, x,y):
-            pass
-
+            radius = sqrt(self.width*self.width + self.height*self.height)/2 *self.zoom
+	    dist = Length(self.translation - Vector(x,y))
+	    if radius >= dist:
+		return True
+	    else:
+		return False
                 
         def getAngle(self, x,y):
                         if (x == 0.0):
@@ -285,6 +314,9 @@ class ZoomableWidget(RectangularWidget):
                 
 		
 	def on_touch_down(self, touches, touchID, x, y):
+		if not self.collidePoint(x,y):
+			return False
+		
                 if len(self.touchDict) < 2:
                         v = Vector(x,y)
                         self.original_points[len(self.touchDict)] = v

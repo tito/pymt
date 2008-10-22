@@ -63,7 +63,7 @@ class SelectionTask(Button):
                 
                 
                 
-from numpy import *
+#from numpy import *
 import ctypes
 
 class Target(RectangularWidget):
@@ -87,7 +87,8 @@ class Target(RectangularWidget):
 c = Container()
 c.add_widget( ZoomableWidget(pos=(300,300))  )
 c.add_widget( Target(pos=(700,500)) )
+c.add_widget( TouchDisplay(c) )
 win = UIWindow(c)
 #t.start_trials(10)
-win.set_fullscreen()
+#win.set_fullscreen()
 runTouchApp()

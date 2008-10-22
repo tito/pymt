@@ -8,7 +8,7 @@ def drawCircle(pos=(0,0), color=(1.0,1.0,1.0), scale=1.0):
     glTranslated(x,y, 0)
     glScaled(scale, scale,1.0)
     glColor3d(*color)
-    gluDisk(gluNewQuadric(), 0, 10, 32,1)
+    gluDisk(gluNewQuadric(), 0, 1, 32,1)
     glPopMatrix()
 
 

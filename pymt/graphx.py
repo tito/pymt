@@ -7,29 +7,34 @@ GREEN = (0.0,1.0,0.0)
 BLUE = (0.0,0.0,1.0)
 
 def drawCircle(pos=(0,0), color=(1.0,1.0,1.0), radius=1.0):
+    if (color):
+        if (len(color)==3):glColor3f(*color)
+        elif (len(color)==4): glColor4f(*color)
     x, y = pos[0], pos[1]
     glPushMatrix()
     glTranslated(x,y, 0)
     glScaled(radius, radius,1.0)
-    glColor3d(*color)
     gluDisk(gluNewQuadric(), 0, 1, 32,1)
     glPopMatrix()
 
 
 def drawTriangle(points, color=(1.0,1.0,1.0)):
 	if (color):
-            glColor3f(*color)
+            if (len(color)==3):glColor3f(*color)
+            elif (len(color)==4): glColor4f(*color)
 	draw(3, GL_TRIANGLES, ('v2f', points))
 
 def drawTriangle(pos, w, h, color=(1.0,1.0,1.0)):
 	if (color):
-            glColor3f(*color)
+            if (len(color)==3):glColor3f(*color)
+            elif (len(color)==4): glColor4f(*color)
         points = (pos[0]-w/2,pos[1], pos[0]+w/2,pos[1], pos[0],pos[1]+h,)
 	draw(3, GL_TRIANGLES, ('v2f', points))
 
 def drawRectangle(pos=(0,0), size=(1.0,1.0), color=(1.0,1.0,1.0)):
-    	if (color):
-	    glColor3f(*color)
+	if (color):
+            if (len(color)==3):glColor3f(*color)
+            elif (len(color)==4): glColor4f(*color)
         data = ( pos[0],pos[1],   pos[0]+size[0],pos[1],   pos[0]+size[0],pos[1]+size[1],  pos[0],pos[1]+size[1] )
 	draw(4, GL_QUADS, ('v2f', data))
 
@@ -37,7 +42,8 @@ def drawRectangle(pos=(0,0), size=(1.0,1.0), color=(1.0,1.0,1.0)):
 def drawLine(points, width=5.0, color=(1.0,1.0,1.0)):
 	glLineWidth (width)
 	if (color):
-		glColor3f(*color)
+            if (len(color)==3):glColor3f(*color)
+            elif (len(color)==4): glColor4f(*color)
 	draw(2,GL_LINES, ('v2f', points))
 	
         

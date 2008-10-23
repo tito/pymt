@@ -141,31 +141,37 @@ class TouchDisplay(MTWidget):
 		
 		
 class Container(object):
-	def __init__(self, parent=None):
+	def __init__(self, parent=None, layers=1):
 		self.parent = parent
-		self.widgets = []
-	
-	def add_widget(self,w):
-		self.widgets.append(w)
+                self.layers = []
+                for i in range(layers):
+                    self.layers.append([])
+                    
+	def add_widget(self,w, z=0):
+		self.layers[z].append(w)
 		
 	def draw(self):
-		for w in self.widgets:
-			w.draw()
+                for l in self.layers:
+                    for w in l:
+                            w.draw()
 
 	def on_touch_down(self, touches, touchID, x, y):
-		for w in reversed(self.widgets):
-		    if w.on_touch_down(touches, touchID, x, y):
-		        break
+		for l in self.layers:
+                    for w in reversed(l):
+                        if w.on_touch_down(touches, touchID, x, y):
+                            break
 		
 	def on_touch_move(self, touches, touchID, x, y):
-		for w in reversed(self.widgets):
-		    if w.on_touch_move(touches, touchID, x, y):
-		        break
+		for l in self.layers:
+                    for w in reversed(l):
+                        if w.on_touch_move(touches, touchID, x, y):
+                            break
 
 	def on_touch_up(self, touches, touchID, x, y):
-		for w in reversed(self.widgets):
-		    if w.on_touch_up(touches, touchID, x, y):
-		        break
+		for l in self.layers:
+                    for w in reversed(l):
+                        if w.on_touch_up(touches, touchID, x, y):
+                            break
 
 
 class RectangularWidget(MTWidget):
@@ -274,19 +280,22 @@ class ZoomableWidget(RectangularWidget):
                 
                 
         
+        def draw_widget(self):
+            drawRectangle((-0.5, -0.5) ,(1, 1))
+        
         def draw(self):
 		
-		glPushMatrix()
-		radius = sqrt(self.width*self.width + self.height*self.height)/2 *self.zoom
-		drawCircle((self.translation[0], self.translation[1]) ,scale=radius, color=(1.0,.0,.0))
-		glPopMatrix()
+		#glPushMatrix()
+		#radius = sqrt(self.width*self.width + self.height*self.height)/2 *self.zoom
+		#drawCircle((self.translation[0], self.translation[1]) ,radius=radius, color=(1.0,.0,.0))
+		#glPopMatrix()
 		
                 glPushMatrix()
                 glTranslatef(self.translation[0], self.translation[1], 0)
                 glRotatef(-1.0*self.rotation*18 , 0, 0, 1)
                 glScalef(self.zoom, self.zoom, 1)
                 glScalef(self.width, self.height, 1)
-                drawRectangle((-0.5, -0.5) ,(1, 1))
+                self.draw_widget()
                 glPopMatrix()
 
 

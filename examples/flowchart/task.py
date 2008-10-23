@@ -20,6 +20,7 @@ createElement('Rhombus', 'Bulb burned out?')
 createElement('Box', 'plug in lamp!', color=(0.3,0.6,0.3))
 createElement('Box', 'buy new bulb!', color=(0.3,0.6,0.3))
 createElement('Box', 'buy new lamp!', color=(0.3,0.6,0.3))
+
 win = UIWindow(c)
 win.set_fullscreen()
 runTouchApp()

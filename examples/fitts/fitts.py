@@ -9,84 +9,94 @@ import pickle
 #new experiment
 #        2d fitts law study:  distances/position, sizes
 #        log: position, size, time taken, errors=[time_into_trial, pos]
-
-
-
-        
-class SelectionTask(Button):
-        def __init__(self):
-                Button.__init__(self)
-                self.log_buffer = []
-                self.errors = []
-                self.start_time = time.clock()
-                self.clickActions.append(self.finish_trial) 
-                
-        def start_trials(self, count):
-                errors = []
-                self.trial_counter = count
-                size = randint(30, 150)
-                self.width, self.height = size, size
-                
-                newx, newy = randint(0, self.parent.width), randint(0, self.parent.height)
-                dx, dy = abs(self.x - newx), abs(self.y - newy)
-                self.distance_to_last_point = sqrt(  dx*dx + dy*dy)
-                self.x, self.y = newx, newy
-                
-        def finish_trial(self):
-                self.log_buffer.append( [self.current_duration(), self.x, self.y, self.width, self.distance_to_last_point, self.errors] )
-                if self.trial_counter > 0:
-                        self.start_trials(self.trial_counter - 1)
-                else:
-                        self.finish_trials()
-                        
-        def finish_trials(self):
-                output = open('data1.pkl', 'wb')
-                pickle.dump(self.log_buffer, output)
-                output.close()
-                pyglet.app.exit()
-                
-        def current_duration(self):
-                return time.clock() - self.start_time
-        
-	def on_touch_down(self, touches, touchID, x, y):
-                if not Button.on_touch_down(self, touches, touchID, x, y):
-                        #print "error"
-                        self.errors.append([self.current_duration(), 'touch_down',x, y])
-                        
-	def on_touch_move(self, touches, touchID, x, y):
-		if not Button.on_touch_move(self, touches, touchID, x, y):
-                        self.errors.append([self.current_duration(), 'touch_move',x, y])
-                
-	def on_touch_up(self, touches, touchID, x, y):
-		if not Button.on_touch_up(self, touches, touchID, x, y):
-                        self.errors.append([self.current_duration(), 'touch_up',x, y])
-                
                 
                 
 #from numpy import *
 import ctypes
-
+from random import randint
 class Target(RectangularWidget):
 	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
-		RectangularWidget.__init__(self,parent, pos, size)
+                s = randint(100,300)
+                pos = (randint(100,900),randint(100,900))
+                self.zoom =randint(1,3)
+		RectangularWidget.__init__(self,parent, pos, (100.0,100.0))
                 self.rotation = self._rotation = 60.0
+                self.translation = Vector(self.x,self.y)
+                self.label = label = pyglet.text.Label(str(self.zoom),
+                font_name='Times New Roman',
+                font_size=24,
+                x=0, y=0,
+                anchor_x='center', anchor_y='center')
 
 
         def draw(self):
                 glPushMatrix()
-                glTranslatef(self.x, self.y, 0)
-                glRotatef(-1.0*self.rotation , 0, 0, 1)
-                glScalef(self.width, self.height, 1)
-                drawRectangle((-0.5, -0.5) ,(1, 1),color=(0.7,0.8,0.8))
-                drawTriangle(pos=(100,100), w=100, h=200)
+                glTranslatef(self.translation[0], self.translation[1], 0)
+                glRotatef(self.rotation , 0, 0, 1)
+                glScalef(self.width*self.zoom, self.height*self.zoom, 1)
+                drawRectangle((-0.5, -0.5) ,(1, 1),color=(0.3,0.3,0.3))
+                drawTriangle(pos=(0.0,-0.25), w=0.6, h=0.6,color=(0.5,0.3,0.3))
+                
+                self.label.text = str(self.zoom)
+                glPushMatrix()
+                glScalef(0.01,0.01,1.0)
+                #self.label.draw()
+                glPopMatrix()
+                
                 glPopMatrix()
 
 
+class SourceWidget(ZoomableWidget):
+        def __init__(self, target,parent=None, pos=(0,0), size=(100,100)):
+                ZoomableWidget.__init__(self, parent=None, pos=pos, size=(100,100))
+                self.color = (1.0, 1.0, 1.0, 0.5)
+                self.target = target
+                self.done = False
                 
+                self.log_buffer = []
+                self.errors = []
+                self.start_time = time.clock()
+                
+        def draw_widget(self):
+                glEnable(GL_BLEND)
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+                drawRectangle((-0.5, -0.5) ,(1, 1),color=self.color)
+                drawTriangle(pos=(0.0,-0.25), w=0.6, h=0.6,color=(0.7,0.5,0.5,0.5))
+                glDisable(GL_BLEND)
+                
+                #self.label.text = str(self.zoom)[:5]
+                glPushMatrix()
+                glScalef(0.01,0.01,1.0)
+                #self.label.draw()
+                glPopMatrix()
+                
+        def testStart(self,dt):
+                self.color = (1.0, 1.0, 1.0, 0.5)
+                x,y = randint(100,900), randint(100,900)
+                self.translation = Vector(x,y)
+                self._translation = Vector(x,y)
+                self.done = False
+                #self.rotation = randint(1,359)
+                #self.zoom = 1.0
+                
+                self.target.translation = Vector(randint(100,900), randint(100,900))
+                self.target.rotation = randint(1,359)
+                self.target.zoom = randint(1,3)
+
+        def on_touch_move(self, touches, touchID, x, y):
+                ZoomableWidget.on_touch_move(self, touches, touchID, x, y)
+                dist = Length(self.translation - self.target.translation)
+                if dist < 20 and not self.done \
+                and abs(self.zoom - t.zoom) < 0.2 \
+                and abs(self.rotation - self.target.rotation) < 10:
+                        self.color = (0,1,0,0.3)
+                        self.done = True
+                        pyglet.clock.schedule_once(curry(SourceWidget.testStart, self), 1)
                 
 c = Container()
-c.add_widget( ZoomableWidget(pos=(300,300))  )
-c.add_widget( Target(pos=(700,500)) )
+t = Target()
+c.add_widget( t)
+c.add_widget( SourceWidget(t,pos=(300,300))  )
 c.add_widget( TouchDisplay(c) )
 win = UIWindow(c)
 #t.start_trials(10)

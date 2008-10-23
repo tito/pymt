@@ -12,7 +12,7 @@ def drawVertex(x,y):
        gluDisk(gluNewQuadric(), 0, 20, 32,1)
        glScaled(0.75,0.75,1.0)
        glColor3d(0.0,0.0,1.0)
-       gluDisk(gluNewQuadric(), 0, 20, 32,1)
+       gluDisk(gluNewQuadric(), 0, 25, 32,1)
        glPopMatrix()
 
 
@@ -34,7 +34,7 @@ class Graph(object):
                      drawVertex(v[0],v[1])
                      
        #returns the vertex at the position, None if no vertex there
-       def collideVerts(self, x,y, regionSize=35):
+       def collideVerts(self, x,y, regionSize=40):
               for v in self.verts:
                      dx = abs(x - v[0])
                      dy = abs(y - v[1])

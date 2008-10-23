@@ -16,7 +16,7 @@ class PaintWindow(TouchWindow):
 	for p in self.touch_positions:
 		x,y = self.touch_positions[p][0][0],self.touch_positions[p][0][1]
 		for pos in self.touch_positions[p][1:]:
-			drawLine( (x, y, pos[0],pos[1]) ,pos[2])
+			drawLine( (x, y, pos[0],pos[1]) ,color=pos[2])
 			x, y = pos[0],pos[1]
 
 	self.color_picker.draw()

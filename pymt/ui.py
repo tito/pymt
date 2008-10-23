@@ -107,6 +107,7 @@ class Widget(object):
 class MTWidget(Widget):
 	def __init__(self, parent=None):
 		Widget.__init__(self, parent)
+                self.color = (1.0,1.0,1.0)
 	
 	def on_touch_down(self, touches, touchID, x, y):
 		#print "touchdown"
@@ -128,7 +129,7 @@ class TouchDisplay(MTWidget):
 		
 	def draw(self):
 		for id in self.touches:
-			drawCircle(pos=self.touches[id], scale=10,color=(0.5,0.5,0.5))
+			drawCircle(pos=self.touches[id], radius=10,color=(0.5,0.5,0.5))
 	
 	def on_touch_down(self, touches, touchID, x, y):
 		self.touches[touchID] = (x,y)
@@ -269,7 +270,7 @@ class ZoomableWidget(RectangularWidget):
 	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
 		RectangularWidget.__init__(self,parent, pos, size)
 
-                self.rotation = self._rotation = 0.0
+                self.rotation = self._rotation = self._oldrotation = 0.0 
                 self.translation = self._translation = Vector(pos[0],pos[1])
                 self.zoom = self._zoom = 1.0
 
@@ -292,7 +293,7 @@ class ZoomableWidget(RectangularWidget):
 		
                 glPushMatrix()
                 glTranslatef(self.translation[0], self.translation[1], 0)
-                glRotatef(-1.0*self.rotation*18 , 0, 0, 1)
+                glRotatef(self.rotation , 0, 0, 1)
                 glScalef(self.zoom, self.zoom, 1)
                 glScalef(self.width, self.height, 1)
                 self.draw_widget()
@@ -326,10 +327,17 @@ class ZoomableWidget(RectangularWidget):
 		if not self.collidePoint(x,y):
 			return False
 		
+                if len(self.touchDict) == 1:
+                    print 'rotated'
+                    self.rotation +=180
+                    self._oldrotation +=180
+                    
                 if len(self.touchDict) < 2:
                         v = Vector(x,y)
                         self.original_points[len(self.touchDict)] = v
                         self.touchDict[touchID] = v
+                        
+                return True
                         
      
                 
@@ -353,21 +361,44 @@ class ZoomableWidget(RectangularWidget):
                        
                         #rotate
                         v1 = self.original_points[1] - self.original_points[0]
-                        v2 =   points[0] - points[1]
-                        self.rotation =  self.getAngle(v1[0], v1[1]) - self.getAngle(v2[0], v2[1]) + self._rotation
-                        
+                        v2 = points[0] - points[1]
+                        if((v1[0] < 0 and v2[0]>0) or (v1[0] > 0 and v2[0]<0)):
+                            self._rotation =  ( 180+(self.getAngle(v1[0], v1[1]) - self.getAngle(v2[0], v2[1]))*-18)  %360
+                        else:
+                            self._rotation =  ((self.getAngle(v1[0], v1[1]) - self.getAngle(v2[0], v2[1]))*-18)  %360
+                       
+                        self.rotation = (self._rotation + self._oldrotation) %360
 
                 if touchID in self.touchDict:
                         self.touchDict[touchID] = Vector(x,y)
-                
+                        
                          
 	def on_touch_up(self, touches, touchID, x, y):
                 if touchID in self.touchDict: #end interaction 
                         self._zoom = self.zoom
                         self._translation += self.translation - self._translation
-                        self._rotation += self.rotation - self._rotation
+                        self._oldrotation = (self._rotation + self._oldrotation) %360
+
                         self.touchDict = {}
 
 
 
-       
+class ZoomableImage(ZoomableWidget):
+	def __init__(self, img_src,parent=None, pos=(0,0), size=(100,100)):
+		ZoomableWidget.__init__(self,parent, pos, size)
+                img = pyglet.image.load(img_src)
+                self.image = pyglet.sprite.Sprite(img)
+
+        def on_touch_down(self, touches, touchID, x, y):
+		if ZoomableWidget.on_touch_down(self, touches, touchID, x, y):
+                    self.parent.layers[0].remove(self)
+                    self.parent.layers[0].append(self)
+                    return True
+                    
+        def draw_widget(self):
+            drawRectangle((-0.5, -0.5) ,(1, 1))
+            glPushMatrix()
+            glTranslatef(-0.5,-0.5,0)
+            glScalef(1.0/self.image.height,1.0/self.image.height,1.0)
+            self.image.draw()
+            glPopMatrix()

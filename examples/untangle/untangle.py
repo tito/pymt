@@ -8,7 +8,7 @@ w = TouchWindow(config)
 
 #init the graph
 w.set_fullscreen()
-g = Graph(12,displaySize=w.get_size())
+g = Graph(24,displaySize=w.get_size())
 touch2vertex = {}
 
 

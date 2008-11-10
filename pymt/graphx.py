@@ -2,6 +2,11 @@
 from pyglet.gl import *
 from pyglet.graphics import draw
 
+
+
+from shader import *
+
+
 RED = (1.0,0.0,0.0)
 GREEN = (0.0,1.0,0.0)
 BLUE = (0.0,0.0,1.0)

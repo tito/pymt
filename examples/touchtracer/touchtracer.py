@@ -3,6 +3,26 @@ from pyglet.gl import *
 from pymt import * 
 
 
+
+
+
+
+
+
+
+
+frag_src = """
+uniform sampler2D tex;
+void main()
+{
+	vec4 color = texture2D(tex,gl_TexCoord[0].st);
+	gl_FragColor = vec4(color.r, color.g, color.b, color.a *0.6);
+}
+"""
+
+shader = Shader(None, frag_src)
+
+
 label = pyglet.text.Label('Go Hawks!', font_size=10,anchor_x="left", anchor_y="top")
 label2 = pyglet.text.Label('Go Hawks!', font_size=8,anchor_x="left", anchor_y="top")
 crosshair = pyglet.sprite.Sprite(pyglet.image.load('crosshair.png'))
@@ -36,7 +56,9 @@ def drawLabel(x,y, ID):
 	label2.draw()
 	crosshair.x = x -12
 	crosshair.y = y -12
+	shader.use()
 	crosshair.draw()
+	shader.stop()
 
 @w.event
 def on_draw():

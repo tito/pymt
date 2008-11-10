@@ -3,6 +3,7 @@ from graphx import *
 from ui import *
 from pyglet import *
 from obj import OBJ
+from shader import *
 
 def curry(fn, *cargs, **ckwargs):
 	def call_fn(*fargs, **fkwargs):

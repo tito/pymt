@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from pyglet.gl import *
 from pyglet.graphics import draw
-
+from math import sqrt
 
 
 from shader import *
@@ -10,6 +10,41 @@ from shader import *
 RED = (1.0,0.0,0.0)
 GREEN = (0.0,1.0,0.0)
 BLUE = (0.0,0.0,1.0)
+
+_brush_texture = None 
+_bruch_size = 10
+
+
+
+def setBrush(sprite, size=10):
+    global _brush_texture
+    point_sprite_img = pyglet.image.load(sprite)
+    _brush_texture = point_sprite_img.get_texture()
+    _bruch_size = size
+
+#paint a line with current brush
+def paintLine(points):
+    p1 = (points[0], points[1])
+    p2 = (points[2], points[3])
+    glEnable(GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(_brush_texture.target)
+    glBindTexture(_brush_texture.target, _brush_texture.id)
+    glEnable(GL_POINT_SPRITE_ARB); 
+    glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE);
+    glPointSize(_bruch_size)
+    dx,dy = p2[0]-p1[0], p2[1]-p1[1]
+    dist = sqrt(dx*dx +dy*dy)
+    numsteps = max(1, int(dist)/4)
+    pointList = [0,0] * numsteps
+    for i in range(numsteps):
+    	pointList[i*2]   = p1[0] + dx* (float(i)/numsteps)
+	pointList[i*2+1] = p1[1] + dy* (float(i)/numsteps)
+    draw(numsteps,GL_POINTS, ('v2f', pointList))
+    glDisable(GL_POINT_SPRITE_ARB);
+    glDisable(_brush_texture.target)
+
+
 
 def drawCircle(pos=(0,0), color=(1.0,1.0,1.0), radius=1.0):
     if (color):
@@ -21,6 +56,8 @@ def drawCircle(pos=(0,0), color=(1.0,1.0,1.0), radius=1.0):
     glScaled(radius, radius,1.0)
     gluDisk(gluNewQuadric(), 0, 1, 32,1)
     glPopMatrix()
+
+
 
 
 def drawTriangle(points, color=(1.0,1.0,1.0)):
@@ -42,6 +79,12 @@ def drawRectangle(pos=(0,0), size=(1.0,1.0), color=(1.0,1.0,1.0)):
             elif (len(color)==4): glColor4f(*color)
         data = ( pos[0],pos[1],   pos[0]+size[0],pos[1],   pos[0]+size[0],pos[1]+size[1],  pos[0],pos[1]+size[1] )
 	draw(4, GL_QUADS, ('v2f', data))
+
+
+def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0)):
+    pos = ( pos[0],pos[1],   pos[0]+size[0],pos[1],   pos[0]+size[0],pos[1]+size[1],  pos[0],pos[1]+size[1] )
+    texcoords = (0,0, 1,0, 1,1, 0,1)
+    draw(4, GL_QUADS, ('v2f', pos), ('t2f', texcoords))
 
 
 def drawLine(points, width=5.0, color=(1.0,1.0,1.0)):

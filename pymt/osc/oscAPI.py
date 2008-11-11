@@ -105,7 +105,8 @@ class OSCServer(Thread) :
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try :
             self.socket.bind( (ipAddr, port) )
-            self.socket.settimeout(1.0) # make sure its not blocking forever...
+            # felipe noticed this line will cause pymt to stop listening when used with simulator or other tuio app that doesnt constantly send messages
+            #self.socket.settimeout(1.0) # make sure its not blocking forever...
             self.haveSocket=True
         except socket.error:
             print 'there was an error binding to ip %s and port %i , maybe the port is already taken by another process?' % (ipAddr. port)

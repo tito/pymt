@@ -5,7 +5,7 @@ c = Container()
 for i in range (20):
 		img_src = 'bilder/testpic'+str(i+1)+'.jpg'
 		x , y =  i/5*300+150, i%5*200+100
-		b = TestImageButton(img_src, parent=c, size=(0.16,0.16), pos = (x,y))
+		b = ImageButton(img_src, parent=c, scale=0.16, pos = (x,y))
 		b.status = 'not zoomed'
 		
 		anim = b.add_animation('zoom','x', 400, 1.0/60, .2)

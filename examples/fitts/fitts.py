@@ -34,8 +34,10 @@ class Target(RectangularWidget):
                 glTranslatef(self.translation[0], self.translation[1], 0)
                 glRotatef(self.rotation , 0, 0, 1)
                 glScalef(self.width*self.zoom, self.height*self.zoom, 1)
-                drawRectangle((-0.5, -0.5) ,(1, 1),color=(0.3,0.3,0.3))
-                drawTriangle(pos=(0.0,-0.25), w=0.6, h=0.6,color=(0.5,0.3,0.3))
+		glColor4f(0.3,0.3,0.3, 1.0)
+                drawRectangle((-0.5, -0.5) ,(1, 1))
+		glColor4f(0.5,0.3,0.3,1.0)
+                drawTriangle(pos=(0.0,-0.25), w=0.6, h=0.6)
                 
                 self.label.text = str(self.zoom)
                 glPushMatrix()
@@ -60,8 +62,10 @@ class SourceWidget(ZoomableWidget):
         def draw_widget(self):
                 glEnable(GL_BLEND)
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-                drawRectangle((-0.5, -0.5) ,(1, 1),color=self.color)
-                drawTriangle(pos=(0.0,-0.25), w=0.6, h=0.6,color=(0.7,0.5,0.5,0.5))
+		glColor4f(*self.color)
+                drawRectangle((-0.5, -0.5) ,(1, 1))
+		glColor4f(0.7,0.5,0.5,0.5)
+                drawTriangle(pos=(0.0,-0.25), w=0.6, h=0.6)
                 glDisable(GL_BLEND)
                 
                 #self.label.text = str(self.zoom)[:5]
@@ -100,5 +104,5 @@ c.add_widget( SourceWidget(t,pos=(300,300))  )
 c.add_widget( TouchDisplay(c) )
 win = UIWindow(c)
 #t.start_trials(10)
-win.set_fullscreen()
+#win.set_fullscreen()
 runTouchApp()

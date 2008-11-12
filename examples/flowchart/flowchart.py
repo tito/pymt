@@ -11,8 +11,10 @@ class LineTool(ZoomableWidget):
     def draw_widget(self):
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        drawCircle((0,0), radius=0.5, color=(0.7,0.7,0.7, 0.2))
-        drawCircle((0,0), radius=0.3, color=(0.4,0.7,0.4, 0.4))
+	glColor4f(0.7,0.7,0.7, 0.2)
+        drawCircle((0,0), radius=0.5)
+	glColor4f(0.4,0.7,0.4, 0.4)
+        drawCircle((0,0), radius=0.3)
         glDisable(GL_BLEND)
 
 collision_targets = []
@@ -32,7 +34,7 @@ class Line(MTWidget):
 
 
 class Symbol(ZoomableWidget):
-    def __init__(self, pos=(0,0), size=(150,100), text="Flowchart Symbol", color=(0.3,0.3,0.5)):
+    def __init__(self, pos=(0,0), size=(150,100), text="Flowchart Symbol", color=(0.3,0.3,0.5,0.9)):
         ZoomableWidget.__init__(self, pos=pos, size=size)
         self.color=color
         self.mode='normal'
@@ -104,13 +106,15 @@ class Symbol(ZoomableWidget):
         
 class Box(Symbol):
     def draw_widget(self):
-        drawRectangle((-.5,-.5), (1.0,1.0), self.color)
+	glColor4f(*self.color)
+        drawRectangle((-.5,-.5), (1.0,1.0))
         self.drawLabel()
 
 class Rhombus(Symbol):
     def draw_widget(self):
-        drawTriangle((0.0,0), 1.0, 0.5, self.color)
-        drawTriangle((0.0,0), 1.0, -0.5, self.color)
+	glColor4f(*self.color)
+        drawTriangle((0.0,0), 1.0, 0.5)
+        drawTriangle((0.0,0), 1.0, -0.5)
         self.drawLabel()
 
 class Oval(Symbol):
@@ -119,7 +123,9 @@ class Oval(Symbol):
         glPushMatrix()
         #glTranslatef(x,y,0)
         glScalef(1.0, float(self.height)/self.width, 1.0)
-        drawCircle((0,0), radius=0.5, color=self.color)
+	glColor4f(0.4,0.7,0.4, 0.4)
+	glColor4f(*self.color)
+        drawCircle((0,0), radius=0.5)
         glPopMatrix()
         self.drawLabel()
 
@@ -127,10 +133,10 @@ class Oval(Symbol):
 
 
 
-c = Container(layers=2)
+
 class CreatorWidget(Container):
     def __init__(self, parent=None, pos=(100,100)):
-        Container.__init__(self,parent)
+        Container.__init__(self,parent=parent)
         self.pos=pos
         
         self.squareButton = Button(pos=(50,80), size=(80,80))
@@ -138,11 +144,11 @@ class CreatorWidget(Container):
         self.rhombusButton = Button(pos=(50,280), size=(80,80))
         
         def newBox():
-            c.add_widget( Box(pos=(100,80), size=(150,120)), z=1 )
+            parent.add_widget( Box(pos=(100,80), size=(150,120)), z=1 )
         def newOval():
-            c.add_widget(Oval(pos=(100,180), size=(150,120)), z=1)
+            parent.add_widget(Oval(pos=(100,180), size=(150,120)), z=1)
         def newRhombus():
-            c.add_widget(Rhombus(pos=(200,280), size=(150,120)), z=1)
+            parent.add_widget(Rhombus(pos=(200,280), size=(150,120)), z=1)
             
             
         self.squareButton.clickActions.append(newBox)
@@ -154,18 +160,18 @@ class CreatorWidget(Container):
         self.add_widget(self.rhombusButton)
         
         
-        
+    
     
     
 
 if __name__ == "__main__":
-    
-    w = CreatorWidget(c)
+    c = Container(layers=2)
+    w = CreatorWidget(parent=c)
     c.add_widget(w,z=1)
     
     tool = LineTool()
     c.add_widget(tool, z=1)
     
     win = UIWindow(c)
-    win.set_fullscreen()
+    #win.set_fullscreen()
     runTouchApp()

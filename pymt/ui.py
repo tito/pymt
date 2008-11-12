@@ -5,34 +5,16 @@ from pyglet.gl import *
 from mtpyglet import TouchWindow
 from graphx import *
 
-class ColorPicker:
-	def __init__(self, width=200, height = 400):
-		self.width, self.height = width, height
-		#draw a rectangle on the left hand side
-		self.vertex_list = graphics.vertex_list(4,
-                                          ('v2f', (40.0, 100.0,  float(width),100.0 ,  float(width),float(height)-50 ,  40.0, float(height)-50)) ,
-                                          ('c4B', (0,0,0,255, 255,0,0,255, 255,255,0,255, 0,255,0,255) ) )
-	def getColorForPoint(self,x,y):
-		if x < self.width and y < self.height:
-			return [float(x)/self.width, float(y)/self.height, 0.0]
-		else: return None
 
-	def draw(self):
-		self.vertex_list.draw(GL_QUADS)
-		
-		
-		
-		
-class MTContext(object):
-	pass
 
 
 
 class UIWindow(TouchWindow):
-	def __init__(self, view):
+	def __init__(self, view, fullscreen=False):
 		config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True, vsync=0)
 		TouchWindow.__init__(self, config)
-		#self.set_fullscreen()
+		if fullscreen:
+			self.set_fullscreen()
 		self.active_view = view
 		self.active_view.parent = self
 	
@@ -87,6 +69,10 @@ class Widget(object):
 	def __init__(self, parent=None):
 		self.parent = parent
 		self.animations = []
+		self.setup()
+		
+	def setup(self):
+		pass
 		
 	def draw(self):
 		pass
@@ -129,7 +115,8 @@ class TouchDisplay(MTWidget):
 		
 	def draw(self):
 		for id in self.touches:
-			drawCircle(pos=self.touches[id], radius=10,color=(0.5,0.5,0.5))
+			glColor4f(1.0,1.0,1.0,0.4)
+			drawCircle(pos=self.touches[id], radius=10)
 	
 	def on_touch_down(self, touches, touchID, x, y):
 		self.touches[touchID] = (x,y)
@@ -141,12 +128,15 @@ class TouchDisplay(MTWidget):
 		
 		
 		
-class Container(object):
-	def __init__(self, parent=None, layers=1):
+class Container(MTWidget):
+	def __init__(self, children=[], parent=None, layers=1):
 		self.parent = parent
                 self.layers = []
                 for i in range(layers):
                     self.layers.append([])
+		    
+		for c in children:
+			self.add_widget(c)
                     
 	def add_widget(self,w, z=0):
 		self.layers[z].append(w)
@@ -225,8 +215,10 @@ class Button(RectangularWidget):
 		
 	def draw(self):
 		if self.state[0] == 'down':
-			drawRectangle((self.x,self.y) , (self.width, self.height), color=(0.5,0.5,0.5))
+			glColor4f(0.5,0.5,0.5,0.5)
+			drawRectangle((self.x,self.y) , (self.width, self.height))
 		else:
+			glColor4f(0.7,0.7,0.7,0.5)
 			drawRectangle((self.x,self.y) , (self.width, self.height))
 
 		
@@ -402,3 +394,108 @@ class ZoomableImage(ZoomableWidget):
             glScalef(1.0/self.image.height,1.0/self.image.height,1.0)
             self.image.draw()
             glPopMatrix()
+	    
+	    
+	    
+class Slider(RectangularWidget):
+    def __init__(self, parent=None, min=0, max=100, pos=(10,10), size=(30,400), alignment='horizontal', padding=8, color=(0.8, 0.8, 0.4,1.0)):
+	RectangularWidget.__init__(self,parent, pos, size)
+	self.touchstarts = [] # only react to touch input that originated on this widget 
+	self.alignment = alignment
+	self.color = color
+	self.padding = padding
+	self.min, self.max = min, max
+	self.value = self.min
+	self.value = 77
+    
+    def draw(self):
+	glEnable(GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	x,y,w,h = self.x,self.y,self.width, self.height
+	p2 =self.padding/2
+	#draw outer rectangle
+	glColor4f(0.2,0.2,0.2,0.5)
+	drawRectangle(pos=(x,y), size=(w,h))
+	#draw inner rectangle
+	glColor4f(*self.color)
+	length = int(self.height*(float(self.value)/self.max) - self.padding)
+	drawRectangle(pos=(self.x+p2,self.y+p2), size=(w-self.padding, length) )
+	
+    def on_touch_down(self, touches, touchID, x, y):
+	if self.collidePoint(x,y):
+	    self.touchstarts.append(touchID)
+	    return True
+
+    def on_touch_move(self, touches, touchID, x, y):
+	if self.collidePoint(x,y) and (touchID in self.touchstarts):
+	    self.value = (y-self.y)/ float(self.height) *self.max
+	    return True
+    def on_touch_up(self, touches, touchID, x, y):
+	if (touchID in self.touchstarts):
+	    self.touchstarts.remove(touchID)
+	    
+	    
+	    
+	    
+	    
+class ColorPicker(RectangularWidget):
+    def __init__(self, parent=None, min=0, max=100, pos=(0,0), size=(640,480),target=[]):
+	RectangularWidget.__init__(self,parent, pos, size)
+	self.canvas = target[0]
+	self.sliders = [ Slider(max=255, size=(30,200), color=(1,0,0,1)),
+			 Slider(max=255, size=(30,200), color=(0,1,0,1)),
+			 Slider(max=255, size=(30,200), color=(0,0,1,1)) ] 
+	self.update_color()
+	self.touch_positions = {}
+	
+	
+	
+    def draw(self):
+	glColor4f(0.2,0.2,0.2,0.5)
+	drawRectangle(pos=(self.x, self.y), size=(self.width,self.height))
+	
+	glColor4f(*self.current_color)
+	drawRectangle(pos=(self.x+10, self.y+220), size=(110,60))
+	
+	for i in range(len(self.sliders)):
+	    self.sliders[i].x = 10 + self.x + i*40
+	    self.sliders[i].y = 10 + self.y
+	    self.sliders[i].draw()
+	    
+    def update_color(self):
+	r = self.sliders[0].value/255.0
+	g = self.sliders[1].value/255.0
+	b = self.sliders[2].value/255.0
+	if self.canvas: self.canvas.color = (r,g,b,1)
+	self.current_color = (r,g,b,1.0)
+	
+    def on_touch_down(self, touches, touchID, x, y):
+	for s in self.sliders:
+	    if s.on_touch_down(touches, touchID, x, y):
+		self.update_color()
+		return True
+	
+	if self.collidePoint(x,y):
+	    self.touch_positions[touchID] = (x,y,touchID)
+	    return True
+    
+    def on_touch_move(self, touches, touchID, x, y):
+	for s in self.sliders:
+	    if s.on_touch_move(touches, touchID, x, y):
+		self.update_color()
+		return True
+	
+	if self.touch_positions.has_key(touchID):
+	    self.x += x - self.touch_positions[touchID][0]
+	    self.y += y - self.touch_positions[touchID][1]
+	    self.touch_positions[touchID] = (x,y,touchID)
+	    return True
+	    
+    def on_touch_up(self, touches, touchID, x, y):
+	for s in self.sliders:
+	    if s.on_touch_up(touches, touchID, x, y):
+		self.update_color()
+		return True
+	if self.touch_positions.has_key(touchID):
+	    del self.touch_positions[touchID]
+	    

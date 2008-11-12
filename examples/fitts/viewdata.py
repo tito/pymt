@@ -13,7 +13,8 @@ class ControlDialog(DragableWidget):
         self.label = pyglet.text.Label(text ,x=200, y= 900)
         
     def draw(self):
-        drawRectangle((self.x, self.y) ,(self.width, self.height), color=(0.3,0.2,0.2))
+        glColor4f(0.3,0.2,0.2,1.0)
+        drawRectangle((self.x, self.y) ,(self.width, self.height))
         self.label.x, self.label.y = (self.x +10, self.y + 580)
         self.label.draw()
 
@@ -24,7 +25,8 @@ class Plot(DragableWidget):
         
         
     def draw(self):
-        drawRectangle((self.x, self.y) ,(self.width, self.height), color=(0.2,0.2,0.2))
+        glColor4f(0.2,0.2,0.2,1.0)
+        drawRectangle((self.x, self.y) ,(self.width, self.height))
         self.draw_grid()
     
     def draw_grid(self):
@@ -34,7 +36,7 @@ class Plot(DragableWidget):
         drawLine( (x,y,x,y+h) )
         for size in self.function:
             x,y,s = self.x  + size*5 - 100, self.y+ 40 +self.function[size][0]*5,  self.function[size][1]
-            drawCircle(pos=(x,y), scale = 0.001 *s )
+            drawCircle(pos=(x,y), radius = 1  )
     
 class DataViewer(Container):
     def __init__(self, data_file, parent=None):
@@ -44,10 +46,10 @@ class DataViewer(Container):
         pkl_file = open(data_file, 'rb')
         self.data = pickle.load(pkl_file)
              
-        self.widgets.append(Plot(self.size_vs_speed(), self) )
+        self.layers[0].append(Plot(self.size_vs_speed(), self) )
         
         caption = "Number of total records: " + str(len(self.data))
-        self.widgets.append(ControlDialog(caption,self))
+        self.layers[0].append(ControlDialog(caption,self))
      
     def size_vs_speed(self):
         function = {}

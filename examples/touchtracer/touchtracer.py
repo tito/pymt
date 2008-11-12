@@ -27,7 +27,7 @@ crosshair.scale = 0.6
 
 
 w = TouchWindow()
-w.set_fullscreen()
+#w.set_fullscreen()
 
 touchPositions = {}
 

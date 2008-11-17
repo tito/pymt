@@ -1,5 +1,6 @@
 import ctypes as c
 from pyglet import *
+from pyglet.gl import *
 
 class ShaderException(Exception):
     pass
@@ -7,17 +8,17 @@ class ShaderException(Exception):
 class Shader(object):
 
     def __init__(self, vertex_source=None, fragment_source=None):
-        self.program = gl.glCreateProgram()
+        self.program = glCreateProgram()
         
         if vertex_source:
-            self.vertex_shader = self.create_shader(vertex_source,gl.GL_VERTEX_SHADER)
-            gl.glAttachShader(self.program, self.vertex_shader)
+            self.vertex_shader = self.create_shader(vertex_source,GL_VERTEX_SHADER)
+            glAttachShader(self.program, self.vertex_shader)
         
         if fragment_source:
-            self.fragment_shader = self.create_shader(fragment_source,gl.GL_FRAGMENT_SHADER)
-            gl.glAttachShader(self.program, self.fragment_shader)
+            self.fragment_shader = self.create_shader(fragment_source,GL_FRAGMENT_SHADER)
+            glAttachShader(self.program, self.fragment_shader)
             
-        gl.glLinkProgram(self.program)
+        glLinkProgram(self.program)
         message = self.get_program_log(self.program)
         if message:
             raise ShaderException(message)
@@ -27,17 +28,17 @@ class Shader(object):
         pointer = c.cast(c.pointer(c.pointer(sbuffer)),
                 c.POINTER(c.POINTER(c.c_char)))
         nulll = c.POINTER(c.c_long)()
-        shader = gl.glCreateShader(shadertype)
-        gl.glShaderSource(shader, 1, pointer, None)
-        gl.glCompileShader(shader)
+        shader = glCreateShader(shadertype)
+        glShaderSource(shader, 1, pointer, None)
+        glCompileShader(shader)
         message = self.get_shader_log(shader)
         if message:
             raise ShaderException(message)
         return shader
 
     def set_uniform_f(self, name, value):
-        location = gl.glGetUniformLocation(self.program, name)
-        gl.glUniform1f(location, value)
+        location = glGetUniformLocation(self.program, name)
+        glUniform1f(location, value)
 
     def __setitem__(self, name, value):
         """pass a variable to the shader"""
@@ -47,16 +48,16 @@ class Shader(object):
             raise TypeError("Only floats are supported so far")
 
     def use(self):
-        gl.glUseProgram(self.program)
+        glUseProgram(self.program)
 
     def stop(self):
-        gl.glUseProgram(0)
+        glUseProgram(0)
 
     def get_shader_log(self, shader):
-        return self.get_log(shader, gl.glGetShaderInfoLog)
+        return self.get_log(shader, glGetShaderInfoLog)
 
     def get_program_log(self, shader):
-        return self.get_log(shader, gl.glGetProgramInfoLog)
+        return self.get_log(shader, glGetProgramInfoLog)
 
     def get_log(self, obj, func):
         log_buffer = c.create_string_buffer(4096)

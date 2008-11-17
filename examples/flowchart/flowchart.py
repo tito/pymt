@@ -143,17 +143,17 @@ class CreatorWidget(Container):
         self.ovalButton = Button(pos=(50,180), size=(80,80))
         self.rhombusButton = Button(pos=(50,280), size=(80,80))
         
-        def newBox():
+        def newBox(touchID, x,y):
             parent.add_widget( Box(pos=(100,80), size=(150,120)), z=1 )
-        def newOval():
+        def newOval(touchID, x,y):
             parent.add_widget(Oval(pos=(100,180), size=(150,120)), z=1)
-        def newRhombus():
+        def newRhombus(touchID, x,y):
             parent.add_widget(Rhombus(pos=(200,280), size=(150,120)), z=1)
             
             
-        self.squareButton.clickActions.append(newBox)
-        self.ovalButton.clickActions.append(newOval)
-        self.rhombusButton.clickActions.append(newRhombus)
+        self.squareButton.push_handlers(on_click=newBox)
+        self.ovalButton.push_handlers(on_click=newOval)
+        self.rhombusButton.push_handlers(on_click=newRhombus)
         
         self.add_widget(self.squareButton)
         self.add_widget(self.ovalButton)

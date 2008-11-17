@@ -75,8 +75,9 @@ class Animation(object):
 		
 
 
-class Widget(object):
+class Widget(pyglet.event.EventDispatcher):
 	def __init__(self, parent=None):
+		pyglet.event.EventDispatcher.__init__(self)
 		self.parent = parent
 		self.animations = []
 		self.setup()
@@ -103,7 +104,13 @@ class Widget(object):
 class MTWidget(Widget):
 	def __init__(self, parent=None):
 		Widget.__init__(self, parent)
-                self.color = (1.0,1.0,1.0)
+		self.register_event_type('on_touch_up')
+		self.register_event_type('on_touch_move')
+		self.register_event_type('on_touch_down')
+		self.register_event_type('on_object_up')
+		self.register_event_type('on_object_move')
+		self.register_event_type('on_object_down')
+		
 	
 	def on_touch_down(self, touches, touchID, x, y):
 		#print "touchdown"
@@ -143,6 +150,7 @@ class TouchDisplay(MTWidget):
 		
 	def on_touch_move(self, touches, touchID, x, y):
 		self.touches[touchID] = (x,y)
+		
 	def on_touch_up(self, touches, touchID, x, y):
 		del self.touches[touchID]
 		
@@ -150,6 +158,7 @@ class TouchDisplay(MTWidget):
 		
 class Container(MTWidget):
 	def __init__(self, children=[], parent=None, layers=1):
+		MTWidget.__init__(self, parent)
 		self.parent = parent
                 self.layers = []
                 self.obj = []
@@ -174,36 +183,36 @@ class Container(MTWidget):
 	def on_touch_down(self, touches, touchID, x, y):
 		for l in self.layers:
                     for w in reversed(l):
-                        if w.on_touch_down(touches, touchID, x, y):
+                        if w.dispatch_event('on_touch_down', touches, touchID, x, y):
                             break
 		
 	def on_touch_move(self, touches, touchID, x, y):
 		for l in self.layers:
                     for w in reversed(l):
-                        if w.on_touch_move(touches, touchID, x, y):
+                        if w.dispatch_event('on_touch_move', touches, touchID, x, y):
                             break
 
 	def on_touch_up(self, touches, touchID, x, y):
 		for l in self.layers:
                     for w in reversed(l):
-                        if w.on_touch_up(touches, touchID, x, y):
+                        if w.dispatch_event('on_touch_up', touches, touchID, x, y):
                             break
                            
 #------ Object --- by Felipe Carvalho
 
 	def on_object_down(self, touches, touchID,id, x, y,angle):
 		for l in self.obj:
-                        if l.on_object_down(touches, touchID,id, x, y,angle):
+                        if l.dispatch_event('on_object_down', touches, touchID,id, x, y,angle):
                             break
 		
 	def on_object_move(self, touches, touchID,id, x, y,angle):
 		for l in self.obj:
-                        if l.on_object_move(touches, touchID,id, x, y,angle):
+                        if l.dispatch_event('on_object_move', touches, touchID,id, x, y,angle):
                             break
 
 	def on_object_up(self, touches, touchID,id, x, y,angle):
 		for l in self.obj:
-                        if l.on_object_up(touches, touchID,id, x, y,angle):
+                        if l.dispatch_event('on_object_up', touches, touchID,id, x, y,angle):
                             break
 
 
@@ -250,7 +259,7 @@ class DragableWidget(RectangularWidget):
 class Button(RectangularWidget):
 	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
 		RectangularWidget.__init__(self,parent, pos, size)
-
+		self.register_event_type('on_click')
 		self.state = ('normal', 0)
 		self.clickActions = []
 
@@ -276,8 +285,7 @@ class Button(RectangularWidget):
 		#print x,y , self.collidePoint(x,y)
 		if self.state[1] == touchID and self.collidePoint(x,y):
 			self.state = ('normal', 0)
-			for callback in self.clickActions:
-				callback()
+			self.dispatch_event('on_click', touchID, x,y)
 			return True
                 
 

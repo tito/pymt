@@ -4,7 +4,7 @@ from pyglet import *
 from pyglet.gl import *
 from mtpyglet import TouchWindow
 from graphx import *
-
+from math import *
 
 
 
@@ -32,6 +32,16 @@ class UIWindow(TouchWindow):
 	def on_touch_up(self, touches, touchID, x, y):
 		self.active_view.on_touch_up(touches, touchID, x, y)
 		
+#------ Object --- by Felipe Carvalho
+
+	def on_object_down(self, touches, touchID,id, x, y,angle):
+		self.active_view.on_object_down(touches, touchID,id, x, y,angle)
+	
+	def on_object_move(self, touches, touchID,id, x, y,angle):
+		self.active_view.on_object_move(touches, touchID,id, x, y,angle)
+
+	def on_object_up(self, touches, touchID,id, x, y,angle):
+		self.active_view.on_object_up(touches, touchID,id, x, y,angle)				
 
 class Animation(object):
 	def __init__(self, widget, label, prop, to, timestep, length):
@@ -104,7 +114,17 @@ class MTWidget(Widget):
 
 	def on_touch_up(self, touches, touchID, x, y):
 		pass
+	
+#------ Object --- by Felipe Carvalho
+	
+	def on_object_down(self, touches, touchID,id, x, y,angle):
+	    pass
 		
+	def on_object_move(self, touches, touchID,id, x, y,angle):
+		pass
+
+	def on_object_up(self, touches, touchID,id, x, y,angle):
+		pass				
 
 
 
@@ -132,20 +152,25 @@ class Container(MTWidget):
 	def __init__(self, children=[], parent=None, layers=1):
 		self.parent = parent
                 self.layers = []
+                self.obj = []
                 for i in range(layers):
                     self.layers.append([])
 		    
 		for c in children:
 			self.add_widget(c)
                     
-	def add_widget(self,w, z=0):
-		self.layers[z].append(w)
+	def add_widget(self,w, z=0,type='cur'):
+		if  type == 'cur':
+		  self.layers[z].append(w)
+		elif type == 'obj':
+		    self.obj.append(w)
 		
 	def draw(self):
+                for l in self.obj:
+                            l.draw()		
                 for l in self.layers:
                     for w in l:
                             w.draw()
-
 	def on_touch_down(self, touches, touchID, x, y):
 		for l in self.layers:
                     for w in reversed(l):
@@ -162,6 +187,23 @@ class Container(MTWidget):
 		for l in self.layers:
                     for w in reversed(l):
                         if w.on_touch_up(touches, touchID, x, y):
+                            break
+                           
+#------ Object --- by Felipe Carvalho
+
+	def on_object_down(self, touches, touchID,id, x, y,angle):
+		for l in self.obj:
+                        if l.on_object_down(touches, touchID,id, x, y,angle):
+                            break
+		
+	def on_object_move(self, touches, touchID,id, x, y,angle):
+		for l in self.obj:
+                        if l.on_object_move(touches, touchID,id, x, y,angle):
+                            break
+
+	def on_object_up(self, touches, touchID,id, x, y,angle):
+		for l in self.obj:
+                        if l.on_object_up(touches, touchID,id, x, y,angle):
                             break
 
 
@@ -499,3 +541,54 @@ class ColorPicker(RectangularWidget):
 	if self.touch_positions.has_key(touchID):
 	    del self.touch_positions[touchID]
 	    
+	    
+	    
+#------ Object --- by Felipe Carvalho
+ 
+class ObjectWidget(RectangularWidget):
+    def __init__(self, parent=None, pos=(0,0), size=(100,100)):
+        RectangularWidget.__init__(self,parent, pos, size)        
+        
+        self.state = ('normal', None)
+        self.visible = False
+        self.angle = 0
+        self.id = 0
+        
+    def on_object_down(self, touches, touchID,id, x, y,angle):
+            self.x ,self.y = x,y
+            self.angle = angle/pi*180
+            self.visible = True
+            self.id = id  
+            self.state = ('dragging', touchID, x, y)
+            return True
+    def on_object_move(self, touches, touchID,id, x, y,angle):
+        if self.state[0] == 'dragging' and self.state[1]==touchID:
+            self.angle = -angle/pi*180
+            self.x, self.y = (self.x + (x - self.state[2]) , self.y + y - self.state[3])
+            self.id = id            
+            self.state = ('dragging', touchID, x, y)
+            return True
+         
+    def on_object_up(self, touches, touchID,id, x, y,angle):
+        if self.state[1] == touchID:
+            self.angle = -angle/pi*180 
+            self.visible = False
+            self.id = id
+            self.state = ('normal', None)
+            return True
+        
+        
+    def draw(self):
+        if self.visible:
+          glPushMatrix()
+          glTranslatef(self.x,self.y,0.0)    
+          glRotatef(self.angle,0.0,0.0,1.0)
+          glColor3f(1.0,1.0,1.0)
+          drawRectangle((-0.5*self.width, -0.5*self.height) ,(self.width, self.height))
+          glColor3f(0.0,0.0,1.0)          
+          glBegin(GL_LINES)
+          glVertex2f(0.0,0.0)
+          glVertex2f(0,-0.5*self.height)
+          glEnd()
+
+          glPopMatrix()

@@ -65,6 +65,7 @@ class DataViewer(Container):
         
 
        
-w = UIWindow(DataViewer('data.pkl'))
+w = UIWindow()
+w.add_widget(DataViewer('data.pkl'))
 w.set_fullscreen()
 runTouchApp()

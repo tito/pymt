@@ -44,16 +44,35 @@ class Canvas(RectangularWidget):
 			del self.touch_positions[touchID]
 
 
-	    
-root = Container()
-w = UIWindow(root)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+w = UIWindow()
+w.set_fullscreen()
+
+root = Widget()
 canvas = Canvas(size=(w.width,w.height))
 root.add_widget(canvas)
 
 slider = ColorPicker(size=(130,290), target=[canvas])
 root.add_widget(slider)
 
+w.add_widget(root)
 
 
 runTouchApp()

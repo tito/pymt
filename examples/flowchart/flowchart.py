@@ -30,6 +30,7 @@ class Line(MTWidget):
         print 'drawing Line'
         x,y  = self.fro.translation[0], self.fro.translation[1]
         xt,yt = self.to.translation[0], self.to.translation[1]
+	glColor3d(.9,.9,.9)
         drawLine((x,y,xt,yt))
 
 
@@ -50,6 +51,7 @@ class Symbol(ZoomableWidget):
         if self.mode == 'lineDrawing':
             x,y  = self.translation[0],self.translation[1]
             xt,yt = self.line_target[0],self.line_target[1]
+	    glColor3d(.9,.9,.9)
             drawLine((x,y, xt,yt))
     
     def drawLabel(self):
@@ -172,6 +174,7 @@ if __name__ == "__main__":
     tool = LineTool()
     c.add_widget(tool, z=1)
     
-    win = UIWindow(c)
+    win = UIWindow()
+    win.add_widget(c)
     #win.set_fullscreen()
     runTouchApp()

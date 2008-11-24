@@ -5,29 +5,29 @@ from pyglet.gl import *
 import pickle
 
 
-class GLWindow(TouchWindow):
-    def __init__(self):
-        config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True, vsync=0)
-        TouchWindow.__init__(self, config)
-	self.model = bunny = OBJ('monkey.obj')
+class GLWindow(RectangularWidget):
+    def __init__(self,parent=None, size=(640,480), pos=(0,0)):
+	RectangularWidget.__init__(self, parent=parent,size=(640,480), pos=(0,0))
+        self.model = bunny = OBJ('monkey.obj')
         self.draw_color = (1.0,1.0,1.0)
         self.touch_position = {}
         self.rot_x, self.rot_y = 0.0, 0.0
         
-    def on_draw(self):
+    def draw(self):
         global batch
-        self.clear()
-
+        
 	glEnable(GL_LIGHTING)
 	glEnable(GL_LIGHT0)
 	glEnable(GL_NORMALIZE)
 	glEnable(GL_DEPTH_TEST)
         
         glMatrixMode(GL_PROJECTION)
+	glPushMatrix()
         glLoadIdentity()
         gluPerspective(60.,self.width/float(self.height) , 1., 100.)
         
         glMatrixMode(GL_MODELVIEW)
+	glPushMatrix()
 	glLoadIdentity()
         glTranslatef(0.0,0.0,-3.0)
         
@@ -36,6 +36,10 @@ class GLWindow(TouchWindow):
 	glRotatef(180.0, 0,0,1)
         glRotatef(90.0, 1,0,0) 
         self.model.draw() 
+        
+	glPopMatrix()
+	glMatrixMode(GL_PROJECTION)
+	glPopMatrix()
         
             
     def on_touch_down(self, touches, touchID, x, y):
@@ -53,7 +57,8 @@ class GLWindow(TouchWindow):
         
 
     
-    
-w = GLWindow()
+w = UIWindow()  
 w.set_fullscreen()
+w.add_widget( GLWindow(size=(w.width, w.height)) )
+
 runTouchApp()

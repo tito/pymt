@@ -96,13 +96,18 @@ class SourceWidget(ZoomableWidget):
                         self.color = (0,1,0,0.3)
                         self.done = True
                         pyglet.clock.schedule_once(curry(SourceWidget.testStart, self), 1)
-                
+
+
+	       
 c = Container()
 t = Target()
 c.add_widget( t)
 c.add_widget( SourceWidget(t,pos=(300,300))  )
 c.add_widget( TouchDisplay(c) )
-win = UIWindow(c)
+
 #t.start_trials(10)
 #win.set_fullscreen()
+
+win = UIWindow()
+win.add_widget(c)
 runTouchApp()

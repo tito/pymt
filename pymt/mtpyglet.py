@@ -38,7 +38,7 @@ class Tuio2DCursor():
                 self.oxpos = self.oypos = 0.0
                 if len(args) < 5:
                         self.xpos, self.ypos = args[0:2]
-                if len(args) == 5:
+                elif len(args) == 5:
                         self.xpos, self.ypos, self.xmot, self.ymot, self.mot_accel = args[0:5]
                 else:
                         self.xpos, self.ypos, self.xmot, self.ymot, self.mot_accel, self.Width , self.Height = args[0:7]
@@ -234,13 +234,7 @@ class TouchWindow(pyglet.window.Window):
         def on_object_up(self, touches, touchID,id, x, y,angle):
                 pass
 
-        def on_mouse_press(self, x, y, button, modifiers):
-                #self.on_touch_down(None, "mouse", x, y)
-                self.dispatch_event('on_touch_down', None, "mouse", x, y)
-        def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-                self.dispatch_event('on_touch_move', None, "mouse", x, y)
-        def on_mouse_release(self, x, y, button, modifiers):
-                self.dispatch_event('on_touch_up', None, "mouse", x, y)
+
   
 
 

@@ -10,38 +10,64 @@ from math import *
 
 
 class UIWindow(TouchWindow):
-	def __init__(self, view, fullscreen=False):
-		config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True, vsync=0)
+	def __init__(self, view=None, fullscreen=False, debug=True, config=None):
+		if not config:
+			config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True, vsync=0)
 		TouchWindow.__init__(self, config)
-		if fullscreen:
-			self.set_fullscreen()
-		self.active_view = view
-		self.active_view.parent = self
+		
+		if fullscreen:	self.set_fullscreen()
+
+		self.root = Widget()
+		self.root.parent = self
+		if view:self.root.add_widget(view)
+		
+		self.debug = debug
+		if self.debug:
+			self.sim = MTSimulator(self)
+			self.root.add_widget(self.sim)
 	
+	def add_widget(self, w):
+		self.root.add_widget(w)
+		
+		
 	def on_draw(self):
+		glClearColor(.3,.3,.3,1.0)
 		self.clear()
-		self.active_view.draw()
+		self.root.dispatch_event('draw')
+		if self.debug:
+			self.sim.draw()
 
 	def on_touch_down(self, touches, touchID, x, y):
-		#print "test", self.active_view
-		self.active_view.on_touch_down(touches, touchID, x, y)
+		self.root.dispatch_event('on_touch_down', touches, touchID, x, y)
 	
 	def on_touch_move(self, touches, touchID, x, y):
-		self.active_view.on_touch_move(touches, touchID, x, y)
+		self.root.dispatch_event('on_touch_move', touches, touchID, x, y)
 
 	def on_touch_up(self, touches, touchID, x, y):
-		self.active_view.on_touch_up(touches, touchID, x, y)
+		self.root.dispatch_event('on_touch_up', touches, touchID, x, y)
+		
+	def on_mouse_press(self, x, y, button, modifiers):
+                self.root.dispatch_event('on_mouse_press',x, y, button, modifiers)
+		
+        def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
+                self.root.dispatch_event('on_mouse_drag',x, y, dx, dy, button, modifiers)
+		
+        def on_mouse_release(self, x, y, button, modifiers):
+		self.root.dispatch_event('on_mouse_release', x, y, button, modifiers)
 		
 #------ Object --- by Felipe Carvalho
 
 	def on_object_down(self, touches, touchID,id, x, y,angle):
-		self.active_view.on_object_down(touches, touchID,id, x, y,angle)
+		self.root.on_object_down(touches, touchID,id, x, y,angle)
 	
 	def on_object_move(self, touches, touchID,id, x, y,angle):
-		self.active_view.on_object_move(touches, touchID,id, x, y,angle)
+		self.root.on_object_move(touches, touchID,id, x, y,angle)
 
 	def on_object_up(self, touches, touchID,id, x, y,angle):
-		self.active_view.on_object_up(touches, touchID,id, x, y,angle)				
+		self.root.on_object_up(touches, touchID,id, x, y,angle)				
+
+
+
 
 class Animation(object):
 	def __init__(self, widget, label, prop, to, timestep, length):
@@ -58,7 +84,6 @@ class Animation(object):
 		return  (1.0-self.frame/self.length) * self.fro  +  self.frame/self.length * self.to 
 		
 	def start(self):
-		#print 'calling'
 		self.reset()
 		pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
 		
@@ -79,14 +104,31 @@ class Widget(pyglet.event.EventDispatcher):
 	def __init__(self, parent=None):
 		pyglet.event.EventDispatcher.__init__(self)
 		self.parent = parent
-		self.animations = []
-		self.setup()
+		self.children = []
+	
+		self.register_event_type('draw')
+		self.register_event_type('on_mouse_press')
+		self.register_event_type('on_mouse_drag')
+		self.register_event_type('on_mouse_release')
+		self.register_event_type('on_touch_up')
+		self.register_event_type('on_touch_move')
+		self.register_event_type('on_touch_down')
+		self.register_event_type('on_object_up')
+		self.register_event_type('on_object_move')
+		self.register_event_type('on_object_down')
 		
-	def setup(self):
+		self.animations = []
+		self.init()
+		
+	def init(self):
 		pass
 		
 	def draw(self):
-		pass
+		for w in self.children:
+			w.dispatch_event('draw')
+	
+	def add_widget(self, w):
+		self.children.append(w)
 		
 	def add_animation(self, label, prop, to , timestep, length):
 		anim = Animation(self, label, prop, to, timestep, length)
@@ -100,39 +142,51 @@ class Widget(pyglet.event.EventDispatcher):
 				anim.start()
 		
 
-
-class MTWidget(Widget):
-	def __init__(self, parent=None):
-		Widget.__init__(self, parent)
-		self.register_event_type('on_touch_up')
-		self.register_event_type('on_touch_move')
-		self.register_event_type('on_touch_down')
-		self.register_event_type('on_object_up')
-		self.register_event_type('on_object_move')
-		self.register_event_type('on_object_down')
 		
 	
 	def on_touch_down(self, touches, touchID, x, y):
-		#print "touchdown"
-		pass
-		
+		for w in self.children:
+			w.dispatch_event('on_touch_down', touches, touchID, x, y)
+	
 	def on_touch_move(self, touches, touchID, x, y):
-		pass
+		for w in self.children:
+			w.dispatch_event('on_touch_move', touches, touchID, x, y)
 
 	def on_touch_up(self, touches, touchID, x, y):
-		pass
-	
-#------ Object --- by Felipe Carvalho
-	
-	def on_object_down(self, touches, touchID,id, x, y,angle):
-	    pass
+		for w in self.children:
+			w.dispatch_event('on_touch_up', touches, touchID, x, y)
 		
+	def on_mouse_press(self, x, y, button, modifiers):
+		for w in self.children:
+	                w.dispatch_event('on_mouse_press',x, y, button, modifiers)
+		
+        def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
+		for w in self.children:
+	                w.dispatch_event('on_mouse_drag',x, y, dx, dy, button, modifiers)
+		
+        def on_mouse_release(self, x, y, button, modifiers):
+		for w in self.children:
+			w.dispatch_event('on_mouse_release', x, y, button, modifiers)
+		
+#------ Object --- by Felipe Carvalho
+
+	def on_object_down(self, touches, touchID,id, x, y,angle):
+		w.on_object_down(touches, touchID,id, x, y,angle)
+	
 	def on_object_move(self, touches, touchID,id, x, y,angle):
-		pass
+		w.on_object_move(touches, touchID,id, x, y,angle)
 
 	def on_object_up(self, touches, touchID,id, x, y,angle):
-		pass				
-
+		w.on_object_up(touches, touchID,id, x, y,angle)
+		
+		
+		
+		
+class MTWidget(Widget):
+	def __init__(self, parent=None):
+		Widget.__init__(self, parent)
+		
+	
 
 
 class TouchDisplay(MTWidget):
@@ -600,3 +654,65 @@ class ObjectWidget(RectangularWidget):
           glEnd()
 
           glPopMatrix()
+	  
+	  
+	  
+	
+	
+	
+	
+from pyglet.window import key
+from mtpyglet import *
+	
+class MTSimulator(MTWidget):
+        def __init__(self, output, parent=None):
+            MTWidget.__init__(self, parent)
+            self.touches = {}
+            self.pos=(100,100)
+            self.output = output
+            self.counter = 0
+            self.current_drag = None
+	
+            
+            
+        def draw(self):
+	    for t in self.touches.values():
+                p = (t.xpos,t.ypos)
+		glColor4f(0.8,0.2,0.2,0.7)
+                drawCircle(pos=p, radius=10)
+    
+        def find_touch(self,x,y):
+            for t in self.touches.values():
+                if (abs(x-t.xpos) < 10 and abs(y-t.ypos) < 10):
+                    return t
+            return False
+    
+    
+    
+        def on_mouse_press(self, x, y, button, modifiers):
+                newTouch = self.find_touch(x,y)
+                if newTouch:
+                    self.current_drag = newTouch
+                 
+                else: #new touch is added 
+                    self.counter += 1
+                    id = 'mouse'+str(self.counter)
+                    self.current_drag = cursor = Tuio2DCursor(id, [x,y])
+                    self.touches[id] = cursor
+                    self.output.dispatch_event('on_touch_down', self.touches, id, x, y)
+                               
+                
+                
+                
+                
+        def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
+                cur = self.current_drag
+                cur.xpos, cur.ypos = x,y
+                self.output.dispatch_event('on_touch_move', self.touches, cur.blobID, x, y)
+                
+                
+        def on_mouse_release(self, x, y, button, modifiers):
+		t = self.find_touch(x,y)
+                if  button == 1 and t and not(modifiers & key.MOD_CTRL):
+                    self.output.dispatch_event('on_touch_up', self.touches, self.current_drag.blobID, x, y)
+                    del self.touches[self.current_drag.blobID]

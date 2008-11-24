@@ -27,6 +27,7 @@ for i in range (20):
 		b.push_handlers(on_click=curry(click,b)  )
 		c.add_widget(b)
 		
-w = UIWindow(c)
-#w.set_fullscreen()
+w = UIWindow()
+w.add_widget(c)
+w.set_fullscreen()
 runTouchApp()

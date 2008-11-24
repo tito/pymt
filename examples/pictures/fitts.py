@@ -1,6 +1,6 @@
 from pymt import *
 
-c = Container()
+c = Widget()
 
 for i in range (10):
 		img_src = 'bilder/testpic'+str(i+1)+'.jpg'
@@ -8,9 +8,10 @@ for i in range (10):
 		b = ZoomableImage(img_src, parent=c,  pos = (x,y))
 			
 		c.add_widget(b)
-		#b.clickActions.append(  curry(click,b)  )
 		
 		
-w = UIWindow(c)
+		
+w = UIWindow()
+w.add_widget(c)
 w.set_fullscreen()
 runTouchApp()

@@ -1,6 +1,9 @@
 
 from distutils.core import setup
+import sys
 
+
+sys.argv.append('install')
 
 setup (name='pymt',
       version='0.1',
@@ -10,4 +13,6 @@ setup (name='pymt',
       license='GPL',
       packages=['pymt', 'pymt.osc'],
 )
+
+
 

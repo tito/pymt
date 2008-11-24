@@ -9,9 +9,9 @@ def drawVertex(x,y):
        glPushMatrix()
        glTranslated(x,y, 0)
        glColor3d(1.0,1.0,1.0)
-       gluDisk(gluNewQuadric(), 0, 20, 32,1)
+       gluDisk(gluNewQuadric(), 0, 25, 32,1)
        glScaled(0.75,0.75,1.0)
-       glColor3d(0.0,0.0,1.0)
+       glColor3d(0.2,0.6,0.2)
        gluDisk(gluNewQuadric(), 0, 25, 32,1)
        glPopMatrix()
 
@@ -29,7 +29,10 @@ class Graph(object):
      
        def draw(self):
               for e in self.edges:
-                     drawLine((e[0][0],e[0][1], e[1][0],e[1][1]))
+                     glColor3d(1,1,1)
+                     drawLine((e[0][0],e[0][1], e[1][0],e[1][1]), width=12.0)
+                     glColor3d(0.3,0.6,0.3)
+                     drawLine((e[0][0],e[0][1], e[1][0],e[1][1]), width=6.0)
               for v in self.verts:
                      drawVertex(v[0],v[1])
                      
@@ -39,7 +42,6 @@ class Graph(object):
                      dx = abs(x - v[0])
                      dy = abs(y - v[1])
                      if (dx < regionSize and dy < regionSize):
-                         print "collision"
                          return v
               return None
 

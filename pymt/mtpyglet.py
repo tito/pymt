@@ -16,7 +16,7 @@
 import osc
 import pyglet
 from pyglet.gl import *
-import sets
+
 import sys
 from Queue import Queue
 

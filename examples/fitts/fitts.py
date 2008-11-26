@@ -109,5 +109,6 @@ c.add_widget( TouchDisplay(c) )
 #win.set_fullscreen()
 
 win = UIWindow()
+win.set_fullscreen()
 win.add_widget(c)
 runTouchApp()

@@ -7,6 +7,7 @@ from graphx import *
 from math import *
 
 
+_id_2_widget = {}
 
 
 class UIWindow(TouchWindow):
@@ -97,11 +98,24 @@ class Animation(object):
 		if self.frame < self.length:
 			pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
 
-		
+
+
+def getWidgetByID(id):
+        print "getting widget", id, _id_2_widget
+        global _id_2_widget
+        if _id_2_widget.has_key(id):
+                return _id_2_widget[id]
 
 
 class Widget(pyglet.event.EventDispatcher):
-	def __init__(self, parent=None):
+	def __init__(self, parent=None, **kargs):
+                global _id_2_widget
+                if kargs.has_key('id'):
+                        print "setting:", kargs['id'], _id_2_widget
+                        self.id = kargs['id']
+                        _id_2_widget[kargs['id']] = self
+                        print "setting Done:", kargs['id'], _id_2_widget
+                
 		pyglet.event.EventDispatcher.__init__(self)
 		self.parent = parent
 		self.children = []
@@ -119,7 +133,8 @@ class Widget(pyglet.event.EventDispatcher):
 		
 		self.animations = []
 		self.init()
-		
+
+
 	def init(self):
 		pass
 		
@@ -183,14 +198,14 @@ class Widget(pyglet.event.EventDispatcher):
 		
 		
 class MTWidget(Widget):
-	def __init__(self, parent=None):
-		Widget.__init__(self, parent)
+	def __init__(self, parent=None, **kargs):
+		Widget.__init__(self, parent, **kargs)
 		
 	
 
 
 class TouchDisplay(MTWidget):
-	def __init__(self, parent=None):
+	def __init__(self, parent=None, **kargs):
 		Widget.__init__(self, parent)
 		self.touches = {}
 		
@@ -271,12 +286,14 @@ class Container(MTWidget):
 
 
 class RectangularWidget(MTWidget):
-	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
-		MTWidget.__init__(self,parent)
+	def __init__(self, parent=None, pos=(0,0), size=(100,100), color=(0.6,0.6,0.6,1.0), **kargs):
+		MTWidget.__init__(self,parent, **kargs)
 		self.x, self.y = pos
+		self.color = color
 		self.width, self.height = size
 		
 	def draw(self):
+		glColor4d(*self.color)
 		drawRectangle((self.x, self.y) ,(self.width, self.height))
                 
         
@@ -286,11 +303,16 @@ class RectangularWidget(MTWidget):
 		    y > self.y and y < self.y + self.height  ):
 			return True
 
+	def _set_pos(self, pos):
+		self.x, self.y = pos
+	def _get_pos(self):
+		return (self.x, self.y)
+	pos = property(_get_pos, _set_pos)
 
 		
 class DragableWidget(RectangularWidget):
-	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
-		RectangularWidget.__init__(self,parent, pos, size)
+	def __init__(self, parent=None, pos=(0,0), size=(100,100), **kargs):
+		RectangularWidget.__init__(self,parent, pos, size, **kargs)
 		self.state = ('normal', None)
 	
 		
@@ -311,8 +333,8 @@ class DragableWidget(RectangularWidget):
 
 
 class Button(RectangularWidget):
-	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
-		RectangularWidget.__init__(self,parent, pos, size)
+	def __init__(self, parent=None, pos=(0,0), size=(100,100), **kargs):
+		RectangularWidget.__init__(self,parent, pos, size, **kargs)
 		self.register_event_type('on_click')
 		self.state = ('normal', 0)
 		self.clickActions = []
@@ -344,7 +366,7 @@ class Button(RectangularWidget):
                 
 
 class ImageButton(Button):
-    def __init__(self, image_file, parent=None, pos=(0,0), size=(1,1), scale = 1.0):
+    def __init__(self, image_file, parent=None, pos=(0,0), size=(1,1), scale = 1.0, **kargs):
         Button.__init__(self,parent,pos,size)
         img = pyglet.image.load(image_file)
 
@@ -362,9 +384,50 @@ class ImageButton(Button):
 
 
 from math import sqrt
+
+
+class ScatterWidget(RectangularWidget):
+	def __init__(self, parent=None, pos=(0,0), size=(100,100), **kargs):
+		RectangularWidget.__init__(self,parent, pos, size, **kargs)
+		
+		self.touches = {}
+		
+		self.rotation = 0.0
+		self.zoom = 1.0
+		
+	def draw(self):
+		glPushMatrix()
+                glTranslatef(self.x, self.y, 0)
+		glRotated(45, 0,0,1)
+		glScalef(self.zoom, self.zoom, 1)
+		glTranslatef(-self.x, -self.y, 0)
+		RectangularWidget.draw(self)
+		Widget.draw(self)
+		glPopMatrix()
+		
+	def collidePoint(self, x,y):
+            radius = sqrt(self.width*self.width + self.height*self.height)/2 *self.zoom
+	    dist = Length(Vector(self.x,self.y) - Vector(x,y))
+	    if radius >= dist:
+		return True
+	    else:
+		return False
+		
+	def on_touch_down(self, touches, touchID, x,y):
+		pass
+	
+	def on_touch_move(self, touches, touchID, x,y):
+		pass
+	
+	def on_touch_up(self, touches, touchID, x,y):
+		pass
+		
+		
+
+
 class ZoomableWidget(RectangularWidget):
-	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
-		RectangularWidget.__init__(self,parent, pos, size)
+	def __init__(self, parent=None, pos=(0,0), size=(100,100), **kargs):
+		RectangularWidget.__init__(self,parent, pos, size, **kargs)
 
                 self.rotation = self._rotation = self._oldrotation = 0.0 
                 self.translation = self._translation = Vector(pos[0],pos[1])

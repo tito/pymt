@@ -90,7 +90,7 @@ class TUIOGetter():
                 global tuio_event_q
                 
                 message = incoming[0]
-                print incoming
+                #print incoming
                 type, types, args = message[0], message[1], message[2:]
                 #self.cur_callback(args,types)
                 tuio_event_q.put([type, args, types])
@@ -161,7 +161,7 @@ class TouchEventLoop(pyglet.app.EventLoop):
                         for blobID in touch_release:
                             
                                 for l in touch_event_listeners:
-                                        print args[1:]
+                                        #print args[1:]
                                         l.dispatch_event('on_object_up', self.blobs2DObj, blobID,self.blobs2DObj[blobID].id ,self.blobs2DObj[blobID].xpos * l.width, l.height - l.height*self.blobs2DObj[blobID].ypos,self.blobs2DObj[blobID].angle)
                                 del self.blobs2DObj[blobID]
 
@@ -241,7 +241,8 @@ class TouchWindow(pyglet.window.Window):
 #static main function that starts the app loop 
 
 def runTouchApp():
-	TouchEventLoop().run()
+        TouchEventLoop().run()
+	
 
 
 #a very simple test

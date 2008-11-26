@@ -78,4 +78,9 @@ class TouchTracer(Widget):
 			drawLabel(x,y, touchID)
 
 w.add_widget(TouchTracer())
+w.set_fullscreen()
+
+import psyco
+psyco.full()
+
 runTouchApp()

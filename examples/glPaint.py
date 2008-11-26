@@ -1,5 +1,11 @@
+
+
 from pymt import *
 from pyglet.gl import *
+
+import psyco
+psyco.profile(0.7)
+
 
 class Canvas(RectangularWidget):
 	def __init__(self, parent=None, min=0, max=100, pos=(0,0), size=(640,480)):

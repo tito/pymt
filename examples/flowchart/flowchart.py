@@ -3,8 +3,9 @@
 from pymt import *
 
 class LineTool(ZoomableWidget):
-    def __init__(self, pos=(0,0), size=(100,100)):
-        ZoomableWidget.__init__(self, pos=pos, size=size)
+    def __init__(self, pos=(0,0), size=(100,100), **kargs):
+        print kargs
+        ZoomableWidget.__init__(self, pos=pos, size=size,**kargs)
     
             
             
@@ -146,7 +147,9 @@ class CreatorWidget(Container):
         self.rhombusButton = Button(pos=(50,280), size=(80,80))
         
         def newBox(touchID, x,y):
-            parent.add_widget( Box(pos=(100,80), size=(150,120)), z=1 )
+            #parent.add_widget( Box(pos=(100,80), size=(150,120)), z=1 )
+            w = getWidgetByID("test")
+            w.pos = (400,400)
         def newOval(touchID, x,y):
             parent.add_widget(Oval(pos=(100,180), size=(150,120)), z=1)
         def newRhombus(touchID, x,y):
@@ -173,6 +176,8 @@ if __name__ == "__main__":
     
     tool = LineTool()
     c.add_widget(tool, z=1)
+    
+    c.add_widget( ScatterWidget(pos=(400,200),id="test") )
     
     win = UIWindow()
     win.add_widget(c)

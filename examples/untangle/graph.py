@@ -26,6 +26,7 @@ class Graph(object):
                      self.verts.append([x,y])
               
               self.edges = [ [self.verts[i], self.verts[(i+1)%num_verts]] for i in range(num_verts) ]
+              
      
        def draw(self):
               for e in self.edges:

@@ -12,10 +12,10 @@ _id_2_widget = {}
 
 class UIWindow(TouchWindow):
 	def __init__(self, view=None, fullscreen=False, debug=True, config=None):
-		if not config:
-			config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True, vsync=0)
-		
+
 		try:
+			if not config:
+				config = Config(sample_buffers=1, samples=64, depth_size=16, double_buffer=True, vsync=0)
 			TouchWindow.__init__(self, config)
 		except:
 			TouchWindow.__init__(self)

@@ -15,7 +15,7 @@ class UIWindow(TouchWindow):
 
 		try:
 			if not config:
-				config = Config(sample_buffers=1, samples=64, depth_size=16, double_buffer=True, vsync=0)
+				config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True, vsync=1)
 			TouchWindow.__init__(self, config)
 		except:
 			TouchWindow.__init__(self)

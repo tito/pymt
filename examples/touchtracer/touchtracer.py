@@ -80,7 +80,6 @@ class TouchTracer(Widget):
 w.add_widget(TouchTracer())
 w.set_fullscreen()
 
-import psyco
-psyco.full()
+
 
 runTouchApp()

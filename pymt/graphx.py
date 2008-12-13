@@ -14,7 +14,8 @@ BLUE = (0.0,0.0,1.0)
 _brush_texture = None 
 _bruch_size = 10
 
-
+glEnable(GL_BLEND);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 def setBrush(sprite, size=10):
     global _brush_texture

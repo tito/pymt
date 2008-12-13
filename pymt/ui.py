@@ -14,8 +14,11 @@ class UIWindow(TouchWindow):
 	def __init__(self, view=None, fullscreen=False, debug=True, config=None):
 		if not config:
 			config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True, vsync=0)
-		TouchWindow.__init__(self, config)
 		
+		try:
+			TouchWindow.__init__(self, config)
+		except:
+			TouchWindow.__init__(self)
 		if fullscreen:	self.set_fullscreen()
 
 		self.root = Widget()
@@ -296,7 +299,6 @@ class RectangularWidget(MTWidget):
 		glColor4d(*self.color)
 		drawRectangle((self.x, self.y) ,(self.width, self.height))
                 
-        
 		
 	def collidePoint(self, x,y):
 		if( x > self.x  and x < self.x + self.width and
@@ -331,13 +333,14 @@ class DragableWidget(RectangularWidget):
                         return True
 		
 
-
+from pyglet.text import HTMLLabel
 class Button(RectangularWidget):
-	def __init__(self, parent=None, pos=(0,0), size=(100,100), **kargs):
+	def __init__(self, parent=None, pos=(0,0), size=(100,100), text="Button", **kargs):
 		RectangularWidget.__init__(self,parent, pos, size, **kargs)
 		self.register_event_type('on_click')
 		self.state = ('normal', 0)
 		self.clickActions = []
+		self.label = HTMLLabel(text=text)
 
 		
 	def draw(self):
@@ -347,7 +350,10 @@ class Button(RectangularWidget):
 		else:
 			glColor4f(0.7,0.7,0.7,0.5)
 			drawRectangle((self.x,self.y) , (self.width, self.height))
-
+		
+		self.label.x, self.label.y = self.x, self.y
+		self.label.draw()
+		
 		
 	def on_touch_down(self, touches, touchID, x, y):
 		if self.collidePoint(x,y):

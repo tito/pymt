@@ -3,8 +3,8 @@
 from pymt import *
 from pyglet.gl import *
 
-import psyco
-psyco.profile(0.7)
+#import psyco
+#psyco.profile(0.7)
 
 
 class Canvas(RectangularWidget):
@@ -48,21 +48,6 @@ class Canvas(RectangularWidget):
 	def on_touch_up(self, touches, touchID, x, y):
 		if self.touch_positions.has_key(touchID):
 			del self.touch_positions[touchID]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

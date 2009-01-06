@@ -3,81 +3,11 @@ import warnings
 
 from pyglet.gl import *
 from pyglet import image
-
-class Material(object):
-    diffuse = [.8, .8, .8]
-    ambient = [.2, .2, .2]
-    specular = [0., 0., 0.]
-    emission = [0., 0., 0.]
-    shininess = 0.
-    opacity = 1.
-    texture = None
-
-    def __init__(self, name):
-        self.name = name
-
-    def apply(self, face=GL_FRONT_AND_BACK):
-        if self.texture:
-            glEnable(self.texture.target)
-            glBindTexture(self.texture.target, self.texture.id)
-        else:
-            glDisable(GL_TEXTURE_2D)
-
-        glMaterialfv(face, GL_DIFFUSE,
-            (GLfloat * 4)(*(self.diffuse + [self.opacity])))
-        glMaterialfv(face, GL_AMBIENT,
-            (GLfloat * 4)(*(self.ambient + [self.opacity])))
-        glMaterialfv(face, GL_SPECULAR,
-            (GLfloat * 4)(*(self.specular + [self.opacity])))
-        glMaterialfv(face, GL_EMISSION,
-            (GLfloat * 4)(*(self.emission + [self.opacity])))
-        glMaterialf(face, GL_SHININESS, self.shininess)
-
-class MaterialGroup(object):
-    def __init__(self, material):
-        self.material = material
-
-        # Interleaved array of floats in GL_T2F_N3F_V3F format
-        self.vertices = []
-        self.array = None
-
-class Mesh(object):
-    def __init__(self, name):
-        self.name = name
-        self.groups = []
-
-        # Display list, created only if compile() is called, but used
-        # automatically by draw()
-        self.list = None
-
-    def draw(self):
-        if self.list:
-            glCallList(self.list)
-            return
-
-        glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT)
-        glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_LIGHTING_BIT)
-        glEnable(GL_CULL_FACE)
-        glCullFace(GL_BACK)
-        for group in self.groups:
-            #group.material.apply()
-            if group.array is None:
-                group.array = (GLfloat * len(group.vertices))(*group.vertices)
-                group.triangles = len(group.vertices) / 8
-            glInterleavedArrays(GL_T2F_N3F_V3F, 0, group.array)
-            glDrawArrays(GL_TRIANGLES, 0, group.triangles)
-        glPopAttrib()
-        glPopClientAttrib()
-
-    def compile(self):
-        if not self.list:
-            list = glGenLists(1)
-            glNewList(list, GL_COMPILE)
-            self.draw()
-            glEndList()
-            self.list = list
+from graphx import *
+from geometric import *
 
 class OBJ:
+
     def __init__(self, filename, file=None, path=None):
         self.materials = {}
         self.meshes = {}        # Name mapping
@@ -88,7 +18,7 @@ class OBJ:
 
         if path is None:
             path = os.path.dirname(filename)
-        self.path = path
+            self.path = path
 
         mesh = None
         group = None
@@ -98,7 +28,7 @@ class OBJ:
         normals = [[0., 0., 0.]]
         tex_coords = [[0., 0.]]
 
-        for line in open(filename, "r"):
+        for line in open(filename, 'r'):
             if line.startswith('#'):
                 continue
             values = line.split()
@@ -141,7 +71,7 @@ class OBJ:
                 points = []
                 for i, v in enumerate(values[1:]):
                     v_index, t_index, n_index = \
-                        (map(int, [j or 0 for j in v.split('/')]) + [0, 0])[:3]
+                            (map(int, [j or 0 for j in v.split('/')]) + [0, 0])[:3]
                     if v_index < 0:
                         v_index += len(vertices) - 1
                     if t_index < 0:
@@ -149,8 +79,8 @@ class OBJ:
                     if n_index < 0:
                         n_index += len(normals) - 1
                     vertex = tex_coords[t_index] + \
-                             normals[n_index] + \
-                             vertices[v_index]
+                            normals[n_index] + \
+                            vertices[v_index]
 
                     if i >= 3:
                         # Triangulate
@@ -160,7 +90,7 @@ class OBJ:
                     if i == 0:
                         v1 = vertex
                     vlast = vertex
-                   
+
     def open_material_file(self, filename):
         '''Override for loading from archive/network etc.'''
         return open(os.path.join(self.path, filename), 'r')
@@ -203,7 +133,6 @@ class OBJ:
                         warnings.warn('Could not load texture %s' % values[1])
             except:
                 warnings.warn('Parse error in %s.' % filename)
-
 
     def draw(self):
         for mesh in self.mesh_list:

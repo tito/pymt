@@ -9,15 +9,15 @@ class Shader(object):
 
     def __init__(self, vertex_source=None, fragment_source=None):
         self.program = glCreateProgram()
-        
+
         if vertex_source:
             self.vertex_shader = self.create_shader(vertex_source,GL_VERTEX_SHADER)
             glAttachShader(self.program, self.vertex_shader)
-        
+
         if fragment_source:
             self.fragment_shader = self.create_shader(fragment_source,GL_FRAGMENT_SHADER)
             glAttachShader(self.program, self.fragment_shader)
-            
+
         glLinkProgram(self.program)
         message = self.get_program_log(self.program)
         if message:
@@ -26,7 +26,7 @@ class Shader(object):
     def create_shader(self, source, shadertype):
         sbuffer = c.create_string_buffer(source)
         pointer = c.cast(c.pointer(c.pointer(sbuffer)),
-                c.POINTER(c.POINTER(c.c_char)))
+                         c.POINTER(c.POINTER(c.c_char)))
         nulll = c.POINTER(c.c_long)()
         shader = glCreateShader(shadertype)
         glShaderSource(shader, 1, pointer, None)

@@ -105,13 +105,14 @@ class OSCServer(Thread) :
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try :
             self.socket.bind( (ipAddr, port) )
-            # felipe noticed this line will cause pymt to stop listening when used with simulator or other tuio app that doesnt constantly send messages
-            #self.socket.settimeout(1.0) # make sure its not blocking forever...
+            # felipe noticed this line will cause pymt to stop listening
+            # when used with simulator or other tuio app that doesnt constantly send messages
+            self.socket.settimeout(1.0) # make sure its not blocking forever...
             self.haveSocket=True
         except socket.error:
             print 'there was an error binding to ip %s and port %i , maybe the port is already taken by another process?' % (ipAddr. port)
             self.haveSocket=False
-            
+
     def run(self):
         if self.haveSocket :
             self.isRunning = True
@@ -177,7 +178,7 @@ def getOSC(inSocket):
 
 if __name__ == '__main__':
     # example of how to use oscAPI
-    
+    init()
     listen() # defaults to "127.0.0.1", 9001
 
     # add addresses to callback manager
@@ -203,6 +204,7 @@ if __name__ == '__main__':
     sendBundle(bundle) # defaults to "127.0.0.1", 9000
 
     dontListen()  # finally close the connection bfore exiting or program
+    print 'osc leave'
 
 
 

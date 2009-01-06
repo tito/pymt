@@ -31,7 +31,7 @@ class Target(RectangularWidget):
 
         def draw(self):
                 glPushMatrix()
-                glTranslatef(self.translation[0], self.translation[1], 0)
+                glTranslatef(self.translation.x, self.translation.y, 0)
                 glRotatef(self.rotation , 0, 0, 1)
                 glScalef(self.width*self.zoom, self.height*self.zoom, 1)
 		glColor4f(0.3,0.3,0.3, 1.0)
@@ -89,7 +89,7 @@ class SourceWidget(ZoomableWidget):
 
         def on_touch_move(self, touches, touchID, x, y):
                 ZoomableWidget.on_touch_move(self, touches, touchID, x, y)
-                dist = Length(self.translation - self.target.translation)
+                dist = Vector.length(self.translation - self.target.translation)
                 if dist < 20 and not self.done \
                 and abs(self.zoom - t.zoom) < 0.2 \
                 and abs(self.rotation - self.target.rotation) < 10:

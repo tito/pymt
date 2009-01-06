@@ -422,7 +422,7 @@ class ZoomableWidget(RectangularWidget):
         RectangularWidget.__init__(self,parent, pos, size, **kargs)
 
         self.rotation = self._rotation = self._oldrotation = 0.0
-        self.translation = self._translation = Vector(pos[0],pos[1])
+        self.translation = self._translation = Vector(pos[0], pos[1])
         self.zoom = self._zoom = 1.0
 
         self.touchDict = {}
@@ -430,20 +430,17 @@ class ZoomableWidget(RectangularWidget):
         self.originalCenter = Vector(0,0)
         self.newCenter = Vector(0,0)
 
-
-
     def draw_widget(self):
         drawRectangle((-0.5, -0.5) ,(1, 1))
 
     def draw(self):
         glPushMatrix()
-        glTranslatef(self.translation[0], self.translation[1], 0)
+        glTranslatef(self.translation.x, self.translation.y, 0)
         glRotatef(self.rotation , 0, 0, 1)
         glScalef(self.zoom, self.zoom, 1)
         glScalef(self.width, self.height, 1)
         self.draw_widget()
         glPopMatrix()
-
 
     def collidePoint(self, x,y):
         radius = sqrt(self.width*self.width + self.height*self.height)/2 *self.zoom

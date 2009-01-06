@@ -52,7 +52,7 @@ class Vector(object):
     @staticmethod
     def distance(vec1, vec2):
         """Returns the distance between two points"""
-        return math.sqrt(self.distanceSqrd(vec1, vec2))
+        return math.sqrt(Vector.distanceSqrd(vec1, vec2))
 
     @staticmethod
     def lengthSqrd(vec):
@@ -63,7 +63,7 @@ class Vector(object):
     @staticmethod
     def length(vec):
         'Returns the length of a vector'
-        return math.sqrt(self.lengthSqrd(vec))
+        return math.sqrt(Vector.lengthSqrd(vec))
 
     @staticmethod
     def normalize(vec):
@@ -71,7 +71,7 @@ class Vector(object):
         but has a length of one."""
         if vec.x == 0. and vec.y == 0.:
             return Vector(0.,0.)
-        return vec / self.length(vec)
+        return vec / Vector.length(vec)
 
     @staticmethod
     def dot(vec1, vec2):

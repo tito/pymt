@@ -60,7 +60,6 @@ class Mesh(object):
         glEnable(GL_CULL_FACE)
         glCullFace(GL_BACK)
         for group in self.groups:
-            #group.material.apply()
             if group.array is None:
                 group.array = (GLfloat * len(group.vertices))(*group.vertices)
                 group.triangles = len(group.vertices) / 8
@@ -70,10 +69,11 @@ class Mesh(object):
         glPopClientAttrib()
 
     def compile(self):
-        if not self.list:
-            list = glGenLists(1)
-            glNewList(list, GL_COMPILE)
-            self.draw()
-            glEndList()
-            self.list = list
+        if self.list:
+            return
+        list = glGenLists(1)
+        glNewList(list, GL_COMPILE)
+        self.draw()
+        glEndList()
+        self.list = list
 

@@ -734,7 +734,6 @@ class MTSimulator(MTWidget):
         cur.xpos, cur.ypos = x,y
         self.output.dispatch_event('on_touch_move', self.touches, cur.blobID, x, y)
 
-
     def on_mouse_release(self, x, y, button, modifiers):
         t = self.find_touch(x,y)
         if  button == 1 and t and not(modifiers & key.MOD_CTRL):

@@ -72,33 +72,45 @@ class UIWindow(TouchWindow):
         self.root.on_object_up(touches, touchID,id, x, y,angle)
 
 
+class AnimationAlpha:
+    @staticmethod
+    def ramp(value_from, value_to, length, frame):
+        return  (1.0 - frame / length) * value_from  +  frame / length * value_to
+
 class Animation(object):
-    def __init__(self, widget, label, prop, to, timestep, length):
+    def __init__(self, widget, label, prop, to, timestep, length,
+                 func=AnimationAlpha.ramp):
         self.widget = widget
         self.frame = 0.0
         self.prop = prop
-        self.to = to
-        self.fro = self.widget.__dict__[self.prop]
+        self.value_to = to
+        self.value_from = self.widget.__dict__[self.prop]
         self.timestep = timestep
         self.length = length
         self.label = label
+        self.func = func
 
     def get_current_value(self):
-        return  (1.0-self.frame/self.length) * self.fro  +  self.frame/self.length * self.to
+        return self.func(self.value_from, self.value_to,
+                         self.length, self.frame)
 
     def start(self):
         self.reset()
         pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
+        self.widget.dispatch_event('on_animation_start', self)
 
     def reset(self):
-        self.fro = self.widget.__dict__[self.prop]
+        self.value_from = self.widget.__dict__[self.prop]
         self.frame = 0.0
+        self.widget.dispatch_event('on_animation_reset', self)
 
     def advance_frame(self, dt):
         self.frame += self.timestep
         self.widget.__dict__[self.prop] = self.get_current_value()
         if self.frame < self.length:
             pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
+        else:
+            self.widget.dispatch_event('on_animation_complete', self)
 
 
 
@@ -132,6 +144,9 @@ class Widget(pyglet.event.EventDispatcher):
         self.register_event_type('on_object_up')
         self.register_event_type('on_object_move')
         self.register_event_type('on_object_down')
+        self.register_event_type('on_animation_complete')
+        self.register_event_type('on_animation_reset')
+        self.register_event_type('on_animation_start')
 
         self.animations = []
         self.init()
@@ -227,7 +242,7 @@ class Container(MTWidget):
         for c in children:
             self.add_widget(c)
 
-    def add_widget(self,w, z=0,type='cur'):
+    def add_widget(self, w, z=0, type='cur'):
         if  type == 'cur':
             self.layers[z].append(w)
         elif type == 'obj':

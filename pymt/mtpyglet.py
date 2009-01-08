@@ -117,7 +117,6 @@ class TouchEventLoop(pyglet.app.EventLoop):
         self.alive2DObj = []
         self.blobs2DCur = {}
         self.blobs2DObj = {}
-        self.drawingSemaphore = Lock()
         self.parser = TUIOGetter()
 
     def close(self):
@@ -190,11 +189,9 @@ class TouchEventLoop(pyglet.app.EventLoop):
                 self.parse2dObj(args, types)
 
         for window in pyglet.app.windows:
-            self.drawingSemaphore.acquire()
             window.dispatch_events()
             window.dispatch_event('on_draw')
             window.flip()
-            self.drawingSemaphore.release()
 
         return 0
 

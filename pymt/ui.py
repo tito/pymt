@@ -293,7 +293,7 @@ class RectangularWidget(MTWidget):
     def __init__(self, parent=None, pos=(0,0), size=(100,100), color=(0.6,0.6,0.6,1.0), **kargs):
         MTWidget.__init__(self,parent, **kargs)
         self.x, self.y = pos
-        self.color = color
+        self._color = color
         self.width, self.height = size
 
     def draw(self):
@@ -308,11 +308,21 @@ class RectangularWidget(MTWidget):
 
     def _set_pos(self, pos):
         self.x, self.y = pos
-
     def _get_pos(self):
         return (self.x, self.y)
-
     pos = property(_get_pos, _set_pos)
+
+
+    def setColor(self, r,g,b, a=1.0):
+        self.color = (r,b,g,a)
+    def _get_color(self):
+        return self._color
+    def _set_color(self, col):
+        if len(col) == 3:
+            self._color = (col[0], col[1], col[2], 1.0)
+        if len(col) == 4:       
+            self._color = col
+    color = property(_get_color, _set_color)
 
 
 class DragableWidget(RectangularWidget):
@@ -343,7 +353,15 @@ class Button(RectangularWidget):
         self.register_event_type('on_click')
         self.state = ('normal', 0)
         self.clickActions = []
-        self.label = HTMLLabel(text=text)
+        self.label_obj = HTMLLabel()
+        self.label = str(text)
+
+    def get_label(self):
+        return self._label
+    def set_label(self, text):
+        self._label = str(text)
+        self.label_obj.text = self.label
+    label = property(get_label, set_label)
 
 
     def draw(self):
@@ -351,11 +369,11 @@ class Button(RectangularWidget):
             glColor4f(0.5,0.5,0.5,0.5)
             drawRectangle((self.x,self.y) , (self.width, self.height))
         else:
-            glColor4f(0.7,0.7,0.7,0.5)
+            glColor4f(*self.color)
             drawRectangle((self.x,self.y) , (self.width, self.height))
 
-        self.label.x, self.label.y = self.x, self.y
-        self.label.draw()
+        self.label_obj.x, self.label_obj.y = self.x, self.y
+        self.label_obj.draw()
 
 
     def on_touch_down(self, touches, touchID, x, y):
@@ -755,3 +773,47 @@ class MTSimulator(MTWidget):
             self.output.dispatch_event('on_touch_up', self.touches, self.current_drag.blobID, x, y)
             del self.touches[self.current_drag.blobID]
 
+
+
+
+
+
+import sys
+from xml.dom import minidom, Node
+
+class XMLWidget(Widget):
+    def __init__(self, parent=None):
+        Widget.__init__(self,parent)
+        
+        
+    def createNode(self, node):
+        if node.nodeType == Node.ELEMENT_NODE:
+            class_name = node.nodeName
+            
+            #create widget
+            nodeWidget  = eval(class_name)( parent=None )
+        
+            #set attributes
+            for (name, value) in node.attributes.items():
+                nodeWidget.__setattr__(name, eval(value))
+                
+            #add child widgets
+            for c in node.childNodes:
+                w = self.createNode(c)
+                if w: nodeWidget.add_widget(w)
+                
+            return nodeWidget
+            
+    def loadString(self, xml):
+        doc = minidom.parseString(xml)
+        root = doc.documentElement
+        self.add_widget(self.createNode(root))
+        
+
+def showNode(node):
+    if node.nodeType == Node.ELEMENT_NODE:
+        print 'Element name: %s' % node.nodeName
+        for (name, value) in node.attributes.items():
+            print '    Attr -- Name: %s  Value: %s' % (name, value)
+        if node.attributes.get('ID') is not None:
+            print '    ID: %s' % node.attributes.get('ID').value

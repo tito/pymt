@@ -482,8 +482,8 @@ class MTScatterWidget(MTRectangularWidget):
         glRotated(45, 0,0,1)
         glScalef(self.zoom, self.zoom, 1)
         glTranslatef(-self.x, -self.y, 0)
-        RectangularWidget.draw(self)
-        Widget.draw(self)
+        MTRectangularWidget.draw(self)
+        MTWidget.draw(self)
         glPopMatrix()
 
     def collidePoint(self, x,y):

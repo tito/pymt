@@ -122,7 +122,7 @@ class Rhombus(Symbol):
 
 class Oval(Symbol):
     def draw_widget(self):
-        x,y = self.translation[0], self.translation[1]
+        x,y = self.translation.x, self.translation.y
         glPushMatrix()
         #glTranslatef(x,y,0)
         glScalef(1.0, float(self.height)/self.width, 1.0)

@@ -54,7 +54,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         self._visible = False
 
         self.animations = []
-        self.show()
+        self.visible = True
         self.init()
 
     def _set_visible(self, visible):
@@ -108,6 +108,10 @@ class MTWidget(pyglet.event.EventDispatcher):
 
     def add_widget(self, w):
         self.children.append(w)
+        try:
+            w.parent = self
+        except:
+            pass
 
     def add_animation(self, label, prop, to , timestep, length):
         anim = Animation(self, label, prop, to, timestep, length)
@@ -162,7 +166,8 @@ class MTWindow(TouchWindow):
        for generating touch event with mouse.
        Use MTWindow as main window application.
     """
-    def __init__(self, view=None, fullscreen=False, config=None):
+    def __init__(self, view=None, fullscreen=False, config=None,
+                 color=(.3,.3,.3,1.0)):
         try:
             if not config:
                 config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True, vsync=1)
@@ -172,6 +177,7 @@ class MTWindow(TouchWindow):
             if fullscreen:
                 self.set_fullscreen()
 
+        self.color = color
         self.root = MTWidget()
         self.root.parent = self
         if view:
@@ -184,7 +190,7 @@ class MTWindow(TouchWindow):
         self.root.add_widget(w)
 
     def on_draw(self):
-        glClearColor(.3,.3,.3,1.0)
+        glClearColor(*self.color)
         self.clear()
         self.root.dispatch_event('draw')
         self.sim.draw()
@@ -295,10 +301,16 @@ class MTContainer(MTWidget):
             self.add_widget(c)
 
     def add_widget(self, w, z=0, type='cur'):
+        if type not in ['cur', 'obj']:
+            return
         if type == 'cur':
             self.layers[z].append(w)
         elif type == 'obj':
             self.obj.append(w)
+        try:
+            w.parent = self
+        except:
+            pass
 
     def draw(self):
         if not self.visible:
@@ -588,10 +600,12 @@ class MTZoomableWidget(MTRectangularWidget):
             #rotate
             v1 = self.original_points[1] - self.original_points[0]
             v2 = points[0] - points[1]
-            if((v1[0] < 0 and v2[0]>0) or (v1[0] > 0 and v2[0]<0)):
-                self._rotation =  ( 180+(self.getAngle(v1[0], v1[1]) - self.getAngle(v2[0], v2[1]))*-18)  %360
+            if((v1.x < 0 and v2.x>0) or (v1.y > 0 and v2.y<0)):
+                self._rotation =  ( 180+(self.getAngle(v1.x, v1.y) -
+                                         self.getAngle(v2.x, v2.y))*-18)  %360
             else:
-                self._rotation =  ((self.getAngle(v1[0], v1[1]) - self.getAngle(v2[0], v2[1]))*-18)  %360
+                self._rotation =  ((self.getAngle(v1.x, v1.y) -
+                                    self.getAngle(v2.x, v2.y))*-18)  %360
 
             self.rotation = (self._rotation + self._oldrotation) %360
 
@@ -845,7 +859,8 @@ class XMLWidget(MTWidget):
             #add child widgets
             for c in node.childNodes:
                 w = self.createNode(c)
-                if w: nodeWidget.add_widget(w)
+                if w:
+                    nodeWidget.add_widget(w)
 
             return nodeWidget
 

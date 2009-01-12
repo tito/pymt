@@ -43,12 +43,12 @@ def drawLabel(x,y, ID):
 
 
 
-w = UIWindow()
+w = MTWindow()
 
 
 touchPositions = {}
 
-class TouchTracer(Widget):
+class TouchTracer(MTWidget):
 	
 	
 	def on_touch_down(self, touches, touchID, x,y):

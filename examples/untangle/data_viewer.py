@@ -4,9 +4,9 @@ from pyglet.gl import *
 import pickle
 from pprint import *
 
-class DataViewer(Widget):
+class DataViewer(MTWidget):
     def __init__(self, datafile):
-        Widget.__init__(self)
+        MTWidget.__init__(self)
         f = open(datafile)
         self.data = pickle.load(f)
         f.close()
@@ -51,5 +51,5 @@ class DataViewer(Widget):
                     
         glPopMatrix()
         
-w = UIWindow(DataViewer('single-mouse.pkl'))
+w = MTWindow(DataViewer('single-mouse.pkl'))
 runTouchApp()

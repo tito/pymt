@@ -5,7 +5,7 @@ from pymt import *
 
 from random import randint
 
-c = Container(layers=2)
+c = MTContainer(layers=2)
 
 def createElement(style='Box',text='Flowchart Element', color=(0.5,0.5,0.3,1.0)):
     w = None
@@ -23,6 +23,6 @@ createElement('Box', 'plug in lamp!', color=(0.3,0.6,0.3,1.0))
 createElement('Box', 'buy new bulb!', color=(0.3,0.6,0.3,1.0))
 createElement('Box', 'buy new lamp!', color=(0.3,0.6,0.3,1.0))
 
-win = UIWindow(c)
+win = MTWindow(c)
 win.set_fullscreen()
 runTouchApp()

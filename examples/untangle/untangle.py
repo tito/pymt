@@ -3,14 +3,14 @@ from graph import *
 from pyglet import *
 
 #init our window
-w = UIWindow()
+w = MTWindow()
 w.set_fullscreen()
 
 import time
 import pickle
-class EventLogger(Widget):
+class EventLogger(MTWidget):
 	def __init__(self, parent=None):
-		Widget.__init__(self, parent)
+		MTWidget.__init__(self, parent)
 		self.touches = {}
 		self.enabled = False
 	
@@ -67,9 +67,9 @@ class TrialLogger(EventLogger):
 		
 		
 		
-class GraphUI(Widget):
+class GraphUI(MTWidget):
 	def __init__(self, parent=None, size=20):
-		Widget.__init__(self, parent)	
+		MTWidget.__init__(self, parent)	
 		self.g = Graph(size,displaySize=w.get_size())
 		self.touch2vertex = {}
 		
@@ -92,16 +92,16 @@ class GraphUI(Widget):
 
 
 
-class HorizontalLayout(RectangularWidget):
+class HorizontalLayout(MTRectangularWidget):
 	def __init__(self, parent=None, spacing=10, **kargs):
-		RectangularWidget.__init__(self, parent, **kargs)
+		MTRectangularWidget.__init__(self, parent, **kargs)
 		self.spacing = spacing
 		
 	def draw(self):
-		Widget.draw(self)
+		MTWidget.draw(self)
 		
 	def add_widget(self,w):
-		Widget.add_widget(self, w)
+		MTWidget.add_widget(self, w)
 		self.layout()
 		
 	def layout(self):
@@ -115,7 +115,7 @@ class HorizontalLayout(RectangularWidget):
 
 
 
-root = Widget()
+root = MTWidget()
 graph = GraphUI(root)
 log = TrialLogger(graph)
 

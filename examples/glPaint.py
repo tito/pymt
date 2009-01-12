@@ -7,9 +7,9 @@ from pyglet.gl import *
 #psyco.profile(0.7)
 
 
-class Canvas(RectangularWidget):
+class Canvas(MTRectangularWidget):
 	def __init__(self, parent=None, min=0, max=100, pos=(0,0), size=(640,480)):
-		RectangularWidget.__init__(self,parent, pos, size)
+		MTRectangularWidget.__init__(self,parent, pos, size)
 		self.touch_positions = {}
 		self.fbo = Fbo((self.width, self.height))
 		self.bgcolor = (0.8,0.8,0.7,1.0)
@@ -53,14 +53,14 @@ class Canvas(RectangularWidget):
 
 
 
-w = UIWindow()
+w = MTWindow()
 w.set_fullscreen()
 
 root = Widget()
 canvas = Canvas(size=(w.width,w.height))
 root.add_widget(canvas)
 
-slider = ColorPicker(size=(130,290), target=[canvas])
+slider = MTColorPicker(size=(130,290), target=[canvas])
 root.add_widget(slider)
 
 w.add_widget(root)

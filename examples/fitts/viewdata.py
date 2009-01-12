@@ -7,9 +7,9 @@ from pyglet.gl import *
 import pickle, pprint
 
 
-class ControlDialog(DragableWidget):
+class ControlDialog(MTDragableWidget):
     def __init__(self, text, parent):
-        DragableWidget.__init__(self,parent, size = (400,600))
+        MTDragableWidget.__init__(self,parent, size = (400,600))
         self.label = pyglet.text.Label(text ,x=200, y= 900)
         
     def draw(self):
@@ -18,9 +18,9 @@ class ControlDialog(DragableWidget):
         self.label.x, self.label.y = (self.x +10, self.y + 580)
         self.label.draw()
 
-class Plot(DragableWidget):
+class Plot(MTDragableWidget):
     def __init__(self, function, parent):
-        DragableWidget.__init__(self,parent, size = (800,600))
+        MTDragableWidget.__init__(self,parent, size = (800,600))
         self.function = function
         
         
@@ -38,9 +38,9 @@ class Plot(DragableWidget):
             x,y,s = self.x  + size*5 - 100, self.y+ 40 +self.function[size][0]*5,  self.function[size][1]
             drawCircle(pos=(x,y), radius = 1  )
     
-class DataViewer(Container):
+class DataViewer(MTContainer):
     def __init__(self, data_file, parent=None):
-        Container.__init__(self, parent=parent)
+        MTContainer.__init__(self, parent=parent)
         self.data_file = data_file
         
         pkl_file = open(data_file, 'rb')
@@ -65,7 +65,7 @@ class DataViewer(Container):
         
 
        
-w = UIWindow()
+w = MTWindow()
 w.add_widget(DataViewer('data.pkl'))
 w.set_fullscreen()
 runTouchApp()

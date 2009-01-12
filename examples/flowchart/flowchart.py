@@ -2,10 +2,10 @@
 
 from pymt import *
 
-class LineTool(ZoomableWidget):
+class LineTool(MTZoomableWidget):
     def __init__(self, pos=(0,0), size=(100,100), **kargs):
         print kargs
-        ZoomableWidget.__init__(self, pos=pos, size=size,**kargs)
+        MTZoomableWidget.__init__(self, pos=pos, size=size,**kargs)
     
             
             
@@ -35,9 +35,9 @@ class Line(MTWidget):
         drawLine((x,y,xt,yt))
 
 
-class Symbol(ZoomableWidget):
+class Symbol(MTZoomableWidget):
     def __init__(self, pos=(0,0), size=(150,100), text="Flowchart Symbol", color=(0.3,0.3,0.5,0.9)):
-        ZoomableWidget.__init__(self, pos=pos, size=size)
+        MTZoomableWidget.__init__(self, pos=pos, size=size)
         self.color=color
         self.mode='normal'
         collision_targets.append(self)
@@ -48,7 +48,7 @@ class Symbol(ZoomableWidget):
                           anchor_x='center', anchor_y='center')
     
     def draw(self):
-        ZoomableWidget.draw(self)
+        MTZoomableWidget.draw(self)
         if self.mode == 'lineDrawing':
             x,y  = self.translation[0],self.translation[1]
             xt,yt = self.line_target[0],self.line_target[1]
@@ -69,7 +69,7 @@ class Symbol(ZoomableWidget):
             self.mode = 'lineDrawing'
             self.line_target = (x,y,touchID)
         else:
-            ZoomableWidget.on_touch_down(self, touches, touchID, x, y)
+            MTZoomableWidget.on_touch_down(self, touches, touchID, x, y)
             
             
     def checkCollisions(self):
@@ -86,7 +86,7 @@ class Symbol(ZoomableWidget):
                 if (t):
                     self.line_target = (t.translation[0],t.translation[1],touchID)
         else:
-            ZoomableWidget.on_touch_move(self, touches, touchID, x, y)
+            MTZoomableWidget.on_touch_move(self, touches, touchID, x, y)
              
     
     def on_touch_up(self, touches, touchID, x, y):
@@ -101,7 +101,7 @@ class Symbol(ZoomableWidget):
         else:
             self.line_target = (0,0,0)
             self.mode = 'normal'
-            ZoomableWidget.on_touch_up(self, touches, touchID, x, y)
+            MTZoomableWidget.on_touch_up(self, touches, touchID, x, y)
         
         
         
@@ -137,14 +137,14 @@ class Oval(Symbol):
 
 
 
-class CreatorWidget(Container):
+class CreatorWidget(MTContainer):
     def __init__(self, parent=None, pos=(100,100)):
-        Container.__init__(self,parent=parent)
+        MTContainer.__init__(self,parent=parent)
         self.pos=pos
         
-        self.squareButton = Button(pos=(50,80), size=(80,80))
-        self.ovalButton = Button(pos=(50,180), size=(80,80))
-        self.rhombusButton = Button(pos=(50,280), size=(80,80))
+        self.squareButton = MTButton(pos=(50,80), size=(80,80))
+        self.ovalButton = MTButton(pos=(50,180), size=(80,80))
+        self.rhombusButton = MTButton(pos=(50,280), size=(80,80))
         
         def newBox(touchID, x,y):
             #parent.add_widget( Box(pos=(100,80), size=(150,120)), z=1 )
@@ -170,16 +170,16 @@ class CreatorWidget(Container):
     
 
 if __name__ == "__main__":
-    c = Container(layers=2)
+    c = MTContainer(layers=2)
     w = CreatorWidget(parent=c)
     c.add_widget(w,z=1)
     
     tool = LineTool()
     c.add_widget(tool, z=1)
     
-    c.add_widget( ScatterWidget(pos=(400,200),id="test") )
+    c.add_widget( MTScatterWidget(pos=(400,200),id="test") )
     
-    win = UIWindow()
+    win = MTWindow()
     win.add_widget(c)
     #win.set_fullscreen()
     runTouchApp()

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import sys
+
 from pyglet import *
 from pyglet.gl import *
 from mtpyglet import TouchWindow
@@ -10,125 +12,26 @@ from mtpyglet import *
 from pyglet.text import HTMLLabel
 from math import sqrt
 from vector import Vector
+from xml.dom import minidom, Node
 
 _id_2_widget = {}
 
-class UIWindow(TouchWindow):
-    def __init__(self, view=None, fullscreen=False, debug=True, config=None):
-
-        try:
-            if not config:
-                config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True, vsync=1)
-                TouchWindow.__init__(self, config)
-        except:
-            TouchWindow.__init__(self)
-            if fullscreen:	self.set_fullscreen()
-
-        self.root = Widget()
-        self.root.parent = self
-        if view:self.root.add_widget(view)
-
-        self.debug = debug
-        if self.debug:
-            self.sim = MTSimulator(self)
-            self.root.add_widget(self.sim)
-
-    def add_widget(self, w):
-        self.root.add_widget(w)
-
-
-    def on_draw(self):
-        glClearColor(.3,.3,.3,1.0)
-        self.clear()
-        self.root.dispatch_event('draw')
-        if self.debug:
-            self.sim.draw()
-
-    def on_touch_down(self, touches, touchID, x, y):
-        self.root.dispatch_event('on_touch_down', touches, touchID, x, y)
-
-    def on_touch_move(self, touches, touchID, x, y):
-        self.root.dispatch_event('on_touch_move', touches, touchID, x, y)
-
-    def on_touch_up(self, touches, touchID, x, y):
-        self.root.dispatch_event('on_touch_up', touches, touchID, x, y)
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        self.root.dispatch_event('on_mouse_press',x, y, button, modifiers)
-
-    def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
-        self.root.dispatch_event('on_mouse_drag',x, y, dx, dy, button, modifiers)
-
-    def on_mouse_release(self, x, y, button, modifiers):
-        self.root.dispatch_event('on_mouse_release', x, y, button, modifiers)
-
-    def on_object_down(self, touches, touchID,id, x, y,angle):
-        self.root.on_object_down(touches, touchID,id, x, y,angle)
-
-    def on_object_move(self, touches, touchID,id, x, y,angle):
-        self.root.on_object_move(touches, touchID,id, x, y,angle)
-
-    def on_object_up(self, touches, touchID,id, x, y,angle):
-        self.root.on_object_up(touches, touchID,id, x, y,angle)
-
-
-class AnimationAlpha:
-    @staticmethod
-    def ramp(value_from, value_to, length, frame):
-        return  (1.0 - frame / length) * value_from  +  frame / length * value_to
-
-class Animation(object):
-    def __init__(self, widget, label, prop, to, timestep, length,
-                 func=AnimationAlpha.ramp):
-        self.widget = widget
-        self.frame = 0.0
-        self.prop = prop
-        self.value_to = to
-        self.value_from = self.widget.__dict__[self.prop]
-        self.timestep = timestep
-        self.length = length
-        self.label = label
-        self.func = func
-
-    def get_current_value(self):
-        return self.func(self.value_from, self.value_to,
-                         self.length, self.frame)
-
-    def start(self):
-        self.reset()
-        pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
-        self.widget.dispatch_event('on_animation_start', self)
-
-    def reset(self):
-        self.value_from = self.widget.__dict__[self.prop]
-        self.frame = 0.0
-        self.widget.dispatch_event('on_animation_reset', self)
-
-    def advance_frame(self, dt):
-        self.frame += self.timestep
-        self.widget.__dict__[self.prop] = self.get_current_value()
-        if self.frame < self.length:
-            pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
-        else:
-            self.widget.dispatch_event('on_animation_complete', self)
-
-
-
 def getWidgetByID(id):
     global _id_2_widget
-    print "getting widget", id, _id_2_widget
     if _id_2_widget.has_key(id):
         return _id_2_widget[id]
 
 
-class Widget(pyglet.event.EventDispatcher):
+class MTWidget(pyglet.event.EventDispatcher):
+    """Global base for any multitouch widget.
+    Implement event for mouse, object, touch and animation.
+    """
+
     def __init__(self, parent=None, **kargs):
         global _id_2_widget
         if kargs.has_key('id'):
-            print "setting:", kargs['id'], _id_2_widget
             self.id = kargs['id']
             _id_2_widget[kargs['id']] = self
-            print "setting Done:", kargs['id'], _id_2_widget
 
         pyglet.event.EventDispatcher.__init__(self)
         self.parent = parent
@@ -149,6 +52,7 @@ class Widget(pyglet.event.EventDispatcher):
         self.register_event_type('on_animation_start')
 
         self.animations = []
+        self.visible = True
         self.init()
 
 
@@ -156,6 +60,8 @@ class Widget(pyglet.event.EventDispatcher):
         pass
 
     def draw(self):
+        if not self.visible:
+            return
         for w in self.children:
             w.dispatch_event('draw')
 
@@ -207,19 +113,120 @@ class Widget(pyglet.event.EventDispatcher):
         w.on_object_up(touches, touchID,id, x, y,angle)
 
 
-class MTWidget(Widget):
-    def __init__(self, parent=None, **kargs):
-        Widget.__init__(self, parent, **kargs)
+class MTWindow(TouchWindow):
+    """MTWindow is a window widget who use MTSimulator
+       for generating touch event with mouse.
+       Use MTWindow as main window application.
+    """
+    def __init__(self, view=None, fullscreen=False, config=None):
+        try:
+            if not config:
+                config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True, vsync=1)
+                TouchWindow.__init__(self, config)
+        except:
+            TouchWindow.__init__(self)
+            if fullscreen:
+                self.set_fullscreen()
 
-class TouchDisplay(MTWidget):
-    def __init__(self, parent=None, **kargs):
-        Widget.__init__(self, parent)
-        self.touches = {}
+        self.root = MTWidget()
+        self.root.parent = self
+        if view:
+            self.root.add_widget(view)
+
+        self.sim = MTSimulator(self)
+        self.root.add_widget(self.sim)
+
+    def add_widget(self, w):
+        self.root.add_widget(w)
+
+    def on_draw(self):
+        glClearColor(.3,.3,.3,1.0)
+        self.clear()
+        self.root.dispatch_event('draw')
+        self.sim.draw()
+
+    def on_touch_down(self, touches, touchID, x, y):
+        self.root.dispatch_event('on_touch_down', touches, touchID, x, y)
+
+    def on_touch_move(self, touches, touchID, x, y):
+        self.root.dispatch_event('on_touch_move', touches, touchID, x, y)
+
+    def on_touch_up(self, touches, touchID, x, y):
+        self.root.dispatch_event('on_touch_up', touches, touchID, x, y)
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        self.root.dispatch_event('on_mouse_press', x, y, button, modifiers)
+
+    def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
+        self.root.dispatch_event('on_mouse_drag', x, y, dx, dy, button, modifiers)
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        self.root.dispatch_event('on_mouse_release', x, y, button, modifiers)
+
+    def on_object_down(self, touches, touchID, id, x, y,angle):
+        self.root.dispatch_event('on_object_down', touches, touchID, id, x, y,angle)
+
+    def on_object_move(self, touches, touchID, id, x, y,angle):
+        self.root.dispatch_event('on_object_move', touches, touchID, id, x, y,angle)
+
+    def on_object_up(self, touches, touchID, id, x, y,angle):
+        self.root.dispatch_event('on_object_up', touches, touchID, id, x, y,angle)
+
+
+class AnimationAlpha(object):
+    """Collection of animation function, to be used with Animation object."""
+    @staticmethod
+    def ramp(value_from, value_to, length, frame):
+        return  (1.0 - frame / length) * value_from  +  frame / length * value_to
+
+class Animation(object):
+    """Class to animate property over the time"""
+    def __init__(self, widget, label, prop, to, timestep, length,
+                 func=AnimationAlpha.ramp):
+        self.widget     = widget
+        self.frame      = 0.0
+        self.prop       = prop
+        self.value_to   = to
+        self.value_from = self.widget.__dict__[self.prop]
+        self.timestep   = timestep
+        self.length     = length
+        self.label      = label
+        self.func       = func
+
+    def get_current_value(self):
+        return self.func(self.value_from, self.value_to,
+                         self.length, self.frame)
+
+    def start(self):
+        self.reset()
+        pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
+        self.widget.dispatch_event('on_animation_start', self)
+
+    def reset(self):
+        self.value_from = self.widget.__dict__[self.prop]
+        self.frame = 0.0
+        self.widget.dispatch_event('on_animation_reset', self)
+
+    def advance_frame(self, dt):
+        self.frame += self.timestep
+        self.widget.__dict__[self.prop] = self.get_current_value()
+        if self.frame < self.length:
+            pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
+        else:
+            self.widget.dispatch_event('on_animation_complete', self)
+
+class MTDisplay(MTWidget):
+    """MTDisplay is a widget that draw a circle under every touch on window"""
+    def __init__(self, parent=None, color=(1.0, 1.0, 1.0, 0.4), radius=10, **kargs):
+        MTWidget.__init__(self, parent)
+        self.touches    = {}
+        self.color      = color
+        self.radius     = radius
 
     def draw(self):
+        glColor4f(*self.color)
         for id in self.touches:
-            glColor4f(1.0,1.0,1.0,0.4)
-            drawCircle(pos=self.touches[id], radius=10)
+            drawCircle(pos=self.touches[id], radius=self.radius)
 
     def on_touch_down(self, touches, touchID, x, y):
         self.touches[touchID] = (x,y)
@@ -230,7 +237,9 @@ class TouchDisplay(MTWidget):
     def on_touch_up(self, touches, touchID, x, y):
         del self.touches[touchID]
 
-class Container(MTWidget):
+
+class MTContainer(MTWidget):
+    """MTContainer is a base for container multiple MTWidget."""
     def __init__(self, children=[], parent=None, layers=1):
         MTWidget.__init__(self, parent)
         self.parent = parent
@@ -289,8 +298,9 @@ class Container(MTWidget):
                 break
 
 
-class RectangularWidget(MTWidget):
-    def __init__(self, parent=None, pos=(0,0), size=(100,100), color=(0.6,0.6,0.6,1.0), **kargs):
+class MTRectangularWidget(MTWidget):
+    """MTRectangularWidget is a MTWidget with a background color, position and dimension"""
+    def __init__(self, parent=None, pos=(0, 0), size=(100, 100), color=(0.6, 0.6, 0.6, 1.0), **kargs):
         MTWidget.__init__(self,parent, **kargs)
         self.x, self.y = pos
         self._color = color
@@ -298,10 +308,9 @@ class RectangularWidget(MTWidget):
 
     def draw(self):
         glColor4d(*self.color)
-        drawRectangle((self.x, self.y) ,(self.width, self.height))
+        drawRectangle((self.x, self.y), (self.width, self.height))
 
-
-    def collidePoint(self, x,y):
+    def collidePoint(self, x, y):
         if( x > self.x  and x < self.x + self.width and
            y > self.y and y < self.y + self.height  ):
             return True
@@ -320,15 +329,15 @@ class RectangularWidget(MTWidget):
     def _set_color(self, col):
         if len(col) == 3:
             self._color = (col[0], col[1], col[2], 1.0)
-        if len(col) == 4:       
+        if len(col) == 4:
             self._color = col
     color = property(_get_color, _set_color)
 
 
-class DragableWidget(RectangularWidget):
-
+class MTDragableWidget(MTRectangularWidget):
+    """MTDragableWidget is a moveable widget over the window"""
     def __init__(self, parent=None, pos=(0,0), size=(100,100), **kargs):
-        RectangularWidget.__init__(self,parent, pos, size, **kargs)
+        MTRectangularWidget.__init__(self,parent, pos, size, **kargs)
         self.state = ('normal', None)
 
     def on_touch_down(self, touches, touchID, x, y):
@@ -337,7 +346,7 @@ class DragableWidget(RectangularWidget):
             return True
 
     def on_touch_move(self, touches, touchID, x, y):
-        if self.state[0] == 'dragging' and self.state[1]==touchID:
+        if self.state[0] == 'dragging' and self.state[1] == touchID:
             self.x, self.y = (self.x + (x - self.state[2]) , self.y + y - self.state[3])
             self.state = ('dragging', touchID, x, y)
             return True
@@ -347,14 +356,15 @@ class DragableWidget(RectangularWidget):
             self.state = ('normal', None)
             return True
 
-class Button(RectangularWidget):
-    def __init__(self, parent=None, pos=(0,0), size=(100,100), text="Button", **kargs):
-        RectangularWidget.__init__(self,parent, pos, size, **kargs)
+class MTButton(MTRectangularWidget):
+    """MTButton is a button implementation using MTRectangularWidget"""
+    def __init__(self, parent=None, pos=(0, 0), size=(100, 100), text='Button', **kargs):
+        MTRectangularWidget.__init__(self,parent, pos, size, **kargs)
         self.register_event_type('on_click')
-        self.state = ('normal', 0)
-        self.clickActions = []
-        self.label_obj = HTMLLabel()
-        self.label = str(text)
+        self.state          = ('normal', 0)
+        self.clickActions   = []
+        self.label_obj      = HTMLLabel()
+        self.label          = str(text)
 
     def get_label(self):
         return self._label
@@ -362,7 +372,6 @@ class Button(RectangularWidget):
         self._label = str(text)
         self.label_obj.text = self.label
     label = property(get_label, set_label)
-
 
     def draw(self):
         if self.state[0] == 'down':
@@ -374,7 +383,6 @@ class Button(RectangularWidget):
 
         self.label_obj.x, self.label_obj.y = self.x, self.y
         self.label_obj.draw()
-
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collidePoint(x,y):
@@ -393,30 +401,33 @@ class Button(RectangularWidget):
             return True
 
 
-class ImageButton(Button):
+class MTImageButton(MTButton):
+    """MTImageButton is a enhanced MTButton that draw an image instead of a text"""
     def __init__(self, image_file, parent=None, pos=(0,0), size=(1,1), scale = 1.0, **kargs):
-        Button.__init__(self,parent,pos,size)
-        img = pyglet.image.load(image_file)
-
-        self.image = pyglet.sprite.Sprite(img)
-        self.image.x, self.image.y = self.x, self.y
-        self.scale =  scale
-        self.image.scale = self.scale
-        self.width, self.height = (self.image.width, self.image.height)
+        MTButton.__init__(self,parent,pos,size)
+        img                 = pyglet.image.load(image_file)
+        self.image          = pyglet.sprite.Sprite(img)
+        self.image.x        = self.x
+        self.image.y        = self.y
+        self.scale          = scale
+        self.image.scale    = self.scale
+        self.width          = self.image.width
+        self.height         = self.image.height
 
     def draw(self):
-        self.image.x, self.image.y = (self.x, self.y)
-        self.image.scale = self.scale
-        self.width, self.height = (self.image.width, self.image.height)
+        self.image.x        = self.x
+        self.image.y        = self.y
+        self.image.scale    = self.scale
+        self.width          = self.image.width
+        self.height         = self.image.height
         self.image.draw()
 
 
-class ScatterWidget(RectangularWidget):
+class MTScatterWidget(MTRectangularWidget):
+    """MTScatterWidget is a scatter widget based on MTRectangularWidget"""
     def __init__(self, parent=None, pos=(0,0), size=(100,100), **kargs):
-        RectangularWidget.__init__(self,parent, pos, size, **kargs)
-
+        MTRectangularWidget.__init__(self,parent, pos, size, **kargs)
         self.touches = {}
-
         self.rotation = 0.0
         self.zoom = 1.0
 
@@ -448,11 +459,10 @@ class ScatterWidget(RectangularWidget):
         pass
 
 
-
-
-class ZoomableWidget(RectangularWidget):
-    def __init__(self, parent=None, pos=(0,0), size=(100,100), **kargs):
-        RectangularWidget.__init__(self,parent, pos, size, **kargs)
+class MTZoomableWidget(MTRectangularWidget):
+    """MTZoomableWidget is a zoomable version of MTRectangularWidget"""
+    def __init__(self, parent=None, pos=(0, 0), size=(100, 100), **kargs):
+        MTRectangularWidget.__init__(self,parent, pos, size, **kargs)
 
         self.rotation = self._rotation = self._oldrotation = 0.0
         self.translation = self._translation = Vector(pos[0], pos[1])
@@ -464,7 +474,7 @@ class ZoomableWidget(RectangularWidget):
         self.newCenter = Vector(0,0)
 
     def draw_widget(self):
-        drawRectangle((-0.5, -0.5) ,(1, 1))
+        drawRectangle((-0.5, -0.5), (1, 1))
 
     def draw(self):
         glPushMatrix()
@@ -552,12 +562,12 @@ class ZoomableWidget(RectangularWidget):
         self.touchDict = {}
 
 
-
-class ZoomableImage(ZoomableWidget):
+class MTZoomableImage(MTZoomableWidget):
+    """MTZoomableWidget is a zoomable Image widget"""
     def __init__(self, img_src,parent=None, pos=(0,0), size=(100,100)):
-        ZoomableWidget.__init__(self,parent, pos, size)
-        img = pyglet.image.load(img_src)
-        self.image = pyglet.sprite.Sprite(img)
+        MTZoomableWidget.__init__(self,parent, pos, size)
+        img         = pyglet.image.load(img_src)
+        self.image  = pyglet.sprite.Sprite(img)
 
     def on_touch_down(self, touches, touchID, x, y):
         if ZoomableWidget.on_touch_down(self, touches, touchID, x, y):
@@ -574,10 +584,10 @@ class ZoomableImage(ZoomableWidget):
         glPopMatrix()
 
 
-
-class Slider(RectangularWidget):
-    def __init__(self, parent=None, min=0, max=100, pos=(10,10), size=(30,400), alignment='horizontal', padding=8, color=(0.8, 0.8, 0.4,1.0)):
-        RectangularWidget.__init__(self,parent, pos, size)
+class MTSlider(MTRectangularWidget):
+    """MTSlider is an implementation of a scrollbar using MTRectangularWidget"""
+    def __init__(self, parent=None, min=0, max=100, pos=(10,10), size=(30,400), alignment='horizontal', padding=8, color=(0.8, 0.8, 0.4, 1.0)):
+        MTRectangularWidget.__init__(self, parent, pos, size)
         self.touchstarts = [] # only react to touch input that originated on this widget 
         self.alignment = alignment
         self.color = color
@@ -588,13 +598,13 @@ class Slider(RectangularWidget):
 
     def draw(self):
         glEnable(GL_BLEND);
-        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         x,y,w,h = self.x,self.y,self.width, self.height
         p2 =self.padding/2
-        #draw outer rectangle
+        # draw outer rectangle
         glColor4f(0.2,0.2,0.2,0.5)
         drawRectangle(pos=(x,y), size=(w,h))
-        #draw inner rectangle
+        # draw inner rectangle
         glColor4f(*self.color)
         length = int(self.height*(float(self.value)/self.max) - self.padding)
         drawRectangle(pos=(self.x+p2,self.y+p2), size=(w-self.padding, length) )
@@ -610,20 +620,18 @@ class Slider(RectangularWidget):
             return True
 
     def on_touch_up(self, touches, touchID, x, y):
-        if (touchID in self.touchstarts):
+        if touchID in self.touchstarts:
             self.touchstarts.remove(touchID)
 
 
-
-
-
-class ColorPicker(RectangularWidget):
+class MTColorPicker(MTRectangularWidget):
+    """MTColorPicker is a implementation of a color picker using MTRectangularWidget"""
     def __init__(self, parent=None, min=0, max=100, pos=(0,0), size=(640,480),target=[]):
-        RectangularWidget.__init__(self,parent, pos, size)
+        MTRectangularWidget.__init__(self,parent, pos, size)
         self.canvas = target[0]
-        self.sliders = [ Slider(max=255, size=(30,200), color=(1,0,0,1)),
-                        Slider(max=255, size=(30,200), color=(0,1,0,1)),
-                        Slider(max=255, size=(30,200), color=(0,0,1,1)) ]
+        self.sliders = [ MTSlider(max=255, size=(30,200), color=(1,0,0,1)),
+                        MTSlider(max=255, size=(30,200), color=(0,1,0,1)),
+                        MTSlider(max=255, size=(30,200), color=(0,0,1,1)) ]
         self.update_color()
         self.touch_positions = {}
 
@@ -678,45 +686,43 @@ class ColorPicker(RectangularWidget):
             del self.touch_positions[touchID]
 
 
+class MTObjectWidget(MTRectangularWidget):
+    """MTObjectWidget is a widget who draw an object on table"""
+    def __init__(self, parent=None, pos=(0, 0), size=(100, 100)):
+        MTRectangularWidget.__init__(self,parent, pos, size)
 
-class ObjectWidget(RectangularWidget):
-    def __init__(self, parent=None, pos=(0,0), size=(100,100)):
-        RectangularWidget.__init__(self,parent, pos, size)
-
-        self.state = ('normal', None)
-        self.visible = False
-        self.angle = 0
-        self.id = 0
+        self.state      = ('normal', None)
+        self.visible    = False
+        self.angle      = 0
+        self.id         = 0
 
     def on_object_down(self, touches, touchID,id, x, y,angle):
-        self.x ,self.y = x,y
-        self.angle = angle/pi*180
-        self.visible = True
-        self.id = id
-        self.state = ('dragging', touchID, x, y)
+        self.x ,self.y  = x, y
+        self.angle      = angle/pi*180
+        self.visible    = True
+        self.id         = id
+        self.state      = ('dragging', touchID, x, y)
         return True
 
-    def on_object_move(self, touches, touchID,id, x, y,angle):
+    def on_object_move(self, touches, touchID, id, x, y, angle):
         if self.state[0] == 'dragging' and self.state[1] == touchID:
-            self.angle = -angle/pi*180
-            self.x, self.y = (self.x + (x - self.state[2]) , self.y + y - self.state[3])
-            self.id = id
-            self.state = ('dragging', touchID, x, y)
+            self.angle      = -angle/pi*180
+            self.x, self.y  = (self.x + (x - self.state[2]) , self.y + y - self.state[3])
+            self.id         = id
+            self.state      = ('dragging', touchID, x, y)
             return True
 
     def on_object_up(self, touches, touchID,id, x, y,angle):
         if self.state[1] == touchID:
-            self.angle = -angle/pi*180
-            self.visible = False
-            self.id = id
-            self.state = ('normal', None)
+            self.angle      = -angle/pi*180
+            self.visible    = False
+            self.id         = id
+            self.state      = ('normal', None)
             return True
-
 
     def draw(self):
         if not self.visible:
             return
-
         glPushMatrix()
         glTranslatef(self.x,self.y,0.0)
         glRotatef(self.angle,0.0,0.0,1.0)
@@ -731,6 +737,7 @@ class ObjectWidget(RectangularWidget):
 
 
 class MTSimulator(MTWidget):
+    """MTSimulator is a widget who generate touch event from mouse event"""
     def __init__(self, output, parent=None):
         MTWidget.__init__(self, parent)
         self.touches = {}
@@ -773,47 +780,38 @@ class MTSimulator(MTWidget):
             self.output.dispatch_event('on_touch_up', self.touches, self.current_drag.blobID, x, y)
             del self.touches[self.current_drag.blobID]
 
+class XMLWidget(MTWidget):
+	def __init__(self, parent=None):
+		MTWidget.__init__(self,parent)
 
+	def createNode(self, node):
+		if node.nodeType == Node.ELEMENT_NODE:
+			class_name = node.nodeName
 
+			#create widget
+			nodeWidget  = eval(class_name)( parent=None )
 
+			#set attributes
+			for (name, value) in node.attributes.items():
+				nodeWidget.__setattr__(name, eval(value))
 
+			#add child widgets
+			for c in node.childNodes:
+				w = self.createNode(c)
+				if w: nodeWidget.add_widget(w)
 
-import sys
-from xml.dom import minidom, Node
+			return nodeWidget
 
-class XMLWidget(Widget):
-    def __init__(self, parent=None):
-        Widget.__init__(self,parent)
-        
-        
-    def createNode(self, node):
-        if node.nodeType == Node.ELEMENT_NODE:
-            class_name = node.nodeName
-            
-            #create widget
-            nodeWidget  = eval(class_name)( parent=None )
-        
-            #set attributes
-            for (name, value) in node.attributes.items():
-                nodeWidget.__setattr__(name, eval(value))
-                
-            #add child widgets
-            for c in node.childNodes:
-                w = self.createNode(c)
-                if w: nodeWidget.add_widget(w)
-                
-            return nodeWidget
-            
-    def loadString(self, xml):
-        doc = minidom.parseString(xml)
-        root = doc.documentElement
-        self.add_widget(self.createNode(root))
-        
+	def loadString(self, xml):
+		doc = minidom.parseString(xml)
+		root = doc.documentElement
+		self.add_widget(self.createNode(root))
+
 
 def showNode(node):
-    if node.nodeType == Node.ELEMENT_NODE:
-        print 'Element name: %s' % node.nodeName
-        for (name, value) in node.attributes.items():
-            print '    Attr -- Name: %s  Value: %s' % (name, value)
-        if node.attributes.get('ID') is not None:
-            print '    ID: %s' % node.attributes.get('ID').value
+	if node.nodeType == Node.ELEMENT_NODE:
+		print 'Element name: %s' % node.nodeName
+		for (name, value) in node.attributes.items():
+			print '    Attr -- Name: %s  Value: %s' % (name, value)
+		if node.attributes.get('ID') is not None:
+			print '    ID: %s' % node.attributes.get('ID').value

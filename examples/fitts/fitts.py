@@ -14,7 +14,7 @@ import pickle
 import ctypes
 from random import randint
 class Target(MTRectangularWidget):
-	def __init__(self, parent=None, pos=(0,0), size=(100,100)):
+    def __init__(self, parent=None, pos=(0,0), size=(100,100)):
         s = randint(100,300)
         pos = (randint(100,900),randint(100,900))
         self.zoom = randint(1,3)
@@ -99,7 +99,7 @@ class MTSourceWidget(MTZoomableWidget):
 c = MTContainer()
 t = Target()
 c.add_widget( t)
-c.add_widget( SourceWidget(t,pos=(300,300))  )
+c.add_widget( MTSourceWidget(t,pos=(300,300))  )
 c.add_widget( MTDisplay(c) )
 
 win = MTWindow()

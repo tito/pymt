@@ -56,7 +56,7 @@ class Canvas(MTRectangularWidget):
 w = MTWindow()
 w.set_fullscreen()
 
-root = Widget()
+root = MTWidget()
 canvas = Canvas(size=(w.width,w.height))
 root.add_widget(canvas)
 

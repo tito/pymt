@@ -1,6 +1,6 @@
 from pymt import *
 
-c = MTWidget()
+c = MTContainer()
 
 for i in range (10):
 		img_src = 'bilder/testpic'+str(i+1)+'.jpg'

@@ -615,7 +615,7 @@ class MTZoomableImage(MTZoomableWidget):
         self.image  = pyglet.sprite.Sprite(img)
 
     def on_touch_down(self, touches, touchID, x, y):
-        if ZoomableWidget.on_touch_down(self, touches, touchID, x, y):
+        if MTZoomableWidget.on_touch_down(self, touches, touchID, x, y):
             self.parent.layers[0].remove(self)
             self.parent.layers[0].append(self)
             return True

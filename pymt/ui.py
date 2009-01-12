@@ -21,10 +21,25 @@ def getWidgetByID(id):
     if _id_2_widget.has_key(id):
         return _id_2_widget[id]
 
+class MTWidgetFactory(object):
+    _widgets = {}
+
+    @staticmethod
+    def register(widgetname, widgetclass):
+        if not MTWidgetFactory._widgets.has_key(widgetname):
+            MTWidgetFactory._widgets[widgetname] = widgetclass
+
+    @staticmethod
+    def get(widgetname):
+        if MTWidgetFactory._widgets.has_key(widgetname):
+            return MTWidgetFactory._widgets[widgetname]
+        raise Exception('Widget %s are not known in MTWidgetFactory' % widgetname)
 
 class MTWidget(pyglet.event.EventDispatcher):
     """Global base for any multitouch widget.
     Implement event for mouse, object, touch and animation.
+
+    Event are dispatched through widget only if it's visible.
     """
 
     def __init__(self, parent=None, **kargs):
@@ -36,28 +51,54 @@ class MTWidget(pyglet.event.EventDispatcher):
         pyglet.event.EventDispatcher.__init__(self)
         self.parent = parent
         self.children = []
-
-        self.register_event_type('draw')
-        self.register_event_type('on_mouse_press')
-        self.register_event_type('on_mouse_drag')
-        self.register_event_type('on_mouse_release')
-        self.register_event_type('on_touch_up')
-        self.register_event_type('on_touch_move')
-        self.register_event_type('on_touch_down')
-        self.register_event_type('on_object_up')
-        self.register_event_type('on_object_move')
-        self.register_event_type('on_object_down')
-        self.register_event_type('on_animation_complete')
-        self.register_event_type('on_animation_reset')
-        self.register_event_type('on_animation_start')
+        self._visible = False
 
         self.animations = []
-        self.visible = True
+        self.show()
         self.init()
 
+    def _set_visible(self, visible):
+        if self._visible == visible:
+            return
+        self._visible = visible
+        self.update_event_registration()
+    def _get_visible(self):
+        return self._visible
+    visible = property(_get_visible, _set_visible)
+
+    def update_event_registration(self):
+        evs = [ 'draw',
+                'on_mouse_press',
+                'on_mouse_drag',
+                'on_mouse_release',
+                'on_touch_up',
+                'on_touch_move',
+                'on_touch_down',
+                'on_object_up',
+                'on_object_move',
+                'on_object_down',
+                'on_animation_complete',
+                'on_animation_reset',
+                'on_animation_start' ]
+
+        if self.visible:
+            for ev in evs:
+                self.register_event_type(ev)
+        else:
+            for ev in evs:
+                if not hasattr(self, 'event_types'):
+                    continue
+                if ev in self.event_types:
+                    self.event_types.remove(ev)
 
     def init(self):
         pass
+
+    def hide(self):
+        self.visible = False
+
+    def show(self):
+        self.visible = True
 
     def draw(self):
         if not self.visible:
@@ -104,13 +145,16 @@ class MTWidget(pyglet.event.EventDispatcher):
             w.dispatch_event('on_mouse_release', x, y, button, modifiers)
 
     def on_object_down(self, touches, touchID,id, x, y,angle):
-        w.on_object_down(touches, touchID,id, x, y,angle)
+        for w in self.children:
+            w.dispatch_event('on_object_down', touches, touchID,id, x, y,angle)
 
     def on_object_move(self, touches, touchID,id, x, y,angle):
-        w.on_object_move(touches, touchID,id, x, y,angle)
+        for w in self.children:
+            w.dispatch_event('on_object_move', touches, touchID,id, x, y,angle)
 
     def on_object_up(self, touches, touchID,id, x, y,angle):
-        w.on_object_up(touches, touchID,id, x, y,angle)
+        for w in self.children:
+            w.dispatch_event('on_object_up', touches, touchID,id, x, y,angle)
 
 
 class MTWindow(TouchWindow):
@@ -242,22 +286,23 @@ class MTContainer(MTWidget):
     """MTContainer is a base for container multiple MTWidget."""
     def __init__(self, children=[], parent=None, layers=1):
         MTWidget.__init__(self, parent)
-        self.parent = parent
-        self.layers = []
-        self.obj = []
+        self.parent	= parent
+        self.layers	= []
+        self.obj	= []
         for i in range(layers):
             self.layers.append([])
-
         for c in children:
             self.add_widget(c)
 
     def add_widget(self, w, z=0, type='cur'):
-        if  type == 'cur':
+        if type == 'cur':
             self.layers[z].append(w)
         elif type == 'obj':
             self.obj.append(w)
 
     def draw(self):
+        if not self.visible:
+            return
         for l in self.obj:
             l.draw()
         for l in self.layers:
@@ -781,31 +826,33 @@ class MTSimulator(MTWidget):
             del self.touches[self.current_drag.blobID]
 
 class XMLWidget(MTWidget):
-	def __init__(self, parent=None):
-		MTWidget.__init__(self,parent)
+    def __init__(self, parent=None, xml=None):
+        MTWidget.__init__(self, parent)
+        if xml is not None:
+            self.loadString(xml)
 
-	def createNode(self, node):
-		if node.nodeType == Node.ELEMENT_NODE:
-			class_name = node.nodeName
+    def createNode(self, node):
+        if node.nodeType == Node.ELEMENT_NODE:
+            class_name = node.nodeName
 
-			#create widget
-			nodeWidget  = eval(class_name)( parent=None )
+            #create widget
+            nodeWidget  = MTWidgetFactory.get(class_name)( parent=None )
 
-			#set attributes
-			for (name, value) in node.attributes.items():
-				nodeWidget.__setattr__(name, eval(value))
+            #set attributes
+            for (name, value) in node.attributes.items():
+                nodeWidget.__setattr__(name, eval(value))
 
-			#add child widgets
-			for c in node.childNodes:
-				w = self.createNode(c)
-				if w: nodeWidget.add_widget(w)
+            #add child widgets
+            for c in node.childNodes:
+                w = self.createNode(c)
+                if w: nodeWidget.add_widget(w)
 
-			return nodeWidget
+            return nodeWidget
 
-	def loadString(self, xml):
-		doc = minidom.parseString(xml)
-		root = doc.documentElement
-		self.add_widget(self.createNode(root))
+    def loadString(self, xml):
+        doc = minidom.parseString(xml)
+        root = doc.documentElement
+        self.add_widget(self.createNode(root))
 
 
 def showNode(node):
@@ -815,3 +862,22 @@ def showNode(node):
 			print '    Attr -- Name: %s  Value: %s' % (name, value)
 		if node.attributes.get('ID') is not None:
 			print '    ID: %s' % node.attributes.get('ID').value
+
+# Register all base widgets
+MTWidgetFactory.register('MTWidget', MTWidget)
+MTWidgetFactory.register('MTWindow', MTWindow)
+MTWidgetFactory.register('MTDisplay', MTDisplay)
+MTWidgetFactory.register('MTContainer', MTContainer)
+MTWidgetFactory.register('MTRectangularWidget', MTRectangularWidget)
+MTWidgetFactory.register('MTDragableWidget', MTDragableWidget)
+MTWidgetFactory.register('MTButton', MTButton)
+MTWidgetFactory.register('MTImageButton', MTImageButton)
+MTWidgetFactory.register('MTScatterWidget', MTScatterWidget)
+MTWidgetFactory.register('MTZoomableWidget', MTZoomableWidget)
+MTWidgetFactory.register('MTZoomableImage', MTZoomableImage)
+MTWidgetFactory.register('MTSlider', MTSlider)
+MTWidgetFactory.register('MTColorPicker', MTColorPicker)
+MTWidgetFactory.register('MTObjectWidget', MTObjectWidget)
+MTWidgetFactory.register('MTSimulator', MTSimulator)
+MTWidgetFactory.register('XMLWidget', XMLWidget)
+

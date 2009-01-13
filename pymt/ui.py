@@ -10,7 +10,7 @@ from math import *
 from pyglet.window import key
 from mtpyglet import *
 from pyglet.text import HTMLLabel
-from math import sqrt
+from math import sqrt, sin
 from vector import Vector
 from xml.dom import minidom, Node
 
@@ -227,7 +227,18 @@ class AnimationAlpha(object):
     """Collection of animation function, to be used with Animation object."""
     @staticmethod
     def ramp(value_from, value_to, length, frame):
-        return  (1.0 - frame / length) * value_from  +  frame / length * value_to
+        return (1.0 - frame / length) * value_from  +  frame / length * value_to
+
+    @staticmethod
+    def sin(value_from, value_to, length, frame):
+        return math.sin(math.pi / 2 * (1.0 - frame / length)) * value_from  + \
+            math.sin(math.pi / 2  * (frame / length)) * value_to
+
+    @staticmethod
+    def bubble(value_from, value_to, length, frame):
+        return math.sin(math.pi * (1.0 - frame / length)) * value_from  + \
+            math.sin(math.pi  * (frame / length)) * value_to
+
 
 class Animation(object):
     """Class to animate property over the time"""
@@ -237,7 +248,7 @@ class Animation(object):
         self.frame      = 0.0
         self.prop       = prop
         self.value_to   = to
-        self.value_from = self.widget.__dict__[self.prop]
+        self.value_from = self.get_value_from()
         self.timestep   = timestep
         self.length     = length
         self.label      = label
@@ -253,17 +264,28 @@ class Animation(object):
         self.widget.dispatch_event('on_animation_start', self)
 
     def reset(self):
-        self.value_from = self.widget.__dict__[self.prop]
+        self.value_from = self.get_value_from()
         self.frame = 0.0
         self.widget.dispatch_event('on_animation_reset', self)
 
     def advance_frame(self, dt):
         self.frame += self.timestep
-        self.widget.__dict__[self.prop] = self.get_current_value()
+        self.set_value_from(self.get_current_value())
         if self.frame < self.length:
             pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
         else:
             self.widget.dispatch_event('on_animation_complete', self)
+
+    def get_value_from(self):
+        if hasattr(self.widget, self.prop):
+            return self.widget.__getattribute__(self.prop)
+        return self.widget.__dict__[self.prop]
+
+    def set_value_from(self, value):
+        if hasattr(self.widget, self.prop):
+            self.widget.__setattr__(self.prop, value)
+        else:
+            self.widget.__dict__[self.prop] = value
 
 class MTDisplay(MTWidget):
     """MTDisplay is a widget that draw a circle under every touch on window"""

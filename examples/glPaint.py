@@ -57,12 +57,12 @@ w = MTWindow()
 w.set_fullscreen()
 
 root = MTWidget()
-canvas = Canvas(size=(w.width,w.height))
+canvas = Canvas(pos=(40,40),size=(w.width,w.height))
 root.add_widget(canvas)
 
 slider = MTColorPicker(size=(130,290), target=[canvas])
-root.add_widget(slider)
 
+root.add_widget(slider)
 w.add_widget(root)
 
 

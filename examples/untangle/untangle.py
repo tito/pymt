@@ -8,6 +8,12 @@ w.set_fullscreen()
 
 import time
 import pickle
+
+
+"""
+I use the EventLogger and TrialLogger classes to record all the touch input, so that I can visuakize/analyze the user interacitons for some user studies I am working on.
+They have absolutly nothing to do with the Graph untabgle game, i case anyone is trying to read this to learn pymt.
+"""
 class EventLogger(MTWidget):
 	def __init__(self, parent=None):
 		MTWidget.__init__(self, parent)
@@ -92,39 +98,12 @@ class GraphUI(MTWidget):
 
 
 
-class HorizontalLayout(MTRectangularWidget):
-	def __init__(self, parent=None, spacing=10, **kargs):
-		MTRectangularWidget.__init__(self, parent, **kargs)
-		self.spacing = spacing
-		
-	def draw(self):
-		MTWidget.draw(self)
-		
-	def add_widget(self,w):
-		MTWidget.add_widget(self, w)
-		self.layout()
-		
-	def layout(self):
-		cur_x = self.x
-		for w in self.children:
-			try:
-				w.x = cur_x
-				cur_x += w.width + spacing
-			except:
-				pass
-
-
-
 root = MTWidget()
 graph = GraphUI(root)
-log = TrialLogger(graph)
-
-
-
-
+#log = TrialLogger(graph)
 root.add_widget(graph)
 w.add_widget(root)
 	
 #start the App
 runTouchApp()
-log.save('data.pkl')
+#log.save('data.pkl')

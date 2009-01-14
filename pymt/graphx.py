@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from pyglet.gl import *
 from pyglet.graphics import draw
+from pyglet.text import Label
 from math import sqrt
 import math
 from shader import *
@@ -11,15 +12,35 @@ BLUE = (0.0,0.0,1.0)
 
 _brush_texture = None
 _bruch_size = 10
-
-glEnable(GL_BLEND)
-glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
 def setBrush(sprite, size=10):
     global _brush_texture
     point_sprite_img = pyglet.image.load(sprite)
     _brush_texture = point_sprite_img.get_texture()
     _bruch_size = size
+
+
+def enable_blending():
+	glEnable(GL_BLEND)
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+enable_blending()
+
+_standard_label = Label(text="standard Label", font_size=64, bold=True)
+def drawLabel(text, pos=(0,0),center=True):
+	if center:
+		_standard_label.anchor_x = 'center'
+		_standard_label.anchor_y = 'center'
+	else:
+		_standard_label.anchor_x = 'left'
+		_standard_label.anchor_y = 'bottom'
+	_standard_label.x = 0
+	_standard_label.y = 0
+	_standard_label.text = text
+	glPushMatrix()
+	glTranslated(pos[0], pos[1], 0.0)
+	glScaled(0.2,0.2,1)
+	_standard_label.draw()
+	glPopMatrix()
+
 
 #paint a line with current brush
 def paintLine(points):

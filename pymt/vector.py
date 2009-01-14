@@ -41,6 +41,10 @@ class Vector(object):
 
     def __str__(self):
         return '(%.1f,%.1f)' % (self.x, self.y)
+    
+    def normalized(self):
+        l = length(self)
+        return Vector(self.x /l , self.y / l)
 
     @staticmethod
     def distanceSqrd(vec1, vec2):
@@ -66,6 +70,11 @@ class Vector(object):
         return math.sqrt(Vector.lengthSqrd(vec))
 
     @staticmethod
+    def normalized(vec):
+        'Returns the length of a vector'
+        return math.sqrt(Vector.lengthSqrd(vec))
+
+    @staticmethod
     def normalize(vec):
         """Returns a new vector that has the same direction as vec,
         but has a length of one."""
@@ -77,4 +86,14 @@ class Vector(object):
     def dot(vec1, vec2):
         'Computes the dot product of a and b'
         return vec1.x * vec2.x + vec1.y * vec2.y
+
+    @staticmethod
+    def angle(v1, v2):
+        'Computes the angle between a and b'
+        angle = -(180/math.pi)*math.atan2(v1.x*v2.y - v1.y*v2.x, v1.x*v2.x+v1.y*v2.y)
+        return angle
+
+
+
+
 

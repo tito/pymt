@@ -1,5 +1,6 @@
 from pymt import *
 import math
+import sys
 
 class MTBubbleWidget(MTWidget):
     def __init__(self, parent=None, pos=(0,0), color=(0.6,0.6,0.6,1.0), **kargs):
@@ -11,6 +12,7 @@ class MTBubbleWidget(MTWidget):
         MTWidget.__init__(self,parent, **kargs)
 
         self._icon   = None
+        self._iconname = ''
 
         # prepare animations
         self.anim_length = 10
@@ -95,7 +97,9 @@ class MTBubbleWidget(MTWidget):
     def _set_icon(self, icon):
         if icon is None:
             self._icon = None
+            self._iconname = ''
         else:
+            self._iconname = icon
             img = pyglet.image.load('icons/%s.png' % icon)
             self._icon = pyglet.sprite.Sprite(img)
     def _get_icon(self):
@@ -109,9 +113,14 @@ class MTMenuNode(MTBubbleWidget):
         MTBubbleWidget.__init__(self,
             parent=parent, pos=pos, color=color)
         self.pos = pos
-        self.visible_children = False
-        self.move_track = None
-        self.move_action = False
+        self.visible_children   = False
+        self.move_track         = None
+        self.move_action        = False
+        self.action             = None
+        self.label_obj          = Label(font_size=10, )
+        self.label_obj.anchor_x = 'center'
+        self.label_obj.anchor_y = 'center'
+        self.label              = 'No label'
 
     def add_widget(self, child):
         child.visible = False
@@ -120,6 +129,8 @@ class MTMenuNode(MTBubbleWidget):
     def draw(self):
         if self.visible:
             MTBubbleWidget.draw(self)
+            self.label_obj.x, self.label_obj.y = self.x, self.y - self.width / 2
+            #self.label_obj.draw()
         for c in self.children:
             if c.visible:
                 c.dispatch_event('on_draw')
@@ -135,6 +146,8 @@ class MTMenuNode(MTBubbleWidget):
         if self.pos == (x, y):
             return
         self.pos = (x, y)
+        self.original_pos = self.pos
+        self.parent_pos((x, y))
         self.move_action = True
 
     def on_touch_up(self, touches, touchID, x, y):
@@ -149,14 +162,29 @@ class MTMenuNode(MTBubbleWidget):
                     return True
 
         if self.visible and self.collidePoint(x, y):
-            print 'click on', self.label
-            if self.visible_children:
+            if self.action:
+                if globals()[self.action](self) != False:
+                    self.close_all()
+            elif self.visible_children:
                 self.parent_unselect()
                 self.close_children()
             else:
                 self.parent_select()
                 self.open_children()
             return True
+
+    def parent_pos(self, pos):
+        if isinstance(self.parent, MTMenuNode):
+            self.parent_pos(pos)
+        else:
+            self.original_pos = pos
+            self.pos = pos
+
+    def close_all(self):
+        if isinstance(self.parent, MTMenuNode):
+            self.parent.close_all()
+        else:
+            self.close_children()
 
     def parent_select(self):
         self.original_pos = self.pos
@@ -211,23 +239,42 @@ class MTMenuNode(MTBubbleWidget):
         return (self.x, self.y)
     pos = property(_get_pos, _set_pos)
 
+    def _get_label(self):
+        return self._label
+    def _set_label(self, text):
+        self._label = str(text)
+        self.label_obj.text = self.label
+    label = property(_get_label, _set_label)
+
 
 xmlmenu = """<?xml version="1.0"?>
-<MTMenuNode label="'Menu'" icon="'glipper'" pos="(200,200)">
-    <MTMenuNode label="'Applications'" icon="'disks'" color="(1,0,0,1)"/>
-    <MTMenuNode label="'Settings'" icon="'nerolinux'" color="(0,1,0,1)">
-        <MTMenuNode label="'Calibration'" color="(1,0,1,1)">
-            <MTMenuNode label="'Applications'" icon="'disks'" color="(1,0,0,1)"/>
-            <MTMenuNode label="'Settings'" icon="'nerolinux'" color="(0,1,0,1)">
-                <MTMenuNode label="'Calibration'" icon="'znes'" color="(1,0,1,1)"/>
-                <MTMenuNode label="'Background Color'" icon="'xpdf'" color="(1,1,0,1)"/>
-            </MTMenuNode>
-        </MTMenuNode>
-        <MTMenuNode label="'Background Color'" icon="'xpdf'" color="(1,1,0,1)"/>
+<MTMenuNode label="'Home'" icon="'home'" pos="(200,200)">
+    <MTMenuNode label="'Games'" icon="'applications-games'">
+        <MTMenuNode label="'ColorPicker'" icon="'gtk-color-picker'"
+        action="'menu_action_game_colorpicker'"/>
     </MTMenuNode>
-    <MTMenuNode label="'Quit'" icon="'kfm'"/>
+    <MTMenuNode label="'Multimedia'" icon="'applications-multimedia'"/>
+    <MTMenuNode label="'Settings'" icon="'preferences-desktop'">
+        <MTMenuNode label="'Sound volume'" icon="'audio-volume-high'"
+        action="'menu_action_volume'"/>
+    </MTMenuNode>
+    <MTMenuNode label="'Quit'" icon="'application-exit'"
+    action="'menu_action_quit'"/>
 </MTMenuNode>
 """
+
+def menu_action_quit(node):
+    sys.exit(0)
+
+def menu_action_volume(node):
+    if node._iconname == 'audio-volume-high':
+        node.icon = 'audio-volume-muted'
+    else:
+        node.icon = 'audio-volume-high'
+    return False
+
+def menu_action_game_colorpicker(node):
+    pass
 
 if __name__ == '__main__':
 

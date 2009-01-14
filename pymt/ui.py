@@ -35,8 +35,10 @@ class AnimationAlpha(object):
 
     @staticmethod
     def bubble(value_from, value_to, length, frame):
-        return math.sin(math.pi * (1.0 - frame / length)) * value_from  + \
-            math.sin(math.pi  * (frame / length)) * value_to
+        s = -math.pi / 2
+        p = math.pi
+        return math.sin(s + p * (1.0 - frame / length)) * value_from  + \
+            math.sin(s + p  * (frame / length)) * value_to
 
 
 class Animation(object):

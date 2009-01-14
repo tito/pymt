@@ -120,8 +120,16 @@ class Fbo:
         if status != GL_FRAMEBUFFER_COMPLETE_EXT:
             print "Error in framebuffer activation"
 
-    def bind(self):
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
-
-    def release(self):
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0)
+	def __del__(self):
+		glDeleteFramebuffersEXT(1, byref(self.framebuffer))
+		glDeleteRenderbuffersEXT(1, byref(self.depthbuffer))
+		
+	
+	def bind(self):
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
+		glPushAttrib(GL_VIEWPORT_BIT)
+		glViewport(0,0,self.size[0], self.size[1])
+		
+	def release(self):
+		glPopAttrib()
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0)

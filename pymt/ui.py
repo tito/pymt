@@ -407,9 +407,12 @@ class MTRectangularWidget(MTWidget):
     """MTRectangularWidget is a MTWidget with a background color, position and dimension"""
     def __init__(self, parent=None, pos=(0, 0), size=(100, 100), color=(0.6, 0.6, 0.6, 1.0), **kargs):
         MTWidget.__init__(self,parent, **kargs)
-        self.x, self.y = pos
+        self._x, self._y = pos
+        self._width, self._height = size
         self._color = color
-        self.width, self.height = size
+
+        self.register_event_type('on_resize')
+        self.register_event_type('on_move')
 
     def draw(self):
         glColor4d(*self.color)
@@ -423,18 +426,63 @@ class MTRectangularWidget(MTWidget):
            y > self.y and y < self.y + self.height  ):
             return True
 
+
+    def on_resize(self, w, h):
+        pass
+
+    def on_move(self, x, y):
+        pass
+
+    def _set_x(self, x):
+        self._x = x
+        self.dispatch_event('on_move', self._x, self._y)
+    def _get_x(self):
+        return self._x
+    x = property(_get_x, _set_x)
+
+    def _set_y(self, y):
+        self._y = y
+        self.dispatch_event('on_move', self._x, self._y)
+    def _get_y(self):
+        return self._y
+    y = property(_get_y, _set_y)
+
+    def _set_width(self, w):
+        self._width = w
+        self.dispatch_event('on_resize', self._width, self._height)
+    def _get_width(self):
+        return self._width
+    width = property(_get_width, _set_width)
+
+    def _set_height(self, h):
+        self._height = h
+        self.dispatch_event('on_resize', self._width, self._height)
+    def _get_height(self):
+        return self._height
+    height = property(_get_height, _set_height)
+
+
     def _get_center(self):
-        return (self.x + self.width/2, self.y+self.height/2)
+        return (self._x + self._width/2, self._y+self._height/2)
     def _set_center(self, center):
-        self.x = pos[0] - self.width/2
-        self.y = pos[1] - self.height/2
+        self._x = pos[0] - self.width/2
+        self._y = pos[1] - self.height/2
+        self.dispatch_event('on_move', self._x, self._y)
     center = property(_get_center, _set_center)
 
     def _set_pos(self, pos):
-        self.x, self.y = pos
+        self._x, self._y = pos
+        self.dispatch_event('on_move', self._x, self._y)
     def _get_pos(self):
-        return (self.x, self.y)
+        return (self._x, self._y)
     pos = property(_get_pos, _set_pos)
+
+    def _set_size(self, size):
+        self.width, self.height = size
+        self.dispatch_event('on_resize', self.width, self.height)
+    def _get_size(self):
+        return (self.width, self.height)
+    size = property(_get_size, _set_size)
 
 
     def setColor(self, r,g,b, a=1.0):

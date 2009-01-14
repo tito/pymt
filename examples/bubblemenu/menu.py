@@ -144,31 +144,39 @@ class MTMenuNode(MTBubbleWidget):
                 return
 
         if self.visible_children:
-            selected_child = None
             for c in self.children:
-                if c.visible and c.collidePoint(x, y):
-                    selected_child = c
-
-            if selected_child is not None:
-                selected_child.dispatch_event('on_touch_up', touches, touchID, x, y)
-                self.select_child(selected_child)
-                return True
+                if c.on_touch_up(touches, touchID, x, y):
+                    return True
 
         if self.visible and self.collidePoint(x, y):
             print 'click on', self.label
             if self.visible_children:
+                self.parent_unselect()
                 self.close_children()
             else:
+                self.parent_select()
                 self.open_children()
             return True
 
-    def select_child(self, child):
+    def parent_select(self):
+        self.original_pos = self.pos
+        if isinstance(self.parent, MTMenuNode):
+            self.pos = self.parent.pos
+            self.parent.show_only_child(self)
+
+    def parent_unselect(self):
+        self.pos = self.original_pos
+        if isinstance(self.parent, MTMenuNode):
+            self.parent.show_all_childs()
+
+    def show_only_child(self, child):
         for c in self.children:
             if c != child:
                 c.hide()
-        #if self.parent:
-        #   self.parent.hide()
-        child.pos = self.pos
+
+    def show_all_childs(self):
+        for c in self.children:
+            c.show()
 
     def update_children_pos(self):
         max = len(self.children)
@@ -189,7 +197,6 @@ class MTMenuNode(MTBubbleWidget):
         self.update_children_pos()
         self.visible_children = True
         for c in self.children:
-            print 'show', c.label, c.x, c.y
             c.show()
 
     def hide(self, with_childs=False):

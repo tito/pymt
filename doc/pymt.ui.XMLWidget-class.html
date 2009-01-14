@@ -97,7 +97,8 @@ pyglet.event.EventDispatcher --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="pymt.ui.XMLWidget-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">parent</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">parent</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">xml</span>=<span class="summary-sig-default">None</span>)</span><br />
       x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="pymt.ui-pysrc.html#XMLWidget.__init__">source&nbsp;code</a></span>
@@ -174,6 +175,39 @@ pyglet.event.EventDispatcher --+
 <tr bgcolor="#e8f0f8" >
   <th colspan="2" class="group-header"
     >&nbsp;&nbsp;&nbsp;&nbsp;Inherited from <a href="pymt.ui.MTWidget-class.html">MTWidget</a></th></tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_get_visible"></a><span class="summary-sig-name">_get_visible</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pymt.ui-pysrc.html#MTWidget._get_visible">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_set_visible"></a><span class="summary-sig-name">_set_visible</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">visible</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pymt.ui-pysrc.html#MTWidget._set_visible">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
@@ -185,7 +219,8 @@ pyglet.event.EventDispatcher --+
         <span class="summary-sig-arg">prop</span>,
         <span class="summary-sig-arg">to</span>,
         <span class="summary-sig-arg">timestep</span>,
-        <span class="summary-sig-arg">length</span>)</span></td>
+        <span class="summary-sig-arg">length</span>,
+        <span class="summary-sig-arg">func</span>=<span class="summary-sig-default">&lt;function ramp at 0x287b8c0&gt;</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="pymt.ui-pysrc.html#MTWidget.add_animation">source&nbsp;code</a></span>
             
@@ -202,9 +237,44 @@ pyglet.event.EventDispatcher --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a name="add_widget"></a><span class="summary-sig-name">add_widget</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">w</span>)</span></td>
+        <span class="summary-sig-arg">w</span>,
+        <span class="summary-sig-arg">front</span>=<span class="summary-sig-default">True</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="pymt.ui-pysrc.html#MTWidget.add_widget">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="bring_to_front"></a><span class="summary-sig-name">bring_to_front</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pymt.ui-pysrc.html#MTWidget.bring_to_front">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="consumes_event"></a><span class="summary-sig-name">consumes_event</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">x</span>,
+        <span class="summary-sig-arg">y</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pymt.ui-pysrc.html#MTWidget.consumes_event">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -234,9 +304,41 @@ pyglet.event.EventDispatcher --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a name="hide"></a><span class="summary-sig-name">hide</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pymt.ui-pysrc.html#MTWidget.hide">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a name="init"></a><span class="summary-sig-name">init</span>(<span class="summary-sig-arg">self</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="pymt.ui-pysrc.html#MTWidget.init">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="on_draw"></a><span class="summary-sig-name">on_draw</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pymt.ui-pysrc.html#MTWidget.on_draw">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -438,10 +540,42 @@ pyglet.event.EventDispatcher --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a name="show"></a><span class="summary-sig-name">show</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pymt.ui-pysrc.html#MTWidget.show">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a name="start_animations"></a><span class="summary-sig-name">start_animations</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">label</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">all</code><code class="variable-quote">'</code></span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="pymt.ui-pysrc.html#MTWidget.start_animations">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="update_event_registration"></a><span class="summary-sig-name">update_event_registration</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="pymt.ui-pysrc.html#MTWidget.update_event_registration">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -524,6 +658,16 @@ pyglet.event.EventDispatcher --+
       </p>
     </td>
   </tr>
+<tr bgcolor="#e8f0f8" >
+  <th colspan="2" class="group-header"
+    >&nbsp;&nbsp;&nbsp;&nbsp;Inherited from <a href="pymt.ui.MTWidget-class.html">MTWidget</a></th></tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="pymt.ui.MTWidget-class.html#visible" class="summary-name">visible</a>
+    </td>
+  </tr>
 </table>
 <!-- ==================== METHOD DETAILS ==================== -->
 <a name="section-MethodDetails"></a>
@@ -551,7 +695,8 @@ pyglet.event.EventDispatcher --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">parent</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">parent</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">xml</span>=<span class="sig-default">None</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -559,10 +704,7 @@ pyglet.event.EventDispatcher --+
     </td>
   </tr></table>
   
-  <pre class="literalblock">
-x.__init__(...) initializes x; see x.__class__.__doc__ for signature
-
-</pre>
+  x.__init__(...) initializes x; see x.__class__.__doc__ for signature
   <dl class="fields">
     <dt>Overrides:
         object.__init__
@@ -603,7 +745,7 @@ x.__init__(...) initializes x; see x.__class__.__doc__ for signature
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jan 12 16:09:29 2009
+    Generated by Epydoc 3.0.1 on Wed Jan 14 23:47:32 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -483,7 +483,6 @@ pyglet.event.EventDispatcher --+
       <code>WINDOW_STYLE_DIALOG</code>,
       <code>WINDOW_STYLE_TOOL</code>,
       <code>event_types</code>,
-      <code>has_exit</code>,
       <code>invalid</code>
       </p>
     <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>pyglet.window.BaseWindow</code></b> (private):
@@ -513,6 +512,31 @@ pyglet.event.EventDispatcher --+
     <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>pyglet.event.EventDispatcher</code></b> (private):
       <code>_event_stack</code>
       </p></div>
+    </td>
+  </tr>
+</table>
+<!-- ==================== INSTANCE VARIABLES ==================== -->
+<a name="section-InstanceVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>pyglet.window.BaseWindow</code></b>:
+      <code>has_exit</code>
+      </p>
     </td>
   </tr>
 </table>
@@ -589,64 +613,46 @@ pyglet.event.EventDispatcher --+
     </td>
   </tr></table>
   
-  <pre class="literalblock">
-Create a window.
-
-All parameters are optional, and reasonable defaults are assumed
-where they are not specified.
-
-The `display`, `screen`, `config` and `context` parameters form
-a hierarchy of control: there is no need to specify more than 
-one of these.  For example, if you specify `screen` the `display`
-will be inferred, and a default `config` and `context` will be
-created.
-
-`config` is a special case; it can be a template created by the
+  <p>Create a window.</p>
+<p>All parameters are optional, and reasonable defaults are assumed
+where they are not specified.</p>
+<p>The display, screen, config and context parameters form
+a hierarchy of control: there is no need to specify more than
+one of these.  For example, if you specify screen the display
+will be inferred, and a default config and context will be
+created.</p>
+<p>config is a special case; it can be a template created by the
 user specifying the attributes desired, or it can be a complete
-`config` as returned from `Screen.get_matching_configs` or similar.
-
-The context will be active as soon as the window is created, as if
-`switch_to` was just called.
-
-:Parameters:
-    `width` : int
-        Width of the window, in pixels.  Not valid if `fullscreen`
-        is True.  Defaults to 640.
-    `height` : int
-        Height of the window, in pixels.  Not valid if `fullscreen`
-        is True.  Defaults to 480.
-    `caption` : str or unicode
-        Initial caption (title) of the window.  Defaults to
-        ``sys.argv[0]``.
-    `resizable` : bool
-        If True, the window will be resizable.  Defaults to False.
-    `style` : int
-        One of the ``WINDOW_STYLE_*`` constants specifying the
-        border style of the window.
-    `fullscreen` : bool
-        If True, the window will cover the entire screen rather
-        than floating.  Defaults to False.
-    `visible` : bool
-        Determines if the window is visible immediately after
-        creation.  Defaults to True.  Set this to False if you
-        would like to change attributes of the window before
-        having it appear to the user.
-    `vsync` : bool
-        If True, buffer flips are synchronised to the primary screen's
-        vertical retrace, eliminating flicker.
-    `display` : `Display`
-        The display device to use.  Useful only under X11.
-    `screen` : `Screen`
-        The screen to use, if in fullscreen.
-    `config` : `pyglet.gl.Config`
-        Either a template from which to create a complete config,
-        or a complete config.
-    `context` : `pyglet.gl.Context`
-        The context to attach to this window.  The context must
-        not already be attached to another window.
-
-</pre>
+config as returned from <code class="link">Screen.get_matching_configs</code> or similar.</p>
+<p>The context will be active as soon as the window is created, as if
+switch_to was just called.</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>width</code></strong> - Width of the window, in pixels.  Not valid if fullscreen
+is True.  Defaults to 640.</li>
+        <li><strong class="pname"><code>height</code></strong> - Height of the window, in pixels.  Not valid if fullscreen
+is True.  Defaults to 480.</li>
+        <li><strong class="pname"><code>caption</code></strong> - Initial caption (title) of the window.  Defaults to
+<tt class="rst-docutils literal"><span class="pre">sys.argv[0]</span></tt>.</li>
+        <li><strong class="pname"><code>resizable</code></strong> - If True, the window will be resizable.  Defaults to False.</li>
+        <li><strong class="pname"><code>style</code></strong> - One of the <tt class="rst-docutils literal"><span class="pre">WINDOW_STYLE_*</span></tt> constants specifying the
+border style of the window.</li>
+        <li><strong class="pname"><code>fullscreen</code></strong> - If True, the window will cover the entire screen rather
+than floating.  Defaults to False.</li>
+        <li><strong class="pname"><code>visible</code></strong> - Determines if the window is visible immediately after
+creation.  Defaults to True.  Set this to False if you
+would like to change attributes of the window before
+having it appear to the user.</li>
+        <li><strong class="pname"><code>vsync</code></strong> - If True, buffer flips are synchronised to the primary screen's
+vertical retrace, eliminating flicker.</li>
+        <li><strong class="pname"><code>display</code></strong> - The display device to use.  Useful only under X11.</li>
+        <li><strong class="pname"><code>screen</code></strong> - The screen to use, if in fullscreen.</li>
+        <li><strong class="pname"><code>config</code></strong> - Either a template from which to create a complete config,
+or a complete config.</li>
+        <li><strong class="pname"><code>context</code></strong> - The context to attach to this window.  The context must
+not already be attached to another window.</li>
+    </ul></dd>
     <dt>Overrides:
         object.__init__
         <dd><em class="note">(inherited documentation)</em></dd>
@@ -686,7 +692,7 @@ The context will be active as soon as the window is created, as if
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jan 12 16:09:28 2009
+    Generated by Epydoc 3.0.1 on Wed Jan 14 23:47:31 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

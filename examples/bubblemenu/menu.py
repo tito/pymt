@@ -249,22 +249,39 @@ class MTMenuNode(MTBubbleWidget):
 
 xmlmenu = """<?xml version="1.0"?>
 <MTMenuNode label="'Home'" icon="'home'" pos="(200,200)">
+
     <MTMenuNode label="'Games'" icon="'applications-games'">
+
         <MTMenuNode label="'ColorPicker'" icon="'gtk-color-picker'"
         action="'menu_action_game_colorpicker'"/>
+
+        <MTMenuNode label="'ColorPicker'" icon="'images'"
+        action="'menu_action_game_scatterimages'"/>
+
+
+
     </MTMenuNode>
+
     <MTMenuNode label="'Multimedia'" icon="'applications-multimedia'"/>
+
     <MTMenuNode label="'Settings'" icon="'preferences-desktop'">
+
         <MTMenuNode label="'Sound volume'" icon="'audio-volume-high'"
         action="'menu_action_volume'"/>
+
     </MTMenuNode>
+
     <MTMenuNode label="'Quit'" icon="'application-exit'"
     action="'menu_action_quit'"/>
+
 </MTMenuNode>
 """
 
 def menu_action_quit(node):
     sys.exit(0)
+
+
+
 
 def menu_action_volume(node):
     if node._iconname == 'audio-volume-high':
@@ -273,15 +290,31 @@ def menu_action_volume(node):
         node.icon = 'audio-volume-high'
     return False
 
+import subprocess
 def menu_action_game_colorpicker(node):
-    pass
+    stopTUIO()
+    os.chdir('../')
+    proc = subprocess.Popen(['python','glPaint.py'])
+    os.chdir('bubblemenu')
+    proc.wait()
+    startTUIO()	
+
+
+
+def menu_action_game_scatterimages(node):
+    stopTUIO()
+    os.chdir('../pictures')
+    proc = subprocess.Popen(['python','scatter.py'])
+    os.chdir('../bubblemenu')
+    proc.wait()
+    startTUIO()	
 
 if __name__ == '__main__':
 
     MTWidgetFactory.register('MTMenuNode', MTMenuNode)
 
     w = MTWindow(color=(0.16,0.223,0.313,1.0))
-    #w.set_fullscreen()
+    w.set_fullscreen()
     menu = XMLWidget(xml=xmlmenu)
     w.add_widget(menu)
     w.add_widget(MTDisplay())

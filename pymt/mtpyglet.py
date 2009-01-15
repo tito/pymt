@@ -93,14 +93,14 @@ class TUIOGetter():
 		self.startListening()
 
     def startListening(self):
-        print "starting ", self
+        #print "starting ", self
         osc.init()
         osc.listen('127.0.0.1', self.port)
         osc.bind(self.osc_2dcur_Callback, '/tuio/2Dcur')
         osc.bind(self.osc_2dobj_Callback, '/tuio/2Dobj')
 
     def stopListening(self):
-		print "stopping ", self
+		#print "stopping ", self
 		osc.dontListen()	
 
     def close(self):
@@ -211,7 +211,7 @@ def stopTUIO():
    global TUIO_listeners
    for listener in TUIO_listeners:
       listener.stopListening()
-   time.sleep(0.3)
+   #time.sleep(0.1)
 def startTUIO():
    global TUIO_listeners
    for listener in TUIO_listeners:

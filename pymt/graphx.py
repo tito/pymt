@@ -99,35 +99,44 @@ def drawLine(points, width=5.0, color=(1.0,1.0,1.0)):
 
 ### FBO, PBO, opengl stuff
 class Fbo:
-    def __init__(self, size=(1024,1024)):
-        self.framebuffer = c_uint(0)
-        self.texture = c_uint(0)
-
-        glGenFramebuffersEXT(1,byref(self.framebuffer))
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
-
-        glGenTextures(1, byref(self.texture))
-        glBindTexture(GL_TEXTURE_2D, self.texture)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size[0], size[1], 0,GL_RGB, GL_UNSIGNED_BYTE, 0)
-        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, self.texture, 0)
-        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0)
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0)
-
-        status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT)
-        if status != GL_FRAMEBUFFER_COMPLETE_EXT:
-            print 'Error in framebuffer activation'
-
-	def __del__(self):
-		glDeleteFramebuffersEXT(1, byref(self.framebuffer))
-		glDeleteRenderbuffersEXT(1, byref(self.depthbuffer))
-
 	def bind(self):
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
 		glPushAttrib(GL_VIEWPORT_BIT)
 		glViewport(0,0,self.size[0], self.size[1])
-
+	
 	def release(self):
 		glPopAttrib()
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0)
+	
+	def __init__(self, size=(1024,1024)):
+		self.framebuffer = c_uint(0)
+		self.depthbuffer = c_uint(0)
+		self.texture = c_uint(0)
+		self.size=size
+		
+		glGenFramebuffersEXT(1,byref(self.framebuffer))
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
+		
+		glGenRenderbuffersEXT(1, byref(self.depthbuffer));
+		glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, self.depthbuffer)
+		glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, size[0], size[1])
+		glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, self.depthbuffer)
+		
+		glGenTextures (1, byref(self.texture))
+		glBindTexture (GL_TEXTURE_2D, self.texture)
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, size[0], size[1], 0,GL_RGB, GL_UNSIGNED_BYTE, 0)
+		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, self.texture, 0)
+		glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, 0)
+		glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0)
+								
+		status = glCheckFramebufferStatusEXT (GL_FRAMEBUFFER_EXT);
+		if status != GL_FRAMEBUFFER_COMPLETE_EXT:
+			print "Error in framebuffer activation"
+	
+	def __del__(self):
+		glDeleteFramebuffersEXT(1, byref(self.framebuffer))
+		glDeleteRenderbuffersEXT(1, byref(self.depthbuffer))
+		
+

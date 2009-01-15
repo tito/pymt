@@ -256,8 +256,17 @@ class MTWindow(TouchWindow):
        for generating touch event with mouse.
        Use MTWindow as main window application.
     """
-    def __init__(self, view=None, fullscreen=False, config=None,
-                 color=(.3,.3,.3,1.0)):
+    def __init__(self, view=None, fullscreen=False, config=None, color=(.3,.3,.3,1.0)):
+        self.color = color
+        self.root = MTWidget()
+
+        self.root.parent = self
+        if view:
+            self.root.add_widget(view)
+
+        self.sim = MTSimulator(self)
+        self.root.add_widget(self.sim)
+
         try:
             if not config:
                 config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True, vsync=1)
@@ -267,18 +276,13 @@ class MTWindow(TouchWindow):
             if fullscreen:
                 self.set_fullscreen()
 
-        self.color = color
-        self.root = MTWidget()
-        self.root.parent = self
-        if view:
-            self.root.add_widget(view)
 
-        self.sim = MTSimulator(self)
-        self.root.add_widget(self.sim)
+
+
 
     def add_widget(self, w):
         self.root.add_widget(w)
-
+        self.sim.bring_to_front()
     def on_draw(self):
         glClearColor(*self.color)
         self.clear()

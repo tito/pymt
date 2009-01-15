@@ -28,7 +28,7 @@ from threading import Lock
 # list upon creation
 tuio_event_q = Queue()
 touch_event_listeners = []
-
+TUIO_listeners = []
 
 def intersection(set1, set2):
     return filter(lambda s:s in set2, set1)
@@ -87,13 +87,25 @@ the  righ parser on the idle function
 class TUIOGetter():
 
     def __init__(self,  ip='127.0.0.1', port=3333):
+		global TUIO_listeners
+		TUIO_listeners.append(self)
+		self.port = port
+		self.startListening()
+
+    def startListening(self):
+        print "starting ", self
         osc.init()
-        osc.listen('127.0.0.1', port)
+        osc.listen('127.0.0.1', self.port)
         osc.bind(self.osc_2dcur_Callback, '/tuio/2Dcur')
         osc.bind(self.osc_2dobj_Callback, '/tuio/2Dobj')
 
+    def stopListening(self):
+		print "stopping ", self
+		osc.dontListen()	
+
     def close(self):
         osc.dontListen()
+        TUIO_listeners.remove(self)
 
     def osc_2dcur_Callback(self, *incoming):
         global tuio_event_q
@@ -194,7 +206,16 @@ class TouchEventLoop(pyglet.app.EventLoop):
             window.flip()
 
         return 0
-
+import time
+def stopTUIO():
+   global TUIO_listeners
+   for listener in TUIO_listeners:
+      listener.stopListening()
+   time.sleep(0.3)
+def startTUIO():
+   global TUIO_listeners
+   for listener in TUIO_listeners:
+      listener.startListening()
 
 #any window that inherhits this or an instance will have event handlers triggered on TUIO touch events
 class TouchWindow(pyglet.window.Window):
@@ -210,6 +231,7 @@ class TouchWindow(pyglet.window.Window):
         self.register_event_type('on_object_down')
 
         touch_event_listeners.append(self)
+
 
     def on_touch_down(self, touches, touchID, x, y):
         pass

@@ -194,6 +194,12 @@ class MTWidget(pyglet.event.EventDispatcher):
         except:
             pass
 
+    def remove_widget(self, w):
+        try:
+            self.children.remove(w)
+        except:
+            pass
+
     def add_animation(self, label, prop, to , timestep, length,
                       func=AnimationAlpha.ramp):
         anim = Animation(self, label, prop, to, timestep, length, func=func)

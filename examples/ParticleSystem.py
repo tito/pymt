@@ -2,14 +2,14 @@ from pymt import *
 import random
 
 class ParticleObject(MTWidget):
-    def __init__(self, parent=None, pos=(0,0), size=(15,15), color=(1,1,1),
+    def __init__(self, parent=None, pos=(0,0), size=(20,20), color=(1,1,1),
                  rotation=45, **kargs):
         MTWidget.__init__(self, parent)
         self.x, self.y = pos
         self.size = size
-        self.color = color
+        self.opacity = 1		
+        self.color = (random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1), self.opacity)
         self.rotation = 0
-        self.opacity = 1
         self.zoom = 1
 
     def animate(self):
@@ -18,7 +18,7 @@ class ParticleObject(MTWidget):
         self.from_y = self.y
         self.to_x = int(random.uniform(self.x-100, self.x+100))
         self.to_y = int(random.uniform(self.y-100, self.y+100))
-        self.length = random.uniform(0.2, 0.25)
+        self.length = random.uniform(0.2, 1.0)
         self.timestep = 1.0/60
         self.frame = 0
 
@@ -35,7 +35,6 @@ class ParticleObject(MTWidget):
     def draw(self):
         if not self.visible:
             return
-        glColor4f(random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1), self.opacity)
         drawRectangle((self.x, self.y), self.size)
 
     def on_draw(self):
@@ -45,6 +44,7 @@ class ParticleObject(MTWidget):
         glScalef(self.zoom, self.zoom, 1)
         glTranslatef(-self.x, -self.y, 0)
         glTranslatef(-self.size[0]/2, -self.size[1]/2, 0)
+        glColor4f(*self.color)		
         self.draw()
         glPopMatrix()
 
@@ -52,7 +52,7 @@ class ParticleObject(MTWidget):
         self.hide()
 
 class ParticleEngine(MTWidget):
-    def __init__(self, parent=None, max=100, **kargs):
+    def __init__(self, parent=None, max=150, **kargs):
         MTWidget.__init__(self,parent,**kargs)
 
         print 'Particle Engine Initialized'
@@ -93,12 +93,12 @@ class ParticleShow(MTWindow):
 
     def on_touch_down(self, touches, touchID, x,y):
         print 'Background Touched'
-        self.pe.generate((x, y), 5)
+        self.pe.generate((x, y), 30)
         return True
 
     def on_touch_move(self, touches, touchID, x,y):
         print 'Background Touched'
-        self.pe.generate((x, y), 5)
+        self.pe.generate((x, y), 30)
         return True
 
 #start the application (inits and shows all windows)

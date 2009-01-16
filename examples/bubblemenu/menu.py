@@ -6,13 +6,18 @@ class MTBubbleWidget(MTWidget):
     def __init__(self, parent=None, pos=(0,0), color=(0.6,0.6,0.6,1.0), **kargs):
         self.x, self.y = pos
         self.color  = color
-        img         = pyglet.image.load('menu-bubble.png')
-        self.image  = pyglet.sprite.Sprite(img)
-        assert self.image.width == self.image.height
         MTWidget.__init__(self,parent, **kargs)
 
+        self._scale  = 1
         self._icon   = None
         self._iconname = ''
+        self._opacity = 0
+        self.radius = 45
+
+        self.label_obj          = Label(font_name='Lucida', font_size=10, color=(10,10,10,150))
+        self.label_obj.anchor_x = 'center'
+        self.label_obj.anchor_y = 'center'
+        self.label              = 'No label'
 
         # prepare animations
         self.anim_length = 10
@@ -23,36 +28,36 @@ class MTBubbleWidget(MTWidget):
         self.add_animation('hide', 'scale', 0, self.anim_precision,
                            self.anim_length, func=AnimationAlpha.bubble)
         self.add_animation('hide', 'opacity', 0, self.anim_precision, self.anim_length)
-        self.add_animation('show_all', 'scale', 1, self.anim_precision, self.anim_length, func=AnimationAlpha.ramp)
-        self.add_animation('show_all', 'opacity', 255, self.anim_precision, self.anim_length)
-        self.add_animation('hide_all', 'scale', 0, self.anim_precision, self.anim_length, func=AnimationAlpha.ramp)
-        self.add_animation('hide_all', 'opacity', 0, self.anim_precision, self.anim_length)
 
     def draw(self):
         if not self.visible:
             return
-        self.image.x = self.x - self.image.width / 2
-        self.image.y = self.y - self.image.height / 2
-        self.image.draw()
+        glColor4f(.1, .1, .1, self.opacity / 255)
+        drawCircle((self.x+1, self.y-1), self.radius * self.scale)
+        glColor4d(1, 1, 1, self.opacity / 255)
+        drawCircle((self.x, self.y), self.radius * self.scale)
         if self.icon:
             self.icon.x = self.x - self.icon.width / 2
             self.icon.y = self.y - self.icon.height / 2
             self.icon.draw()
+        self.label_obj.x, self.label_obj.y = self.x, self.y - self.radius
+        drawRoundedRectangle(
+            (self.label_obj.x - (self.label_obj.content_width+5) / 2+1,
+             self.label_obj.y - self.label_obj.content_height / 2-3),
+            (self.label_obj.content_width+5, self.label_obj.content_height),
+            color=(.1,.1,.1,self._opacity))
+        drawRoundedRectangle(
+            (self.label_obj.x - (self.label_obj.content_width+5) / 2,
+             self.label_obj.y - self.label_obj.content_height / 2-2),
+            (self.label_obj.content_width+5, self.label_obj.content_height),
+            color=(1,1,1,self._opacity))
+        self.label_obj.draw()
 
     def collidePoint(self, x, y):
-        return Vector.distance(Vector(x, y), Vector(self.x, self.y)) < self.image.width / 2
-
-    def show_all(self):
-        MTWidget.show(self)
-        self.start_animations('show_all')
-
-    def hide_all(self):
-        self.start_animations('hide_all')
+        return Vector.distance(Vector(x, y), Vector(self.x, self.y)) < self.radius
 
     def on_animation_complete(self, anim):
-        if anim.label == 'hide_all':
-            MTWidget.hide(self)
-        elif anim.label == 'hide':
+        if anim.label == 'hide':
             self.visible = False
 
     def show(self):
@@ -73,26 +78,20 @@ class MTBubbleWidget(MTWidget):
     pos = property(_get_pos, _set_pos)
 
     def _set_scale(self, scale):
-        self.image.scale = scale
+        self._scale = scale
         if self.icon:
             self.icon.scale = scale
     def _get_scale(self):
-        return self.image.scale
+        return self._scale
     scale = property(_get_scale, _set_scale)
 
     def _set_opacity(self, opacity):
-        self.image.opacity = opacity
+        self._opacity = opacity
         if self.icon:
             self.icon.opacity = opacity
     def _get_opacity(self):
-        return self.image.opacity
+        return self._opacity
     opacity = property(_get_opacity, _set_opacity)
-
-    def _set_width(self, width):
-        self.image.width = width
-    def _get_width(self):
-        return self.image.width
-    width = property(_get_width, _set_width)
 
     def _set_icon(self, icon):
         if icon is None:
@@ -107,7 +106,6 @@ class MTBubbleWidget(MTWidget):
     icon = property(_get_icon, _set_icon)
 
 class MTMenuNode(MTBubbleWidget):
-    STATE_ = 1
 
     def __init__(self, parent=None, pos=(0,0), size=30, color=(1,1,1,1)):
         MTBubbleWidget.__init__(self,
@@ -117,10 +115,7 @@ class MTMenuNode(MTBubbleWidget):
         self.move_track         = None
         self.move_action        = False
         self.action             = None
-        self.label_obj          = Label(font_size=10, )
-        self.label_obj.anchor_x = 'center'
-        self.label_obj.anchor_y = 'center'
-        self.label              = 'No label'
+        self.margin             = 15
 
     def add_widget(self, child):
         child.visible = False
@@ -129,8 +124,6 @@ class MTMenuNode(MTBubbleWidget):
     def draw(self):
         if self.visible:
             MTBubbleWidget.draw(self)
-            self.label_obj.x, self.label_obj.y = self.x, self.y - self.width / 2
-            #self.label_obj.draw()
         for c in self.children:
             if c.visible:
                 c.dispatch_event('on_draw')
@@ -211,8 +204,10 @@ class MTMenuNode(MTBubbleWidget):
         i = 0
         start = math.pi / 2 # Orientation
         for c in self.children:
-            x = self.x + math.sin(start + i * math.pi * 2 / max) * self.width
-            y = self.y + math.cos(start + i * math.pi * 2 / max) * self.width
+            x = self.x + math.sin(start + i * math.pi * 2 / max) * \
+                    (self.radius * 2 + self.margin)
+            y = self.y + math.cos(start + i * math.pi * 2 / max) * \
+                    (self.radius * 2 + self.margin)
             c.pos = (x, y)
             i += 1
 
@@ -280,9 +275,6 @@ xmlmenu = """<?xml version="1.0"?>
 def menu_action_quit(node):
     sys.exit(0)
 
-
-
-
 def menu_action_volume(node):
     if node._iconname == 'audio-volume-high':
         node.icon = 'audio-volume-muted'
@@ -297,9 +289,7 @@ def menu_action_game_colorpicker(node):
     proc = subprocess.Popen(['python','glPaint.py'])
     os.chdir('bubblemenu')
     proc.wait()
-    startTUIO()	
-
-
+    startTUIO()
 
 def menu_action_game_scatterimages(node):
     stopTUIO()
@@ -307,7 +297,7 @@ def menu_action_game_scatterimages(node):
     proc = subprocess.Popen(['python','scatter.py'])
     os.chdir('../bubblemenu')
     proc.wait()
-    startTUIO()	
+    startTUIO()
 
 if __name__ == '__main__':
 

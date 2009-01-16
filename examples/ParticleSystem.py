@@ -13,9 +13,6 @@ class particle(MTRectangularWidget):
         self.rotation = rotation
         self.zoom = 1.0
 
-    def __del__(self):
-        print "deleted obj"
-		
     def draw(self):
         enable_blending()	
         glColor4d(self.red,self.green,self.blue,self.opacity)
@@ -32,7 +29,7 @@ class particle(MTRectangularWidget):
         glPopMatrix()
 		
     def on_animation_complete(self, anim):
-        self.__del__()
+        self.parent.remove_widget(self)
         
 
 
@@ -85,4 +82,3 @@ if __name__ == '__main__':
 	
 
 	runTouchApp()
-

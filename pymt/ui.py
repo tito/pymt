@@ -212,6 +212,10 @@ class MTWidget(pyglet.event.EventDispatcher):
                 anim.reset()
                 anim.start()
 
+    def remove_animation(self, label):
+        for anim in self.animations:
+            if anim.label == label:
+                self.animations.remove(anim)
 
     #hack for now to allow consumtion of events..really we need to work out a different way of propagatiing the events, rather than dispatching for each child
     def consumes_event(self, x,y):

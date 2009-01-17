@@ -1,6 +1,8 @@
 from pymt import *
 import random
 
+particle_type = "Square"
+
 class ParticleObject(MTWidget):
     def __init__(self, parent=None, pos=(0,0), size=(20,20), color=(1,1,1),
                  rotation=45, **kargs):
@@ -33,10 +35,15 @@ class ParticleObject(MTWidget):
             self.hide()
 
     def draw(self):
+        global particle_type
         if not self.visible:
             return
-        drawRectangle((self.x, self.y), self.size)
-
+        glColor4f(*self.color)
+        if particle_type == "Square":
+            drawRectangle((self.x, self.y), self.size)
+        else:
+            drawCircle ((self.x, self.y),10)		
+		
     def on_draw(self):
         glPushMatrix()
         glTranslatef(self.x, self.y, 0)
@@ -44,7 +51,6 @@ class ParticleObject(MTWidget):
         glScalef(self.zoom, self.zoom, 1)
         glTranslatef(-self.x, -self.y, 0)
         glTranslatef(-self.size[0]/2, -self.size[1]/2, 0)
-        glColor4f(*self.color)		
         self.draw()
         glPopMatrix()
 
@@ -54,8 +60,7 @@ class ParticleObject(MTWidget):
 class ParticleEngine(MTWidget):
     def __init__(self, parent=None, max=150, **kargs):
         MTWidget.__init__(self,parent,**kargs)
-
-        print 'Particle Engine Initialized'
+        #print 'Particle Engine Initialized'
         self.max        = max
         self.particles  = {}
         for i in range(self.max):
@@ -85,24 +90,54 @@ class ParticleEngine(MTWidget):
                 self.particles[i].advance_frame(dt)
         pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
 
-class ParticleShow(MTWindow):
-    def __init__(self):
-        MTWindow.__init__(self)
-        self.pe = ParticleEngine()
-        self.add_widget(self.pe)
+class ParticleShow(MTRectangularWidget):
+    def __init__(self, parent=None, pos=(0, 0), size=(100, 100), color=(0.6, 0.6, 0.6, 1.0), **kargs):
+        MTRectangularWidget.__init__(self, parent, (0,0),(1440,900),(0,0,0,0),**kargs)
 
     def on_touch_down(self, touches, touchID, x,y):
-        print 'Background Touched'
-        self.pe.generate((x, y), 30)
+        global pe
+        #print 'Background Touched'
+        pe.generate((x, y), 30)
         return True
 
     def on_touch_move(self, touches, touchID, x,y):
-        print 'Background Touched'
-        self.pe.generate((x, y), 30)
+        global pe	
+        #print 'Background Touched'
+        pe.generate((x, y), 30)
         return True
+		
+class SetButton(MTButton):
+    def __init__(self, parent=None, pos=(0, 0), size=(100, 100), label="Hello",**kargs):
+        MTButton.__init__(self, parent, pos, size, label,**kargs)
+        self.label = label		
+		
+    def on_touch_down(self, touches, touchID, x,y):
+        global  particle_type,pe,back	  
+        if self.collidePoint(x,y):
+            self.state = ('down', touchID)
+            if self.label == "Squares":
+                back.remove_widget(pe)
+                particle_type = "Square"
+                pe = ParticleEngine()
+                back.add_widget(pe)
+            else:
+                back.remove_widget(pe)			
+                particle_type = "Circles"
+                pe = ParticleEngine()
+                back.add_widget(pe)				
+            return True     
+        
 
 #start the application (inits and shows all windows)
 if __name__ == '__main__':
-    w = ParticleShow()
+    w = MTWindow()
+    back = ParticleShow()
+    w.add_widget(back)
+    pe = ParticleEngine()
+    back.add_widget(pe)
+    but1 = SetButton(back,(20,40),(80,50),'Squares')
+    w.add_widget(but1)
+    but2 = SetButton(back,(20,100),(80,50),'Circles')
+    w.add_widget(but2)
     w.set_fullscreen()
     runTouchApp()

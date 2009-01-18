@@ -1,7 +1,15 @@
+# PYMT Plugin integration
+IS_PYMT_PLUGIN = True
+PLUGIN_TITLE = 'Particles'
+PLUGIN_AUTHOR = 'Sharath'
+PLUGIN_DESCRIPTION = 'All stars are coming under touches!'
+
 from pymt import *
 import random
 
 particle_type = "Square"
+back = pe = but1 = but2 = None
+
 
 class ParticleObject(MTWidget):
     def __init__(self, parent=None, pos=(0,0), size=(20,20), color=(1,1,1),
@@ -126,11 +134,9 @@ class SetButton(MTButton):
                 pe = ParticleEngine()
                 back.add_widget(pe)				
             return True     
-        
 
-#start the application (inits and shows all windows)
-if __name__ == '__main__':
-    w = MTWindow()
+def pymt_plugin_activate(w):
+    global back, pe, but1, but2
     back = ParticleShow()
     w.add_widget(back)
     pe = ParticleEngine()
@@ -139,5 +145,18 @@ if __name__ == '__main__':
     w.add_widget(but1)
     but2 = SetButton(back,(20,100),(80,50),'Circles')
     w.add_widget(but2)
+
+def pymt_plugin_deactivate(w):
+    global back, pe, but1, but2
+    w.remove_widget(but2)
+    w.remove_widget(but1)
+    w.remove_widget(pe)
+    w.remove_widget(back)
+
+#start the application (inits and shows all windows)
+if __name__ == '__main__':
+    w = MTWindow()
     w.set_fullscreen()
+    pymt_plugin_activate(w)
     runTouchApp()
+    pymt_plugin_deactivate(w)

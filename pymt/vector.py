@@ -41,7 +41,10 @@ class Vector(object):
 
     def __str__(self):
         return '(%.1f,%.1f)' % (self.x, self.y)
-    
+
+    def length(self):
+        return Vector.length(self)
+
     def normalized(self):
         l = length(self)
         return Vector(self.x /l , self.y / l)

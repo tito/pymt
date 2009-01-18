@@ -206,12 +206,12 @@ class TouchEventLoop(pyglet.app.EventLoop):
             window.flip()
 
         return 0
-import time
+
 def stopTUIO():
    global TUIO_listeners
    for listener in TUIO_listeners:
       listener.stopListening()
-   #time.sleep(0.1)
+
 def startTUIO():
    global TUIO_listeners
    for listener in TUIO_listeners:

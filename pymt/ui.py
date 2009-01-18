@@ -289,6 +289,10 @@ class MTWindow(TouchWindow):
     def add_widget(self, w):
         self.root.add_widget(w)
         self.sim.bring_to_front()
+
+    def remove_widget(self, w):
+        self.root.remove_widget(w)
+
     def on_draw(self):
         glClearColor(*self.color)
         self.clear()
@@ -343,7 +347,8 @@ class MTDisplay(MTWidget):
         self.touches[touchID] = (x,y)
 
     def on_touch_up(self, touches, touchID, x, y):
-        del self.touches[touchID]
+        if self.touches.has_key(touchID):
+            del self.touches[touchID]
 
 
 class MTContainer(MTWidget):
@@ -437,10 +442,12 @@ class MTRectangularWidget(MTWidget):
             return True
 
     def on_resize(self, w, h):
-        pass
+        for c in self.children:
+            c.dispatch_event('on_resize', w, h)
 
     def on_move(self, x, y):
-        pass
+        for c in self.children:
+            c.dispatch_event('on_move', x, y)
 
     def _set_x(self, x):
         self._x = x
@@ -595,7 +602,6 @@ class MTImageButton(MTButton):
         self.width          = self.image.width
         self.height         = self.image.height
         self.image.draw()
-
 
 
 class MTScatterWidget(MTRectangularWidget):

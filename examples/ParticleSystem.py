@@ -113,7 +113,7 @@ class SetButton(MTButton):
 		
     def on_touch_down(self, touches, touchID, x,y):
         global  particle_type,pe,back	  
-        if self.collidePoint(x,y):
+        if self.collide_point(x,y):
             self.state = ('down', touchID)
             if self.label == "Squares":
                 back.remove_widget(pe)

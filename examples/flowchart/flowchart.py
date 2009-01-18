@@ -41,12 +41,12 @@ class FlowchartObject(MTScatterWidget):
 	def find_target(self):
 		for target in FlowchartObject.line_targets:
 			if target != self:
-				if target.collidePoint(self.line_target[0],self.line_target[1]):
+				if target.collide_point(self.line_target[0],self.line_target[1]):
 					return target
 	
 	def on_touch_down(self, touches, touchID, x, y):
 		#if this is the third touch, start a new line
-		if (len(self.touches) == 2) and self.collidePoint(x,y):
+		if (len(self.touches) == 2) and self.collide_point(x,y):
 			self.mode = 'lineDrawing'
 			self.line_target = (x,y,touchID)
 		

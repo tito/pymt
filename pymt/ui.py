@@ -163,7 +163,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         pass
 
     def bring_to_front(self):
-        #remove it from wherever it is and add it back at the top
+        """Remove it from wherever it is and add it back at the top"""
         if self.parent:
             self.parent.children.remove(self)
             self.parent.children.append(self)
@@ -177,9 +177,9 @@ class MTWidget(pyglet.event.EventDispatcher):
     def on_draw(self):
         if not self.visible:
             return
+        self.draw()
         for w in self.children:
             w.dispatch_event('on_draw')
-        self.draw()
 
     def draw(self):
         pass
@@ -285,10 +285,6 @@ class MTWindow(TouchWindow):
             TouchWindow.__init__(self)
             if fullscreen:
                 self.set_fullscreen()
-
-
-
-
 
     def add_widget(self, w):
         self.root.add_widget(w)
@@ -433,13 +429,12 @@ class MTRectangularWidget(MTWidget):
         drawRectangle((self.x, self.y), (self.width, self.height))
 
     def consumes_event(self, x,y):
-        return self.collidePoint(x,y)
+        return self.collide_point(x,y)
 
-    def collidePoint(self, x, y):
+    def collide_point(self, x, y):
         if( x > self.x  and x < self.x + self.width and
            y > self.y and y < self.y + self.height  ):
             return True
-
 
     def on_resize(self, w, h):
         pass
@@ -518,7 +513,7 @@ class MTDragableWidget(MTRectangularWidget):
         self.state = ('normal', None)
 
     def on_touch_down(self, touches, touchID, x, y):
-        if self.collidePoint(x,y):
+        if self.collide_point(x,y):
             self.state = ('dragging', touchID, x, y)
             return True
 
@@ -542,7 +537,7 @@ class MTButton(MTRectangularWidget):
         self.clickActions   = []
         self.label_obj      = Label(font_size=10, bold=True, )
         self.label_obj.anchor_x = 'center'
-        self.label_obj.anchor_y = 'center'        
+        self.label_obj.anchor_y = 'center'
         self.label          = str(label)
 
     def get_label(self):
@@ -564,17 +559,17 @@ class MTButton(MTRectangularWidget):
         self.label_obj.draw()
 
     def on_touch_down(self, touches, touchID, x, y):
-        if self.collidePoint(x,y):
+        if self.collide_point(x,y):
             self.state = ('down', touchID)
             return True
 
     def on_touch_move(self, touches, touchID, x, y):
-        if self.state[1] == touchID and not self.collidePoint(x,y):
+        if self.state[1] == touchID and not self.collide_point(x,y):
             self.state = ('normal', 0)
             return True
 
     def on_touch_up(self, touches, touchID, x, y):
-        if self.state[1] == touchID and self.collidePoint(x,y):
+        if self.state[1] == touchID and self.collide_point(x,y):
             self.state = ('normal', 0)
             self.dispatch_event('on_click', touchID, x,y)
             return True
@@ -611,9 +606,6 @@ class MTScatterWidget(MTRectangularWidget):
         self.rotation = 0.0
         self.zoom  = 1.0
 
-    def draw(self):
-        MTRectangularWidget.draw(self)
-
     def on_draw(self):
         glPushMatrix()
         glTranslatef(self.x, self.y, 0)
@@ -625,7 +617,7 @@ class MTScatterWidget(MTRectangularWidget):
         self.draw()
         glPopMatrix()
 
-    def collidePoint(self, x,y):
+    def collide_point(self, x,y):
         radius = sqrt(self.width*self.width + self.height*self.height)/2 *self.zoom
         dist = Vector.length(Vector(self.x,self.y) - Vector(x,y))
         if radius >= dist:
@@ -633,11 +625,7 @@ class MTScatterWidget(MTRectangularWidget):
         else:
             return False
 
-
-
-
     def updateTouchPos(self, touchID, x,y):
-        #update touchPos        
         for i in range(len(self.touches)):
             if touchID == self.touches[i]["id"]:
                 self.touches[i]["pos"] = Vector(x,y)
@@ -653,13 +641,11 @@ class MTScatterWidget(MTRectangularWidget):
             self.touches[i]["start_pos"] = self.touches[i]["pos"]
 
     def on_touch_down(self, touches, touchID, x,y):
-        if not self.collidePoint(x,y):
+        if not self.collide_point(x,y):
             return
         self.bring_to_front()
         if not self.haveTouch(touchID):
             self.touches.append( {"id":touchID, "start_pos":Vector(x,y), "pos":Vector(x,y)} )
-        
-         
 
     def on_touch_move(self, touches, touchID, x,y):
         if not self.haveTouch(touchID):
@@ -678,7 +664,7 @@ class MTScatterWidget(MTRectangularWidget):
             p2_start = self.touches[1]["start_pos"]
             p1_now   = self.touches[0]["pos"]
             p2_now   = self.touches[1]["pos"]
-            
+
             #compute zoom
             old_dist = Vector.distance(p1_start, p2_start)
             new_dist = Vector.distance(p1_now, p2_now)
@@ -695,7 +681,7 @@ class MTScatterWidget(MTRectangularWidget):
             old_line = p1_start - p2_start
             new_line = p1_now - p2_now
             self.rotation -= Vector.angle(old_line, new_line)
-            
+
         self.save_status()
 
     def on_touch_up(self, touches, touchID, x,y):
@@ -709,10 +695,6 @@ class MTScatterWidget(MTRectangularWidget):
             del self.touches[index]
 
 
-
-
-
-
 class MTScatterImage(MTScatterWidget):
     """MTZoomableWidget is a zoomable Image widget"""
     def __init__(self, img_src,parent=None, pos=(0,0), size=(100,100)):
@@ -721,13 +703,12 @@ class MTScatterImage(MTScatterWidget):
         self.image  = pyglet.sprite.Sprite(img)
 
     def draw(self):
-        glPushMatrix()        
+        glPushMatrix()
         glTranslated(self.x, self.y, 0)
-        glScaled(float(self.width)/self.image.width, float(self.height)/self.image.height, 2.0)        
+        glScaled(float(self.width)/self.image.width, float(self.height)/self.image.height, 2.0)
         self.image.draw()
         glPopMatrix()
         #MTScatterWidget.draw(self)
-
 
 
 class MTSlider(MTRectangularWidget):
@@ -756,12 +737,12 @@ class MTSlider(MTRectangularWidget):
         drawRectangle(pos=(self.x+p2,self.y+p2), size=(w-self.padding, length) )
 
     def on_touch_down(self, touches, touchID, x, y):
-        if self.collidePoint(x,y):
+        if self.collide_point(x,y):
             self.touchstarts.append(touchID)
             return True
 
     def on_touch_move(self, touches, touchID, x, y):
-        if self.collidePoint(x,y) and (touchID in self.touchstarts):
+        if self.collide_point(x,y) and (touchID in self.touchstarts):
             self.value = (y-self.y)/ float(self.height) *self.max
             return True
 
@@ -807,7 +788,7 @@ class MTColorPicker(MTRectangularWidget):
                 self.update_color()
                 return True
 
-        if self.collidePoint(x,y):
+        if self.collide_point(x,y):
             self.touch_positions[touchID] = (x,y,touchID)
             return True
 

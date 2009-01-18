@@ -37,7 +37,6 @@ class Canvas(MTRectangularWidget):
         drawTexturedRectangle( self.fbo.texture, size=(self.width, self.height))
 
     def on_resize(self, w, h):
-        print 'on_resize()', w, h
         del self.fbo
         self.fbo = Fbo((w, h), push_viewport=False)
 

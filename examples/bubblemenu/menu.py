@@ -388,7 +388,6 @@ class MTInnerWindow(MTDragableWidget):
         self.wm_window.y = self.wm_close.y
 
     def on_resize(self, w, h):
-        print 'apzokdpaozkd, on_resize()'
         self.container.size = (w - 2 * self.style_border_width, h - self.style_title_height)
         self.update_icons_pos()
         self.container.dispatch_event('on_resize', w, h)

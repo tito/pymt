@@ -79,37 +79,34 @@ class FlowchartObject(MTScatterWidget):
 class Oval(FlowchartObject):
 	def draw(self):
 		glPushMatrix()
-		glTranslated(self.x, self.y, 0)
 		glScaled(self.width, self.height, 1.0)
 		enable_blending()
 		glColor4f(*self.color)
 		drawCircle(pos=(0.5,0.5), radius=0.5)
 		glPopMatrix()
-		drawLabel("Oval", pos=self.center)
+		drawLabel("Oval", pos=(self.width/2, self.height/2))
 
 class Box(FlowchartObject):
 	def draw(self):
 		glPushMatrix()
-		glTranslated(self.x, self.y, 0)
 		glScaled(self.width, self.height, 1.0)
 		enable_blending()
 		glColor4f(*self.color)
 		drawRectangle(pos=(0,0), size=(1,1))
 		glPopMatrix()
-		drawLabel("Box", pos=self.center)
+		drawLabel("Box", pos=(self.width/2, self.height/2))
 
 class Rhombus(FlowchartObject):
 	def draw(self):
 		glPushMatrix()
-		glTranslated(self.x, self.y, 0)
 		glScaled(self.width, self.height, 1.0)
 		glTranslated(0.5,0.5, 0)
 		glRotated(45, 0,0,1)
 		enable_blending()
 		glColor4f(*self.color)
-		drawRectangle(pos=(-0.5,-0.5), size=(1,1))
+		drawRectangle(pos=(-0.5,-0.5), size=(0.7,0.7))
 		glPopMatrix()
-		drawLabel("Rhombus", pos=self.center)
+		drawLabel("Rhombus", pos=(self.width/2, self.height/2*0.6))
 
 
 

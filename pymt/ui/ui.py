@@ -92,6 +92,11 @@ class MTRectangularWidget(MTWidget):
     def consumes_event(self, x,y):
         return self.collide_point(x,y)
 
+    def to_local(self,x,y):
+        lx = (x - self.x)
+        ly = (y - self.y)
+        return (lx,ly)
+
     def collide_point(self, x, y):
         if( x > self.x  and x < self.x + self.width and
            y > self.y and y < self.y + self.height  ):
@@ -267,22 +272,31 @@ class MTScatterWidget(MTRectangularWidget):
         self.touches = []
         self.rotation = 0.0
         self.zoom  = 1.0
+        self.testPos = Vector(0,0)
 
     def on_draw(self):
         glPushMatrix()
         glTranslatef(self.x, self.y, 0)
-        glRotated(self.rotation, 0,0,1)
+        glTranslatef(self.width/2, self.height/2, 0)
         glScalef(self.zoom, self.zoom, 1)
-        glTranslatef(-self.x, -self.y, 0)
+        glRotated(self.rotation, 0,0,1)
         glTranslatef(-self.width/2, -self.height/2, 0)
         glColor3d(1,0,0)
         self.draw()
         glPopMatrix()
 
+
+    def _set_size(self, size):
+        self.width, self.height = size
+        self.dispatch_event('on_resize', self.width, self.height)
+    def _get_size(self):
+        return (int(self.width*self.zoom), int(self.height*self.zoom))
+    size = property(_get_size, _set_size)
+
     def collide_point(self, x,y):
-        radius = sqrt(self.width*self.width + self.height*self.height)/2 *self.zoom
-        dist = Vector.length(Vector(self.x,self.y) - Vector(x,y))
-        if radius >= dist:
+        local_coords = self.to_local(x,y)
+        if local_coords[0] > 0 and local_coords[0] < self.width \
+           and local_coords[1] > 0 and local_coords[1] < self.height:
             return True
         else:
             return False
@@ -298,6 +312,17 @@ class MTScatterWidget(MTRectangularWidget):
                 return True
         return False
 
+    def to_local(self,x,y):
+        #local center x,y ..around which we rotate 
+        lcx = (x - self.x ) - self.width/2
+        lcy = (y - self.y ) - self.height/2        
+      
+        #rotate around the center(its moved center to 0,0) then move back to position
+        angle = radians(-self.rotation)
+        lx= ( lcx*cos(angle)-lcy*sin(angle) ) *1.0/self.zoom
+        ly= ( lcx*sin(angle)+lcy*cos(angle) ) *1.0/self.zoom
+        return (lx+ self.width/2,ly+ self.height/2)
+
     def save_status(self):
         for i in range(len(self.touches)):
             self.touches[i]["start_pos"] = self.touches[i]["pos"]
@@ -310,6 +335,8 @@ class MTScatterWidget(MTRectangularWidget):
             self.touches.append( {"id":touchID, "start_pos":Vector(x,y), "pos":Vector(x,y)} )
 
     def on_touch_move(self, touches, touchID, x,y):
+        self.testPos.x, self.testPos.y = self.to_local(x,y)
+        
         if not self.haveTouch(touchID):
             return
 
@@ -366,7 +393,7 @@ class MTScatterImage(MTScatterWidget):
 
     def draw(self):
         glPushMatrix()
-        glTranslated(self.x, self.y, 0)
+       
         glScaled(float(self.width)/self.image.width, float(self.height)/self.image.height, 2.0)
         self.image.draw()
         glPopMatrix()

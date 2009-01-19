@@ -5,7 +5,7 @@ from pyglet.media import *
 
 class MTVideoObj(MTScatterImage):
     """MTScatteredObj is a zoomable Image widget with a possibility of providing rotation during spawning"""
-    def __init__(self, img_src="..\pictures\drawing.jpg",parent=None, pos=(0,0), size=(0,0), rotation=0):
+    def __init__(self, img_src="../pictures/drawing.jpg",parent=None, pos=(0,0), size=(0,0), rotation=0):
         MTScatterImage.__init__(self,img_src,parent,pos,size)
         self.rotation = rotation
         self.x = pos[0]

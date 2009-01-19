@@ -452,9 +452,11 @@ class MTInnerWindow(MTScatterWidget):
         self.fbo.bind()
         glClearColor(1,0,0,1)
         glClear(GL_COLOR_BUFFER_BIT)
+        glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glTranslated(-self.padding, -self.padding, 0)
-        self.container.on_draw()
+        self.container.dispatch_event('on_draw')
+        glMatrixMode(GL_MODELVIEW)
         glPopMatrix()
         self.fbo.release()
 
@@ -529,6 +531,9 @@ xmlmenu = """<?xml version="1.0"?>
         <MTMenuNode label="'Untangle'" icon="'images'"
         action="'menu_action_game_untangle'"/>
 
+        <MTMenuNode label="'3D Viewer'" icon="'images'"
+        action="'menu_action_game_3dmt'"/>
+
 
 
     </MTMenuNode>
@@ -583,6 +588,9 @@ def menu_action_game_pictures(node):
 
 def menu_action_game_untangle(node):
     launch_plugin(node, 'untangle')
+
+def menu_action_game_3dmt(node):
+    launch_plugin(node, '3Dviewer')
 
 
 if __name__ == '__main__':

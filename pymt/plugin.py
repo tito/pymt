@@ -1,6 +1,10 @@
 import sys
 import os
 
+class MTContext(object):
+    def __init__(self):
+        pass
+
 class MTPlugins(object):
     def __init__(self, plugin_paths=['../examples/']):
         self.plugin_paths = plugin_paths
@@ -20,6 +24,8 @@ class MTPlugins(object):
             except:
                 continue
             for plugin in l:
+                if not os.path.isdir(os.path.join(path, plugin)):
+                    continue
                 try:
                     a = __import__(name='%s.%s' % (plugin, plugin), fromlist=plugin)
                     if not a.IS_PYMT_PLUGIN:
@@ -52,10 +58,16 @@ class MTPlugins(object):
         }
 
     def activate(self, plugin, container):
-        plugin.pymt_plugin_activate(container)
+        ctx = MTContext()
+        plugin.pymt_plugin_activate(container, ctx)
 
     def deactivate(self, plugin, container):
-        plugin.pymt_plugin_deactivate(container)
+        # XXX TODO: remember each context for each plugin instance !
+        ctx = MTContext()
+        try:
+            plugin.pymt_plugin_deactivate(container)
+        except:
+            pass
 
 
 if __name__ == '__main__':

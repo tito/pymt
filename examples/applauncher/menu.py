@@ -246,7 +246,7 @@ class MTMenuNode(MTBubbleWidget):
         self.label_obj.text = self.label
     label = property(_get_label, _set_label)
 
-
+"""
 class MTInnerWindowContainer(MTRectangularWidget):
     def __init__(self, **kargs):
         MTRectangularWidget.__init__(self, **kargs)
@@ -436,7 +436,7 @@ class MTInnerWindowOld(MTDragableWidget):
         if self.container.collide_point(x, y):
             self.container.dispatch_event('on_touch_up', touches, touchID, x, y)
         return True
-
+"""
 
 class MTInnerWindow(MTScatterWidget):
     def __init__(self, parent=None, pos=(0,0), size=(100,100),title='Plugin window', **kargs):
@@ -483,8 +483,7 @@ class MTInnerWindow(MTScatterWidget):
     def on_touch_down(self, touches, touchID, x, y):
         lx,ly = self.transposeTouch(x,y)
         if self.container.collide_point(lx, ly):
-            if self.container.dispatch_event('on_touch_down', touches, touchID, lx, ly):
-                return True
+            return self.container.dispatch_event('on_touch_down', touches, touchID, lx, ly)
         else:
             self.bring_to_front()
             if MTScatterWidget.on_touch_down(self, touches, touchID, x, y):
@@ -492,26 +491,21 @@ class MTInnerWindow(MTScatterWidget):
 
     def on_touch_move(self, touches, touchID, x, y):
         lx,ly = self.transposeTouch(x,y)
-        self.moveData = (lx,ly)
-        if MTScatterWidget.on_touch_move(self, touches, touchID, x, y):
-            return True
-        elif self.container.collide_point(lx, ly):
-            if self.container.dispatch_event('on_touch_move', touches, touchID, lx, ly):
-                return True
+        if self.container.collide_point(lx, ly):
+            return self.container.dispatch_event('on_touch_move', touches, touchID, lx, ly)
+        return MTScatterWidget.on_touch_move(self, touches, touchID, x, y)
 
+        
     def on_touch_up(self, touches, touchID, x, y):
         lx,ly = self.transposeTouch(x,y)
         if self.container.collide_point(lx, ly):
-            if self.container.dispatch_event('on_touch_up', touches, touchID, lx, ly):
-                return True
+            return self.container.dispatch_event('on_touch_up', touches, touchID, lx, ly)
 
-        if MTScatterWidget.on_touch_up(self, touches, touchID, x, y):
-            return True
-
+        MTScatterWidget.on_touch_up(self, touches, touchID, x, y)
+            
         w,h = int(self.width*self.zoom)-self.padding*2, int(self.height*self.zoom)-self.padding*2
         self.container.size = (w,h)
         del self.fbo
-        print 'Recreate FBO !'
         self.fbo = Fbo(size=(w,h))
 
 

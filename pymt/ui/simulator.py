@@ -1,5 +1,8 @@
 from pyglet import *
 from pyglet.gl import *
+from pyglet.window import key
+from pymt.graphx import *
+from pymt.mtpyglet import *
 from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widget import MTWidget
 

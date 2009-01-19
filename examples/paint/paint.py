@@ -62,23 +62,20 @@ class Canvas(MTRectangularWidget):
             del self.touch_positions[touchID]
 
 
-canvas = None
-slider = None
-def pymt_plugin_activate(root):
-    global canvas, slider
-    canvas = Canvas(pos=(40,40),size=(root.width,root.height))
-    root.add_widget(canvas)
-    slider = MTColorPicker(size=(130,290), target=[canvas])
-    root.add_widget(slider)
+def pymt_plugin_activate(root, ctx):
+    ctx.canvas = Canvas(pos=(40,40),size=(root.width,root.height))
+    root.add_widget(ctx.canvas)
+    ctx.slider = MTColorPicker(size=(130,290), target=[ctx.canvas])
+    root.add_widget(ctx.slider)
 
-def pymt_plugin_deactivate(root):
-    global canvas, slider
-    root.remove_widget(canvas)
-    root.remove_widget(slider)
+def pymt_plugin_deactivate(root, ctx):
+    root.remove_widget(ctx.canvas)
+    root.remove_widget(ctx.slider)
 
 if __name__ == '__main__':
     w = MTWindow()
     w.set_fullscreen()
-    pymt_plugin_activate(w)
+    ctx = MTContext()
+    pymt_plugin_activate(w, ctx)
     runTouchApp()
-    pymt_plugin_deactivate(w)
+    pymt_plugin_deactivate(w, ctx)

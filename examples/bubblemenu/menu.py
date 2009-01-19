@@ -245,6 +245,7 @@ class MTMenuNode(MTBubbleWidget):
         self.label_obj.text = self.label
     label = property(_get_label, _set_label)
 
+
 class MTInnerWindowContainer(MTRectangularWidget):
     def __init__(self, **kargs):
         MTRectangularWidget.__init__(self, **kargs)
@@ -444,8 +445,8 @@ xmlmenu = """<?xml version="1.0"?>
         <MTMenuNode label="'Particles'" icon="'gtk-color-picker'"
         action="'menu_action_game_particles'"/>
 
-        <MTMenuNode label="'Scatter Image'" icon="'images'"
-        action="'menu_action_game_scatterimages'"/>
+        <MTMenuNode label="'Pictures'" icon="'images'"
+        action="'menu_action_game_pictures'"/>
 
 
 
@@ -496,13 +497,8 @@ def menu_action_game_paint(node):
 def menu_action_game_particles(node):
     launch_plugin(node, 'particles')
 
-def menu_action_game_scatterimages(node):
-    stopTUIO()
-    os.chdir('../pictures')
-    proc = subprocess.Popen(['python','scatter.py'])
-    os.chdir('../bubblemenu')
-    proc.wait()
-    startTUIO()
+def menu_action_game_pictures(node):
+    launch_plugin(node, 'pictures')
 
 if __name__ == '__main__':
 

@@ -309,6 +309,9 @@ class MTInnerWindowContainer(MTRectangularWidget):
         return MTRectangularWidget.on_touch_up(self,
             touches, touchID, x, y)
 
+    def get_size(self):
+        return self.size
+
 
 class MTInnerWindow(MTDragableWidget):
     def __init__(self, parent=None, pos=(0,0), size=(100,100),
@@ -448,6 +451,9 @@ xmlmenu = """<?xml version="1.0"?>
         <MTMenuNode label="'Pictures'" icon="'images'"
         action="'menu_action_game_pictures'"/>
 
+        <MTMenuNode label="'Untangle'" icon="'images'"
+        action="'menu_action_game_untangle'"/>
+
 
 
     </MTMenuNode>
@@ -499,6 +505,10 @@ def menu_action_game_particles(node):
 
 def menu_action_game_pictures(node):
     launch_plugin(node, 'pictures')
+
+def menu_action_game_untangle(node):
+    launch_plugin(node, 'untangle')
+
 
 if __name__ == '__main__':
 

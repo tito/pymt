@@ -1,10 +1,13 @@
+# PYMT Plugin integration
+IS_PYMT_PLUGIN = True
+PLUGIN_TITLE = 'Untangle'
+PLUGIN_AUTHOR = 'Thomas Hansen'
+PLUGIN_EMAIL = 'thomas.hansen@gmail.com'
+PLUGIN_DESCRIPTION = 'Untangle game !'
+
 from pymt import *
 from graph import *
 from pyglet import *
-
-#init our window
-w = MTWindow()
-w.set_fullscreen()
 
 import time
 import pickle
@@ -74,7 +77,7 @@ class TrialLogger(EventLogger):
 		
 		
 class GraphUI(MTWidget):
-	def __init__(self, parent=None, size=20):
+	def __init__(self, parent=None, size=20, w=None):
 		MTWidget.__init__(self, parent)	
 		self.g = Graph(size,displaySize=w.get_size())
 		self.touch2vertex = {}
@@ -96,14 +99,24 @@ class GraphUI(MTWidget):
 	                self.touch2vertex[touchID][1] = y
 
 
+def pymt_plugin_activate(w, ctx):
+	ctx.root = MTWidget()
+	ctx.graph = GraphUI(ctx.root, w=w)
+	#ctx.log = TrialLogger(ctx.graph)
+	ctx.root.add_widget(ctx.graph)
+	w.add_widget(ctx.root)
+
+def pymt_plugin_deactivate(w, ctx):
+    w.remove_widget(ctx.root)
+	#ctx.log.save('data.pkl')
 
 
-root = MTWidget()
-graph = GraphUI(root)
-#log = TrialLogger(graph)
-root.add_widget(graph)
-w.add_widget(root)
-	
-#start the App
-runTouchApp()
-#log.save('data.pkl')
+if __name__ == '__main__':
+	#init our window
+	w = MTWindow()
+	w.set_fullscreen()
+	ctx = MTContext()
+	pymt_plugin_activate(w, ctx)
+	runTouchApp()
+	pymt_plugin_deactivate(w, ctx)
+

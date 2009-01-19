@@ -36,6 +36,7 @@ class MTBubbleWidget(MTWidget):
     def draw(self):
         if not self.visible:
             return
+        glDisable(GL_BLEND)
         glColor4f(.1, .1, .1, self.opacity / 255)
         drawCircle((self.x+1, self.y-1), self.radius * self.scale)
         glColor4d(1, 1, 1, self.opacity / 255)

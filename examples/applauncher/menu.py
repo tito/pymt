@@ -454,7 +454,7 @@ class MTInnerWindow(MTScatterWidget):
         glPushMatrix()
         glTranslated(-self.padding, -self.padding, 0)
         self.container.on_draw()
-        glPopMatrix()        
+        glPopMatrix()
         self.fbo.release()
 
         MTScatterWidget.on_draw(self)
@@ -462,7 +462,7 @@ class MTInnerWindow(MTScatterWidget):
     def draw(self):
         glPushMatrix()
         glScaled(self.width*0.01, self.height*0.01, 1.0)
-        glColor3d(0.7,0.7,0.9)        
+        glColor3d(0.7,0.7,0.9)
         drawRoundedRectangle(pos=(0,0), size=(100,100))
         glPopMatrix()
 
@@ -489,7 +489,7 @@ class MTInnerWindow(MTScatterWidget):
         return True
 
     def on_touch_move(self, touches, touchID, x, y):
-        lx,ly = self.transposeTouch(x,y) 
+        lx,ly = self.transposeTouch(x,y)
         self.moveData = (lx,ly)
         if MTScatterWidget.on_touch_move(self, touches, touchID, x, y):
             return True
@@ -500,13 +500,15 @@ class MTInnerWindow(MTScatterWidget):
     def on_touch_up(self, touches, touchID, x, y):
         lx,ly = self.transposeTouch(x,y)
         if self.container.collide_point(lx, ly):
-            self.container.dispatch_event('on_touch_up', touches, touchID, lx, ly)
-        
+            if self.container.dispatch_event('on_touch_up', touches, touchID, lx, ly):
+                return True
+
         MTScatterWidget.on_touch_up(self, touches, touchID, x, y)
 
         w,h = int(self.width*self.zoom)-self.padding*2, int(self.height*self.zoom)-self.padding*2
         self.container.size = (w,h)
         del self.fbo
+        print 'Recreate FBO !'
         self.fbo = Fbo(size=(w,h))
         return True
 

@@ -47,13 +47,13 @@ class MTWindow(TouchWindow):
         self.sim.draw()
 
     def on_touch_down(self, touches, touchID, x, y):
-        self.root.dispatch_event('on_touch_down', touches, touchID, x, y)
+        return self.root.dispatch_event('on_touch_down', touches, touchID, x, y)
 
     def on_touch_move(self, touches, touchID, x, y):
-        self.root.dispatch_event('on_touch_move', touches, touchID, x, y)
+        return self.root.dispatch_event('on_touch_move', touches, touchID, x, y)
 
     def on_touch_up(self, touches, touchID, x, y):
-        self.root.dispatch_event('on_touch_up', touches, touchID, x, y)
+        return self.root.dispatch_event('on_touch_up', touches, touchID, x, y)
 
     def on_mouse_press(self, x, y, button, modifiers):
         self.root.dispatch_event('on_mouse_press', x, y, button, modifiers)

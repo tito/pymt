@@ -44,19 +44,19 @@ class MTContainer(MTWidget):
         for l in self.layers:
             for w in reversed(l):
                 if w.dispatch_event('on_touch_down', touches, touchID, x, y):
-                    break
+                    return True
 
     def on_touch_move(self, touches, touchID, x, y):
         for l in self.layers:
             for w in reversed(l):
                 if w.dispatch_event('on_touch_move', touches, touchID, x, y):
-                    break
+                    return True
 
     def on_touch_up(self, touches, touchID, x, y):
         for l in self.layers:
             for w in reversed(l):
                 if w.dispatch_event('on_touch_up', touches, touchID, x, y):
-                    break
+                    return True
 
     def on_object_down(self, touches, touchID,id, x, y,angle):
         for l in self.obj:
@@ -357,6 +357,7 @@ class MTScatterWidget(MTRectangularWidget):
         if not self.haveTouch(touchID):
             self.touches.append( {"id":touchID, "start_pos":Vector(x,y), "pos":Vector(x,y)} )
         return True
+
     def on_touch_move(self, touches, touchID, x,y):
         self.testPos.x, self.testPos.y = self.to_local(x,y)
 
@@ -393,7 +394,7 @@ class MTScatterWidget(MTRectangularWidget):
             old_line = p1_start - p2_start
             new_line = p1_now - p2_now
             self.rotation -= Vector.angle(old_line, new_line)
-            
+
 
 
         self.save_status()
@@ -410,7 +411,7 @@ class MTScatterWidget(MTRectangularWidget):
             del self.touches[index]
         if self.collide_point(x,y):
             return True
-        
+
 
 
 class MTScatterImage(MTScatterWidget):

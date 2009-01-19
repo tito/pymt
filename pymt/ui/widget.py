@@ -51,6 +51,44 @@ class MTWidget(pyglet.event.EventDispatcher):
         return self._visible
     visible = property(_get_visible, _set_visible)
 
+    def dispatch_event(self, event_type, *args):
+        '''Dispatch a single event to the attached handlers.
+        
+        The event is propogated to all handlers from from the top of the stack
+        until one returns `EVENT_HANDLED`.  This method should be used only by
+        `EventDispatcher` implementors; applications should call
+        the ``dispatch_events`` method.
+
+        :Parameters:
+            `event_type` : str
+                Name of the event.
+            `args` : sequence
+                Arguments to pass to the event handler.
+
+        '''
+        assert event_type in self.event_types
+
+        # Search handler stack for matching event handlers
+        for frame in list(self._event_stack):
+            handler = frame.get(event_type, None)
+            if handler:
+                try:
+                    if handler(*args):
+                        return True
+                except TypeError:
+                    self._raise_dispatch_exception(event_type, args, handler)
+
+
+        # Check instance for an event handler
+        if hasattr(self, event_type):
+            try:
+                if getattr(self, event_type)(*args):
+                    return True
+            except TypeError:
+                self._raise_dispatch_exception(
+                    event_type, args, getattr(self, event_type))
+
+
     def update_event_registration(self):
         evs = [ 'on_draw',
                 'on_mouse_press',
@@ -140,18 +178,18 @@ class MTWidget(pyglet.event.EventDispatcher):
 
     def on_touch_down(self, touches, touchID, x, y):
         for w in reversed(self.children):
-            w.dispatch_event('on_touch_down', touches, touchID, x, y)
-            if w.consumes_event(x,y): break
+            if w.dispatch_event('on_touch_down', touches, touchID, x, y):
+                return True
 
     def on_touch_move(self, touches, touchID, x, y):
         for w in reversed(self.children):
-            w.dispatch_event('on_touch_move', touches, touchID, x, y)
-            if w.consumes_event(x,y): break
+            if w.dispatch_event('on_touch_move', touches, touchID, x, y):
+                return True
 
     def on_touch_up(self, touches, touchID, x, y):
         for w in reversed(self.children):
-            w.dispatch_event('on_touch_up', touches, touchID, x, y)
-            if w.consumes_event(x,y): break
+            if w.dispatch_event('on_touch_up', touches, touchID, x, y):
+                return True
 
     def on_mouse_press(self, x, y, button, modifiers):
         for w in reversed(self.children):

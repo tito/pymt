@@ -112,6 +112,9 @@ class ParticleShow(MTRectangularWidget):
         self.pe.generate((x, y), 30)
         return True
 
+    def on_touch_up(self, touches, touchID, x, y):
+        return True
+
 class SetButton(MTButton):
     def __init__(self, parent=None, pos=(0, 0), size=(100, 100), label='Hello',
                  pe=None, **kargs):

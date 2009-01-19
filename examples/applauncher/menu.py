@@ -453,7 +453,6 @@ class MTInnerWindow(MTScatterWidget):
         glClear(GL_COLOR_BUFFER_BIT)
         glPushMatrix()
         glTranslated(-self.padding, -self.padding, 0)
-        #glScaled(self.zoom, self.zoom,1)
         self.container.on_draw()
         glPopMatrix()        
         self.fbo.release()

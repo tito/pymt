@@ -11,7 +11,7 @@ setup (name='pymt',
       author_email='thomas.hansen@gmail.com',
       url='http://code.google.com/p/pymt/',
       license='GPL',
-      packages=['pymt', 'pymt.osc'],
+      packages=['pymt', 'pymt.osc', 'pymt.ui'],
 )
 
 

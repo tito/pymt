@@ -1,5 +1,6 @@
 from pyglet import *
 from pyglet.gl import *
+import math
 
 class AnimationAlpha(object):
     """Collection of animation function, to be used with Animation object."""

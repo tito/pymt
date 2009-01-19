@@ -5,6 +5,7 @@ from math import *
 from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widget import MTWidget
 from pymt.ui.simulator import MTSimulator
+from pymt.vector import Vector
 
 class MTContainer(MTWidget):
     """MTContainer is a base for container multiple MTWidget."""

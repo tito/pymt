@@ -295,17 +295,17 @@ class MTInnerWindowContainer(MTRectangularWidget):
         return (x, y)
 
     def on_touch_down(self, touches, touchID, x, y):
-        x, y = self.transpose_xy(x, y)
+        x, y = self.to_local(x, y)
         return MTRectangularWidget.on_touch_down(self,
             touches, touchID, x, y)
 
     def on_touch_move(self, touches, touchID, x, y):
-        x, y = self.transpose_xy(x, y)
+        x, y = self.to_local(x, y)
         return MTRectangularWidget.on_touch_move(self,
             touches, touchID, x, y)
 
     def on_touch_up(self, touches, touchID, x, y):
-        x, y = self.transpose_xy(x, y)
+        x, y = self.to_local(x, y)
         return MTRectangularWidget.on_touch_up(self,
             touches, touchID, x, y)
 
@@ -313,7 +313,7 @@ class MTInnerWindowContainer(MTRectangularWidget):
         return self.size
 
 
-class MTInnerWindow(MTDragableWidget):
+class MTInnerWindowOld(MTDragableWidget):
     def __init__(self, parent=None, pos=(0,0), size=(100,100),
                  title='Plugin window', **kargs):
         MTDragableWidget.__init__(self, parent=parent, pos=pos, size=size, **kargs)
@@ -435,6 +435,84 @@ class MTInnerWindow(MTDragableWidget):
         if self.container.collide_point(x, y):
             self.container.dispatch_event('on_touch_up', touches, touchID, x, y)
         return True
+
+
+class MTInnerWindow(MTScatterWidget):
+    def __init__(self, parent=None, pos=(0,0), size=(100,100),title='Plugin window', **kargs):
+        MTScatterWidget.__init__(self, pos=pos, size=size, **kargs)
+        self.padding = 15
+        self.container = MTRectangularWidget(parent=self,
+            pos=(self.padding,self.padding),size=(size[0]-self.padding*2,size[1]-self.padding*2))
+        self.fbo = Fbo(size=(size[0]-self.padding*2,size[1]-self.padding*2))
+        self.needs_fbo_resize = False
+
+
+    def on_draw(self):
+        self.fbo.bind()
+        glClearColor(1,0,0,1)
+        glClear(GL_COLOR_BUFFER_BIT)
+        glPushMatrix()
+        glTranslated(-self.padding, -self.padding, 0)
+        #glScaled(self.zoom, self.zoom,1)
+        self.container.on_draw()
+        glPopMatrix()        
+        self.fbo.release()
+
+        MTScatterWidget.on_draw(self)
+
+    def draw(self):
+        glPushMatrix()
+        glScaled(self.width*0.01, self.height*0.01, 1.0)
+        glColor3d(0.7,0.7,0.9)        
+        drawRoundedRectangle(pos=(0,0), size=(100,100))
+        glPopMatrix()
+
+        glPushMatrix()
+        glTranslated(self.padding, self.padding, 0)
+        glScaled(self.width-self.padding*2, self.height-self.padding*2, 1.0)
+        drawTexturedRectangle(self.fbo.texture)
+        glPopMatrix()
+
+    def transposeTouch(self, x,y):
+        lx,ly = self.to_local(x,y)
+        lx = (lx)*self.zoom
+        ly = (ly)*self.zoom
+        return (lx,ly)
+
+
+    def on_touch_down(self, touches, touchID, x, y):
+        lx,ly = self.transposeTouch(x,y)
+        if self.container.collide_point(lx, ly):
+            self.container.dispatch_event('on_touch_down', touches, touchID, lx, ly)
+        else:
+            self.bring_to_front()
+            MTScatterWidget.on_touch_down(self, touches, touchID, x, y)
+        return True
+
+    def on_touch_move(self, touches, touchID, x, y):
+        lx,ly = self.transposeTouch(x,y) 
+        self.moveData = (lx,ly)
+        if MTScatterWidget.on_touch_move(self, touches, touchID, x, y):
+            return True
+        elif self.container.collide_point(lx, ly):
+            self.container.dispatch_event('on_touch_move', touches, touchID, lx, ly)
+        return True
+
+    def on_touch_up(self, touches, touchID, x, y):
+        lx,ly = self.transposeTouch(x,y)
+        if self.container.collide_point(lx, ly):
+            self.container.dispatch_event('on_touch_up', touches, touchID, lx, ly)
+        
+        MTScatterWidget.on_touch_up(self, touches, touchID, x, y)
+
+        w,h = int(self.width*self.zoom)-self.padding*2, int(self.height*self.zoom)-self.padding*2
+        self.container.size = (w,h)
+        del self.fbo
+        self.fbo = Fbo(size=(w,h))
+        return True
+
+
+
 
 
 xmlmenu = """<?xml version="1.0"?>

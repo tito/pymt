@@ -11,6 +11,8 @@ class MTWindow(TouchWindow):
        for generating touch event with mouse.
        Use MTWindow as main window application.
     """
+
+
     def __init__(self, view=None, fullscreen=False, config=None, color=(.3,.3,.3,1.0)):
         self.color = color
         self.root = MTWidget()
@@ -70,6 +72,8 @@ class MTWindow(TouchWindow):
 
     def on_object_up(self, touches, touchID, id, x, y,angle):
         self.root.dispatch_event('on_object_up', touches, touchID, id, x, y,angle)
+
+
 
 
 class MTDisplay(MTWidget):

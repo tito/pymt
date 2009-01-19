@@ -85,6 +85,9 @@ class MTRectangularWidget(MTWidget):
         self.register_event_type('on_resize')
         self.register_event_type('on_move')
 
+    def get_size(self):
+        return (self.width, self.height)
+
     def draw(self):
         glColor4d(*self.color)
         drawRectangle((self.x, self.y), (self.width, self.height))
@@ -160,6 +163,8 @@ class MTRectangularWidget(MTWidget):
     def _get_size(self):
         return (self.width, self.height)
     size = property(_get_size, _set_size)
+
+
 
 
     def setColor(self, r,g,b, a=1.0):
@@ -274,6 +279,11 @@ class MTScatterWidget(MTRectangularWidget):
         self.zoom  = 1.0
         self.testPos = Vector(0,0)
 
+    def draw(self):
+        glColor4d(1,0,1,0)
+        drawRectangle((0,0), (self.width, self.height))
+
+
     def on_draw(self):
         glPushMatrix()
         glTranslatef(self.x, self.y, 0)
@@ -285,13 +295,26 @@ class MTScatterWidget(MTRectangularWidget):
         self.draw()
         glPopMatrix()
 
+    def _set_width(self, w):
+        self._width = w
+        self.dispatch_event('on_resize', self._width, self._height)
+    def _get_width(self):
+        return self._width*self.zoom
+
+
+    def _set_height(self, h):
+        self._height = h
+        self.dispatch_event('on_resize', self._width, self._height)
+    def _get_height(self):
+        return self._height*self.zoom
+
 
     def _set_size(self, size):
         self.width, self.height = size
         self.dispatch_event('on_resize', self.width, self.height)
     def _get_size(self):
         return (int(self.width*self.zoom), int(self.height*self.zoom))
-    size = property(_get_size, _set_size)
+
 
     def collide_point(self, x,y):
         local_coords = self.to_local(x,y)
@@ -329,14 +352,14 @@ class MTScatterWidget(MTRectangularWidget):
 
     def on_touch_down(self, touches, touchID, x,y):
         if not self.collide_point(x,y):
-            return
+            return False
         self.bring_to_front()
         if not self.haveTouch(touchID):
             self.touches.append( {"id":touchID, "start_pos":Vector(x,y), "pos":Vector(x,y)} )
-
+        return True
     def on_touch_move(self, touches, touchID, x,y):
         self.testPos.x, self.testPos.y = self.to_local(x,y)
-        
+
         if not self.haveTouch(touchID):
             return
 
@@ -370,8 +393,11 @@ class MTScatterWidget(MTRectangularWidget):
             old_line = p1_start - p2_start
             new_line = p1_now - p2_now
             self.rotation -= Vector.angle(old_line, new_line)
+            
+
 
         self.save_status()
+        return True
 
     def on_touch_up(self, touches, touchID, x,y):
         #find the touch in our record and remove it, also remove the ones that arent alive anymore...otherwise this causes a rare bug, where a touch is remembered although its dead
@@ -382,6 +408,9 @@ class MTScatterWidget(MTRectangularWidget):
                 delete_indexes.append(i)
         for index in delete_indexes:
             del self.touches[index]
+        if self.collide_point(x,y):
+            return True
+        
 
 
 class MTScatterImage(MTScatterWidget):
@@ -393,7 +422,6 @@ class MTScatterImage(MTScatterWidget):
 
     def draw(self):
         glPushMatrix()
-       
         glScaled(float(self.width)/self.image.width, float(self.height)/self.image.height, 2.0)
         self.image.draw()
         glPopMatrix()

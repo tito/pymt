@@ -8,28 +8,26 @@ class MTVideoPlayPause(MTImageButton):
         MTImageButton.__init__(self,image_file,pos, size,**kargs)
         self.vid = player
         self.playState = "Pause"
-        self.imageState = 'play.png'
 
-    def on_touch_down(self, touches, touchID, x,y):
-        if self.collide_point(x,y):
-            self.state = ('down', touchID)
+        self.images = {} #crate a python dictionary..like a hash map
+        self.images['Play']  = pyglet.sprite.Sprite( image.load('play.png')  )
+        self.images['Pause'] = pyglet.sprite.Sprite( image.load('pause.png') )
+
+        self.scale    = 0.35
+
+    def on_click(self, touchID, x,y):
+            #change the status to what it was not before
             if self.playState == "Pause":
                 self.vid.play()
                 self.playState = "Play"
-                self.imageState = 'pause.png'
-                img = pyglet.image.load(self.imageState)
-                self.image = pyglet.sprite.Sprite(img)
             elif self.playState == "Play":
                 self.vid.pause()
                 self.playState = "Pause"
-                self.imageState = 'play.png'
-                img = pyglet.image.load(self.imageState)
-                self.image = pyglet.sprite.Sprite(img)
-            print "Button touched"
 
-    def draw(self):
-        self.image.scale = 0.75
-        self.image.draw()
+            #set the correct image
+            self.image = self.images[self.playState]  #playState is one of the two strings that are used as keys/lookups in the dictionary
+
+
 
 class MTVideoTimeline(MTSlider):
     def __init__(self, min=0, max=30, pos=(5,5), size=(150,30), alignment='horizontal', padding=8, color=(0.78, 0.78, 0.78, 1.0), player=None,duration=100):
@@ -38,17 +36,10 @@ class MTVideoTimeline(MTSlider):
         self.vid = player
         self.max = duration
         self.x, self.y = pos[0], pos[1]
-        self.width , self.height = self.vid.get_texture().width-60,30
+        self.width , self.height = self.vid.get_texture().width-60, 30
         self.length = 0
 
     def draw(self):
-        self.value = self.vid.time % self.max
-        print "value:",self.value
-        if self.vid.time == self.max:
-            print "movie ended"
-            self.value = 0
-            self.vid.seek(0)
-            self.length = 0
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         x,y,w,h = self.x,self.y,self.width+self.padding, self.height
@@ -66,7 +57,6 @@ class MTVideoTimeline(MTSlider):
 
     def on_draw(self):
         self.value = self.vid.time % self.max
-        print "value:",self.value
         if self.vid.time == self.max:
             print "movie ended"
             self.value = 0
@@ -89,7 +79,7 @@ class MTVideoTimeline(MTSlider):
 
 class MTVideo(MTScatterWidget):
     """MTVideo is a Zoomable,Rotatable,Movable Video widget"""
-    def __init__(self, video="video.avi", pos=(300,200), size=(0,0), rotation=0):
+    def __init__(self, pos=(300,200), size=(0,0), rotation=0):
         MTScatterWidget.__init__(self,pos=pos,size=size)
         self.rotation = rotation
         self.player = Player()
@@ -106,7 +96,7 @@ class MTVideo(MTScatterWidget):
         #the pos, size is relative to this parent widget...if it scales etc so will these
         self.button = MTVideoPlayPause(image_file='play.png',pos=(0,0), player=self.player)
         self.add_widget(self.button)
-        self.timeline = MTVideoTimeline(pos=(40,3),player=self.player,duration=self.sourceDuration)
+        self.timeline = MTVideoTimeline(pos=(50,0),player=self.player,duration=self.sourceDuration)
         self.add_widget(self.timeline )
 
     def draw(self):
@@ -116,8 +106,6 @@ class MTVideo(MTScatterWidget):
         drawRectangle((-10,-10),(self.texW+20,self.texH+20))
         glColor3d(1,1,1)
         self.player.get_texture().blit(0,0)
-        self.button.draw()
-        self.timeline.draw()
         glPopMatrix()
 
 
@@ -125,9 +113,8 @@ class MTVideo(MTScatterWidget):
 
 if __name__ == '__main__':
     w = MTWindow()
-    w.set_fullscreen()
+    #w.set_fullscreen()
     video = MTVideo()
     w.add_widget(video)
-    video = MTVideo('super-fly.wmv',(100,100))
-    w.add_widget(video)
+
     runTouchApp()

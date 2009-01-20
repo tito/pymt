@@ -4,8 +4,8 @@ import random
 from pyglet.media import *
 
 class MTVideoPlayPause(MTImageButton):
-    def __init__(self,parent=None,image_file='play.png', pos=(0, 0),size=(100, 100),player = None,**kargs):
-        MTImageButton.__init__(self,image_file,parent, pos, size,**kargs)
+    def __init__(self,image_file='play.png', pos=(0, 0),size=(100, 100),player = None,**kargs):
+        MTImageButton.__init__(self,image_file,pos, size,**kargs)
         self.vid = player
         self.playState = "Pause"
         self.imageState = 'play.png'
@@ -34,8 +34,8 @@ class MTVideoPlayPause(MTImageButton):
         self.image.draw()
         
 class MTVideoTimeline(MTSlider):
-    def __init__(self, parent=None, min=0, max=30, pos=(5,5), size=(150,30), alignment='horizontal', padding=8, color=(0.78, 0.78, 0.78, 1.0), player=None,duration=100):
-        MTSlider.__init__(self, parent, min, max, pos, size, alignment, padding, color)
+    def __init__(self, min=0, max=30, pos=(5,5), size=(150,30), alignment='horizontal', padding=8, color=(0.78, 0.78, 0.78, 1.0), player=None,duration=100):
+        MTSlider.__init__(self, min, max, pos, size, alignment, padding, color)
         self.value = 0
         self.vid = player
         self.max = duration
@@ -78,8 +78,6 @@ class MTVideo(MTScatterWidget):
     def __init__(self, pos=(300,200), size=(0,0), rotation=0):
         MTScatterWidget.__init__(self,pos=pos,size=size)
         self.rotation = rotation
-        self.x = pos[0]
-        self.y = pos[1]
         self.player = Player()
         self.source = pyglet.media.load('video.avi')
         self.sourceDuration = self.source.duration
@@ -103,7 +101,7 @@ class MTVideo(MTScatterWidget):
 if __name__ == '__main__':
     w = MTWindow()
     #w.set_fullscreen()
-    video = MTVideo(w)
+    video = MTVideo()
     w.add_widget(video)
     butt = MTVideoPlayPause(image_file='play.png',pos=(100,100), player=video.player)
     w.add_widget(butt)

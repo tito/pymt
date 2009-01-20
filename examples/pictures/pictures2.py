@@ -60,8 +60,8 @@ def pymt_plugin_activate(w, ctx):
         img_src = '../pictures/images/pic'+str(i+1)+'.jpg'
         teta = float((360/5)*i*(math.pi/180))
         #print "Teta: ",teta
-        x = int((100)+ (200*math.cos(teta)))
-        y = int((100)+ (200*math.sin(teta)))
+        x = int((550)+ (200*math.cos(teta)))
+        y = int((340)+ (200*math.sin(teta)))
         print "x,y",x,y
         #x = int(random.uniform((w.width/2)-400, (w.width/2)+100))
         #y = int(random.uniform((w.height/2)-100, (w.height/2)+100))

@@ -9,6 +9,26 @@ from pymt.vector import Vector
 
 
 
+
+class MTRectangularWidget(MTWidget):
+    """A rectangular widget that only propagates and handles events if the event was within its bounds"""
+
+    def on_touch_down(self, touches, touchID, x, y):
+        if self.collide_point(x,y):
+            MTWidget.on_touch_down(self, touches, touchID, x, y)
+            return True
+
+    def on_touch_move(self, touches, touchID, x, y):
+        if self.collide_point(x,y):
+            MTWidget.on_touch_move(self, touches, touchID, x, y)
+            return True
+
+    def on_touch_up(self, touches, touchID, x, y):
+        if self.collide_point(x,y):
+            MTWidget.on_touch_up(self, touches, touchID, x, y)
+            return True
+
+
 class MTDragableWidget(MTWidget):
     """MTDragableWidget is a moveable widget over the window"""
     def __init__(self, pos=(0,0), size=(100,100), **kargs):
@@ -113,7 +133,6 @@ class MTScatterWidget(MTWidget):
         glColor4d(1,0,1,0)
         drawRectangle((0,0), (self.width, self.height))
 
-
     def on_draw(self):
         glPushMatrix()
         glTranslatef(self.x, self.y, 0)
@@ -131,13 +150,11 @@ class MTScatterWidget(MTWidget):
     def _get_width(self):
         return self._width*self.zoom
 
-
     def _set_height(self, h):
         self._height = h
         self.dispatch_event('on_resize', self._width, self._height)
     def _get_height(self):
         return self._height*self.zoom
-
 
     def _set_size(self, size):
         self.width, self.height = size
@@ -159,6 +176,10 @@ class MTScatterWidget(MTWidget):
             if touchID == self.touches[i]["id"]:
                 self.touches[i]["pos"] = Vector(x,y)
 
+    def save_status(self):
+        for i in range(len(self.touches)):
+            self.touches[i]["start_pos"] = self.touches[i]["pos"]
+
     def haveTouch(self, touchID):
         for i in range(len(self.touches)):
             if touchID == self.touches[i]["id"]:
@@ -176,24 +197,9 @@ class MTScatterWidget(MTWidget):
         ly= ( lcx*sin(angle)+lcy*cos(angle) ) *1.0/self.zoom
         return (lx+ self.width/2,ly+ self.height/2)
 
-    def save_status(self):
-        for i in range(len(self.touches)):
-            self.touches[i]["start_pos"] = self.touches[i]["pos"]
 
-    def on_touch_down(self, touches, touchID, x,y):
-        if not self.collide_point(x,y):
-            return False
-        self.bring_to_front()
-        if not self.haveTouch(touchID):
-            self.touches.append( {"id":touchID, "start_pos":Vector(x,y), "pos":Vector(x,y)} )
-        return True
 
-    def on_touch_move(self, touches, touchID, x,y):
-        self.testPos.x, self.testPos.y = self.to_local(x,y)
-
-        if not self.haveTouch(touchID):
-            return
-
+    def rotate_zoom_move(self, touchID, x, y):
         self.updateTouchPos(touchID, x,y)
         if len(self.touches) == 1 :
             p1_start = self.touches[0]["start_pos"]
@@ -211,7 +217,8 @@ class MTScatterWidget(MTWidget):
             #compute zoom
             old_dist = Vector.distance(p1_start, p2_start)
             new_dist = Vector.distance(p1_now, p2_now)
-            self.zoom =  new_dist/old_dist * self.zoom
+            scale = new_dist/old_dist
+            self.zoom =  scale * self.zoom
 
             #compute pos
             old_center = p1_start + (p2_start - p1_start)*0.5
@@ -225,22 +232,70 @@ class MTScatterWidget(MTWidget):
             new_line = p1_now - p2_now
             self.rotation -= Vector.angle(old_line, new_line)
 
-
-
         self.save_status()
+
+
+    def on_touch_down(self, touches, touchID, x,y):
+        #if the touch isnt on teh widget we do nothing
+        if not self.collide_point(x,y):
+            return False
+
+        #let the child widgets handle the event if they want
+        lx,ly = self.to_local(x,y)
+        if MTWidget.on_touch_down(self, touches, touchID, lx, ly):
+            return True
+
+        #if teh children didnt handle it, we bring to front & keep track of touches for rotate/scale/zoom action
+        self.bring_to_front()
+        if not self.haveTouch(touchID):
+            self.touches.append( {"id":touchID, "start_pos":Vector(x,y), "pos":Vector(x,y)} )
+
         return True
 
-    def on_touch_up(self, touches, touchID, x,y):
-        #find the touch in our record and remove it, also remove the ones that arent alive anymore...otherwise this causes a rare bug, where a touch is remembered although its dead
-        #print len(self.touches), touches.keys()
-        delete_indexes = [] #removing them from teh list while iterating it is a bad idea :P
-        for i in range(len(self.touches)):
-            if (touchID == self.touches[i]["id"]) or (self.touches[i]["id"] not in touches):
-                delete_indexes.append(i)
-        for index in delete_indexes:
-            del self.touches[index]
-        if self.collide_point(x,y):
+    def on_touch_move(self, touches, touchID, x,y):
+
+        #if this touch is used for rotate_scale_move,...do that
+        if self.haveTouch(touchID):
+            self.rotate_zoom_move(touchID, x, y)
+            self.dispatch_event('on_resize', self.width, self.height)
+            self.dispatch_event('on_move', self.x, self.y)
             return True
+
+        #let the child widgets handle the event if we want
+        lx,ly = self.to_local(x,y)
+        if MTWidget.on_touch_move(self, touches, touchID, lx, ly):
+            return True
+
+    def on_touch_up(self, touches, touchID, x,y):
+        #if the touch isnt on the widget we do nothing
+        if not self.collide_point(x,y):
+            return False
+
+        #if this touch is used for rotate_scale_move, clean up
+        if self.haveTouch(touchID):
+            self.touches = []
+
+            return True
+
+        #the child widgets can handle it if we didnt here
+        else:
+            lx,ly = self.to_local(x,y)
+            return MTWidget.on_touch_move(self, touches, touchID, lx, ly)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

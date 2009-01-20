@@ -13,7 +13,7 @@ class MTScatteredObj(MTScatterImage):
     def __init__(self, img_src, pos=(0,0), size=(100,100), rotation=45):
         MTScatterImage.__init__(self,img_src,pos,size)
         self.rotation = rotation
- 
+
 def pymt_plugin_activate(w, ctx):
     ctx.c = MTWidget()
     for i in range (10):
@@ -31,8 +31,8 @@ def pymt_plugin_deactivate(w, ctx):
 
 if __name__ == '__main__':
     w = MTWindow()
-    w.set_fullscreen()
+    #w.set_fullscreen()
     ctx = MTContext()
-    pymt_plugin_activate(w, ctx)  
+    pymt_plugin_activate(w, ctx)
     runTouchApp()
     pymt_plugin_deactivate(w, ctx)

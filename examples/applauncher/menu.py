@@ -439,14 +439,61 @@ class MTInnerWindowOld(MTDragableWidget):
 class MTInnerWindow(MTScatterWidget):
     def __init__(self, parent=None, pos=(0,0), size=(100,100),title='Plugin window', **kargs):
         MTScatterWidget.__init__(self, pos=pos, size=size, **kargs)
+
         self.padding = 15
-        self.container = MTWidget(parent=self,
-            pos=(self.padding,self.padding),size=(size[0]-self.padding*2,size[1]-self.padding*2))
-        self.fbo = Fbo(size=(size[0]-self.padding*2,size[1]-self.padding*2))
-        self.needs_fbo_resize = False
+
+        self.container = MTRectangularWidget(pos=(self.padding,self.padding),size=(size[0]-self.padding*2,size[1]-self.padding*2))
+        self.add_widget(self.container)
+        self.old_zoom = self.zoom
+        self.set_fbo_size()
+        self.old_zoom = self.zoom#needed to check whether we need to resize
+
+    def set_fbo_size(self):
+        sx = int((self.size[0] -self.padding*2) *self.zoom )
+        sy = int((self.size[1]-self.padding*2) *self.zoom )
+        if sx>10 and sy>10:
+            self.fbo = Fbo(size=(sx,sy))
+            self.container.size = (sx,sy)
+        else:
+            print "not resizing, would be too ssmall"
+
+    def resize_fbo(self, force=False):
+        if force or (abs(self.zoom - self.old_zoom > 0.4)):
+            return # dont resize if we dont have too...this is potentially slow
+        if self.zoom == self.old_zoom:
+            return #we really dont have to...even if your forcing...it wont make a difference
+        self.set_fbo_size()
+        self.old_zoom = self.zoom
+
+    #force fbo to exactly correct size if we are done resizing
+    def on_touch_up(self, touches, touchID, x,y):
+        if MTScatterWidget.on_touch_up(self, touches, touchID, x,y):
+            self.resize_fbo(force=True)
+            return True
+
+    #child widgets dont get larger as teh widget gets larger...only their viewport does, so we have to factor in zoom also
+    def to_local(self, x,y):
+        lx,ly = MTScatterWidget.to_local(self,x,y)
+        lx = lx*self.zoom
+        ly = ly*self.zoom
+        return (lx,ly)
+
+    #have to overwrite this also, since to_local now factors in zoom..so need to take care of that here also
+    def collide_point(self, x,y):
+        lx,ly = self.to_local(x,y)
+        lx = float(lx)/self.zoom
+        ly = float(ly)/self.zoom
+        if lx > 0 and lx < self.width \
+           and lx > 0 and ly < self.height:
+            return True
+        else:
+            return False
+
 
 
     def on_draw(self):
+        #draw contained app into FBO
+        self.resize_fbo()
         self.fbo.bind()
         glClearColor(0,0,0,1)
         glClear(GL_COLOR_BUFFER_BIT)
@@ -473,40 +520,9 @@ class MTInnerWindow(MTScatterWidget):
         drawTexturedRectangle(self.fbo.texture)
         glPopMatrix()
 
-    def transposeTouch(self, x,y):
-        lx,ly = self.to_local(x,y)
-        lx = (lx)*self.zoom
-        ly = (ly)*self.zoom
-        return (lx,ly)
 
 
-    def on_touch_down(self, touches, touchID, x, y):
-        lx,ly = self.transposeTouch(x,y)
-        if self.container.collide_point(lx, ly):
-            return self.container.dispatch_event('on_touch_down', touches, touchID, lx, ly)
-        else:
-            self.bring_to_front()
-            if MTScatterWidget.on_touch_down(self, touches, touchID, x, y):
-                return True
 
-    def on_touch_move(self, touches, touchID, x, y):
-        lx,ly = self.transposeTouch(x,y)
-        if self.container.collide_point(lx, ly):
-            return self.container.dispatch_event('on_touch_move', touches, touchID, lx, ly)
-        return MTScatterWidget.on_touch_move(self, touches, touchID, x, y)
-
-
-    def on_touch_up(self, touches, touchID, x, y):
-        lx,ly = self.transposeTouch(x,y)
-        if self.container.collide_point(lx, ly):
-            return self.container.dispatch_event('on_touch_up', touches, touchID, lx, ly)
-
-        MTScatterWidget.on_touch_up(self, touches, touchID, x, y)
-
-        w,h = int(self.width*self.zoom)-self.padding*2, int(self.height*self.zoom)-self.padding*2
-        self.container.size = (w,h)
-        del self.fbo
-        self.fbo = Fbo(size=(w,h))
 
 
 

@@ -7,6 +7,7 @@ PLUGIN_DESCRIPTION = 'Demonstration of MTScatterWidget object'
 from pymt import *
 import os
 import random
+import math
 
 def drawRectangle(pos=(0,0), size=(1.0,1.0), ):
     data = (pos[0],pos[1], pos[0]+size[0],pos[1], pos[0]+size[0], pos[1]+size[1], pos[0],pos[1]+size[1])
@@ -57,14 +58,20 @@ def pymt_plugin_activate(w, ctx):
     ctx.c.add_widget(back)
     for i in range (5):
         img_src = '../pictures/images/pic'+str(i+1)+'.jpg'
-        x = int(random.uniform((w.width/2)-400, (w.width/2)+100))
-        y = int(random.uniform((w.height/2)-100, (w.height/2)+100))
-        size = 400
-        rot = random.uniform(0, 360)
+        teta = float((360/5)*i*(math.pi/180))
+        #print "Teta: ",teta
+        x = int((100)+ (200*math.cos(teta)))
+        y = int((100)+ (200*math.sin(teta)))
+        print "x,y",x,y
+        #x = int(random.uniform((w.width/2)-400, (w.width/2)+100))
+        #y = int(random.uniform((w.height/2)-100, (w.height/2)+100))
+        size = 300
+        rot = (360/5)*i
         b = MTScatteredObj(img_src, (x,y),(size,size), rot)
         ctx.c.add_widget(b)
+    ctx.c._set_pos((int(w.width/2),int(w.height/2)))
     w.add_widget(ctx.c)
-    
+
 def pymt_plugin_deactivate(w, ctx):
     w.remove_widget(ctx.c)
 

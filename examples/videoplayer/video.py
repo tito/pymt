@@ -53,7 +53,7 @@ class MTVideoTimeline(MTSlider):
         drawRectangle(pos=(x,y), size=(w,h))
         # draw inner rectangle
         glColor4f(*self.color)
-        self.length = 50#int(self.width*(float(self.value)/self.max))
+        self.length = int(self.width*(float(self.value)/self.max))
         drawRectangle(pos=(self.x+p2,self.y+p2+11), size=(self.length,(h-self.padding)/2))
         glColor4f(0.713, 0.713, 0.713, 1.0)
         drawRectangle(pos=(self.x+p2,self.y+p2), size=(self.length,(h-self.padding)/2))
@@ -96,6 +96,8 @@ class MTVideo(MTScatterWidget):
         self.texW = self.player.get_texture().width
         self.texH = self.player.get_texture().height
 
+        #init as subwidgest.  adding them using add_widgtes, makes it so that they get the events before MTVideo instance
+        #the pos, size is relative to this parent widget...if it scales etc so will these
         self.button = MTVideoPlayPause(image_file='play.png',pos=(0,0), player=self.player)
         self.add_widget(self.button)
         self.timeline = MTVideoTimeline(pos=(50,0),player=self.player,duration=self.sourceDuration)
@@ -110,8 +112,7 @@ class MTVideo(MTScatterWidget):
         self.player.get_texture().blit(0,0)
         glPopMatrix()
 
-        self.button.draw()
-        self.timeline.draw()
+
 
 
 if __name__ == '__main__':

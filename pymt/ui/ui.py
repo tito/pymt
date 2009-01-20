@@ -142,7 +142,11 @@ class MTScatterWidget(MTWidget):
         glTranslatef(-self.width/2, -self.height/2, 0)
         glColor3d(1,0,0)
         self.draw()
+                #calling the MTWidget super method propagates to children
+        MTWidget.on_draw(self)
         glPopMatrix()
+
+
 
     def _set_width(self, w):
         self._width = w

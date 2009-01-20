@@ -79,7 +79,7 @@ class TrialLogger(EventLogger):
 class GraphUI(MTWidget):
 	def __init__(self, parent=None, size=20, w=None):
 		MTWidget.__init__(self, parent)	
-		self.g = Graph(size,displaySize=w.size)
+		self.g = Graph(size,displaySize=w.get_size())
 		self.touch2vertex = {}
 		
 	def draw(self):

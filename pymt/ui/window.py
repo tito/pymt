@@ -36,6 +36,13 @@ class MTWindow(TouchWindow):
             if fullscreen:
                 self.set_fullscreen()
 
+    def _set_size(self, size):
+        self.set_size(*size)
+    def _get_size(self):
+        return self.get_size()
+    size = property(_get_size, _set_size)
+
+
     def add_widget(self, w):
         self.root.add_widget(w)
         self.sim.bring_to_front()

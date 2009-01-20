@@ -268,32 +268,16 @@ class MTScatterWidget(MTWidget):
 
     def on_touch_up(self, touches, touchID, x,y):
         #if the touch isnt on the widget we do nothing
+        lx,ly = self.to_local(x,y)
+        MTWidget.on_touch_up(self, touches, touchID, lx, ly)
+
         if not self.collide_point(x,y):
             return False
 
         #if this touch is used for rotate_scale_move, clean up
         if self.haveTouch(touchID):
             self.touches = []
-
             return True
-
-        #the child widgets can handle it if we didnt here
-        else:
-            lx,ly = self.to_local(x,y)
-            return MTWidget.on_touch_move(self, touches, touchID, lx, ly)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -312,6 +296,7 @@ class MTScatterImage(MTScatterWidget):
         self.image.draw()
         glPopMatrix()
         #MTScatterWidget.draw(self)
+
 
 
 class MTSlider(MTWidget):

@@ -9,8 +9,8 @@ import random
 
 class ParticleObject(MTWidget):
     def __init__(self, pos=(0,0), size=(20,20), color=(1,1,1),
-                 rotation=45, type='Squares', **kargs):
-        MTWidget.__init__(self, pos=pos, size=size, color=color)
+            rotation=45, type='Squares', **kargs):
+        MTWidget.__init__(self, pos=pos, size=size, color=color, **kargs)
         self.opacity = 1
         self.color = (random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1), self.opacity)
         self.rotation = 0
@@ -115,7 +115,7 @@ class ParticleShow(MTWidget):
 
 class SetButton(MTButton):
     def __init__(self, pos=(0, 0), size=(100, 100), label='Hello',
-                 pe=None, **kargs):
+            pe=None, **kargs):
         MTButton.__init__(self, pos=pos, size=size, label=label, **kargs)
         self.label = label
         self.pe = pe

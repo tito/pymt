@@ -7,70 +7,6 @@ from pymt.ui.widget import MTWidget
 from pymt.ui.simulator import MTSimulator
 from pymt.vector import Vector
 
-class MTContainer(MTWidget):
-    """MTContainer is a base for container multiple MTWidget."""
-    def __init__(self, children=[], layers=1):
-        MTWidget.__init__(self)
-        self.layers	= []
-        self.obj	= []
-        for i in range(layers):
-            self.layers.append([])
-        for c in children:
-            self.add_widget(c)
-
-    def add_widget(self, w, z=0, type='cur'):
-        if type not in ['cur', 'obj']:
-            return
-        if type == 'cur':
-            self.layers[z].append(w)
-        elif type == 'obj':
-            self.obj.append(w)
-        try:
-            w.parent = self
-        except:
-            pass
-
-    def on_draw(self):
-        if not self.visible:
-            return
-        for l in self.obj:
-            l.draw()
-        for l in self.layers:
-            for w in l:
-                w.on_draw()
-
-    def on_touch_down(self, touches, touchID, x, y):
-        for l in self.layers:
-            for w in reversed(l):
-                if w.dispatch_event('on_touch_down', touches, touchID, x, y):
-                    return True
-
-    def on_touch_move(self, touches, touchID, x, y):
-        for l in self.layers:
-            for w in reversed(l):
-                if w.dispatch_event('on_touch_move', touches, touchID, x, y):
-                    return True
-
-    def on_touch_up(self, touches, touchID, x, y):
-        for l in self.layers:
-            for w in reversed(l):
-                if w.dispatch_event('on_touch_up', touches, touchID, x, y):
-                    return True
-
-    def on_object_down(self, touches, touchID,id, x, y,angle):
-        for l in self.obj:
-            if l.dispatch_event('on_object_down', touches, touchID,id, x, y,angle):
-                break
-
-    def on_object_move(self, touches, touchID,id, x, y,angle):
-        for l in self.obj:
-            if l.dispatch_event('on_object_move', touches, touchID,id, x, y,angle):
-                break
-
-    def on_object_up(self, touches, touchID,id, x, y,angle):
-        for l in self.obj:
-            if l.dispatch_event('on_object_up', touches, touchID,id, x, y,angle):
-                break
 
 
 class MTDragableWidget(MTWidget):
@@ -230,10 +166,10 @@ class MTScatterWidget(MTWidget):
         return False
 
     def to_local(self,x,y):
-        #local center x,y ..around which we rotate 
+        #local center x,y ..around which we rotate
         lcx = (x - self.x ) - self.width/2
-        lcy = (y - self.y ) - self.height/2        
-      
+        lcy = (y - self.y ) - self.height/2
+
         #rotate around the center(its moved center to 0,0) then move back to position
         angle = radians(-self.rotation)
         lx= ( lcx*cos(angle)-lcy*sin(angle) ) *1.0/self.zoom
@@ -327,7 +263,7 @@ class MTSlider(MTWidget):
     """MTSlider is an implementation of a scrollbar using MTWidget"""
     def __init__(self, min=0, max=100, pos=(10,10), size=(30,400), alignment='horizontal', padding=8, color=(0.8, 0.8, 0.4, 1.0)):
         MTWidget.__init__(self, pos=pos, size=size)
-        self.touchstarts = [] # only react to touch input that originated on this widget 
+        self.touchstarts = [] # only react to touch input that originated on this widget
         self.alignment = alignment
         self.color = color
         self.padding = padding
@@ -484,4 +420,3 @@ MTWidgetFactory.register('MTScatterImage', MTScatterImage)
 MTWidgetFactory.register('MTSlider', MTSlider)
 MTWidgetFactory.register('MTColorPicker', MTColorPicker)
 MTWidgetFactory.register('MTObjectWidget', MTObjectWidget)
-

@@ -13,7 +13,7 @@ import pickle
 # from numpy import *
 import ctypes
 from random import randint
-class Target(MTRectangularWidget):
+class Target(MTWidget):
 
 		def draw(self):
 				glPushMatrix()
@@ -27,11 +27,11 @@ class Target(MTRectangularWidget):
 				glPopMatrix()
 
 
-		def __init__(self, parent=None, pos=(0,0), size=(100,100)):
+		def __init__(self, pos=(0,0), size=(100,100)):
 			s = randint(100,300)
 			pos = (randint(100,900),randint(100,900))
 			self.zoom = randint(1,3)
-			MTRectangularWidget.__init__(self,parent, pos, (100.0,100.0))
+			MTWidget.__init__(self, pos, (100.0,100.0))
 			self.rotation = self._rotation = 60.0
 			self.translation = Vector(*self.center)
 			self.label = label = pyglet.text.Label(str(self.zoom),
@@ -46,8 +46,8 @@ class Target(MTRectangularWidget):
 
 
 class MTSourceWidget(MTScatterWidget):
-		def __init__(self, target, parent=None, pos=(0,0), size=(100,100)):
-			MTScatterWidget.__init__(self, parent=None, pos=pos, size=(100,100))
+		def __init__(self, target, pos=(0,0), size=(100,100)):
+			MTScatterWidget.__init__(self, pos=pos, size=(100,100))
 			self.color = (1.0, 1.0, 1.0, 0.5)
 			self.target = target
 			self.done = False

@@ -8,17 +8,17 @@ from pymt.ui.widget import MTWidget
 
 class MTSimulator(MTWidget):
     """MTSimulator is a widget who generate touch event from mouse event"""
-    def __init__(self, output, parent=None):
-        MTWidget.__init__(self, parent)
-        self.touches = {}
-        self.pos=(100,100)
-        self.output = output
-        self.counter = 0
-        self.current_drag = None
+    def __init__(self, output):
+        MTWidget.__init__(self)
+        self.touches		= {}
+        self.pos			= (100,100)
+        self.output			= output
+        self.counter		= 0
+        self.current_drag	= None
 
     def draw(self):
         for t in self.touches.values():
-            p = (t.xpos,t.ypos)
+            p = (t.xpos, t.ypos)
             glColor4f(0.8,0.2,0.2,0.7)
             drawCircle(pos=p, radius=10)
 

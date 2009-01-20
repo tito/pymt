@@ -10,8 +10,8 @@ import random
 
 class MTScatteredObj(MTScatterImage):
     """MTScatteredObj is a zoomable Image widget with a possibility of providing rotation during spawning"""
-    def __init__(self, img_src,parent=None, pos=(0,0), size=(100,100), rotation=45):
-        MTScatterImage.__init__(self,img_src,parent,pos,size)
+    def __init__(self, img_src, pos=(0,0), size=(100,100), rotation=45):
+        MTScatterImage.__init__(self,img_src,pos,size)
         self.rotation = rotation
  
 def pymt_plugin_activate(w, ctx):
@@ -22,7 +22,7 @@ def pymt_plugin_activate(w, ctx):
         y = int(random.uniform(100, w.height-100))
         size = random.uniform(0.5, 4.1)*100
         rot = random.uniform(0, 360)
-        b = MTScatteredObj(img_src, c, (x,y),(size,size), rot)
+        b = MTScatteredObj(img_src, (x,y),(size,size), rot)
         ctx.c.add_widget(b)
     w.add_widget(ctx.c)
 

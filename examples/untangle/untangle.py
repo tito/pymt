@@ -18,8 +18,8 @@ I use the EventLogger and TrialLogger classes to record all the touch input, so 
 They have absolutly nothing to do with the Graph untabgle game, i case anyone is trying to read this to learn pymt.
 """
 class EventLogger(MTWidget):
-	def __init__(self, parent=None):
-		MTWidget.__init__(self, parent)
+	def __init__(self):
+		MTWidget.__init__(self)
 		self.touches = {}
 		self.enabled = False
 	
@@ -77,8 +77,8 @@ class TrialLogger(EventLogger):
 		
 		
 class GraphUI(MTWidget):
-	def __init__(self, parent=None, size=20, w=None):
-		MTWidget.__init__(self, parent)	
+	def __init__(self, size=20, w=None):
+		MTWidget.__init__(self)	
 		self.g = Graph(size,displaySize=w.get_size())
 		self.touch2vertex = {}
 		
@@ -100,14 +100,12 @@ class GraphUI(MTWidget):
 
 
 def pymt_plugin_activate(w, ctx):
-	ctx.root = MTWidget()
-	ctx.graph = GraphUI(ctx.root, w=w)
+	ctx.graph = GraphUI(w=w)
 	#ctx.log = TrialLogger(ctx.graph)
-	ctx.root.add_widget(ctx.graph)
-	w.add_widget(ctx.root)
+	w.add_widget(ctx.graph)
 
 def pymt_plugin_deactivate(w, ctx):
-    w.remove_widget(ctx.root)
+    w.remove_widget(ctx.graph)
 	#ctx.log.save('data.pkl')
 
 

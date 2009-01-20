@@ -1,14 +1,10 @@
 from pymt.ui.widget import MTWidget
-from pymt.ui.ui import MTRectangularWidget
 
 """TODO: Layouts...not used anywhere yet"""
-class HorizontalLayout(MTRectangularWidget):
-    def __init__(self, parent=None, spacing=10, **kargs):
-        MTRectangularWidget.__init__(self, parent, **kargs)
+class HorizontalLayout(MTWidget):
+    def __init__(self, spacing=10, **kargs):
+        MTWidget.__init__(self, **kargs)
         self.spacing = spacing
-
-    def draw(self):
-        MTWidget.draw(self)
 
     def add_widget(self,w):
         MTWidget.add_widget(self, w)
@@ -22,8 +18,4 @@ class HorizontalLayout(MTRectangularWidget):
                 cur_x += w.width + spacing
             except:
                 pass
-
-
-
-
 

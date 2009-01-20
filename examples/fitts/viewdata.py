@@ -8,8 +8,8 @@ import pickle, pprint
 
 
 class ControlDialog(MTDragableWidget):
-    def __init__(self, text, parent):
-        MTDragableWidget.__init__(self,parent, size = (400,600))
+    def __init__(self, text):
+        MTDragableWidget.__init__(self, size = (400,600))
         self.label = pyglet.text.Label(text ,x=200, y= 900)
         
     def draw(self):
@@ -19,8 +19,8 @@ class ControlDialog(MTDragableWidget):
         self.label.draw()
 
 class Plot(MTDragableWidget):
-    def __init__(self, function, parent):
-        MTDragableWidget.__init__(self,parent, size = (800,600))
+    def __init__(self, function):
+        MTDragableWidget.__init__(self, size = (800,600))
         self.function = function
         
         
@@ -39,17 +39,17 @@ class Plot(MTDragableWidget):
             drawCircle(pos=(x,y), radius = 1  )
     
 class DataViewer(MTContainer):
-    def __init__(self, data_file, parent=None):
-        MTContainer.__init__(self, parent=parent)
+    def __init__(self, data_file):
+        MTContainer.__init__(self)
         self.data_file = data_file
         
         pkl_file = open(data_file, 'rb')
         self.data = pickle.load(pkl_file)
              
-        self.layers[0].append(Plot(self.size_vs_speed(), self) )
+        self.layers[0].append(Plot(self.size_vs_speed()) )
         
         caption = "Number of total records: " + str(len(self.data))
-        self.layers[0].append(ControlDialog(caption,self))
+        self.layers[0].append(ControlDialog(caption))
      
     def size_vs_speed(self):
         function = {}

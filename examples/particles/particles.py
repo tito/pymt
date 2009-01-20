@@ -8,11 +8,9 @@ from pymt import *
 import random
 
 class ParticleObject(MTWidget):
-    def __init__(self, parent=None, pos=(0,0), size=(20,20), color=(1,1,1),
+    def __init__(self, pos=(0,0), size=(20,20), color=(1,1,1),
                  rotation=45, type='Squares', **kargs):
-        MTWidget.__init__(self, parent)
-        self.x, self.y = pos
-        self.size = size
+        MTWidget.__init__(self, pos=pos, size=size, color=color)
         self.opacity = 1
         self.color = (random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1), self.opacity)
         self.rotation = 0
@@ -62,8 +60,8 @@ class ParticleObject(MTWidget):
         self.hide()
 
 class ParticleEngine(MTWidget):
-    def __init__(self, parent=None, max=150, **kargs):
-        MTWidget.__init__(self,parent,**kargs)
+    def __init__(self, max=150, **kargs):
+        MTWidget.__init__(self, **kargs)
         #print 'Particle Engine Initialized'
         self.max        = max
         self.particles  = {}
@@ -98,10 +96,10 @@ class ParticleEngine(MTWidget):
                 self.particles[i].advance_frame(dt)
         pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
 
-class ParticleShow(MTRectangularWidget):
-    def __init__(self, parent=None, pos=(0, 0), size=(100, 100), color=(0.6, 0.6, 0.6, 1.0),
+class ParticleShow(MTWidget):
+    def __init__(self, pos=(0, 0), size=(100, 100), color=(0.6, 0.6, 0.6, 1.0),
                  pe=None, **kargs):
-        MTRectangularWidget.__init__(self, parent, (0,0),(1440,900),(0,0,0,0), **kargs)
+        MTWidget.__init__(self, pos=(0,0), size=(1440,900), color=(0,0,0,0), **kargs)
         self.pe = pe
 
     def on_touch_down(self, touches, touchID, x,y):
@@ -116,9 +114,9 @@ class ParticleShow(MTRectangularWidget):
         return True
 
 class SetButton(MTButton):
-    def __init__(self, parent=None, pos=(0, 0), size=(100, 100), label='Hello',
+    def __init__(self, pos=(0, 0), size=(100, 100), label='Hello',
                  pe=None, **kargs):
-        MTButton.__init__(self, parent, pos, size, label,**kargs)
+        MTButton.__init__(self, pos=pos, size=size, label=label, **kargs)
         self.label = label
         self.pe = pe
 

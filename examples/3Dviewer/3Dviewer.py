@@ -10,7 +10,7 @@ from pyglet import *
 from pyglet.gl import *
 
 """sets up 3d projection in on_draw function and then calls seld.draw"""
-class GLWindow(MTRectangularWidget):
+class GLWindow(MTWidget):
 
     def on_draw(self):
         self.draw3D()
@@ -44,8 +44,8 @@ class GLWindow(MTRectangularWidget):
 
 
 class ModelViewer(GLWindow):
-    def __init__(self,parent=None, size=(640,480), pos=(0,0)):
-        GLWindow.__init__(self, parent=parent,size=(640,480), pos=(0,0))
+    def __init__(self, size=(640,480), pos=(0,0)):
+        GLWindow.__init__(self, size=(640,480), pos=(0,0))
         self.touch_position = {}
         try:
             self.model = bunny = OBJ('monkey.obj')

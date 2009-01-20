@@ -27,19 +27,25 @@ class MTWidget(pyglet.event.EventDispatcher):
     Event are dispatched through widget only if it's visible.
     """
 
-    def __init__(self, parent=None, **kargs):
+    def __init__(self, pos=(0,0), size=(100,100), color=(.6,.6,.6,1.0), **kargs):
         global _id_2_widget
         if kargs.has_key('id'):
             self.id = kargs['id']
             _id_2_widget[kargs['id']] = self
 
         pyglet.event.EventDispatcher.__init__(self)
-        self.parent = parent
-        self.children = []
-        self._visible = False
+        self.parent					= None
+        self.children				= []
+        self._visible				= False
+        self._x, self._y			= pos
+        self._width, self._height	= size
+        self._color					= color
+        self.animations				= []
+        self.visible				= True
 
-        self.animations = []
-        self.visible = True
+        self.register_event_type('on_resize')
+        self.register_event_type('on_move')
+
         self.init()
 
     def _set_visible(self, visible):
@@ -50,6 +56,67 @@ class MTWidget(pyglet.event.EventDispatcher):
     def _get_visible(self):
         return self._visible
     visible = property(_get_visible, _set_visible)
+
+    def _set_x(self, x):
+        self._x = x
+        self.dispatch_event('on_move', self._x, self._y)
+    def _get_x(self):
+        return self._x
+    x = property(_get_x, _set_x)
+
+    def _set_y(self, y):
+        self._y = y
+        self.dispatch_event('on_move', self._x, self._y)
+    def _get_y(self):
+        return self._y
+    y = property(_get_y, _set_y)
+
+    def _set_width(self, w):
+        self._width = w
+        self.dispatch_event('on_resize', self._width, self._height)
+    def _get_width(self):
+        return self._width
+    width = property(_get_width, _set_width)
+
+    def _set_height(self, h):
+        self._height = h
+        self.dispatch_event('on_resize', self._width, self._height)
+    def _get_height(self):
+        return self._height
+    height = property(_get_height, _set_height)
+
+
+    def _get_center(self):
+        return (self._x + self._width/2, self._y+self._height/2)
+    def _set_center(self, center):
+        self._x = pos[0] - self.width/2
+        self._y = pos[1] - self.height/2
+        self.dispatch_event('on_move', self._x, self._y)
+    center = property(_get_center, _set_center)
+
+    def _set_pos(self, pos):
+        self._x, self._y = pos
+        self.dispatch_event('on_move', self._x, self._y)
+    def _get_pos(self):
+        return (self._x, self._y)
+    pos = property(_get_pos, _set_pos)
+
+    def _set_size(self, size):
+        self.width, self.height = size
+        self.dispatch_event('on_resize', self.width, self.height)
+    def _get_size(self):
+        return (self.width, self.height)
+    size = property(_get_size, _set_size)
+
+    def _get_color(self):
+        return self._color
+    def _set_color(self, col):
+        if len(col) == 3:
+            self._color = (col[0], col[1], col[2], 1.0)
+        if len(col) == 4:
+            self._color = col
+    color = property(_get_color, _set_color)
+
 
     def dispatch_event(self, event_type, *args):
         '''Dispatch a single event to the attached handlers.
@@ -114,6 +181,16 @@ class MTWidget(pyglet.event.EventDispatcher):
                 if ev in self.event_types:
                     self.event_types.remove(ev)
 
+    def to_local(self,x,y):
+        lx = (x - self.x)
+        ly = (y - self.y)
+        return (lx,ly)
+
+    def collide_point(self, x, y):
+        if( x > self.x  and x < self.x + self.width and
+           y > self.y and y < self.y + self.height  ):
+            return True
+
     def init(self):
         pass
 
@@ -137,7 +214,11 @@ class MTWidget(pyglet.event.EventDispatcher):
             w.dispatch_event('on_draw')
 
     def draw(self):
-        pass
+        """Default drawing function.
+        If you don't want to draw a box,
+        rewrite this function in your own class!"""
+        glColor4d(*self.color)
+        drawRectangle((self.x, self.y), (self.width, self.height))
 
     def add_widget(self, w, front=True):
         if front:
@@ -172,9 +253,13 @@ class MTWidget(pyglet.event.EventDispatcher):
             if anim.label == label:
                 self.animations.remove(anim)
 
-    #hack for now to allow consumtion of events..really we need to work out a different way of propagatiing the events, rather than dispatching for each child
-    def consumes_event(self, x,y):
-        return False
+    def on_resize(self, w, h):
+        for c in self.children:
+            c.dispatch_event('on_resize', w, h)
+
+    def on_move(self, x, y):
+        for c in self.children:
+            c.dispatch_event('on_move', x, y)
 
     def on_touch_down(self, touches, touchID, x, y):
         for w in reversed(self.children):

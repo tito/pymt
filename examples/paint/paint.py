@@ -13,8 +13,8 @@ PLUGIN_DESCRIPTION = 'This is a simple paint canvas.'
 
 
 class Canvas(MTRectangularWidget):
-    def __init__(self, parent=None, min=0, max=100, pos=(0,0), size=(640,480)):
-        MTRectangularWidget.__init__(self,parent, pos, size)
+    def __init__(self, min=0, max=100, pos=(0,0), size=(640,480)):
+        MTRectangularWidget.__init__(self, pos=pos, size=size)
         self.touch_positions = {}
         self.fbo = Fbo((self.width, self.height), push_viewport=False)
         self.bgcolor = (0.8,0.8,0.7,1.0)

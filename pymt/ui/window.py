@@ -6,16 +6,19 @@ from pymt.mtpyglet import TouchWindow
 from pymt.ui.simulator import *
 from pymt.ui.widget import *
 
+class MTWindowRoot(MTWidget):
+	def draw(self):
+		pass
+
 class MTWindow(TouchWindow):
     """MTWindow is a window widget who use MTSimulator
        for generating touch event with mouse.
        Use MTWindow as main window application.
     """
 
-
     def __init__(self, view=None, fullscreen=False, config=None, color=(.3,.3,.3,1.0)):
         self.color = color
-        self.root = MTWidget()
+        self.root = MTWindowRoot()
 
         self.root.parent = self
         if view:
@@ -74,14 +77,11 @@ class MTWindow(TouchWindow):
         self.root.dispatch_event('on_object_up', touches, touchID, id, x, y,angle)
 
 
-
-
 class MTDisplay(MTWidget):
     """MTDisplay is a widget that draw a circle under every touch on window"""
-    def __init__(self, parent=None, color=(1.0, 1.0, 1.0, 0.4), radius=10, **kargs):
-        MTWidget.__init__(self, parent)
+    def __init__(self, color=(1.0, 1.0, 1.0, 0.4), radius=10, **kargs):
+        MTWidget.__init__(self, color=color)
         self.touches    = {}
-        self.color      = color
         self.radius     = radius
 
     def draw(self):
@@ -98,6 +98,7 @@ class MTDisplay(MTWidget):
     def on_touch_up(self, touches, touchID, x, y):
         if self.touches.has_key(touchID):
             del self.touches[touchID]
+
 
 # Register all base widgets
 MTWidgetFactory.register('MTWindow', MTWindow)

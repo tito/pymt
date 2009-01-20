@@ -9,9 +9,8 @@ from pymt.vector import Vector
 
 class MTContainer(MTWidget):
     """MTContainer is a base for container multiple MTWidget."""
-    def __init__(self, children=[], parent=None, layers=1):
-        MTWidget.__init__(self, parent)
-        self.parent	= parent
+    def __init__(self, children=[], layers=1):
+        MTWidget.__init__(self)
         self.layers	= []
         self.obj	= []
         for i in range(layers):
@@ -74,115 +73,10 @@ class MTContainer(MTWidget):
                 break
 
 
-class MTRectangularWidget(MTWidget):
-    """MTRectangularWidget is a MTWidget with a background color, position and dimension"""
-    def __init__(self, parent=None, pos=(0, 0), size=(100, 100), color=(0.6, 0.6, 0.6, 1.0), **kargs):
-        MTWidget.__init__(self,parent, **kargs)
-        self._x, self._y = pos
-        self._width, self._height = size
-        self._color = color
-
-        self.register_event_type('on_resize')
-        self.register_event_type('on_move')
-
-    def get_size(self):
-        return (self.width, self.height)
-
-    def draw(self):
-        glColor4d(*self.color)
-        drawRectangle((self.x, self.y), (self.width, self.height))
-
-    def consumes_event(self, x,y):
-        return self.collide_point(x,y)
-
-    def to_local(self,x,y):
-        lx = (x - self.x)
-        ly = (y - self.y)
-        return (lx,ly)
-
-    def collide_point(self, x, y):
-        if( x > self.x  and x < self.x + self.width and
-           y > self.y and y < self.y + self.height  ):
-            return True
-
-    def on_resize(self, w, h):
-        for c in self.children:
-            c.dispatch_event('on_resize', w, h)
-
-    def on_move(self, x, y):
-        for c in self.children:
-            c.dispatch_event('on_move', x, y)
-
-    def _set_x(self, x):
-        self._x = x
-        self.dispatch_event('on_move', self._x, self._y)
-    def _get_x(self):
-        return self._x
-    x = property(_get_x, _set_x)
-
-    def _set_y(self, y):
-        self._y = y
-        self.dispatch_event('on_move', self._x, self._y)
-    def _get_y(self):
-        return self._y
-    y = property(_get_y, _set_y)
-
-    def _set_width(self, w):
-        self._width = w
-        self.dispatch_event('on_resize', self._width, self._height)
-    def _get_width(self):
-        return self._width
-    width = property(_get_width, _set_width)
-
-    def _set_height(self, h):
-        self._height = h
-        self.dispatch_event('on_resize', self._width, self._height)
-    def _get_height(self):
-        return self._height
-    height = property(_get_height, _set_height)
-
-
-    def _get_center(self):
-        return (self._x + self._width/2, self._y+self._height/2)
-    def _set_center(self, center):
-        self._x = pos[0] - self.width/2
-        self._y = pos[1] - self.height/2
-        self.dispatch_event('on_move', self._x, self._y)
-    center = property(_get_center, _set_center)
-
-    def _set_pos(self, pos):
-        self._x, self._y = pos
-        self.dispatch_event('on_move', self._x, self._y)
-    def _get_pos(self):
-        return (self._x, self._y)
-    pos = property(_get_pos, _set_pos)
-
-    def _set_size(self, size):
-        self.width, self.height = size
-        self.dispatch_event('on_resize', self.width, self.height)
-    def _get_size(self):
-        return (self.width, self.height)
-    size = property(_get_size, _set_size)
-
-
-
-
-    def setColor(self, r,g,b, a=1.0):
-        self.color = (r,b,g,a)
-    def _get_color(self):
-        return self._color
-    def _set_color(self, col):
-        if len(col) == 3:
-            self._color = (col[0], col[1], col[2], 1.0)
-        if len(col) == 4:
-            self._color = col
-    color = property(_get_color, _set_color)
-
-
-class MTDragableWidget(MTRectangularWidget):
+class MTDragableWidget(MTWidget):
     """MTDragableWidget is a moveable widget over the window"""
-    def __init__(self, parent=None, pos=(0,0), size=(100,100), **kargs):
-        MTRectangularWidget.__init__(self,parent, pos, size, **kargs)
+    def __init__(self, pos=(0,0), size=(100,100), **kargs):
+        MTWidget.__init__(self, pos=pos, size=size, **kargs)
         self.state = ('normal', None)
 
     def on_touch_down(self, touches, touchID, x, y):
@@ -201,10 +95,10 @@ class MTDragableWidget(MTRectangularWidget):
             self.state = ('normal', None)
             return True
 
-class MTButton(MTRectangularWidget):
-    """MTButton is a button implementation using MTRectangularWidget"""
-    def __init__(self, parent=None, pos=(0, 0), size=(100, 100), label='Button', **kargs):
-        MTRectangularWidget.__init__(self,parent, pos, size, **kargs)
+class MTButton(MTWidget):
+    """MTButton is a button implementation using MTWidget"""
+    def __init__(self, pos=(0, 0), size=(100, 100), label='Button', **kargs):
+        MTWidget.__init__(self, pos=pos, size=size, **kargs)
         self.register_event_type('on_click')
         self.state          = ('normal', 0)
         self.clickActions   = []
@@ -250,8 +144,8 @@ class MTButton(MTRectangularWidget):
 
 class MTImageButton(MTButton):
     """MTImageButton is a enhanced MTButton that draw an image instead of a text"""
-    def __init__(self, image_file, parent=None, pos=(0,0), size=(1,1), scale = 1.0, **kargs):
-        MTButton.__init__(self,parent,pos,size)
+    def __init__(self, image_file, pos=(0,0), size=(1,1), scale = 1.0, **kargs):
+        MTButton.__init__(self, pos=pos, size=size)
         img                 = pyglet.image.load(image_file)
         self.image          = pyglet.sprite.Sprite(img)
         self.image.x        = self.x
@@ -270,10 +164,10 @@ class MTImageButton(MTButton):
         self.image.draw()
 
 
-class MTScatterWidget(MTRectangularWidget):
-    """MTScatterWidget is a scatter widget based on MTRectangularWidget"""
-    def __init__(self, parent=None, pos=(0,0), size=(100,100), **kargs):
-        MTRectangularWidget.__init__(self,parent, pos, size, **kargs)
+class MTScatterWidget(MTWidget):
+    """MTScatterWidget is a scatter widget based on MTWidget"""
+    def __init__(self, pos=(0,0), size=(100,100), **kargs):
+        MTWidget.__init__(self, pos=pos, size=size, **kargs)
         self.touches = []
         self.rotation = 0.0
         self.zoom  = 1.0
@@ -416,8 +310,8 @@ class MTScatterWidget(MTRectangularWidget):
 
 class MTScatterImage(MTScatterWidget):
     """MTZoomableWidget is a zoomable Image widget"""
-    def __init__(self, img_src,parent=None, pos=(0,0), size=(100,100)):
-        MTScatterWidget.__init__(self,parent, pos, size)
+    def __init__(self, img_src, pos=(0,0), size=(100,100)):
+        MTScatterWidget.__init__(self, pos=pos, size=size)
         img         = pyglet.image.load(img_src)
         self.image  = pyglet.sprite.Sprite(img)
 
@@ -429,10 +323,10 @@ class MTScatterImage(MTScatterWidget):
         #MTScatterWidget.draw(self)
 
 
-class MTSlider(MTRectangularWidget):
-    """MTSlider is an implementation of a scrollbar using MTRectangularWidget"""
-    def __init__(self, parent=None, min=0, max=100, pos=(10,10), size=(30,400), alignment='horizontal', padding=8, color=(0.8, 0.8, 0.4, 1.0)):
-        MTRectangularWidget.__init__(self, parent, pos, size)
+class MTSlider(MTWidget):
+    """MTSlider is an implementation of a scrollbar using MTWidget"""
+    def __init__(self, min=0, max=100, pos=(10,10), size=(30,400), alignment='horizontal', padding=8, color=(0.8, 0.8, 0.4, 1.0)):
+        MTWidget.__init__(self, pos=pos, size=size)
         self.touchstarts = [] # only react to touch input that originated on this widget 
         self.alignment = alignment
         self.color = color
@@ -469,10 +363,10 @@ class MTSlider(MTRectangularWidget):
             self.touchstarts.remove(touchID)
 
 
-class MTColorPicker(MTRectangularWidget):
-    """MTColorPicker is a implementation of a color picker using MTRectangularWidget"""
-    def __init__(self, parent=None, min=0, max=100, pos=(0,0), size=(640,480),target=[]):
-        MTRectangularWidget.__init__(self,parent, pos, size)
+class MTColorPicker(MTWidget):
+    """MTColorPicker is a implementation of a color picker using MTWidget"""
+    def __init__(self, min=0, max=100, pos=(0,0), size=(640,480),target=[]):
+        MTWidget.__init__(self, pos=pos, size=size)
         self.canvas = target[0]
         self.sliders = [ MTSlider(max=255, size=(30,200), color=(1,0,0,1)),
                         MTSlider(max=255, size=(30,200), color=(0,1,0,1)),
@@ -531,10 +425,10 @@ class MTColorPicker(MTRectangularWidget):
             del self.touch_positions[touchID]
 
 
-class MTObjectWidget(MTRectangularWidget):
+class MTObjectWidget(MTWidget):
     """MTObjectWidget is a widget who draw an object on table"""
-    def __init__(self, parent=None, pos=(0, 0), size=(100, 100)):
-        MTRectangularWidget.__init__(self,parent, pos, size)
+    def __init__(self, pos=(0, 0), size=(100, 100)):
+        MTWidget.__init__(self, pos=pos, size=size)
 
         self.state      = ('normal', None)
         self.visible    = False
@@ -582,7 +476,6 @@ class MTObjectWidget(MTRectangularWidget):
 
 # Register all base widgets
 MTWidgetFactory.register('MTContainer', MTContainer)
-MTWidgetFactory.register('MTRectangularWidget', MTRectangularWidget)
 MTWidgetFactory.register('MTDragableWidget', MTDragableWidget)
 MTWidgetFactory.register('MTButton', MTButton)
 MTWidgetFactory.register('MTImageButton', MTImageButton)

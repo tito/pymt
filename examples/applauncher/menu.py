@@ -7,10 +7,10 @@ p = MTPlugins(plugin_paths=['../'])
 p.search_plugins()
 
 class MTBubbleWidget(MTWidget):
-    def __init__(self, parent=None, pos=(0,0), color=(0.6,0.6,0.6,1.0), **kargs):
+    def __init__(self, pos=(0,0), color=(0.6,0.6,0.6,1.0), **kargs):
         self.x, self.y = pos
         self.color  = color
-        MTWidget.__init__(self,parent, **kargs)
+        MTWidget.__init__(self, pos=pos, color=color, **kargs)
 
         self._scale  = 1
         self._icon   = None
@@ -112,9 +112,8 @@ class MTBubbleWidget(MTWidget):
 
 class MTMenuNode(MTBubbleWidget):
 
-    def __init__(self, parent=None, pos=(0,0), size=30, color=(1,1,1,1)):
-        MTBubbleWidget.__init__(self,
-            parent=parent, pos=pos, color=color)
+    def __init__(self, pos=(0,0), size=30, color=(1,1,1,1)):
+        MTBubbleWidget.__init__(self, pos=pos, color=color)
         self.pos = pos
         self.visible_children   = False
         self.move_track         = None
@@ -442,7 +441,7 @@ class MTInnerWindow(MTScatterWidget):
     def __init__(self, parent=None, pos=(0,0), size=(100,100),title='Plugin window', **kargs):
         MTScatterWidget.__init__(self, pos=pos, size=size, **kargs)
         self.padding = 15
-        self.container = MTRectangularWidget(parent=self,
+        self.container = MTWidget(parent=self,
             pos=(self.padding,self.padding),size=(size[0]-self.padding*2,size[1]-self.padding*2))
         self.fbo = Fbo(size=(size[0]-self.padding*2,size[1]-self.padding*2))
         self.needs_fbo_resize = False

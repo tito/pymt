@@ -3,8 +3,8 @@ from pymt.ui.widget import MTWidget
 from pymt.ui.factory import MTWidgetFactory
 
 class XMLWidget(MTWidget):
-    def __init__(self, parent=None, xml=None):
-        MTWidget.__init__(self, parent)
+    def __init__(self, xml=None):
+        MTWidget.__init__(self)
         if xml is not None:
             self.loadString(xml)
 
@@ -13,7 +13,7 @@ class XMLWidget(MTWidget):
             class_name = node.nodeName
 
             #create widget
-            nodeWidget  = MTWidgetFactory.get(class_name)( parent=None )
+            nodeWidget  = MTWidgetFactory.get(class_name)()
 
             #set attributes
             for (name, value) in node.attributes.items():

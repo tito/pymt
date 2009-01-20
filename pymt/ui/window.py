@@ -7,8 +7,8 @@ from pymt.ui.simulator import *
 from pymt.ui.widget import *
 
 class MTWindowRoot(MTWidget):
-	def draw(self):
-		pass
+    def draw(self):
+        pass
 
 class MTWindow(TouchWindow):
     """MTWindow is a window widget who use MTSimulator
@@ -103,4 +103,3 @@ class MTDisplay(MTWidget):
 # Register all base widgets
 MTWidgetFactory.register('MTWindow', MTWindow)
 MTWidgetFactory.register('MTDisplay', MTDisplay)
-

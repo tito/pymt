@@ -411,7 +411,6 @@ class MTObjectWidget(MTWidget):
         glPopMatrix()
 
 # Register all base widgets
-MTWidgetFactory.register('MTContainer', MTContainer)
 MTWidgetFactory.register('MTDragableWidget', MTDragableWidget)
 MTWidgetFactory.register('MTButton', MTButton)
 MTWidgetFactory.register('MTImageButton', MTImageButton)

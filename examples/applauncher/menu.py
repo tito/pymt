@@ -8,9 +8,9 @@ p.search_plugins()
 
 class MTBubbleWidget(MTWidget):
     def __init__(self, pos=(0,0), color=(0.6,0.6,0.6,1.0), **kargs):
-        self.x, self.y = pos
-        self.color  = color
         MTWidget.__init__(self, pos=pos, color=color, **kargs)
+        self.color  = color
+
 
         self._scale  = 1
         self._icon   = None
@@ -496,14 +496,14 @@ class MTInnerWindow(MTScatterWidget):
             return self.container.dispatch_event('on_touch_move', touches, touchID, lx, ly)
         return MTScatterWidget.on_touch_move(self, touches, touchID, x, y)
 
-        
+
     def on_touch_up(self, touches, touchID, x, y):
         lx,ly = self.transposeTouch(x,y)
         if self.container.collide_point(lx, ly):
             return self.container.dispatch_event('on_touch_up', touches, touchID, lx, ly)
 
         MTScatterWidget.on_touch_up(self, touches, touchID, x, y)
-            
+
         w,h = int(self.width*self.zoom)-self.padding*2, int(self.height*self.zoom)-self.padding*2
         self.container.size = (w,h)
         del self.fbo
@@ -602,4 +602,3 @@ if __name__ == '__main__':
     w.add_widget(menu)
     w.add_widget(MTDisplay())
     runTouchApp()
-

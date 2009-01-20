@@ -59,14 +59,14 @@ class MTWidget(pyglet.event.EventDispatcher):
 
     def _set_x(self, x):
         self._x = x
-        self.dispatch_event('on_move', self._x, self._y)
+        self.dispatch_event('on_move', self.x, self.y)
     def _get_x(self):
         return self._x
     x = property(_get_x, _set_x)
 
     def _set_y(self, y):
         self._y = y
-        self.dispatch_event('on_move', self._x, self._y)
+        self.dispatch_event('on_move', self.x, self.y)
     def _get_y(self):
         return self._y
     y = property(_get_y, _set_y)
@@ -85,7 +85,6 @@ class MTWidget(pyglet.event.EventDispatcher):
         return self._height
     height = property(_get_height, _set_height)
 
-
     def _get_center(self):
         return (self._x + self._width/2, self._y+self._height/2)
     def _set_center(self, center):
@@ -98,7 +97,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         self._x, self._y = pos
         self.dispatch_event('on_move', self._x, self._y)
     def _get_pos(self):
-        return (self._x, self._y)
+        return (self.x, self.y)
     pos = property(_get_pos, _set_pos)
 
     def _set_size(self, size):

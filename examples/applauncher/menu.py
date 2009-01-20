@@ -114,7 +114,6 @@ class MTMenuNode(MTBubbleWidget):
 
     def __init__(self, pos=(0,0), size=30, color=(1,1,1,1)):
         MTBubbleWidget.__init__(self, pos=pos, color=color)
-        self.pos = pos
         self.visible_children   = False
         self.move_track         = None
         self.move_action        = False

@@ -28,7 +28,7 @@ class MTVideoPlayPause(MTImageButton):
         self.image          = pyglet.sprite.Sprite(img)
         self.image.x        = self.x
         self.image.y        = self.y
-        self.image.scale    = self.scale
+        self.image.scale    = 0.35
         self.width          = self.image.width
         self.height         = self.image.height
         self.image.draw()
@@ -41,6 +41,7 @@ class MTVideoTimeline(MTSlider):
         self.max = duration
         self.x, self.y = pos[0], pos[1]
         self.width , self.height = self.vid.get_texture().width, 30
+        self.length = 0
         
     def draw(self):
         glEnable(GL_BLEND);
@@ -52,14 +53,21 @@ class MTVideoTimeline(MTSlider):
         drawRectangle(pos=(x,y), size=(w,h))
         # draw inner rectangle
         glColor4f(*self.color)
-        length = int(self.width*(float(self.value)/self.max))
-        drawRectangle(pos=(self.x+p2,self.y+p2+11), size=(length,(h-self.padding)/2))
+        self.length = int(self.width*(float(self.value)/self.max))
+        drawRectangle(pos=(self.x+p2,self.y+p2+11), size=(self.length,(h-self.padding)/2))
         glColor4f(0.713, 0.713, 0.713, 1.0)
-        drawRectangle(pos=(self.x+p2,self.y+p2), size=(length,(h-self.padding)/2))
+        drawRectangle(pos=(self.x+p2,self.y+p2), size=(self.length,(h-self.padding)/2))
+        
         
     def on_draw(self):
-        self.value = self.vid.time
+        self.value = self.vid.time % self.max
+        if self.vid.time == self.max:
+            print "movie ended"
+            self.value = 0
+            self.vid.seek(0)
+            self.length = 0
         self.draw()
+            
         
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -89,14 +97,14 @@ class MTVideo(MTScatterWidget):
         self.texH = self.player.get_texture().height
 
     def draw(self):
-        #print "Time:",self.player.time
         glPushMatrix()
         enable_blending()
-        glColor4f(0,0,0,0.5)
+        glColor4f(1,1,1,0.5)
         drawRectangle((-10,-10),(self.texW+20,self.texH+20))
         glColor3d(1,1,1)
         self.player.get_texture().blit(0,0)
-        glPopMatrix()   
+        glPopMatrix()
+
 
 if __name__ == '__main__':
     w = MTWindow()

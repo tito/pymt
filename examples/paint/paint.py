@@ -12,9 +12,9 @@ PLUGIN_DESCRIPTION = 'This is a simple paint canvas.'
 #psyco.profile(0.7)
 
 
-class Canvas(MTRectangularWidget):
+class Canvas(MTWidget):
     def __init__(self, min=0, max=100, pos=(0,0), size=(640,480)):
-        MTRectangularWidget.__init__(self, pos=pos, size=size)
+        MTWidget.__init__(self, pos=pos, size=size)
         self.touch_positions = {}
         self.fbo = Fbo((self.width, self.height), push_viewport=False)
         self.bgcolor = (0.8,0.8,0.7,1.0)

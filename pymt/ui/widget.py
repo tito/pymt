@@ -120,7 +120,7 @@ class MTWidget(pyglet.event.EventDispatcher):
 
     def dispatch_event(self, event_type, *args):
         '''Dispatch a single event to the attached handlers.
-        
+
         The event is propogated to all handlers from from the top of the stack
         until one returns `EVENT_HANDLED`.  This method should be used only by
         `EventDispatcher` implementors; applications should call
@@ -214,11 +214,7 @@ class MTWidget(pyglet.event.EventDispatcher):
             w.dispatch_event('on_draw')
 
     def draw(self):
-        """Default drawing function.
-        If you don't want to draw a box,
-        rewrite this function in your own class!"""
-        glColor4d(*self.color)
-        drawRectangle((self.x, self.y), (self.width, self.height))
+        pass
 
     def add_widget(self, w, front=True):
         if front:
@@ -303,4 +299,3 @@ class MTWidget(pyglet.event.EventDispatcher):
 
 # Register all base widgets
 MTWidgetFactory.register('MTWidget', MTWidget)
-

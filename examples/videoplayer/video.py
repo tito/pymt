@@ -29,6 +29,25 @@ class MTVideoPlayPause(MTImageButton):
 
             #set the correct image
             self.image = self.images[self.playState]  #playState is one of the two strings that are used as keys/lookups in the dictionary
+          
+
+class MTVideoMute(MTImageButton):
+    def __init__(self,image_file='mute.png', pos=(0, 0),size=(100, 100),player = None,**kargs):
+        MTImageButton.__init__(self,image_file,pos, size,**kargs)
+        self.vid = player
+        self.playState = "NotMute"
+
+        self.scale    = 0.75
+
+    def on_touch_down(self, touches, touchID, x,y):
+        if self.collide_point(x,y):
+            self.state = ('down', touchID)
+            if self.playState == "NotMute":
+                self.vid.volume = 0.0
+                self.playState = "Mute"
+            elif self.playState == "Mute":
+                self.vid.volume = 1.0
+                self.playState = "NotMute"
 
 class MTVideoTimeline(MTSlider):
     def __init__(self, min=0, max=30, pos=(5,5), size=(150,30), alignment='horizontal', padding=8, color=(0.78, 0.78, 0.78, 1.0), player=None,duration=100):
@@ -37,7 +56,7 @@ class MTVideoTimeline(MTSlider):
         self.vid = player
         self.max = duration
         self.x, self.y = pos[0], pos[1]
-        self.width , self.height = self.vid.get_texture().width-60,30
+        self.width , self.height = self.vid.get_texture().width-83,30
         self.length = 0
 
     def draw(self):
@@ -103,7 +122,9 @@ class MTVideo(MTScatterWidget):
         #the pos, size is relative to this parent widget...if it scales etc so will these
         self.button = MTVideoPlayPause(image_file='play.png',pos=(0,0), player=self.player)
         self.add_widget(self.button)
-        self.timeline = MTVideoTimeline(pos=(40,3),player=self.player,duration=self.sourceDuration)
+        self.mutebutton = MTVideoMute(image_file='mute.png',pos=(36,0), player=self.player)
+        self.add_widget(self.mutebutton)
+        self.timeline = MTVideoTimeline(pos=(72,3),player=self.player,duration=self.sourceDuration)
         self.add_widget(self.timeline )
 
     def draw(self):
@@ -114,6 +135,7 @@ class MTVideo(MTScatterWidget):
         glColor3d(1,1,1)
         self.player.get_texture().blit(0,0)
         self.button.draw()
+        self.mutebutton.draw()
         self.timeline.draw()
         glPopMatrix()
 

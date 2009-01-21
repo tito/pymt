@@ -505,7 +505,7 @@ class MTInnerWindow(MTScatterWidget):
         glPopMatrix()
         self.fbo.release()
 
-        MTScatterWidget.on_draw(self)
+        self.draw()
 
     def draw(self):
         glPushMatrix()

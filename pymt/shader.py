@@ -42,6 +42,7 @@ class Shader(object):
 
     def __setitem__(self, name, value):
         """pass a variable to the shader"""
+        #print "setting", name, value
         if isinstance(value, float):
             self.set_uniform_f(name, value)
         else:

@@ -145,7 +145,11 @@ def drawLine(points, width=5.0, color=(1.0,1.0,1.0)):
 
 ### FBO, PBO, opengl stuff
 class Fbo:
+
+    fbo_stack = [0]
+
     def bind(self):
+        Fbo.fbo_stack.append(self.framebuffer)
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
         if self.push_viewport:
             glPushAttrib(GL_VIEWPORT_BIT)
@@ -154,7 +158,8 @@ class Fbo:
     def release(self):
         if self.push_viewport:
             glPopAttrib()
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0)
+        Fbo.fbo_stack.pop()
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, Fbo.fbo_stack[-1])
 
     def __init__(self, size=(1024,1024), push_viewport=False):
         self.framebuffer    = c_uint(0)
@@ -188,5 +193,3 @@ class Fbo:
     def __del__(self):
         glDeleteFramebuffersEXT(1, byref(self.framebuffer))
         glDeleteRenderbuffersEXT(1, byref(self.depthbuffer))
-
-

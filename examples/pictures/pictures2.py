@@ -27,7 +27,7 @@ class MTScatteredObj(MTScatterWidget):
        glPushMatrix()
        enable_blending()
        glColor4f(0.9,0.9,0.9,1)
-       drawRectangle((-10,-10),(self.width+20,self.width*self.aspectRatio+20))
+       drawRectangle((-6,-6),(self.width+12,self.width*self.aspectRatio+12))
        glScaled(float(self.width)/float(self.image.width), float(self.width*self.aspectRatio)/float(self.image.height), 1.0)
        self.image.draw()
        glPopMatrix()
@@ -92,7 +92,7 @@ class ShadowSurface(MTWidget):
         self.fbo.bind()              #bind the fbo...all openGl drawing calls now go into the fbo texture instead of teh screen
         glClearColor(*self.color)    #set clear color
         glClear(GL_COLOR_BUFFER_BIT) #clear the color of the fbo texture
-        self.bg_image.draw()
+        #self.bg_image.draw()
         self.drawing_shadows = True #this is used in draw, while we are drawing shadows, we dont want to draw ourselves...but MTWidget.on_draw(self) will draw this and child widgets
         self.shadow_shader.use()    #use the shaodw shader...it just draws all teh child widgets as completly black
         MTWidget.on_draw(self)      #this will draw the child widgets
@@ -113,7 +113,7 @@ class ShadowSurface(MTWidget):
         self.blur_shader.use()
         self.blur_shader['size_x'] = float(self.width)
         self.blur_shader['size_y'] = float(self.height)
-        self.blur_shader['kernel_size'] = 9.0
+        self.blur_shader['kernel_size'] = 15.0
         self.blur_shader['direction'] = 0.0
         drawTexturedRectangle(self.fbo.texture, (0,0),(self.width,self.height))
         self.blur_shader.stop()
@@ -124,7 +124,7 @@ class ShadowSurface(MTWidget):
         self.blur_shader.use()
         self.blur_shader['size_x'] = float(self.width)
         self.blur_shader['size_y'] = float(self.height)
-        self.blur_shader['kernel_size'] = 9.0
+        self.blur_shader['kernel_size'] = 15.0
         self.blur_shader['direction'] = 1.0
         drawTexturedRectangle(self.fbo2.texture, (0,0),(self.width,self.height))
         self.blur_shader.stop()

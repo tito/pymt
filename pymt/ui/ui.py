@@ -254,7 +254,7 @@ class MTScatterWidget(MTWidget):
 
         #if teh children didnt handle it, we bring to front & keep track of touches for rotate/scale/zoom action
         self.bring_to_front()
-        if not self.haveTouch(touchID):
+        if not self.haveTouch(touchID) and len(self.touches) <=2:
             self.touches.append( {"id":touchID, "start_pos":Vector(x,y), "pos":Vector(x,y)} )
 
         return True
@@ -283,7 +283,14 @@ class MTScatterWidget(MTWidget):
 
         #if this touch is used for rotate_scale_move, clean up
         if self.haveTouch(touchID):
-            self.touches = []
+            if len(self.touches)  < 2:
+                self.touches = []
+                return True
+            #if this was one of the two..only remove one of them
+            if self.touches[0]['id'] == touchID:
+                self.touches = [self.touches[1]]
+            else:
+                self.touches = [self.touches[0]]
             return True
 
 

@@ -6,4 +6,5 @@ from layout import *
 from window import *
 from simulator import *
 from ui import *
+from wallpaperwindow import *
 

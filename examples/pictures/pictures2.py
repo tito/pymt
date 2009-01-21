@@ -21,6 +21,8 @@ class MTScatteredObj(MTScatterWidget):
         self.image  = pyglet.sprite.Sprite(img)
         self.aspectRatio = float(self.image.height)/float(self.image.width)
         MTScatterWidget.__init__(self, pos=pos, size=(size[0],size[0]*self.aspectRatio))
+        self.x = self.x - int(self.x/4)
+        self.y = self.y - int(self.y/4)
         self.rotation = rotation
         
     def draw(self):
@@ -54,17 +56,11 @@ class BackgroundImage(MTWidget):
  
 def pymt_plugin_activate(w, ctx):
     ctx.c = MTWidget()
-    back = BackgroundImage(image_file='back.jpg',size=(1,1),scale = 1.25)
-    ctx.c.add_widget(back)
     for i in range (5):
         img_src = '../pictures/images/pic'+str(i+1)+'.jpg'
         teta = float((360/5)*i*(math.pi/180))
-        #print "Teta: ",teta
-        x = int((550)+ (200*math.cos(teta)))
-        y = int((340)+ (200*math.sin(teta)))
-        print "x,y",x,y
-        #x = int(random.uniform((w.width/2)-400, (w.width/2)+100))
-        #y = int(random.uniform((w.height/2)-100, (w.height/2)+100))
+        x = int((w.width/2)+ (200*math.cos(teta)))
+        y = int((w.height/2)+ (200*math.sin(teta)))
         size = 300
         rot = (360/5)*i
         b = MTScatteredObj(img_src, (x,y),(size,size), rot)
@@ -76,7 +72,7 @@ def pymt_plugin_deactivate(w, ctx):
     w.remove_widget(ctx.c)
 
 if __name__ == '__main__':
-    w = MTWindow()
+    w = MTWallpaperWindow('back.jpg')
     w.set_fullscreen()
     ctx = MTContext()
     pymt_plugin_activate(w, ctx)  

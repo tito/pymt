@@ -128,6 +128,8 @@ class MTScatterWidget(MTWidget):
         self.rotation = 0.0
         self.zoom  = 1.0
         self.testPos = Vector(0,0)
+        self.draw_children = True
+
 
     def draw(self):
         glColor4d(1,0,1,0)
@@ -143,7 +145,8 @@ class MTScatterWidget(MTWidget):
         glColor3d(1,0,0)
         self.draw()
                 #calling the MTWidget super method propagates to children
-        MTWidget.on_draw(self)
+        if self.draw_children:
+            MTWidget.on_draw(self)
         glPopMatrix()
 
 

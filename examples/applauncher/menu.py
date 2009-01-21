@@ -503,9 +503,11 @@ class MTInnerWindow(MTScatterWidget):
         self.container.dispatch_event('on_draw')
         glMatrixMode(GL_MODELVIEW)
         glPopMatrix()
+
         self.fbo.release()
 
-        self.draw()
+        self.draw_children = False
+        MTScatterWidget.on_draw(self)
 
     def draw(self):
         glPushMatrix()

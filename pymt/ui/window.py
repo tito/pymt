@@ -50,9 +50,12 @@ class MTWindow(TouchWindow):
     def remove_widget(self, w):
         self.root.remove_widget(w)
 
-    def on_draw(self):
+    def draw(self):
         glClearColor(*self.color)
         self.clear()
+
+    def on_draw(self):
+        self.draw()
         self.root.dispatch_event('on_draw')
         self.sim.draw()
 

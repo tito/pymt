@@ -55,7 +55,8 @@ class MTButton(MTWidget):
     """MTButton is a button implementation using MTWidget"""
     def __init__(self, pos=(0, 0), size=(100, 100), label='Button', **kargs):
         MTWidget.__init__(self, pos=pos, size=size, **kargs)
-        self.register_event_type('on_click')
+        self.register_event_type('on_press')
+        self.register_event_type('on_release')
         self.state          = ('normal', 0)
         self.clickActions   = []
         self.label_obj      = Label(font_size=10, bold=True, )
@@ -84,6 +85,7 @@ class MTButton(MTWidget):
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
             self.state = ('down', touchID)
+            self.dispatch_event('on_press', touchID, x,y)
             return True
 
     def on_touch_move(self, touches, touchID, x, y):
@@ -94,7 +96,7 @@ class MTButton(MTWidget):
     def on_touch_up(self, touches, touchID, x, y):
         if self.state[1] == touchID and self.collide_point(x,y):
             self.state = ('normal', 0)
-            self.dispatch_event('on_click', touchID, x,y)
+            self.dispatch_event('on_release', touchID, x,y)
             return True
 
 

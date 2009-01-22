@@ -128,9 +128,9 @@ class CreatorWidget(MTContainer):
             self.parent.add_widget(Rhombus(pos=(200,200), size=(150,120), color=(.3,.3,1,.8)))
 
 
-        self.squareButton.push_handlers(on_click=newBox)
-        self.ovalButton.push_handlers(on_click=newOval)
-        self.rhombusButton.push_handlers(on_click=newRhombus)
+        self.squareButton.push_handlers(on_release=newBox)
+        self.ovalButton.push_handlers(on_release=newOval)
+        self.rhombusButton.push_handlers(on_release=newRhombus)
 
         self.add_widget(self.squareButton)
         self.add_widget(self.ovalButton)

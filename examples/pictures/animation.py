@@ -24,7 +24,7 @@ for i in range (20):
                 w.start_animations('zoom')
                 w.status = 'zoomed'
 
-        b.push_handlers(on_click=curry(click,b)  )
+        b.push_handlers(on_release=curry(click,b)  )
         c.add_widget(b)
 
 w = MTWindow()

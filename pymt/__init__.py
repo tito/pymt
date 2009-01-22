@@ -16,6 +16,7 @@ from obj import OBJ
 from shader import *
 from vector import Vector
 from plugin import *
+from loader import *
 from pymt.ui import *
 
 def curry(fn, *cargs, **ckwargs):

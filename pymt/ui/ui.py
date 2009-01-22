@@ -327,7 +327,7 @@ class MTSlider(MTWidget):
         self.value = 77
 
     def on_value_change(self, value):
-        print "slider value changed", value
+        pass
 
     def draw(self):
         glEnable(GL_BLEND);

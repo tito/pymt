@@ -122,7 +122,6 @@ class MTToggleButton(MTButton):
 
     def on_touch_move(self, touches, touchID, x, y):
         if self.state[1] == touchID and not self.collide_point(x,y):
-            self.state = ('normal', 0)
             return True
 
     def on_touch_up(self, touches, touchID, x, y):

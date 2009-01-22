@@ -6,6 +6,6 @@ from layout import *
 from window import *
 from simulator import *
 from ui import *
-from VideoWidget import *
+from videowidget import *
 from wallpaperwindow import *
 

@@ -1,5 +1,5 @@
 from distutils.core import setup
-from distutils.sysconfig import get_python_lib; 
+from distutils.sysconfig import get_python_lib 
 import sys
 
 

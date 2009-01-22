@@ -133,7 +133,7 @@ class MTToggleButton(MTButton):
 
 class MTImageButton(MTButton):
     """MTImageButton is a enhanced MTButton that draw an image instead of a text"""
-    def __init__(self, image_file, pos=(0,0), size=(1,1), scale = 1.0, **kargs):
+    def __init__(self, image_file, pos=(0,0), size=(1,1), scale = 1.0, opacity = 100, **kargs):
         MTButton.__init__(self, pos=pos, size=size)
         img                 = pyglet.image.load(image_file)
         self.image          = pyglet.sprite.Sprite(img)
@@ -143,7 +143,7 @@ class MTImageButton(MTButton):
         self.image.scale    = self.scale
         self.width          = self.image.width
         self.height         = self.image.height
-
+       
     def draw(self):
         self.image.x        = self.x
         self.image.y        = self.y

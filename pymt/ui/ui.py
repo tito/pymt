@@ -350,7 +350,7 @@ class MTScatterImage(MTScatterWidget):
 
 class MTSlider(MTWidget):
     """MTSlider is an implementation of a scrollbar using MTWidget"""
-    def __init__(self, min=0, max=100, pos=(10,10), size=(30,400), alignment='horizontal', padding=8, color=(0.8, 0.8, 0.4, 1.0)):
+    def __init__(self, min=77, max=100, pos=(10,10), size=(30,400), alignment='horizontal', padding=8, color=(0.8, 0.8, 0.4, 1.0)):
         MTWidget.__init__(self, pos=pos, size=size)
         self.register_event_type('on_value_change')
         self.touchstarts = [] # only react to touch input that originated on this widget
@@ -359,10 +359,17 @@ class MTSlider(MTWidget):
         self.padding = padding
         self.min, self.max = min, max
         self.value = self.min
-        self.value = 77
 
     def on_value_change(self, value):
         pass
+    
+    def set_value(self, value):
+        self.value = value
+        self.dispatch_event('on_value_change', self.value)
+        self.draw()
+        
+    def get_value():
+        return self.value
 
     def draw(self):
         glEnable(GL_BLEND);

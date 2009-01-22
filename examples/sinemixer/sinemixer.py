@@ -13,12 +13,14 @@ PLUGIN_DESCRIPTION = 'This plugin is a demonstration of the integration between 
 from pymt import *
 from pyglet.gl import *
 from ounk import ounklib as ounk
+import time
 
 def pymt_plugin_activate(w, ctx):
     ounk.setGlobalDuration(-1)
     ounk.oscReceive(bus=['amp0','amp1','amp2','amp3','pitch0','pitch1','pitch2','pitch3'], adress=['/amp0','/amp1','/amp2','/amp3','/pitch0','/pitch1','/pitch2','/pitch3'], port = 9005, portamento = 0.05)
     ounk.sine(pitch=[1,1,1,1], pitchVar=['pitch0','pitch1','pitch2','pitch3'], amplitudeVar=['amp0','amp1','amp2','amp3'])
     ounk.startCsound()
+    time.sleep(1.5)
     
     ctx.c = MTWidget()
     window_size = w.get_size()
@@ -27,11 +29,16 @@ def pymt_plugin_activate(w, ctx):
     buttons = []
     for widget in range(4):
         sliders.append(MTSlider(min = 100, max = 1000, pos = (window_size[0]*((widget + 1)/5.) - size[0]/2., 90), size = size))
+        sliders[widget].set_value(300)
         buttons.append(MTButton(label = '', pos = (window_size[0]*((widget + 1)/5.) - size[0]/2., 30), size = (size[0], size[0])))
         ctx.c.add_widget(sliders[widget])
         ctx.c.add_widget(buttons[widget])
     s1,s2,s3,s4 = sliders
     b1,b2,b3,b4 = buttons
+    
+    # Force init of the pitches
+    for val in range(4):
+        ounk.sendOscControl(300, adress='/pitch{0}'.format(val), port=9005)
     
     @s1.event
     def on_value_change(value):

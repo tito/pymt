@@ -86,6 +86,8 @@ class MTVideoTimeline(MTSlider):
 
 
     def on_draw(self):
+        if not self.visible:
+            return
         self.value = self.vid.time % self.max
         if self.vid.time == self.max:
             self.value = 0

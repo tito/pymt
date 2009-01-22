@@ -53,7 +53,7 @@ class MTDragableWidget(MTWidget):
 
 class MTButton(MTWidget):
     """MTButton is a button implementation using MTWidget"""
-    def __init__(self, pos=(0, 0), size=(100, 100), label='Button', **kargs):
+    def __init__(self, pos=(0, 0), size=(100, 100), label='', **kargs):
         MTWidget.__init__(self, pos=pos, size=size, **kargs)
         self.register_event_type('on_press')
         self.register_event_type('on_release')
@@ -81,7 +81,7 @@ class MTButton(MTWidget):
 
         #self.label_obj.x, self.label_obj.y = self.x +self.width/2 , self.y + +self.height/2
         #self.label_obj.draw()
-        drawLabel("test", self.center)
+        drawLabel(self.label, self.center)
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):

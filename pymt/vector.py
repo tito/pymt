@@ -1,7 +1,11 @@
+__docformat__ = 'restructuredtext'
+
 import math
 
 class Vector(object):
-    """Represents a 2D vector."""
+    '''Represents a 2D vector.
+
+    '''
     __slots__ = ('x', 'y')
     def __init__(self, x = 0.0, y = 0.0):
         self.x = float(x)

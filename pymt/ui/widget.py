@@ -3,8 +3,8 @@ import os
 
 from math import *
 from math import sqrt, sin
-from pyglet.gl import *
 from pyglet import *
+from pyglet.gl import *
 from pyglet.text import HTMLLabel, Label
 from pyglet.window import key
 from pymt.graphx import *
@@ -27,7 +27,7 @@ class MTWidget(pyglet.event.EventDispatcher):
     Event are dispatched through widget only if it's visible.
     """
 
-    def __init__(self, pos=(0,0), size=(100,100), color=(.6,.6,.6,1.0), **kargs):
+    def __init__(self, pos=(0,0), size=(100,100), color=(1,1,1,1), **kargs):
         global _id_2_widget
         if kargs.has_key('id'):
             self.id = kargs['id']

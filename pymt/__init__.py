@@ -1,3 +1,13 @@
+r"""PyMT, a multi touch UI toolkit for pyglet.
+
+PyMT is a python module for developing multi-touch enabled media rich applications.
+
+Currently the aim is to allow for quick and easy interaction design and rapid prototype development. There is also a focus on logging tasks or sessions of user interaction to quantitative data and the analysis/visualization of such data.
+
+You can visit http://code.google.com/p/pymt/ for more informations !
+"""
+
+
 from mtpyglet import *
 from graphx import *
 from ui import *

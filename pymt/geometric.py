@@ -1,10 +1,16 @@
+r'''
+Geometric module provide some class to handle 3D Mesh.
+'''
+
 import os
 import warnings
-
+import pyglet
 from pyglet.gl import *
-from pyglet import image
 
 class Material(object):
+    '''
+    This is the material class
+    '''
     diffuse = [.8, .8, .8]
     ambient = [.2, .2, .2]
     specular = [0., 0., 0.]
@@ -16,7 +22,7 @@ class Material(object):
     def __init__(self, name):
         self.name = name
 
-    def apply(self, face=GL_FRONT_AND_BACK):
+    def apply(self, face=pyglet.gl.GL_FRONT_AND_BACK):
         if self.texture:
             glEnable(self.texture.target)
             glBindTexture(self.texture.target, self.texture.id)

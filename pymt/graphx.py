@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from pyglet import *
 from pyglet.gl import *
 from pyglet.graphics import draw
 from pyglet.text import Label
@@ -27,12 +28,14 @@ def disable_blending():
     glDisable(GL_BLEND)
 
 
-
 def set_color(r,g,b,a=1.0):
     glColor4f(r,g,b,a)
 
-_standard_label = Label(text='standard Label', font_size=32, bold=True)
+_standard_label = None
 def drawLabel(text, pos=(0,0),center=True):
+    global _standard_label
+    if _standard_label is None:
+        _standard_label = Label(text='standard Label', font_size=64, bold=True)
     if center:
         _standard_label.anchor_x = 'center'
         _standard_label.anchor_y = 'center'

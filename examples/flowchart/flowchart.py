@@ -111,9 +111,9 @@ class Rhombus(FlowchartObject):
 
 
 
-class CreatorWidget(MTContainer):
+class CreatorWidget(MTWidget):
     def __init__(self,  pos=(100,100)):
-        MTContainer.__init__(self)
+        MTWidget.__init__(self)
         self.pos=pos
 
         self.squareButton  = MTButton(label="Box", pos=(20,40), size=(80,50))

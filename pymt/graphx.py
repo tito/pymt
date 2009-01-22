@@ -20,8 +20,16 @@ def setBrush(sprite, size=10):
     _bruch_size = size
 
 def enable_blending():
-	glEnable(GL_BLEND)
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+def disable_blending():
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+
+def set_color(r,g,b,a=1.0):
+    glColor4f(r,g,b,a)
 
 _standard_label = Label(text='standard Label', font_size=32, bold=True)
 def drawLabel(text, pos=(0,0),center=True):

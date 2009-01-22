@@ -14,7 +14,7 @@
 
 
 
-This is very early alpha, so keep in mind that it might not work as intended at all times.  For bug reports, feature requests and other issues please contact thomas.hansen@gmail.com.  
+This is very early alpha, so keep in mind that it might not work as intended at all times.  For bug reports, feature requests and other issues please contact thomas.hansen@gmail.com.
 
 
 
@@ -43,8 +43,8 @@ There is some simple example apps in the examples folder that should get you sta
 
 *3dmt.py
   draws an obj model exported form blender and lets you rotate it around, the more fingers you use the faster it rotates
-  
-  
+
+
 
 
 Other python/MT resources:

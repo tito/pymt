@@ -264,7 +264,7 @@ class MTInnerWindow(MTScatterWidget):
         if sx>10 and sy>10:  #not resizing, would be too ssmall
             self.fbo = Fbo(size=(sx,sy))
             self.container.size = (sx,sy)
-        
+
     def resize_fbo(self, force=False):
         if force or (abs(self.zoom - self.old_zoom > 0.4)):
             return # dont resize if we dont have too...this is potentially slow
@@ -311,23 +311,20 @@ class MTInnerWindow(MTScatterWidget):
         self.container.dispatch_event('on_draw')
         glMatrixMode(GL_MODELVIEW)
         glPopMatrix()
-
         self.fbo.release()
 
         self.draw_children = False
         MTScatterWidget.on_draw(self)
 
     def draw(self):
-        glPushMatrix()
-        glScaled(self.width*0.01, self.height*0.01, 1.0)
+        #print self.width
         glColor3d(0.7,0.7,0.9)
-        drawRoundedRectangle(pos=(0,0), size=(100,100))
-        glPopMatrix()
+        drawRoundedRectangle(pos=(0,0), size=self.size)
 
         glPushMatrix()
         glTranslated(self.padding, self.padding, 0)
-        glScaled(self.width-self.padding*2, self.height-self.padding*2, 1.0)
-        drawTexturedRectangle(self.fbo.texture)
+        #glScaled(, 1.0)
+        drawTexturedRectangle(self.fbo.texture, size=(self.width-self.padding*2, self.height-self.padding*2))
         glPopMatrix()
 
 
@@ -422,7 +419,7 @@ if __name__ == '__main__':
     MTWidgetFactory.register('MTMenuNode', MTMenuNode)
 
     w = MTWindow(color=(0.16,0.223,0.313,1.0))
-    w.set_fullscreen()
+    #w.set_fullscreen()
     menu = XMLWidget(xml=xmlmenu)
     w.add_widget(menu)
     w.add_widget(MTDisplay())

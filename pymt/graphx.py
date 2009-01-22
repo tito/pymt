@@ -23,7 +23,7 @@ def enable_blending():
 	glEnable(GL_BLEND)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-_standard_label = Label(text='standard Label', font_size=64, bold=True)
+_standard_label = Label(text='standard Label', font_size=32, bold=True)
 def drawLabel(text, pos=(0,0),center=True):
     if center:
         _standard_label.anchor_x = 'center'
@@ -36,7 +36,7 @@ def drawLabel(text, pos=(0,0),center=True):
     _standard_label.text = text
     glPushMatrix()
     glTranslated(pos[0], pos[1], 0.0)
-    glScaled(0.2,0.2,1)
+    glScaled(0.4,0.4,1)
     _standard_label.draw()
     glPopMatrix()
 

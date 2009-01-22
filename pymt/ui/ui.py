@@ -59,16 +59,16 @@ class MTButton(MTWidget):
         self.register_event_type('on_release')
         self.state          = ('normal', 0)
         self.clickActions   = []
-        self.label_obj      = Label(font_size=10, bold=True, )
+        self.label_obj      = Label(font_size=10, bold=True )
         self.label_obj.anchor_x = 'center'
         self.label_obj.anchor_y = 'center'
-        self.label          = str(label)
+        self._label          = str(label)
 
     def get_label(self):
         return self._label
     def set_label(self, text):
         self._label = str(text)
-        self.label_obj.text = self.label
+        #self.label_obj.text = self._label
     label = property(get_label, set_label)
 
     def draw(self):
@@ -79,8 +79,9 @@ class MTButton(MTWidget):
             glColor4f(*self.color)
             drawRectangle((self.x,self.y) , (self.width, self.height))
 
-        self.label_obj.x, self.label_obj.y = self.x +self.width/2 , self.y + +self.height/2
-        self.label_obj.draw()
+        #self.label_obj.x, self.label_obj.y = self.x +self.width/2 , self.y + +self.height/2
+        #self.label_obj.draw()
+        drawLabel("test", self.center)
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -137,6 +138,7 @@ class MTScatterWidget(MTWidget):
         glColor4d(1,0,1,0)
         drawRectangle((0,0), (self.width, self.height))
 
+
     def on_draw(self):
         glPushMatrix()
         glTranslatef(self.x, self.y, 0)
@@ -152,12 +154,13 @@ class MTScatterWidget(MTWidget):
         glPopMatrix()
 
 
-
+    """
     def _set_width(self, w):
         self._width = w
         self.dispatch_event('on_resize', self._width, self._height)
     def _get_width(self):
         return self._width*self.zoom
+    width = property(_get_width, _set_width)
 
     def _set_height(self, h):
         self._height = h
@@ -170,7 +173,7 @@ class MTScatterWidget(MTWidget):
         self.dispatch_event('on_resize', self.width, self.height)
     def _get_size(self):
         return (int(self.width*self.zoom), int(self.height*self.zoom))
-
+    """
 
     def collide_point(self, x,y):
         local_coords = self.to_local(x,y)

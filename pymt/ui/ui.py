@@ -70,6 +70,13 @@ class MTButton(MTWidget):
         self._label = str(text)
         #self.label_obj.text = self._label
     label = property(get_label, set_label)
+    
+    def get_state(self):
+        return self.state[0]
+    
+    def set_state(self, state):
+        self.state = (state, 0)
+        self.draw()
 
     def draw(self):
         if self.state[0] == 'down':
@@ -97,6 +104,29 @@ class MTButton(MTWidget):
     def on_touch_up(self, touches, touchID, x, y):
         if self.state[1] == touchID and self.collide_point(x,y):
             self.state = ('normal', 0)
+            self.dispatch_event('on_release', touchID, x,y)
+            return True
+        
+class MTToggleButton(MTButton):
+    def __init__(self, pos=(0, 0), size=(100, 100), label='ToggleButton', **kargs):
+        MTButton.__init__(self, pos=pos, size=size, label=label, **kargs)
+        
+    def on_touch_down(self, touches, touchID, x, y):
+        if self.collide_point(x,y):
+            if self.get_state() == 'down':
+                self.state = ('normal', touchID)
+            else:
+                self.state = ('down', touchID)
+            self.dispatch_event('on_press', touchID, x,y)
+            return True
+
+    def on_touch_move(self, touches, touchID, x, y):
+        if self.state[1] == touchID and not self.collide_point(x,y):
+            self.state = ('normal', 0)
+            return True
+
+    def on_touch_up(self, touches, touchID, x, y):
+        if self.state[1] == touchID and self.collide_point(x,y):
             self.dispatch_event('on_release', touchID, x,y)
             return True
 

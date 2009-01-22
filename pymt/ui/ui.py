@@ -70,10 +70,10 @@ class MTButton(MTWidget):
         self._label = str(text)
         #self.label_obj.text = self._label
     label = property(get_label, set_label)
-    
+
     def get_state(self):
         return self.state[0]
-    
+
     def set_state(self, state):
         self.state = (state, 0)
         self.draw()
@@ -88,6 +88,7 @@ class MTButton(MTWidget):
 
         #self.label_obj.x, self.label_obj.y = self.x +self.width/2 , self.y + +self.height/2
         #self.label_obj.draw()
+        #print "drawing label", self.label
         drawLabel(self.label, self.center)
 
     def on_touch_down(self, touches, touchID, x, y):
@@ -106,11 +107,11 @@ class MTButton(MTWidget):
             self.state = ('normal', 0)
             self.dispatch_event('on_release', touchID, x,y)
             return True
-        
+
 class MTToggleButton(MTButton):
     def __init__(self, pos=(0, 0), size=(100, 100), label='ToggleButton', **kargs):
         MTButton.__init__(self, pos=pos, size=size, label=label, **kargs)
-        
+
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
             if self.get_state() == 'down':

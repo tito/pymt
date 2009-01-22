@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Video - video player widget &mdash; PyMT v0.1a1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '',
+          VERSION:     '0.1a1',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="contents" title="Global table of contents" href="contents.html" />
+    <link rel="index" title="Global index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="PyMT v0.1a1 documentation" href="index.html" />
+    <link rel="up" title="UI - all user interface stuff" href="api-pymt-ui.html" />
+    <link rel="next" title="Wallpaper Window - a simple window with background" href="api-pymt-ui-wallpaperwindow.html" />
+    <link rel="prev" title="UI - core widgets" href="api-pymt-ui-ui.html" />
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-ui-wallpaperwindow.html" title="Wallpaper Window - a simple window with background"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-ui-ui.html" title="UI - core widgets"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.1a1 documentation</a> &raquo;</li>
+          <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
+          <li><a href="api-pymt-ui.html" accesskey="U">UI - all user interface stuff</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="module-pymt.ui.videowidget">
+<h1>Video - video player widget<a class="headerlink" href="#module-pymt.ui.videowidget" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pymt.ui.videowidget.MTVideo">
+<!--[pymt.ui.videowidget.MTVideo]-->class <tt class="descclassname">pymt.ui.videowidget.</tt><tt class="descname">MTVideo</tt><big>(</big><em>video='none'</em>, <em>pos=(300</em>, <em>200)</em>, <em>size=(0</em>, <em>0)</em>, <em>rotation=0</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideo" title="Permalink to this definition">¶</a></dt>
+<dd><p>MTVideo is a Zoomable,Rotatable,Movable Video widget
+Usage:</p>
+<div class="system-message">
+<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils"></tt>, line 0)</p>
+Unexpected indentation.</div>
+<blockquote>
+video = MTVideo(&#8216;source_file&#8217;,(x_pos,y_pos),(scale,scale),rotation_in_degrees)
+supported file types are similar file support of pyglet player class</blockquote>
+<dl class="method">
+<dt id="pymt.ui.videowidget.MTVideo.draw">
+<!--[pymt.ui.videowidget.MTVideo.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideo.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.videowidget.MTVideoMute">
+<!--[pymt.ui.videowidget.MTVideoMute]-->class <tt class="descclassname">pymt.ui.videowidget.</tt><tt class="descname">MTVideoMute</tt><big>(</big><em>image_file='/usr/local/lib/python2.5/pymt/data/icons/videoWidgetMute.png'</em>, <em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em>, <em>player=None</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideoMute" title="Permalink to this definition">¶</a></dt>
+<dd><p>MTVideoMute is a mute button class of the video widget</p>
+<dl class="method">
+<dt id="pymt.ui.videowidget.MTVideoMute.on_touch_down">
+<!--[pymt.ui.videowidget.MTVideoMute.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideoMute.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.videowidget.MTVideoPlayPause">
+<!--[pymt.ui.videowidget.MTVideoPlayPause]-->class <tt class="descclassname">pymt.ui.videowidget.</tt><tt class="descname">MTVideoPlayPause</tt><big>(</big><em>image_file='/usr/local/lib/python2.5/pymt/data/icons/videoWidgetPlay.png'</em>, <em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em>, <em>player=None</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideoPlayPause" title="Permalink to this definition">¶</a></dt>
+<dd><p>MTVideoPlayPause is a dynamic play/pause button of the video widget</p>
+<dl class="method">
+<dt id="pymt.ui.videowidget.MTVideoPlayPause.on_touch_down">
+<!--[pymt.ui.videowidget.MTVideoPlayPause.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideoPlayPause.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.videowidget.MTVideoTimeline">
+<!--[pymt.ui.videowidget.MTVideoTimeline]-->class <tt class="descclassname">pymt.ui.videowidget.</tt><tt class="descname">MTVideoTimeline</tt><big>(</big><em>min=0</em>, <em>max=30</em>, <em>pos=(5</em>, <em>5)</em>, <em>size=(150</em>, <em>30)</em>, <em>alignment='horizontal'</em>, <em>padding=8</em>, <em>color=(0.78000000000000003</em>, <em>0.78000000000000003</em>, <em>0.78000000000000003</em>, <em>1.0)</em>, <em>player=None</em>, <em>duration=100</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideoTimeline" title="Permalink to this definition">¶</a></dt>
+<dd><p>MTVideoTimeline is a part of the video widget which tracks the video playback</p>
+<dl class="method">
+<dt id="pymt.ui.videowidget.MTVideoTimeline.draw">
+<!--[pymt.ui.videowidget.MTVideoTimeline.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideoTimeline.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.videowidget.MTVideoTimeline.on_draw">
+<!--[pymt.ui.videowidget.MTVideoTimeline.on_draw]--><tt class="descname">on_draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideoTimeline.on_draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.videowidget.MTVideoTimeline.on_touch_down">
+<!--[pymt.ui.videowidget.MTVideoTimeline.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideoTimeline.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.videowidget.MTVideoTimeline.on_touch_move">
+<!--[pymt.ui.videowidget.MTVideoTimeline.on_touch_move]--><tt class="descname">on_touch_move</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideoTimeline.on_touch_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.videowidget.MTVideoTimeline.on_touch_up">
+<!--[pymt.ui.videowidget.MTVideoTimeline.on_touch_up]--><tt class="descname">on_touch_up</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideoTimeline.on_touch_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="api-pymt-ui-ui.html" title="previous chapter">UI - core widgets</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="api-pymt-ui-wallpaperwindow.html" title="next chapter">Wallpaper Window - a simple window with background</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/api-pymt-ui-video.txt">Show Source</a></li>
+            </ul>
+            <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-ui-wallpaperwindow.html" title="Wallpaper Window - a simple window with background"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-ui-ui.html" title="UI - core widgets"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.1a1 documentation</a> &raquo;</li>
+          <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
+          <li><a href="api-pymt-ui.html" accesskey="U">UI - all user interface stuff</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, pymt-dev.
+      Last updated on Jan 22, 2009.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>

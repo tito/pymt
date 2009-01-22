@@ -1,0 +1,391 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>UI - core widgets &mdash; PyMT v0.1a1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '',
+          VERSION:     '0.1a1',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="contents" title="Global table of contents" href="contents.html" />
+    <link rel="index" title="Global index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="PyMT v0.1a1 documentation" href="index.html" />
+    <link rel="up" title="UI - all user interface stuff" href="api-pymt-ui.html" />
+    <link rel="next" title="Video - video player widget" href="api-pymt-ui-video.html" />
+    <link rel="prev" title="Simulator - implementation of multitouch with mouse" href="api-pymt-ui-simulator.html" />
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-ui-video.html" title="Video - video player widget"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-ui-simulator.html" title="Simulator - implementation of multitouch with mouse"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.1a1 documentation</a> &raquo;</li>
+          <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
+          <li><a href="api-pymt-ui.html" accesskey="U">UI - all user interface stuff</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="module-pymt.ui.ui">
+<h1>UI - core widgets<a class="headerlink" href="#module-pymt.ui.ui" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pymt.ui.ui.MTButton">
+<!--[pymt.ui.ui.MTButton]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTButton</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em>, <em>label=''</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButton" title="Permalink to this definition">¶</a></dt>
+<dd><p>MTButton is a button implementation using MTWidget</p>
+<dl class="method">
+<dt id="pymt.ui.ui.MTButton.draw">
+<!--[pymt.ui.ui.MTButton.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButton.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTButton.get_label">
+<!--[pymt.ui.ui.MTButton.get_label]--><tt class="descname">get_label</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButton.get_label" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTButton.get_state">
+<!--[pymt.ui.ui.MTButton.get_state]--><tt class="descname">get_state</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButton.get_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.ui.ui.MTButton.label">
+<!--[pymt.ui.ui.MTButton.label]--><tt class="descname">label</tt><a class="headerlink" href="#pymt.ui.ui.MTButton.label" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTButton.on_touch_down">
+<!--[pymt.ui.ui.MTButton.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButton.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTButton.on_touch_move">
+<!--[pymt.ui.ui.MTButton.on_touch_move]--><tt class="descname">on_touch_move</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButton.on_touch_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTButton.on_touch_up">
+<!--[pymt.ui.ui.MTButton.on_touch_up]--><tt class="descname">on_touch_up</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButton.on_touch_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTButton.set_label">
+<!--[pymt.ui.ui.MTButton.set_label]--><tt class="descname">set_label</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButton.set_label" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTButton.set_state">
+<!--[pymt.ui.ui.MTButton.set_state]--><tt class="descname">set_state</tt><big>(</big><em>state</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButton.set_state" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.ui.MTColorPicker">
+<!--[pymt.ui.ui.MTColorPicker]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTColorPicker</tt><big>(</big><em>min=0</em>, <em>max=100</em>, <em>pos=(0</em>, <em>0)</em>, <em>size=(640</em>, <em>480)</em>, <em>target=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTColorPicker" title="Permalink to this definition">¶</a></dt>
+<dd><p>MTColorPicker is a implementation of a color picker using MTWidget</p>
+<dl class="method">
+<dt id="pymt.ui.ui.MTColorPicker.draw">
+<!--[pymt.ui.ui.MTColorPicker.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTColorPicker.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTColorPicker.on_touch_down">
+<!--[pymt.ui.ui.MTColorPicker.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTColorPicker.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTColorPicker.on_touch_move">
+<!--[pymt.ui.ui.MTColorPicker.on_touch_move]--><tt class="descname">on_touch_move</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTColorPicker.on_touch_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTColorPicker.on_touch_up">
+<!--[pymt.ui.ui.MTColorPicker.on_touch_up]--><tt class="descname">on_touch_up</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTColorPicker.on_touch_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTColorPicker.update_color">
+<!--[pymt.ui.ui.MTColorPicker.update_color]--><tt class="descname">update_color</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTColorPicker.update_color" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.ui.MTDragableWidget">
+<!--[pymt.ui.ui.MTDragableWidget]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTDragableWidget</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTDragableWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>MTDragableWidget is a moveable widget over the window</p>
+<dl class="method">
+<dt id="pymt.ui.ui.MTDragableWidget.on_touch_down">
+<!--[pymt.ui.ui.MTDragableWidget.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTDragableWidget.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTDragableWidget.on_touch_move">
+<!--[pymt.ui.ui.MTDragableWidget.on_touch_move]--><tt class="descname">on_touch_move</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTDragableWidget.on_touch_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTDragableWidget.on_touch_up">
+<!--[pymt.ui.ui.MTDragableWidget.on_touch_up]--><tt class="descname">on_touch_up</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTDragableWidget.on_touch_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.ui.MTImageButton">
+<!--[pymt.ui.ui.MTImageButton]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTImageButton</tt><big>(</big><em>image_file</em>, <em>pos=(0</em>, <em>0)</em>, <em>size=(1</em>, <em>1)</em>, <em>scale=1.0</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTImageButton" title="Permalink to this definition">¶</a></dt>
+<dd><p>MTImageButton is a enhanced MTButton that draw an image instead of a text</p>
+<dl class="method">
+<dt id="pymt.ui.ui.MTImageButton.draw">
+<!--[pymt.ui.ui.MTImageButton.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTImageButton.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.ui.MTObjectWidget">
+<!--[pymt.ui.ui.MTObjectWidget]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTObjectWidget</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTObjectWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>MTObjectWidget is a widget who draw an object on table</p>
+<dl class="method">
+<dt id="pymt.ui.ui.MTObjectWidget.draw">
+<!--[pymt.ui.ui.MTObjectWidget.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTObjectWidget.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTObjectWidget.on_object_down">
+<!--[pymt.ui.ui.MTObjectWidget.on_object_down]--><tt class="descname">on_object_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>id</em>, <em>x</em>, <em>y</em>, <em>angle</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTObjectWidget.on_object_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTObjectWidget.on_object_move">
+<!--[pymt.ui.ui.MTObjectWidget.on_object_move]--><tt class="descname">on_object_move</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>id</em>, <em>x</em>, <em>y</em>, <em>angle</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTObjectWidget.on_object_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTObjectWidget.on_object_up">
+<!--[pymt.ui.ui.MTObjectWidget.on_object_up]--><tt class="descname">on_object_up</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>id</em>, <em>x</em>, <em>y</em>, <em>angle</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTObjectWidget.on_object_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.ui.MTRectangularWidget">
+<!--[pymt.ui.ui.MTRectangularWidget]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTRectangularWidget</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em>, <em>color=(1</em>, <em>1</em>, <em>1</em>, <em>1)</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTRectangularWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>A rectangular widget that only propagates and handles events if the event was within its bounds</p>
+<dl class="method">
+<dt id="pymt.ui.ui.MTRectangularWidget.on_touch_down">
+<!--[pymt.ui.ui.MTRectangularWidget.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTRectangularWidget.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTRectangularWidget.on_touch_move">
+<!--[pymt.ui.ui.MTRectangularWidget.on_touch_move]--><tt class="descname">on_touch_move</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTRectangularWidget.on_touch_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTRectangularWidget.on_touch_up">
+<!--[pymt.ui.ui.MTRectangularWidget.on_touch_up]--><tt class="descname">on_touch_up</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTRectangularWidget.on_touch_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.ui.MTScatterImage">
+<!--[pymt.ui.ui.MTScatterImage]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTScatterImage</tt><big>(</big><em>img_src</em>, <em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>MTZoomableWidget is a zoomable Image widget</p>
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterImage.draw">
+<!--[pymt.ui.ui.MTScatterImage.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterImage.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.ui.MTScatterWidget">
+<!--[pymt.ui.ui.MTScatterWidget]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTScatterWidget</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>MTScatterWidget is a scatter widget based on MTWidget</p>
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterWidget.collide_point">
+<!--[pymt.ui.ui.MTScatterWidget.collide_point]--><tt class="descname">collide_point</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.collide_point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterWidget.draw">
+<!--[pymt.ui.ui.MTScatterWidget.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterWidget.haveTouch">
+<!--[pymt.ui.ui.MTScatterWidget.haveTouch]--><tt class="descname">haveTouch</tt><big>(</big><em>touchID</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.haveTouch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterWidget.on_draw">
+<!--[pymt.ui.ui.MTScatterWidget.on_draw]--><tt class="descname">on_draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.on_draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterWidget.on_touch_down">
+<!--[pymt.ui.ui.MTScatterWidget.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterWidget.on_touch_move">
+<!--[pymt.ui.ui.MTScatterWidget.on_touch_move]--><tt class="descname">on_touch_move</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.on_touch_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterWidget.on_touch_up">
+<!--[pymt.ui.ui.MTScatterWidget.on_touch_up]--><tt class="descname">on_touch_up</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.on_touch_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterWidget.rotate_zoom_move">
+<!--[pymt.ui.ui.MTScatterWidget.rotate_zoom_move]--><tt class="descname">rotate_zoom_move</tt><big>(</big><em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.rotate_zoom_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterWidget.save_status">
+<!--[pymt.ui.ui.MTScatterWidget.save_status]--><tt class="descname">save_status</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.save_status" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterWidget.to_local">
+<!--[pymt.ui.ui.MTScatterWidget.to_local]--><tt class="descname">to_local</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.to_local" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterWidget.updateTouchPos">
+<!--[pymt.ui.ui.MTScatterWidget.updateTouchPos]--><tt class="descname">updateTouchPos</tt><big>(</big><em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.updateTouchPos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.ui.MTSlider">
+<!--[pymt.ui.ui.MTSlider]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTSlider</tt><big>(</big><em>min=0</em>, <em>max=100</em>, <em>pos=(10</em>, <em>10)</em>, <em>size=(30</em>, <em>400)</em>, <em>alignment='horizontal'</em>, <em>padding=8</em>, <em>color=(0.80000000000000004</em>, <em>0.80000000000000004</em>, <em>0.40000000000000002</em>, <em>1.0)</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTSlider" title="Permalink to this definition">¶</a></dt>
+<dd><p>MTSlider is an implementation of a scrollbar using MTWidget</p>
+<dl class="method">
+<dt id="pymt.ui.ui.MTSlider.draw">
+<!--[pymt.ui.ui.MTSlider.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTSlider.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTSlider.on_touch_down">
+<!--[pymt.ui.ui.MTSlider.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTSlider.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTSlider.on_touch_move">
+<!--[pymt.ui.ui.MTSlider.on_touch_move]--><tt class="descname">on_touch_move</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTSlider.on_touch_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTSlider.on_touch_up">
+<!--[pymt.ui.ui.MTSlider.on_touch_up]--><tt class="descname">on_touch_up</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTSlider.on_touch_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTSlider.on_value_change">
+<!--[pymt.ui.ui.MTSlider.on_value_change]--><tt class="descname">on_value_change</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTSlider.on_value_change" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.ui.MTToggleButton">
+<!--[pymt.ui.ui.MTToggleButton]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTToggleButton</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em>, <em>label='ToggleButton'</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTToggleButton" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="pymt.ui.ui.MTToggleButton.on_touch_down">
+<!--[pymt.ui.ui.MTToggleButton.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTToggleButton.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTToggleButton.on_touch_move">
+<!--[pymt.ui.ui.MTToggleButton.on_touch_move]--><tt class="descname">on_touch_move</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTToggleButton.on_touch_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTToggleButton.on_touch_up">
+<!--[pymt.ui.ui.MTToggleButton.on_touch_up]--><tt class="descname">on_touch_up</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTToggleButton.on_touch_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="api-pymt-ui-simulator.html" title="previous chapter">Simulator - implementation of multitouch with mouse</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="api-pymt-ui-video.html" title="next chapter">Video - video player widget</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/api-pymt-ui-ui.txt">Show Source</a></li>
+            </ul>
+            <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-ui-video.html" title="Video - video player widget"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-ui-simulator.html" title="Simulator - implementation of multitouch with mouse"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.1a1 documentation</a> &raquo;</li>
+          <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
+          <li><a href="api-pymt-ui.html" accesskey="U">UI - all user interface stuff</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, pymt-dev.
+      Last updated on Jan 22, 2009.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>

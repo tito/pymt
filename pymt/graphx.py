@@ -24,8 +24,8 @@ def enable_blending():
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
 def disable_blending():
-    glEnable(GL_BLEND)
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    glDisable(GL_BLEND)
+
 
 
 def set_color(r,g,b,a=1.0):

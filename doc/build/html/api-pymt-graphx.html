@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>graphx - generic drawing functions &mdash; PyMT v0.1a1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '',
+          VERSION:     '0.1a1',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: ''
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/interface.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="contents" title="Global table of contents" href="contents.html" />
+    <link rel="index" title="Global index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="PyMT v0.1a1 documentation" href="index.html" />
+    <link rel="up" title="PyMT - API Documentation" href="api.html" />
+    <link rel="next" title="mtpyglet - multitouch abstraction for pyglet" href="api-pymt-mtpyglet.html" />
+    <link rel="prev" title="geometric - utility for 3D mesh handling" href="api-pymt-geometric.html" />
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-mtpyglet.html" title="mtpyglet - multitouch abstraction for pyglet"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-geometric.html" title="geometric - utility for 3D mesh handling"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.1a1 documentation</a> &raquo;</li>
+          <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section">
+<h1 id="module-pymt.graphx">graphx - generic drawing functions<a class="headerlink" href="#module-pymt.graphx" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pymt.graphx.Fbo">
+<!--[pymt.graphx.Fbo]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">Fbo</tt><big>(</big><em>size=(1024</em>, <em>1024)</em>, <em>push_viewport=False</em><big>)</big><a class="headerlink" href="#pymt.graphx.Fbo" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="pymt.graphx.Fbo.bind">
+<!--[pymt.graphx.Fbo.bind]--><tt class="descname">bind</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.graphx.Fbo.bind" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.graphx.Fbo.release">
+<!--[pymt.graphx.Fbo.release]--><tt class="descname">release</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.graphx.Fbo.release" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.disable_blending">
+<!--[pymt.graphx.disable_blending]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">disable_blending</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.graphx.disable_blending" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.drawCircle">
+<!--[pymt.graphx.drawCircle]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawCircle</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>radius=1.0</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawCircle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.drawLabel">
+<!--[pymt.graphx.drawLabel]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawLabel</tt><big>(</big><em>text</em>, <em>pos=(0</em>, <em>0)</em>, <em>center=True</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawLabel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.drawLine">
+<!--[pymt.graphx.drawLine]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawLine</tt><big>(</big><em>points</em>, <em>width=5.0</em>, <em>color=(1.0</em>, <em>1.0</em>, <em>1.0)</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawLine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.drawRectangle">
+<!--[pymt.graphx.drawRectangle]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawRectangle</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(1.0</em>, <em>1.0)</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawRectangle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.drawRoundedRectangle">
+<!--[pymt.graphx.drawRoundedRectangle]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawRoundedRectangle</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>50)</em>, <em>radius=5</em>, <em>color=(1</em>, <em>1</em>, <em>1</em>, <em>1)</em>, <em>linewidth=1.5</em>, <em>precision=0.5</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawRoundedRectangle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.drawTexturedRectangle">
+<!--[pymt.graphx.drawTexturedRectangle]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawTexturedRectangle</tt><big>(</big><em>texture</em>, <em>pos=(0</em>, <em>0)</em>, <em>size=(1.0</em>, <em>1.0)</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawTexturedRectangle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.drawTriangle">
+<!--[pymt.graphx.drawTriangle]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawTriangle</tt><big>(</big><em>pos</em>, <em>w</em>, <em>h</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawTriangle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.enable_blending">
+<!--[pymt.graphx.enable_blending]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">enable_blending</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.graphx.enable_blending" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.paintLine">
+<!--[pymt.graphx.paintLine]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">paintLine</tt><big>(</big><em>points</em><big>)</big><a class="headerlink" href="#pymt.graphx.paintLine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.setBrush">
+<!--[pymt.graphx.setBrush]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">setBrush</tt><big>(</big><em>sprite</em>, <em>size=10</em><big>)</big><a class="headerlink" href="#pymt.graphx.setBrush" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.set_color">
+<!--[pymt.graphx.set_color]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">set_color</tt><big>(</big><em>r</em>, <em>g</em>, <em>b</em>, <em>a=1.0</em><big>)</big><a class="headerlink" href="#pymt.graphx.set_color" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="api-pymt-geometric.html" title="previous chapter">geometric - utility for 3D mesh handling</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="api-pymt-mtpyglet.html" title="next chapter">mtpyglet - multitouch abstraction for pyglet</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/api-pymt-graphx.txt">Show Source</a></li>
+            </ul>
+            <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-mtpyglet.html" title="mtpyglet - multitouch abstraction for pyglet"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-geometric.html" title="geometric - utility for 3D mesh handling"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.1a1 documentation</a> &raquo;</li>
+          <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, pymt-dev.
+      Last updated on Jan 22, 2009.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>

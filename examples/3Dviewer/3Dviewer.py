@@ -11,7 +11,7 @@ from pyglet.gl import *
 
 
 class GLWindow(MTWidget):
-"""Sets up 3d projection in on_draw function and then calls seld.draw"""
+    """Sets up 3d projection in on_draw function and then calls seld.draw"""
     def on_draw(self):
         self.draw3D()
 

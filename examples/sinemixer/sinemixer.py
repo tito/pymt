@@ -58,7 +58,7 @@ def pymt_plugin_activate(w, ctx):
         print('Button {0} released'.format(btn+1))
         
     def on_press_callback(btn, touchID, x, y):
-        ounk.sendOscControl(1, adress='/amp{0}'.format(btn), port=9005)
+        ounk.sendOscControl(0.5, adress='/amp{0}'.format(btn), port=9005)
         print('Button {0} pressed'.format(btn+1))
     
     for b in range(4):

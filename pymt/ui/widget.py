@@ -13,6 +13,9 @@ from pymt.ui.animation import *
 from pymt.ui.factory import *
 from pymt.vector import Vector
 
+
+
+
 _id_2_widget = {}
 
 def getWidgetByID(id):
@@ -194,6 +197,10 @@ class MTWidget(pyglet.event.EventDispatcher):
 
     def init(self):
         pass
+
+
+    def get_parent_window(self):
+        return self.parent.get_parent_window()
 
     def bring_to_front(self):
         """Remove it from wherever it is and add it back at the top"""

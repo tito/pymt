@@ -9,6 +9,8 @@ from pymt.ui.widget import *
 class MTWindowRoot(MTWidget):
     def draw(self):
         pass
+    def get_parent_window(self):
+        return self
 
 class MTWindow(TouchWindow):
     """MTWindow is a window widget who use MTSimulator
@@ -41,6 +43,7 @@ class MTWindow(TouchWindow):
     def _get_size(self):
         return self.get_size()
     size = property(_get_size, _set_size)
+
 
 
     def add_widget(self, w):

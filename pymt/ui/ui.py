@@ -319,8 +319,6 @@ class MTScatterWidget(MTWidget):
         lx,ly = self.to_local(x,y)
         MTWidget.on_touch_up(self, touches, touchID, lx, ly)
 
-        if not self.collide_point(x,y):
-            return False
 
         #if this touch is used for rotate_scale_move, clean up
         if self.haveTouch(touchID):
@@ -334,7 +332,8 @@ class MTScatterWidget(MTWidget):
                 self.touches = [self.touches[0]]
             return True
 
-
+        if not self.collide_point(x,y):
+            return False
 
 
 
@@ -368,12 +367,12 @@ class MTSlider(MTWidget):
 
     def on_value_change(self, value):
         pass
-    
+
     def set_value(self, value):
         self.value = value
         self.dispatch_event('on_value_change', self.value)
         self.draw()
-        
+
     def get_value():
         return self.value
 

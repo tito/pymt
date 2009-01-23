@@ -1,7 +1,42 @@
 from pymt import *
 
-class MTHorizontalLayout(MTWidget):
 
+class MTTextInput(MTButton):
+    """
+    A text input widget is a simple label widget that will pop up a virtual keyboard when touched
+    any input of the virtual keyboard will then have effect on the TextInput widget
+    """
+
+    def __init__(self, label="text input", pos=(100,100), size=(100,100), color=(0.2,0.2,0.2,1), **kargs):
+        MTButton.__init__(self,pos=pos, size=size, color=color, **kargs)
+        self.keyboard = MTVKeyboard(self)
+        self.is_active_input = False
+
+    def on_release(self,touchID, x, y):
+        if self.is_active_input:
+            self.hide_keyboard()
+        else:
+            self.show_keyboard()
+
+    def show_keyboard(self):
+        self.get_parent_window().add_widget(self.keyboard)
+
+    def hide_keyboard(self):
+        self.get_parent_window().remove_widget(self.keyboard)
+
+
+
+class MTHorizontalLayout(MTWidget):
+    """
+    MTHorizontalLayout lays out its child widgtes in horizonatl order
+    x values are computed based on the widgets in front, all y values are set to the y value of the layout widget
+
+    when a new widget is added, the widgets are layed out again (internal call to layout())
+    call layout() to rearrange all child widgets
+
+    padding determines how much space is put between the widgets
+
+    """
     def __init__(self, pos=(0,0), padding=5):
         MTWidget.__init__(self, pos=pos)
         self.padding = padding
@@ -21,6 +56,7 @@ class MTHorizontalLayout(MTWidget):
 
 
 class MTKeyButton(MTButton):
+    """ Internal Class used in MTVKeyboard """
     def __init__(self, keyboard, pos=(0,0), size=(100, 100), label='', color=(0.1,0.1,0.1,0.7)):
         MTButton.__init__(self, pos=pos, size=size, color=color, label=label)
         self.keyboard = keyboard
@@ -29,6 +65,7 @@ class MTKeyButton(MTButton):
         self.keyboard.active_keys[self] = self
 
     def on_release(self, touchID, x, y):
+        self.keyboard.on_key_down(self.label)
         if self.keyboard.active_keys.has_key(self):
             del self.keyboard.active_keys[self]
 
@@ -37,10 +74,12 @@ class MTKeyButton(MTButton):
 
 
 class MTVKeyboard(MTScatterWidget):
+    """A virtual keyboard that can be scaled/roatetd/moved"""
 
-    _row_keys = ["X1234567890+-","qwertyuiop", "asdfghjkl;", "zxcvbnm,./"]
 
-    def __init__(self, pos=(0,0)):
+    _row_keys = ["X1234567890+-","qwertyuiop", "asdfghjkl;", "zxcvbnm,.?"]
+
+    def __init__(self, text_widget, pos=(0,0)):
         MTScatterWidget.__init__(self, pos=(0,0), size=(400,200))
         self._setup_keys()
         self.dl_needs_update = False
@@ -48,6 +87,15 @@ class MTVKeyboard(MTScatterWidget):
         self.update_dl()
         self.active_keys = {}
         #self.needs_update = False
+        self.text_widget = text_widget
+
+    def on_key_down(self, k_str):
+        if k_str == "<-":
+            self.text_widget.label = self.text_widget.label[:-1]
+        if k_str == "space":
+            self.text_widget.label = self.text_widget.label[:-1]
+        else:
+            self.text_widget.label = self.text_widget.label + k_str
 
     def update_dl(self):
         glNewList(self.display_list, GL_COMPILE)
@@ -129,6 +177,6 @@ class MTVKeyboard(MTScatterWidget):
 if __name__ == "__main__":
     w = MTWindow()
     #w.set_fullscreen()
-    kb = MTVKeyboard(pos=(100,100))
-    w.add_widget(kb)
+    text_input = MTTextInput()
+    w.add_widget(text_input)
     runTouchApp()

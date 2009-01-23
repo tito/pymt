@@ -80,7 +80,7 @@ def pymt_plugin_deactivate(root, ctx):
    root.remove_widget(ctx.PA)
     
 if __name__ == '__main__':
-    w = MTWindow()
+    w = MTWindow(color=(0,0,0,1))
     w.set_fullscreen()
     ctx = MTContext()
     pymt_plugin_activate(w, ctx)

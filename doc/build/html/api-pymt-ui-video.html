@@ -10,10 +10,11 @@
           URL_ROOT:    '',
           VERSION:     '0.1a1',
           COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: '.html'
+          FILE_SUFFIX: ''
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/interface.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="contents" title="Global table of contents" href="contents.html" />
     <link rel="index" title="Global index" href="genindex.html" />
@@ -50,8 +51,8 @@
           <div class="body">
             
   
-  <div class="section" id="module-pymt.ui.videowidget">
-<h1>Video - video player widget<a class="headerlink" href="#module-pymt.ui.videowidget" title="Permalink to this headline">¶</a></h1>
+  <div class="section">
+<h1 id="module-pymt.ui.videowidget">Video - video player widget<a class="headerlink" href="#module-pymt.ui.videowidget" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pymt.ui.videowidget.MTVideo">
 <!--[pymt.ui.videowidget.MTVideo]-->class <tt class="descclassname">pymt.ui.videowidget.</tt><tt class="descname">MTVideo</tt><big>(</big><em>video='none'</em>, <em>pos=(300</em>, <em>200)</em>, <em>size=(0</em>, <em>0)</em>, <em>rotation=0</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideo" title="Permalink to this definition">¶</a></dt>
@@ -68,11 +69,21 @@ supported file types are similar file support of pyglet player class</blockquote
 <!--[pymt.ui.videowidget.MTVideo.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideo.draw" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="pymt.ui.videowidget.MTVideo.hideControls">
+<!--[pymt.ui.videowidget.MTVideo.hideControls]--><tt class="descname">hideControls</tt><big>(</big><em>dt</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideo.hideControls" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.videowidget.MTVideo.on_touch_down">
+<!--[pymt.ui.videowidget.MTVideo.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideo.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt id="pymt.ui.videowidget.MTVideoMute">
-<!--[pymt.ui.videowidget.MTVideoMute]-->class <tt class="descclassname">pymt.ui.videowidget.</tt><tt class="descname">MTVideoMute</tt><big>(</big><em>image_file='/usr/local/lib/python2.5/pymt/data/icons/videoWidgetMute.png'</em>, <em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em>, <em>player=None</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideoMute" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.ui.videowidget.MTVideoMute]-->class <tt class="descclassname">pymt.ui.videowidget.</tt><tt class="descname">MTVideoMute</tt><big>(</big><em>image_file='/usr/lib/python2.5/pymt/data/icons/videoWidgetMute.png'</em>, <em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em>, <em>player=None</em>, <em>opacity=100</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideoMute" title="Permalink to this definition">¶</a></dt>
 <dd><p>MTVideoMute is a mute button class of the video widget</p>
 <dl class="method">
 <dt id="pymt.ui.videowidget.MTVideoMute.on_touch_down">
@@ -83,7 +94,7 @@ supported file types are similar file support of pyglet player class</blockquote
 
 <dl class="class">
 <dt id="pymt.ui.videowidget.MTVideoPlayPause">
-<!--[pymt.ui.videowidget.MTVideoPlayPause]-->class <tt class="descclassname">pymt.ui.videowidget.</tt><tt class="descname">MTVideoPlayPause</tt><big>(</big><em>image_file='/usr/local/lib/python2.5/pymt/data/icons/videoWidgetPlay.png'</em>, <em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em>, <em>player=None</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideoPlayPause" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.ui.videowidget.MTVideoPlayPause]-->class <tt class="descclassname">pymt.ui.videowidget.</tt><tt class="descname">MTVideoPlayPause</tt><big>(</big><em>image_file='/usr/lib/python2.5/pymt/data/icons/videoWidgetPlay.png'</em>, <em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em>, <em>player=None</em>, <em>opacity=100</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.videowidget.MTVideoPlayPause" title="Permalink to this definition">¶</a></dt>
 <dd><p>MTVideoPlayPause is a dynamic play/pause button of the video widget</p>
 <dl class="method">
 <dt id="pymt.ui.videowidget.MTVideoPlayPause.on_touch_down">
@@ -171,7 +182,7 @@ supported file types are similar file support of pyglet player class</blockquote
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on Jan 22, 2009.
+      Last updated on Jan 23, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
     </div>
   </body>

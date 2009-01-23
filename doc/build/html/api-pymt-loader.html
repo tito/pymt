@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>loader - asynchronous way to load image &mdash; PyMT v0.1a1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '',
+          VERSION:     '0.1a1',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: ''
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/interface.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="contents" title="Global table of contents" href="contents.html" />
+    <link rel="index" title="Global index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="PyMT v0.1a1 documentation" href="index.html" />
+    <link rel="up" title="Core - base class for pymt" href="api-pymt-core.html" />
+    <link rel="next" title="mtpyglet - multitouch abstraction for pyglet" href="api-pymt-mtpyglet.html" />
+    <link rel="prev" title="graphx - generic drawing functions" href="api-pymt-graphx.html" />
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-mtpyglet.html" title="mtpyglet - multitouch abstraction for pyglet"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-graphx.html" title="graphx - generic drawing functions"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.1a1 documentation</a> &raquo;</li>
+          <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
+          <li><a href="api-pymt-core.html" accesskey="U">Core - base class for pymt</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section">
+<h1 id="module-pymt.loader">loader - asynchronous way to load image<a class="headerlink" href="#module-pymt.loader" title="Permalink to this headline">¶</a></h1>
+<p>This is the Asynchronous Loader. You can use it to load an image
+and use it, even if data are not yet available. You must specify a default
+loading image for using a such loader</p>
+<div class="highlight"><pre><span class="k">from</span> <span class="nn">pymt</span> <span class="k">import</span> <span class="o">*</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">loading_image</span><span class="o">=</span><span class="s">&#39;load.png&#39;</span><span class="p">)</span>
+<span class="n">sprite</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">sprite</span><span class="p">(</span><span class="s">&#39;mysprite.png&#39;</span><span class="p">)</span>
+</pre></div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">You may experienced crash with gdkpixbuf default loader
+from pyglet package ! Use async=False as default when you
+instanciate loader !</p>
+</div>
+<dl class="class">
+<dt id="pymt.loader.Loader">
+<!--[pymt.loader.Loader]-->class <tt class="descclassname">pymt.loader.</tt><tt class="descname">Loader</tt><big>(</big><em>loading_image</em>, <em>async=True</em><big>)</big><a class="headerlink" href="#pymt.loader.Loader" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="pymt.loader.Loader.get_image">
+<!--[pymt.loader.Loader.get_image]--><tt class="descname">get_image</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#pymt.loader.Loader.get_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.loader.Loader.image">
+<!--[pymt.loader.Loader.image]--><tt class="descname">image</tt><big>(</big><em>name</em>, <em>async=None</em><big>)</big><a class="headerlink" href="#pymt.loader.Loader.image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.loader.Loader.sprite">
+<!--[pymt.loader.Loader.sprite]--><tt class="descname">sprite</tt><big>(</big><em>name</em>, <em>async=None</em><big>)</big><a class="headerlink" href="#pymt.loader.Loader.sprite" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.loader.ProxyImage">
+<!--[pymt.loader.ProxyImage]-->class <tt class="descclassname">pymt.loader.</tt><tt class="descname">ProxyImage</tt><big>(</big><em>name</em>, <em>loader</em>, <em>image=None</em>, <em>loading_image=None</em><big>)</big><a class="headerlink" href="#pymt.loader.ProxyImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>ProxyImage is a derivation of AbstractImage of pyglet.
+You have the same abstraction, except that he use loading_image when
+the final image are not yet available.</p>
+<p>Don&#8217;t instanciate directly, use the loader</p>
+<div class="highlight"><pre><span class="k">from</span> <span class="nn">pymt</span> <span class="k">import</span> <span class="o">*</span>
+<span class="n">loader</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">loading_image</span><span class="o">=</span><span class="s">&#39;load.png&#39;</span><span class="p">)</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="s">&#39;myimage.png&#39;</span><span class="p">)</span>
+</pre></div>
+<p>You can use the loader to get image in a synchronous way</p>
+<div class="highlight"><pre><span class="n">image2</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="s">&#39;test.png&#39;</span><span class="p">,</span> <span class="n">async</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+<dl class="method">
+<dt id="pymt.loader.ProxyImage.blit">
+<!--[pymt.loader.ProxyImage.blit]--><tt class="descname">blit</tt><big>(</big><em>x</em>, <em>y</em>, <em>z=0</em><big>)</big><a class="headerlink" href="#pymt.loader.ProxyImage.blit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.loader.ProxyImage.blit_into">
+<!--[pymt.loader.ProxyImage.blit_into]--><tt class="descname">blit_into</tt><big>(</big><em>source</em>, <em>x</em>, <em>y</em>, <em>z=0</em><big>)</big><a class="headerlink" href="#pymt.loader.ProxyImage.blit_into" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.loader.ProxyImage.blit_to_texture">
+<!--[pymt.loader.ProxyImage.blit_to_texture]--><tt class="descname">blit_to_texture</tt><big>(</big><em>target</em>, <em>level</em>, <em>x</em>, <em>y</em>, <em>z=0</em><big>)</big><a class="headerlink" href="#pymt.loader.ProxyImage.blit_to_texture" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.loader.ProxyImage.get_image_data">
+<!--[pymt.loader.ProxyImage.get_image_data]--><tt class="descname">get_image_data</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.loader.ProxyImage.get_image_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.loader.ProxyImage.get_region">
+<!--[pymt.loader.ProxyImage.get_region]--><tt class="descname">get_region</tt><big>(</big><em>x</em>, <em>y</em>, <em>width</em>, <em>height</em><big>)</big><a class="headerlink" href="#pymt.loader.ProxyImage.get_region" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.loader.ProxyImage.get_texture">
+<!--[pymt.loader.ProxyImage.get_texture]--><tt class="descname">get_texture</tt><big>(</big><em>rectangle=False</em><big>)</big><a class="headerlink" href="#pymt.loader.ProxyImage.get_texture" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.loader.ProxyImage.height">
+<!--[pymt.loader.ProxyImage.height]--><tt class="descname">height</tt><a class="headerlink" href="#pymt.loader.ProxyImage.height" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.loader.ProxyImage.image_data">
+<!--[pymt.loader.ProxyImage.image_data]--><tt class="descname">image_data</tt><a class="headerlink" href="#pymt.loader.ProxyImage.image_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.loader.ProxyImage.mipmapped_texture">
+<!--[pymt.loader.ProxyImage.mipmapped_texture]--><tt class="descname">mipmapped_texture</tt><a class="headerlink" href="#pymt.loader.ProxyImage.mipmapped_texture" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.loader.ProxyImage.save">
+<!--[pymt.loader.ProxyImage.save]--><tt class="descname">save</tt><big>(</big><em>filename=None</em>, <em>file=None</em>, <em>encoder=None</em><big>)</big><a class="headerlink" href="#pymt.loader.ProxyImage.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.loader.ProxyImage.texture">
+<!--[pymt.loader.ProxyImage.texture]--><tt class="descname">texture</tt><a class="headerlink" href="#pymt.loader.ProxyImage.texture" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.loader.ProxyImage.width">
+<!--[pymt.loader.ProxyImage.width]--><tt class="descname">width</tt><a class="headerlink" href="#pymt.loader.ProxyImage.width" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.loader.ProxySprite">
+<!--[pymt.loader.ProxySprite]-->class <tt class="descclassname">pymt.loader.</tt><tt class="descname">ProxySprite</tt><big>(</big><em>img</em>, <em>x=0</em>, <em>y=0</em>, <em>blend_src=770</em>, <em>blend_dest=771</em>, <em>batch=None</em>, <em>group=None</em>, <em>usage='dynamic'</em><big>)</big><a class="headerlink" href="#pymt.loader.ProxySprite" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="api-pymt-graphx.html" title="previous chapter">graphx - generic drawing functions</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="api-pymt-mtpyglet.html" title="next chapter">mtpyglet - multitouch abstraction for pyglet</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/api-pymt-loader.txt">Show Source</a></li>
+            </ul>
+            <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-mtpyglet.html" title="mtpyglet - multitouch abstraction for pyglet"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-graphx.html" title="graphx - generic drawing functions"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.1a1 documentation</a> &raquo;</li>
+          <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
+          <li><a href="api-pymt-core.html" accesskey="U">Core - base class for pymt</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, pymt-dev.
+      Last updated on Jan 23, 2009.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>

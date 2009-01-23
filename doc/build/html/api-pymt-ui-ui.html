@@ -10,10 +10,11 @@
           URL_ROOT:    '',
           VERSION:     '0.1a1',
           COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: '.html'
+          FILE_SUFFIX: ''
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/interface.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="contents" title="Global table of contents" href="contents.html" />
     <link rel="index" title="Global index" href="genindex.html" />
@@ -50,11 +51,11 @@
           <div class="body">
             
   
-  <div class="section" id="module-pymt.ui.ui">
-<h1>UI - core widgets<a class="headerlink" href="#module-pymt.ui.ui" title="Permalink to this headline">¶</a></h1>
+  <div class="section">
+<h1 id="module-pymt.ui.ui">UI - core widgets<a class="headerlink" href="#module-pymt.ui.ui" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pymt.ui.ui.MTButton">
-<!--[pymt.ui.ui.MTButton]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTButton</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em>, <em>label=''</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButton" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.ui.ui.MTButton]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTButton</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em>, <em>label=''</em>, <em>color=(0.20000000000000001</em>, <em>0.20000000000000001</em>, <em>0.20000000000000001</em>, <em>0.80000000000000004)</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButton" title="Permalink to this definition">¶</a></dt>
 <dd><p>MTButton is a button implementation using MTWidget</p>
 <dl class="method">
 <dt id="pymt.ui.ui.MTButton.draw">
@@ -157,7 +158,7 @@
 
 <dl class="class">
 <dt id="pymt.ui.ui.MTImageButton">
-<!--[pymt.ui.ui.MTImageButton]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTImageButton</tt><big>(</big><em>image_file</em>, <em>pos=(0</em>, <em>0)</em>, <em>size=(1</em>, <em>1)</em>, <em>scale=1.0</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTImageButton" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.ui.ui.MTImageButton]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTImageButton</tt><big>(</big><em>image_file</em>, <em>pos=(0</em>, <em>0)</em>, <em>size=(1</em>, <em>1)</em>, <em>scale=1.0</em>, <em>opacity=100</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTImageButton" title="Permalink to this definition">¶</a></dt>
 <dd><p>MTImageButton is a enhanced MTButton that draw an image instead of a text</p>
 <dl class="method">
 <dt id="pymt.ui.ui.MTImageButton.draw">
@@ -194,8 +195,13 @@
 
 <dl class="class">
 <dt id="pymt.ui.ui.MTRectangularWidget">
-<!--[pymt.ui.ui.MTRectangularWidget]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTRectangularWidget</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em>, <em>color=(1</em>, <em>1</em>, <em>1</em>, <em>1)</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTRectangularWidget" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.ui.ui.MTRectangularWidget]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTRectangularWidget</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>100)</em>, <em>color=(0.20000000000000001</em>, <em>0.20000000000000001</em>, <em>0.20000000000000001</em>, <em>1)</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTRectangularWidget" title="Permalink to this definition">¶</a></dt>
 <dd><p>A rectangular widget that only propagates and handles events if the event was within its bounds</p>
+<dl class="method">
+<dt id="pymt.ui.ui.MTRectangularWidget.draw">
+<!--[pymt.ui.ui.MTRectangularWidget.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTRectangularWidget.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="pymt.ui.ui.MTRectangularWidget.on_touch_down">
 <!--[pymt.ui.ui.MTRectangularWidget.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTRectangularWidget.on_touch_down" title="Permalink to this definition">¶</a></dt>
@@ -287,11 +293,16 @@
 
 <dl class="class">
 <dt id="pymt.ui.ui.MTSlider">
-<!--[pymt.ui.ui.MTSlider]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTSlider</tt><big>(</big><em>min=0</em>, <em>max=100</em>, <em>pos=(10</em>, <em>10)</em>, <em>size=(30</em>, <em>400)</em>, <em>alignment='horizontal'</em>, <em>padding=8</em>, <em>color=(0.80000000000000004</em>, <em>0.80000000000000004</em>, <em>0.40000000000000002</em>, <em>1.0)</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTSlider" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.ui.ui.MTSlider]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTSlider</tt><big>(</big><em>min=77</em>, <em>max=100</em>, <em>pos=(10</em>, <em>10)</em>, <em>size=(30</em>, <em>400)</em>, <em>alignment='horizontal'</em>, <em>padding=8</em>, <em>color=(0.80000000000000004</em>, <em>0.80000000000000004</em>, <em>0.40000000000000002</em>, <em>1.0)</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTSlider" title="Permalink to this definition">¶</a></dt>
 <dd><p>MTSlider is an implementation of a scrollbar using MTWidget</p>
 <dl class="method">
 <dt id="pymt.ui.ui.MTSlider.draw">
 <!--[pymt.ui.ui.MTSlider.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTSlider.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTSlider.get_value">
+<!--[pymt.ui.ui.MTSlider.get_value]--><tt class="descname">get_value</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTSlider.get_value" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -312,6 +323,11 @@
 <dl class="method">
 <dt id="pymt.ui.ui.MTSlider.on_value_change">
 <!--[pymt.ui.ui.MTSlider.on_value_change]--><tt class="descname">on_value_change</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTSlider.on_value_change" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTSlider.set_value">
+<!--[pymt.ui.ui.MTSlider.set_value]--><tt class="descname">set_value</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTSlider.set_value" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -384,7 +400,7 @@
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on Jan 22, 2009.
+      Last updated on Jan 23, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
     </div>
   </body>

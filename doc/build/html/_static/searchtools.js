@@ -243,7 +243,6 @@ var Search = {
         var dots = $('<span></span>').appendTo(title);
         var status = $('<p style="display: none"></p>').appendTo(out);
         var output = $('<ul class="search"/>').appendTo(out);
-        $('#search-progress').text('Getting search index...')
 
         // spawn a background runner for updating the dots
         // until the search has finished
@@ -300,8 +299,6 @@ var Search = {
                 var words = data[2];
                 var fileMap = {};
                 var files = null;
-
-                $('#search-progress').empty()
 
                 // perform the search on the required words
                 for (var i = 0; i < searchwords.length; i++) {

@@ -11,12 +11,13 @@ import math
 
 
 
+loader = Loader(loading_image='fitts.png')
 
 class MTScatteredObj(MTScatterWidget):
     """MTScatteredObj is a zoomable Image widget with a possibility of providing rotation during spawning"""
     def __init__(self, img_src, pos=(0,0), size=(100,100), rotation=45):
-        img  = pyglet.image.load(img_src)
-        self.image  = pyglet.sprite.Sprite(img)
+        global loader
+        self.image  = loader.sprite(img_src)
         self.aspectRatio = float(self.image.height)/float(self.image.width)
         MTScatterWidget.__init__(self, pos=pos, size=(size[0],size[0]*self.aspectRatio))
         self.x = self.x - int(self.x/4)
@@ -24,13 +25,20 @@ class MTScatteredObj(MTScatterWidget):
         self.rotation = rotation
 
     def draw(self):
-       glPushMatrix()
-       enable_blending()
-       glColor4f(0.9,0.9,0.9,1)
-       drawRectangle((-6,-6),(self.width+12,self.width*self.aspectRatio+12))
-       glScaled(float(self.width)/float(self.image.width), float(self.width*self.aspectRatio)/float(self.image.height), 1.0)
-       self.image.draw()
-       glPopMatrix()
+        self.update_ratio()
+        glPushMatrix()
+        enable_blending()
+        glColor4f(0.9,0.9,0.9,1)
+        drawRectangle((-6,-6),(self.width+12,self.width*self.aspectRatio+12))
+        glScaled(float(self.width)/float(self.image.width), float(self.width*self.aspectRatio)/float(self.image.height), 1.0)
+        self.image.draw()
+        glPopMatrix()
+
+    def update_ratio(self):
+        ratio = float(self.image.height)/float(self.image.width)
+        if ratio != self.aspectRatio:
+            self.aspectRatio = ratio
+            self.size = (self.width, self.width * ratio)
 
 
 
@@ -164,7 +172,7 @@ def pymt_plugin_deactivate(w, ctx):
 
 if __name__ == '__main__':
     w = MTWindow()
-    w.set_fullscreen()
+    #w.set_fullscreen()
     ctx = MTContext()
     pymt_plugin_activate(w, ctx)
     runTouchApp()

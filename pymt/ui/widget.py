@@ -27,7 +27,7 @@ class MTWidget(pyglet.event.EventDispatcher):
     Event are dispatched through widget only if it's visible.
     """
 
-    def __init__(self, pos=(0,0), size=(100,100), color=(1,1,1,1), **kargs):
+    def __init__(self, pos=(0,0), size=(100,100), color=(0.2,0.2,0.2,1), **kargs):
         global _id_2_widget
         if kargs.has_key('id'):
             self.id = kargs['id']
@@ -210,9 +210,11 @@ class MTWidget(pyglet.event.EventDispatcher):
     def on_draw(self):
         if not self.visible:
             return
+
         self.draw()
         for w in self.children:
             w.dispatch_event('on_draw')
+
 
     def draw(self):
         pass

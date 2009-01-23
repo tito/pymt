@@ -35,7 +35,7 @@ _standard_label = None
 def drawLabel(text, pos=(0,0),center=True):
     global _standard_label
     if _standard_label is None:
-        _standard_label = Label(text='standard Label', font_size=64, bold=True)
+        _standard_label = Label(text='standard Label', font_size=32, bold=True)
     if center:
         _standard_label.anchor_x = 'center'
         _standard_label.anchor_y = 'center'
@@ -47,7 +47,7 @@ def drawLabel(text, pos=(0,0),center=True):
     _standard_label.text = text
     glPushMatrix()
     glTranslated(pos[0], pos[1], 0.0)
-    glScaled(0.4,0.4,1)
+    glScaled(0.3,0.3,1)
     _standard_label.draw()
     glPopMatrix()
 
@@ -131,7 +131,7 @@ def drawCircle(pos=(0,0), radius=1.0):
     gluDisk(gluNewQuadric(), 0, 1, 32,1)
     glPopMatrix()
 
-def drawTriangle(points, ):
+def drawTriangle(points ):
     draw(3, GL_TRIANGLES, ('v2f', points))
 
 def drawTriangle(pos, w, h):
@@ -150,7 +150,7 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0)):
     draw(4, GL_QUADS, ('v2f', pos), ('t2f', texcoords))
     glDisable(GL_TEXTURE_2D)
 
-def drawLine(points, width=5.0, color=(1.0,1.0,1.0)):
+def drawLine(points, width=5.0):
     glLineWidth (width)
     draw(2,GL_LINES, ('v2f', points))
 

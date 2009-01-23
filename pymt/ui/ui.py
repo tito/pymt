@@ -28,6 +28,10 @@ class MTRectangularWidget(MTWidget):
             MTWidget.on_touch_up(self, touches, touchID, x, y)
             return True
 
+    def draw(self):
+        set_color(*self.color)
+        drawRectangle(self.pos, self.size)
+
 
 class MTDragableWidget(MTWidget):
     """MTDragableWidget is a moveable widget over the window"""
@@ -53,8 +57,8 @@ class MTDragableWidget(MTWidget):
 
 class MTButton(MTWidget):
     """MTButton is a button implementation using MTWidget"""
-    def __init__(self, pos=(0, 0), size=(100, 100), label='', **kargs):
-        MTWidget.__init__(self, pos=pos, size=size, **kargs)
+    def __init__(self, pos=(0, 0), size=(100, 100), label='', color=(0.2,0.2,0.2,0.8),**kargs):
+        MTWidget.__init__(self, pos=pos, size=size, color=color, **kargs)
         self.register_event_type('on_press')
         self.register_event_type('on_release')
         self.state          = ('normal', 0)
@@ -101,12 +105,14 @@ class MTButton(MTWidget):
         if self.state[1] == touchID and not self.collide_point(x,y):
             self.state = ('normal', 0)
             return True
+        return self.collide_point(x,y)
 
     def on_touch_up(self, touches, touchID, x, y):
         if self.state[1] == touchID and self.collide_point(x,y):
             self.state = ('normal', 0)
             self.dispatch_event('on_release', touchID, x,y)
             return True
+        return self.collide_point(x,y)
 
 class MTToggleButton(MTButton):
     def __init__(self, pos=(0, 0), size=(100, 100), label='ToggleButton', **kargs):
@@ -143,7 +149,7 @@ class MTImageButton(MTButton):
         self.image.scale    = self.scale
         self.width          = self.image.width
         self.height         = self.image.height
-       
+
     def draw(self):
         self.image.x        = self.x
         self.image.y        = self.y

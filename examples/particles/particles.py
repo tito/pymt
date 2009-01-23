@@ -11,7 +11,7 @@ class ParticleObject(MTWidget):
     def __init__(self, pos=(0,0), size=(20,20), color=(1,1,1),
             rotation=45, type='Squares', **kargs):
         MTWidget.__init__(self, pos=pos, size=size, color=color, **kargs)
-        self.opacity = 1
+        self.opacity = 0.5
         self.color = (random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1), self.opacity)
         self.rotation = 0
         self.zoom = 1

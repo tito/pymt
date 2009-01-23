@@ -38,6 +38,7 @@ class Canvas(MTWidget):
 
     def on_resize(self, w, h):
         del self.fbo
+        print "resizing fbo"
         self.fbo = Fbo((w, h), push_viewport=False)
 
     def on_touch_down(self, touches, touchID, x, y):
@@ -63,7 +64,12 @@ class Canvas(MTWidget):
 
 
 def pymt_plugin_activate(root, ctx):
+
     ctx.canvas = Canvas(pos=(40,40),size=(root.width,root.height))
+    def resizeCanvas(w,h):
+        ctx.canvas.dispatch_event('on_resize',w,h)
+    root.push_handlers(on_resize=resizeCanvas)
+
     root.add_widget(ctx.canvas)
     ctx.slider = MTColorPicker(size=(130,290), target=[ctx.canvas])
     root.add_widget(ctx.slider)
@@ -74,7 +80,7 @@ def pymt_plugin_deactivate(root, ctx):
 
 if __name__ == '__main__':
     w = MTWindow()
-    w.set_fullscreen()
+    #w.set_fullscreen()
     ctx = MTContext()
     pymt_plugin_activate(w, ctx)
     runTouchApp()

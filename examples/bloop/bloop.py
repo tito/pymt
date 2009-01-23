@@ -52,15 +52,15 @@ class bloop(MTButton):
         self.blue = color[2]
         self.score_text = score_text
         
-        self.highlightred = self.red * 1.4
+        self.highlightred = self.red * 1.25
         if(self.highlightred > 1):
             self.highlightred = 1
 
-        self.highlightblue = self.blue * 1.4
+        self.highlightblue = self.blue * 1.25
         if(self.highlightblue > 1):
             self.highlightblue = 1
 
-        self.highlightgreen = self.green * 1.4
+        self.highlightgreen = self.green * 1.25
         if(self.highlightgreen > 1):
             self.highlightgreen = 1
         
@@ -90,6 +90,12 @@ class bloop(MTButton):
     def draw(self):
         glPushMatrix()
         enable_blending()
+        if self.highlight:
+            self.highlightalpha = self.alpha * 1.25
+            if(self.highlightalpha > 1):
+               self.highlightalpha = 1
+            glColor4f(self.highlightred, self.highlightgreen, self.highlightblue, self.highlightalpha)
+            drawCircle(pos=(self.x + self.width/2,self.y + self.height/2),radius=(self.radius*1.25))
         glColor4f(self.red,self.green,self.blue,self.alpha)
         drawCircle(pos=(self.x + self.width/2,self.y + self.height/2),radius=self.radius)
         glPopMatrix()

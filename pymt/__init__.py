@@ -17,6 +17,7 @@ from shader import *
 from vector import Vector
 from plugin import *
 from loader import *
+from gesture import *
 from pymt.ui import *
 
 def curry(fn, *cargs, **ckwargs):

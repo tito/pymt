@@ -1,9 +1,40 @@
+r'''This is the Asynchronous Loader. You can use it to load an image
+and use it, even if data are not yet available. You must specify a default
+loading image for using a such loader ::
+
+ from pymt import *
+ loader = Loader(loading_image='load.png')
+ sprite = loader.sprite('mysprite.png')
+
+.. warning::
+
+    You may experienced crash with gdkpixbuf default loader
+    from pyglet package ! Use async=False as default when you
+    instanciate loader !
+
+
+'''
+
 import threading
 import pyglet.image
 import pyglet.sprite
 import time
 
 class ProxyImage(pyglet.image.AbstractImage):
+    '''ProxyImage is a derivation of AbstractImage of pyglet.
+    You have the same abstraction, except that he use loading_image when
+    the final image are not yet available.
+
+    Don't instanciate directly, use the loader ::
+
+        from pymt import *
+        loader = Loader(loading_image='load.png')
+        image = loader.image('myimage.png')
+
+    You can use the loader to get image in a synchronous way ::
+
+        image2 = loader.image('test.png', async=False)
+    '''
     def __init__(self, name, loader, image=None, loading_image=None):
         self.name = name
         self.loader = loader
@@ -110,31 +141,43 @@ class ProxySprite(pyglet.sprite.Sprite):
         self.image = self._internal_image
 
 class Loader(object):
-    def __init__(self, loading_image):
+    def __init__(self, loading_image, async=True):
         self.cache = {}
         self.loadlist = {}
         self.updatelist = []
         self.thread = None
         self.loading_image = self.image(loading_image, async=False)
+        self.default_async=async
         pyglet.clock.schedule_interval(self._run_update, 1/2.0)
 
-    def image(self, name, async=True):
+    def image(self, name, async=None):
+        # get data cache
         data = self.get_image(name)
         if data:
             return ProxyImage(name=name, loader=self, image=data,
                               loading_image=self.loading_image)
+
+        # no data ? user want data async or not ?
+        if async is None:
+            async = self.default_async
         if not async:
             return pyglet.image.load(name)
 
+        # prepare proxy image
         obj = ProxyImage(name=name, loader=self, image=None,
                           loading_image=self.loading_image)
+
+        # add name into loadlist
         if not name in self.loadlist:
             self.loadlist[name] = []
         self.loadlist[name].append(obj)
+
+        # start loading
         self._start_load()
+
         return obj
 
-    def sprite(self, name, async=True):
+    def sprite(self, name, async=None):
         img = self.image(name, async)
         return ProxySprite(img)
 

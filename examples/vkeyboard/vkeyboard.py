@@ -10,19 +10,51 @@ class MTTextInput(MTButton):
     def __init__(self, label="text input", pos=(100,100), size=(100,100), color=(0.2,0.2,0.2,1), **kargs):
         MTButton.__init__(self,pos=pos, size=size, color=color, **kargs)
         self.keyboard = MTVKeyboard(self)
+        self.label_obj = Label(text='', font_size=64, bold=True)
+        self.label_obj.anchor_x = 'left'
+        self.label_obj.anchor_y = 'bottom'
         self.is_active_input = False
+        self.added_keyboard = False
+        self.padding = 20
+
+        self.register_event_type('on_text_change')
+
 
     def on_release(self,touchID, x, y):
         if self.is_active_input:
             self.hide_keyboard()
+            self.is_active_input = False
         else:
+            if not self.added_keyboard:
+                self.get_parent_window().add_widget(self.keyboard)
             self.show_keyboard()
+            self.is_active_input = True
+
+    def on_text_change(self):
+
+        self.label_obj.text = self.label
+        self.label_obj.x = self.x +self.padding
+        self.label_obj.y = self.y
+        self.width =  self.label_obj.content_width +self.padding*2
+        if self.width < 100:
+            self.width = 100
 
     def show_keyboard(self):
-        self.get_parent_window().add_widget(self.keyboard)
+        self.keyboard.show()
 
     def hide_keyboard(self):
-        self.get_parent_window().remove_widget(self.keyboard)
+        self.keyboard.hide()
+
+    def draw(self):
+        if self.state[0] == 'down':
+            glColor4f(0.5,0.5,0.5,0.5)
+            drawRectangle((self.x,self.y) , (self.width, self.height))
+        else:
+            glColor4f(*self.color)
+            drawRectangle((self.x,self.y) , (self.width, self.height))
+        self.label_obj.draw()
+
+
 
 
 
@@ -72,7 +104,6 @@ class MTKeyButton(MTButton):
 
 
 
-
 class MTVKeyboard(MTScatterWidget):
     """A virtual keyboard that can be scaled/roatetd/moved"""
 
@@ -92,10 +123,11 @@ class MTVKeyboard(MTScatterWidget):
     def on_key_down(self, k_str):
         if k_str == "<-":
             self.text_widget.label = self.text_widget.label[:-1]
-        if k_str == "space":
-            self.text_widget.label = self.text_widget.label[:-1]
+        elif k_str == "space":
+            self.text_widget.label += " "
         else:
             self.text_widget.label = self.text_widget.label + k_str
+        self.text_widget.dispatch_event('on_text_change')
 
     def update_dl(self):
         glNewList(self.display_list, GL_COMPILE)
@@ -176,7 +208,7 @@ class MTVKeyboard(MTScatterWidget):
 
 if __name__ == "__main__":
     w = MTWindow()
-    #w.set_fullscreen()
+    w.set_fullscreen()
     text_input = MTTextInput()
     w.add_widget(text_input)
     runTouchApp()

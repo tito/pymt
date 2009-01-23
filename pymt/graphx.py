@@ -32,10 +32,10 @@ def set_color(r,g,b,a=1.0):
     glColor4f(r,g,b,a)
 
 _standard_label = None
-def drawLabel(text, pos=(0,0),center=True):
+def drawLabel(text, pos=(0,0),center=True, font_size=16):
     global _standard_label
     if _standard_label is None:
-        _standard_label = Label(text='standard Label', font_size=32, bold=True)
+        _standard_label = Label(text='standard Label', font_size=font_size, bold=True)
     if center:
         _standard_label.anchor_x = 'center'
         _standard_label.anchor_y = 'center'
@@ -45,11 +45,13 @@ def drawLabel(text, pos=(0,0),center=True):
     _standard_label.x = 0
     _standard_label.y = 0
     _standard_label.text = text
+    _standard_label.font_size=font_size
     glPushMatrix()
     glTranslated(pos[0], pos[1], 0.0)
-    glScaled(0.3,0.3,1)
+    glScaled(0.6,0.6,1)
     _standard_label.draw()
     glPopMatrix()
+    return _standard_label.content_width
 
 
 #paint a line with current brush

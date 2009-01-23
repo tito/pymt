@@ -51,6 +51,7 @@ class bloop(MTButton):
         self.green = color[1]
         self.blue = color[2]
         self.score_text = score_text
+        self.touched = False
         
         self.highlightred = self.red * 1.25
         if(self.highlightred > 1):
@@ -76,12 +77,14 @@ class bloop(MTButton):
         
     def on_touch_down(self, touches, touchID, x,y):
         if self.collide_point(x,y):
-            self.parent.bloop_points = self.parent.bloop_points+1
-            self.music.play()
-            self.highlight = True
-            self.red = self.highlightred
-            self.green = self.highlightgreen
-            self.blue = self.highlightblue            
+            if self.touched == False:
+                self.parent.bloop_points = self.parent.bloop_points+1
+                self.music.play()
+                self.highlight = True
+                self.red = self.highlightred
+                self.green = self.highlightgreen
+                self.blue = self.highlightblue            
+            self.touched = True
             self.showing = False
             self.start_animations('fadeout')            
     

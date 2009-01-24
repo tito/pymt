@@ -94,6 +94,7 @@ class MTButton(MTWidget):
         #self.label_obj.draw()
         #print "drawing label", self.label
         drawLabel(self.label, self.center)
+        
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):

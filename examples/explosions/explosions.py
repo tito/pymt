@@ -52,7 +52,6 @@ class PlayArea(MTWidget):
         self.exploding = False
         self.collisionobjects = []
         self.level = level
-        self.levelended = False
 
         if(level == 1):
             self.blooplength = 8.0
@@ -65,6 +64,8 @@ class PlayArea(MTWidget):
             self.required_points = 250
             self.timelimit = 300
 
+        self.levelended = False
+
         #self.notifications.new_notification(0, text="EXPLODE")
         
         pyglet.clock.schedule_interval(self.generateBloop, self.bloop_freq)
@@ -76,7 +77,7 @@ class PlayArea(MTWidget):
             for obj in self.collisionobjects:
                 self.remove_widget(obj)
             self.notifications.new_notification(0, text="End of Level")
-            pyglet.clock.schedule_interval(self.startLevel, 3.0, level=self.level+1)
+            pyglet.clock.schedule_once(self.prepLevel, 3.0, level=self.level+1)
             self.levelended = True
         
         

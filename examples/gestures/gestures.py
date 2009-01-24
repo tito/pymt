@@ -8,13 +8,17 @@ class CaptureGesture(MTGestureWidget):
     def on_gesture(self, gesture, x, y):
         # try to find gesture from database
         best = self.gdb.find(gesture, minscore=0.8)
-        if not best:
-            print 'No gesture found'
-        else:
+        if type(best).__name__=='str':
+            print 'No gesture found, returned:\n', best 
+        elif type(best).__name__=='tuple':
             print 'Gesture found, score', best[0], ':', best[1].label
+        else:
+            print "No gesture found, nothing returned."
 
 if __name__ == '__main__':
     gdb = GestureDatabase()
+    #UNCOMMENT the below line if you want to get the string for missed gestures (easy way to generate new gestures).
+    gdb.returnmismatches = True
 
     # Circle
     g = gdb.str_to_gesture('eNqFkMtqw0AMRff6EXtTo8doHj+Qbgv+gJImJoSm8eCZQPP3HTlpodDHIJiFdO7VVX/M17c6HKZSL8sEj/c/I/T7TDB2pS7z61Q6yAz9KQv0PxLjOgbZGaeNy/PxXA3zhoVfsCebghyNSo26NoAQNjhwiI45iiJ7j5EVyti9W5usTc6JkGpyrDElTVBetn96EK+RBA43AyHvveNEgYJScgHK4aaNilG5GWBAkabu/xdfc5N+iScvLogX4eiS4qf4Q9uclJAdtmwtFbEzcauxq/NpWrbn3WQx/RoTvz+yK9xXeM7LvL/sqg2H1TS0g7RAjiOLqNhNhg+4A4YT')
@@ -29,6 +33,11 @@ if __name__ == '__main__':
     # NUI-wave
     g = gdb.str_to_gesture('eNqFkMtuwyAQRffzI/am1jwYBn6g3VbyB1RpYkVR0xjZRGr+vkCdRaU+EBIL7jmXoT+l23sejtOar8sET9uZEPpDIhi7NS/z27R2kBj6cxLofyTGFoPkKqeFS/PpkivmK2a/YM81BSlUKhbqVgBCeHzAAX2g4KOLXhFFAhKsY/dRA9QCyjFECYFYjGN05f5192cNcZtK4HjvEBMrEmRE51jYYD3e9eiUWY0IWRxZ+F/fhif90uNApCoSA2pgZcdxk+PgDAk9UTDPVqqbu+6xy/N5WnaX/VQH9U2D31f7h+0FL2mZD9d9rmGrYTM11tpIJuX1rpiHT145hrs=')
     g.label = 'NUI-wave'
+    gdb.add_gesture(g)
+
+    #A (without cross-bar)
+    g = gdb.str_to_gesture('eNqFkE1qw0AMhfe6iL2pkUbS/Fwg2RZ8gJImJoSm8eCZQHP7jkxSKPRnEMxC73vSU3/Kt/c6HKdSr8sE2/ufEfpDJhi7Upf5bSodZAf9OTP0PxLjKoMsxmnj8ny6VMO8YeEX7NlUkKNRqVG3BhDC5gkH9uwcxSiSokTEBGXsPqxPa1+FXGBO3qnXFIOH8rr7cwq5NRTD8TECMRCpFyZJiSOU48OcoorjgIGVmVD/N1+Tk36Zq8eQsK2o6h3b+qs5DqIxOO+Rg7AgOTFvq7Gr83ladpf9ZDG9iQm/P7Ir3Dd4yct8uO6riQNsqOVJxF5iy0Ka7CDDJ/cphc4=')
+    g.label = 'A (no cross-bar)'
     gdb.add_gesture(g)
 
     w = MTWindow()

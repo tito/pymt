@@ -55,7 +55,7 @@ class PlayArea(MTWidget):
         if(level == 1):
             self.blooplength = 8.0
             self.bloop_freq = 0.5
-            self.required_points = 10
+            self.required_points = 200
             self.timelimit = 300
         elif(level == 2):
             self.blooplength = 6.0
@@ -63,7 +63,7 @@ class PlayArea(MTWidget):
             self.required_points = 250
             self.timelimit = 300
 
-        self.notifications.new_notification(0, text="EXPLODE")
+        #self.notifications.new_notification(0, text="EXPLODE")
         
         pyglet.clock.schedule_interval(self.generateBloop, self.bloop_freq)
 

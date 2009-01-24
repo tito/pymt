@@ -1,15 +1,72 @@
-'''
-A python implementation of a gesture recognition algorithm by Oleg Dopertchouk
-http://www.gamedev.net/reference/articles/article2039.asp
+'''Base for gesture recognition. You can easily use these class to create
+new gesture, and compare them ! ::
 
-Implemented by Jeiel Aranal (chemikhazi@gmail.com), released into the public domain
+    from pymt import *
+
+    # Create a gesture
+    g = Gesture()
+    g.add_stroke(point_list=[(1,1), (3,4), (2,1)])
+    g.normalize()
+
+    # Add him to database
+    gdb = GestureDatabase()
+    gdb.add_gesture(g)
+
+    # And for the next gesture, try to find him !
+    g2 = Gesture()
+    # ...
+    gdb.find(g2)
 '''
 
 import math
+import pickle, base64, zlib
+from cStringIO import StringIO
+
+class GestureDatabase(object):
+    '''Class to handle a gesture database.'''
+    def __init__(self):
+        self.db = []
+
+    def add_gesture(self, gesture):
+        '''Add a new gesture in database'''
+        self.db.append(gesture)
+
+    def find(self, gesture, minscore=0.9):
+        '''Find current gesture in database'''
+        if not gesture:
+            return
+
+        best = None
+        bestscore = minscore
+        for g in self.db:
+            score = g.get_score(gesture)
+            if score < bestscore:
+                continue
+            bestscore = score
+            best = g
+        if not best:
+            return
+        return (bestscore, best)
+
+    def gesture_to_str(self, gesture):
+        '''Convert a gesture into a unique string'''
+        io = StringIO()
+        p = pickle.Pickler(io)
+        p.dump(gesture)
+        data = base64.b64encode(zlib.compress(io.getvalue(), 9))
+        return data
+
+    def str_to_gesture(self, data):
+        '''Convert a unique string to a gesture'''
+        io = StringIO(zlib.decompress(base64.b64decode(data)))
+        p = pickle.Unpickler(io)
+        gesture = p.load()
+        return gesture
+
 
 class GesturePoint:
     def __init__(self, x, y):
-        ''' Stores the x,y coordinates of a point in the gesture '''
+        '''Stores the x,y coordinates of a point in the gesture'''
         self.x = float(x)
         self.y = float(y)
 
@@ -136,6 +193,13 @@ class GestureStroke:
             point.y -= offset_y
 
 class Gesture:
+    '''
+    A python implementation of a gesture recognition algorithm by Oleg Dopertchouk
+    http://www.gamedev.net/reference/articles/article2039.asp
+
+    Implemented by Jeiel Aranal (chemikhazi@gmail.com), released into the public domain
+    '''
+
     # Tolerance for evaluation using the '==' operator
     DEFAULT_TOLERANCE= 0.1
 

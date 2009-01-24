@@ -7,6 +7,7 @@ Core - base class for pymt
 
     api-pymt-geometric.rst
     api-pymt-graphx.rst
+    api-pymt-gesture.rst
     api-pymt-loader.rst
     api-pymt-mtpyglet.rst
     api-pymt-obj.rst

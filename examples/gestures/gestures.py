@@ -1,82 +1,17 @@
 from pymt import *
 
-import pickle, base64, zlib
-from cStringIO import StringIO
-
-class GestureDatabase(object):
-    def __init__(self):
-        self.db = []
-
-    def add_gesture(self, gesture):
-        self.db.append(gesture)
-
-    def find(self, gesture, minscore=0.9):
-        best = None
-        bestscore = minscore
-        for g in self.db:
-            score = g.get_score(gesture)
-            if score < bestscore:
-                continue
-            bestscore = score
-            best = g
-        if not best:
-            return
-        return (bestscore, best)
-
-    def gesture_to_str(self, gesture):
-        io = StringIO()
-        p = pickle.Pickler(io)
-        p.dump(gesture)
-        data = base64.b64encode(zlib.compress(io.getvalue(), 9))
-        return data
-
-    def str_to_gesture(self, data):
-        io = StringIO(zlib.decompress(base64.b64decode(data)))
-        p = pickle.Unpickler(io)
-        gesture = p.load()
-        return gesture
-
-
-class MTGestureWidget(MTWidget):
+class CaptureGesture(MTGestureWidget):
     def __init__(self, gdb):
-        super(MTGestureWidget, self).__init__()
+        super(CaptureGesture, self).__init__()
         self.gdb = gdb
-        self.points = {}
-        self.db = []
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if not self.points.has_key(touchID):
-            self.points[touchID] = []
-        self.points[touchID].append((x, y))
-
-    def on_touch_move(self, touches, touchID, x, y):
-        if not self.points.has_key(touchID):
-            return
-        self.points[touchID].append((x, y))
-
-    def on_touch_up(self, touches, touchID, x, y):
-        if not self.points.has_key(touchID):
-            return
-        self.points[touchID].append((x, y))
-
-        # create Gesture from stroke
-        g = Gesture()
-        g.add_stroke(self.points[touchID])
-        g.normalize()
-
+    def on_gesture(self, gesture, x, y):
         # try to find gesture from database
-        best = self.gdb.find(g, minscore=0.8)
+        best = self.gdb.find(gesture, minscore=0.8)
         if not best:
             print 'No gesture found'
         else:
             print 'Gesture found, score', best[0], ':', best[1].label
-
-        # activate this to have string representation
-        #print 'Representation of this gesture', self.gdb.gesture_to_str(g)
-
-        # reset stroke
-        del self.points[touchID]
-
 
 if __name__ == '__main__':
     gdb = GestureDatabase()
@@ -97,5 +32,5 @@ if __name__ == '__main__':
     gdb.add_gesture(g)
 
     w = MTWindow()
-    w.add_widget(MTGestureWidget(gdb))
+    w.add_widget(CaptureGesture(gdb))
     runTouchApp()

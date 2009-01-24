@@ -24,6 +24,7 @@ class PlayArea(MTWidget):
         self.bonus_points = 0
         self.bonus_points_snapshot = 0
         self.required_points = 1
+        self.levelended = False
         
         self.score = ScoreZone(self)
         self.bonusalert = BonusText(self)
@@ -51,6 +52,7 @@ class PlayArea(MTWidget):
         self.exploding = False
         self.collisionobjects = []
         self.level = level
+        self.levelended = False
 
         if(level == 1):
             self.blooplength = 8.0
@@ -68,12 +70,14 @@ class PlayArea(MTWidget):
         pyglet.clock.schedule_interval(self.generateBloop, self.bloop_freq)
 
     def endLevel(self, dt):
-        print("Ending level!")
-        pyglet.clock.unschedule(self.generateBloop)
-        for obj in self.collisionobjects:
-            self.remove_widget(obj)
-        self.notifications.new_notification(0, text="End of Level")
-        pyglet.clock.schedule_interval(self.startLevel, 3.0, level=self.level+1)
+        if not self.levelended
+            print("Ending level!")
+            pyglet.clock.unschedule(self.generateBloop)
+            for obj in self.collisionobjects:
+                self.remove_widget(obj)
+            self.notifications.new_notification(0, text="End of Level")
+            pyglet.clock.schedule_interval(self.startLevel, 3.0, level=self.level+1)
+            self.levelended = True
         
         
     def generateBloop(self,dt):

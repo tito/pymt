@@ -70,7 +70,7 @@ class PlayArea(MTWidget):
         pyglet.clock.schedule_interval(self.generateBloop, self.bloop_freq)
 
     def endLevel(self, dt):
-        if not self.levelended
+        if not self.levelended:
             print("Ending level!")
             pyglet.clock.unschedule(self.generateBloop)
             for obj in self.collisionobjects:

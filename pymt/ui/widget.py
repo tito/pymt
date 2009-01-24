@@ -24,11 +24,11 @@ def getWidgetByID(id):
         return _id_2_widget[id]
 
 class MTWidget(pyglet.event.EventDispatcher):
-    """Global base for any multitouch widget.
+    '''Global base for any multitouch widget.
     Implement event for mouse, object, touch and animation.
 
     Event are dispatched through widget only if it's visible.
-    """
+    '''
 
     def __init__(self, pos=(0,0), size=(100,100), color=(0.2,0.2,0.2,1), **kargs):
         global _id_2_widget
@@ -203,7 +203,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         return self.parent.get_parent_window()
 
     def bring_to_front(self):
-        """Remove it from wherever it is and add it back at the top"""
+        '''Remove it from wherever it is and add it back at the top'''
         if self.parent:
             self.parent.children.remove(self)
             self.parent.children.append(self)

@@ -13,13 +13,13 @@ class MTVideoPlayPause(MTImageButton):
         MTImageButton.__init__(self,image_file,pos, size,opacity,**kargs)
         self.vid = player
         self.playState = "Pause"
-       
+
         self.images = {} #crate a python dictionary..like a hash map
         self.images['Play']  = pyglet.sprite.Sprite( image.load(iconPath+'videoWidgetPlay.png')  )
         self.images['Pause'] = pyglet.sprite.Sprite( image.load(iconPath+'videoWidgetPause.png') )
-        
+
         self.scale    = 0.75
-        
+
     def on_touch_down(self, touches, touchID, x,y):
         if self.collide_point(x,y):
             self.state = ('down', touchID)
@@ -32,7 +32,7 @@ class MTVideoPlayPause(MTImageButton):
 
             #set the correct image
             self.image = self.images[self.playState]  #playState is one of the two strings that are used as keys/lookups in the dictionary
-          
+
 
 class MTVideoMute(MTImageButton):
     """MTVideoMute is a mute button class of the video widget"""
@@ -126,17 +126,17 @@ class MTVideo(MTScatterWidget):
         self.height = self.player.get_texture().height
         self.texW = self.player.get_texture().width
         self.texH = self.player.get_texture().height
-        
+
         #init as subwidgest.  adding them using add_widgtes, makes it so that they get the events before MTVideo instance
         #the pos, size is relative to this parent widget...if it scales etc so will these
         self.button = MTVideoPlayPause(image_file=iconPath+'videoWidgetPlay.png',pos=(0,0), player=self.player, opacity=100)
         self.add_widget(self.button)
         self.button.hide()
-                
+
         self.mutebutton = MTVideoMute(image_file=iconPath+'videoWidgetMute.png',pos=(36,0), player=self.player, opacity=100)
         self.add_widget(self.mutebutton)
         self.mutebutton.hide()
-        
+
         self.timeline = MTVideoTimeline(pos=(72,3),player=self.player,duration=self.sourceDuration)
         self.add_widget(self.timeline)
         self.timeline.hide()
@@ -149,7 +149,7 @@ class MTVideo(MTScatterWidget):
         glColor3d(1,1,1)
         self.player.get_texture().blit(0,0)
         glPopMatrix()
-    
+
     def on_touch_down(self, touches, touchID, x, y):
         #if the touch isnt on teh widget we do nothing
         if not self.collide_point(x,y):
@@ -170,11 +170,11 @@ class MTVideo(MTScatterWidget):
         if not self.haveTouch(touchID) and len(self.touches) <=2:
             self.touches.append( {"id":touchID, "start_pos":Vector(x,y), "pos":Vector(x,y)} )
         return True
-        
+
     def hideControls(self, dt):
         self.button.hide()
         self.mutebutton.hide()
         self.timeline.hide()
-      
-    
+
+# Register all base widgets
 MTWidgetFactory.register('MTVideo', MTVideo)

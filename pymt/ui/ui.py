@@ -8,24 +8,21 @@ from pymt.ui.simulator import MTSimulator
 from pymt.vector import Vector
 
 
-
-
 class MTRectangularWidget(MTWidget):
-    """A rectangular widget that only propagates and handles events if the event was within its bounds"""
-
+    '''A rectangular widget that only propagates and handles events if the event was within its bounds'''
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
-            MTWidget.on_touch_down(self, touches, touchID, x, y)
+            super(MTRectangularWidget, self).on_touch_down(touches, touchID, x, y)
             return True
 
     def on_touch_move(self, touches, touchID, x, y):
         if self.collide_point(x,y):
-            MTWidget.on_touch_move(self, touches, touchID, x, y)
+            super(MTRectangularWidget, self).on_touch_move(touches, touchID, x, y)
             return True
 
     def on_touch_up(self, touches, touchID, x, y):
         if self.collide_point(x,y):
-            MTWidget.on_touch_up(self, touches, touchID, x, y)
+            super(MTRectangularWidget, self).on_touch_up(touches, touchID, x, y)
             return True
 
     def draw(self):
@@ -34,9 +31,9 @@ class MTRectangularWidget(MTWidget):
 
 
 class MTDragableWidget(MTWidget):
-    """MTDragableWidget is a moveable widget over the window"""
+    '''MTDragableWidget is a moveable widget over the window'''
     def __init__(self, pos=(0,0), size=(100,100), **kargs):
-        MTWidget.__init__(self, pos=pos, size=size, **kargs)
+        super(MTDragableWidget, self).__init__(pos=pos, size=size, **kargs)
         self.state = ('normal', None)
 
     def on_touch_down(self, touches, touchID, x, y):
@@ -55,10 +52,11 @@ class MTDragableWidget(MTWidget):
             self.state = ('normal', None)
             return True
 
+
 class MTButton(MTWidget):
-    """MTButton is a button implementation using MTWidget"""
+    '''MTButton is a button implementation using MTWidget'''
     def __init__(self, pos=(0, 0), size=(100, 100), label='', color=(0.2,0.2,0.2,0.8),**kargs):
-        MTWidget.__init__(self, pos=pos, size=size, color=color, **kargs)
+        super(MTButton, self).__init__(pos=pos, size=size, color=color, **kargs)
         self.register_event_type('on_press')
         self.register_event_type('on_release')
         self.state          = ('normal', 0)
@@ -94,7 +92,6 @@ class MTButton(MTWidget):
         #self.label_obj.draw()
         #print "drawing label", self.label
         drawLabel(self.label, self.center)
-        
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -115,9 +112,10 @@ class MTButton(MTWidget):
             return True
         return self.collide_point(x,y)
 
+
 class MTToggleButton(MTButton):
     def __init__(self, pos=(0, 0), size=(100, 100), label='ToggleButton', **kargs):
-        MTButton.__init__(self, pos=pos, size=size, label=label, **kargs)
+        super(MTToggleButton, self).__init__(pos=pos, size=size, label=label, **kargs)
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -139,9 +137,9 @@ class MTToggleButton(MTButton):
 
 
 class MTImageButton(MTButton):
-    """MTImageButton is a enhanced MTButton that draw an image instead of a text"""
+    '''MTImageButton is a enhanced MTButton that draw an image instead of a text'''
     def __init__(self, image_file, pos=(0,0), size=(1,1), scale = 1.0, opacity = 100, **kargs):
-        MTButton.__init__(self, pos=pos, size=size)
+        self(MTImageButton, self).__init__(pos=pos, size=size)
         img                 = pyglet.image.load(image_file)
         self.image          = pyglet.sprite.Sprite(img)
         self.image.x        = self.x
@@ -161,20 +159,18 @@ class MTImageButton(MTButton):
 
 
 class MTScatterWidget(MTWidget):
-    """MTScatterWidget is a scatter widget based on MTWidget"""
+    '''MTScatterWidget is a scatter widget based on MTWidget'''
     def __init__(self, pos=(0,0), size=(100,100), **kargs):
-        MTWidget.__init__(self, pos=pos, size=size, **kargs)
+        super(MTScatterWidget, self).__init__(pos=pos, size=size, **kargs)
         self.touches = []
         self.rotation = 0.0
         self.zoom  = 1.0
         self.testPos = Vector(0,0)
         self.draw_children = True
 
-
     def draw(self):
         glColor4d(1,0,1,0)
         drawRectangle((0,0), (self.width, self.height))
-
 
     def on_draw(self):
         glPushMatrix()
@@ -184,14 +180,17 @@ class MTScatterWidget(MTWidget):
         glRotated(self.rotation, 0,0,1)
         glTranslatef(-self.width/2, -self.height/2, 0)
         glColor3d(1,0,0)
+
         self.draw()
-                #calling the MTWidget super method propagates to children
+
+        # propagates to children
         if self.draw_children:
-            MTWidget.on_draw(self)
+            self(MTScatterWidget, self).on_draw()
+
         glPopMatrix()
 
 
-    """
+    '''
     def _set_width(self, w):
         self._width = w
         self.dispatch_event('on_resize', self._width, self._height)
@@ -210,7 +209,7 @@ class MTScatterWidget(MTWidget):
         self.dispatch_event('on_resize', self.width, self.height)
     def _get_size(self):
         return (int(self.width*self.zoom), int(self.height*self.zoom))
-    """
+    '''
 
     def collide_point(self, x,y):
         local_coords = self.to_local(x,y)
@@ -236,17 +235,15 @@ class MTScatterWidget(MTWidget):
         return False
 
     def to_local(self,x,y):
-        #local center x,y ..around which we rotate
+        # local center x,y ..around which we rotate
         lcx = (x - self.x ) - self.width/2
         lcy = (y - self.y ) - self.height/2
 
-        #rotate around the center(its moved center to 0,0) then move back to position
+        # rotate around the center(its moved center to 0,0) then move back to position
         angle = radians(-self.rotation)
         lx= ( lcx*cos(angle)-lcy*sin(angle) ) *1.0/self.zoom
         ly= ( lcx*sin(angle)+lcy*cos(angle) ) *1.0/self.zoom
         return (lx+ self.width/2,ly+ self.height/2)
-
-
 
     def rotate_zoom_move(self, touchID, x, y):
         self.updateTouchPos(touchID, x,y)
@@ -257,26 +254,26 @@ class MTScatterWidget(MTWidget):
             self.x += translation.x
             self.y += translation.y
 
-        if len(self.touches) > 1 :  #only if we have at least 2 touches do we rotate/scale
+        if len(self.touches) > 1 :  # only if we have at least 2 touches do we rotate/scale
             p1_start = self.touches[0]["start_pos"]
             p2_start = self.touches[1]["start_pos"]
             p1_now   = self.touches[0]["pos"]
             p2_now   = self.touches[1]["pos"]
 
-            #compute zoom
+            # compute zoom
             old_dist = Vector.distance(p1_start, p2_start)
             new_dist = Vector.distance(p1_now, p2_now)
             scale = new_dist/old_dist
             self.zoom =  scale * self.zoom
 
-            #compute pos
+            # compute pos
             old_center = p1_start + (p2_start - p1_start)*0.5
             new_center = p1_now + (p2_now - p1_now)*0.5
             translation =  new_center - old_center
             self.x += translation.x
             self.y += translation.y
 
-            #compute rotation
+            # compute rotation
             old_line = p1_start - p2_start
             new_line = p1_now - p2_now
             self.rotation -= Vector.angle(old_line, new_line)
@@ -285,16 +282,16 @@ class MTScatterWidget(MTWidget):
 
 
     def on_touch_down(self, touches, touchID, x,y):
-        #if the touch isnt on teh widget we do nothing
+        # if the touch isnt on teh widget we do nothing
         if not self.collide_point(x,y):
             return False
 
-        #let the child widgets handle the event if they want
+        # let the child widgets handle the event if they want
         lx,ly = self.to_local(x,y)
-        if MTWidget.on_touch_down(self, touches, touchID, lx, ly):
+        if super(MTScatterWidget, self).on_touch_down(touches, touchID, lx, ly):
             return True
 
-        #if teh children didnt handle it, we bring to front & keep track of touches for rotate/scale/zoom action
+        # if teh children didnt handle it, we bring to front & keep track of touches for rotate/scale/zoom action
         self.bring_to_front()
         if not self.haveTouch(touchID) and len(self.touches) <=2:
             self.touches.append( {"id":touchID, "start_pos":Vector(x,y), "pos":Vector(x,y)} )
@@ -339,9 +336,8 @@ class MTScatterWidget(MTWidget):
 
 
 class MTScatterImage(MTScatterWidget):
-    """MTZoomableWidget is a zoomable Image widget"""
     def __init__(self, img_src, pos=(0,0), size=(100,100)):
-        MTScatterWidget.__init__(self, pos=pos, size=size)
+        super(MTScatterImage, self).__init__(pos=pos, size=size)
         img         = pyglet.image.load(img_src)
         self.image  = pyglet.sprite.Sprite(img)
 
@@ -350,14 +346,12 @@ class MTScatterImage(MTScatterWidget):
         glScaled(float(self.width)/self.image.width, float(self.height)/self.image.height, 2.0)
         self.image.draw()
         glPopMatrix()
-        #MTScatterWidget.draw(self)
-
 
 
 class MTSlider(MTWidget):
-    """MTSlider is an implementation of a scrollbar using MTWidget"""
+    '''MTSlider is an implementation of a scrollbar using MTWidget'''
     def __init__(self, min=77, max=100, pos=(10,10), size=(30,400), alignment='horizontal', padding=8, color=(0.8, 0.8, 0.4, 1.0)):
-        MTWidget.__init__(self, pos=pos, size=size)
+        super(MTSlider, self).__init__(pos=pos, size=size)
         self.register_event_type('on_value_change')
         self.touchstarts = [] # only react to touch input that originated on this widget
         self.alignment = alignment
@@ -407,9 +401,9 @@ class MTSlider(MTWidget):
 
 
 class MTColorPicker(MTWidget):
-    """MTColorPicker is a implementation of a color picker using MTWidget"""
+    '''MTColorPicker is a implementation of a color picker using MTWidget'''
     def __init__(self, min=0, max=100, pos=(0,0), size=(640,480),target=[]):
-        MTWidget.__init__(self, pos=pos, size=size)
+        super(MTColorPicker, self).__init__(pos=pos, size=size)
         self.canvas = target[0]
         self.sliders = [ MTSlider(max=255, size=(30,200), color=(1,0,0,1)),
                         MTSlider(max=255, size=(30,200), color=(0,1,0,1)),
@@ -469,9 +463,9 @@ class MTColorPicker(MTWidget):
 
 
 class MTObjectWidget(MTWidget):
-    """MTObjectWidget is a widget who draw an object on table"""
+    '''MTObjectWidget is a widget who draw an object on table'''
     def __init__(self, pos=(0, 0), size=(100, 100)):
-        MTWidget.__init__(self, pos=pos, size=size)
+        super(MTObjectWidget, self).__init__(pos=pos, size=size)
 
         self.state      = ('normal', None)
         self.visible    = False

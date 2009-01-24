@@ -7,7 +7,7 @@ class MTWallpaperWindow(MTWindow):
     CENTER = 1
 
     def __init__(self, wallpaper=None, **kargs):
-        MTWindow.__init__(self, **kargs)
+        super(MTWindow, self).__init__(**kargs)
         self.wallpaper = wallpaper
         self.position = MTWallpaperWindow.CENTER
 

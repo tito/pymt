@@ -3,11 +3,11 @@ from pymt.ui.widget import MTWidget
 """TODO: Layouts...not used anywhere yet"""
 class HorizontalLayout(MTWidget):
     def __init__(self, spacing=10, **kargs):
-        MTWidget.__init__(self, **kargs)
+        super(HorizontalLayout, self).__init__(**kargs)
         self.spacing = spacing
 
-    def add_widget(self,w):
-        MTWidget.add_widget(self, w)
+    def add_widget(self, w):
+        super(HorizontalLayout, self).add_widget(w)
         self.layout()
 
     def layout(self):

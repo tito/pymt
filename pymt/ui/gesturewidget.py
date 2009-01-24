@@ -1,5 +1,6 @@
 from pymt.gesture import Gesture
 from pymt.ui import MTWidget
+from pymt.ui.factory import MTWidgetFactory
 
 class MTGestureWidget(MTWidget):
     def __init__(self):
@@ -37,3 +38,5 @@ class MTGestureWidget(MTWidget):
     def on_gesture(self, gesture, x, y):
         pass
 
+# Register all base widgets
+MTWidgetFactory.register('MTGestureWidget', MTGestureWidget)

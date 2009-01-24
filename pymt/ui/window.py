@@ -13,10 +13,10 @@ class MTWindowRoot(MTWidget):
         return self
 
 class MTWindow(TouchWindow):
-    """MTWindow is a window widget who use MTSimulator
+    '''MTWindow is a window widget who use MTSimulator
        for generating touch event with mouse.
        Use MTWindow as main window application.
-    """
+    '''
 
     def __init__(self, view=None, fullscreen=False, config=None, color=(.3,.3,.3,1.0)):
         self.color = color
@@ -32,9 +32,9 @@ class MTWindow(TouchWindow):
         try:
             if not config:
                 config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True, vsync=1)
-                TouchWindow.__init__(self, config)
+                super(MTWindow, self).__init__(config)
         except:
-            TouchWindow.__init__(self)
+            super(MTWindow, self).__init__()
             if fullscreen:
                 self.set_fullscreen()
 
@@ -91,9 +91,9 @@ class MTWindow(TouchWindow):
 
 
 class MTDisplay(MTWidget):
-    """MTDisplay is a widget that draw a circle under every touch on window"""
+    '''MTDisplay is a widget that draw a circle under every touch on window'''
     def __init__(self, color=(1.0, 1.0, 1.0, 0.4), radius=10, **kargs):
-        MTWidget.__init__(self, color=color)
+        super(MTDisplay, self).__init__(color=color)
         self.touches    = {}
         self.radius     = radius
 

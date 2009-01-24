@@ -9,7 +9,7 @@ from pymt.ui.widget import MTWidget
 class MTSimulator(MTWidget):
     """MTSimulator is a widget who generate touch event from mouse event"""
     def __init__(self, output):
-        MTWidget.__init__(self)
+        super(MTSimulator, self).__init__()
         self.touches		= {}
         self.pos			= (100,100)
         self.output			= output

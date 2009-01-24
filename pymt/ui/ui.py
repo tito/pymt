@@ -514,6 +514,7 @@ class MTObjectWidget(MTWidget):
 # Register all base widgets
 MTWidgetFactory.register('MTDragableWidget', MTDragableWidget)
 MTWidgetFactory.register('MTButton', MTButton)
+MTWidgetFactory.register('MTToggleButton', MTToggleButton)
 MTWidgetFactory.register('MTImageButton', MTImageButton)
 MTWidgetFactory.register('MTScatterWidget', MTScatterWidget)
 MTWidgetFactory.register('MTScatterImage', MTScatterImage)

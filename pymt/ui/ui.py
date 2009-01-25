@@ -381,8 +381,9 @@ class MTSlider(MTWidget):
         drawRectangle(pos=(x,y), size=(w,h))
         # draw inner rectangle
         glColor4f(*self.color)
-        length = int(self.height*(float(self.value)/self.max) - self.padding)
-        drawRectangle(pos=(self.x+p2,self.y+p2), size=(w-self.padding, length) )
+        #length = int(self.height*(float(self.value)/self.max) - self.padding)
+        length = int((self.value - self.min) * (self.height - self.padding) / (self.max - self.min)) 
+        drawRectangle(pos=(self.x+p2,self.y+p2), size=(w - self.padding, length))
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -390,8 +391,12 @@ class MTSlider(MTWidget):
             return True
 
     def on_touch_move(self, touches, touchID, x, y):
-        if self.collide_point(x,y) and (touchID in self.touchstarts):
-            self.value = (y-self.y)/ float(self.height) *self.max
+        if touchID in self.touchstarts:
+            self.value = (y - self.y) * (self.max - self.min) / float(self.height) + self.min
+            if self.value >= self.max:
+                self.value = self.max
+            if self.value <= self.min:
+                self.value = self.min
             self.dispatch_event('on_value_change', self.value)
             return True
 

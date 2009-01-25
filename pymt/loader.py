@@ -19,6 +19,7 @@ import threading
 import pyglet.image
 import pyglet.sprite
 import time
+import urllib
 
 class ProxyImage(pyglet.image.AbstractImage):
     '''ProxyImage is a derivation of AbstractImage of pyglet.
@@ -203,7 +204,9 @@ class Loader(object):
         while len(self.loadlist):
             name, objs = self.loadlist.popitem()
             try:
-                self.cache[name] = pyglet.image.load(name)
+                fd = urllib.urlopen(name)
+                self.cache[name] = pyglet.image.load(name, file=fd)
+                fd.close()
                 for obj in objs:
                     self.updatelist.append(obj)
             except Exception, e:

@@ -174,6 +174,7 @@ if __name__ == '__main__':
     w = MTWindow()
     #w.set_fullscreen()
     ctx = MTContext()
+    print gl_info.get_extensions()
     pymt_plugin_activate(w, ctx)
     runTouchApp()
     pymt_plugin_deactivate(w, ctx)

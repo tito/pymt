@@ -9,7 +9,7 @@ from urllib import urlencode
 
 HOST = 'http://flickr.com'
 PATH = '/services/rest/'
-API_KEY = 'SET YOUR API KEY HERE'
+API_KEY = '2a02cfc894c73bac3cc167e1d2333ce2'
 
 
 class FlickrError(Exception):

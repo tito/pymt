@@ -1,59 +1,63 @@
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-
-
-This is very early alpha, so keep in mind that it might not work as intended at all times.  For bug reports, feature requests and other issues please contact thomas.hansen@gmail.com.
+Copyright (c) 2007-2008 pymt-developers
 
 
 
-run the setup script as follows to install pymt systemwide for python:
- python setup.py install
+Contributors:
+   Thomas Hansen (University of Iowa)
+   Mathieu Virbel
+   Sharath Patali
+   Nathanaël Lécaudé
+   Riley Dutton
+   Felipe Moura
 
-Or you can copy the pymt folder into your python site-packages folder to install system wide yourelf. Otherwise just put the pymt folder in the same directory as your pymt application.
-The examples folder has a couple of very basic example applications (need to install pymt first, or copy pymt folder into the examples folder).
-
-
-Note:  you will need pyglet (www.pyglet.org) and will probably want to take a look at the pyglet documentation since pymt is really just a thin layer on top of pyglet dealing with multi touch events.
-
-
-
-
-There is some simple example apps in the examples folder that should get you started
-
-*touchtracer.py
-	just draws an image and a line to trace each touch
-
-*glPaint.py
-  very simple drawing app with a oversimnplified colorpicker (notice that you can change color while drawing)
-
-*untabgle.py
-  a simple game that draws a circular graph and places the vertoces at random locations.  goal of the game is to untabgle the graph (similar to www.planarity.net)
-
-*3dmt.py
-  draws an obj model exported form blender and lets you rotate it around, the more fingers you use the faster it rotates
+About:
+   This is very early alpha, so keep in mind that it might not work as intended at all times.
+   For bug reports, feature requests and other issues please contact thomas.hansen@gmail.com
+   or stop by #pymt on freenode.org
 
 
+Installation:
+  run the setup script as follows to install pymt systemwide for python:
+    'python setup.py install'
+
+
+Dependencies:
+   python (2.6 recommended, not 3.0 compatible)
+   pyglet (for video support you need avbin)
+     you will need pyglet (www.pyglet.org) and will probably want to take a look at the pyglet
+     documentation since pymt is built on top of pyglet dealing with multi touch events.
+
+   for sound apps using csound:
+     ounk
+     csound
+
+
+Dcoumentation, Examples & Tutorials
+   There is an API refernece included in the trunk under the doc folder.
+   There is some simple example apps in the examples folder that should get you started for now.
 
 
 Other python/MT resources:
+   *touchpy.googlecode.com
+        Some of the code for pymt (Tuio2DCursor class and some parsing) is taken from touchpy (touchpy.googlecode.com).
+        touchpy provides a slightly different event model (I think it is agnostic as to what windowing libraries you want to use).
 
-*touchpy
-Some of the code for pymt (Tuio2DCursor class and some parsing) is taken from touchpy (touchpy.googlecode.com).  touchpy provides a slightly different event model (I think it is agnostic as to what windowing libraries you want to use).
+   *pyglet.org
+      pymt is for use with pyglet only at the moment.  It provides MT events in a way that is consistent to other pyglet events (
+      the pyglet team has a great section about their event system in their documentaion)
 
-*pyglet
-pymt is for use with pyglet only at the moment.  It provides MT events in a way that is consistent to other pyglet events (the pyglet team has a great section about their event system in their documentaion)
-
-*nuigroup.com
-THE resource and research community for open source multi touch and other natural user interfaces
+   *nuigroup.com
+      THE resource and research community for open source multi touch and other natural user interfaces

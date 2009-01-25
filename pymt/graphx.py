@@ -31,9 +31,9 @@ def disable_blending():
 def set_color(r,g,b,a=1.0):
     glColor4f(r,g,b,a)
 
-_standard_label = None
+
 def drawLabel(text, pos=(0,0),center=True, font_size=16):
-    global _standard_label
+    _standard_label = None
     if _standard_label is None:
         _standard_label = Label(text='standard Label', font_size=font_size, bold=True)
     if center:

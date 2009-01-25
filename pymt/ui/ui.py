@@ -64,13 +64,14 @@ class MTButton(MTWidget):
         self.label_obj      = Label(font_size=10, bold=True )
         self.label_obj.anchor_x = 'center'
         self.label_obj.anchor_y = 'center'
+        self.label_obj.text = str(label)
         self._label          = str(label)
 
     def get_label(self):
         return self._label
     def set_label(self, text):
         self._label = str(text)
-        #self.label_obj.text = self._label
+        self.label_obj.text = self._label
     label = property(get_label, set_label)
 
     def get_state(self):
@@ -88,10 +89,10 @@ class MTButton(MTWidget):
             glColor4f(*self.color)
             drawRectangle((self.x,self.y) , (self.width, self.height))
 
-        #self.label_obj.x, self.label_obj.y = self.x +self.width/2 , self.y + +self.height/2
-        #self.label_obj.draw()
+        self.label_obj.x, self.label_obj.y = self.x +self.width/2 , self.y + +self.height/2
+        self.label_obj.draw()
         #print "drawing label", self.label
-        drawLabel(self.label, self.center)
+        #drawLabel(self.label, self.center)
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -381,7 +382,7 @@ class MTSlider(MTWidget):
         drawRectangle(pos=(x,y), size=(w,h))
         # draw inner rectangle
         glColor4f(*self.color)
-        length = int((self.value - self.min) * (self.height - self.padding) / (self.max - self.min)) 
+        length = int((self.value - self.min) * (self.height - self.padding) / (self.max - self.min))
         drawRectangle(pos=(self.x+p2,self.y+p2), size=(w - self.padding, length))
 
     def on_touch_down(self, touches, touchID, x, y):

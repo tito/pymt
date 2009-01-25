@@ -8,10 +8,12 @@ class MTTextInput(MTButton):
     any input of the virtual keyboard will then have effect on the TextInput widget
     """
 
-    def __init__(self, label="text input", pos=(100,100), size=(100,100), color=(0.2,0.2,0.2,1), **kargs):
+    def __init__(self, label="text input", pos=(0,0), size=(100,100), color=(0.2,0.2,0.2,1), **kargs):
         MTButton.__init__(self,pos=pos, size=size, color=color, **kargs)
         self.keyboard = MTVKeyboard(self)
-        self.label_obj = Label(text='', font_size=64, bold=True)
+        self.original_width = size[0]
+        f_size = min(max(int(64*self.width/100.0), 9),120)
+        self.label_obj = Label(text='', font_size=f_size, bold=True)
         self.label_obj.anchor_x = 'left'
         self.label_obj.anchor_y = 'bottom'
         self.is_active_input = False
@@ -26,8 +28,7 @@ class MTTextInput(MTButton):
             self.hide_keyboard()
             self.is_active_input = False
         else:
-            if not self.added_keyboard:
-                self.get_parent_window().add_widget(self.keyboard)
+
             self.show_keyboard()
             self.is_active_input = True
 
@@ -37,14 +38,16 @@ class MTTextInput(MTButton):
         self.label_obj.x = self.x +self.padding
         self.label_obj.y = self.y
         self.width =  self.label_obj.content_width +self.padding*2
-        if self.width < 100:
-            self.width = 100
+        if self.width < self.original_width:
+            self.width = self.original_width
 
     def show_keyboard(self):
-        self.keyboard.show()
+        #print "show keyboard"
+        self.get_parent_window().add_widget(self.keyboard)
 
     def hide_keyboard(self):
-        self.keyboard.hide()
+        #print "hide keyboard"
+        self.get_parent_window().remove_widget(self.keyboard)
 
     def draw(self):
         if self.state[0] == 'down':

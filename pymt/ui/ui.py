@@ -391,12 +391,14 @@ class MTSlider(MTWidget):
 
     def on_touch_move(self, touches, touchID, x, y):
         if touchID in self.touchstarts:
+            last_value = self.value
             self.value = (y - self.y) * (self.max - self.min) / float(self.height) + self.min
             if self.value >= self.max:
                 self.value = self.max
             if self.value <= self.min:
                 self.value = self.min
-            self.dispatch_event('on_value_change', self.value)
+            if not self.value == last_value:
+                self.dispatch_event('on_value_change', self.value)
             return True
 
     def on_touch_up(self, touches, touchID, x, y):

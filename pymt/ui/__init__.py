@@ -9,4 +9,4 @@ from ui import *
 from gesturewidget import *
 from videowidget import *
 from wallpaperwindow import *
-
+from vkeyboard import *

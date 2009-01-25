@@ -381,7 +381,6 @@ class MTSlider(MTWidget):
         drawRectangle(pos=(x,y), size=(w,h))
         # draw inner rectangle
         glColor4f(*self.color)
-        #length = int(self.height*(float(self.value)/self.max) - self.padding)
         length = int((self.value - self.min) * (self.height - self.padding) / (self.max - self.min)) 
         drawRectangle(pos=(self.x+p2,self.y+p2), size=(w - self.padding, length))
 

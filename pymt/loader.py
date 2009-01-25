@@ -21,6 +21,12 @@ import pyglet.sprite
 import time
 import urllib
 
+try:
+    # Used for gdk thread lock access.
+    import gtk
+except:
+    pass
+
 class ProxyImage(pyglet.image.AbstractImage):
     '''ProxyImage is a derivation of AbstractImage of pyglet.
     You have the same abstraction, except that he use loading_image when
@@ -205,9 +211,34 @@ class Loader(object):
             name, objs = self.loadlist.popitem()
             try:
                 fd = urllib.urlopen(name)
-                self.cache[name] = pyglet.image.load(name, file=fd)
+
+                # Special case for gdk loader
+                # We experienced random crash while using pyglet.image.load
+                # in gdk_pixbuf_loader_write().
+                # Since we don't known what pyglet will use to load image
+                # we lock the loading each time
+                try:
+                    gtk.gdk.threads_enter()
+                except:
+                    pass
+
+                # Load image
+                try:
+                    self.cache[name] = pyglet.image.load(name, file=fd)
+                except Exception, e:
+                    print 'Loader: unable to load image %s' % name, e
+
+                try:
+                    gtk.gdk.threads_leave()
+                except:
+                    pass
+
+                # Close fd
                 fd.close()
+
+                # Notify object for new data
                 for obj in objs:
                     self.updatelist.append(obj)
+
             except Exception, e:
                 print 'Loader: unable to load image %s' % name, e

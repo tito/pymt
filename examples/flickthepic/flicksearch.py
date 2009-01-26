@@ -15,9 +15,8 @@ class FlickrPhoto(MTScatterImage):
     def __init__(self, img_src, pos=(0,0), size=(200,200),rotation=45):
         self.image  = loader.sprite(img_src)
         self.aspectRatio = float(self.image.height)/float(self.image.width)
-        super(MTScatterImage, self).__init__(pos=pos, size=(size[0],size[0]*self.aspectRatio))
-        self.rotation = rotation
-        
+        super(MTScatterImage, self).__init__(pos=pos, size=(size[0],size[0]*self.aspectRatio),rotation = rotation)
+
     def draw(self):
         self.update_ratio()
         glPushMatrix()
@@ -27,15 +26,15 @@ class FlickrPhoto(MTScatterImage):
         glScaled(float(self.width)/float(self.image.width), float(self.width*self.aspectRatio)/float(self.image.height), 1.0)
         self.image.draw()
         glPopMatrix()
-   
+
     def update_ratio(self):
         ratio = float(self.image.height)/float(self.image.width)
         if ratio != self.aspectRatio:
             self.aspectRatio = ratio
             self.size = (self.width, self.width * ratio)
 
-   
-            
+
+
 class flickrEngine(MTWidget):
     def __init__(self, search_text = "Dark Knight",pos=(0,0), size=(100,100), **kargs):
         MTWidget.__init__(self, pos=pos, size=size)
@@ -44,7 +43,7 @@ class flickrEngine(MTWidget):
         self.photos = self.client.flickr_photos_search(text=search_text,per_page=8)
         self.num_of_photos = len(self.photos)
         self.generatePhotos()
-   
+
     def generatePhotos(self):
         for photo in self.photos:
             self.farm_id = photo('farm')
@@ -59,21 +58,21 @@ class flickrEngine(MTWidget):
             self.add_widget(self.pic)
 
 
-  
+
 class flickrSearchButton(MTButton):
     def __init__(self,text_widget = None, pos=(0,0), size=(100,100), scale = 1.0, opacity = 100, **kargs):
         super(flickrSearchButton, self).__init__(pos=pos, size=size, label="SEARCH")
         self.txt_widget = text_widget
         self.flickme = None
-        
+
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
             if self.flickme:
                 self.parent.remove_widget(self.flickme)
             self.flickme = flickrEngine(self.txt_widget.label)
             self.parent.add_widget(self.flickme)
-            return True 
-  
+            return True
+
 class flickrControl(MTWidget):
     def __init__(self, pos=(0,0), size=(200,100), **kargs):
         MTWidget.__init__(self, pos=pos, size=size)

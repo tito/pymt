@@ -19,10 +19,10 @@ class MTScatteredObj(MTScatterWidget):
         global loader
         self.image  = loader.sprite(img_src)
         self.aspectRatio = float(self.image.height)/float(self.image.width)
-        MTScatterWidget.__init__(self, pos=pos, size=(size[0],size[0]*self.aspectRatio))
+        MTScatterWidget.__init__(self, pos=pos, size=(size[0],size[0]*self.aspectRatio), rotation=rotation)
         self.x = self.x - int(self.x/4)
         self.y = self.y - int(self.y/4)
-        self.rotation = rotation
+
 
     def draw(self):
         self.update_ratio()
@@ -172,7 +172,7 @@ def pymt_plugin_deactivate(w, ctx):
 
 if __name__ == '__main__':
     w = MTWindow()
-    #w.set_fullscreen()
+    w.set_fullscreen()
     ctx = MTContext()
     print gl_info.get_extensions()
     pymt_plugin_activate(w, ctx)

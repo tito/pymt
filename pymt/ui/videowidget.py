@@ -110,7 +110,7 @@ class MTVideoTimeline(MTSlider):
 
 class MTVideo(MTScatterWidget):
     """MTVideo is a Zoomable,Rotatable,Movable Video widget
-       Usage: 
+       Usage:
           video = MTVideo('source_file',(x_pos,y_pos),(scale,scale),rotation_in_degrees)
           supported file types are similar file support of pyglet player class
     """
@@ -152,24 +152,14 @@ class MTVideo(MTScatterWidget):
 
     def on_touch_down(self, touches, touchID, x, y):
         #if the touch isnt on teh widget we do nothing
-        if not self.collide_point(x,y):
-            return False
-        elif self.collide_point(x,y):
+        if self.collide_point(x,y):
             self.button.show()
             self.mutebutton.show()
             self.timeline.show()
-            pyglet.clock.schedule_once(self.hideControls, 2)
+            pyglet.clock.schedule_once(self.hideControls, 5)
 
-        #let the child widgets handle the event if they want
-        lx,ly = self.to_local(x,y)
-        if MTWidget.on_touch_down(self, touches, touchID, lx, ly):
-            return True
 
-        #if teh children didnt handle it, we bring to front & keep track of touches for rotate/scale/zoom action
-        self.bring_to_front()
-        if not self.haveTouch(touchID) and len(self.touches) <=2:
-            self.touches.append( {"id":touchID, "start_pos":Vector(x,y), "pos":Vector(x,y)} )
-        return True
+        return MTScatterWidget.on_touch_down(self, touches, touchID, x, y)
 
     def hideControls(self, dt):
         self.button.hide()

@@ -5,7 +5,7 @@ from math import *
 from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widget import MTWidget
 from pymt.ui.simulator import MTSimulator
-from pymt.vector import Vector
+from pymt.vector import *
 
 
 class MTRectangularWidget(MTWidget):
@@ -158,59 +158,41 @@ class MTImageButton(MTButton):
         self.height         = self.image.height
         self.image.draw()
 
-
+import random
 class MTScatterWidget(MTWidget):
     '''MTScatterWidget is a scatter widget based on MTWidget'''
-    def __init__(self, pos=(0,0), size=(100,100), **kargs):
+    def __init__(self, pos=(0,0), size=(100,100),rotation=0, **kargs):
         super(MTScatterWidget, self).__init__(pos=pos, size=size, **kargs)
-        self.touches = []
-        self.rotation = 0.0
-        self.zoom  = 1.0
-        self.testPos = Vector(0,0)
+        self.touches = {}
         self.draw_children = True
+        self.transform_mat = (GLfloat * 16)()
+        self.init_transform(pos, rotation)
+
+
+    def init_transform(self, pos, angle):
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLoadIdentity()
+        glTranslated(pos[0], pos[1], 0)
+        glRotated(angle,0,0,1)
+        glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
+        glPopMatrix()
 
     def draw(self):
-        glColor4d(1,0,1,0)
+        glColor4d(*self.color)
         drawRectangle((0,0), (self.width, self.height))
 
     def on_draw(self):
         glPushMatrix()
-        glTranslatef(self.x, self.y, 0)
-        glTranslatef(self.width/2, self.height/2, 0)
-        glScalef(self.zoom, self.zoom, 1)
-        glRotated(self.rotation, 0,0,1)
-        glTranslatef(-self.width/2, -self.height/2, 0)
-        glColor3d(1,0,0)
-
+        glMultMatrixf(self.transform_mat)
         self.draw()
-
-        # propagates to children
-        if self.draw_children:
-            super(MTScatterWidget, self).on_draw()
-
+        for w in self.children:
+            w.dispatch_event('on_draw')
         glPopMatrix()
 
-
-    '''
-    def _set_width(self, w):
-        self._width = w
-        self.dispatch_event('on_resize', self._width, self._height)
-    def _get_width(self):
-        return self._width*self.zoom
-    width = property(_get_width, _set_width)
-
-    def _set_height(self, h):
-        self._height = h
-        self.dispatch_event('on_resize', self._width, self._height)
-    def _get_height(self):
-        return self._height*self.zoom
-
-    def _set_size(self, size):
-        self.width, self.height = size
-        self.dispatch_event('on_resize', self.width, self.height)
-    def _get_size(self):
-        return (int(self.width*self.zoom), int(self.height*self.zoom))
-    '''
+    def to_local(self,x,y):
+        self.new_point = matrix_inv_mult(self.transform_mat, (x,y,0,1))
+        return (self.new_point.x, self.new_point.y)
 
     def collide_point(self, x,y):
         local_coords = self.to_local(x,y)
@@ -220,66 +202,66 @@ class MTScatterWidget(MTWidget):
         else:
             return False
 
-    def updateTouchPos(self, touchID, x,y):
-        for i in range(len(self.touches)):
-            if touchID == self.touches[i]["id"]:
-                self.touches[i]["pos"] = Vector(x,y)
 
-    def save_status(self):
-        for i in range(len(self.touches)):
-            self.touches[i]["start_pos"] = self.touches[i]["pos"]
-
-    def haveTouch(self, touchID):
-        for i in range(len(self.touches)):
-            if touchID == self.touches[i]["id"]:
-                return True
-        return False
-
-    def to_local(self,x,y):
-        # local center x,y ..around which we rotate
-        lcx = (x - self.x ) - self.width/2
-        lcy = (y - self.y ) - self.height/2
-
-        # rotate around the center(its moved center to 0,0) then move back to position
-        angle = radians(-self.rotation)
-        lx= ( lcx*cos(angle)-lcy*sin(angle) ) *1.0/self.zoom
-        ly= ( lcx*sin(angle)+lcy*cos(angle) ) *1.0/self.zoom
-        return (lx+ self.width/2,ly+ self.height/2)
+    def find_second_touch(self, touchID):
+        for tID in self.touches.keys():
+            x,y = self.touches[tID].x, self.touches[tID].y
+            if self.collide_point(x,y) and tID!=touchID:
+                return tID
+        return None
 
     def rotate_zoom_move(self, touchID, x, y):
-        self.updateTouchPos(touchID, x,y)
-        if len(self.touches) == 1 :
-            p1_start = self.touches[0]["start_pos"]
-            p1_now   = self.touches[0]["pos"]
-            translation = p1_now - p1_start
-            self.x += translation.x
-            self.y += translation.y
+        #some default values, in case we dont calculate them, they still need to be defined for applying the openGL transformations
+        intersect = Vector(0,0)
+        trans = Vector(0,0)
+        rotation = 0
+        scale = 1
 
-        if len(self.touches) > 1 :  # only if we have at least 2 touches do we rotate/scale
-            p1_start = self.touches[0]["start_pos"]
-            p2_start = self.touches[1]["start_pos"]
-            p1_now   = self.touches[0]["pos"]
-            p2_now   = self.touches[1]["pos"]
+        #we definitly have one point
+        p1_start = self.touches[touchID]
+        p1_now   = Vector(x,y)
 
-            # compute zoom
+        #if we have a second point, do the scale/rotate/move thing
+        second_touch = self.find_second_touch(touchID)
+        if second_touch:
+            p2_start = self.touches[second_touch]
+            p2_now   = self.touches[second_touch]
+
+            #find intersection between lines...the point around which to rotate
+            intersect = Vector.line_intersection(p1_start,  p2_start,p1_now, p2_now)
+            if not intersect:
+                intersect = Vector(0,0)
+
+            # compute scale factor
             old_dist = Vector.distance(p1_start, p2_start)
             new_dist = Vector.distance(p1_now, p2_now)
             scale = new_dist/old_dist
-            self.zoom =  scale * self.zoom
 
-            # compute pos
-            old_center = p1_start + (p2_start - p1_start)*0.5
-            new_center = p1_now + (p2_now - p1_now)*0.5
-            translation =  new_center - old_center
-            self.x += translation.x
-            self.y += translation.y
-
-            # compute rotation
+            # compute rotation angle
             old_line = p1_start - p2_start
             new_line = p1_now - p2_now
-            self.rotation -= Vector.angle(old_line, new_line)
+            rotation = -Vector.angle(old_line, new_line)
 
-        self.save_status()
+        else:
+            #just comnpute a translation component if we only have one point
+            trans = p1_now - p1_start
+
+        #apply to our transformation matrix
+        glPushMatrix()
+        glLoadIdentity()
+        glTranslated(trans.x, trans.y,0)
+        glTranslated(intersect.x, intersect.y,0)
+        glScaled(scale, scale,1)
+        glRotated(rotation,0,0,1)
+        glTranslated(-intersect.x, -intersect.y,0)
+        glMultMatrixf(self.transform_mat)
+        glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
+        glPopMatrix()
+
+        #save new position of the current touch
+        self.touches[touchID] = Vector(x,y)
+
+
 
 
     def on_touch_down(self, touches, touchID, x,y):
@@ -294,23 +276,28 @@ class MTScatterWidget(MTWidget):
 
         # if teh children didnt handle it, we bring to front & keep track of touches for rotate/scale/zoom action
         self.bring_to_front()
-        if not self.haveTouch(touchID) and len(self.touches) <=2:
-            self.touches.append( {"id":touchID, "start_pos":Vector(x,y), "pos":Vector(x,y)} )
-
+        self.touches[touchID] = Vector(x,y)
         return True
 
     def on_touch_move(self, touches, touchID, x,y):
+        # if the touch isnt on teh widget we do nothing
+        if not (self.collide_point(x,y) or touchID in self.touches):
+            return False
 
-        #if this touch is used for rotate_scale_move,...do that
-        if self.haveTouch(touchID):
+        #rotate/scale/translate
+        if touchID in self.touches:
             self.rotate_zoom_move(touchID, x, y)
             self.dispatch_event('on_resize', self.width, self.height)
             self.dispatch_event('on_move', self.x, self.y)
             return True
 
-        #let the child widgets handle the event if we want
+        #let the child widgets handle the event if they want an we did not
         lx,ly = self.to_local(x,y)
         if MTWidget.on_touch_move(self, touches, touchID, lx, ly):
+            return True
+
+        #stop porpagation if its within our bounds
+        if self.collide_point(x,y):
             return True
 
     def on_touch_up(self, touches, touchID, x,y):
@@ -318,21 +305,13 @@ class MTScatterWidget(MTWidget):
         lx,ly = self.to_local(x,y)
         MTWidget.on_touch_up(self, touches, touchID, lx, ly)
 
+        #remove it from our saved touches
+        if self.touches.has_key(touchID):
+            del self.touches[touchID]
 
-        #if this touch is used for rotate_scale_move, clean up
-        if self.haveTouch(touchID):
-            if len(self.touches)  < 2:
-                self.touches = []
-                return True
-            #if this was one of the two..only remove one of them
-            if self.touches[0]['id'] == touchID:
-                self.touches = [self.touches[1]]
-            else:
-                self.touches = [self.touches[0]]
+        #stop porpagating if its within our bounds
+        if  self.collide_point(x,y):
             return True
-
-        if not self.collide_point(x,y):
-            return False
 
 
 

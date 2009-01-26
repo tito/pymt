@@ -15,9 +15,9 @@ class FlickrPhoto(MTScatterImage):
     def __init__(self, img_src, pos=(0,0), size=(200,200),rotation=45):
         self.image  = loader.sprite(img_src)
         self.aspectRatio = float(self.image.height)/float(self.image.width)
-        super(MTScatterImage, self).__init__(pos=pos, size=(size[0],size[0]*self.aspectRatio))
-        self.rotation = rotation
-        
+        super(MTScatterImage, self).__init__(pos=pos, size=(size[0],size[0]*self.aspectRatio), rotation = rotation)
+
+
     def draw(self):
         self.update_ratio()
         glPushMatrix()
@@ -27,7 +27,7 @@ class FlickrPhoto(MTScatterImage):
         glScaled(float(self.width)/float(self.image.width), float(self.width*self.aspectRatio)/float(self.image.height), 1.0)
         self.image.draw()
         glPopMatrix()
-   
+
     def update_ratio(self):
         ratio = float(self.image.height)/float(self.image.width)
         if ratio != self.aspectRatio:
@@ -42,7 +42,7 @@ class flickrEngine(MTWidget):
         self.photos = self.client.flickr_favorites_getPublicList(user_id=self.USER_ID)
         self.num_of_photos = len(self.photos)
         self.generatePhotos()
-   
+
     def generatePhotos(self):
         for photo in self.photos:
             self.farm_id = photo('farm')
@@ -55,8 +55,8 @@ class flickrEngine(MTWidget):
             rot = random.uniform(0, 360)
             self.pic = FlickrPhoto(img_src=self.url,pos=(x,y),rotation=rot)
             self.add_widget(self.pic)
-            
-            
+
+
 if __name__ == '__main__':
     w = MTWindow()
     w.set_fullscreen()

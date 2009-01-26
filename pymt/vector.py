@@ -100,7 +100,64 @@ class Vector(object):
         angle = -(180/math.pi)*math.atan2(v1.x*v2.y - v1.y*v2.x, v1.x*v2.x+v1.y*v2.y)
         return angle
 
+    @staticmethod
+    def line_intersection(v1,v2, v3, v4):
+        """
+        finds the intersection point between the lines (1)v1->v2 and (2)v3->v4
+        and returns it as a vector object
+
+        for math see: http://en.wikipedia.org/wiki/Line-line_intersection
+        """
+        #linear algebar sucks...seriously!!
+        x1,x2,x3,x4 = float(v1.x), float(v2.x), float(v3.x), float(v4.x)
+        y1,y2,y3,y4 = float(v1.y), float(v2.y), float(v3.y), float(v4.y)
+
+        u = (x1*y2-y1*x2)
+        v = (x3*y4-y3*x4)
+        denom = (x1-x2)*(y3-y4)-(y1-y2)*(x3-x4)
+        if denom == 0:
+            return None
+
+        px = ( u*(x3-x4) - (x1-x2)*v ) / denom
+        py = ( u*(y3-y4) - (y1-y2)*v ) / denom
+
+        return Vector(px,py)
 
 
 
 
+
+import operator
+from numpy import matrix
+
+def matrix_inv_mult(m, v):
+    """  takes an openGL matrix and a 2 Vector and returns the inverse of teh matrix applied to the vector """
+    mat = matrix(
+        [[m[0],m[1],m[2],m[3]],
+         [m[4],m[5],m[6],m[7]],
+         [m[8],m[9],m[10],m[11]],
+         [m[12],m[13],m[14],m[15]]] )
+    vec = matrix(v)
+    inv = mat.I
+    result = vec*inv
+    return Vector(result[0,0],result[0,1])
+
+def matrix_trans_mult(m, v):
+    """  takes an openGL matrix and a 2 Vector and returns the transpose of teh matrix applied to the vector """
+    mat = [[m[0],m[4],m[8],m[12]],
+         [m[1],m[5],m[9],m[13]],
+         [m[2],m[6],m[10],m[14]],
+         [m[3],m[7],m[11],m[15]]]
+    vec = matrix(v)
+    result = vec*mat
+    return Vector(result[0,0],result[0,1])
+
+def matrix_mult(m, v):
+    """  takes an openGL matrix and a 2 Vector and returns the matrix applied to the vector """
+    mat = [[m[0],m[1],m[2],m[3]],
+         [m[4],m[5],m[6],m[7]],
+         [m[8],m[9],m[10],m[11]],
+         [m[12],m[13],m[14],m[15]]]
+    vec = matrix(v)
+    result = vec*mat
+    return Vector(result[0,0],result[0,1])

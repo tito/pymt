@@ -1,6 +1,6 @@
 from pymt import *
 
-c = MTContainer()
+c = MTWidget()
 
 for i in range (20):
         img_src = 'bilder/testpic'+str(i+1)+'.jpg'
@@ -21,6 +21,7 @@ for i in range (20):
                 w.start_animations('shrink')
                 w.status = 'not_zoomed'
             else:
+                w.bring_to_front()
                 w.start_animations('zoom')
                 w.status = 'zoomed'
 

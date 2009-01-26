@@ -9,7 +9,7 @@ from urllib import urlencode
 
 HOST = 'http://flickr.com'
 PATH = '/services/rest/'
-API_KEY = ''
+API_KEY = '2a02cfc894c73bac3cc167e1d2333ce2'
 
 
 
@@ -17,7 +17,7 @@ class FlickrError(Exception):
     def __init__(self, code, message):
         self.code = code
         self.message = message
-    
+
     def __str__(self):
         return 'Flickr Error %s: %s' % (self.code, self.message)
 
@@ -25,7 +25,7 @@ class FlickrError(Exception):
 class FlickrClient:
     def __init__(self, api_key):
         self.api_key = api_key
-    
+
     def __getattr__(self, method):
         def method(_self=self, _method=method, **params):
             _method = _method.replace("_", ".")
@@ -41,7 +41,7 @@ class FlickrClient:
     def _parseResponse(self, rsp):
         if rsp('stat') == 'fail':
             raise FlickrError(rsp.err('code'), rsp.err('msg'))
-        
+
         try:
                 return rsp[0]
         except:

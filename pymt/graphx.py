@@ -33,25 +33,23 @@ def set_color(r,g,b,a=1.0):
 
 
 def drawLabel(text, pos=(0,0),center=True, font_size=16):
-    _standard_label = None
-    if _standard_label is None:
-        _standard_label = Label(text='standard Label', font_size=font_size, bold=True)
+    temp_label = Label(text, font_size=font_size, bold=True)
     if center:
-        _standard_label.anchor_x = 'center'
-        _standard_label.anchor_y = 'center'
+        temp_label.anchor_x = 'center'
+        temp_label.anchor_y = 'center'
     else:
-        _standard_label.anchor_x = 'left'
-        _standard_label.anchor_y = 'bottom'
-    _standard_label.x = 0
-    _standard_label.y = 0
-    _standard_label.text = text
-    _standard_label.font_size=font_size
+        temp_label.anchor_x = 'left'
+        temp_label.anchor_y = 'bottom'
+    temp_label.x = 0
+    temp_label.y = 0
+    temp_label.text = text
+    temp_label.font_size=font_size
     glPushMatrix()
     glTranslated(pos[0], pos[1], 0.0)
     glScaled(0.6,0.6,1)
-    _standard_label.draw()
+    temp_label.draw()
     glPopMatrix()
-    return _standard_label.content_width
+    return temp_label.content_width
 
 
 #paint a line with current brush
@@ -77,12 +75,15 @@ def paintLine(points):
     glDisable(_brush_texture.target)
 
 
-def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=(1,1,1,1),
+def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
                          linewidth=1.5, precision=0.5):
     x, y = pos
     w, h = size
 
-    glColor4f(*color)
+    #with smalle values the algorithm draws wierd stuff, so well make the number s bigger and do a glScale to undo
+
+    if color:
+        glColor4f(*color)
     glLineWidth(linewidth)
 
     glBegin(GL_POLYGON)
@@ -124,6 +125,7 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=(1,1,1,1),
         t += precision
 
     glEnd()
+
 
 def drawCircle(pos=(0,0), radius=1.0):
     x, y = pos[0], pos[1]

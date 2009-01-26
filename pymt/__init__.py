@@ -14,7 +14,7 @@ from ui import *
 from pyglet import *
 from obj import OBJ
 from shader import *
-from vector import Vector
+from vector import *
 from plugin import *
 from loader import *
 from gesture import *

@@ -23,17 +23,15 @@ class MTTextInput(MTButton):
         self.register_event_type('on_text_change')
 
 
+
+
     def on_release(self,touchID, x, y):
         if self.is_active_input:
             self.hide_keyboard()
-            self.is_active_input = False
         else:
-
             self.show_keyboard()
-            self.is_active_input = True
 
-    def on_text_change(self):
-
+    def reposition(self):
         self.label_obj.text = self.label
         self.label_obj.x = self.x +self.padding
         self.label_obj.y = self.y
@@ -41,13 +39,25 @@ class MTTextInput(MTButton):
         if self.width < self.original_width:
             self.width = self.original_width
 
+    def on_move(self, w, h):
+        self.reposition()
+
+
+
+    def on_text_change(self):
+        self.reposition()
+
+
     def show_keyboard(self):
         #print "show keyboard"
         self.get_parent_window().add_widget(self.keyboard)
+        self.is_active_input = True
 
     def hide_keyboard(self):
         #print "hide keyboard"
         self.get_parent_window().remove_widget(self.keyboard)
+        self.is_active_input = False
+
 
     def draw(self):
         if self.state[0] == 'down':
@@ -127,6 +137,8 @@ class MTVKeyboard(MTScatterWidget):
     def on_key_down(self, k_str):
         if k_str == "<-":
             self.text_widget.label = self.text_widget.label[:-1]
+        elif k_str == "X":
+            self.text_widget.hide_keyboard()
         elif k_str == "space":
             self.text_widget.label += " "
         else:

@@ -405,6 +405,77 @@ class MTSlider(MTWidget):
     def on_touch_up(self, touches, touchID, x, y):
         if touchID in self.touchstarts:
             self.touchstarts.remove(touchID)
+            
+class MT2DSlider(MTWidget):
+    '''MT2DSlider is an implementation of a 2D slider using MTWidget'''
+    def __init__(self, min_x=20, max_x=100, min_y = 20, max_y = 100, pos=(10,10), size=(300,300), radius=20, color=(0.8, 0.8, 0.4, 1.0)):
+        super(MT2DSlider, self).__init__(pos=pos, size=size)
+        self.register_event_type('on_value_change')
+        self.touchstarts = [] # only react to touch input that originated on this widget
+        self.color = color
+        self.radius = radius
+        self.padding = radius
+        self.min_x, self.max_x = min_x, max_x
+        self.min_y, self.max_y = min_y, max_y
+        self.value_x, self.value_y = self.min_x, self.min_y
+
+    def on_value_change(self, value_x, value_y):
+        pass
+
+    def set_value_x(self, value):
+        self.value_x = value
+        self.dispatch_event('on_value_change', self.value_x, self.value_y)
+        self.draw()
+
+    def get_value_x():
+        return self.value_x
+    
+    def set_value_y(self, value):
+        self.value_y = value
+        self.dispatch_event('on_value_change', self.value_x, self.value_y)
+        self.draw()
+
+    def get_value_y():
+        return self.value_y
+    
+    def draw(self):
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        x,y,w,h = self.x,self.y,self.width, self.height
+        # draw outer rectangle
+        glColor4f(0.2,0.2,0.2,0.5)
+        drawRectangle(pos=(x,y), size=(w,h))
+        # draw inner circle
+        glColor4f(*self.color)
+        pos_x = int((self.value_x - self.min_x) * (self.width - self.padding*2) / (self.max_x - self.min_x))  + self.x + self.padding
+        pos_y = int((self.value_y - self.min_y) * (self.height - self.padding*2) / (self.max_y - self.min_y)) + self.y + self.padding
+        drawCircle(pos=(pos_x, pos_y), radius = self.radius)
+
+    def on_touch_down(self, touches, touchID, x, y):
+        if self.collide_point(x,y):
+            self.touchstarts.append(touchID)
+            return True
+
+    def on_touch_move(self, touches, touchID, x, y):
+        if touchID in self.touchstarts:
+            last_value_x, last_value_y = self.value_x, self.value_y
+            self.value_x = (x - self.x) * (self.max_x - self.min_x) / float(self.width) + self.min_x
+            self.value_y = (y - self.y) * (self.max_y - self.min_y) / float(self.height) + self.min_y
+            if self.value_x >= self.max_x:
+                self.value_x = self.max_x
+            if self.value_x <= self.min_x:
+                self.value_x = self.min_x
+            if self.value_y >= self.max_y:
+                self.value_y = self.max_y
+            if self.value_y <= self.min_y:
+                self.value_y = self.min_y
+            if not self.value_x == last_value_x or not self.value_y == last_value_y:
+                self.dispatch_event('on_value_change', self.value_x, self.value_y)
+            return True
+
+    def on_touch_up(self, touches, touchID, x, y):
+        if touchID in self.touchstarts:
+            self.touchstarts.remove(touchID)
 
 
 class MTColorPicker(MTWidget):
@@ -528,5 +599,6 @@ MTWidgetFactory.register('MTImageButton', MTImageButton)
 MTWidgetFactory.register('MTScatterWidget', MTScatterWidget)
 MTWidgetFactory.register('MTScatterImage', MTScatterImage)
 MTWidgetFactory.register('MTSlider', MTSlider)
+MTWidgetFactory.register('MT2DSlider', MT2DSlider)
 MTWidgetFactory.register('MTColorPicker', MTColorPicker)
 MTWidgetFactory.register('MTObjectWidget', MTObjectWidget)

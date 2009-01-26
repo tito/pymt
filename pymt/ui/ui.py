@@ -59,7 +59,7 @@ class MTButton(MTWidget):
         super(MTButton, self).__init__(pos=pos, size=size, color=color, **kargs)
         self.register_event_type('on_press')
         self.register_event_type('on_release')
-        self.state          = ('normal', 0)
+        self._state         = ('normal', 0)
         self.clickActions   = []
         self.label_obj      = Label(font_size=10, bold=True )
         self.label_obj.anchor_x = 'center'
@@ -69,20 +69,23 @@ class MTButton(MTWidget):
 
     def get_label(self):
         return self._label
+    
     def set_label(self, text):
         self._label = str(text)
         self.label_obj.text = self._label
+
     label = property(get_label, set_label)
 
     def get_state(self):
-        return self.state[0]
+        return self._state[0]
 
     def set_state(self, state):
-        self.state = (state, 0)
-        self.draw()
+        self._state = (_state, 0)
 
+    state = property(get_state, set_state, doc='Sets the state of the button, "normal" or "down"')
+    
     def draw(self):
-        if self.state[0] == 'down':
+        if self._state[0] == 'down':
             glColor4f(0.5,0.5,0.5,0.5)
             drawRectangle((self.x,self.y) , (self.width, self.height))
         else:
@@ -96,19 +99,19 @@ class MTButton(MTWidget):
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
-            self.state = ('down', touchID)
+            self._state = ('down', touchID)
             self.dispatch_event('on_press', touchID, x,y)
             return True
 
     def on_touch_move(self, touches, touchID, x, y):
-        if self.state[1] == touchID and not self.collide_point(x,y):
-            self.state = ('normal', 0)
+        if self._state[1] == touchID and not self.collide_point(x,y):
+            self._state = ('normal', 0)
             return True
         return self.collide_point(x,y)
 
     def on_touch_up(self, touches, touchID, x, y):
-        if self.state[1] == touchID and self.collide_point(x,y):
-            self.state = ('normal', 0)
+        if self._state[1] == touchID and self.collide_point(x,y):
+            self._state = ('normal', 0)
             self.dispatch_event('on_release', touchID, x,y)
             return True
         return self.collide_point(x,y)
@@ -121,18 +124,18 @@ class MTToggleButton(MTButton):
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
             if self.get_state() == 'down':
-                self.state = ('normal', touchID)
+                self._state = ('normal', touchID)
             else:
-                self.state = ('down', touchID)
+                self._state = ('down', touchID)
             self.dispatch_event('on_press', touchID, x,y)
             return True
 
     def on_touch_move(self, touches, touchID, x, y):
-        if self.state[1] == touchID and not self.collide_point(x,y):
+        if self._state[1] == touchID and not self.collide_point(x,y):
             return True
 
     def on_touch_up(self, touches, touchID, x, y):
-        if self.state[1] == touchID and self.collide_point(x,y):
+        if self._state[1] == touchID and self.collide_point(x,y):
             self.dispatch_event('on_release', touchID, x,y)
             return True
 
@@ -338,19 +341,20 @@ class MTSlider(MTWidget):
         self.color = color
         self.padding = padding
         self.min, self.max = min, max
-        self.value = self.min
+        self._value = self.min
 
     def on_value_change(self, value):
         pass
 
-    def set_value(self, value):
-        self.value = value
-        self.dispatch_event('on_value_change', self.value)
-        self.draw()
+    def set_value(self, _value):
+        self._value = _value
+        self.dispatch_event('on_value_change', self._value)
 
-    def get_value():
-        return self.value
-
+    def get_value(self):
+        return self._value
+    
+    value = property(get_value, set_value, doc='Represents the value of the slider')
+    
     def draw(self):
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -361,7 +365,7 @@ class MTSlider(MTWidget):
         drawRectangle(pos=(x,y), size=(w,h))
         # draw inner rectangle
         glColor4f(*self.color)
-        length = int((self.value - self.min) * (self.height - self.padding) / (self.max - self.min))
+        length = int((self._value - self.min) * (self.height - self.padding) / (self.max - self.min))
         drawRectangle(pos=(self.x+p2,self.y+p2), size=(w - self.padding, length))
 
     def on_touch_down(self, touches, touchID, x, y):
@@ -371,14 +375,14 @@ class MTSlider(MTWidget):
 
     def on_touch_move(self, touches, touchID, x, y):
         if touchID in self.touchstarts:
-            last_value = self.value
-            self.value = (y - self.y) * (self.max - self.min) / float(self.height) + self.min
-            if self.value >= self.max:
-                self.value = self.max
-            if self.value <= self.min:
-                self.value = self.min
-            if not self.value == last_value:
-                self.dispatch_event('on_value_change', self.value)
+            last_value = self._value
+            self._value = (y - self.y) * (self.max - self.min) / float(self.height) + self.min
+            if self._value >= self.max:
+                self._value = self.max
+            if self._value <= self.min:
+                self._value = self.min
+            if not self._value == last_value:
+                self.dispatch_event('on_value_change', self._value)
             return True
 
     def on_touch_up(self, touches, touchID, x, y):
@@ -396,26 +400,30 @@ class MT2DSlider(MTWidget):
         self.padding = radius
         self.min_x, self.max_x = min_x, max_x
         self.min_y, self.max_y = min_y, max_y
-        self.value_x, self.value_y = self.min_x, self.min_y
+        self._value_x, self._value_y = self.min_x, self.min_y
 
     def on_value_change(self, value_x, value_y):
         pass
 
     def set_value_x(self, value):
-        self.value_x = value
-        self.dispatch_event('on_value_change', self.value_x, self.value_y)
+        self._value_x = value
+        self.dispatch_event('on_value_change', self._value_x, self._value_y)
         self.draw()
 
-    def get_value_x():
-        return self.value_x
+    def get_value_x(self):
+        return self._value_x
+    
+    value_x = property(get_value_x, set_value_x, doc='Represents the value of the slider (x axis)')
     
     def set_value_y(self, value):
-        self.value_y = value
-        self.dispatch_event('on_value_change', self.value_x, self.value_y)
+        self._value_y = value
+        self.dispatch_event('on_value_change', self._value_x, self._value_y)
         self.draw()
 
-    def get_value_y():
-        return self.value_y
+    def get_value_y(self):
+        return self._value_y
+    
+    value_y = property(get_value_y, set_value_y, doc='Represents the value of the slider (y axis)')
     
     def draw(self):
         glEnable(GL_BLEND);
@@ -426,8 +434,8 @@ class MT2DSlider(MTWidget):
         drawRectangle(pos=(x,y), size=(w,h))
         # draw inner circle
         glColor4f(*self.color)
-        pos_x = int((self.value_x - self.min_x) * (self.width - self.padding*2) / (self.max_x - self.min_x))  + self.x + self.padding
-        pos_y = int((self.value_y - self.min_y) * (self.height - self.padding*2) / (self.max_y - self.min_y)) + self.y + self.padding
+        pos_x = int((self._value_x - self.min_x) * (self.width - self.padding*2) / (self.max_x - self.min_x))  + self.x + self.padding
+        pos_y = int((self._value_y - self.min_y) * (self.height - self.padding*2) / (self.max_y - self.min_y)) + self.y + self.padding
         drawCircle(pos=(pos_x, pos_y), radius = self.radius)
 
     def on_touch_down(self, touches, touchID, x, y):
@@ -437,19 +445,19 @@ class MT2DSlider(MTWidget):
 
     def on_touch_move(self, touches, touchID, x, y):
         if touchID in self.touchstarts:
-            last_value_x, last_value_y = self.value_x, self.value_y
-            self.value_x = (x - self.x) * (self.max_x - self.min_x) / float(self.width) + self.min_x
-            self.value_y = (y - self.y) * (self.max_y - self.min_y) / float(self.height) + self.min_y
-            if self.value_x >= self.max_x:
-                self.value_x = self.max_x
-            if self.value_x <= self.min_x:
-                self.value_x = self.min_x
-            if self.value_y >= self.max_y:
-                self.value_y = self.max_y
-            if self.value_y <= self.min_y:
-                self.value_y = self.min_y
-            if not self.value_x == last_value_x or not self.value_y == last_value_y:
-                self.dispatch_event('on_value_change', self.value_x, self.value_y)
+            last_value_x, last_value_y = self._value_x, self._value_y
+            self._value_x = (x - self.x) * (self.max_x - self.min_x) / float(self.width) + self.min_x
+            self._value_y = (y - self.y) * (self.max_y - self.min_y) / float(self.height) + self.min_y
+            if self._value_x >= self.max_x:
+                self._value_x = self.max_x
+            if self._value_x <= self.min_x:
+                self._value_x = self.min_x
+            if self._value_y >= self.max_y:
+                self._value_y = self.max_y
+            if self._value_y <= self.min_y:
+                self._value_y = self.min_y
+            if not self._value_x == last_value_x or not self._value_y == last_value_y:
+                self.dispatch_event('on_value_change', self._value_x, self._value_y)
             return True
 
     def on_touch_up(self, touches, touchID, x, y):
@@ -466,7 +474,7 @@ class MTColorPicker(MTWidget):
                         MTSlider(max=255, size=(30,200), color=(0,1,0,1)),
                         MTSlider(max=255, size=(30,200), color=(0,0,1,1)) ]
         for slider in self.sliders:
-            slider.set_value(77)
+            slider.value = 77
         self.update_color()
         self.touch_positions = {}
 

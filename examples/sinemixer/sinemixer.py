@@ -49,7 +49,7 @@ def pymt_plugin_activate(w, ctx):
     for s in range(4):
         sliders[s].push_handlers(on_value_change = curry(on_value_change_callback, s))
         time.sleep(2)
-        sliders[s].set_value(300)
+        sliders[s].value = 300
   
     # When the button is pressed, the amplitude is changed to 0.5
     def on_press_callback(btn, touchID, x, y):

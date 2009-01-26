@@ -26,8 +26,6 @@ class GestureDatabase(object):
     '''Class to handle a gesture database.'''
     def __init__(self):
         self.db = []
-        #Add the ability to return missed gestures, as an easy way to create new gestures.
-        self.returnmismatches = False
 
     def add_gesture(self, gesture):
         '''Add a new gesture in database'''
@@ -47,9 +45,6 @@ class GestureDatabase(object):
             bestscore = score
             best = g
         if not best:
-            if self.returnmismatches:
-                #Return the missed gesture, so that we can add it to the database.
-                return self.gesture_to_str(gesture)
             return
         return (bestscore, best)
 

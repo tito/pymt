@@ -8,17 +8,13 @@ class CaptureGesture(MTGestureWidget):
     def on_gesture(self, gesture, x, y):
         # try to find gesture from database
         best = self.gdb.find(gesture, minscore=0.8)
-        if type(best).__name__=='str':
-            print 'No gesture found, returned:\n', best 
-        elif type(best).__name__=='tuple':
-            print 'Gesture found, score', best[0], ':', best[1].label
+        if not best:
+            print 'No gesture found\nString version of your last gesture :\n', self.gdb.gesture_to_str(best)
         else:
-            print "No gesture found, nothing returned."
+            print 'Gesture found, score', best[0], ':', best[1].label
 
 if __name__ == '__main__':
     gdb = GestureDatabase()
-    #UNCOMMENT the below line if you want to get the string for missed gestures (easy way to generate new gestures).
-    gdb.returnmismatches = True
 
     # Circle
     g = gdb.str_to_gesture('eNqFkMtqw0AMRff6EXtTo8doHj+Qbgv+gJImJoSm8eCZQPP3HTlpodDHIJiFdO7VVX/M17c6HKZSL8sEj/c/I/T7TDB2pS7z61Q6yAz9KQv0PxLjOgbZGaeNy/PxXA3zhoVfsCebghyNSo26NoAQNjhwiI45iiJ7j5EVyti9W5usTc6JkGpyrDElTVBetn96EK+RBA43AyHvveNEgYJScgHK4aaNilG5GWBAkabu/xdfc5N+iScvLogX4eiS4qf4Q9uclJAdtmwtFbEzcauxq/NpWrbn3WQx/RoTvz+yK9xXeM7LvL/sqg2H1TS0g7RAjiOLqNhNhg+4A4YT')

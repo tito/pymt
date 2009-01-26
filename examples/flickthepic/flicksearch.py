@@ -1,8 +1,8 @@
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
-PLUGIN_TITLE = 'Flicker Favorites Viewer'
+PLUGIN_TITLE = 'Flicker Searcher'
 PLUGIN_AUTHOR = 'Sharath Patali'
-PLUGIN_DESCRIPTION = 'This application download pictures asynchrnously and displaces them as a MT Image'
+PLUGIN_DESCRIPTION = 'This application download pictures asynchrnously and displays them as a MT Image'
 
 from pymt import *
 from urllib import urlopen
@@ -41,7 +41,7 @@ class flickrEngine(MTWidget):
         MTWidget.__init__(self, pos=pos, size=size)
         self.USER_ID = '23307960@N04' # SET THE FLICKR USER ID HERE TO FETCH THE FAVORITES
         self.client = FlickrClient(API_KEY)
-        self.photos = self.client.flickr_photos_search(text=search_text,per_page=5)
+        self.photos = self.client.flickr_photos_search(text=search_text,per_page=8)
         self.num_of_photos = len(self.photos)
         self.generatePhotos()
    
@@ -64,9 +64,12 @@ class flickrSearchButton(MTButton):
     def __init__(self,text_widget = None, pos=(0,0), size=(100,100), scale = 1.0, opacity = 100, **kargs):
         super(flickrSearchButton, self).__init__(pos=pos, size=size, label="SEARCH")
         self.txt_widget = text_widget
+        self.flickme = None
         
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
+            if self.flickme:
+                self.parent.remove_widget(self.flickme)
             self.flickme = flickrEngine(self.txt_widget.label)
             self.parent.add_widget(self.flickme)
             return True 

@@ -380,7 +380,7 @@ def pymt_plugin_deactivate(root, ctx):
     
 if __name__ == '__main__':
     w = MTWindow(color=(0,0,0,1))
-    #w.set_fullscreen()
+    w.set_fullscreen()
     #print gl_info.get_version()
     ctx = MTContext()
     pymt_plugin_activate(w, ctx)

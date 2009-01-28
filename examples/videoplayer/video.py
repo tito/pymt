@@ -11,7 +11,7 @@ from pymt.ui.videowidget import *
 
 if __name__ == '__main__':
     w = MTWindow()
-    w.set_fullscreen()
+    #w.set_fullscreen()
     video = MTVideo('softboy.avi',pos=(100,200))
     w.add_widget(video)
 

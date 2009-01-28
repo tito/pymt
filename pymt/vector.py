@@ -123,41 +123,76 @@ class Vector(object):
 
         return Vector(px,py)
 
+try:
+    import numpy
+except:
+    print "Warning:  you do not have numpy installed.  Computing transformations for MTScatterWidget can get painfully slow without numpy. You shoudl install numpy: http://numpy.scipy.org/"
+    from matrix import Matrix, RowVector
 
 
-from matrix import Matrix, RowVector
 def matrix_inv_mult(m, v):
     """  takes an openGL matrix and a 2 Vector and returns the inverse of teh matrix applied to the vector """
-    mat = Matrix([
-        RowVector(m[0:4]),
-        RowVector(m[4:8]),
-        RowVector(m[8:12]),
-        RowVector(m[12:16])] )
-    vec = RowVector(v)
-    result = vec*mat.inverse()
+    try: #try to do this using numpy....soooo much faster
+        mat = numpy.matrix(
+        [[m[0],m[1],m[2],m[3]],
+         [m[4],m[5],m[6],m[7]],
+         [m[8],m[9],m[10],m[11]],
+         [m[12],m[13],m[14],m[15]]] )
+        vec = numpy.matrix(v)
+        inv = mat.I
+        result = vec*inv
+        return Vector(result[0,0],result[0,1])
+    except:
+        mat = Matrix([
+            RowVector(m[0:4]),
+            RowVector(m[4:8]),
+            RowVector(m[8:12]),
+            RowVector(m[12:16])] )
+        vec = RowVector(v)
+        result = vec*mat.inverse()
 
-    return Vector(result[1], result[2])
+        return Vector(result[1], result[2])
 
 def matrix_trans_mult(m, v):
     """  takes an openGL matrix and a 2 Vector and returns the transpose of teh matrix applied to the vector """
-    mat = Matrix([
-        RowVector(m[0:4]),
-        RowVector(m[4:8]),
-        RowVector(m[8:12]),
-        RowVector(m[12:16])] )
-    vec = RowVector(v)
-    result = vec*mat.transpose()
 
-    return Vector(result[1], result[2])
+    try: #try to do this using numpy....soooo much faster
+        mat = numpy.matrix(
+        [[m[0],m[1],m[2],m[3]],
+         [m[4],m[5],m[6],m[7]],
+         [m[8],m[9],m[10],m[11]],
+         [m[12],m[13],m[14],m[15]]] )
+        vec = numpy.matrix(v)
+        result = vec*mat.T
+        return Vector(result[0,0],result[0,1])
+    except:
+        mat = Matrix([
+            RowVector(m[0:4]),
+            RowVector(m[4:8]),
+            RowVector(m[8:12]),
+            RowVector(m[12:16])] )
+        vec = RowVector(v)
+        result = vec*mat.transpose()
+        return Vector(result[1], result[2])
 
 def matrix_mult(m, v):
     """  takes an openGL matrix and a 2 Vector and returns the matrix applied to the vector """
-    mat = Matrix([
+
+    try: #try to do this using numpy....soooo much faster
+        mat = numpy.matrix(
+        [[m[0],m[1],m[2],m[3]],
+         [m[4],m[5],m[6],m[7]],
+         [m[8],m[9],m[10],m[11]],
+         [m[12],m[13],m[14],m[15]]] )
+        vec = numpy.matrix(v)
+        result = vec*mat
+        return Vector(result[0,0],result[0,1])
+    except:
+        mat = Matrix([
         RowVector(m[0:4]),
         RowVector(m[4:8]),
         RowVector(m[8:12]),
         RowVector(m[12:16])] )
-    vec = RowVector(v)
-    result = vec*mat
-
-    return Vector(result[1], result[2])
+        vec = RowVector(v)
+        result = vec*mat
+        return Vector(result[1], result[2])

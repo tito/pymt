@@ -69,7 +69,7 @@ class MTButton(MTWidget):
 
     def get_label(self):
         return self._label
-    
+
     def set_label(self, text):
         self._label = str(text)
         self.label_obj.text = self._label
@@ -80,10 +80,10 @@ class MTButton(MTWidget):
         return self._state[0]
 
     def set_state(self, state):
-        self._state = (_state, 0)
+        self._state = (self._state, 0)
 
     state = property(get_state, set_state, doc='Sets the state of the button, "normal" or "down"')
-    
+
     def draw(self):
         if self._state[0] == 'down':
             glColor4f(0.5,0.5,0.5,0.5)
@@ -352,9 +352,9 @@ class MTSlider(MTWidget):
 
     def get_value(self):
         return self._value
-    
+
     value = property(get_value, set_value, doc='Represents the value of the slider')
-    
+
     def draw(self):
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -388,7 +388,7 @@ class MTSlider(MTWidget):
     def on_touch_up(self, touches, touchID, x, y):
         if touchID in self.touchstarts:
             self.touchstarts.remove(touchID)
-            
+
 class MT2DSlider(MTWidget):
     '''MT2DSlider is an implementation of a 2D slider using MTWidget'''
     def __init__(self, min_x=20, max_x=100, min_y = 20, max_y = 100, pos=(10,10), size=(300,300), radius=20, color=(0.8, 0.8, 0.4, 1.0)):
@@ -412,9 +412,9 @@ class MT2DSlider(MTWidget):
 
     def get_value_x(self):
         return self._value_x
-    
+
     value_x = property(get_value_x, set_value_x, doc='Represents the value of the slider (x axis)')
-    
+
     def set_value_y(self, value):
         self._value_y = value
         self.dispatch_event('on_value_change', self._value_x, self._value_y)
@@ -422,9 +422,9 @@ class MT2DSlider(MTWidget):
 
     def get_value_y(self):
         return self._value_y
-    
+
     value_y = property(get_value_y, set_value_y, doc='Represents the value of the slider (y axis)')
-    
+
     def draw(self):
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)

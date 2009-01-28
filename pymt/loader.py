@@ -6,12 +6,9 @@ loading image for using a such loader ::
  loader = Loader(loading_image='load.png')
  sprite = loader.sprite('mysprite.png')
 
-.. warning::
+You can also load image from url ::
 
-    You may experienced crash with gdkpixbuf default loader
-    from pyglet package ! Use async=False as default when you
-    instanciate loader !
-
+ sprite = loader.sprite('http://mysite.com/test.png')
 
 '''
 

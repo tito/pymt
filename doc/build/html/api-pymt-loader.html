@@ -22,7 +22,7 @@
     <link rel="top" title="PyMT v0.1a1 documentation" href="index.html" />
     <link rel="up" title="Core - base class for pymt" href="api-pymt-core.html" />
     <link rel="next" title="mtpyglet - multitouch abstraction for pyglet" href="api-pymt-mtpyglet.html" />
-    <link rel="prev" title="graphx - generic drawing functions" href="api-pymt-graphx.html" />
+    <link rel="prev" title="gesture - gesture recognition" href="api-pymt-gesture.html" />
   </head>
   <body>
     <div class="related">
@@ -38,7 +38,7 @@
           <a href="api-pymt-mtpyglet.html" title="mtpyglet - multitouch abstraction for pyglet"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt-graphx.html" title="graphx - generic drawing functions"
+          <a href="api-pymt-gesture.html" title="gesture - gesture recognition"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">PyMT v0.1a1 documentation</a> &raquo;</li>
           <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
@@ -60,12 +60,9 @@ loading image for using a such loader</p>
 <span class="n">loader</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">loading_image</span><span class="o">=</span><span class="s">&#39;load.png&#39;</span><span class="p">)</span>
 <span class="n">sprite</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">sprite</span><span class="p">(</span><span class="s">&#39;mysprite.png&#39;</span><span class="p">)</span>
 </pre></div>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">You may experienced crash with gdkpixbuf default loader
-from pyglet package ! Use async=False as default when you
-instanciate loader !</p>
-</div>
+<p>You can also load image from url</p>
+<div class="highlight"><pre><span class="n">sprite</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">sprite</span><span class="p">(</span><span class="s">&#39;http://mysite.com/test.png&#39;</span><span class="p">)</span>
+</pre></div>
 <dl class="class">
 <dt id="pymt.loader.Loader">
 <!--[pymt.loader.Loader]-->class <tt class="descclassname">pymt.loader.</tt><tt class="descname">Loader</tt><big>(</big><em>loading_image</em>, <em>async=True</em><big>)</big><a class="headerlink" href="#pymt.loader.Loader" title="Permalink to this definition">¶</a></dt>
@@ -176,7 +173,7 @@ the final image are not yet available.</p>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt-graphx.html" title="previous chapter">graphx - generic drawing functions</a></p>
+            <p class="topless"><a href="api-pymt-gesture.html" title="previous chapter">gesture - gesture recognition</a></p>
             <h4>Next topic</h4>
             <p class="topless"><a href="api-pymt-mtpyglet.html" title="next chapter">mtpyglet - multitouch abstraction for pyglet</a></p>
             <h3>This Page</h3>
@@ -206,7 +203,7 @@ the final image are not yet available.</p>
           <a href="api-pymt-mtpyglet.html" title="mtpyglet - multitouch abstraction for pyglet"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt-graphx.html" title="graphx - generic drawing functions"
+          <a href="api-pymt-gesture.html" title="gesture - gesture recognition"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">PyMT v0.1a1 documentation</a> &raquo;</li>
           <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
@@ -215,7 +212,7 @@ the final image are not yet available.</p>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on Jan 23, 2009.
+      Last updated on jan 27, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
     </div>
   </body>

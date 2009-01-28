@@ -7,12 +7,11 @@ class MTWallpaperWindow(MTWindow):
     CENTER = 1
 
     def __init__(self, wallpaper=None, **kargs):
-        super(MTWindow, self).__init__(**kargs)
+        super(MTWallpaperWindow, self).__init__(**kargs)
         self.wallpaper = wallpaper
         self.position = MTWallpaperWindow.CENTER
 
     def draw(self):
-        MTWindow.draw(self)
         if self.position == MTWallpaperWindow.NOREPEAT:
             self.wallpaper.x, self.wallpaper.y = (0, 0)
             self.wallpaper.draw()

@@ -79,8 +79,8 @@ class Tuio2DObject():
 
 
 """
-In TUIOGetter , The "type" item differentiates the 2Dobj of the 2DCur , to choose 
-the  righ parser on the idle function 
+In TUIOGetter , The "type" item differentiates the 2Dobj of the 2DCur , to choose
+the  righ parser on the idle function
 
 """
 
@@ -101,7 +101,7 @@ class TUIOGetter():
 
     def stopListening(self):
 		#print "stopping ", self
-		osc.dontListen()	
+		osc.dontListen()
 
     def close(self):
         osc.dontListen()
@@ -252,10 +252,59 @@ class TouchWindow(pyglet.window.Window):
         pass
 
 
-#static main function that starts the app loop 
+
+
+
+import sys, getopt, os
+
+def pymt_usage():
+        print """
+pymt application usage: %s [-h][--port][--host][--fullscreen]
+
+        '-h':
+           prints this mesage
+
+        '--port=X':
+           listen for TUIO input on port X
+           if not specified pymt defaults to port 3333
+
+        '--host=xxx.xxx.xxx.xxx':
+           listen for TUIO from host xxx.xxx.xxx.xxx (IP adress of host)
+           if not specified pymt defaults listening on localhost (127.0.0.1)
+
+        '--fullscreen':
+           sets the pymt window to fullscreen
+           (code inside the program might do this by itself)
+
+        """ % os.path.split(sys.argv[0])[1]
+
+#static main function that starts the app loop
 
 def runTouchApp():
-    evloop = TouchEventLoop()
+    port = 3333
+    host = '127.0.0.1'
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "h", ['port=', 'host=','fullscreen'])
+        for opt, arg in opts:
+            if opt == '-h':
+                pymt_usage()
+            if opt == '--port':
+                port = arg
+            elif opt == '--host':
+                host = arg
+            elif opt == '--fullscreen':
+                global touch_event_listeners
+                touch_event_listeners[0].set_fullscreen(True)
+
+    except getopt.GetoptError, err:
+        print str(err)
+        pymt_usage()
+        sys.exit(2)
+
+    print "Listening for TUIO on port " , port, " of host ", host
+    evloop = TouchEventLoop(host=host, port=port)
+
     try:
         evloop.run()
     except:
@@ -295,6 +344,3 @@ if __name__ == '__main__':
     runTouchApp()
 
 tuio_event_q.join()
-
-
-

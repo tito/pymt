@@ -48,7 +48,12 @@ def action_close_menu(menu, w, args):
 
 def action_launch_plugin(menu, w, args):
     name, plugin = args
-    print 'launch', name, plugin
+
+    win = MTInnerWindow(size=(320,280))
+    plugins.activate(plugin, win)
+    menu.parent.add_widget(win)
+    #win.pos = w.pos
+
     action_close_menu(menu, w, None)
 
 class MTActionButton(MTButton):
@@ -132,16 +137,5 @@ if __name__ == '__main__':
     w.set_fullscreen()
     g = MTGestureDetector(gdb)
     w.add_widget(g)
-
-    #inner window test
-    winTest = MTInnerWindow(size=(320,280))
-
-    _plugins = MTPlugins(plugin_paths=['../'])
-    _plugins.search_plugins()
-    app = _plugins.get_plugin('untangle')
-    _plugins.activate(app, winTest)
-
-    w.add_widget(winTest)
-
 
     runTouchApp()

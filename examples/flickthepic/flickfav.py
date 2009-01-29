@@ -1,8 +1,8 @@
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
-PLUGIN_TITLE = 'Flicker Searcher'
+PLUGIN_TITLE = 'Flicker Favorites Viewer'
 PLUGIN_AUTHOR = 'Sharath Patali'
-PLUGIN_DESCRIPTION = 'This application download pictures asynchrnously and displays them as a MT Image'
+PLUGIN_DESCRIPTION = 'This application download pictures asynchrnously and displaces them as a MT Image'
 
 from pymt import *
 from urllib import urlopen
@@ -36,20 +36,13 @@ class FlickrPhoto(MTScatterImage):
             self.aspectRatio = ratio
             self.size = (self.width, self.width * ratio)
 
-
-
 class flickrEngine(MTWidget):
     '''This is a engine which communicates with the flickr server using flickr api to download the image urls'''
     def __init__(self, **kwargs):
-        kwargs.setdefault('search_text', "Dark Knight")  
-        kwargs.setdefault('size', (200,200))
-        kwargs.setdefault('color', (0.9,0.9,0.9,1))
         super(flickrEngine, self).__init__(**kwargs)
-        
-        self.search_text = kwargs.get('search_text')
         self.USER_ID = '23307960@N04' # SET THE FLICKR USER ID HERE TO FETCH THE FAVORITES
         self.client = FlickrClient(API_KEY)
-        self.photos = self.client.flickr_photos_search(text=self.search_text,per_page=8)
+        self.photos = self.client.flickr_favorites_getPublicList(user_id=self.USER_ID)
         self.num_of_photos = len(self.photos)
         self.generatePhotos()
 
@@ -67,39 +60,9 @@ class flickrEngine(MTWidget):
             self.add_widget(self.pic)
 
 
-
-class flickrSearchButton(MTButton):
-    '''Responsible for removing older images and downloading new images'''
-    def __init__(self, **kwargs):
-        kwargs.setdefault('text_widget', None)
-        kwargs.setdefault('label', "SEARCH")
-        super(flickrSearchButton, self).__init__(**kwargs)
-        self.txt_widget = kwargs.get('text_widget')
-        self.flickme = None
-
-    def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x,y):
-            if self.flickme:
-                self.parent.remove_widget(self.flickme)
-            self.flickme = flickrEngine(search_text=self.txt_widget.label)
-            self.parent.add_widget(self.flickme)
-            return True
-
-class flickrControl(MTWidget):
-    '''This widget handles the controls text input and the search button'''
-    def __init__(self, **kwargs):
-        super(flickrControl, self).__init__(**kwargs)
-        self.text_input = MTTextInput(pos=(105,0),size=(100,100))
-        w.add_widget(self.text_input)
-        flickSearch = flickrSearchButton(text_widget=self.text_input)
-        w.add_widget(flickSearch)
-
-
 if __name__ == '__main__':
     w = MTWindow()
     w.set_fullscreen()
-
-
-    flickControl = flickrControl()
-    w.add_widget(flickControl)
+    flickme = flickrEngine()
+    w.add_widget(flickme)
     runTouchApp()

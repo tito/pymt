@@ -14,7 +14,7 @@ pyglet.resource.reindex()
 
 
 class PlayArea(MTWidget):
-   ''' This is a widget which spawns new bloops and also maintains and displays the scorezone widget  '''
+    ''' This is a widget which spawns new bloops and also maintains and displays the scorezone widget  '''
     def __init__(self, **kwargs):
         super(PlayArea, self).__init__(**kwargs)
         self.num_bloops = 1
@@ -31,7 +31,7 @@ class PlayArea(MTWidget):
         self.bluept = random.uniform(0, 1)
         self.x = int(random.uniform(100, w.width-100))
         self.y = int(random.uniform(100, w.height-100))
-        self.b = bloop(parent=self,music_file=random.choice('ABCDEFG')+str(random.randint(1, 3))+".mp3",score_text=self.score,pos=(self.x,self.y),color=(self.redpt,self.greenpt,self.bluept,1))
+        self.b = bloop(music_file=random.choice('ABCDEFG')+str(random.randint(1, 3))+".mp3",score_text=self.score,pos=(self.x,self.y),color=(self.redpt,self.greenpt,self.bluept,1))
         self.add_widget(self.b)
 
     def show_num_bloops(self):
@@ -41,14 +41,13 @@ class PlayArea(MTWidget):
         return str(self.bloop_points)
         
 class bloop(MTButton):
-    def __init__(self,**kwargs):
     ''' This is a bloop widget, which tells itself to play music when it is touched and animate itself  '''
+    def __init__(self,**kwargs):
         super(bloop, self).__init__(**kwargs)
         kwargs.setdefault('parent', None)
         kwargs.setdefault('music_file', None)
         kwargs.setdefault('score_text', None)
         self.color = kwargs.get('color')
-        self.parent = kwargs.get('parent')
         self.music_file = kwargs.get('music_file')
         self.music = pyglet.resource.media(self.music_file, streaming=False)
         self.radius = int(self.width/2)
@@ -124,7 +123,6 @@ class ScoreZone(MTWidget):
         kwargs.setdefault('parent', None)
         super(ScoreZone, self).__init__(**kwargs)
         self.label = "1/1"
-        self.parent = kwargs.get('parent')
         pyglet.clock.schedule_interval(self.drawScore, 0.5)        
         
     def draw(self):

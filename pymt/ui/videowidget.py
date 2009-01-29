@@ -135,7 +135,7 @@ class MTVideo(MTScatterWidget):
 
         super(MTVideo, self).__init__(**kwargs)
         self.player = Player()
-        self.source = pyglet.media.load(video)
+        self.source = pyglet.media.load(kwargs.get('video'))
         self.sourceDuration = self.source.duration
         self.player.queue(self.source)
         self.player.eos_action = 'pause'

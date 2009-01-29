@@ -53,6 +53,14 @@
   
   <div class="section">
 <h1 id="module-pymt.vector">vector - generic vector class<a class="headerlink" href="#module-pymt.vector" title="Permalink to this headline">¶</a></h1>
+<p>Generic vector class to handle Vector operation.
+For example, if you want to get length of a vector</p>
+<div class="highlight"><pre><span class="k">from</span> <span class="nn">pymt</span> <span class="k">import</span> <span class="o">*</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">Vector</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span> <span class="mf">5</span><span class="p">)</span>
+
+<span class="c"># get length</span>
+<span class="k">print</span> <span class="n">Vector</span><span class="o">.</span><span class="n">length</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</pre></div>
 <dl class="class">
 <dt id="pymt.vector.Vector">
 <!--[pymt.vector.Vector]-->class <tt class="descclassname">pymt.vector.</tt><tt class="descname">Vector</tt><big>(</big><em>x=0.0</em>, <em>y=0.0</em><big>)</big><a class="headerlink" href="#pymt.vector.Vector" title="Permalink to this definition">¶</a></dt>
@@ -92,9 +100,9 @@ Faster than Length(), but only  marginally</dd></dl>
 <dl class="attribute">
 <dt id="pymt.vector.Vector.line_intersection">
 <!--[pymt.vector.Vector.line_intersection]--><tt class="descname">line_intersection</tt><a class="headerlink" href="#pymt.vector.Vector.line_intersection" title="Permalink to this definition">¶</a></dt>
-<dd><p>finds the intersection point between the lines (1)v1-&gt;v2 and (2)v3-&gt;v4
+<dd><p>Finds the intersection point between the lines (1)v1-&gt;v2 and (2)v3-&gt;v4
 and returns it as a vector object</p>
-<p>for math see: <a class="reference" href="http://en.wikipedia.org/wiki/Line-line_intersection">http://en.wikipedia.org/wiki/Line-line_intersection</a></p>
+<p>For math see: <a class="reference" href="http://en.wikipedia.org/wiki/Line-line_intersection">http://en.wikipedia.org/wiki/Line-line_intersection</a></p>
 </dd></dl>
 
 <dl class="attribute">
@@ -123,17 +131,20 @@ but has a length of one.</dd></dl>
 <dl class="function">
 <dt id="pymt.vector.matrix_inv_mult">
 <!--[pymt.vector.matrix_inv_mult]--><tt class="descclassname">pymt.vector.</tt><tt class="descname">matrix_inv_mult</tt><big>(</big><em>m</em>, <em>v</em><big>)</big><a class="headerlink" href="#pymt.vector.matrix_inv_mult" title="Permalink to this definition">¶</a></dt>
-<dd>takes an openGL matrix and a 2 Vector and returns the inverse of teh matrix applied to the vector</dd></dl>
+<dd>Takes an openGL matrix and a 2 Vector and returns
+the inverse of teh matrix applied to the vector</dd></dl>
 
 <dl class="function">
 <dt id="pymt.vector.matrix_mult">
 <!--[pymt.vector.matrix_mult]--><tt class="descclassname">pymt.vector.</tt><tt class="descname">matrix_mult</tt><big>(</big><em>m</em>, <em>v</em><big>)</big><a class="headerlink" href="#pymt.vector.matrix_mult" title="Permalink to this definition">¶</a></dt>
-<dd>takes an openGL matrix and a 2 Vector and returns the matrix applied to the vector</dd></dl>
+<dd>Takes an openGL matrix and a 2 Vector and returns
+the matrix applied to the vector</dd></dl>
 
 <dl class="function">
 <dt id="pymt.vector.matrix_trans_mult">
 <!--[pymt.vector.matrix_trans_mult]--><tt class="descclassname">pymt.vector.</tt><tt class="descname">matrix_trans_mult</tt><big>(</big><em>m</em>, <em>v</em><big>)</big><a class="headerlink" href="#pymt.vector.matrix_trans_mult" title="Permalink to this definition">¶</a></dt>
-<dd>takes an openGL matrix and a 2 Vector and returns the transpose of teh matrix applied to the vector</dd></dl>
+<dd>Takes an openGL matrix and a 2 Vector and return
+the transpose of teh matrix applied to the vector</dd></dl>
 
 </div>
 
@@ -183,7 +194,7 @@ but has a length of one.</dd></dl>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on jan 27, 2009.
+      Last updated on jan 29, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
     </div>
   </body>

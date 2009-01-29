@@ -1,11 +1,26 @@
-__docformat__ = 'restructuredtext'
+'''Generic vector class to handle Vector operation.
+For example, if you want to get length of a vector ::
 
+    from pymt import *
+    v = Vector(1, 5)
+
+    # get length
+    print Vector.length(v)
+
+'''
 import math
 
-class Vector(object):
-    '''Represents a 2D vector.
+_use_numpy = False
 
-    '''
+try:
+    import numpy
+    _use_numpy = True
+except:
+    print 'Warning:  you do not have numpy installed.  Computing transformations for MTScatterWidget can get painfully slow without numpy. You should install numpy: http://numpy.scipy.org/'
+    from matrix import Matrix, RowVector
+
+class Vector(object):
+    '''Represents a 2D vector.'''
     __slots__ = ('x', 'y')
     def __init__(self, x = 0.0, y = 0.0):
         self.x = float(x)
@@ -55,59 +70,59 @@ class Vector(object):
 
     @staticmethod
     def distanceSqrd(vec1, vec2):
-        """Returns the distance between two points squared.
+        '''Returns the distance between two points squared.
         Marginally faster than Distance()
-        """
+        '''
         return ((vec1.x - vec2.x)**2 + (vec1.y - vec2.y)**2)
 
     @staticmethod
     def distance(vec1, vec2):
-        """Returns the distance between two points"""
+        '''Returns the distance between two points'''
         return math.sqrt(Vector.distanceSqrd(vec1, vec2))
 
     @staticmethod
     def lengthSqrd(vec):
-        """Returns the length of a vector sqaured.
-        Faster than Length(), but only  marginally"""
+        '''Returns the length of a vector sqaured.
+        Faster than Length(), but only  marginally'''
         return vec.x**2 + vec.y**2
 
     @staticmethod
     def length(vec):
-        'Returns the length of a vector'
+        '''Returns the length of a vector'''
         return math.sqrt(Vector.lengthSqrd(vec))
 
     @staticmethod
     def normalized(vec):
-        'Returns the length of a vector'
+        '''Returns the length of a vector'''
         return math.sqrt(Vector.lengthSqrd(vec))
 
     @staticmethod
     def normalize(vec):
-        """Returns a new vector that has the same direction as vec,
-        but has a length of one."""
+        '''Returns a new vector that has the same direction as vec,
+        but has a length of one.'''
         if vec.x == 0. and vec.y == 0.:
             return Vector(0.,0.)
         return vec / Vector.length(vec)
 
     @staticmethod
     def dot(vec1, vec2):
-        'Computes the dot product of a and b'
+        '''Computes the dot product of a and b'''
         return vec1.x * vec2.x + vec1.y * vec2.y
 
     @staticmethod
     def angle(v1, v2):
-        'Computes the angle between a and b'
+        '''Computes the angle between a and b'''
         angle = -(180/math.pi)*math.atan2(v1.x*v2.y - v1.y*v2.x, v1.x*v2.x+v1.y*v2.y)
         return angle
 
     @staticmethod
     def line_intersection(v1,v2, v3, v4):
-        """
-        finds the intersection point between the lines (1)v1->v2 and (2)v3->v4
+        '''
+        Finds the intersection point between the lines (1)v1->v2 and (2)v3->v4
         and returns it as a vector object
 
-        for math see: http://en.wikipedia.org/wiki/Line-line_intersection
-        """
+        For math see: http://en.wikipedia.org/wiki/Line-line_intersection
+        '''
         #linear algebar sucks...seriously!!
         x1,x2,x3,x4 = float(v1.x), float(v2.x), float(v3.x), float(v4.x)
         y1,y2,y3,y4 = float(v1.y), float(v2.y), float(v3.y), float(v4.y)
@@ -123,16 +138,11 @@ class Vector(object):
 
         return Vector(px,py)
 
-try:
-    import numpy
-except:
-    print "Warning:  you do not have numpy installed.  Computing transformations for MTScatterWidget can get painfully slow without numpy. You shoudl install numpy: http://numpy.scipy.org/"
-    from matrix import Matrix, RowVector
-
 
 def matrix_inv_mult(m, v):
-    """  takes an openGL matrix and a 2 Vector and returns the inverse of teh matrix applied to the vector """
-    try: #try to do this using numpy....soooo much faster
+    '''Takes an openGL matrix and a 2 Vector and returns
+    the inverse of teh matrix applied to the vector'''
+    if _use_numpy:
         mat = numpy.matrix(
         [[m[0],m[1],m[2],m[3]],
          [m[4],m[5],m[6],m[7]],
@@ -142,7 +152,7 @@ def matrix_inv_mult(m, v):
         inv = mat.I
         result = vec*inv
         return Vector(result[0,0],result[0,1])
-    except:
+    else:
         mat = Matrix([
             RowVector(m[0:4]),
             RowVector(m[4:8]),
@@ -154,9 +164,9 @@ def matrix_inv_mult(m, v):
         return Vector(result[1], result[2])
 
 def matrix_trans_mult(m, v):
-    """  takes an openGL matrix and a 2 Vector and returns the transpose of teh matrix applied to the vector """
-
-    try: #try to do this using numpy....soooo much faster
+    '''Takes an openGL matrix and a 2 Vector and return
+    the transpose of teh matrix applied to the vector'''
+    if _use_numpy:
         mat = numpy.matrix(
         [[m[0],m[1],m[2],m[3]],
          [m[4],m[5],m[6],m[7]],
@@ -165,7 +175,7 @@ def matrix_trans_mult(m, v):
         vec = numpy.matrix(v)
         result = vec*mat.T
         return Vector(result[0,0],result[0,1])
-    except:
+    else:
         mat = Matrix([
             RowVector(m[0:4]),
             RowVector(m[4:8]),
@@ -176,9 +186,9 @@ def matrix_trans_mult(m, v):
         return Vector(result[1], result[2])
 
 def matrix_mult(m, v):
-    """  takes an openGL matrix and a 2 Vector and returns the matrix applied to the vector """
-
-    try: #try to do this using numpy....soooo much faster
+    '''Takes an openGL matrix and a 2 Vector and returns
+    the matrix applied to the vector'''
+    if _use_numpy:
         mat = numpy.matrix(
         [[m[0],m[1],m[2],m[3]],
          [m[4],m[5],m[6],m[7]],
@@ -187,7 +197,7 @@ def matrix_mult(m, v):
         vec = numpy.matrix(v)
         result = vec*mat
         return Vector(result[0,0],result[0,1])
-    except:
+    else:
         mat = Matrix([
         RowVector(m[0:4]),
         RowVector(m[4:8]),

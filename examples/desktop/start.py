@@ -25,20 +25,68 @@ def gesture_add_default(gdb):
     g.id = 'contextmenu'
     gdb.add_gesture(g)
 
-class MTCloseButton(MTButton):
+
+plugins = MTPlugins(plugin_paths=['..'])
+plugins.search_plugins()
+
+def action_close_menu(menu, w, args):
+    menu.parent.remove_widget(menu)
+    del menu
+
+def action_launch_plugin(menu, w, args):
+    name, plugin = args
+    print 'launch', name, plugin
+    action_close_menu(menu, w, None)
+
+class MTActionButton(MTButton):
     def __init__(self, **kwargs):
-        super(MTCloseButton, self).__init__(label='Close', **kwargs)
+        kwargs.setdefault('action', None)
+        kwargs.setdefault('args', None)
+        super(MTActionButton, self).__init__(**kwargs)
+        self.height = self.label_obj.content_height + 10
+        self.width = self.label_obj.content_width + 10
+        self.action = kwargs.get('action')
+        self.args = kwargs.get('args')
 
     def on_touch_up(self, touches, touchID, x, y):
         if not self.collide_point(x, y):
             return
-        self.parent.hide()
+        if self.action:
+            self.action(self.parent, self, self.args)
 
-class MTMenu(MTWidget):
+class MTMenu(HVLayout):
     def __init__(self, **kwargs):
+        kwargs.setdefault('alignment', 'vertical')
+        kwargs.setdefault('uniform_width', True)
+        kwargs.setdefault('uniform_height', True)
         super(MTMenu, self).__init__(**kwargs)
-        closebutton = MTCloseButton(pos=self.pos)
-        self.add_widget(closebutton)
+
+        self.orig_x = self.x
+        self.orig_y = self.y
+
+        plist = plugins.list()
+        while len(plist):
+            name, plugin = plist.popitem()
+            infos = plugins.get_infos(plugin)
+            w = MTActionButton(label=infos.get('title'), color=self.color,
+                    action=action_launch_plugin, args=[name, plugin])
+            self.add_widget(w)
+
+        self.add_widget(MTActionButton(
+            label='Close menu', action=action_close_menu))
+
+    def on_draw(self):
+        # For all next operation, enable blending
+        enable_blending()
+        super(MTMenu, self).on_draw()
+
+    def on_move(self, x, y):
+        pass
+
+    def on_layout(self):
+        # center layout
+        self.x = self.orig_x - self.content_width / 2
+        self.y = self.orig_y - self.content_height / 2
 
 
 class MTGestureDetector(MTGestureWidget):
@@ -47,8 +95,8 @@ class MTGestureDetector(MTGestureWidget):
         self.gdb = gdb
 
     def draw(self):
-        drawLabel('Draw a nui-wave to show menu', pos=(10, 10), center=False,
-                  font_size=20)
+        drawLabel('Draw a nui-wave to show menu',
+            pos=(10, 10), center=False, font_size=20)
 
     def on_gesture(self, gesture, x, y):
         try:
@@ -57,12 +105,11 @@ class MTGestureDetector(MTGestureWidget):
             return
 
         if best.id == 'menu':
-            menu = MTMenu(pos=(x, y))
+            menu = MTMenu(pos=(x, y), color=(.2, .2, .2, .5))
             self.parent.add_widget(menu)
 
 
 if __name__ == '__main__':
-
     # Create and fill gesture database
     gdb = GestureDatabase()
     gesture_add_default(gdb)

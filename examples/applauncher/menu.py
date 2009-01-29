@@ -419,7 +419,7 @@ if __name__ == '__main__':
     MTWidgetFactory.register('MTMenuNode', MTMenuNode)
 
     w = MTWindow(color=(0.16,0.223,0.313,1.0))
-    #w.set_fullscreen()
+    w.set_fullscreen()
     menu = XMLWidget(xml=xmlmenu)
     w.add_widget(menu)
     w.add_widget(MTDisplay())

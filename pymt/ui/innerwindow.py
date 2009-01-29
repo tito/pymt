@@ -73,5 +73,5 @@ class MTInnerWindow(MTScatterWidget):
         glPushMatrix()
         glMultMatrixf(self.transform_mat)
         self.draw()
-        drawTexturedRectangle(self.window_fbo.texture, self.pos, self.size)
+        drawTexturedRectangle(self.window_fbo.texture, (0,0), self.size)
         glPopMatrix()

@@ -49,7 +49,7 @@ def action_close_menu(menu, w, args):
 def action_launch_plugin(menu, w, args):
     name, plugin = args
 
-    win = MTInnerWindow(size=(320,280))
+    win = MTInnerWindow(size=(320,280), pos=(100,100))
     plugins.activate(plugin, win)
     menu.parent.add_widget(win)
     #win.pos = w.pos

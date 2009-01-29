@@ -14,11 +14,12 @@ pyglet.resource.reindex()
 
 
 class PlayArea(MTWidget):
-    def __init__(self, pos=(0,0), size=(500,400), scale = 1.0, **kargs):
-        MTWidget.__init__(self, pos=pos, size=size)
+   ''' This is a widget which spawns new bloops and also maintains and displays the scorezone widget  '''
+    def __init__(self, **kwargs):
+        super(PlayArea, self).__init__(**kwargs)
         self.num_bloops = 1
         self.bloop_points = 1
-        self.score = ScoreZone(self)
+        self.score = ScoreZone(parent=self)
         self.add_widget(self.score)
         pyglet.clock.schedule_interval(self.generateBloop, 0.5)
 
@@ -30,7 +31,7 @@ class PlayArea(MTWidget):
         self.bluept = random.uniform(0, 1)
         self.x = int(random.uniform(100, w.width-100))
         self.y = int(random.uniform(100, w.height-100))
-        self.b = bloop(self,music_file=random.choice('ABCDEFG')+str(random.randint(1, 3))+".mp3",score_text=self.score,pos=(self.x,self.y),color=(self.redpt,self.greenpt,self.bluept,1))
+        self.b = bloop(parent=self,music_file=random.choice('ABCDEFG')+str(random.randint(1, 3))+".mp3",score_text=self.score,pos=(self.x,self.y),color=(self.redpt,self.greenpt,self.bluept,1))
         self.add_widget(self.b)
 
     def show_num_bloops(self):
@@ -40,17 +41,22 @@ class PlayArea(MTWidget):
         return str(self.bloop_points)
         
 class bloop(MTButton):
-    def __init__(self,parent=None,music_file=None,score_text=None,pos=(50,50), size=(100,100), scale = 1.0, color=(0.2,0.2,0.2,0.8),**kargs):
-        MTButton.__init__(self, pos=pos, size=size, label="test")
-        self.parent = parent
-        self.music_file = music_file
+    def __init__(self,**kwargs):
+    ''' This is a bloop widget, which tells itself to play music when it is touched and animate itself  '''
+        super(bloop, self).__init__(**kwargs)
+        kwargs.setdefault('parent', None)
+        kwargs.setdefault('music_file', None)
+        kwargs.setdefault('score_text', None)
+        self.color = kwargs.get('color')
+        self.parent = kwargs.get('parent')
+        self.music_file = kwargs.get('music_file')
         self.music = pyglet.resource.media(self.music_file, streaming=False)
         self.radius = int(self.width/2)
         self.alpha = 0.00
-        self.red = color[0]
-        self.green = color[1]
-        self.blue = color[2]
-        self.score_text = score_text
+        self.red = self.color[0]
+        self.green = self.color[1]
+        self.blue = self.color[2]
+        self.score_text = kwargs.get('score_text')
         self.touched = False
         
         self.highlightred = self.red * 1.25
@@ -112,10 +118,13 @@ class bloop(MTButton):
             self.parent.remove_widget(self)
 
 class ScoreZone(MTWidget):
-    def __init__(self, parent = None, pos=(0,0), size=(200,100), scale = 1.0, **kargs):
-        MTWidget.__init__(self, pos=pos, size=size)
+    ''' This is a widget is responsible for drawing and updating the score on the screen'''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('size', (200,100))
+        kwargs.setdefault('parent', None)
+        super(ScoreZone, self).__init__(**kwargs)
         self.label = "1/1"
-        self.parent = parent
+        self.parent = kwargs.get('parent')
         pyglet.clock.schedule_interval(self.drawScore, 0.5)        
         
     def draw(self):

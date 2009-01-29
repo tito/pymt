@@ -176,7 +176,7 @@ class MTImageButton(MTButton):
         kwargs.setdefault('scale', 1.0)
         kwargs.setdefault('filename', None)
         if kwargs.get('filename') is None:
-            raise Exception('No filename given to MTScatterImage')
+            raise Exception('No filename given to MTImageButton')
 
         super(MTImageButton, self).__init__(**kwargs)
         img                 = pyglet.image.load(kwargs.get('filename'))
@@ -367,6 +367,8 @@ class MTScatterImage(MTScatterWidget):
     :Parameters:
         `filename` : str
             Filename of image
+        `loader` : Loader instance
+            Use the loader to load image
     '''
     def __init__(self, **kwargs):
         # Preserve this way to do
@@ -374,10 +376,17 @@ class MTScatterImage(MTScatterWidget):
         kwargs.setdefault('filename', None)
         if kwargs.get('filename') is None:
             raise Exception('No filename given to MTScatterImage')
+        kwargs.setdefault('loader', None)
 
         super(MTScatterImage, self).__init__(**kwargs)
-        img         = pyglet.image.load(kwargs.get('filename'))
-        self.image  = pyglet.sprite.Sprite(img)
+
+        # Use loader if available
+        loader = kwargs.get('loader')
+        if loader:
+            self.image  = loader.sprite(kwargs.get('filename'))
+        else:
+            img         = pyglet.image.load(kwargs.get('filename'))
+            self.image  = pyglet.sprite.Sprite(img)
 
     def draw(self):
         glPushMatrix()

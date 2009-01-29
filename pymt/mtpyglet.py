@@ -19,7 +19,7 @@ import osc
 import pyglet
 from pyglet.gl import *
 
-import sys
+import sys, getopt, os
 from Queue import Queue
 from threading import Lock
 
@@ -252,57 +252,46 @@ class TouchWindow(pyglet.window.Window):
         pass
 
 
-
-
-
-import sys, getopt, os
-
 def pymt_usage():
-        print """
-pymt application usage: %s [-h][--port][--host][--fullscreen]
+    '''PyMT Usage: %s [OPTION...]
 
-        '-h':
-           prints this mesage
+  -h, --help                        prints this mesage
+  -f, --fullscreen                  force run in fullscreen
+  -w, --windowed                    force run in window
+  -p, --port=x                      specify TUIO port (default 3333)
+  -H, --host=xxx.xxx.xxx.xxx        specify TUIO host (default 127.0.0.1)
+    '''
+    print pymt_usage.__doc__ % (os.path.basename(sys.argv[0]))
 
-        '--port=X':
-           listen for TUIO input on port X
-           if not specified pymt defaults to port 3333
-
-        '--host=xxx.xxx.xxx.xxx':
-           listen for TUIO from host xxx.xxx.xxx.xxx (IP adress of host)
-           if not specified pymt defaults listening on localhost (127.0.0.1)
-
-        '--fullscreen':
-           sets the pymt window to fullscreen
-           (code inside the program might do this by itself)
-
-        """ % os.path.split(sys.argv[0])[1]
-
-#static main function that starts the app loop
 
 def runTouchApp():
+    '''Static main function that starts the application loop'''
+
     port = 3333
     host = '127.0.0.1'
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "h", ['port=', 'host=','fullscreen'])
+        opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fw',
+            ['help', 'port=', 'host=', 'fullscreen', 'windowed'])
         for opt, arg in opts:
-            if opt == '-h':
+            if opt in ['-h', '--help']:
                 pymt_usage()
-            if opt == '--port':
+                sys.exit(0)
+            elif opt in ['-p', '--port']:
                 port = arg
-            elif opt == '--host':
+            elif opt in ['-H', '--host']:
                 host = arg
-            elif opt == '--fullscreen':
-                global touch_event_listeners
+            elif opt in ['-f', '--fullscreen']:
                 touch_event_listeners[0].set_fullscreen(True)
+            elif opt in ['-w', '--windowed']:
+                touch_event_listeners[0].set_fullscreen(False)
 
     except getopt.GetoptError, err:
         print str(err)
         pymt_usage()
         sys.exit(2)
 
-    print "Listening for TUIO on port " , port, " of host ", host
+    print 'Notice: listening for TUIO on port', port, 'of host', host
     evloop = TouchEventLoop(host=host, port=port)
 
     try:

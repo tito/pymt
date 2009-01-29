@@ -10,11 +10,10 @@
           URL_ROOT:    '',
           VERSION:     '0.1a1',
           COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: ''
+          FILE_SUFFIX: '.html'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/interface.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="contents" title="Global table of contents" href="contents.html" />
     <link rel="index" title="Global index" href="genindex.html" />
@@ -51,8 +50,8 @@
           <div class="body">
             
   
-  <div class="section">
-<h1 id="module-pymt.mtpyglet">mtpyglet - multitouch abstraction for pyglet<a class="headerlink" href="#module-pymt.mtpyglet" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-pymt.mtpyglet">
+<h1>mtpyglet - multitouch abstraction for pyglet<a class="headerlink" href="#module-pymt.mtpyglet" title="Permalink to this headline">¶</a></h1>
 <p>This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -62,7 +61,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.</p>
 <p>You should have received a copy of the GNU General Public License
-along with this program.  If not, see &lt;<a class="reference" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
+along with this program.  If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
 <p>Object part by Felipe Carvalho</p>
 <dl class="class">
 <dt id="pymt.mtpyglet.TUIOGetter">
@@ -197,12 +196,36 @@ along with this program.  If not, see &lt;<a class="reference" href="http://www.
 <dl class="function">
 <dt id="pymt.mtpyglet.pymt_usage">
 <!--[pymt.mtpyglet.pymt_usage]--><tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">pymt_usage</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.mtpyglet.pymt_usage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>PyMT Usage: %s [OPTION...]</p>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">&#8211;help</span></kbd></td>
+<td>prints this mesage</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-f</span>, <span class="option">&#8211;fullscreen</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>force run in fullscreen</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-w</span>, <span class="option">&#8211;windowed</span></kbd></td>
+<td>force run in window</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-p</span>, <span class="option">&#8211;port=<var>x</var></span></kbd></td>
+<td>specify TUIO port (default 3333)</td></tr>
+</tbody>
+</table>
+<div class="system-message">
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">/usr/local/lib/python2.5/pymt/mtpyglet.py:docstring of pymt.mtpyglet.pymt_usage</tt>, line 7)</p>
+Option list ends without a blank line; unexpected unindent.</div>
+<p>-H, &#8211;host=xxx.xxx.xxx.xxx        specify TUIO host (default 127.0.0.1)</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="pymt.mtpyglet.runTouchApp">
 <!--[pymt.mtpyglet.runTouchApp]--><tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">runTouchApp</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.mtpyglet.runTouchApp" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd>Static main function that starts the application loop</dd></dl>
 
 <dl class="function">
 <dt id="pymt.mtpyglet.startTUIO">

@@ -16,7 +16,7 @@ try:
     import numpy
     _use_numpy = True
 except:
-    print 'Warning:  you do not have numpy installed.  Computing transformations for MTScatterWidget can get painfully slow without numpy. You should install numpy: http://numpy.scipy.org/'
+    print 'Warning: you do not have numpy installed.  Computing transformations for MTScatterWidget can get painfully slow without numpy. You should install numpy: http://numpy.scipy.org/'
     from matrix import Matrix, RowVector
 
 class Vector(object):

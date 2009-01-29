@@ -10,11 +10,10 @@
           URL_ROOT:    '',
           VERSION:     '0.1a1',
           COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: ''
+          FILE_SUFFIX: '.html'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/interface.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="contents" title="Global table of contents" href="contents.html" />
     <link rel="index" title="Global index" href="genindex.html" />
@@ -51,12 +50,12 @@
           <div class="body">
             
   
-  <div class="section">
-<h1 id="module-pymt.loader">loader - asynchronous way to load image<a class="headerlink" href="#module-pymt.loader" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-pymt.loader">
+<h1>loader - asynchronous way to load image<a class="headerlink" href="#module-pymt.loader" title="Permalink to this headline">¶</a></h1>
 <p>This is the Asynchronous Loader. You can use it to load an image
 and use it, even if data are not yet available. You must specify a default
 loading image for using a such loader</p>
-<div class="highlight"><pre><span class="k">from</span> <span class="nn">pymt</span> <span class="k">import</span> <span class="o">*</span>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymt</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">loader</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">loading_image</span><span class="o">=</span><span class="s">&#39;load.png&#39;</span><span class="p">)</span>
 <span class="n">sprite</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">sprite</span><span class="p">(</span><span class="s">&#39;mysprite.png&#39;</span><span class="p">)</span>
 </pre></div>
@@ -90,7 +89,7 @@ loading image for using a such loader</p>
 You have the same abstraction, except that he use loading_image when
 the final image are not yet available.</p>
 <p>Don&#8217;t instanciate directly, use the loader</p>
-<div class="highlight"><pre><span class="k">from</span> <span class="nn">pymt</span> <span class="k">import</span> <span class="o">*</span>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymt</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">loader</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">loading_image</span><span class="o">=</span><span class="s">&#39;load.png&#39;</span><span class="p">)</span>
 <span class="n">image</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="s">&#39;myimage.png&#39;</span><span class="p">)</span>
 </pre></div>
@@ -212,7 +211,7 @@ the final image are not yet available.</p>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on jan 27, 2009.
+      Last updated on jan 29, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
     </div>
   </body>

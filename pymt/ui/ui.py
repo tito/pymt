@@ -32,8 +32,8 @@ class MTRectangularWidget(MTWidget):
 
 class MTDragableWidget(MTWidget):
     '''MTDragableWidget is a moveable widget over the window'''
-    def __init__(self, pos=(0,0), size=(100,100), **kargs):
-        super(MTDragableWidget, self).__init__(pos=pos, size=size, **kargs)
+    def __init__(self, **kwargs):
+        super(MTDragableWidget, self).__init__(**kwargs)
         self.state = ('normal', None)
 
     def on_touch_down(self, touches, touchID, x, y):
@@ -54,39 +54,59 @@ class MTDragableWidget(MTWidget):
 
 
 class MTButton(MTWidget):
-    '''MTButton is a button implementation using MTWidget'''
-    def __init__(self, pos=(0, 0), size=(100, 100), label='', color=(0.2,0.2,0.2,0.8),**kargs):
-        super(MTButton, self).__init__(pos=pos, size=size, color=color, **kargs)
+    '''MTButton is a button implementation using MTWidget
+
+    :Parameters:
+        `label` : string, default is ''
+            Label of button
+        `color_down` : list, default is (.5, .5, .5, .5)
+            Color of button when pushed
+        `anchor_x`: string
+            X anchor of label, refer to pyglet.label.anchor_x documentation
+        `anchor_y`: string
+            Y anchor of label, refer to pyglet.label.anchor_x documentation
+        `font_size`: integer, default is 10
+            Font size of label
+        `bold`: bool, default is True
+            Font bold of label
+    '''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('label', '')
+        kwargs.setdefault('anchor_x', 'center')
+        kwargs.setdefault('anchor_y', 'center')
+        kwargs.setdefault('font_size', 10)
+        kwargs.setdefault('bold', True)
+        kwargs.setdefault('color_down', (.5, .5, .5, .5))
+
+        super(MTButton, self).__init__(**kwargs)
         self.register_event_type('on_press')
         self.register_event_type('on_release')
+
         self._state         = ('normal', 0)
         self.clickActions   = []
-        self.label_obj      = Label(font_size=10, bold=True )
-        self.label_obj.anchor_x = 'center'
-        self.label_obj.anchor_y = 'center'
-        self.label_obj.text = str(label)
-        self._label          = str(label)
+        self.label_obj      = Label(font_size=kwargs.get('font_size'), bold=kwargs.get('bold'))
+        self.label_obj.anchor_x = kwargs.get('anchor_x')
+        self.label_obj.anchor_y = kwargs.get('anchor_y')
+        self.label_obj.text = str(kwargs.get('label'))
+        self._label         = str(kwargs.get('label'))
+        self.color_down     = kwargs.get('color_down')
 
     def get_label(self):
         return self._label
-
     def set_label(self, text):
         self._label = str(text)
         self.label_obj.text = self._label
-
     label = property(get_label, set_label)
 
     def get_state(self):
         return self._state[0]
-
     def set_state(self, state):
         self._state = (self._state, 0)
-
     state = property(get_state, set_state, doc='Sets the state of the button, "normal" or "down"')
 
     def draw(self):
         if self._state[0] == 'down':
-            glColor4f(0.5,0.5,0.5,0.5)
+            glColor4f(*self.color_down)
             drawRectangle((self.x,self.y) , (self.width, self.height))
         else:
             glColor4f(*self.color)
@@ -94,8 +114,6 @@ class MTButton(MTWidget):
 
         self.label_obj.x, self.label_obj.y = self.x +self.width/2 , self.y + +self.height/2
         self.label_obj.draw()
-        #print "drawing label", self.label
-        #drawLabel(self.label, self.center)
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -118,8 +136,10 @@ class MTButton(MTWidget):
 
 
 class MTToggleButton(MTButton):
-    def __init__(self, pos=(0, 0), size=(100, 100), label='ToggleButton', **kargs):
-        super(MTToggleButton, self).__init__(pos=pos, size=size, label=label, **kargs)
+    '''Toggle button implementation, based on MTButton'''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('label', 'ToggleButton')
+        super(MTToggleButton, self).__init__(**kwargs)
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -141,14 +161,29 @@ class MTToggleButton(MTButton):
 
 
 class MTImageButton(MTButton):
-    '''MTImageButton is a enhanced MTButton that draw an image instead of a text'''
-    def __init__(self, image_file, pos=(0,0), size=(1,1), scale = 1.0, opacity = 100, **kargs):
-        super(MTImageButton, self).__init__(pos=pos, size=size)
-        img                 = pyglet.image.load(image_file)
+    '''MTImageButton is a enhanced MTButton
+    that draw an image instead of a text.
+
+    :Parameters:
+        `filename` : str
+            Filename of image
+        `scale` : float, default is 1.0
+            Scaling of image, default is 100%, ie 1.0
+    '''
+    def __init__(self, **kwargs):
+        # Preserve this way to do
+        # Later, we'll give another possibility, like using a loader...
+        kwargs.setdefault('scale', 1.0)
+        kwargs.setdefault('filename', None)
+        if kwargs.get('filename') is None:
+            raise Exception('No filename given to MTScatterImage')
+
+        super(MTImageButton, self).__init__(**kwargs)
+        img                 = pyglet.image.load(kwargs.get('filename'))
         self.image          = pyglet.sprite.Sprite(img)
         self.image.x        = self.x
         self.image.y        = self.y
-        self.scale          = scale
+        self.scale          = kwargs.get('scale')
         self.image.scale    = self.scale
         self.width          = self.image.width
         self.height         = self.image.height
@@ -161,15 +196,25 @@ class MTImageButton(MTButton):
         self.height         = self.image.height
         self.image.draw()
 
-import random
+
 class MTScatterWidget(MTWidget):
-    '''MTScatterWidget is a scatter widget based on MTWidget'''
-    def __init__(self, pos=(0,0), size=(100,100),rotation=0, **kargs):
-        super(MTScatterWidget, self).__init__(pos=pos, size=size, **kargs)
+    '''MTScatterWidget is a scatter widget based on MTWidget
+    
+    :Parameters:
+        `draw_children` : bool, default is True
+            Indicate if children will be draw, or not
+        `rotation` : float, default to 0
+            Set rotation of widget
+    '''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('draw_children', True)
+        kwargs.setdefault('rotation', 0)
+
+        super(MTScatterWidget, self).__init__(**kwargs)
         self.touches = {}
-        self.draw_children = True
         self.transform_mat = (GLfloat * 16)()
-        self.init_transform(pos, rotation)
+        self.draw_children = kwargs.get('draw_children')
+        self.init_transform(kwargs.get('pos'), kwargs.get('rotation'))
 
 
     def init_transform(self, pos, angle):
@@ -205,7 +250,6 @@ class MTScatterWidget(MTWidget):
         else:
             return False
 
-
     def find_second_touch(self, touchID):
         for tID in self.touches.keys():
             x,y = self.touches[tID].x, self.touches[tID].y
@@ -214,23 +258,24 @@ class MTScatterWidget(MTWidget):
         return None
 
     def rotate_zoom_move(self, touchID, x, y):
-        #some default values, in case we dont calculate them, they still need to be defined for applying the openGL transformations
+        # some default values, in case we dont calculate them,
+        # they still need to be defined for applying the openGL transformations
         intersect = Vector(0,0)
         trans = Vector(0,0)
         rotation = 0
         scale = 1
 
-        #we definitly have one point
+        # we definitly have one point
         p1_start = self.touches[touchID]
         p1_now   = Vector(x,y)
 
-        #if we have a second point, do the scale/rotate/move thing
+        # if we have a second point, do the scale/rotate/move thing
         second_touch = self.find_second_touch(touchID)
         if second_touch:
             p2_start = self.touches[second_touch]
             p2_now   = self.touches[second_touch]
 
-            #find intersection between lines...the point around which to rotate
+            # find intersection between lines...the point around which to rotate
             intersect = Vector.line_intersection(p1_start,  p2_start,p1_now, p2_now)
             if not intersect:
                 intersect = Vector(0,0)
@@ -246,10 +291,10 @@ class MTScatterWidget(MTWidget):
             rotation = -Vector.angle(old_line, new_line)
 
         else:
-            #just comnpute a translation component if we only have one point
+            # just comnpute a translation component if we only have one point
             trans = p1_now - p1_start
 
-        #apply to our transformation matrix
+        # apply to our transformation matrix
         glPushMatrix()
         glLoadIdentity()
         glTranslated(trans.x, trans.y,0)
@@ -261,10 +306,8 @@ class MTScatterWidget(MTWidget):
         glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
         glPopMatrix()
 
-        #save new position of the current touch
+        # save new position of the current touch
         self.touches[touchID] = Vector(x,y)
-
-
 
 
     def on_touch_down(self, touches, touchID, x,y):
@@ -319,9 +362,21 @@ class MTScatterWidget(MTWidget):
 
 
 class MTScatterImage(MTScatterWidget):
-    def __init__(self, img_src, pos=(0,0), size=(100,100)):
-        super(MTScatterImage, self).__init__(pos=pos, size=size)
-        img         = pyglet.image.load(img_src)
+    '''MTScatterImage is a image showed in a Scatter widget
+    
+    :Parameters:
+        `filename` : str
+            Filename of image
+    '''
+    def __init__(self, **kwargs):
+        # Preserve this way to do
+        # Later, we'll give another possibility, like using a loader...
+        kwargs.setdefault('filename', None)
+        if kwargs.get('filename') is None:
+            raise Exception('No filename given to MTScatterImage')
+
+        super(MTScatterImage, self).__init__(**kwargs)
+        img         = pyglet.image.load(kwargs.get('filename'))
         self.image  = pyglet.sprite.Sprite(img)
 
     def draw(self):
@@ -332,16 +387,37 @@ class MTScatterImage(MTScatterWidget):
 
 
 class MTSlider(MTWidget):
-    '''MTSlider is an implementation of a scrollbar using MTWidget'''
-    def __init__(self, min=0, max=100, pos=(10,10), size=(30,400), alignment='horizontal', padding=8, color=(0.8, 0.8, 0.4, 1.0)):
-        super(MTSlider, self).__init__(pos=pos, size=size)
+    '''MTSlider is an implementation of a scrollbar using MTWidget.
+
+    :Parameters:
+        `min` : int, default is 0
+            Minimum value of slider
+        `max` : int, default is 100
+            Maximum value of slider
+        `alignment` : str, default is horizontal
+            Type of alignement, can be 'horizontal' or 'vertical'
+        `value` : int, default is `min`
+            Default value of slider
+    '''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('min', 0)
+        kwargs.setdefault('max', 100)
+        kwargs.setdefault('padding', 8)
+        kwargs.setdefault('alignment', 'horizontal')
+        kwargs.setdefault('color', (.8, .8, .4, 1.0))
+        kwargs.setdefault('size', (30, 400))
+        kwargs.setdefault('value', None)
+
+        super(MTSlider, self).__init__(**kwargs)
         self.register_event_type('on_value_change')
-        self.touchstarts = [] # only react to touch input that originated on this widget
-        self.alignment = alignment
-        self.color = color
-        self.padding = padding
-        self.min, self.max = min, max
-        self._value = self.min
+        self.touchstarts    = [] # only react to touch input that originated on this widget
+        self.alignment      = kwargs.get('alignment')
+        self.padding        = kwargs.get('padding')
+        self.min            = kwargs.get('min')
+        self.max            = kwargs.get('max')
+        self._value         = self.min
+        if kwargs.get('value'):
+            self.value = value
 
     def on_value_change(self, value):
         pass
@@ -349,11 +425,9 @@ class MTSlider(MTWidget):
     def set_value(self, _value):
         self._value = _value
         self.dispatch_event('on_value_change', self._value)
-
     def get_value(self):
         return self._value
-
-    value = property(get_value, set_value, doc='Represents the value of the slider')
+    value = property(get_value, set_value, doc='Value of the slider')
 
     def draw(self):
         glEnable(GL_BLEND);
@@ -390,17 +464,49 @@ class MTSlider(MTWidget):
             self.touchstarts.remove(touchID)
 
 class MT2DSlider(MTWidget):
-    '''MT2DSlider is an implementation of a 2D slider using MTWidget'''
-    def __init__(self, min_x=20, max_x=100, min_y = 20, max_y = 100, pos=(10,10), size=(300,300), radius=20, color=(0.8, 0.8, 0.4, 1.0)):
-        super(MT2DSlider, self).__init__(pos=pos, size=size)
+    '''MT2DSlider is an implementation of a 2D slider using MTWidget.
+
+    :Parameters:
+        `min_x` : int, default is 20
+            Minimum value of slider
+        `max_x` : int, default is 100
+            Maximum value of slider
+        `min_y` : int, default is 20
+            Minimum value of slider
+        `max_y` : int, default is 100
+            Maximum value of slider
+        `radius` : int, default is 200
+            Type of alignement, can be 'horizontal' or 'vertical'
+        `value_x` : int, default is `min_x`
+            Default X value of slider
+        `value_y` : int, default is `min_y`
+            Default Y value of slider
+    '''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('min_x', 20)
+        kwargs.setdefault('max_x', 100)
+        kwargs.setdefault('min_y', 20)
+        kwargs.setdefault('max_y', 100)
+        kwargs.setdefault('radius', 200)
+        kwargs.setdefault('value_x', None)
+        kwargs.setdefault('value_y', None)
+        kwargs.setdefault('color', (.8, .8, .4, 1.0))
+
+        super(MT2DSlider, self).__init__(**kwargs)
         self.register_event_type('on_value_change')
         self.touchstarts = [] # only react to touch input that originated on this widget
-        self.color = color
-        self.radius = radius
-        self.padding = radius
-        self.min_x, self.max_x = min_x, max_x
-        self.min_y, self.max_y = min_y, max_y
+        self.radius     = kwargs.get('radius')
+        self.padding    = kwargs.get('radius')
+        self.min_x      = kwargs.get('min_x')
+        self.max_x      = kwargs.get('max_x')
+        self.min_y      = kwargs.get('min_y')
+        self.max_y      = kwargs.get('max_y')
+        self.radius     = kwargs.get('radius')
         self._value_x, self._value_y = self.min_x, self.min_y
+        if kwargs.get('value_x'):
+            self.value_x = kwargs.get('value_x')
+        if kwargs.get('value_y'):
+            self.value_y = kwargs.get('value_y')
 
     def on_value_change(self, value_x, value_y):
         pass
@@ -466,13 +572,25 @@ class MT2DSlider(MTWidget):
 
 
 class MTColorPicker(MTWidget):
-    '''MTColorPicker is a implementation of a color picker using MTWidget'''
-    def __init__(self, min=0, max=100, pos=(0,0), size=(640,480),target=[]):
-        super(MTColorPicker, self).__init__(pos=pos, size=size)
-        self.canvas = target[0]
-        self.sliders = [ MTSlider(max=255, size=(30,200), color=(1,0,0,1)),
-                        MTSlider(max=255, size=(30,200), color=(0,1,0,1)),
-                        MTSlider(max=255, size=(30,200), color=(0,0,1,1)) ]
+    '''MTColorPicker is a implementation of a color picker using MTWidget
+
+    :Parameters:
+        `min` : int, default is 0
+            Minimum value of slider
+        `max` : int, default is 255
+            Maximum value of slider
+        `targets` : list, default is []
+            List of widget to be affected by change
+    '''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('min', 0)
+        kwargs.setdefault('max', 255)
+        kwargs.setdefault('target', [])
+        super(MTColorPicker, self).__init__(**kwargs)
+        self.targets = targets
+        self.sliders = [ MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), color=(1,0,0,1)),
+                        MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), color=(0,1,0,1)),
+                        MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), color=(0,0,1,1)) ]
         for slider in self.sliders:
             slider.value = 77
         self.update_color()
@@ -494,8 +612,8 @@ class MTColorPicker(MTWidget):
         r = self.sliders[0].value/255.0
         g = self.sliders[1].value/255.0
         b = self.sliders[2].value/255.0
-        if self.canvas:
-            self.canvas.color = (r,g,b,1)
+        for w in self.targets:
+            w.color = (r,g,b,1)
         self.current_color = (r,g,b,1.0)
 
     def on_touch_down(self, touches, touchID, x, y):
@@ -531,9 +649,8 @@ class MTColorPicker(MTWidget):
 
 class MTObjectWidget(MTWidget):
     '''MTObjectWidget is a widget who draw an object on table'''
-    def __init__(self, pos=(0, 0), size=(100, 100)):
-        super(MTObjectWidget, self).__init__(pos=pos, size=size)
-
+    def __init__(self, **kwargs):
+        super(MTObjectWidget, self).__init__(**kwargs)
         self.state      = ('normal', None)
         self.visible    = False
         self.angle      = 0

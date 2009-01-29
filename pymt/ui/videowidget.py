@@ -5,62 +5,70 @@ from pymt.ui import *
 from pyglet.media import *
 from time import sleep
 
-iconPath = os.path.dirname(pymt.__file__)+"/data/icons/"
+iconPath = os.path.dirname(pymt.__file__) + '/data/icons/'
 
 class MTVideoPlayPause(MTImageButton):
-    """MTVideoPlayPause is a dynamic play/pause button of the video widget"""
-    def __init__(self,image_file=iconPath+'videoWidgetPlay.png', pos=(0, 0),size=(100, 100),player = None, opacity=100,**kargs):
-        MTImageButton.__init__(self,image_file,pos, size,opacity,**kargs)
-        self.vid = player
-        self.playState = "Pause"
+    '''MTVideoPlayPause is a dynamic play/pause button of the video widget'''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('filename', iconPath + 'videoWidgetPlay.png')
+        kwargs.setdefault('filename_pause', iconPath + 'videoWidgetPause.png')
+        kwargs.setdefault('player', None)
+        super(MTVideoPlayPause, self).__init__(**kwargs)
+        self.vid        = kwargs.get('player')
+        self.playState  = 'Pause'
 
         self.images = {} #crate a python dictionary..like a hash map
-        self.images['Play']  = pyglet.sprite.Sprite( image.load(iconPath+'videoWidgetPlay.png')  )
-        self.images['Pause'] = pyglet.sprite.Sprite( image.load(iconPath+'videoWidgetPause.png') )
+        self.images['Play']  = pyglet.sprite.Sprite(image.load(kwargs.get('filename')))
+        self.images['Pause'] = pyglet.sprite.Sprite(image.load(kwargs.get('filename_pause')))
 
         self.scale    = 0.75
 
     def on_touch_down(self, touches, touchID, x,y):
         if self.collide_point(x,y):
             self.state = ('down', touchID)
-            if self.playState == "Pause":
+            if self.playState == 'Pause':
                 self.vid.play()
-                self.playState = "Play"
-            elif self.playState == "Play":
+                self.playState = 'Play'
+            elif self.playState == 'Play':
                 self.vid.pause()
-                self.playState = "Pause"
+                self.playState = 'Pause'
 
             #set the correct image
             self.image = self.images[self.playState]  #playState is one of the two strings that are used as keys/lookups in the dictionary
 
 
 class MTVideoMute(MTImageButton):
-    """MTVideoMute is a mute button class of the video widget"""
-    def __init__(self,image_file=iconPath+'videoWidgetMute.png', pos=(0, 0),size=(100, 100),player = None,opacity=100,**kargs):
-        MTImageButton.__init__(self,image_file,pos, size,**kargs)
-        self.vid = player
-        self.playState = "NotMute"
+    '''MTVideoMute is a mute button class of the video widget'''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('filename', iconPath + 'videoWidgetMute.png')
+        kwargs.setdefault('player', None)
+        super(MTVideoMute, self).__init__(**kwargs)
+        self.vid = kwargs.get('player')
+        self.playState = 'NotMute'
         self.scale    = 0.75
 
     def on_touch_down(self, touches, touchID, x,y):
         if self.collide_point(x,y):
             self.state = ('down', touchID)
-            if self.playState == "NotMute":
+            if self.playState == 'NotMute':
                 self.vid.volume = 0.0
-                self.playState = "Mute"
-            elif self.playState == "Mute":
+                self.playState = 'Mute'
+            elif self.playState == 'Mute':
                 self.vid.volume = 1.0
-                self.playState = "NotMute"
+                self.playState = 'NotMute'
 
 class MTVideoTimeline(MTSlider):
-    """MTVideoTimeline is a part of the video widget which tracks the video playback"""
-    def __init__(self, min=0, max=30, pos=(5,5), size=(150,30), alignment='horizontal', padding=8, color=(0.78, 0.78, 0.78, 1.0), player=None,duration=100):
-        MTSlider.__init__(self, min, max, pos, size, alignment, padding, color)
-        self.value = 0
-        self.vid = player
-        self.max = duration
-        self.x, self.y = pos[0], pos[1]
-        self.width , self.height = self.vid.get_texture().width-83,30
+    '''MTVideoTimeline is a part of the video widget which tracks the video playback'''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('player', None)
+        kwargs.setdefault('duration', 100)
+        kwargs.setdefault('color', (.78, .78, .78, 1.0))
+
+        super(MTVideoTimeline, self).__init__(**kwargs)
+        self.vid = kwargs.get('player')
+        self.max = kwargs.get('duration')
+        self.width = self.vid.get_texture().width
+        self.height = 30
         self.length = 0
 
     def draw(self):
@@ -108,32 +116,42 @@ class MTVideoTimeline(MTSlider):
         if touchID in self.touchstarts:
             self.touchstarts.remove(touchID)
 
+
 class MTVideo(MTScatterWidget):
-    """MTVideo is a Zoomable,Rotatable,Movable Video widget
-       Usage:
-          video = MTVideo('source_file',(x_pos,y_pos),(scale,scale),rotation_in_degrees)
-          supported file types are similar file support of pyglet player class
-    """
-    def __init__(self, video="none", pos=(300,200), size=(0,0), rotation=0):
-        MTScatterWidget.__init__(self,pos=pos,size=size)
-        self.rotation = rotation
+    '''MTVideo is a video player, implemented in top of MTScatterWidget.
+    You can use it like this ::
+
+          video = MTVideo(video='source_file')
+
+    :Parameters:
+        `video` : str
+            Filename of video
+
+    '''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('video', None)
+        if kwargs.get('video') is None:
+            raise Exception('No video given to MTVideo')
+
+        super(MTVideo, self).__init__(**kwargs)
         self.player = Player()
         self.source = pyglet.media.load(video)
         self.sourceDuration = self.source.duration
         self.player.queue(self.source)
-        self.player.eos_action = "pause"
+        self.player.eos_action = 'pause'
         self.width = self.player.get_texture().width
         self.height = self.player.get_texture().height
         self.texW = self.player.get_texture().width
         self.texH = self.player.get_texture().height
 
-        #init as subwidgest.  adding them using add_widgtes, makes it so that they get the events before MTVideo instance
+        #init as subwidgest.  adding them using add_widgtes
+        #makes it so that they get the events before MTVideo instance
         #the pos, size is relative to this parent widget...if it scales etc so will these
-        self.button = MTVideoPlayPause(image_file=iconPath+'videoWidgetPlay.png',pos=(0,0), player=self.player, opacity=100)
+        self.button = MTVideoPlayPause(pos=(0,0), player=self.player)
         self.add_widget(self.button)
         self.button.hide()
 
-        self.mutebutton = MTVideoMute(image_file=iconPath+'videoWidgetMute.png',pos=(36,0), player=self.player, opacity=100)
+        self.mutebutton = MTVideoMute(pos=(36,0), player=self.player)
         self.add_widget(self.mutebutton)
         self.mutebutton.hide()
 
@@ -156,12 +174,10 @@ class MTVideo(MTScatterWidget):
             self.button.show()
             self.mutebutton.show()
             self.timeline.show()
-            pyglet.clock.schedule_once(self.hideControls, 5)
+            pyglet.clock.schedule_once(self.hide_controls, 5)
+        return super(MTVideo, self).on_touch_down(touches, touchID, x, y)
 
-
-        return MTScatterWidget.on_touch_down(self, touches, touchID, x, y)
-
-    def hideControls(self, dt):
+    def hide_controls(self, dt):
         self.button.hide()
         self.mutebutton.hide()
         self.timeline.hide()

@@ -28,23 +28,38 @@ class MTWidget(pyglet.event.EventDispatcher):
     Implement event for mouse, object, touch and animation.
 
     Event are dispatched through widget only if it's visible.
+
+    :Parameters:
+        `pos` : list, default is (0, 0)
+            Position of widget, in (x, y) format
+        `size` : list, default is (100, 100)
+            Size of widget, in (width, height) format
+        `size` : list, default is (.2, .2, .2, 1)
+            Color of widget, in (r, v, b, a) format
+        `visible` : bool, default is True
+            Visibility of widget
     '''
 
-    def __init__(self, pos=(0,0), size=(100,100), color=(0.2,0.2,0.2,1), **kargs):
+    def __init__(self, **kwargs):
+        kwargs.setdefault('pos', (0, 0))
+        kwargs.setdefault('size', (100, 100))
+        kwargs.setdefault('color', (.2, .2, .2, 1))
+        kwargs.setdefault('visible', True)
+
         global _id_2_widget
-        if kargs.has_key('id'):
-            self.id = kargs['id']
-            _id_2_widget[kargs['id']] = self
+        if kwargs.has_key('id'):
+            self.id = kwargs.get('id')
+            _id_2_widget[kwargs.get('id')] = self
 
         pyglet.event.EventDispatcher.__init__(self)
         self.parent					= None
         self.children				= []
         self._visible				= False
-        self._x, self._y			= pos
-        self._width, self._height	= size
-        self._color					= color
+        self._x, self._y			= kwargs.get('pos')
+        self._width, self._height	= kwargs.get('size')
+        self._color					= kwargs.get('color')
         self.animations				= []
-        self.visible				= True
+        self.visible				= kwargs.get('visible')
 
         self.register_event_type('on_resize')
         self.register_event_type('on_move')

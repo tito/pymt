@@ -1,5 +1,5 @@
 IS_PYMT_PLUGIN = True
-PLUGIN_TITLE = 'Explosions in the Sky (Working Title :)'
+PLUGIN_TITLE = 'Explosions in the Sky'
 PLUGIN_AUTHOR = 'Riley Dutton and Sharath Patali'
 PLUGIN_EMAIL = 'riley@newspringmedia.com and sharath.patali@gmail.com'
 PLUGIN_DESCRIPTION = 'A fun explosions game, with modes for both whack a mole and chain reaction fun!'

@@ -199,7 +199,7 @@ class MTImageButton(MTButton):
 
 class MTScatterWidget(MTWidget):
     '''MTScatterWidget is a scatter widget based on MTWidget
-    
+
     :Parameters:
         `draw_children` : bool, default is True
             Indicate if children will be draw, or not
@@ -214,7 +214,7 @@ class MTScatterWidget(MTWidget):
         self.touches = {}
         self.transform_mat = (GLfloat * 16)()
         self.draw_children = kwargs.get('draw_children')
-        self.init_transform(kwargs.get('pos'), kwargs.get('rotation'))
+        self.init_transform(self.pos, kwargs.get('rotation'))
 
 
     def init_transform(self, pos, angle):
@@ -306,9 +306,15 @@ class MTScatterWidget(MTWidget):
         glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
         glPopMatrix()
 
+        
         # save new position of the current touch
         self.touches[touchID] = Vector(x,y)
 
+    def get_scale_factor(self):
+        p1_trans = matrix_mult(self.transform_mat, (1,1,0,1))
+        p2_trans = matrix_mult(self.transform_mat, (2,1,0,1))
+        dist_trans = Vector.distance(p1_trans, p2_trans)
+        return dist_trans
 
     def on_touch_down(self, touches, touchID, x,y):
         # if the touch isnt on teh widget we do nothing
@@ -333,7 +339,7 @@ class MTScatterWidget(MTWidget):
         #rotate/scale/translate
         if touchID in self.touches:
             self.rotate_zoom_move(touchID, x, y)
-            self.dispatch_event('on_resize', self.width, self.height)
+            self.dispatch_event('on_resize', int(self.width*self.get_scale_factor()), int(self.height*self.get_scale_factor()))
             self.dispatch_event('on_move', self.x, self.y)
             return True
 
@@ -363,7 +369,7 @@ class MTScatterWidget(MTWidget):
 
 class MTScatterImage(MTScatterWidget):
     '''MTScatterImage is a image showed in a Scatter widget
-    
+
     :Parameters:
         `filename` : str
             Filename of image

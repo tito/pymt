@@ -1,5 +1,18 @@
 from pymt import *
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 def gesture_add_default(gdb):
     # Circle
     g = gdb.str_to_gesture('eNqFkMtqw0AMRff6EXtTo8doHj+Qbgv+gJImJoSm8eCZQPP3HTlpodDHIJiFdO7VVX/M17c6HKZSL8sEj/c/I/T7TDB2pS7z61Q6yAz9KQv0PxLjOgbZGaeNy/PxXA3zhoVfsCebghyNSo26NoAQNjhwiI45iiJ7j5EVyti9W5usTc6JkGpyrDElTVBetn96EK+RBA43AyHvveNEgYJScgHK4aaNilG5GWBAkabu/xdfc5N+iScvLogX4eiS4qf4Q9uclJAdtmwtFbEzcauxq/NpWrbn3WQx/RoTvz+yK9xXeM7LvL/sqg2H1TS0g7RAjiOLqNhNhg+4A4YT')
@@ -115,9 +128,20 @@ if __name__ == '__main__':
     gesture_add_default(gdb)
 
     # Create background window
-    w = MTWallpaperWindow(wallpaper='wallpaper.jpg')
+    w = MTWallpaperWindow(wallpaper='wallpaper.jpg', show_fps=True)
     w.set_fullscreen()
     g = MTGestureDetector(gdb)
     w.add_widget(g)
+
+    #inner window test
+    winTest = MTInnerWindow(size=(320,280))
+
+    _plugins = MTPlugins(plugin_paths=['../'])
+    _plugins.search_plugins()
+    app = _plugins.get_plugin('untangle')
+    _plugins.activate(app, winTest)
+
+    w.add_widget(winTest)
+
 
     runTouchApp()

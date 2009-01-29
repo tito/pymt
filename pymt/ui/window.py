@@ -21,7 +21,7 @@ class MTWindow(TouchWindow):
     '''MTWindow is a window widget who use MTSimulator
     for generating touch event with mouse.
     Use MTWindow as main window application.
-       
+
     :Parameters:
         `color` : list
             Background color of window
@@ -38,6 +38,10 @@ class MTWindow(TouchWindow):
         kwargs.setdefault('view', None)
         kwargs.setdefault('fullscreen', None)
         kwargs.setdefault('config', None)
+        kwargs.setdefault('show_fps', False)
+
+        self.show_fps = kwargs.get('show_fps')
+        self.fps_display =  pyglet.clock.ClockDisplay()
 
         self.color = kwargs.get('color')
         self.root = MTWindowRoot()
@@ -85,6 +89,8 @@ class MTWindow(TouchWindow):
         self.draw()
         self.root.dispatch_event('on_draw')
         self.sim.draw()
+        if self.show_fps:
+            self.fps_display.draw()
 
     def on_touch_down(self, touches, touchID, x, y):
         return self.root.dispatch_event('on_touch_down', touches, touchID, x, y)
@@ -117,7 +123,7 @@ class MTWindow(TouchWindow):
 class MTDisplay(MTWidget):
     '''MTDisplay is a widget that draw a circle
     under every touch on window
-       
+
     :Parameters:
         `color` : list
             Color of circle under finger

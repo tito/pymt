@@ -15,6 +15,8 @@ class MTWallpaperWindow(MTWindow):
         self.position   = kwargs.get('position')
 
     def draw(self):
+        glClearColor(0,0,0,0)
+        self.clear()
         if self.position == MTWallpaperWindow.NOREPEAT:
             super(MTWallpaperWindow, self).draw()
             self.wallpaper.x, self.wallpaper.y = (0, 0)
@@ -48,5 +50,3 @@ class MTWallpaperWindow(MTWindow):
     def _get_wallpaper(self):
         return self._image
     wallpaper = property(_get_wallpaper, _set_wallpaper)
-
-

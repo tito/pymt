@@ -1,18 +1,5 @@
 from pymt import *
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 def gesture_add_default(gdb):
     # Circle
     g = gdb.str_to_gesture('eNqFkMtqw0AMRff6EXtTo8doHj+Qbgv+gJImJoSm8eCZQPP3HTlpodDHIJiFdO7VVX/M17c6HKZSL8sEj/c/I/T7TDB2pS7z61Q6yAz9KQv0PxLjOgbZGaeNy/PxXA3zhoVfsCebghyNSo26NoAQNjhwiI45iiJ7j5EVyti9W5usTc6JkGpyrDElTVBetn96EK+RBA43AyHvveNEgYJScgHK4aaNilG5GWBAkabu/xdfc5N+iScvLogX4eiS4qf4Q9uclJAdtmwtFbEzcauxq/NpWrbn3WQx/RoTvz+yK9xXeM7LvL/sqg2H1TS0g7RAjiOLqNhNhg+4A4YT')
@@ -49,10 +36,9 @@ def action_close_menu(menu, w, args):
 def action_launch_plugin(menu, w, args):
     name, plugin = args
 
-    win = MTInnerWindow(size=(320,280), pos=(100,100))
+    win = MTInnerWindow(size=(320,280), pos=w.pos)
     plugins.activate(plugin, win)
     menu.parent.add_widget(win)
-    #win.pos = w.pos
 
     action_close_menu(menu, w, None)
 
@@ -133,7 +119,7 @@ if __name__ == '__main__':
     gesture_add_default(gdb)
 
     # Create background window
-    w = MTWallpaperWindow(wallpaper='wallpaper.jpg', show_fps=True)
+    w = MTWallpaperWindow(wallpaper='wallpaper.jpg')
     w.set_fullscreen()
     g = MTGestureDetector(gdb)
     w.add_widget(g)

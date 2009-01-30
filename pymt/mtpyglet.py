@@ -260,6 +260,7 @@ def pymt_usage():
   -w, --windowed                    force run in window
   -p, --port=x                      specify TUIO port (default 3333)
   -H, --host=xxx.xxx.xxx.xxx        specify TUIO host (default 127.0.0.1)
+  -F, --fps                         show fps in window
     '''
     print pymt_usage.__doc__ % (os.path.basename(sys.argv[0]))
 
@@ -271,8 +272,8 @@ def runTouchApp():
     host = '127.0.0.1'
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fw',
-            ['help', 'port=', 'host=', 'fullscreen', 'windowed'])
+        opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwF',
+            ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps'])
         for opt, arg in opts:
             if opt in ['-h', '--help']:
                 pymt_usage()
@@ -285,6 +286,8 @@ def runTouchApp():
                 touch_event_listeners[0].set_fullscreen(True)
             elif opt in ['-w', '--windowed']:
                 touch_event_listeners[0].set_fullscreen(False)
+            elif opt in ['-F', '--fps']:
+                touch_event_listeners[0].show_fps = True
 
     except getopt.GetoptError, err:
         print str(err)

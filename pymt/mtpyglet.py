@@ -129,7 +129,7 @@ class TouchEventLoop(pyglet.app.EventLoop):
         self.alive2DObj = []
         self.blobs2DCur = {}
         self.blobs2DObj = {}
-        self.parser = TUIOGetter()
+        self.parser = TUIOGetter(ip = host, port = port)
 
     def close(self):
         if not self.parser:

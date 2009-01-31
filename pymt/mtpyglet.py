@@ -86,16 +86,17 @@ the  righ parser on the idle function
 
 class TUIOGetter():
 
-    def __init__(self,  ip='127.0.0.1', port=3333):
+    def __init__(self,  host='127.0.0.1', port=3333):
 		global TUIO_listeners
 		TUIO_listeners.append(self)
+		self.host = host
 		self.port = port
 		self.startListening()
 
     def startListening(self):
         #print "starting ", self
         osc.init()
-        osc.listen('127.0.0.1', self.port)
+        osc.listen(self.host, self.port)
         osc.bind(self.osc_2dcur_Callback, '/tuio/2Dcur')
         osc.bind(self.osc_2dobj_Callback, '/tuio/2Dobj')
 
@@ -129,7 +130,7 @@ class TouchEventLoop(pyglet.app.EventLoop):
         self.alive2DObj = []
         self.blobs2DCur = {}
         self.blobs2DObj = {}
-        self.parser = TUIOGetter()
+        self.parser = TUIOGetter(host = host, port = port)
 
     def close(self):
         if not self.parser:

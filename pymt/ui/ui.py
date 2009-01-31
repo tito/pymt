@@ -409,8 +409,8 @@ class MTSlider(MTWidget):
             Minimum value of slider
         `max` : int, default is 100
             Maximum value of slider
-        `alignment` : str, default is vertical
-            Type of alignement, can be 'horizontal' or 'vertical'
+        `orientation` : str, default is vertical
+            Type of orientation, can be 'horizontal' or 'vertical'
         `value` : int, default is `min`
             Default value of slider
     '''
@@ -418,7 +418,7 @@ class MTSlider(MTWidget):
         kwargs.setdefault('min', 0)
         kwargs.setdefault('max', 100)
         kwargs.setdefault('padding', 8)
-        kwargs.setdefault('alignment', 'vertical')
+        kwargs.setdefault('orientation', 'vertical')
         kwargs.setdefault('color', (.8, .8, .4, 1.0))
         kwargs.setdefault('size', (30, 400))
         kwargs.setdefault('value', None)
@@ -426,7 +426,7 @@ class MTSlider(MTWidget):
         super(MTSlider, self).__init__(**kwargs)
         self.register_event_type('on_value_change')
         self.touchstarts    = [] # only react to touch input that originated on this widget
-        self.alignment      = kwargs.get('alignment')
+        self.orientation      = kwargs.get('orientation')
         self.padding        = kwargs.get('padding')
         self.min            = kwargs.get('min')
         self.max            = kwargs.get('max')
@@ -456,7 +456,7 @@ class MTSlider(MTWidget):
         drawRectangle(pos=(x,y), size=(w,h))
         # draw inner rectangle
         glColor4f(*self.color)
-        if self.alignment == 'vertical':
+        if self.orientation == 'vertical':
             length = int((self._value - self.min) * (self.height - self.padding) / (self.max - self.min))
             drawRectangle(pos=(x+p2,y+p2), size=(w - self.padding, length))
         else:
@@ -471,7 +471,7 @@ class MTSlider(MTWidget):
     def on_touch_move(self, touches, touchID, x, y):
         if touchID in self.touchstarts:
             last_value = self._value
-            if self.alignment == 'vertical':
+            if self.orientation == 'vertical':
                 self._value = (y - self.y) * (self.max - self.min) / float(self.height) + self.min
             else:
                 self._value = (x - self.x) * (self.max - self.min) / float(self.width) + self.min

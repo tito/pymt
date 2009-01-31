@@ -409,7 +409,7 @@ class MTSlider(MTWidget):
             Minimum value of slider
         `max` : int, default is 100
             Maximum value of slider
-        `alignment` : str, default is horizontal
+        `alignment` : str, default is vertical
             Type of alignement, can be 'horizontal' or 'vertical'
         `value` : int, default is `min`
             Default value of slider
@@ -418,7 +418,7 @@ class MTSlider(MTWidget):
         kwargs.setdefault('min', 0)
         kwargs.setdefault('max', 100)
         kwargs.setdefault('padding', 8)
-        kwargs.setdefault('alignment', 'horizontal')
+        kwargs.setdefault('alignment', 'vertical')
         kwargs.setdefault('color', (.8, .8, .4, 1.0))
         kwargs.setdefault('size', (30, 400))
         kwargs.setdefault('value', None)
@@ -432,7 +432,7 @@ class MTSlider(MTWidget):
         self.max            = kwargs.get('max')
         self._value         = self.min
         if kwargs.get('value'):
-            self.value = value
+            self._value = kwargs.get('value')
 
     def on_value_change(self, value):
         pass
@@ -440,22 +440,28 @@ class MTSlider(MTWidget):
     def set_value(self, _value):
         self._value = _value
         self.dispatch_event('on_value_change', self._value)
+    
     def get_value(self):
         return self._value
+    
     value = property(get_value, set_value, doc='Value of the slider')
 
     def draw(self):
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        x,y,w,h = self.x,self.y,self.width, self.height
+        x,y,w,h = self.x, self.y, self.width, self.height
         p2 =self.padding/2
         # draw outer rectangle
         glColor4f(0.2,0.2,0.2,0.5)
         drawRectangle(pos=(x,y), size=(w,h))
         # draw inner rectangle
         glColor4f(*self.color)
-        length = int((self._value - self.min) * (self.height - self.padding) / (self.max - self.min))
-        drawRectangle(pos=(self.x+p2,self.y+p2), size=(w - self.padding, length))
+        if self.alignment == 'vertical':
+            length = int((self._value - self.min) * (self.height - self.padding) / (self.max - self.min))
+            drawRectangle(pos=(x+p2,y+p2), size=(w - self.padding, length))
+        else:
+            length = int((self._value - self.min) * (self.width - self.padding) / (self.max - self.min))
+            drawRectangle(pos=(x+p2,y+p2), size=(length, h - self.padding))
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -465,7 +471,10 @@ class MTSlider(MTWidget):
     def on_touch_move(self, touches, touchID, x, y):
         if touchID in self.touchstarts:
             last_value = self._value
-            self._value = (y - self.y) * (self.max - self.min) / float(self.height) + self.min
+            if self.alignment == 'vertical':
+                self._value = (y - self.y) * (self.max - self.min) / float(self.height) + self.min
+            else:
+                self._value = (x - self.x) * (self.max - self.min) / float(self.width) + self.min
             if self._value >= self.max:
                 self._value = self.max
             if self._value <= self.min:
@@ -491,7 +500,7 @@ class MT2DSlider(MTWidget):
         `max_y` : int, default is 100
             Maximum value of slider
         `radius` : int, default is 200
-            Type of alignement, can be 'horizontal' or 'vertical'
+            Radius of the slider handle
         `value_x` : int, default is `min_x`
             Default X value of slider
         `value_y` : int, default is `min_y`
@@ -519,9 +528,9 @@ class MT2DSlider(MTWidget):
         self.radius     = kwargs.get('radius')
         self._value_x, self._value_y = self.min_x, self.min_y
         if kwargs.get('value_x'):
-            self.value_x = kwargs.get('value_x')
+            self._value_x = kwargs.get('value_x')
         if kwargs.get('value_y'):
-            self.value_y = kwargs.get('value_y')
+            self._value_y = kwargs.get('value_y')
 
     def on_value_change(self, value_x, value_y):
         pass
@@ -534,7 +543,7 @@ class MT2DSlider(MTWidget):
     def get_value_x(self):
         return self._value_x
 
-    value_x = property(get_value_x, set_value_x, doc='Represents the value of the slider (x axis)')
+    value_x = property(get_value_x, set_value_x, doc='Value of the slider (x axis)')
 
     def set_value_y(self, value):
         self._value_y = value
@@ -544,7 +553,7 @@ class MT2DSlider(MTWidget):
     def get_value_y(self):
         return self._value_y
 
-    value_y = property(get_value_y, set_value_y, doc='Represents the value of the slider (y axis)')
+    value_y = property(get_value_y, set_value_y, doc='Value of the slider (y axis)')
 
     def draw(self):
         glEnable(GL_BLEND);

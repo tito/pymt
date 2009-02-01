@@ -51,9 +51,8 @@ class TouchTracer(MTWidget):
                 x, y = pos
             drawLabel(x,y, touchID)
 
-w = MTWindow()
+w = MTWindow(fullscreen=True)
 w.add_widget(TouchTracer())
-w.set_fullscreen()
 
 
 

@@ -96,10 +96,7 @@ class flickrControl(MTWidget):
 
 
 if __name__ == '__main__':
-    w = MTWindow()
-    w.set_fullscreen()
-
-
+    w = MTWindow(fullscreen=True)
     flickControl = flickrControl()
     w.add_widget(flickControl)
     runTouchApp()

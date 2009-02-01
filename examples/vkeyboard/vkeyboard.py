@@ -7,8 +7,7 @@ PLUGIN_DESCRIPTION = 'This example shows how to use a virtual keyboard widget wh
 from pymt import *
 
 if __name__ == "__main__":
-    w = MTWindow()
-    w.set_fullscreen()
+    w = MTWindow(fullscreen=True)
     text_input = MTTextInput()
     w.add_widget(text_input)
     runTouchApp()

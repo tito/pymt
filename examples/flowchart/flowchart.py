@@ -170,5 +170,4 @@ if __name__ == "__main__":
     w = CreatorWidget()
     c.add_widget(w)
     win.add_widget(c)
-    #win.set_fullscreen()
     runTouchApp()

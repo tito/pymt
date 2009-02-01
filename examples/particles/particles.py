@@ -147,8 +147,7 @@ def pymt_plugin_deactivate(w, ctx):
 
 #start the application (inits and shows all windows)
 if __name__ == '__main__':
-    w = MTWindow()
-    w.set_fullscreen()
+    w = MTWindow(fullscreen=True)
     ctx = MTContext()
     pymt_plugin_activate(w, ctx)
     runTouchApp()

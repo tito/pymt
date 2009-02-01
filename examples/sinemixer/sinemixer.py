@@ -75,7 +75,6 @@ def pymt_plugin_deactivate(w, ctx):
 
 if __name__ == '__main__':
     w = MTWindow()
-    #w.set_fullscreen()
     ctx = MTContext()
     pymt_plugin_activate(w, ctx)
     runTouchApp()

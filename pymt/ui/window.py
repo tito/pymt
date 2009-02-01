@@ -2,6 +2,7 @@ import sys
 
 from pyglet.gl import *
 from pyglet import *
+import pymt
 from pymt.mtpyglet import TouchWindow
 from pymt.ui.simulator import *
 from pymt.ui.widget import *
@@ -40,7 +41,6 @@ class MTWindow(TouchWindow):
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
 
-        self.show_fps = kwargs.get('show_fps')
         self.fps_display =  pyglet.clock.ClockDisplay()
 
         self.color = kwargs.get('color')
@@ -60,8 +60,16 @@ class MTWindow(TouchWindow):
             super(MTWindow, self).__init__(config)
         except:
             super(MTWindow, self).__init__()
-            if kwargs.get('fullscreen'):
-                self.set_fullscreen()
+
+        # use user-options before local options
+        if pymt.options.has_key('fullscreen'):
+            self.set_fullscreen(pymt.options.get('fullscreen'))
+        elif kwargs.get('fullscreen'):
+            self.set_fullscreen(kwargs.get('fullscreen'))
+
+        self.show_fps = kwargs.get('show_fps')
+        if pymt.options.has_key('show_fps'):
+            self.show_fps = True
 
     def _set_size(self, size):
         self.set_size(*size)

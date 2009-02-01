@@ -1,4 +1,4 @@
-"""
+'''
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -13,12 +13,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     Object part by Felipe Carvalho
-"""
+'''
 
 import osc
 import pyglet
 from pyglet.gl import *
 
+import pymt
 import sys, getopt, os
 from Queue import Queue
 from threading import Lock
@@ -78,11 +79,11 @@ class Tuio2DObject():
 
 
 
-"""
+'''
 In TUIOGetter , The "type" item differentiates the 2Dobj of the 2DCur , to choose
 the  righ parser on the idle function
 
-"""
+'''
 
 class TUIOGetter():
 
@@ -269,32 +270,8 @@ def pymt_usage():
 def runTouchApp():
     '''Static main function that starts the application loop'''
 
-    port = 3333
-    host = '127.0.0.1'
-
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwF',
-            ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps'])
-        for opt, arg in opts:
-            if opt in ['-h', '--help']:
-                pymt_usage()
-                sys.exit(0)
-            elif opt in ['-p', '--port']:
-                port = arg
-            elif opt in ['-H', '--host']:
-                host = arg
-            elif opt in ['-f', '--fullscreen']:
-                touch_event_listeners[0].set_fullscreen(True)
-            elif opt in ['-w', '--windowed']:
-                touch_event_listeners[0].set_fullscreen(False)
-            elif opt in ['-F', '--fps']:
-                touch_event_listeners[0].show_fps = True
-
-    except getopt.GetoptError, err:
-        print str(err)
-        pymt_usage()
-        sys.exit(2)
-
+    host = pymt.options.get('host')
+    port = pymt.options.get('port')
     print 'Notice: listening for TUIO on port', port, 'of host', host
     evloop = TouchEventLoop(host=host, port=port)
 

@@ -1,63 +1,82 @@
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+PyMT - A Multitouch UI Toolkit for Pyglet
+=========================================
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+About
+-----
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+This is beta, so keep in mind that it might not work as intended at all times.
+You can post bug reports, feature requests on Google Project page :
 
-Copyright (c) 2007-2008 pymt-developers
+  http://code.google.com/p/pymt/issues/list
 
+If you need more help, you can discuss on mailing list :
 
+  * Google Group : http://groups.google.com/group/pymt-dev
+  * Email        : pymt-dev@googlegroups.com
 
-pymt-developers:
-   Thomas Hansen (University of Iowa)
-   Mathieu Virbel
-   Sharath Patali
-   Nathanaël Lécaudé
-   Riley Dutton
-   Felipe Moura
+We have also an IRC channel :
 
-About:
-   This is very early alpha, so keep in mind that it might not work as intended at all times.
-   For bug reports, feature requests and other issues please contact thomas.hansen@gmail.com
-   or stop by #pymt on freenode.org
+  * Server  : irc.freenode.net
+  * Channel : #pymt
 
 
-Installation:
-  run the setup script as follows to install pymt systemwide for python:
-    'python setup.py install'
+Introduction
+------------
+
+PyMT is a python module for developing multi-touch enabled media rich
+applications. Currently the aim is to allow for quick and easy interaction
+design and rapid prototype development.
+
+PyMT is written in python, based on pyglet toolkit.
 
 
-Dependencies:
-   python (2.6 recommended, not 3.0 compatible)
-   pyglet (for video support you need avbin)
-     you will need pyglet (www.pyglet.org) and will probably want to take a look at the pyglet
-     documentation since pymt is built on top of pyglet dealing with multi touch events.
+Installation
+------------
 
-   for sound apps using csound:
-     ounk
-     csound
+Run the setup script as follows to install pymt systemwide for python:
+
+  python setup.py install
+
+
+Dependencies
+------------
+
+  * python (>= 2.5, < 3.0) - http://python.org
+  * pyglet (>= 1.1.2) - http://www.pyglet.org
+  * csound (audio, optional) - http://www.csound.com
+  * ounk (audio, optional) - http://code.google.com/p/ounk/
+  * avbin (video, optional) - http://code.google.com/p/avbin/
 
 
 Dcoumentation, Examples & Tutorials
-   There is an API refernece included in the trunk under the doc folder.
-   There is some simple example apps in the examples folder that should get you started for now.
+-----------------------------------
+
+There is an API reference included in doc/build/html/.
+There is some simple example apps in the examples folder that should get
+you started for now.
 
 
-Other python/MT resources:
-   *touchpy.googlecode.com
-        Some of the code for pymt (Tuio2DCursor class and some parsing) is taken from touchpy (touchpy.googlecode.com).
-        touchpy provides a slightly different event model (I think it is agnostic as to what windowing libraries you want to use).
+Other python/MT resources
+-------------------------
 
-   *pyglet.org
-      pymt is for use with pyglet only at the moment.  It provides MT events in a way that is consistent to other pyglet events (
-      the pyglet team has a great section about their event system in their documentaion)
+touchpy.googlecode.com
+^^^^^^^^^^^^^^^^^^^^^^
 
-   *nuigroup.com
-      THE resource and research community for open source multi touch and other natural user interfaces
+Some of the code for pymt (Tuio2DCursor class and some parsing) is taken
+from touchpy. Touchpy provides a slightly different event model
+(I think it is agnostic as to what windowing libraries you want to use).
+
+pyglet.org
+^^^^^^^^^^
+
+PyMT is for use with pyglet only at the moment. It provides MT events in
+a way that is consistent to other pyglet events (the pyglet team has a
+great section about their event system in their documentaion)
+
+nuigroup.com
+^^^^^^^^^^^^
+
+THE resource and research community for open source multi touch and other
+natural user interfaces.
+
+

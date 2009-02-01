@@ -10,10 +10,11 @@
           URL_ROOT:    '',
           VERSION:     '0.1a1',
           COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: '.html'
+          FILE_SUFFIX: ''
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/interface.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="contents" title="Global table of contents" href="contents.html" />
     <link rel="index" title="Global index" href="genindex.html" />
@@ -50,8 +51,8 @@
           <div class="body">
             
   
-  <div class="section" id="module-pymt.ui.ui">
-<h1>UI - core widgets<a class="headerlink" href="#module-pymt.ui.ui" title="Permalink to this headline">¶</a></h1>
+  <div class="section">
+<h1 id="module-pymt.ui.ui">UI - core widgets<a class="headerlink" href="#module-pymt.ui.ui" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pymt.ui.ui.MT2DSlider">
 <!--[pymt.ui.ui.MT2DSlider]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MT2DSlider</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MT2DSlider" title="Permalink to this definition">¶</a></dt>
@@ -74,7 +75,7 @@
 <dd><p class="first last">Maximum value of slider</p>
 </dd>
 <dt><cite>radius</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int, default is 200</span></dt>
-<dd><p class="first last">Type of alignement, can be &#8216;horizontal&#8217; or &#8216;vertical&#8217;</p>
+<dd><p class="first last">Radius of the slider handle</p>
 </dd>
 <dt><cite>value_x</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int, default is <cite>min_x</cite></span></dt>
 <dd><p class="first last">Default X value of slider</p>
@@ -135,12 +136,12 @@
 <dl class="attribute">
 <dt id="pymt.ui.ui.MT2DSlider.value_x">
 <!--[pymt.ui.ui.MT2DSlider.value_x]--><tt class="descname">value_x</tt><a class="headerlink" href="#pymt.ui.ui.MT2DSlider.value_x" title="Permalink to this definition">¶</a></dt>
-<dd>Represents the value of the slider (x axis)</dd></dl>
+<dd>Value of the slider (x axis)</dd></dl>
 
 <dl class="attribute">
 <dt id="pymt.ui.ui.MT2DSlider.value_y">
 <!--[pymt.ui.ui.MT2DSlider.value_y]--><tt class="descname">value_y</tt><a class="headerlink" href="#pymt.ui.ui.MT2DSlider.value_y" title="Permalink to this definition">¶</a></dt>
-<dd>Represents the value of the slider (y axis)</dd></dl>
+<dd>Value of the slider (y axis)</dd></dl>
 
 </dd></dl>
 
@@ -391,6 +392,9 @@ that draw an image instead of a text.</p>
 <dt><cite>filename</cite> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
 <dd><p class="first last">Filename of image</p>
 </dd>
+<dt><cite>loader</cite> <span class="classifier-delimiter">:</span> <span class="classifier">Loader instance</span></dt>
+<dd><p class="first last">Use the loader to load image</p>
+</dd>
 </dl>
 </td>
 </tr>
@@ -436,6 +440,11 @@ that draw an image instead of a text.</p>
 <dl class="method">
 <dt id="pymt.ui.ui.MTScatterWidget.find_second_touch">
 <!--[pymt.ui.ui.MTScatterWidget.find_second_touch]--><tt class="descname">find_second_touch</tt><big>(</big><em>touchID</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.find_second_touch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterWidget.get_scale_factor">
+<!--[pymt.ui.ui.MTScatterWidget.get_scale_factor]--><tt class="descname">get_scale_factor</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.get_scale_factor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -490,8 +499,8 @@ that draw an image instead of a text.</p>
 <dt><cite>max</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int, default is 100</span></dt>
 <dd><p class="first last">Maximum value of slider</p>
 </dd>
-<dt><cite>alignment</cite> <span class="classifier-delimiter">:</span> <span class="classifier">str, default is horizontal</span></dt>
-<dd><p class="first last">Type of alignement, can be &#8216;horizontal&#8217; or &#8216;vertical&#8217;</p>
+<dt><cite>orientation</cite> <span class="classifier-delimiter">:</span> <span class="classifier">str, default is vertical</span></dt>
+<dd><p class="first last">Type of orientation, can be &#8216;horizontal&#8217; or &#8216;vertical&#8217;</p>
 </dd>
 <dt><cite>value</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int, default is <cite>min</cite></span></dt>
 <dd><p class="first last">Default value of slider</p>
@@ -612,7 +621,7 @@ that draw an image instead of a text.</p>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on jan 29, 2009.
+      Last updated on fév 01, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
     </div>
   </body>

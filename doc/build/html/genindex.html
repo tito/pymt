@@ -10,10 +10,11 @@
           URL_ROOT:    '',
           VERSION:     '0.1a1',
           COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: '.html'
+          FILE_SUFFIX: ''
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/interface.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="contents" title="Global table of contents" href="contents.html" />
     <link rel="index" title="Global index" href="" />
@@ -54,7 +55,7 @@
 <dt><a href="api-pymt-gesture.html#pymt.gesture.GestureDatabase.add_gesture">add_gesture() (pymt.gesture.GestureDatabase method)</a></dt>
 <dt><a href="api-pymt-gesture.html#pymt.gesture.GestureStroke.add_point">add_point() (pymt.gesture.GestureStroke method)</a></dt>
 <dt><a href="api-pymt-gesture.html#pymt.gesture.Gesture.add_stroke">add_stroke() (pymt.gesture.Gesture method)</a></dt>
-<dt><a href="api-pymt-ui-layout.html#pymt.ui.layout.HorizontalLayout.add_widget">add_widget() (pymt.ui.layout.HorizontalLayout method)</a></dt>
+<dt><a href="api-pymt-ui-layout.html#pymt.ui.layout.HVLayout.add_widget">add_widget() (pymt.ui.layout.HVLayout method)</a></dt>
   <dd><dl>
     <dt><a href="api-pymt-ui-window.html#pymt.ui.window.MTWindow.add_widget">(pymt.ui.window.MTWindow method)</a></dt>
   </dl></dd></dl></td><td width="33%" valign="top"><dl>
@@ -167,11 +168,12 @@
 <dt><a href="api-pymt-plugin.html#pymt.plugin.MTPlugins.get_infos">get_infos() (pymt.plugin.MTPlugins method)</a></dt>
 <dt><a href="api-pymt-plugin.html#pymt.plugin.MTPlugins.get_key">get_key() (pymt.plugin.MTPlugins method)</a></dt>
 <dt><a href="api-pymt-ui-ui.html#pymt.ui.ui.MTButton.get_label">get_label() (pymt.ui.ui.MTButton method)</a></dt>
-<dt><a href="api-pymt-shader.html#pymt.shader.Shader.get_log">get_log() (pymt.shader.Shader method)</a></dt></dl></td><td width="33%" valign="top"><dl>
-<dt><a href="api-pymt-ui-window.html#pymt.ui.window.MTWindowRoot.get_parent_window">get_parent_window() (pymt.ui.window.MTWindowRoot method)</a></dt>
+<dt><a href="api-pymt-shader.html#pymt.shader.Shader.get_log">get_log() (pymt.shader.Shader method)</a></dt>
+<dt><a href="api-pymt-ui-window.html#pymt.ui.window.MTWindowRoot.get_parent_window">get_parent_window() (pymt.ui.window.MTWindowRoot method)</a></dt></dl></td><td width="33%" valign="top"><dl>
 <dt><a href="api-pymt-plugin.html#pymt.plugin.MTPlugins.get_plugin">get_plugin() (pymt.plugin.MTPlugins method)</a></dt>
 <dt><a href="api-pymt-shader.html#pymt.shader.Shader.get_program_log">get_program_log() (pymt.shader.Shader method)</a></dt>
 <dt><a href="api-pymt-loader.html#pymt.loader.ProxyImage.get_region">get_region() (pymt.loader.ProxyImage method)</a></dt>
+<dt><a href="api-pymt-ui-ui.html#pymt.ui.ui.MTScatterWidget.get_scale_factor">get_scale_factor() (pymt.ui.ui.MTScatterWidget method)</a></dt>
 <dt><a href="api-pymt-gesture.html#pymt.gesture.Gesture.get_score">get_score() (pymt.gesture.Gesture method)</a></dt>
 <dt><a href="api-pymt-shader.html#pymt.shader.Shader.get_shader_log">get_shader_log() (pymt.shader.Shader method)</a></dt>
 <dt><a href="api-pymt-ui-ui.html#pymt.ui.ui.MTButton.get_state">get_state() (pymt.ui.ui.MTButton method)</a></dt>
@@ -188,7 +190,7 @@
 
 <dt><a href="api-pymt-loader.html#pymt.loader.ProxyImage.height">height (pymt.loader.ProxyImage attribute)</a></dt>
 <dt><a href="api-pymt-ui-video.html#pymt.ui.videowidget.MTVideo.hide_controls">hide_controls() (pymt.ui.videowidget.MTVideo method)</a></dt></dl></td><td width="33%" valign="top"><dl>
-<dt><a href="api-pymt-ui-layout.html#pymt.ui.layout.HorizontalLayout">HorizontalLayout (class in pymt.ui.layout)</a></dt>
+<dt><a href="api-pymt-ui-layout.html#pymt.ui.layout.HVLayout">HVLayout (class in pymt.ui.layout)</a></dt>
 </dl></td></tr></table>
 
 <h2 id="I">I</h2>
@@ -207,7 +209,7 @@
 <dl>
 
 <dt><a href="api-pymt-ui-ui.html#pymt.ui.ui.MTButton.label">label (pymt.ui.ui.MTButton attribute)</a></dt>
-<dt><a href="api-pymt-ui-layout.html#pymt.ui.layout.HorizontalLayout.layout">layout() (pymt.ui.layout.HorizontalLayout method)</a></dt>
+<dt><a href="api-pymt-ui-layout.html#pymt.ui.layout.HVLayout.layout">layout() (pymt.ui.layout.HVLayout method)</a></dt>
 <dt><a href="api-pymt-vector.html#pymt.vector.Vector.length">length (pymt.vector.Vector attribute)</a></dt>
 <dt><a href="api-pymt-vector.html#pymt.vector.Vector.lengthSqrd">lengthSqrd (pymt.vector.Vector attribute)</a></dt>
 <dt><a href="api-pymt-vector.html#pymt.vector.Vector.line_intersection">line_intersection (pymt.vector.Vector attribute)</a></dt></dl></td><td width="33%" valign="top"><dl>
@@ -276,12 +278,14 @@
 <dl>
 
 <dt><a href="api-pymt-obj.html#pymt.obj.OBJ">OBJ (class in pymt.obj)</a></dt>
+<dt><a href="api-pymt-ui-layout.html#pymt.ui.layout.HVLayout.on_content_resize">on_content_resize() (pymt.ui.layout.HVLayout method)</a></dt>
 <dt><a href="api-pymt-ui-ui.html#pymt.ui.ui.MTScatterWidget.on_draw">on_draw() (pymt.ui.ui.MTScatterWidget method)</a></dt>
   <dd><dl>
     <dt><a href="api-pymt-ui-video.html#pymt.ui.videowidget.MTVideoTimeline.on_draw">(pymt.ui.videowidget.MTVideoTimeline method)</a></dt>
     <dt><a href="api-pymt-ui-window.html#pymt.ui.window.MTWindow.on_draw">(pymt.ui.window.MTWindow method)</a></dt>
   </dl></dd>
 <dt><a href="api-pymt-ui-gesturewidget.html#pymt.ui.gesturewidget.MTGestureWidget.on_gesture">on_gesture() (pymt.ui.gesturewidget.MTGestureWidget method)</a></dt>
+<dt><a href="api-pymt-ui-layout.html#pymt.ui.layout.HVLayout.on_layout">on_layout() (pymt.ui.layout.HVLayout method)</a></dt>
 <dt><a href="api-pymt-ui-simulator.html#pymt.ui.simulator.MTSimulator.on_mouse_drag">on_mouse_drag() (pymt.ui.simulator.MTSimulator method)</a></dt>
   <dd><dl>
     <dt><a href="api-pymt-ui-window.html#pymt.ui.window.MTWindow.on_mouse_drag">(pymt.ui.window.MTWindow method)</a></dt>
@@ -294,6 +298,7 @@
   <dd><dl>
     <dt><a href="api-pymt-ui-window.html#pymt.ui.window.MTWindow.on_mouse_release">(pymt.ui.window.MTWindow method)</a></dt>
   </dl></dd>
+<dt><a href="api-pymt-ui-layout.html#pymt.ui.layout.HVLayout.on_move">on_move() (pymt.ui.layout.HVLayout method)</a></dt>
 <dt><a href="api-pymt-mtpyglet.html#pymt.mtpyglet.TouchWindow.on_object_down">on_object_down() (pymt.mtpyglet.TouchWindow method)</a></dt>
   <dd><dl>
     <dt><a href="api-pymt-ui-ui.html#pymt.ui.ui.MTObjectWidget.on_object_down">(pymt.ui.ui.MTObjectWidget method)</a></dt>
@@ -506,7 +511,6 @@
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
 
-   
 
             <h3>Quick search</h3>
             <form class="search" action="search.html" method="get">
@@ -532,7 +536,7 @@
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on jan 29, 2009.
+      Last updated on fév 01, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
     </div>
   </body>

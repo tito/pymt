@@ -10,10 +10,11 @@
           URL_ROOT:    '',
           VERSION:     '0.1a1',
           COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: '.html'
+          FILE_SUFFIX: ''
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/interface.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="contents" title="Global table of contents" href="contents.html" />
     <link rel="index" title="Global index" href="genindex.html" />
@@ -50,11 +51,11 @@
           <div class="body">
             
   
-  <div class="section" id="module-pymt.gesture">
-<h1>gesture - gesture recognition<a class="headerlink" href="#module-pymt.gesture" title="Permalink to this headline">¶</a></h1>
+  <div class="section">
+<h1 id="module-pymt.gesture">gesture - gesture recognition<a class="headerlink" href="#module-pymt.gesture" title="Permalink to this headline">¶</a></h1>
 <p>Base for gesture recognition. You can easily use these class to create
 new gesture, and compare them !</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymt</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight"><pre><span class="k">from</span> <span class="nn">pymt</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c"># Create a gesture</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">Gesture</span><span class="p">()</span>
@@ -74,8 +75,8 @@ new gesture, and compare them !</p>
 <dt id="pymt.gesture.Gesture">
 <!--[pymt.gesture.Gesture]-->class <tt class="descclassname">pymt.gesture.</tt><tt class="descname">Gesture</tt><big>(</big><em>tolerance=None</em><big>)</big><a class="headerlink" href="#pymt.gesture.Gesture" title="Permalink to this definition">¶</a></dt>
 <dd><p>A python implementation of a gesture recognition algorithm by Oleg Dopertchouk
-<a class="reference external" href="http://www.gamedev.net/reference/articles/article2039.asp">http://www.gamedev.net/reference/articles/article2039.asp</a></p>
-<p>Implemented by Jeiel Aranal (<a class="reference external" href="mailto:chemikhazi&#37;&#52;&#48;gmail&#46;com">chemikhazi<span>&#64;</span>gmail<span>&#46;</span>com</a>), released into the public domain</p>
+<a class="reference" href="http://www.gamedev.net/reference/articles/article2039.asp">http://www.gamedev.net/reference/articles/article2039.asp</a></p>
+<p>Implemented by Jeiel Aranal (<a class="reference" href="mailto:chemikhazi&#37;&#52;&#48;gmail&#46;com">chemikhazi<span>&#64;</span>gmail<span>&#46;</span>com</a>), released into the public domain</p>
 <dl class="method">
 <dt id="pymt.gesture.Gesture.add_stroke">
 <!--[pymt.gesture.Gesture.add_stroke]--><tt class="descname">add_stroke</tt><big>(</big><em>point_list=None</em><big>)</big><a class="headerlink" href="#pymt.gesture.Gesture.add_stroke" title="Permalink to this definition">¶</a></dt>

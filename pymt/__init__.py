@@ -20,7 +20,7 @@ from loader import *
 from gesture import *
 from pymt.ui import *
 
-import sys, getopt
+import sys, getopt, os
 
 def curry(fn, *cargs, **ckwargs):
     def call_fn(*fargs, **fkwargs):
@@ -31,27 +31,27 @@ def curry(fn, *cargs, **ckwargs):
 
 # PYMT Options management
 # Can be overrided in command line
-options = {'host': '127.0.0.1', 'port': 3333}
-try:
-    opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwF',
-        ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps'])
-    for opt, arg in opts:
-        if opt in ['-h', '--help']:
-            pymt_usage()
-            sys.exit(0)
-        elif opt in ['-p', '--port']:
-            options['port'] = int(arg)
-        elif opt in ['-H', '--host']:
-            options['host'] = str(arg)
-        elif opt in ['-f', '--fullscreen']:
-            options['fullscreen'] = True
-        elif opt in ['-w', '--windowed']:
-            options['fullscreen'] = False
-        elif opt in ['-F', '--fps']:
-            options['show_fps'] = True
+if not os.path.basename(sys.argv[0]).startswith('sphinx'):
+    options = {'host': '127.0.0.1', 'port': 3333}
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwF',
+            ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps'])
+        for opt, arg in opts:
+            if opt in ['-h', '--help']:
+                pymt_usage()
+                sys.exit(0)
+            elif opt in ['-p', '--port']:
+                options['port'] = int(arg)
+            elif opt in ['-H', '--host']:
+                options['host'] = str(arg)
+            elif opt in ['-f', '--fullscreen']:
+                options['fullscreen'] = True
+            elif opt in ['-w', '--windowed']:
+                options['fullscreen'] = False
+            elif opt in ['-F', '--fps']:
+                options['show_fps'] = True
 
-except getopt.GetoptError, err:
-    print str(err)
-    pymt_usage()
-    sys.exit(2)
-
+    except getopt.GetoptError, err:
+        print str(err), sys.argv, __name__
+        pymt_usage()
+        sys.exit(2)

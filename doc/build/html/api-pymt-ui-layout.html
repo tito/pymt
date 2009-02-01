@@ -10,10 +10,11 @@
           URL_ROOT:    '',
           VERSION:     '0.1a1',
           COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: '.html'
+          FILE_SUFFIX: ''
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/interface.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="contents" title="Global table of contents" href="contents.html" />
     <link rel="index" title="Global index" href="genindex.html" />
@@ -50,19 +51,70 @@
           <div class="body">
             
   
-  <div class="section" id="module-pymt.ui.layout">
-<h1>Layout - horizontal, vertical layout arrangment<a class="headerlink" href="#module-pymt.ui.layout" title="Permalink to this headline">¶</a></h1>
+  <div class="section">
+<h1 id="module-pymt.ui.layout">Layout - horizontal, vertical layout arrangment<a class="headerlink" href="#module-pymt.ui.layout" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="pymt.ui.layout.HorizontalLayout">
-<!--[pymt.ui.layout.HorizontalLayout]-->class <tt class="descclassname">pymt.ui.layout.</tt><tt class="descname">HorizontalLayout</tt><big>(</big><em>spacing=10</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#pymt.ui.layout.HorizontalLayout" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="pymt.ui.layout.HorizontalLayout.add_widget">
-<!--[pymt.ui.layout.HorizontalLayout.add_widget]--><tt class="descname">add_widget</tt><big>(</big><em>w</em><big>)</big><a class="headerlink" href="#pymt.ui.layout.HorizontalLayout.add_widget" title="Permalink to this definition">¶</a></dt>
+<dt id="pymt.ui.layout.HVLayout">
+<!--[pymt.ui.layout.HVLayout]-->class <tt class="descclassname">pymt.ui.layout.</tt><tt class="descname">HVLayout</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.layout.HVLayout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Horizontal / Vertical layout.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><cite>alignment</cite> <span class="classifier-delimiter">:</span> <span class="classifier">str, default is &#8216;horizontal&#8217;</span></dt>
+<dd><p class="first last">Alignment of widget inside layout, can be <cite>horizontal</cite> or <cite>vertical</cite></p>
+</dd>
+<dt><cite>spacing</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int, default to 1</span></dt>
+<dd><p class="first last">Spacing between widgets</p>
+</dd>
+<dt><cite>uniform_width</cite> <span class="classifier-delimiter">:</span> <span class="classifier">bool, default to False</span></dt>
+<dd><p class="first last">Try to have same width for all children</p>
+</dd>
+<dt><cite>uniform_height</cite> <span class="classifier-delimiter">:</span> <span class="classifier">bool, default to False</span></dt>
+<dd><p class="first last">Try to have same height for all children</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Events:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>on_layout</cite></dt>
+<dd><p class="first last">Fired when layout function have been called</p>
+</dd>
+<dt><cite>on_content_resize</cite></dt>
+<dd><p class="first last">Fired when content_width or content_height have changed</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pymt.ui.layout.HVLayout.add_widget">
+<!--[pymt.ui.layout.HVLayout.add_widget]--><tt class="descname">add_widget</tt><big>(</big><em>w</em><big>)</big><a class="headerlink" href="#pymt.ui.layout.HVLayout.add_widget" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="pymt.ui.layout.HorizontalLayout.layout">
-<!--[pymt.ui.layout.HorizontalLayout.layout]--><tt class="descname">layout</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.layout.HorizontalLayout.layout" title="Permalink to this definition">¶</a></dt>
+<dt id="pymt.ui.layout.HVLayout.layout">
+<!--[pymt.ui.layout.HVLayout.layout]--><tt class="descname">layout</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.layout.HVLayout.layout" title="Permalink to this definition">¶</a></dt>
+<dd>Recalculate position for every subwidget, fire
+on_layout when finished. If content size have changed,
+fire on_content_resize too. Uniform width/height are handled
+after on_content_resize.</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.layout.HVLayout.on_content_resize">
+<!--[pymt.ui.layout.HVLayout.on_content_resize]--><tt class="descname">on_content_resize</tt><big>(</big><em>w</em>, <em>h</em><big>)</big><a class="headerlink" href="#pymt.ui.layout.HVLayout.on_content_resize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.layout.HVLayout.on_layout">
+<!--[pymt.ui.layout.HVLayout.on_layout]--><tt class="descname">on_layout</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.layout.HVLayout.on_layout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.layout.HVLayout.on_move">
+<!--[pymt.ui.layout.HVLayout.on_move]--><tt class="descname">on_move</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.layout.HVLayout.on_move" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

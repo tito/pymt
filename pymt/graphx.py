@@ -143,8 +143,14 @@ def drawTriangle(pos, w, h):
     draw(3, GL_TRIANGLES, ('v2f', points))
 
 def drawRectangle(pos=(0,0), size=(1.0,1.0), ):
-    data = (pos[0],pos[1], pos[0]+size[0],pos[1], pos[0]+size[0], pos[1]+size[1], pos[0],pos[1]+size[1])
-    draw(4, GL_QUADS, ('v2f', data))
+    #data = (pos[0],pos[1], pos[0]+size[0],pos[1], pos[0]+size[0], pos[1]+size[1], pos[0],pos[1]+size[1])
+    #draw(4, GL_QUADS, ('v2f', data))
+    glBegin(GL_QUADS)
+    glVertex2f(pos[0], pos[1])
+    glVertex2f(pos[0] + size[0], pos[1])
+    glVertex2f(pos[0] + size[0], pos[1] + size[1])
+    glVertex2f(pos[0], pos[1] + size[1])
+    glEnd(GL_QUADS)
 
 def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0)):
     glEnable(GL_TEXTURE_2D)

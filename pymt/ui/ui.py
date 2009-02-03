@@ -91,6 +91,7 @@ class MTButton(MTWidget):
         self.label_obj.text = str(kwargs.get('label'))
         self._label         = str(kwargs.get('label'))
         self.color_down     = kwargs.get('color_down')
+        self.batch          = None
 
     def get_label(self):
         return self._label
@@ -106,15 +107,25 @@ class MTButton(MTWidget):
     state = property(get_state, set_state, doc='Sets the state of the button, "normal" or "down"')
 
     def draw(self):
+        # Select color
         if self._state[0] == 'down':
             glColor4f(*self.color_down)
-            drawRectangle((self.x,self.y) , (self.width, self.height))
         else:
             glColor4f(*self.color)
-            drawRectangle((self.x,self.y) , (self.width, self.height))
 
-        self.label_obj.x, self.label_obj.y = self.x +self.width/2 , self.y + +self.height/2
-        self.label_obj.draw()
+        # Try to optimize, use display if possible
+        if self.batch is None:
+            self.batch = pyglet.graphics.Batch()
+            self.batch.add(4, GL_QUADS, None, ('v2f',
+              (self.x, self.y, self.x + self.width,
+               self.y, self.x + self.width, self.y +
+               self.height, self.x, self.y +
+               self.height)))
+        self.batch.draw()
+
+        if len(self._label):
+            self.label_obj.x, self.label_obj.y = self.x +self.width/2 , self.y + +self.height/2
+            self.label_obj.draw()
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -196,7 +207,8 @@ class MTImageButton(MTButton):
         self.width          = self.image.width
         self.height         = self.image.height
         self.image.draw()
-        
+
+
 class MTButtonMatrix(MTWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('matrix_size', (3,3))
@@ -205,7 +217,7 @@ class MTButtonMatrix(MTWidget):
         self.matrix_size = kwargs.get('matrix_size')
         self.spacing = kwargs.get('spacing')
         self.buttons = []
-        
+
         vlayout = HVLayout(alignment = 'vertical', spacing = self.spacing)
         for l in range(self.matrix_size[1]):
             hlayout = HVLayout(spacing = self.spacing)
@@ -215,7 +227,6 @@ class MTButtonMatrix(MTWidget):
                 self.buttons.append(b)
             vlayout.add_widget(hlayout)
         self.add_widget(vlayout)
-          
 
 
 class MTScatterWidget(MTWidget):
@@ -460,10 +471,8 @@ class MTSlider(MTWidget):
     def set_value(self, _value):
         self._value = _value
         self.dispatch_event('on_value_change', self._value)
-    
     def get_value(self):
         return self._value
-    
     value = property(get_value, set_value, doc='Value of the slider')
 
     def draw(self):

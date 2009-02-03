@@ -37,7 +37,7 @@ def intersection(set1, set2):
 def difference(set1, set2):
     return filter(lambda s:s not in set2, set1)
 
-class Tuio2DCursor():
+class Tuio2DCursor(object):
 
     def __init__(self, blobID, args):
         self.blobID = blobID
@@ -57,7 +57,7 @@ class Tuio2DCursor():
             self.xpos, self.ypos, self.xmot, self.ymot, self.mot_accel, self.Width , self.Height = args[0:7]
 
 
-class Tuio2DObject():
+class Tuio2DObject(object):
 
     def __init__(self, blobID, args):
         self.blobID = blobID
@@ -85,7 +85,7 @@ the  righ parser on the idle function
 
 '''
 
-class TUIOGetter():
+class TUIOGetter(object):
 
     def __init__(self,  host='127.0.0.1', port=3333):
 		global TUIO_listeners

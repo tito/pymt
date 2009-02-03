@@ -91,7 +91,6 @@ class MTButton(MTWidget):
         self.label_obj.text = str(kwargs.get('label'))
         self._label         = str(kwargs.get('label'))
         self.color_down     = kwargs.get('color_down')
-        self.batch          = None
 
     def get_label(self):
         return self._label
@@ -114,14 +113,7 @@ class MTButton(MTWidget):
             glColor4f(*self.color)
 
         # Try to optimize, use display if possible
-        if self.batch is None:
-            self.batch = pyglet.graphics.Batch()
-            self.batch.add(4, GL_QUADS, None, ('v2f',
-              (self.x, self.y, self.x + self.width,
-               self.y, self.x + self.width, self.y +
-               self.height, self.x, self.y +
-               self.height)))
-        self.batch.draw()
+        drawRectangle(self.pos, self.size)
 
         if len(self._label):
             self.label_obj.x, self.label_obj.y = self.x +self.width/2 , self.y + +self.height/2

@@ -2,7 +2,7 @@
 
 from pymt import *
 
-m = MTButtonMatrix(matrix_size = (3,3))
+m = MTButtonMatrix(matrix_size = (30,30))
 
 slider = MTSlider(pos = (10,10))
 for btn in range(len(m.buttons)):

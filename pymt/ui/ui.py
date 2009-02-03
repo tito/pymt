@@ -200,7 +200,7 @@ class MTImageButton(MTButton):
 class MTButtonMatrix(MTWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('matrix_size', (3,3))
-        kwargs.setdefault('spacing', (3,3))
+        kwargs.setdefault('spacing', 1)
         super(MTButtonMatrix, self).__init__(**kwargs)
         self.matrix_size = kwargs.get('matrix_size')
         self.spacing = kwargs.get('spacing')

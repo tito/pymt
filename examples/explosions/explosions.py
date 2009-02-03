@@ -10,7 +10,7 @@ from pyglet.gl import *
 import random
 import rabbyt.collisions
 
-pyglet.resource.path=['music']
+pyglet.resource.path=['../bloop/music']
 pyglet.resource.reindex()
 
 def showfps(arg):

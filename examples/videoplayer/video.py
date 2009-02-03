@@ -15,13 +15,7 @@ if __name__ == '__main__':
     video = MTVideo(video='softboy.avi',pos=(100,200))
     w.add_widget(video)
 
-    video2 = MTVideo(video='ninja-cat.avi',pos=(600,200))
-    w.add_widget(video2)
-
     video3 = MTVideo(video='super-fly.avi',pos=(550,500))
     w.add_widget(video3)
-
-    video4 = MTVideo(video='video.avi',pos=(440,300))
-    w.add_widget(video4)
 
     runTouchApp()

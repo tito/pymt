@@ -67,7 +67,7 @@ class MTVideoTimeline(MTSlider):
         super(MTVideoTimeline, self).__init__(**kwargs)
         self.vid = kwargs.get('player')
         self.max = kwargs.get('duration')
-        self.width = self.vid.get_texture().width
+        self.width = self.vid.get_texture().width-85
         self.height = 30
         self.length = 0
 

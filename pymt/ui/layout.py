@@ -98,6 +98,9 @@ class HVLayout(MTWidget):
                 for w in self.children:
                     w.height = max_w_height
 
+        # XXX make it optionnal, in 0.2
+        self.size = (self.content_width, self.content_height)
+
         # we just do a layout, dispatch event
         self.dispatch_event('on_layout')
 

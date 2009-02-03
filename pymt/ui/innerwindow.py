@@ -17,6 +17,8 @@ class MTInnerWindow(MTScatterWidget):
         super(MTInnerWindow, self).add_widget(self.container)
 
 
+
+
     def add_widget(self, w):
         self.container.add_widget(w)
 
@@ -27,7 +29,7 @@ class MTInnerWindow(MTScatterWidget):
         self.resize_fbo(w,h)
 
     def resize_fbo(self, w, h, force=False):
-        if abs(w-self.window_fbo.size[0]) > 40 or force:
+        if abs(w-self.window_fbo.size[0]) > 50 or force:
             self.window_fbo = Fbo(size=(w,h))
             self.container.size = (w,h)
             self.needs_redisplay = True
@@ -46,9 +48,10 @@ class MTInnerWindow(MTScatterWidget):
         return (self.new_point.x, self.new_point.y)
 
     def collide_point(self, x,y):
+        scaled_border = int(self.border * (1.0/self.get_scale_factor()))
         local_coords = super(MTInnerWindow,self).to_local(x,y)
-        left, right = -self.border, self.width+self.border*2
-        bottom,top = -self.border,self.height+self.border*2
+        left, right = -scaled_border, self.width+scaled_border*2
+        bottom,top = -scaled_border,self.height+scaled_border*2
         if local_coords[0] > left and local_coords[0] < right \
            and local_coords[1] > bottom and local_coords[1] < top:
             self.needs_redisplay = True
@@ -60,11 +63,12 @@ class MTInnerWindow(MTScatterWidget):
     def draw(self):
         enable_blending()
         glColor4d(*self.color)
-        drawRoundedRectangle((-self.border, -self.border), (self.width+self.border*2, self.height+self.border*2))
+        scaled_border = int(self.border * (1.0/self.get_scale_factor()))
+        drawRoundedRectangle((-scaled_border, -scaled_border), (self.width+scaled_border*2, self.height+scaled_border*2))
         disable_blending()
 
     def on_draw(self):
-        if self.needs_redisplay:
+        if self.needs_redisplay or True:
             self.window_fbo.bind()
             self.container.dispatch_event('on_draw')
             self.window_fbo.release()

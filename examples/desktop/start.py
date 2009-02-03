@@ -1,5 +1,11 @@
 from pymt import *
 
+
+
+plugins = MTPlugins(plugin_paths=['..'])
+plugins.search_plugins()
+
+
 def gesture_add_default(gdb):
     # Circle
     g = gdb.str_to_gesture('eNqFkMtqw0AMRff6EXtTo8doHj+Qbgv+gJImJoSm8eCZQPP3HTlpodDHIJiFdO7VVX/M17c6HKZSL8sEj/c/I/T7TDB2pS7z61Q6yAz9KQv0PxLjOgbZGaeNy/PxXA3zhoVfsCebghyNSo26NoAQNjhwiI45iiJ7j5EVyti9W5usTc6JkGpyrDElTVBetn96EK+RBA43AyHvveNEgYJScgHK4aaNilG5GWBAkabu/xdfc5N+iScvLogX4eiS4qf4Q9uclJAdtmwtFbEzcauxq/NpWrbn3WQx/RoTvz+yK9xXeM7LvL/sqg2H1TS0g7RAjiOLqNhNhg+4A4YT')
@@ -25,9 +31,17 @@ def gesture_add_default(gdb):
     g.id = 'contextmenu'
     gdb.add_gesture(g)
 
+    #X up_letf, bottom_right, top_right, bottom_left
+    g = gdb.str_to_gesture('eNqFkN1qwzAMRu/1IsnNgmVZsv0C6e0gDzC6NoSyrjGJC+vbz3ICY7AfY/gurHMkub2kx3vupnHN92WEw57JQHtOCEOz5mV+G9cGkoX2mgjaH4mhlkFyynHh0ny5ZcVEMf8L9qxVkIJSsVCPAqCB3nQk7FHYeoxSA9ah+dBnhP7JdGKIWVzgLUKA9fX4ZxO0dSeCaetgfUAiQRRvXSQuHaZdzmysY3TsPJIPxv0vr4sjb/KisCImWCGOgUoIf9mJkEOMHGoIerXrHZo8X8fleDuNuqjolGi+n/oP+wwvaZnP91PWYg89dqYITbkuiCm7qbj7BChMhl8=')
+    g.label = 'X'
+    g.id = 'close'
+    gdb.add_gesture(g)
 
-plugins = MTPlugins(plugin_paths=['..'])
-plugins.search_plugins()
+
+
+
+
+
 
 def action_close_menu(menu, w, args):
     menu.parent.remove_widget(menu)
@@ -109,6 +123,10 @@ class MTGestureDetector(MTGestureWidget):
             return
 
         if best.id == 'menu':
+            menu = MTMenu(pos=(x, y), color=(.2, .2, .2, .5))
+            self.parent.add_widget(menu)
+
+        if best.id == 'close':
             menu = MTMenu(pos=(x, y), color=(.2, .2, .2, .5))
             self.parent.add_widget(menu)
 

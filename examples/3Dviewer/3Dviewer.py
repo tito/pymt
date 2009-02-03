@@ -12,11 +12,29 @@ from pyglet.gl import *
 
 class GLWindow(MTWidget):
     """Sets up 3d projection in on_draw function and then calls seld.draw"""
+    def __init__(self, **kargs):
+        super(GLWindow, self).__init__(**kargs)
+        self.needs_redisplay = True
+        self.fbo = Fbo(self.size)
+
+    def on_resize(self, w, h):
+        del self.fbo
+        self.fbo = Fbo(self.size)
+
     def on_draw(self):
-        self.draw3D()
+        if self.needs_redisplay:
+            self.fbo.bind()
+            self.draw3D()
+            self.fbo.release()
+        glColor3f(1,1,1)
+        drawTexturedRectangle(self.fbo.texture, size=self.size)
 
 
     def draw3D(self):
+        glPushAttrib(GL_VIEWPORT_BIT)
+        glViewport(0,0,self.fbo.size[0], self.fbo.size[1])
+        glClearColor(*self.color)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
         glEnable(GL_NORMALIZE)
@@ -41,11 +59,13 @@ class GLWindow(MTWidget):
         glDisable(GL_DEPTH_TEST)
         glDisable(GL_LIGHTING)
         glDisable(GL_LIGHT0)
+        glPopAttrib()
+        self.needs_redisplay = False
 
 
 class ModelViewer(GLWindow):
-    def __init__(self, size=(640,480), pos=(0,0)):
-        GLWindow.__init__(self, size=(640,480), pos=(0,0))
+    def __init__(self, **kargs):
+        GLWindow.__init__(self, **kargs)
         self.touch_position = {}
         try:
             self.model = bunny = OBJ('monkey.obj')
@@ -63,7 +83,7 @@ class ModelViewer(GLWindow):
 
     def draw(self):
         glMultMatrixf(self.rotation_matrix)
-        glRotatef(180.0, 0,0,1)
+        #glRotatef(180.0, 0,0,1)
         glRotatef(90.0, 1,0,0)
         self.model.draw()
 
@@ -82,12 +102,14 @@ class ModelViewer(GLWindow):
         glGetFloatv(GL_MODELVIEW_MATRIX, self.rotation_matrix)
         glPopMatrix()
         self.touch_position[touchID] = (x,y)
+        self.needs_redisplay = True
 
     def on_touch_up(self, touches, touchID, x, y):
         del self.touch_position[touchID]
+        self.needs_redisplay = True
 
 def pymt_plugin_activate(root, ctx):
-    ctx.mv = ModelViewer(size=(200,200))
+    ctx.mv = ModelViewer(size=(root.width,root.height))
     root.add_widget(ctx.mv)
 
 def pymt_plugin_deactivate(root, ctx):

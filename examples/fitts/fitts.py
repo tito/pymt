@@ -14,7 +14,20 @@ import pickle
 import ctypes
 from random import randint
 class Target(MTWidget):
-
+		def __init__(self, **kwargs):
+			kwargs.setdefault('pos', (randint(100,900),randint(100,900)))
+			kwargs.setdefault('size', (100,100))
+			s = randint(100,300)
+			self.zoom = randint(1,3)
+			super(Target, self).__init__(**kwargs)
+			self.rotation = self._rotation = 60.0
+			self.translation = Vector(*self.center)
+			self.label = label = pyglet.text.Label(str(self.zoom),
+				font_name='Times New Roman',
+				font_size=24,
+				x=0, y=0,
+				anchor_x='center', anchor_y='center')
+                
 		def draw(self):
 				glPushMatrix()
 				glTranslatef(self.translation.x, self.translation.y, 0)
@@ -26,30 +39,14 @@ class Target(MTWidget):
 				drawTriangle(pos=(0.0,-0.25), w=0.6, h=0.6)
 				glPopMatrix()
 
-
-		def __init__(self, pos=(0,0), size=(100,100)):
-			s = randint(100,300)
-			pos = (randint(100,900),randint(100,900))
-			self.zoom = randint(1,3)
-			MTWidget.__init__(self, pos, (100.0,100.0))
-			self.rotation = self._rotation = 60.0
-			self.translation = Vector(*self.center)
-			self.label = label = pyglet.text.Label(str(self.zoom),
-				font_name='Times New Roman',
-				font_size=24,
-				x=0, y=0,
-				anchor_x='center', anchor_y='center')
-
-
-
-
-
-
 class MTSourceWidget(MTScatterWidget):
-		def __init__(self, target, pos=(0,0), size=(100,100)):
-			MTScatterWidget.__init__(self, pos=pos, size=(100,100))
+		def __init__(self, **kwargs):
+			kwargs.setdefault('pos', (0,0))
+			kwargs.setdefault('size', (100,100))
+			kwargs.setdefault('target', None)
+			super(MTSourceWidget, self).__init__(**kwargs)
 			self.color = (1.0, 1.0, 1.0, 0.5)
-			self.target = target
+			self.target = kwargs.get('target')
 			self.done = False
 			self.translation = Vector(*self.center)
 			self.log_buffer = []
@@ -93,7 +90,7 @@ class MTSourceWidget(MTScatterWidget):
 c = MTWidget()
 t = Target()
 c.add_widget( t)
-c.add_widget( MTSourceWidget(t,pos=(300,300))  )
+c.add_widget( MTSourceWidget(target=t,pos=(300,300))  )
 #c.add_widget( MTDisplay(c) )
 
 win = MTWindow(fullscreen=True)

@@ -92,8 +92,6 @@ class bloop(MTButton):
             self.touched = True
             self.showing = False
             self.start_animations('fadeout')            
-    
-            
             
     def draw(self):
         glPushMatrix()

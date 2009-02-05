@@ -150,7 +150,7 @@ def drawRectangle(pos=(0,0), size=(1.0,1.0), ):
     glVertex2f(pos[0] + size[0], pos[1])
     glVertex2f(pos[0] + size[0], pos[1] + size[1])
     glVertex2f(pos[0], pos[1] + size[1])
-    glEnd(GL_QUADS)
+    glEnd()
 
 def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0)):
     glEnable(GL_TEXTURE_2D)

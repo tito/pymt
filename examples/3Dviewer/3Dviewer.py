@@ -20,10 +20,13 @@ class GLWindow(MTWidget):
     def on_resize(self, w, h):
         del self.fbo
         self.fbo = Fbo(self.size)
+        self.needs_redisplay = True
 
     def on_draw(self):
         if self.needs_redisplay:
             self.fbo.bind()
+            glClearColor(1,0,0,0)
+            glClear(GL_COLOR_BUFFER_BIT)
             self.draw3D()
             self.fbo.release()
         glColor3f(1,1,1)
@@ -56,6 +59,7 @@ class GLWindow(MTWidget):
         glPopMatrix()
         glMatrixMode(GL_PROJECTION)
         glPopMatrix()
+        glMatrixMode(GL_MODELVIEW)
         glDisable(GL_DEPTH_TEST)
         glDisable(GL_LIGHTING)
         glDisable(GL_LIGHT0)

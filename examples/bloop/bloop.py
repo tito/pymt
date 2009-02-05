@@ -1,3 +1,4 @@
+# PYMT Plugin integration
 IS_PYMT_PLUGIN = True
 PLUGIN_TITLE = 'Blop The Game'
 PLUGIN_AUTHOR = 'Sharath Patali'

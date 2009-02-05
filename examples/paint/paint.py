@@ -71,7 +71,7 @@ def pymt_plugin_activate(root, ctx):
     root.push_handlers(on_resize=resizeCanvas)
 
     root.add_widget(ctx.canvas)
-    ctx.slider = MTColorPicker(size=(130,290), target=[ctx.canvas])
+    ctx.slider = MTColorPicker(size=(130,290), targets=[ctx.canvas])
     root.add_widget(ctx.slider)
 
 def pymt_plugin_deactivate(root, ctx):

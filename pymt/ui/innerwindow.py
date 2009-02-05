@@ -65,7 +65,7 @@ class MTInnerWindow(MTScatterWidget):
         self.container.add_widget(w)
 
     def get_parent_window(self):
-        return self.app_container
+        return self.container
 
     def on_resize(self, w,h):
         if not self.locked:

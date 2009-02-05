@@ -201,6 +201,7 @@ class Loader(object):
                 return
             del self.thread
         self.thread = threading.Thread(target=self._run_load)
+        self.thread.setDaemon(True)
         self.thread.start()
 
     def _run_load(self):

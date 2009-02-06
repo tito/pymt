@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 13.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 14948)  -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.0"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="800px"
+   height="600px"
+   viewBox="0 0 800 600"
+   enable-background="new 0 0 800 600"
+   xml:space="preserve"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   sodipodi:docname="sky.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"><metadata
+   id="metadata2626"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+   id="defs2624"><inkscape:perspective
+     sodipodi:type="inkscape:persp3d"
+     inkscape:vp_x="0 : 300 : 1"
+     inkscape:vp_y="0 : 1000 : 0"
+     inkscape:vp_z="800 : 300 : 1"
+     inkscape:persp3d-origin="400 : 200 : 1"
+     id="perspective2628" /><linearGradient
+     inkscape:collect="always"
+     xlink:href="#SVGID_1_"
+     id="linearGradient3873"
+     x1="124.4375"
+     y1="66.671875"
+     x2="200"
+     y2="66.671875"
+     gradientUnits="userSpaceOnUse" /></defs><sodipodi:namedview
+   inkscape:window-height="726"
+   inkscape:window-width="1224"
+   inkscape:pageshadow="2"
+   inkscape:pageopacity="0.0"
+   guidetolerance="10.0"
+   gridtolerance="10.0"
+   objecttolerance="10.0"
+   borderopacity="1.0"
+   bordercolor="#666666"
+   pagecolor="#ffffff"
+   id="base"
+   showgrid="false"
+   inkscape:zoom="0.675"
+   inkscape:cx="-20.006149"
+   inkscape:cy="296.07157"
+   inkscape:window-x="0"
+   inkscape:window-y="6"
+   inkscape:current-layer="Layer_1" />
+<linearGradient
+   id="SVGID_1_"
+   gradientUnits="userSpaceOnUse"
+   x1="314.2646"
+   y1="91.3613"
+   x2="315.1191"
+   y2="686.2339"
+   gradientTransform="matrix(1 0 0 -1 86.5 690)">
+	<stop
+   offset="0"
+   style="stop-color:#BFDBFF"
+   id="stop2585" />
+	<stop
+   offset="1"
+   style="stop-color:#0055FF"
+   id="stop2587" />
+</linearGradient>
+<rect
+   x="0.337"
+   y="0.354"
+   fill="url(#SVGID_1_)"
+   width="801.709"
+   height="602.565"
+   id="rect2589" />
+<g
+   id="g2591">
+	<polygon
+   fill="#9C8DBD"
+   points="252.382,564.963 160.249,322.186 92.977,292.278 52.029,232.463 -122,545.611  "
+   id="polygon2593" />
+	<polygon
+   fill="#FFFFFF"
+   points="54.954,257.093 82.74,304.593 151.474,323.944 167.561,371.444 69.578,346.814  "
+   id="polygon2595" />
+	<polygon
+   fill="#AA9EC6"
+   points="180.723,397.834 135.387,390.797 180.723,543.852 231.908,556.166  "
+   id="polygon2597" />
+	<polygon
+   fill="#9C8DBD"
+   points="426.41,598.389 610.677,301.074 698.422,309.87 761.307,262.37 890,652.927  "
+   id="polygon2599" />
+	<polygon
+   fill="#8E7DB3"
+   points="92.977,630.056 268.468,258.852 340.127,311.63 468.82,202.556 701.348,667  "
+   id="polygon2601" />
+	<polygon
+   fill="#F2F2FF"
+   points="212.896,360.889 265.543,243.018 337.203,297.556 464.433,192 550.717,348.574 442.497,396.074    335.74,376.722 262.619,417.186  "
+   id="polygon2603" />
+	<polygon
+   fill="#FFFFFF"
+   points="461.509,214.87 531.705,338.018 499.532,360.889 452.734,253.574  "
+   id="polygon2605" />
+	<polygon
+   fill="#FFFFFF"
+   points="272.855,267.648 326.965,308.111 319.653,360.889  "
+   id="polygon2607" />
+	<polygon
+   fill="#9C8DBC"
+   points="498.07,385.518 534.63,369.686 676.486,651.166 594.59,633.574  "
+   id="polygon2609" />
+	<polygon
+   fill="#9C8DBC"
+   points="293.329,420.703 331.353,394.314 344.515,573.759  "
+   id="polygon2611" />
+	<polygon
+   fill="#F2F2FF"
+   points="555.104,374.963 604.826,290.518 698.422,299.314 765.693,246.537 825.652,436.537 699.884,429.5    667.711,396.074  "
+   id="polygon2613" />
+	<polygon
+   fill="#FFFFFF"
+   points="698.422,309.87 761.307,262.37 803.717,422.463 745.22,320.427  "
+   id="polygon2615" />
+	<polygon
+   fill="#AA9EC6"
+   points="771.543,443.574 808.104,443.574 875.375,638.852 827.116,621.259  "
+   id="polygon2617" />
+	<polygon
+   fill="#F2F2FF"
+   points="-2.081,322.186 52.029,220.148 92.977,292.278 163.174,313.389 192.422,390.797 50.566,371.444     "
+   id="polygon2619" />
+</g>
+<polygon
+   fill="#79BF00"
+   points="1.306,507 27.156,494 59.809,506 107.427,500 161.849,511 218.991,492 253.004,511 346.881,502   395.861,515 451.643,496 522.39,516 586.335,495 624.43,512 712.865,514 763.205,501 790.416,519 853,612 -64,617 "
+   id="polygon2621" />
+<path
+   style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+   d="M 274.08102,137.77662 C 276.3491,177.82492 197.24983,174.07085 200.03009,150.39931 C 158.96828,151.23939 143.71874,189.30509 143.71875,205.9375 C 143.71875,223.11083 178.53542,237.03125 221.46875,237.03125 C 252.99792,237.03125 330.53762,265.06913 342.74537,254.27431 C 296.04741,196.65895 358.53126,205.85554 358.53125,193.34375 C 358.53125,179.03264 319.87657,137.77661 274.08102,137.77662 z"
+   id="path2630"
+   sodipodi:nodetypes="ccsscsc" /><path
+   style="opacity:1;fill:url(#linearGradient3873);fill-opacity:1.0;stroke:none;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+   d="M 160.75 23.71875 C 144.80333 23.71875 131.84375 37.639167 131.84375 54.8125 C 131.84375 56.806331 132.04165 58.766394 132.375 60.65625 C 127.40488 65.798432 124.4375 72.238538 124.4375 79.25 C 124.4375 96.014445 141.36542 109.625 162.21875 109.625 C 183.07208 109.625 200.00001 96.014445 200 79.25 C 200 71.079918 195.97261 63.679237 189.4375 58.21875 C 189.55033 57.102234 189.625 55.96117 189.625 54.8125 C 189.625 37.639167 176.69667 23.71875 160.75 23.71875 z "
+   id="path3862" /></svg>

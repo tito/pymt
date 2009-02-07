@@ -1,0 +1,51 @@
+PyMT - Examples
+===============
+
+About
+-----
+
+All examples are made to show you how powerfull PyMT are.
+
+If you want to play fast, just run (it will launch desktop app.) :
+
+  python launcher.py
+
+List of examples
+----------------
+
+  * 3Dviewer	- rotate the head of a 3d monkey
+  * bloop		- game with sound, simple and great !
+  * desktop		- launch some example in inner window, rotate and move them !
+  * fitts		- demonstration of scatter widget
+  * flickthepic	- search photo in flickr, and show them onto wall
+  * flowchart	- construct flow chart in multitouch !
+  * gestures	- a base to detect gesture
+  * paint		- paint on the wall
+  * particles	- magical particles are showed under each touch
+  * pictures	- pictures on wall, move, rotate...
+  * sinemixer	- using ounk+csound, modify sound with slider !
+  * svg			- svg pictures showed in scatter widget
+  * touchtracer - trace each touch path
+  * untangle	- game with circle / line, try to untangle them :)
+  * videoplayer - play video under pymt
+  * vkeyboard	- demonstration of vkeyboard widget
+  * xmlgui		- demonstration of xml widget
+
+If you want to test example, you can :
+
+  cd examples/untangle
+  python untangle.py
+
+
+PyMT Usage
+----------
+
+Some options are available in all pymt applications :
+
+  -h, --help                        prints this mesage
+  -f, --fullscreen                  force run in fullscreen
+  -w, --windowed                    force run in window
+  -p, --port=x                      specify TUIO port (default 3333)
+  -H, --host=xxx.xxx.xxx.xxx        specify TUIO host (default 127.0.0.1)
+  -F, --fps                         show fps in window
+

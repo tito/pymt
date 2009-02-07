@@ -8,11 +8,11 @@ PLUGIN_AUTHOR = 'Thomas hansen'
 PLUGIN_DESCRIPTION = 'Tic Tac Toe game!'
 
 
-class TTTGame(ButtonMatrix):
+class TTTGame(MTButtonMatrix):
 
     def __init__(self,**kwargs):
         super(TTTGame, self).__init__(**kwargs)
-        self.player_images = (MTWidget(),MTSquirtle(filename='../../pymt/data/icons/svg/cross.svg'),MTSquirtle(filename='../../pymt/data/icons/svg/circle.svg') )
+        self.player_images = (MTWidget(),MTSquirtle(filename='../../pymt/data/icons/svg/X.svg'),MTSquirtle(filename='../../pymt/data/icons/svg/Triangle.svg') )
         self.player = 1
         self.done = False
         self.testpoint = (0,0)

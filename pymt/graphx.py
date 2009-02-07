@@ -154,7 +154,7 @@ def drawRectangle(pos=(0,0), size=(1.0,1.0), ):
 
 def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0)):
     glEnable(GL_TEXTURE_2D)
-    glBindTexture(GL_TEXTURE_2D,texture.id)
+    glBindTexture(GL_TEXTURE_2D,texture)
     pos = ( pos[0],pos[1],   pos[0]+size[0],pos[1],   pos[0]+size[0],pos[1]+size[1],  pos[0],pos[1]+size[1] )
     texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
     draw(4, GL_QUADS, ('v2f', pos), ('t2f', texcoords))

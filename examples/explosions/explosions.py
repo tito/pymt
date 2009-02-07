@@ -1,4 +1,4 @@
-IS_PYMT_PLUGIN = True
+IS_PYMT_PLUGIN = False # Activate only when it will work entirely !
 PLUGIN_TITLE = 'Explosions in the Sky'
 PLUGIN_AUTHOR = 'Riley Dutton and Sharath Patali'
 PLUGIN_EMAIL = 'riley@newspringmedia.com and sharath.patali@gmail.com'
@@ -26,15 +26,15 @@ class PlayArea(MTWidget):
         self.required_points = 2
         self.levelended = False
         self.time_left = 80
-        
+
         self.score = ScoreZone(self)
         self.bonusalert = BonusText(self)
         self.notifications = NotificationText(self)
-        
+
         self.add_widget(self.bonusalert)
         self.add_widget(self.score)
         self.add_widget(self.notifications)
-        
+
         self.exploding = False
         self.collisionobjects = [] #Keep track of our objects that can be collided.
         self.blooplength = 8.0 #Set this high for a chain-reaction game, low for the original Bloop experience!
@@ -46,14 +46,14 @@ class PlayArea(MTWidget):
         self.time_left = self.time_left - 1
         if self.time_left < 1:
             self.endLevel()
-        
+
     def prepLevel(self, dt=0, level=0):
         self.score.showing = False
         self.notifications.new_notification(0, text="Level " + str(level))
         pyglet.clock.schedule_once(self.notifications.new_notification, 3.0, text="Get ready!")
         pyglet.clock.schedule_once(self.startLevel, 6.0, level=level)
     def startLevel(self, dt=0, level=0):
-        
+
         self.bloop_points = 1
         self.num_bloops = 1
         self.bonus_points = 0
@@ -97,11 +97,10 @@ class PlayArea(MTWidget):
             else:
                 self.notifications.new_notification(0, text="Level Failed", color="red", speed=5.0)
                 self.level = self.level - 1 #Repeat the level
-    
+
             pyglet.clock.schedule_once(self.prepLevel, 5.0, level=self.level+1)
             self.levelended = True
-        
-        
+
     def generateBloop(self,dt):
         self.num_bloops = self.num_bloops + 1
         self.redpt = random.uniform(0, 1)
@@ -115,7 +114,7 @@ class PlayArea(MTWidget):
 
     def show_num_bloops(self):
         return str(self.num_bloops)
-    
+
     def show_bloop_points(self):
         return str(self.bloop_points)
     def show_bonus_points(self):
@@ -136,7 +135,7 @@ class PlayArea(MTWidget):
         return str(self.min_left) + ":" + str(self.sec_left_str)
 
     def draw(self):
-        
+
         #Check for collisions!
         chainactive = False
         bonus = 0
@@ -162,7 +161,7 @@ class PlayArea(MTWidget):
                     self.bonusalert.new_bonus((self.bonus_points - self.bonus_points_snapshot) + 1, self.bonus_x, self.bonus_y)
                 self.bonus_points_snapshot = self.bonus_points
                 self.exploding = False
-            
+
 
     def on_touch_down(self, touches, touchID, x,y):
         if self.collide_point(x,y):
@@ -171,8 +170,8 @@ class PlayArea(MTWidget):
                 if obj.collide_point(x, y):
                     obj.explode()
                     self.exploding = True
-            
-        
+
+
 class bloop(MTButton):
     def __init__(self,parent=None,music_file=None,score_text=None,pos=(50,50), size=(100,100), scale = 1.0, color=(0.2,0.2,0.2,0.8), expiretime = 2.0, **kargs):
         MTButton.__init__(self, pos=pos, size=size, label="test")
@@ -189,7 +188,7 @@ class bloop(MTButton):
         self.bounding_radius_squared = 0
         self.exploded = False
         self.expiretime = expiretime
-        
+
         self.highlightred = self.red * 1.25
         if(self.highlightred > 1):
             self.highlightred = 1
@@ -201,24 +200,24 @@ class bloop(MTButton):
         self.highlightgreen = self.green * 1.25
         if(self.highlightgreen > 1):
             self.highlightgreen = 1
-        
+
         anim = self.add_animation('fadein','alpha', 1.00, 1.0/60, 0.5)
         self.start_animations('fadein')
         self.showing = True
         self.highlight = False
-        
+
         pyglet.clock.schedule_once(self.BloopHide, self.expiretime)
-        
+
         anim = self.add_animation('fadeout','radius', self.width+10, 1.0/60, 1.0)
         anim = self.add_animation('fadeout','alpha', 0.00, 1.0/60, 0.5)
-        
+
     def explode(self):
         self.parent.bloop_points = self.parent.bloop_points+1
         self.music.play()
         self.highlight = True
         self.red = self.highlightred
         self.green = self.highlightgreen
-        self.blue = self.highlightblue            
+        self.blue = self.highlightblue
         self.showing = False
         self.exploded = True
         self.start_animations('fadeout')
@@ -228,7 +227,7 @@ class bloop(MTButton):
         self.bounding_radius = self.radius
         self.bounding_radius_squared = int(self.radius) ** 2
         #print(self, self.x, self.y, self.bounding_radius, self.bounding_radius_squared)
-            
+
     def draw(self):
         self.update()
         glPushMatrix()
@@ -243,11 +242,11 @@ class bloop(MTButton):
         glColor4f(self.red,self.green,self.blue,self.alpha)
         drawCircle(pos=(self.x + self.width/2,self.y + self.height/2),radius=self.radius)
         glPopMatrix()
-        
+
     def BloopHide(self,dt):
         self.start_animations('fadeout')
         self.showing = False
-               
+
     def on_animation_complete(self, anim):
         if self.showing == False:
             self.parent.remove_widget(self)
@@ -265,7 +264,7 @@ class BonusText(MTWidget):
         self.y = 0
         self.text_scale = 0.3
         self.text_red = 100
-        
+
         anim = self.add_animation('grow', 'text_scale', 1.5, 1.0/30, 0.5)
         anim = self.add_animation('appear', 'alpha', 0.00, 1.0/30, 2.0)
 
@@ -304,7 +303,7 @@ class NotificationText(MTWidget):
         self.x = 100
         self.y = w.height/2
         self.text_scale = 0.3
-        
+
         #anim = self.add_animation('grow', 'text_scale', 2.0, 1.0/30, 3.0)
         #anim = self.add_animation('appear', 'alpha', 0.00, 1.0/30, 3.0)
 
@@ -334,7 +333,7 @@ class NotificationText(MTWidget):
             self.red = 0
             self.green = 255
             self.blue = 0
-        
+
         self.alpha = 1.00
         self.text_scale = 0.3
         self.start_animations('appear')
@@ -368,16 +367,16 @@ def drawLabel(text, pos=(0,0),center=True,alpha = 75,scale=0.3,red=255,green=255
     glScaled(scale,scale,1)
     _standard_label.draw()
     glPopMatrix()
-    
+
 def pymt_plugin_activate(root, ctx):
     ctx.PA = PlayArea(size=(root.width, root.height))
     pyglet.clock.schedule_interval(showfps, 5.0)
     root.add_widget(ctx.PA)
-    
+
 
 def pymt_plugin_deactivate(root, ctx):
    root.remove_widget(ctx.PA)
-    
+
 if __name__ == '__main__':
     w = MTWindow(color=(0,0,0,1), fullscreen=True)
     #print gl_info.get_version()

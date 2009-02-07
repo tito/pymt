@@ -5,8 +5,9 @@ from math import *
 from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widget import MTWidget
 from pymt.ui.simulator import MTSimulator
-from pymt.ui.layout import HVLayout
+from pymt.ui import squirtle
 from pymt.vector import *
+
 
 
 class MTRectangularWidget(MTWidget):
@@ -720,6 +721,23 @@ class MTObjectWidget(MTWidget):
         glVertex2f(0,-0.5*self.height)
         glEnd()
         glPopMatrix()
+        
+class MTSquirtle(MTScatterWidget):
+    def __init__(self, **kwargs):
+        kwargs.setdefault('filename', None)
+        if kwargs.get('filename') is None:
+            raise Exception('No filename given to MTSquirtle')
+        super(MTSquirtle, self).__init__(**kwargs)
+        self.filename = kwargs.get('filename')
+        
+        squirtle.setup_gl()
+        self.svg = squirtle.SVG(self.filename)
+        
+        self.height = self.svg.height
+        self.width = self.svg.width
+    
+    def draw(self):      
+        self.svg.draw(0, 0)
 
 # Register all base widgets
 MTWidgetFactory.register('MTDragableWidget', MTDragableWidget)
@@ -732,3 +750,4 @@ MTWidgetFactory.register('MTSlider', MTSlider)
 MTWidgetFactory.register('MT2DSlider', MT2DSlider)
 MTWidgetFactory.register('MTColorPicker', MTColorPicker)
 MTWidgetFactory.register('MTObjectWidget', MTObjectWidget)
+MTWidgetFactory.register('MTSquirtle', MTObjectWidget)

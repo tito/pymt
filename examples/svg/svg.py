@@ -8,9 +8,9 @@ PLUGIN_AUTHOR = 'Nathanaël Lécaudé'
 PLUGIN_DESCRIPTION = 'This is an example of Scalable Vector Graphics using the Squirtle library for pyglet.'
 
 def pymt_plugin_activate(w, ctx):
-    sun = MTSquirtle(filename = 'squirtle/svgs/sun.svg', pos = (200,200))
-    cloud = MTSquirtle(filename = 'squirtle/svgs/cloud.svg', pos = (50,100))
-    ship = MTSquirtle(filename = 'squirtle/svgs/ship.svg', pos = (280,100))
+    sun = MTSquirtle(filename = '../svg/squirtle/svgs/sun.svg', pos = (200,200))
+    cloud = MTSquirtle(filename = '../svg/squirtle/svgs/cloud.svg', pos = (50,100))
+    ship = MTSquirtle(filename = '../svg/squirtle/svgs/ship.svg', pos = (280,100))
     ctx.c = MTWidget()
     ctx.c.add_widget(sun)
     ctx.c.add_widget(cloud)

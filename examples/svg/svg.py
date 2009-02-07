@@ -1,11 +1,28 @@
+# -*- coding: utf-8 -*-
 from pymt import *
 
-if __name__ == '__main__':
-    w = MTWindow()
+# PYMT Plugin integration
+IS_PYMT_PLUGIN = True
+PLUGIN_TITLE = 'SVG Example'
+PLUGIN_AUTHOR = 'Nathanaël Lécaudé'
+PLUGIN_DESCRIPTION = 'This is an example of Scalable Vector Graphics using the Squirtle library for pyglet.'
+
+def pymt_plugin_activate(w, ctx):
     sun = MTSquirtle(filename = 'squirtle/svgs/sun.svg', pos = (200,200))
     cloud = MTSquirtle(filename = 'squirtle/svgs/cloud.svg', pos = (50,100))
     ship = MTSquirtle(filename = 'squirtle/svgs/ship.svg', pos = (280,100))
-    w.add_widget(sun)
-    w.add_widget(cloud)
-    w.add_widget(ship)
+    ctx.c = MTWidget()
+    ctx.c.add_widget(sun)
+    ctx.c.add_widget(cloud)
+    ctx.c.add_widget(ship)
+    w.add_widget(ctx.c)
+
+def pymt_plugin_deactivate(w, ctx):
+    w.remove_widget(ctx.c)
+
+if __name__ == '__main__':
+    w = MTWindow()
+    ctx = MTContext()
+    pymt_plugin_activate(w, ctx)
     runTouchApp()
+    pymt_plugin_deactivate(w, ctx)

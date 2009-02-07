@@ -73,6 +73,8 @@ class MTInnerWindow(MTScatterWidget):
         for button in self.controlls.children:
             button.scale = 0.5/self.get_scale_factor()
         self.controlls.x, self.controlls.y = self.width/2 - self.controlls.children[0].width*3/2, -self.controlls.children[0].height*1.7
+        for child in self.container.children:
+            child.on_resize(w,h)
 
     def resize_fbo(self, w, h, force=False):
         if abs(w-self.window_fbo.size[0]) > 50 or force:

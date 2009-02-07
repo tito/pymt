@@ -200,7 +200,7 @@ class MTImageButton(MTButton):
         self.width          = self.image.width
         self.height         = self.image.height
         self.image.draw()
-        
+
 
 class MTScatterWidget(MTWidget):
     '''MTScatterWidget is a scatter widget based on MTWidget
@@ -311,7 +311,7 @@ class MTScatterWidget(MTWidget):
         glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
         glPopMatrix()
 
-        
+
         # save new position of the current touch
         self.touches[touchID] = Vector(x,y)
 
@@ -721,7 +721,7 @@ class MTObjectWidget(MTWidget):
         glVertex2f(0,-0.5*self.height)
         glEnd()
         glPopMatrix()
-        
+
 class MTSquirtle(MTScatterWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('filename', None)
@@ -729,15 +729,66 @@ class MTSquirtle(MTScatterWidget):
             raise Exception('No filename given to MTSquirtle')
         super(MTSquirtle, self).__init__(**kwargs)
         self.filename = kwargs.get('filename')
-        
+
         squirtle.setup_gl()
         self.svg = squirtle.SVG(self.filename)
-        
+
         self.height = self.svg.height
         self.width = self.svg.width
-    
-    def draw(self):      
+
+    def draw(self):
         self.svg.draw(0, 0)
+
+
+
+class MTButtonMatrix(MTWidget):
+    """ButtonMatrix is a lightweight Grid of buttons/tiles
+      collide_point returns which matrix element was hit
+      draw_tile(i,j) draws the  tile @ matrix position (i,j)
+    """
+
+    def __init__(self,**kwargs):
+        kwargs.setdefault('matrix_size', (3,3))
+        super(MTButtonMatrix, self).__init__(**kwargs)
+        self.matrix_size = kwargs.get('matrix_size')
+        self.matrix = [[0 for i in range(self.matrix_size[0])] for j in range(self.matrix_size[1])]
+        self.border = 5
+        self.matrix_size = kwargs.get('matrix_size')
+
+
+    def draw_tile(self, i, j):
+        if self.matrix[i][j] == 0:
+            glColor4f(1,1,0,1)
+        if self.matrix[i][j] == 'down':
+            glColor4f(0,0,1,1)
+
+        glPushMatrix()
+        glTranslatef(self.width/self.matrix_size[0]*i, self.height/self.matrix_size[1]*j,0)
+        s =  (self.width/self.matrix_size[0]-self.border,self.height/self.matrix_size[1]-self.border)
+        drawRectangle(size=s)
+        glPopMatrix()
+
+
+    def draw(self):
+        for i in range (self.matrix_size[0]):
+            for j in range (self.matrix_size[1]):
+                self.draw_tile(i,j)
+
+
+    def collide_point(self, x, y):
+        i = x/(self.width/self.matrix_size[0])
+        j = y/(self.height/self.matrix_size[1])
+        return (i,j)
+
+    def on_touch_down(self, touches, touchID, x, y):
+        i,j = self.collide_point(x,y)
+        if self.matrix[i][j] == 'down':
+            self.matrix[i][j] = 0
+        else:
+            self.matrix[i][j] = 'down'
+
+
+
 
 # Register all base widgets
 MTWidgetFactory.register('MTDragableWidget', MTDragableWidget)

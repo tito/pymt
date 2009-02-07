@@ -6,6 +6,7 @@ from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widget import MTWidget
 from pymt.ui.simulator import MTSimulator
 from pymt.ui import squirtle
+from pymt.ui.layout import HVLayout
 from pymt.vector import *
 
 
@@ -200,6 +201,26 @@ class MTImageButton(MTButton):
         self.width          = self.image.width
         self.height         = self.image.height
         self.image.draw()
+        
+class MTButtonMatrix(MTWidget):
+    def __init__(self, **kwargs):
+        kwargs.setdefault('matrix_size', (3,3))
+        kwargs.setdefault('spacing', 1)
+        super(MTButtonMatrix, self).__init__(**kwargs)
+        self.matrix_size = kwargs.get('matrix_size')
+        self.spacing = kwargs.get('spacing')
+        self.buttons = []
+
+        vlayout = HVLayout(alignment = 'vertical', spacing = self.spacing)
+        for l in range(self.matrix_size[1]):
+            hlayout = HVLayout(spacing = self.spacing)
+            for btn in range(self.matrix_size[0]):
+                b = MTToggleButton(size = (20,20), label = '')
+                hlayout.add_widget(b)
+                self.buttons.append(b)
+            vlayout.add_widget(hlayout)
+        self.add_widget(vlayout)
+
 
 
 class MTScatterWidget(MTWidget):
@@ -744,6 +765,7 @@ MTWidgetFactory.register('MTDragableWidget', MTDragableWidget)
 MTWidgetFactory.register('MTButton', MTButton)
 MTWidgetFactory.register('MTToggleButton', MTToggleButton)
 MTWidgetFactory.register('MTImageButton', MTImageButton)
+MTWidgetFactory.register('MTButtonMatrix', MTImageButton)
 MTWidgetFactory.register('MTScatterWidget', MTScatterWidget)
 MTWidgetFactory.register('MTScatterImage', MTScatterImage)
 MTWidgetFactory.register('MTSlider', MTSlider)

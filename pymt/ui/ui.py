@@ -785,9 +785,9 @@ class MTSquirtle(MTWidget):
             self.svg = squirtle.SVG(self.filename)
         except Exception, e:
             try:
-                svgpath = os.path.dirname(__file__) + '/../data/icons/svg/'
+                svgpath = os.path.normpath(os.path.dirname(__file__) + '/../data/icons/svg/')
                 print "laod failed.  trying:", svgpath+self.filename
-                self.svg = squirtle.SVG(svgpath+self.filename)
+                self.svg = squirtle.SVG(os.path.join(svgpath, self.filename))
             except Exception, e:
                 print "Couldn't load file ", self.filename, e
 

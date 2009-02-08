@@ -25,7 +25,7 @@ class FlowchartObject(MTScatterWidget):
         self._hide_children = False
         self.hidden_children = []
 
-        self.add_bttn = SVGButton( filename='shuffle.svg', pos=(self.center[0]-15, -15), size=(30,30))
+        self.add_bttn = SVGButton( filename='transport-shuffle.svg', pos=(self.center[0]-15, -15), size=(30,30))
         self.add_bttn.push_handlers(on_press=self.add_new_child)
         self.add_widget(self.add_bttn)
 

@@ -214,19 +214,22 @@ class MTScatterWidget(MTWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('draw_children', True)
         kwargs.setdefault('rotation', 0)
+        kwargs.setdefault('translation', (0,0))
+        kwargs.setdefault('scale', 1.0)
 
         super(MTScatterWidget, self).__init__(**kwargs)
         self.touches = {}
         self.transform_mat = (GLfloat * 16)()
         self.draw_children = kwargs.get('draw_children')
-        self.init_transform(self.pos, kwargs.get('rotation'))
+        self.init_transform(kwargs.get('translation'), kwargs.get('rotation'), kwargs.get('scale'))
 
 
-    def init_transform(self, pos, angle):
+    def init_transform(self, pos, angle, scale):
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLoadIdentity()
         glTranslated(pos[0], pos[1], 0)
+        glScalef(scale, scale, 1)
         glRotated(angle,0,0,1)
         glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
         glPopMatrix()
@@ -242,6 +245,10 @@ class MTScatterWidget(MTWidget):
         for w in self.children:
             w.dispatch_event('on_draw')
         glPopMatrix()
+
+    def to_parent(self, x,y):
+        self.new_point = matrix_mult(self.transform_mat, (x,y,0,1))
+        return (self.new_point.x, self.new_point.y)
 
     def to_local(self,x,y):
         self.new_point = matrix_inv_mult(self.transform_mat, (x,y,0,1))
@@ -322,14 +329,14 @@ class MTScatterWidget(MTWidget):
         return dist_trans
 
     def on_touch_down(self, touches, touchID, x,y):
-        # if the touch isnt on teh widget we do nothing
-        if not self.collide_point(x,y):
-            return False
-
         # let the child widgets handle the event if they want
         lx,ly = self.to_local(x,y)
         if super(MTScatterWidget, self).on_touch_down(touches, touchID, lx, ly):
             return True
+
+        # if the touch isnt on teh widget we do nothing
+        if not self.collide_point(x,y):
+            return False
 
         # if teh children didnt handle it, we bring to front & keep track of touches for rotate/scale/zoom action
         self.bring_to_front()
@@ -337,6 +344,12 @@ class MTScatterWidget(MTWidget):
         return True
 
     def on_touch_move(self, touches, touchID, x,y):
+
+        #let the child widgets handle the event if they want an we did not
+        lx,ly = self.to_local(x,y)
+        if MTWidget.on_touch_move(self, touches, touchID, lx, ly):
+            return True
+
         # if the touch isnt on teh widget we do nothing
         if not (self.collide_point(x,y) or touchID in self.touches):
             return False
@@ -346,11 +359,6 @@ class MTScatterWidget(MTWidget):
             self.rotate_zoom_move(touchID, x, y)
             self.dispatch_event('on_resize', int(self.width*self.get_scale_factor()), int(self.height*self.get_scale_factor()))
             self.dispatch_event('on_move', self.x, self.y)
-            return True
-
-        #let the child widgets handle the event if they want an we did not
-        lx,ly = self.to_local(x,y)
-        if MTWidget.on_touch_move(self, touches, touchID, lx, ly):
             return True
 
         #stop porpagation if its within our bounds
@@ -368,6 +376,46 @@ class MTScatterWidget(MTWidget):
 
         #stop porpagating if its within our bounds
         if  self.collide_point(x,y):
+            return True
+
+
+class MTScatterPlane(MTScatterWidget):
+    """A Plane that transforms for zoom/rotate/pan.
+         if none of the childwidgets handles the input (the background is touched), all of tehm are transformed together"""
+    def find_second_touch(self, touchID):
+        for tID in self.touches.keys():
+            if  tID!=touchID:
+                return tID
+        return None
+
+    def draw(self):
+        pass
+
+    def on_touch_down(self, touches, touchID, x,y):
+        lx,ly = self.to_local(x,y)
+        if super(MTScatterWidget, self).on_touch_down(touches, touchID, lx, ly):
+            return True
+
+        self.bring_to_front()
+        self.touches[touchID] = Vector(x,y)
+        return True
+
+    def on_touch_move(self, touches, touchID, x,y):
+        if touchID in self.touches:
+            self.rotate_zoom_move(touchID, x, y)
+            self.dispatch_event('on_resize', int(self.width*self.get_scale_factor()), int(self.height*self.get_scale_factor()))
+            self.dispatch_event('on_move', self.x, self.y)
+            return True
+        lx,ly = self.to_local(x,y)
+        if MTWidget.on_touch_move(self, touches, touchID, lx, ly):
+            return True
+
+
+    def on_touch_up(self, touches, touchID, x,y):
+        lx,ly = self.to_local(x,y)
+        MTWidget.on_touch_up(self, touches, touchID, lx, ly)
+        if self.touches.has_key(touchID):
+            del self.touches[touchID]
             return True
 
 
@@ -722,7 +770,7 @@ class MTObjectWidget(MTWidget):
         glEnd()
         glPopMatrix()
 
-class MTSquirtle(MTScatterWidget):
+class MTSquirtle(MTWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('filename', None)
         if kwargs.get('filename') is None:
@@ -731,7 +779,17 @@ class MTSquirtle(MTScatterWidget):
         self.filename = kwargs.get('filename')
 
         squirtle.setup_gl()
-        self.svg = squirtle.SVG(self.filename)
+
+        try:
+            print "laoding", self.filename
+            self.svg = squirtle.SVG(self.filename)
+        except Exception, e:
+            try:
+                svgpath = os.path.dirname(__file__) + '/../data/icons/svg/'
+                print "laod failed.  trying:", svgpath+self.filename
+                self.svg = squirtle.SVG(svgpath+self.filename)
+            except Exception, e:
+                print "Couldn't load file ", self.filename, e
 
         self.height = self.svg.height
         self.width = self.svg.width
@@ -739,7 +797,16 @@ class MTSquirtle(MTScatterWidget):
     def draw(self):
         self.svg.draw(0, 0)
 
+class MTScatterSquirtle(MTScatterWidget):
+    def __init__(self, **kwargs):
+        kwargs.setdefault('filename', None)
+        if kwargs.get('filename') is None:
+            raise Exception('No filename given to MTSquirtle')
+        super(MTScatterSquirtle, self).__init__(**kwargs)
+        self.squirt = MTSquirtle(filename=kwargs.get('filename'))
 
+    def draw(self):
+        self.squirt.draw()
 
 class MTButtonMatrix(MTWidget):
     """ButtonMatrix is a lightweight Grid of buttons/tiles

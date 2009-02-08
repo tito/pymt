@@ -98,7 +98,7 @@ class ShadowSurface(MTWidget):
     #this function draws the shadows of child widgets into the framebuffer texture
     def drawShadowsToTexture(self):
         self.fbo.bind()              #bind the fbo...all openGl drawing calls now go into the fbo texture instead of teh screen
-        glClearColor(*self.color)    #set clear color
+        glClearColor(1,1,1,1)    #set clear color
         glClear(GL_COLOR_BUFFER_BIT) #clear the color of the fbo texture
         #self.bg_image.draw()
         self.drawing_shadows = True #this is used in draw, while we are drawing shadows, we dont want to draw ourselves...but MTWidget.on_draw(self) will draw this and child widgets
@@ -110,7 +110,7 @@ class ShadowSurface(MTWidget):
         self.fbo.release()
 
         self.blurShadowTexture()
-
+        self.blurShadowTexture()
 
     #this function blurrs the shadow texture..first horizontally by drawing it into fbo2 using gaussioan shader with direction=0
     # then vertically by drawing the result from fbo2 into fbo1 using gaussian shader with dir=1..the end result is a nice
@@ -121,7 +121,7 @@ class ShadowSurface(MTWidget):
         self.blur_shader.use()
         self.blur_shader['size_x'] = float(self.width)
         self.blur_shader['size_y'] = float(self.height)
-        self.blur_shader['kernel_size'] = 15.0
+        self.blur_shader['kernel_size'] = 3.0
         self.blur_shader['direction'] = 0.0
         drawTexturedRectangle(self.fbo.texture, (0,0),(self.width,self.height))
         self.blur_shader.stop()
@@ -132,7 +132,7 @@ class ShadowSurface(MTWidget):
         self.blur_shader.use()
         self.blur_shader['size_x'] = float(self.width)
         self.blur_shader['size_y'] = float(self.height)
-        self.blur_shader['kernel_size'] = 15.0
+        self.blur_shader['kernel_size'] = 3.0
         self.blur_shader['direction'] = 1.0
         drawTexturedRectangle(self.fbo2.texture, (0,0),(self.width,self.height))
         self.blur_shader.stop()

@@ -135,7 +135,7 @@ def drawCircle(pos=(0,0), radius=1.0):
     gluDisk(gluNewQuadric(), 0, 1, 32,1)
     glPopMatrix()
 
-def drawTriangle(points ):
+def drawTrianglePoints(points ):
     draw(3, GL_TRIANGLES, ('v2f', points))
 
 def drawTriangle(pos, w, h):

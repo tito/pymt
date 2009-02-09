@@ -772,7 +772,8 @@ class MTObjectWidget(MTWidget):
         glVertex2f(0,-0.5*self.height)
         glEnd()
         glPopMatrix()
-        
+
+
 class MTSquirtle(MTWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('filename', None)
@@ -780,9 +781,9 @@ class MTSquirtle(MTWidget):
             raise Exception('No filename given to MTSquirtle')
         super(MTSquirtle, self).__init__(**kwargs)
         self.filename = kwargs.get('filename')
-        
+
         squirtle.setup_gl()
-        
+
         try:
             print "loading", self.filename
             self.svg = squirtle.SVG(self.filename)
@@ -796,9 +797,10 @@ class MTSquirtle(MTWidget):
 
         self.height = self.svg.height
         self.width = self.svg.width
-    
-    def draw(self):      
+
+    def draw(self):
         self.svg.draw(0, 0)
+
 
 class MTScatterSquirtle(MTScatterWidget):
     def __init__(self, **kwargs):

@@ -35,7 +35,6 @@ class FlowchartObject(MTScatterWidget):
         self.hide_bttn2 = SVGButton(filename='plus.svg', pos=(0, self.height-20), size=(20,20))
         self.hide_bttn2.push_handlers(on_press=self.toggle_children)
 
-
         self.del_bttn = SVGButton(filename='power.svg', pos=(self.width-20, self.height-20), size=(20,20))
         self.del_bttn.push_handlers(on_press=self.remove)
         self.add_widget(self.del_bttn)
@@ -67,9 +66,10 @@ class FlowchartObject(MTScatterWidget):
             self.add_widget(self.hide_bttn2)
 
     def add_new_child(self, touchID, x,y):
-        child = FlowchartObject(translation=(x-20,y-20), scale = 0.4)
+        child = FlowchartObject(translation=(x-20,y-20), scale = 0.5)
         child.on_touch_down([], touchID, x,y)
         self.add_widget(child)
+
 
     def remove(self, touchID, x,y):
         self.parent.remove_widget(self)
@@ -82,8 +82,7 @@ class FlowchartObject(MTScatterWidget):
             offset = Vector.rotate(Vector(20,0),-angle)
             drawTrianglePoints((x1-offset.x,y1-offset.y,x1+offset.x,y1+offset.y,x2,y2))
 
-
-    def draw(self):
+    def draw_connections(self):
         offset = Vector(0,0)
         for child in self.children:
             if  isinstance(child, FlowchartObject):
@@ -93,6 +92,9 @@ class FlowchartObject(MTScatterWidget):
             if  isinstance(child, FlowchartObject):
                 glColor4f(1,0.5,0.5,0.1)
                 self.draw_connection(child)
+
+    def draw(self):
+        self.draw_connections()
         self.svg.draw()
 
 

@@ -221,7 +221,10 @@ class MTScatterWidget(MTWidget):
         self.touches = {}
         self.transform_mat = (GLfloat * 16)()
         self.draw_children = kwargs.get('draw_children')
-        self.init_transform(kwargs.get('translation'), kwargs.get('rotation'), kwargs.get('scale'))
+        if kwargs.get('translation')[0] != 0 or kwargs.get('translation')[1] != 0:
+            self.init_transform(kwargs.get('translation'), kwargs.get('rotation'), kwargs.get('scale'))
+        else:
+            self.init_transform(self.pos, kwargs.get('rotation'), kwargs.get('scale'))
 
 
     def init_transform(self, pos, angle, scale):

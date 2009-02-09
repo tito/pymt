@@ -12,7 +12,7 @@ class TTTGame(MTButtonMatrix):
 
     def __init__(self,**kwargs):
         super(TTTGame, self).__init__(**kwargs)
-        self.player_images = (MTWidget(),MTSquirtle(filename='cross.svg'),MTSquirtle(filename='triangle.svg') )
+        self.player_images = (MTWidget(),MTSquirtle(filename='cross.svg'),MTSquirtle(filename='circle.svg') )
         self.player = 1
         self.done = False
         self.testpoint = (0,0)

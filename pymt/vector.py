@@ -116,6 +116,11 @@ class Vector(object):
         return angle
 
     @staticmethod
+    def rotate(v1, angle):
+        angle = math.radians(angle)
+        return Vector((v1.x * math.cos(angle)) - (v1.y * math.sin(angle)), (v1.y * math.cos(angle)) + (v1.x * math.sin(angle)))
+
+    @staticmethod
     def line_intersection(v1,v2, v3, v4):
         '''
         Finds the intersection point between the lines (1)v1->v2 and (2)v3->v4

@@ -784,12 +784,12 @@ class MTSquirtle(MTWidget):
         squirtle.setup_gl()
 
         try:
-            print "laoding", self.filename
+            print "loading", self.filename
             self.svg = squirtle.SVG(self.filename)
         except Exception, e:
             try:
                 svgpath = os.path.normpath(os.path.dirname(__file__) + '/../data/icons/svg/')
-                print "laod failed.  trying:", svgpath+self.filename
+                print "load failed.  trying:", svgpath+self.filename
                 self.svg = squirtle.SVG(os.path.join(svgpath, self.filename))
             except Exception, e:
                 print "Couldn't load file ", self.filename, e
@@ -807,7 +807,8 @@ class MTScatterSquirtle(MTScatterWidget):
             raise Exception('No filename given to MTSquirtle')
         super(MTScatterSquirtle, self).__init__(**kwargs)
         self.squirt = MTSquirtle(filename=kwargs.get('filename'))
-
+        self.height = self.squirt.svg.height
+        self.width = self.squirt.svg.width
     def draw(self):
         self.squirt.draw()
 

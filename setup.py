@@ -13,6 +13,5 @@ setup (name='pymt',
       license='GPL',
       packages=['pymt', 'pymt.osc', 'pymt.ui'],
       package_dir={'pymt': 'pymt'},
-      package_data={'pymt': ['data/icons/*.png'],
-                    'pymt': ['data/icons/svg/*.svg']}
+      package_data={'pymt': ['data/icons/svg/*.svg', 'data/icons/*.png']}
 )

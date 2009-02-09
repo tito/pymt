@@ -12,7 +12,7 @@ setup (name='pymt',
       url='http://code.google.com/p/pymt/',
       license='GPL',
       packages=['pymt', 'pymt.osc', 'pymt.ui'],
-      data_files=[(pylib+'/pymt/data/icons', ['pymt/data/icons/videoWidgetMute.png', 'pymt/data/icons/videoWidgetPause.png', 'pymt/data/icons/videoWidgetPlay.png',
-                'pymt/data/icons/pause.png', 'pymt/data/icons/fullscreen.png', 'pymt/data/icons/stop.png'
-                 ])]
+      package_dir={'pymt': 'pymt'},
+      package_data={'pymt': ['data/icons/*.png'],
+                    'pymt': ['data/icons/svg/*.svg']}
 )

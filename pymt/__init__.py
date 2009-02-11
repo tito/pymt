@@ -32,10 +32,10 @@ def curry(fn, *cargs, **ckwargs):
 # PYMT Options management
 # Can be overrided in command line
 if not os.path.basename(sys.argv[0]).startswith('sphinx'):
-    options = {'host': '127.0.0.1', 'port': 3333}
+    options = {'host': '127.0.0.1', 'port': 3333, 'eventstats': False}
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwF',
-            ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps'])
+        opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwFe',
+            ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps', 'event'])
         for opt, arg in opts:
             if opt in ['-h', '--help']:
                 pymt_usage()
@@ -50,6 +50,8 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
                 options['fullscreen'] = False
             elif opt in ['-F', '--fps']:
                 options['show_fps'] = True
+            elif opt in ['-e', '--eventstats']:
+                options['eventstats'] = True
 
     except getopt.GetoptError, err:
         print str(err), sys.argv, __name__

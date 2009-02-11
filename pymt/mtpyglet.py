@@ -270,6 +270,10 @@ def pymt_usage():
 def runTouchApp():
     '''Static main function that starts the application loop'''
 
+    # Check if we show event stats
+    if pymt.options.get('eventstats'):
+        pymt.widget.event_stats_activate()
+
     host = pymt.options.get('host')
     port = pymt.options.get('port')
     print 'Notice: listening for TUIO on port', port, 'of host', host
@@ -280,6 +284,10 @@ def runTouchApp():
     except:
         evloop.close()
         raise
+
+    # Show event stats
+    if pymt.options.get('eventstats'):
+        pymt.widget.event_stats_print()
 
 #a very simple test
 if __name__ == '__main__':

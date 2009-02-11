@@ -15,13 +15,28 @@ from pymt.vector import Vector
 
 
 
-
 _id_2_widget = {}
 
 def getWidgetByID(id):
     global _id_2_widget
     if _id_2_widget.has_key(id):
         return _id_2_widget[id]
+
+_event_stats = {}
+_event_stats_activate = False
+
+def event_stats_activate(activate=True):
+    '''Activate or deactivate debug info on event'''
+    global _event_stats_activate
+    _event_stats_activate = activate
+
+def event_stats_print():
+    '''Print actual event stats'''
+    print '[ Event stats ] ---------------------------------'
+    global _event_stats
+    for k in _event_stats:
+        print '| %6d | %s' % (_event_stats[k], k)
+    print '-------------------------------------------------'
 
 class MTWidget(pyglet.event.EventDispatcher):
     '''Global base for any multitouch widget.
@@ -151,11 +166,10 @@ class MTWidget(pyglet.event.EventDispatcher):
 
         '''
         #assert event_type in self.event_types
-        if event_type not in self.event_types:
-            return
+        if event_type not in self.event_types: return
 
         # Search handler stack for matching event handlers
-        for frame in list(self._event_stack):
+        for frame in self._event_stack:
             handler = frame.get(event_type, None)
             if handler:
                 try:
@@ -168,6 +182,16 @@ class MTWidget(pyglet.event.EventDispatcher):
         # Check instance for an event handler
         if hasattr(self, event_type):
             try:
+                # Statistics
+                global _event_stats_activate
+                if _event_stats_activate:
+                    global _event_stats
+                    if not _event_stats.has_key(event_type):
+                        _event_stats[event_type] = 1
+                    else:
+                        _event_stats[event_type] = _event_stats[event_type] + 1
+
+                # Call event
                 if getattr(self, event_type)(*args):
                     return True
             except TypeError:
@@ -236,7 +260,6 @@ class MTWidget(pyglet.event.EventDispatcher):
         self.draw()
         for w in self.children:
             w.dispatch_event('on_draw')
-
 
     def draw(self):
         pass

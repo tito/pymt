@@ -208,12 +208,16 @@ class MTScatterWidget(MTWidget):
     :Parameters:
         `draw_children` : bool, default is True
             Indicate if children will be draw, or not
-        `rotation` : float, default to 0
-            Set rotation of widget
+        `rotation` : float, default to 0.0
+            Set initial rotation of widget
+        `translation` : list, default to (0,0)
+            Set the initial translation of widget
+        `scale` : float, default to 1.0
+            Set the initial scaling of widget
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('draw_children', True)
-        kwargs.setdefault('rotation', 0)
+        kwargs.setdefault('rotation', 0.0)
         kwargs.setdefault('translation', (0,0))
         kwargs.setdefault('scale', 1.0)
 
@@ -321,7 +325,6 @@ class MTScatterWidget(MTWidget):
         glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
         glPopMatrix()
 
-
         # save new position of the current touch
         self.touches[touchID] = Vector(x,y)
 
@@ -332,26 +335,21 @@ class MTScatterWidget(MTWidget):
         return dist_trans
 
     def on_touch_down(self, touches, touchID, x,y):
+        # if the touch isnt on teh widget we do nothing
+        if not self.collide_point(x,y):
+            return False
+
         # let the child widgets handle the event if they want
         lx,ly = self.to_local(x,y)
         if super(MTScatterWidget, self).on_touch_down(touches, touchID, lx, ly):
             return True
-
-        # if the touch isnt on teh widget we do nothing
-        if not self.collide_point(x,y):
-            return False
 
         # if teh children didnt handle it, we bring to front & keep track of touches for rotate/scale/zoom action
         self.bring_to_front()
         self.touches[touchID] = Vector(x,y)
         return True
 
-    def on_touch_move(self, touches, touchID, x,y):
-
-        #let the child widgets handle the event if they want an we did not
-        lx,ly = self.to_local(x,y)
-        if MTWidget.on_touch_move(self, touches, touchID, lx, ly):
-            return True
+    def on_touch_move(self, touches, touchID, x, y):
 
         # if the touch isnt on teh widget we do nothing
         if not (self.collide_point(x,y) or touchID in self.touches):
@@ -360,8 +358,13 @@ class MTScatterWidget(MTWidget):
         #rotate/scale/translate
         if touchID in self.touches:
             self.rotate_zoom_move(touchID, x, y)
-            self.dispatch_event('on_resize', int(self.width*self.get_scale_factor()), int(self.height*self.get_scale_factor()))
-            self.dispatch_event('on_move', self.x, self.y)
+            #self.dispatch_event('on_resize', int(self.width*self.get_scale_factor()), int(self.height*self.get_scale_factor()))
+            #self.dispatch_event('on_move', self.x, self.y)
+            return True
+
+        #let the child widgets handle the event if they want an we did not
+        lx, ly = self.to_local(x, y)
+        if MTWidget.on_touch_move(self, touches, touchID, lx, ly):
             return True
 
         #stop porpagation if its within our bounds
@@ -378,7 +381,7 @@ class MTScatterWidget(MTWidget):
             del self.touches[touchID]
 
         #stop porpagating if its within our bounds
-        if  self.collide_point(x,y):
+        if self.collide_point(x,y):
             return True
 
 

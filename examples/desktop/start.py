@@ -137,7 +137,7 @@ if __name__ == '__main__':
     gesture_add_default(gdb)
 
     # Create background window
-    w = MTWallpaperWindow(wallpaper='wallpaper.jpg', fullscreen=False)
+    w = MTWallpaperWindow(wallpaper='wallpaper.jpg', fullscreen=True)
     g = MTGestureDetector(gdb)
     w.add_widget(g)
 

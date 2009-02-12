@@ -190,15 +190,13 @@ class MTImageButton(MTButton):
         self.image.y        = self.y
         self.scale          = kwargs.get('scale')
         self.image.scale    = self.scale
-        self.width          = self.image.width
-        self.height         = self.image.height
+        self.size           = (self.image.width, self.image.height)
 
     def draw(self):
         self.image.x        = self.x
         self.image.y        = self.y
         self.image.scale    = self.scale
-        self.width          = self.image.width
-        self.height         = self.image.height
+        self.size           = (self.image.width, self.image.height)
         self.image.draw()
 
 
@@ -806,8 +804,7 @@ class MTSvg(MTWidget):
             except Exception, e:
                 print "Couldn't load file ", self.filename, e
 
-        self.height = self.svg.height
-        self.width = self.svg.width
+        self.size = (self.svg.width, self.svg.height)
 
     def draw(self):
         self.svg.draw(self.x, self.y)
@@ -826,8 +823,7 @@ class MTScatterSvg(MTScatterWidget):
             raise Exception('No filename given to MTSvg')
         super(MTScatterSvg, self).__init__(**kwargs)
         self.squirt = MTSvg(filename=kwargs.get('filename'))
-        self.height = self.squirt.svg.height
-        self.width = self.squirt.svg.width
+        self.size = (self.squirt.svg.width, self.squirt.svg.height)
 
     def draw(self):
         self.squirt.draw()

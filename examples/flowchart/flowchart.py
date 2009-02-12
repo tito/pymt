@@ -7,7 +7,7 @@ class SVGButton(MTButton):
         kwargs.setdefault('filename', None)
         super(SVGButton,self).__init__(**kwargs)
         filename = kwargs.get('filename')
-        self.svg = MTSquirtle(filename=filename)
+        self.svg = MTSvg(filename=filename)
 
     def draw(self):
         glPushMatrix()
@@ -20,7 +20,7 @@ class SVGButton(MTButton):
 
 class FlowchartObject(MTScatterWidget):
     def init(self):
-        self.svg = MTSquirtle(filename='box.svg')
+        self.svg = MTSvg(filename='box.svg')
         self.size = (self.svg.width, self.svg.height)
         self._hide_children = False
         self.hidden_children = []

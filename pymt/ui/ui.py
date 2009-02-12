@@ -386,8 +386,8 @@ class MTScatterWidget(MTWidget):
 
 
 class MTScatterPlane(MTScatterWidget):
-    """A Plane that transforms for zoom/rotate/pan.
-         if none of the childwidgets handles the input (the background is touched), all of tehm are transformed together"""
+    '''A Plane that transforms for zoom/rotate/pan.
+         if none of the childwidgets handles the input (the background is touched), all of tehm are transformed together'''
     def find_second_touch(self, touchID):
         for tID in self.touches.keys():
             if  tID!=touchID:
@@ -776,16 +776,25 @@ class MTObjectWidget(MTWidget):
         glEnd()
         glPopMatrix()
 
-class MTSquirtle(MTWidget):
+class MTSvg(MTWidget):
+    '''Render an svg image
+
+    :Parameters:
+        `filename` : str
+            Filename of image
+    '''
     def __init__(self, **kwargs):
         kwargs.setdefault('filename', None)
         if kwargs.get('filename') is None:
-            raise Exception('No filename given to MTSquirtle')
-        super(MTSquirtle, self).__init__(**kwargs)
+            raise Exception('No filename given to MTSvg')
+        super(MTSvg, self).__init__(**kwargs)
         self.filename = kwargs.get('filename')
 
+		# TODO this code is not ok, he change some attribute in gl
+		# this impact is for all app, not only for squirtle.
         squirtle.setup_gl()
 
+		# TODO remove this ugly code, improve loader for this
         try:
             print "loading", self.filename
             self.svg = squirtle.SVG(self.filename)
@@ -801,25 +810,34 @@ class MTSquirtle(MTWidget):
         self.width = self.svg.width
 
     def draw(self):
-        self.svg.draw(0, 0)
+        self.svg.draw(self.x, self.y)
 
-class MTScatterSquirtle(MTScatterWidget):
+
+class MTScatterSvg(MTScatterWidget):
+    '''Render an svg image into a scatter widget
+
+    :Parameters:
+        `filename` : str
+            Filename of image
+    '''
     def __init__(self, **kwargs):
         kwargs.setdefault('filename', None)
         if kwargs.get('filename') is None:
-            raise Exception('No filename given to MTSquirtle')
-        super(MTScatterSquirtle, self).__init__(**kwargs)
-        self.squirt = MTSquirtle(filename=kwargs.get('filename'))
+            raise Exception('No filename given to MTSvg')
+        super(MTScatterSvg, self).__init__(**kwargs)
+        self.squirt = MTSvg(filename=kwargs.get('filename'))
         self.height = self.squirt.svg.height
         self.width = self.squirt.svg.width
+
     def draw(self):
         self.squirt.draw()
 
+
 class MTButtonMatrix(MTWidget):
-    """ButtonMatrix is a lightweight Grid of buttons/tiles
+    '''ButtonMatrix is a lightweight Grid of buttons/tiles
       collide_point returns which matrix element was hit
       draw_tile(i,j) draws the  tile @ matrix position (i,j)
-    """
+    '''
 
     def __init__(self,**kwargs):
         kwargs.setdefault('matrix_size', (3,3))
@@ -875,4 +893,5 @@ MTWidgetFactory.register('MTSlider', MTSlider)
 MTWidgetFactory.register('MT2DSlider', MT2DSlider)
 MTWidgetFactory.register('MTColorPicker', MTColorPicker)
 MTWidgetFactory.register('MTObjectWidget', MTObjectWidget)
-MTWidgetFactory.register('MTSquirtle', MTSquirtle)
+MTWidgetFactory.register('MTScatterSvg', MTScatterSvg)
+MTWidgetFactory.register('MTSvg', MTSvg)

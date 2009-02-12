@@ -228,7 +228,6 @@ class MTScatterWidget(MTWidget):
         else:
             self.init_transform(self.pos, kwargs.get('rotation'), kwargs.get('scale'))
 
-
     def init_transform(self, pos, angle, scale):
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()

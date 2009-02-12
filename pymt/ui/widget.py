@@ -121,8 +121,8 @@ class MTWidget(pyglet.event.EventDispatcher):
     def _get_center(self):
         return (self._x + self._width/2, self._y+self._height/2)
     def _set_center(self, center):
-        self._x = self.pos[0] - self.width/2
-        self._y = self.pos[1] - self.height/2
+        self._x = center[0] - self.width/2
+        self._y = center[1] - self.height/2
         self.dispatch_event('on_move', self._x, self._y)
     center = property(_get_center, _set_center)
 

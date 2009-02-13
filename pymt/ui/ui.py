@@ -805,8 +805,8 @@ class MTSvg(MTWidget):
 
         self.size = (self.svg.width, self.svg.height)
 
-    def draw(self):
-        self.svg.draw(self.x, self.y)
+    def draw(self, **kwargs):
+        self.svg.draw(self.x, self.y, **kwargs)
 
 
 class MTScatterSvg(MTScatterWidget):

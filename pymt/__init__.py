@@ -35,7 +35,8 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     options = {'host': '127.0.0.1', 'port': 3333, 'eventstats': False}
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwFe',
-            ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps', 'event'])
+            ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps', 'event',
+             'dump-frame', 'dump-format=', 'dump-prefix='])
         for opt, arg in opts:
             if opt in ['-h', '--help']:
                 pymt_usage()
@@ -52,6 +53,12 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
                 options['show_fps'] = True
             elif opt in ['-e', '--eventstats']:
                 options['eventstats'] = True
+            elif opt in ['--dump-frame']:
+                options['dump_frame'] = True
+            elif opt in ['--dump-prefix']:
+                options['dump_prefix'] = str(arg)
+            elif opt in ['--dump-format']:
+                options['dump_format'] = str(arg)
 
     except getopt.GetoptError, err:
         print str(err), sys.argv, __name__

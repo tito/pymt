@@ -32,6 +32,13 @@ class MTWindow(TouchWindow):
             Make window as fullscreen
         `config` : `Config`
             Default configuration to pass on TouchWindow
+        `dump_frame` : bool, default is False
+            Activate dump of each frame in file
+        `dump_format` : string, default is png
+            Format of each frame
+        `dump_prefix` : string, default is 'img_'
+            Prefix of each frame filename
+
     '''
 
     def __init__(self, **kwargs):
@@ -40,6 +47,9 @@ class MTWindow(TouchWindow):
         kwargs.setdefault('fullscreen', None)
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
+        kwargs.setdefault('dump_frame', False)
+        kwargs.setdefault('dump_format', 'png')
+        kwargs.setdefault('dump_prefix', 'img_')
 
         self.fps_display =  pyglet.clock.ClockDisplay()
 
@@ -71,6 +81,18 @@ class MTWindow(TouchWindow):
         if pymt.options.has_key('show_fps'):
             self.show_fps = True
 
+        # initialize dump image
+        self.dump_frame     = kwargs.get('dump_frame')
+        if pymt.options.has_key('dump_frame'):
+            self.dump_frame = True
+        self.dump_prefix    = kwargs.get('dump_prefix')
+        if pymt.options.has_key('dump_prefix'):
+            self.dump_prefix = pymt.options.get('dump_prefix')
+        self.dump_format    = kwargs.get('dump_format')
+        if pymt.options.has_key('dump_format'):
+            self.dump_format = pymt.options.get('dump_format')
+        self.dump_idx       = 0
+
     def _set_size(self, size):
         self.set_size(*size)
     def _get_size(self):
@@ -99,6 +121,13 @@ class MTWindow(TouchWindow):
         self.sim.draw()
         if self.show_fps:
             self.fps_display.draw()
+
+        if self.dump_frame:
+            self.dump_idx = self.dump_idx + 1
+            filename = '%s%05d.%s' % (self.dump_prefix, self.dump_idx,
+                                       self.dump_format)
+            #print pyglet.image.get_buffer_manager().get_color_buffer().get_texture()
+            pyglet.image.get_buffer_manager().get_color_buffer().save(filename=filename)
 
     def on_touch_down(self, touches, touchID, x, y):
         return self.root.dispatch_event('on_touch_down', touches, touchID, x, y)

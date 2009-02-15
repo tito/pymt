@@ -263,6 +263,9 @@ def pymt_usage():
   -p, --port=x                      specify TUIO port (default 3333)
   -H, --host=xxx.xxx.xxx.xxx        specify TUIO host (default 127.0.0.1)
   -F, --fps                         show fps in window
+      --dump-frame                  dump each frame in file
+      --dump-prefix                 specify a prefix for each frame file
+      --dump-format                 specify a format for dump
     '''
     print pymt_usage.__doc__ % (os.path.basename(sys.argv[0]))
 

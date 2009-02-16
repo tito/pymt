@@ -118,7 +118,6 @@ class MTWindow(TouchWindow):
         '''Clear window, and dispatch event in root widget + simulator'''
         self.draw()
         self.root.dispatch_event('on_draw')
-        self.sim.draw()
         if self.show_fps:
             self.fps_display.draw()
 

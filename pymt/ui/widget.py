@@ -53,6 +53,8 @@ class MTWidget(pyglet.event.EventDispatcher):
             Color of widget, in (r, v, b, a) format
         `visible` : bool, default is True
             Visibility of widget
+        `draw_children` : bool, default is True
+            Indicate if children will be draw, or not
     '''
 
     def __init__(self, **kwargs):
@@ -60,6 +62,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         kwargs.setdefault('size', (100, 100))
         kwargs.setdefault('color', (.2, .2, .2, 1))
         kwargs.setdefault('visible', True)
+        kwargs.setdefault('draw_children', True)
 
         global _id_2_widget
         if kwargs.has_key('id'):
@@ -75,6 +78,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         self._color					= kwargs.get('color')
         self.animations				= []
         self.visible				= kwargs.get('visible')
+        self.draw_children          = kwargs.get('draw_children')
 
         self.register_event_type('on_resize')
         self.register_event_type('on_move')
@@ -258,8 +262,9 @@ class MTWidget(pyglet.event.EventDispatcher):
             return
 
         self.draw()
-        for w in self.children:
-            w.dispatch_event('on_draw')
+        if self.draw_children:
+            for w in self.children:
+                w.dispatch_event('on_draw')
 
     def draw(self):
         pass

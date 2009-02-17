@@ -204,8 +204,6 @@ class MTScatterWidget(MTWidget):
     '''MTScatterWidget is a scatter widget based on MTWidget
 
     :Parameters:
-        `draw_children` : bool, default is True
-            Indicate if children will be draw, or not
         `rotation` : float, default to 0.0
             Set initial rotation of widget
         `translation` : list, default to (0,0)
@@ -214,7 +212,6 @@ class MTScatterWidget(MTWidget):
             Set the initial scaling of widget
     '''
     def __init__(self, **kwargs):
-        kwargs.setdefault('draw_children', True)
         kwargs.setdefault('rotation', 0.0)
         kwargs.setdefault('translation', (0,0))
         kwargs.setdefault('scale', 1.0)
@@ -222,7 +219,6 @@ class MTScatterWidget(MTWidget):
         super(MTScatterWidget, self).__init__(**kwargs)
         self.touches = {}
         self.transform_mat = (GLfloat * 16)()
-        self.draw_children = kwargs.get('draw_children')
         if kwargs.get('translation')[0] != 0 or kwargs.get('translation')[1] != 0:
             self.init_transform(kwargs.get('translation'), kwargs.get('rotation'), kwargs.get('scale'))
         else:
@@ -245,9 +241,7 @@ class MTScatterWidget(MTWidget):
     def on_draw(self):
         glPushMatrix()
         glMultMatrixf(self.transform_mat)
-        self.draw()
-        for w in self.children:
-            w.dispatch_event('on_draw')
+        super(MTScatterWidget, self).on_draw()
         glPopMatrix()
 
     def to_parent(self, x,y):

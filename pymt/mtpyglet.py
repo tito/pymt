@@ -43,10 +43,19 @@ class Tuio2DCursor(object):
         self.blobID = blobID
         self.oxpos = self.oypos = 0.0
         self.depack(args)
+	self.motcalc()
 
     def move(self, args):
         self.oxpos, self.oypos = self.xpos, self.ypos
         self.depack(args)
+	self.motcalc()
+
+    def motcalc(self):
+	#NOTE: This does not work with the mouse, but with a real TUIO stream it does
+	'''Calculates the relative movement if the tracker is not providing it'''
+	'''Ported from touchpy'''
+	self.xmot = self.xpos - self.oxpos
+	self.ymot = self.ypos - self.oypos
 
     def depack(self, args):
         if len(args) < 5:
@@ -67,6 +76,14 @@ class Tuio2DObject(object):
     def move(self, args):
         self.oxpos, self.oypos = self.xpos, self.ypos
         self.depack(args)
+	self.motcalc()
+
+    def motcalc(self):
+	'''Calculates the relative movement if the tracker is not providing it'''
+	'''Ported from touchpy'''
+	self.xmot = self.xpos - self.oxpos
+	self.ymot = self.ypos - self.oypos
+	print 'foo'
 
     def depack(self, args):
         if len(args) < 5:

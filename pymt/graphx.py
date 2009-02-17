@@ -143,8 +143,6 @@ def drawTriangle(pos, w, h):
     draw(3, GL_TRIANGLES, ('v2f', points))
 
 def drawRectangle(pos=(0,0), size=(1.0,1.0), ):
-    #data = (pos[0],pos[1], pos[0]+size[0],pos[1], pos[0]+size[0], pos[1]+size[1], pos[0],pos[1]+size[1])
-    #draw(4, GL_QUADS, ('v2f', data))
     glBegin(GL_QUADS)
     glVertex2f(pos[0], pos[1])
     glVertex2f(pos[0] + size[0], pos[1])
@@ -163,6 +161,30 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0)):
 def drawLine(points, width=5.0):
     glLineWidth (width)
     draw(2,GL_LINES, ('v2f', points))
+
+class DisplayList:
+    '''Abstraction to opengl display-list usage.'''
+    def __init__(self):
+        self.dl = None
+
+    def clear(self):
+        self.dl = None
+
+    def is_compiled(self):
+        return self.dl != None
+
+    def bind(self):
+        self.dl = glGenLists(1)
+        glNewList(self.dl, GL_COMPILE)
+
+    def release(self):
+        glEndList()
+
+    def draw(self):
+        if self.dl is None:
+            return
+        glCallList(self.dl)
+
 
 ### FBO, PBO, opengl stuff
 class Fbo:

@@ -76,13 +76,16 @@ class flickrSearchButton(MTButton):
         self.txt_widget = kwargs.get('text_widget')
         self.flickme = None
 
+    def do_search(self):
+        if self.flickme:
+            self.parent.remove_widget(self.flickme)
+        self.flickme = flickrEngine(search_text=self.txt_widget.label)
+        self.parent.add_widget(self.flickme)
+        self.flickme.generatePhotos()
+
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
-            if self.flickme:
-                self.parent.remove_widget(self.flickme)
-            self.flickme = flickrEngine(search_text=self.txt_widget.label)
-            self.parent.add_widget(self.flickme)
-            self.flickme.generatePhotos()
+            self.do_search()
             return True
 
 class flickrControl(MTWidget):
@@ -91,8 +94,12 @@ class flickrControl(MTWidget):
         super(flickrControl, self).__init__(**kwargs)
         self.text_input = MTTextInput(pos=(105,0),size=(100,100))
         self.add_widget(self.text_input)
-        flickSearch = flickrSearchButton(text_widget=self.text_input)
-        self.add_widget(flickSearch)
+        self.flickSearch = flickrSearchButton(text_widget=self.text_input)
+        self.add_widget(self.flickSearch)
+        self.text_input.push_handlers('on_text_validate', self.on_text_validate)
+
+    def on_text_validate(self):
+        self.flickSearch.do_search()
 
 def pymt_plugin_activate(root, ctx):
     ctx.flickControl = flickrControl()

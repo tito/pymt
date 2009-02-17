@@ -1,17 +1,18 @@
+from __future__ import with_statement
 import pymt
 from pymt import *
 from pymt.ui import *
 
 class MTTextInput(MTButton):
-    """
+    '''
     A text input widget is a simple label widget that will pop up a virtual keyboard when touched
     any input of the virtual keyboard will then have effect on the TextInput widget
-    """
+    '''
 
-    def __init__(self, label="text input", pos=(0,0), size=(100,100), color=(0.2,0.2,0.2,1), **kargs):
-        MTButton.__init__(self,pos=pos, size=size, color=color, **kargs)
+    def __init__(self, label='text input', **kwargs):
+        super(MTTextInput, self).__init__(**kwargs)
         self.keyboard = MTVKeyboard(self)
-        self.original_width = size[0]
+        self.original_width = self.width
         f_size = min(max(int(64*self.width/100.0), 9),120)
         self.label_obj = Label(text='', font_size=f_size, bold=True)
         self.label_obj.anchor_x = 'left'
@@ -21,9 +22,7 @@ class MTTextInput(MTButton):
         self.padding = 20
 
         self.register_event_type('on_text_change')
-
-
-
+        self.register_event_type('on_text_validate')
 
     def on_release(self,touchID, x, y):
         if self.is_active_input:
@@ -33,31 +32,28 @@ class MTTextInput(MTButton):
 
     def reposition(self):
         self.label_obj.text = self.label
-        self.label_obj.x = self.x +self.padding
+        self.label_obj.x = self.x + self.padding
         self.label_obj.y = self.y
-        self.width =  self.label_obj.content_width +self.padding*2
+        self.width =  self.label_obj.content_width + self.padding * 2
         if self.width < self.original_width:
             self.width = self.original_width
 
     def on_move(self, w, h):
         self.reposition()
 
-
-
     def on_text_change(self):
         self.reposition()
 
+    def on_text_validate(self):
+        pass
 
     def show_keyboard(self):
-        #print "show keyboard"
         self.get_parent_window().add_widget(self.keyboard)
         self.is_active_input = True
 
     def hide_keyboard(self):
-        #print "hide keyboard"
         self.get_parent_window().remove_widget(self.keyboard)
         self.is_active_input = False
-
 
     def draw(self):
         if self.state[0] == 'down':
@@ -69,153 +65,174 @@ class MTTextInput(MTButton):
         self.label_obj.draw()
 
 
-
-
-
-class MTHorizontalLayout(MTWidget):
-    """
-    MTHorizontalLayout lays out its child widgtes in horizonatl order
-    x values are computed based on the widgets in front, all y values are set to the y value of the layout widget
-
-    when a new widget is added, the widgets are layed out again (internal call to layout())
-    call layout() to rearrange all child widgets
-
-    padding determines how much space is put between the widgets
-
-    """
-    def __init__(self, pos=(0,0), padding=5):
-        MTWidget.__init__(self, pos=pos)
-        self.padding = padding
-
-    def add_widget(self, widget):
-        MTWidget.add_widget(self, widget)
-        self.layout()
-
-    def layout(self):
-        self.children[0].x = self.x + self.padding
-        self.children[0].y = self.y
-        for i in range(1,len(self.children)):
-            current_widgt = self.children[i]
-            prev_widget   = self.children[i-1]
-            current_widgt.x = prev_widget.x + prev_widget.width + self.padding
-            current_widgt.y = self.y
-
-
 class MTKeyButton(MTButton):
-    """ Internal Class used in MTVKeyboard """
-    def __init__(self, keyboard, pos=(0,0), size=(100, 100), label='', color=(0.1,0.1,0.1,0.7)):
-        MTButton.__init__(self, pos=pos, size=size, color=color, label=label)
+    '''Internal Class used in MTVKeyboard'''
+    def __init__(self, keyboard, **kwargs):
+        super(MTKeyButton, self).__init__(**kwargs)
         self.keyboard = keyboard
 
     def on_press(self, touchID, x, y):
+        self.keyboard.on_key_down(self.label)
         self.keyboard.active_keys[self] = self
 
     def on_release(self, touchID, x, y):
-        self.keyboard.on_key_down(self.label)
         if self.keyboard.active_keys.has_key(self):
             del self.keyboard.active_keys[self]
+            self.keyboard.on_key_up(self.label)
 
 
 
 
 class MTVKeyboard(MTScatterWidget):
-    """A virtual keyboard that can be scaled/roatetd/moved"""
+    '''A virtual keyboard that can be scaled/roatetd/moved'''
 
+    KEY_SPACE       = 'Space'
+    KEY_ESCAPE      = 'Esc'
+    KEY_BACKSPACE   = '<-'
+    KEY_SHIFT       = 'Shift'
+    KEY_CAPSLOCK    = 'CL'
+    KEY_ENTER       = 'Enter'
 
-    _row_keys = ["X1234567890+-","qwertyuiop", "asdfghjkl;", "zxcvbnm,.?"]
+    _row_keys       = ['1234567890-=', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
+    _row_keyscaps   = ['!@#$%^&*()_+', 'QWERTYUIOP', 'ASDFGHJKL:', 'ZXCVBNM<>?']
 
     def __init__(self, text_widget, pos=(0,0)):
         MTScatterWidget.__init__(self, pos=(0,0), size=(400,200))
-        self._setup_keys()
-        self.dl_needs_update = False
-        self.display_list = glGenLists(1)
-        self.update_dl()
-        self.active_keys = {}
-        #self.needs_update = False
-        self.text_widget = text_widget
+
+        # setup caps keys
+        self._setup_keys(MTVKeyboard._row_keyscaps)
+        self.children_keyscaps = self.children
+        self.children = []
+
+        # setup normal keys
+        self._setup_keys(MTVKeyboard._row_keys)
+        self.children_keys = self.children
+
+        self.dl             = GlDisplayList()
+        self.active_keys    = {}
+        self.text_widget    = text_widget
+        self.draw_children  = False
+        self.is_shift       = False
+        self.is_capslock    = False
 
     def on_key_down(self, k_str):
-        if k_str == "<-":
-            self.text_widget.label = self.text_widget.label[:-1]
-        elif k_str == "X":
+        if k_str == MTVKeyboard.KEY_SHIFT:
+            self.is_shift = True
+            self.dl.clear()
+            return True
+
+    def on_key_up(self, k_str):
+        if k_str == MTVKeyboard.KEY_ENTER:
+            self.text_widget.dispatch_event('on_text_validate')
             self.text_widget.hide_keyboard()
-        elif k_str == "space":
-            self.text_widget.label += " "
+            return True
+
+        elif k_str == MTVKeyboard.KEY_ESCAPE:
+            self.text_widget.hide_keyboard()
+            return True
+
+        elif k_str == MTVKeyboard.KEY_BACKSPACE:
+            self.text_widget.label = self.text_widget.label[:-1]
+
+        elif k_str == MTVKeyboard.KEY_SPACE:
+            self.text_widget.label += ' '
+
+        elif k_str == MTVKeyboard.KEY_SHIFT:
+            self.is_shift = False
+            self.dl.clear()
+            return True
+
+        elif k_str == MTVKeyboard.KEY_CAPSLOCK:
+            self.is_capslock = not self.is_capslock
+            self.dl.clear()
+            return True
+
         else:
             self.text_widget.label = self.text_widget.label + k_str
+
         self.text_widget.dispatch_event('on_text_change')
+        return True
 
     def update_dl(self):
-        glNewList(self.display_list, GL_COMPILE)
-        for w in self.children:
-            w.dispatch_event('on_draw')
-        glEndList()
+        use_caps = self.is_capslock
+        if self.is_shift:
+            use_caps = not use_caps
+        if use_caps:
+            self.children = self.children_keyscaps
+        else:
+            self.children = self.children_keys
+        with self.dl:
+            with gx_blending:
+                set_color(0.2,0.2,0.2,0.6)
+                drawRectangle((0,0), self.size)
+                for w in self.children:
+                    w.dispatch_event('on_draw')
 
-    def _setup_keys(self):
+    def _setup_keys(self, keys):
         k_width = 25
-        #print k_width
+        spacing = 3
+        color = (0.1, 0.1, 0.1, 0.7)
+
+        vlayout = HVLayout(alignment='vertical', pos=(20,-2*k_width), spacing=spacing, invert_y=True)
 
         for j in range(4):
-            row = MTRectangularWidget(pos=(15,self.height-(j+1)*(k_width+3)), size=(363, k_width), color=(1,1,1,0))
-            layout = MTHorizontalLayout(pos=(15,self.height-(j+1)*(k_width+3)),padding=3)
+            layout = HVLayout(spacing=spacing)
 
-            #special keys on left
-            if j==1:
-                k_str   = ""
-                k_btn   = MTKeyButton(self,label=k_str, size=(k_width*0.5, k_width))
+            # special keys on left
+            if j == 0:
+                k_str   = MTVKeyboard.KEY_ESCAPE
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width, k_width), color=color)
                 layout.add_widget(k_btn)
-            if j==2:
-                k_str   = "CL"
-                k_btn   = MTKeyButton(self,label=k_str, size=(k_width, k_width))
+            elif j == 1:
+                k_str   = ''
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*0.5, k_width), color=color)
                 layout.add_widget(k_btn)
-            if j==3:
-                k_str   = "Shift"
-                k_btn   = MTKeyButton(self,label=k_str, size=(k_width*1.5, k_width))
+            elif j == 2:
+                k_str   = MTVKeyboard.KEY_CAPSLOCK
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width, k_width), color=color)
                 layout.add_widget(k_btn)
-
-            #regular keys
-            num_keys = len(MTVKeyboard._row_keys[j])
-            for i in range( num_keys ):
-                k_str   = MTVKeyboard._row_keys[j][i]
-                k_btn   = MTKeyButton(self,label=k_str, size=(k_width, k_width))
+            elif j == 3:
+                k_str   = MTVKeyboard.KEY_SHIFT
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*1.5, k_width), color=color)
                 layout.add_widget(k_btn)
 
-            #special keys on right
-            if j==1:
-                k_str   = "<-"
-                k_btn   = MTKeyButton(self,label=k_str, size=(k_width*2.5 +3, k_width))
-                layout.add_widget(k_btn)
-            if j==2:
-                k_str   = "enter"
-                k_btn   = MTKeyButton(self,label=k_str, size=(k_width*2+3, k_width))
-                layout.add_widget(k_btn)
-            if j==3:
-                k_str   = "Shift"
-                k_btn   = MTKeyButton(self,label=k_str, size=(k_width*1.5+3, k_width))
+            # regular keys
+            num_keys = len(keys[j])
+            for i in range(num_keys):
+                k_str   = keys[j][i]
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width, k_width), color=color)
                 layout.add_widget(k_btn)
 
+            # special keys on right
+            if j == 1:
+                k_str   = MTVKeyboard.KEY_BACKSPACE
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*2.5 +3, k_width), color=color)
+                layout.add_widget(k_btn)
+            elif j == 2:
+                k_str   = MTVKeyboard.KEY_ENTER
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*2+3, k_width), color=color)
+                layout.add_widget(k_btn)
+            elif j == 3:
+                k_str   = MTVKeyboard.KEY_SHIFT
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*1.5+3, k_width), color=color)
+                layout.add_widget(k_btn)
 
-            row.add_widget(layout)
-            self.add_widget(row)
+            vlayout.add_widget(layout)
 
-        space_key = MTKeyButton(self,label="space", pos=(18,self.height-5*(k_width+3)),size=(363, k_width), color=(0.1,0.1,0.1,0.7))
-        self.add_widget(space_key)
-
-    def on_draw(self):
-        enable_blending()
-        self.draw_children=False
-        MTScatterWidget.on_draw(self)
-        disable_blending()
+        layout = HVLayout(spacing=3)
+        space_key = MTKeyButton(self, label=MTVKeyboard.KEY_SPACE, size=(361, k_width), color=color)
+        layout.add_widget(space_key)
+        vlayout.add_widget(layout)
+        self.add_widget(vlayout)
 
     def draw_active_children(self):
         for key in self.active_keys:
             self.active_keys[key].draw()
 
-
     def draw(self):
-        set_color(0.2,0.2,0.2,0.6)
-        drawRectangle((0,0), self.size)
-        glCallList(self.display_list)
+        if not self.dl.is_compiled():
+            self.update_dl()
+        self.dl.draw()
         self.draw_active_children()
 
 # Register all base widgets

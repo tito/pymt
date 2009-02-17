@@ -162,28 +162,79 @@ def drawLine(points, width=5.0):
     glLineWidth (width)
     draw(2,GL_LINES, ('v2f', points))
 
-class DisplayList:
-    '''Abstraction to opengl display-list usage.'''
+class GlDisplayList:
+    '''Abstraction to opengl display-list usage. Here is an example of usage ::
+
+        dl = GlDisplayList()
+        with dl:
+            # do draw function, like drawLabel etc...
+        dl.draw()
+    '''
     def __init__(self):
         self.dl = None
+
+    def __enter__(self):
+        self.dl = glGenLists(1)
+        glNewList(self.dl, GL_COMPILE)
+
+    def __exit__(self, type, value, traceback):
+        glEndList()
 
     def clear(self):
         self.dl = None
 
     def is_compiled(self):
-        return self.dl != None
-
-    def bind(self):
-        self.dl = glGenLists(1)
-        glNewList(self.dl, GL_COMPILE)
-
-    def release(self):
-        glEndList()
+        if self.dl == None:
+            return False
+        return True
 
     def draw(self):
         if self.dl is None:
             return
         glCallList(self.dl)
+
+
+class GlBlending:
+    '''Abstraction to use blending ! Don't use directly this class.
+    We've got an alias you can use ::
+
+    with gx_blending:
+        # do draw function
+    '''
+    def __enter__(self):
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+    def __exit__(self, type, value, traceback):
+        glDisable(GL_BLEND)
+
+gx_blending = GlBlending()
+
+
+class GlMatrix:
+    '''Abstraction for glPushMatrix/glPopMatrix ! Don't use directly this class.
+    We've got 2 alias: gx_matrix and gx_matrix_identity
+
+    with gx_matrix:
+        # do draw function
+
+    with gx_matrix_identity:
+        # do draw function
+    '''
+    def __init__(self, matrixmode=GL_MODELVIEW, do_loadidentity=False):
+        self.do_loadidentity = do_loadidentity
+
+    def __enter__(self):
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        if self.do_loadidentity:
+            glLoadIdentity()
+
+    def __exit__(self, type, value, traceback):
+        glPopMatrix()
+
+gx_matrix = GlMatrix()
+gx_matrix_identity = GlMatrix(do_loadidentity=True)
 
 
 ### FBO, PBO, opengl stuff

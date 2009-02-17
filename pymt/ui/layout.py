@@ -12,6 +12,10 @@ class HVLayout(MTWidget):
             Try to have same width for all children
         `uniform_height` : bool, default to False
             Try to have same height for all children
+        `invert_x` : bool, default to False
+            Invert X axis
+        `invert_y` : bool, default to False
+            Invert Y axis
 
     :Events:
         `on_layout`
@@ -25,6 +29,8 @@ class HVLayout(MTWidget):
         kwargs.setdefault('spacing', 1)
         kwargs.setdefault('uniform_width', False)
         kwargs.setdefault('uniform_height', False)
+        kwargs.setdefault('invert_x', False)
+        kwargs.setdefault('invert_y', False)
 
         if kwargs.get('alignment') not in ['horizontal', 'vertical']:
             raise Exception('Invalid alignment, only horizontal/vertical are supported')
@@ -36,6 +42,8 @@ class HVLayout(MTWidget):
         self.alignment      = kwargs.get('alignment')
         self.uniform_width  = kwargs.get('uniform_width')
         self.uniform_height = kwargs.get('uniform_height')
+        self.invert_x       = kwargs.get('invert_x')
+        self.invert_y       = kwargs.get('invert_y')
         self.content_height = 0
         self.content_width  = 0
 
@@ -64,8 +72,14 @@ class HVLayout(MTWidget):
         current_width = current_height = 0
         for w in self.children:
             try:
-                w.x = cur_x
-                w.y = cur_y
+                if self.invert_x:
+                    w.x = self.width - cur_x
+                else:
+                    w.x = cur_x
+                if self.invert_y:
+                    w.y = self.height - cur_y
+                else:
+                    w.y = cur_y
                 if w.height > current_height:
                     current_height = w.height
                 if w.width > current_width:

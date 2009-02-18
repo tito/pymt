@@ -67,35 +67,35 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
             print 'Warning: error while saving default configuration file :', e
 
 
-        # Can be overrided in command line
-        try:
-            opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwFe',
-                ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps', 'event',
-                 'dump-frame', 'dump-format=', 'dump-prefix='])
-            for opt, arg in opts:
-                if opt in ['-h', '--help']:
-                    pymt_usage()
-                    sys.exit(0)
-                elif opt in ['-p', '--port']:
-                    pymt_config.set('tuio', 'port', str(arg))
-                elif opt in ['-H', '--host']:
-                    pymt_config.set('tuio', 'host', str(arg))
-                elif opt in ['-f', '--fullscreen']:
-                    pymt_config.set('pymt', 'fullscreen', '1')
-                elif opt in ['-w', '--windowed']:
-                    pymt_config.set('pymt', 'fullscreen', '0')
-                elif opt in ['-F', '--fps']:
-                    pymt_config.set('pymt', 'show_fps', '1')
-                elif opt in ['-e', '--eventstats']:
-                    pymt_config.set('pymt', 'show_eventstats', '1')
-                elif opt in ['--dump-frame']:
-                    pymt_config.set('dump', 'enabled', '1')
-                elif opt in ['--dump-prefix']:
-                    pymt_config.set('dump', 'prefix', str(arg))
-                elif opt in ['--dump-format']:
-                    pymt_config.set('dump', 'format', str(arg))
+    # Can be overrided in command line
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwFe',
+            ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps', 'event',
+             'dump-frame', 'dump-format=', 'dump-prefix='])
+        for opt, arg in opts:
+            if opt in ['-h', '--help']:
+                pymt_usage()
+                sys.exit(0)
+            elif opt in ['-p', '--port']:
+                pymt_config.set('tuio', 'port', str(arg))
+            elif opt in ['-H', '--host']:
+                pymt_config.set('tuio', 'host', str(arg))
+            elif opt in ['-f', '--fullscreen']:
+                pymt_config.set('pymt', 'fullscreen', '1')
+            elif opt in ['-w', '--windowed']:
+                pymt_config.set('pymt', 'fullscreen', '0')
+            elif opt in ['-F', '--fps']:
+                pymt_config.set('pymt', 'show_fps', '1')
+            elif opt in ['-e', '--eventstats']:
+                pymt_config.set('pymt', 'show_eventstats', '1')
+            elif opt in ['--dump-frame']:
+                pymt_config.set('dump', 'enabled', '1')
+            elif opt in ['--dump-prefix']:
+                pymt_config.set('dump', 'prefix', str(arg))
+            elif opt in ['--dump-format']:
+                pymt_config.set('dump', 'format', str(arg))
 
-        except getopt.GetoptError, err:
-            print str(err), sys.argv, __name__
-            pymt_usage()
-            sys.exit(2)
+    except getopt.GetoptError, err:
+        print str(err), sys.argv, __name__
+        pymt_usage()
+        sys.exit(2)

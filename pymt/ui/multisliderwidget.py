@@ -1,33 +1,37 @@
 #!/usr/bin/env python
-
 from pymt import *
-import random
-import math
 
 class MTMultiSlider(MTWidget):
     def __init__(self, **kwargs):
-        super(MTMultiSlider, self).__init__(**kwargs)
-        kwargs.setdefault('sliders', 27)
+        kwargs.setdefault('sliders', 20)
+        kwargs.setdefault('color', (1,0.5,0,1))
+        kwargs.setdefault('background_color', (0.2,0.2,0.2,0.5))
+        kwargs.setdefault('size', (400,300))
+        kwargs.setdefault('spacing', 1)
+        kwargs.setdefault('init_value', 0.5)
+        super(MTMultiSlider, self).__init__(**kwargs)   
+
         self._sliders = kwargs.get('sliders')
-        #self._slider_values = [random.random() for x in range(self._sliders)]
-        self._slider_values = [0.5 for x in range(self._sliders)]
-        self._spacing = 2
-    
+        self._spacing = kwargs.get('spacing')
+        self._background_color = kwargs.get('background_color')
+        self.slider_values = [kwargs.get('init_value') for x in range(self._sliders)]        
+        
     def draw(self):
-        glColor4f(0.2,0.2,0.2,0.5)
+        # Draw background
+        glColor4f(*self._background_color)
         drawRectangle(pos=(self.x,self.y), size=(self.width,self.height))
+        # Draw sliders
         glColor4f(*self.color)
         for slider in range(self._sliders):
             pos_x = self.x + slider * (float(self.width) / self._sliders)
             pos_y = self.y
             size_x = (float(self.width) / self._sliders) - self._spacing
-            size_y = self.height * self._slider_values[slider]
+            size_y = self.height * self.slider_values[slider]
             drawRectangle(pos = (pos_x, pos_y), size = (size_x, size_y))
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
-            print self.return_slider(x)
-            self._slider_values[self.return_slider(x)] = (y - self.y) / float(self.height)
+            self.slider_values[self.return_slider(x)] = (y - self.y) / float(self.height)
             return True
         
     def on_touch_move(self, touches, touchID, x, y):
@@ -39,7 +43,7 @@ class MTMultiSlider(MTWidget):
 if __name__ == '__main__':
     w = MTWindow(fullscreen=False)
     wsize = w.size
-    mms = MTMultiSlider(pos = (40,50), size = (450, 300), color = (1,0.5,0,1))
+    mms = MTMultiSlider()
     w.add_widget(mms)
     runTouchApp()
     

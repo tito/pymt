@@ -2,13 +2,13 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>mtpyglet - multitouch abstraction for pyglet &mdash; PyMT v0.1 documentation</title>
+    <title>mtpyglet - multitouch abstraction for pyglet &mdash; PyMT v0.2 alpha documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    '',
-          VERSION:     '0.1',
+          VERSION:     '0.2 alpha',
           COLLAPSE_MODINDEX: false,
           FILE_SUFFIX: ''
       };
@@ -19,7 +19,7 @@
     <link rel="contents" title="Global table of contents" href="contents.html" />
     <link rel="index" title="Global index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.1 documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
     <link rel="up" title="Core - base class for pymt" href="api-pymt-core.html" />
     <link rel="next" title="obj - handle 3D mesh" href="api-pymt-obj.html" />
     <link rel="prev" title="loader - asynchronous way to load image" href="api-pymt-loader.html" />
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="api-pymt-loader.html" title="loader - asynchronous way to load image"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
           <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
           <li><a href="api-pymt-core.html" accesskey="U">Core - base class for pymt</a> &raquo;</li>
       </ul>
@@ -163,6 +163,11 @@ along with this program.  If not, see &lt;<a class="reference" href="http://www.
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="pymt.mtpyglet.Tuio2DCursor.motcalc">
+<!--[pymt.mtpyglet.Tuio2DCursor.motcalc]--><tt class="descname">motcalc</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.mtpyglet.Tuio2DCursor.motcalc" title="Permalink to this definition">¶</a></dt>
+<dd>Calculates the relative movement if the tracker is not providing it</dd></dl>
+
+<dl class="method">
 <dt id="pymt.mtpyglet.Tuio2DCursor.move">
 <!--[pymt.mtpyglet.Tuio2DCursor.move]--><tt class="descname">move</tt><big>(</big><em>args</em><big>)</big><a class="headerlink" href="#pymt.mtpyglet.Tuio2DCursor.move" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -176,6 +181,11 @@ along with this program.  If not, see &lt;<a class="reference" href="http://www.
 <dt id="pymt.mtpyglet.Tuio2DObject.depack">
 <!--[pymt.mtpyglet.Tuio2DObject.depack]--><tt class="descname">depack</tt><big>(</big><em>args</em><big>)</big><a class="headerlink" href="#pymt.mtpyglet.Tuio2DObject.depack" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.mtpyglet.Tuio2DObject.motcalc">
+<!--[pymt.mtpyglet.Tuio2DObject.motcalc]--><tt class="descname">motcalc</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.mtpyglet.Tuio2DObject.motcalc" title="Permalink to this definition">¶</a></dt>
+<dd>Calculates the relative movement if the tracker is not providing it</dd></dl>
 
 <dl class="method">
 <dt id="pymt.mtpyglet.Tuio2DObject.move">
@@ -222,6 +232,26 @@ along with this program.  If not, see &lt;<a class="reference" href="http://www.
 Option list ends without a blank line; unexpected unindent.</div>
 <p>-H, &#8211;host=xxx.xxx.xxx.xxx        specify TUIO host (default 127.0.0.1)
 -F, &#8211;fps                         show fps in window</p>
+<div class="system-message">
+<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">/usr/lib/python2.5/pymt/mtpyglet.py:docstring of pymt.mtpyglet</tt>, line 6)</p>
+Unexpected indentation.</div>
+<blockquote>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">&#8211;dump-frame</span></kbd></td>
+<td>dump each frame in file</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">&#8211;dump-prefix</span></kbd></td>
+<td>specify a prefix for each frame file</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">&#8211;dump-format</span></kbd></td>
+<td>specify a format for dump</td></tr>
+</tbody>
+</table>
+</blockquote>
 </dd></dl>
 
 <dl class="function">
@@ -280,14 +310,14 @@ Option list ends without a blank line; unexpected unindent.</div>
         <li class="right" >
           <a href="api-pymt-loader.html" title="loader - asynchronous way to load image"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
           <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
           <li><a href="api-pymt-core.html" accesskey="U">Core - base class for pymt</a> &raquo;</li>
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on fév 05, 2009.
+      Last updated on fév 18, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
     </div>
   </body>

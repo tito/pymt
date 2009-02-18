@@ -2,13 +2,13 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>UI - core widgets &mdash; PyMT v0.1 documentation</title>
+    <title>UI - core widgets &mdash; PyMT v0.2 alpha documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    '',
-          VERSION:     '0.1',
+          VERSION:     '0.2 alpha',
           COLLAPSE_MODINDEX: false,
           FILE_SUFFIX: ''
       };
@@ -19,7 +19,7 @@
     <link rel="contents" title="Global table of contents" href="contents.html" />
     <link rel="index" title="Global index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.1 documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
     <link rel="up" title="UI - all user interface stuff" href="api-pymt-ui.html" />
     <link rel="next" title="Gesture widget - capture and signal every gesture" href="api-pymt-ui-gesturewidget.html" />
     <link rel="prev" title="Simulator - implementation of multitouch with mouse" href="api-pymt-ui-simulator.html" />
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="api-pymt-ui-simulator.html" title="Simulator - implementation of multitouch with mouse"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
           <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
           <li><a href="api-pymt-ui.html" accesskey="U">UI - all user interface stuff</a> &raquo;</li>
       </ul>
@@ -230,6 +230,34 @@
 </dd></dl>
 
 <dl class="class">
+<dt id="pymt.ui.ui.MTButtonMatrix">
+<!--[pymt.ui.ui.MTButtonMatrix]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTButtonMatrix</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButtonMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>ButtonMatrix is a lightweight Grid of buttons/tiles
+collide_point returns which matrix element was hit
+draw_tile(i,j) draws the  tile &#64; matrix position (i,j)</p>
+<dl class="method">
+<dt id="pymt.ui.ui.MTButtonMatrix.collide_point">
+<!--[pymt.ui.ui.MTButtonMatrix.collide_point]--><tt class="descname">collide_point</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButtonMatrix.collide_point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTButtonMatrix.draw">
+<!--[pymt.ui.ui.MTButtonMatrix.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButtonMatrix.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTButtonMatrix.draw_tile">
+<!--[pymt.ui.ui.MTButtonMatrix.draw_tile]--><tt class="descname">draw_tile</tt><big>(</big><em>i</em>, <em>j</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButtonMatrix.draw_tile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTButtonMatrix.on_touch_down">
+<!--[pymt.ui.ui.MTButtonMatrix.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTButtonMatrix.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="pymt.ui.ui.MTColorPicker">
 <!--[pymt.ui.ui.MTColorPicker]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTColorPicker</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTColorPicker" title="Permalink to this definition">¶</a></dt>
 <dd><p>MTColorPicker is a implementation of a color picker using MTWidget</p>
@@ -408,6 +436,62 @@ that draw an image instead of a text.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="pymt.ui.ui.MTScatterPlane">
+<!--[pymt.ui.ui.MTScatterPlane]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTScatterPlane</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterPlane" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Plane that transforms for zoom/rotate/pan.
+if none of the childwidgets handles the input (the background is touched), all of tehm are transformed together</p>
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterPlane.draw">
+<!--[pymt.ui.ui.MTScatterPlane.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterPlane.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterPlane.find_second_touch">
+<!--[pymt.ui.ui.MTScatterPlane.find_second_touch]--><tt class="descname">find_second_touch</tt><big>(</big><em>touchID</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterPlane.find_second_touch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterPlane.on_touch_down">
+<!--[pymt.ui.ui.MTScatterPlane.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterPlane.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterPlane.on_touch_move">
+<!--[pymt.ui.ui.MTScatterPlane.on_touch_move]--><tt class="descname">on_touch_move</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterPlane.on_touch_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterPlane.on_touch_up">
+<!--[pymt.ui.ui.MTScatterPlane.on_touch_up]--><tt class="descname">on_touch_up</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterPlane.on_touch_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.ui.MTScatterSvg">
+<!--[pymt.ui.ui.MTScatterSvg]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTScatterSvg</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterSvg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render an svg image into a scatter widget</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>filename</cite> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Filename of image</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterSvg.draw">
+<!--[pymt.ui.ui.MTScatterSvg.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterSvg.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="pymt.ui.ui.MTScatterWidget">
 <!--[pymt.ui.ui.MTScatterWidget]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTScatterWidget</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget" title="Permalink to this definition">¶</a></dt>
 <dd><p>MTScatterWidget is a scatter widget based on MTWidget</p>
@@ -416,11 +500,23 @@ that draw an image instead of a text.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><cite>draw_children</cite> <span class="classifier-delimiter">:</span> <span class="classifier">bool, default is True</span></dt>
-<dd><p class="first last">Indicate if children will be draw, or not</p>
+<dt><cite>rotation</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to 0.0</span></dt>
+<dd><p class="first last">Set initial rotation of widget</p>
 </dd>
-<dt><cite>rotation</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to 0</span></dt>
-<dd><p class="first last">Set rotation of widget</p>
+<dt><cite>translation</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list, default to (0,0)</span></dt>
+<dd><p class="first last">Set the initial translation of widget</p>
+</dd>
+<dt><cite>scale</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to 1.0</span></dt>
+<dd><p class="first last">Set the initial scaling of widget</p>
+</dd>
+<dt><cite>do_rotation</cite> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, default to True</span></dt>
+<dd><p class="first last">Set to False for disabling rotation</p>
+</dd>
+<dt><cite>do_translation</cite> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, default to True</span></dt>
+<dd><p class="first last">Set to False for disabling translation</p>
+</dd>
+<dt><cite>do_scale</cite> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, default to True</span></dt>
+<dd><p class="first last">Set to False for disabling scale</p>
 </dd>
 </dl>
 </td>
@@ -449,7 +545,7 @@ that draw an image instead of a text.</p>
 
 <dl class="method">
 <dt id="pymt.ui.ui.MTScatterWidget.init_transform">
-<!--[pymt.ui.ui.MTScatterWidget.init_transform]--><tt class="descname">init_transform</tt><big>(</big><em>pos</em>, <em>angle</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.init_transform" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.ui.ui.MTScatterWidget.init_transform]--><tt class="descname">init_transform</tt><big>(</big><em>pos</em>, <em>angle</em>, <em>scale</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.init_transform" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -480,6 +576,11 @@ that draw an image instead of a text.</p>
 <dl class="method">
 <dt id="pymt.ui.ui.MTScatterWidget.to_local">
 <!--[pymt.ui.ui.MTScatterWidget.to_local]--><tt class="descname">to_local</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.to_local" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.ui.MTScatterWidget.to_parent">
+<!--[pymt.ui.ui.MTScatterWidget.to_parent]--><tt class="descname">to_parent</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTScatterWidget.to_parent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -553,6 +654,30 @@ that draw an image instead of a text.</p>
 </dd></dl>
 
 <dl class="class">
+<dt id="pymt.ui.ui.MTSvg">
+<!--[pymt.ui.ui.MTSvg]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTSvg</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTSvg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render an svg image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>filename</cite> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Filename of image</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pymt.ui.ui.MTSvg.draw">
+<!--[pymt.ui.ui.MTSvg.draw]--><tt class="descname">draw</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTSvg.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="pymt.ui.ui.MTToggleButton">
 <!--[pymt.ui.ui.MTToggleButton]-->class <tt class="descclassname">pymt.ui.ui.</tt><tt class="descname">MTToggleButton</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.ui.MTToggleButton" title="Permalink to this definition">¶</a></dt>
 <dd><p>Toggle button implementation, based on MTButton</p>
@@ -614,14 +739,14 @@ that draw an image instead of a text.</p>
         <li class="right" >
           <a href="api-pymt-ui-simulator.html" title="Simulator - implementation of multitouch with mouse"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.1 documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
           <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
           <li><a href="api-pymt-ui.html" accesskey="U">UI - all user interface stuff</a> &raquo;</li>
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on fév 05, 2009.
+      Last updated on fév 18, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
     </div>
   </body>

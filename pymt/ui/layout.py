@@ -6,6 +6,8 @@ class HVLayout(MTWidget):
     :Parameters:
         `alignment` : str, default is 'horizontal'
             Alignment of widget inside layout, can be `horizontal` or `vertical`
+        `padding` : int, default to 0
+            Padding between the border and content
         `spacing` : int, default to 1
             Spacing between widgets
         `uniform_width` : bool, default to False
@@ -27,6 +29,7 @@ class HVLayout(MTWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('alignment', 'horizontal')
         kwargs.setdefault('spacing', 1)
+        kwargs.setdefault('padding', 0)
         kwargs.setdefault('uniform_width', False)
         kwargs.setdefault('uniform_height', False)
         kwargs.setdefault('invert_x', False)
@@ -39,6 +42,7 @@ class HVLayout(MTWidget):
         self.register_event_type('on_layout')
         self.register_event_type('on_content_resize')
         self.spacing        = kwargs.get('spacing')
+        self.padding        = kwargs.get('padding')
         self.alignment      = kwargs.get('alignment')
         self.uniform_width  = kwargs.get('uniform_width')
         self.uniform_height = kwargs.get('uniform_height')
@@ -67,8 +71,8 @@ class HVLayout(MTWidget):
         fire on_content_resize too. Uniform width/height are handled
         after on_content_resize.
         '''
-        start_x = cur_x = self.x
-        start_y = cur_y = self.y
+        start_x = cur_x = self.x + self.padding
+        start_y = cur_y = self.y + self.padding
         current_width = current_height = 0
         for w in self.children:
             try:
@@ -90,6 +94,12 @@ class HVLayout(MTWidget):
                     cur_y += w.height + self.spacing
             except:
                 pass
+
+        # apply double padding, we take only what we want after
+        cur_x = cur_x + self.padding * 2
+        cur_y = cur_y + self.padding * 2
+        current_width = current_width + self.padding * 2
+        current_height = current_height + self.padding * 2
 
         # update content size
         max_w_height = new_height = current_height

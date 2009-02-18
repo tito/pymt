@@ -12,11 +12,12 @@ from xml.etree.cElementTree import parse
 import re
 import math
 from ctypes import CFUNCTYPE, POINTER, byref, cast
-import sys
+import sys, os
 
-tess = gluNewTess()
-gluTessNormal(tess, 0, 0, 1)
-gluTessProperty(tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO)
+if not os.path.basename(sys.argv[0]).startswith('sphinx'):
+    tess = gluNewTess()
+    gluTessNormal(tess, 0, 0, 1)
+    gluTessProperty(tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO)
 
 if sys.platform == 'win32':
     from ctypes import WINFUNCTYPE

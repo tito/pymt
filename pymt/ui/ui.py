@@ -211,15 +211,28 @@ class MTScatterWidget(MTWidget):
             Set the initial translation of widget
         `scale` : float, default to 1.0
             Set the initial scaling of widget
+        `do_rotation` : boolean, default to True
+            Set to False for disabling rotation
+        `do_translation` : boolean, default to True
+            Set to False for disabling translation
+        `do_scale` : boolean, default to True
+            Set to False for disabling scale
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('rotation', 0.0)
         kwargs.setdefault('translation', (0,0))
         kwargs.setdefault('scale', 1.0)
+        kwargs.setdefault('do_scale', True)
+        kwargs.setdefault('do_rotation', True)
+        kwargs.setdefault('do_translation', True)
 
         super(MTScatterWidget, self).__init__(**kwargs)
-        self.touches = {}
-        self.transform_mat = (GLfloat * 16)()
+
+        self.do_scale       = kwargs.get('do_scale')
+        self.do_rotation    = kwargs.get('do_rotation')
+        self.do_translation = kwargs.get('do_translation')
+        self.touches        = {}
+        self.transform_mat  = (GLfloat * 16)()
         if kwargs.get('translation')[0] != 0 or kwargs.get('translation')[1] != 0:
             self.init_transform(kwargs.get('translation'), kwargs.get('rotation'), kwargs.get('scale'))
         else:
@@ -303,10 +316,13 @@ class MTScatterWidget(MTWidget):
 
         # apply to our transformation matrix
         with gx_matrix_identity:
-            glTranslated(trans.x, trans.y,0)
+            if self.do_translation:
+                glTranslated(trans.x, trans.y,0)
             glTranslated(intersect.x, intersect.y,0)
-            glScaled(scale, scale,1)
-            glRotated(rotation,0,0,1)
+            if self.do_scale:
+                glScaled(scale, scale,1)
+            if self.do_rotation:
+                glRotated(rotation,0,0,1)
             glTranslated(-intersect.x, -intersect.y,0)
             glMultMatrixf(self.transform_mat)
             glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)

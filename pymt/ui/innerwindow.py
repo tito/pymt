@@ -1,3 +1,4 @@
+from __future__ import with_statement
 from pymt import *
 from pyglet.gl import *
 from pymt.ui import *
@@ -124,14 +125,12 @@ class MTInnerWindow(MTScatterWidget):
 
 
     def draw(self):
-        enable_blending()
-        glColor4d(*self.color)
-        scaled_border = int(self.border * (1.0/self.get_scale_factor()))
-        drawRoundedRectangle((-scaled_border, -scaled_border), (self.width+scaled_border*2, self.height+scaled_border*2))
-        glPushMatrix()
-        drawRectangle(((self.width/2)-(scaled_border*2.5), -scaled_border), (scaled_border*5, -scaled_border*1.2))
-        glPopMatrix()
-        disable_blending()
+        with gx_blending:
+            glColor4d(*self.color)
+            scaled_border = int(self.border * (1.0/self.get_scale_factor()))
+            drawRoundedRectangle((-scaled_border, -scaled_border), (self.width+scaled_border*2, self.height+scaled_border*2))
+            with gx_matrix:
+                drawRectangle(((self.width/2)-(scaled_border*2.5), -scaled_border), (scaled_border*5, -scaled_border*1.2))
 
 
     def on_draw(self):
@@ -141,15 +140,12 @@ class MTInnerWindow(MTScatterWidget):
             self.window_fbo.release()
             self.needs_redisplay = False
 
-        glPushMatrix()
-        glMultMatrixf(self.transform_mat)
-        self.draw()
-        drawTexturedRectangle(self.window_fbo.texture, (0,0), self.size)
-        if self.locked:
-            enable_blending()
-            glColor4f(0.5,0.5,1, 0.3)
-            drawRectangle((0,0), self.size)
-            disable_blending()
-        self.controlls.dispatch_event('on_draw')
-
-        glPopMatrix()
+        with gx_matrix:
+            glMultMatrixf(self.transform_mat)
+            self.draw()
+            drawTexturedRectangle(self.window_fbo.texture, (0,0), self.size)
+            if self.locked:
+                with gx_blending:
+                    glColor4f(0.5,0.5,1, 0.3)
+                    drawRectangle((0,0), self.size)
+            self.controlls.dispatch_event('on_draw')

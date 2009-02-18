@@ -1,3 +1,4 @@
+from __future__ import with_statement
 import pymt
 from pymt import *
 from pyglet.gl import *
@@ -78,20 +79,19 @@ class MTVideoTimeline(MTSlider):
             self.value = 0
             self.vid.seek(0)
             self.length = 0
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        x,y,w,h = self.x,self.y,self.width+self.padding, self.height
-        p2 =self.padding/2
-        # draw outer rectangle
-        glColor4f(0.2,0.2,0.2,0.5)
-        drawRectangle(pos=(x,y), size=(w,h))
-        # draw inner rectangle
-        glColor4f(*self.color)
-        self.length = int(self.width*(float(self.value)/self.max))
-        drawRectangle(pos=(self.x+p2,self.y+p2+11), size=(self.length,(h-self.padding)/2))
-        glColor4f(0.713, 0.713, 0.713, 1.0)
-        drawRectangle(pos=(self.x+p2,self.y+p2), size=(self.length,(h-self.padding)/2))
 
+        with gx_blending:
+            x,y,w,h = self.x,self.y,self.width+self.padding, self.height
+            p2 =self.padding/2
+            # draw outer rectangle
+            glColor4f(0.2,0.2,0.2,0.5)
+            drawRectangle(pos=(x,y), size=(w,h))
+            # draw inner rectangle
+            glColor4f(*self.color)
+            self.length = int(self.width*(float(self.value)/self.max))
+            drawRectangle(pos=(self.x+p2,self.y+p2+11), size=(self.length,(h-self.padding)/2))
+            glColor4f(0.713, 0.713, 0.713, 1.0)
+            drawRectangle(pos=(self.x+p2,self.y+p2), size=(self.length,(h-self.padding)/2))
 
     def on_draw(self):
         if not self.visible:
@@ -124,7 +124,7 @@ class MTVideo(MTScatterWidget):
           video = MTVideo(video='source_file')
 
     :Parameters:
-        `video` : str
+        `video` : stsize=iw.size, r
             Filename of video
 
     '''
@@ -160,13 +160,11 @@ class MTVideo(MTScatterWidget):
         self.timeline.hide()
 
     def draw(self):
-        glPushMatrix()
-        enable_blending()
-        glColor4f(1,1,1,0.5)
-        drawRectangle((-10,-10),(self.texW+20,self.texH+20))
-        glColor3d(1,1,1)
-        self.player.get_texture().blit(0,0)
-        glPopMatrix()
+        with DO(gx_matrix, gx_blending):
+            glColor4f(1,1,1,0.5)
+            drawRectangle((-10,-10),(self.texW+20,self.texH+20))
+            glColor3d(1,1,1)
+            self.player.get_texture().blit(0,0)
 
     def on_touch_down(self, touches, touchID, x, y):
         #if the touch isnt on teh widget we do nothing

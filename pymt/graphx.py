@@ -182,7 +182,7 @@ class GlDisplayList:
         glCallList(self.dl)
 
 class DO:
-    def __enter__(self, *args):
+    def __init__(self, *args):
         self.args = args
 
     def __enter__(self):

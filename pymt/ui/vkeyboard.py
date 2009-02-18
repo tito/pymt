@@ -81,10 +81,8 @@ class MTKeyButton(MTButton):
             self.keyboard.on_key_up(self.label)
 
 
-
-
 class MTVKeyboard(MTScatterWidget):
-    '''A virtual keyboard that can be scaled/roatetd/moved'''
+    '''A virtual keyboard that can be scaled/rotate/moved'''
 
     KEY_SPACE       = 'Space'
     KEY_ESCAPE      = 'Esc'

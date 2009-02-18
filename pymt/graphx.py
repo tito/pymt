@@ -171,25 +171,25 @@ class GlDisplayList:
         dl.draw()
     '''
     def __init__(self):
-        self.dl = None
+        print 'dl init'
+        self.dl = glGenLists(1)
+        self.compiled = False
 
     def __enter__(self):
-        self.dl = glGenLists(1)
         glNewList(self.dl, GL_COMPILE)
 
     def __exit__(self, type, value, traceback):
         glEndList()
+        self.compiled = True
 
     def clear(self):
-        self.dl = None
+        self.compiled = False
 
     def is_compiled(self):
-        if self.dl == None:
-            return False
-        return True
+        return self.compiled
 
     def draw(self):
-        if self.dl is None:
+        if not self.compiled:
             return
         glCallList(self.dl)
 

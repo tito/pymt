@@ -95,15 +95,21 @@ class HVLayout(MTWidget):
             except:
                 pass
 
-        # apply double padding, we take only what we want after
+        # apply double padding
         cur_x = cur_x + self.padding * 2
         cur_y = cur_y + self.padding * 2
+
+        # save
+        max_w_height = current_height
+        max_w_width  = current_width
+
+        # apply double padding
         current_width = current_width + self.padding * 2
         current_height = current_height + self.padding * 2
 
         # update content size
-        max_w_height = new_height = current_height
-        max_w_width  = new_width  = current_width
+        new_width  = current_width
+        new_height = current_height
         if self.alignment == 'horizontal':
             new_width = cur_x - start_x
         elif self.alignment == 'vertical':

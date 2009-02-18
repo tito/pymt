@@ -30,5 +30,4 @@ for i in range (20):
 
 w = MTWindow()
 w.add_widget(c)
-w.set_fullscreen()
 runTouchApp()

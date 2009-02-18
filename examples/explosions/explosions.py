@@ -378,7 +378,7 @@ def pymt_plugin_deactivate(root, ctx):
    root.remove_widget(ctx.PA)
 
 if __name__ == '__main__':
-    w = MTWindow(color=(0,0,0,1), fullscreen=True)
+    w = MTWindow(color=(0,0,0,1))
     #print gl_info.get_version()
     ctx = MTContext()
     pymt_plugin_activate(w, ctx)

@@ -103,7 +103,7 @@ class FlowchartObject(MTScatterWidget):
 
 
 if __name__ == "__main__":
-    win = MTWindow(fullscreen=True)
+    win = MTWindow()
     c = MTScatterPlane()
     root = FlowchartObject()
     c.add_widget(root)

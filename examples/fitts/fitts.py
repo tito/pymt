@@ -93,6 +93,6 @@ c.add_widget( t)
 c.add_widget( MTSourceWidget(target=t,pos=(300,300))  )
 #c.add_widget( MTDisplay(c) )
 
-win = MTWindow(fullscreen=True)
+win = MTWindow()
 win.add_widget(c)
 runTouchApp()

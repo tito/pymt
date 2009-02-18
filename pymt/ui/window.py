@@ -32,13 +32,6 @@ class MTWindow(TouchWindow):
             Make window as fullscreen
         `config` : `Config`
             Default configuration to pass on TouchWindow
-        `dump_frame` : bool, default is False
-            Activate dump of each frame in file
-        `dump_format` : string, default is png
-            Format of each frame
-        `dump_prefix` : string, default is 'img_'
-            Prefix of each frame filename
-
     '''
 
     def __init__(self, **kwargs):
@@ -47,9 +40,6 @@ class MTWindow(TouchWindow):
         kwargs.setdefault('fullscreen', None)
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
-        kwargs.setdefault('dump_frame', False)
-        kwargs.setdefault('dump_format', 'png')
-        kwargs.setdefault('dump_prefix', 'img_')
 
         self.fps_display =  pyglet.clock.ClockDisplay()
 
@@ -72,25 +62,19 @@ class MTWindow(TouchWindow):
             super(MTWindow, self).__init__()
 
         # use user-options before local options
-        if pymt.options.has_key('fullscreen'):
-            self.set_fullscreen(pymt.options.get('fullscreen'))
-        elif kwargs.get('fullscreen'):
+        if kwargs.get('fullscreen') is None:
+            self.set_fullscreen(pymt.pymt_config.getboolean('pymt', 'fullscreen'))
+        else:
             self.set_fullscreen(kwargs.get('fullscreen'))
 
         self.show_fps = kwargs.get('show_fps')
-        if pymt.options.has_key('show_fps'):
+        if pymt.pymt_config.getboolean('pymt', 'show_fps'):
             self.show_fps = True
 
         # initialize dump image
-        self.dump_frame     = kwargs.get('dump_frame')
-        if pymt.options.has_key('dump_frame'):
-            self.dump_frame = True
-        self.dump_prefix    = kwargs.get('dump_prefix')
-        if pymt.options.has_key('dump_prefix'):
-            self.dump_prefix = pymt.options.get('dump_prefix')
-        self.dump_format    = kwargs.get('dump_format')
-        if pymt.options.has_key('dump_format'):
-            self.dump_format = pymt.options.get('dump_format')
+        self.dump_frame     = pymt.pymt_config.getboolean('dump', 'enabled')
+        self.dump_prefix    = pymt.pymt_config.get('dump', 'prefix')
+        self.dump_format    = pymt.pymt_config.get('dump', 'format')
         self.dump_idx       = 0
 
     def _set_size(self, size):

@@ -24,7 +24,7 @@ def pymt_plugin_deactivate(w, ctx):
     w.remove_widget(ctx.c)
 
 if __name__ == '__main__':
-    w = MTWindow(fullscreen=True)
+    w = MTWindow()
     ctx = MTContext()
     pymt_plugin_activate(w, ctx)
     runTouchApp()

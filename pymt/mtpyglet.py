@@ -291,11 +291,11 @@ def runTouchApp():
     '''Static main function that starts the application loop'''
 
     # Check if we show event stats
-    if pymt.options.get('eventstats'):
+    if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
         pymt.widget.event_stats_activate()
 
-    host = pymt.options.get('host')
-    port = pymt.options.get('port')
+    host = pymt.pymt_config.get('tuio', 'host')
+    port = pymt.pymt_config.getint('tuio', 'port')
     print 'Notice: listening for TUIO on port', port, 'of host', host
     evloop = TouchEventLoop(host=host, port=port)
 
@@ -306,7 +306,7 @@ def runTouchApp():
         raise
 
     # Show event stats
-    if pymt.options.get('eventstats'):
+    if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
         pymt.widget.event_stats_print()
 
 #a very simple test

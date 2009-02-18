@@ -67,5 +67,4 @@ class DataViewer(MTContainer):
        
 w = MTWindow()
 w.add_widget(DataViewer('data.pkl'))
-w.set_fullscreen()
 runTouchApp()

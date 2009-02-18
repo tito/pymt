@@ -56,7 +56,7 @@ class Wang(MTWidget):
 
 
 if __name__ == '__main__':
-    w = MTWindow(fullscreen=True)
+    w = MTWindow()
     w.add_widget(Wang(mindist=200))
 
     runTouchApp()

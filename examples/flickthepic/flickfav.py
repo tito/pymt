@@ -62,7 +62,6 @@ class flickrEngine(MTWidget):
 
 if __name__ == '__main__':
     w = MTWindow()
-    w.set_fullscreen()
     flickme = flickrEngine()
     w.add_widget(flickme)
     runTouchApp()

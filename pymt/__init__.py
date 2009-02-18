@@ -7,7 +7,8 @@ Currently the aim is to allow for quick and easy interaction design and rapid pr
 You can visit http://code.google.com/p/pymt/ for more informations !
 '''
 
-
+from __future__ import with_statement
+import ConfigParser
 from mtpyglet import *
 from graphx import *
 from ui import *
@@ -29,38 +30,72 @@ def curry(fn, *cargs, **ckwargs):
         return fn(*(cargs + fargs), **d)
     return call_fn
 
-# PYMT Options management
-# Can be overrided in command line
+# Don't go further if we generate documentation
 if not os.path.basename(sys.argv[0]).startswith('sphinx'):
-    options = {'host': '127.0.0.1', 'port': 3333, 'eventstats': False}
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwFe',
-            ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps', 'event',
-             'dump-frame', 'dump-format=', 'dump-prefix='])
-        for opt, arg in opts:
-            if opt in ['-h', '--help']:
-                pymt_usage()
-                sys.exit(0)
-            elif opt in ['-p', '--port']:
-                options['port'] = int(arg)
-            elif opt in ['-H', '--host']:
-                options['host'] = str(arg)
-            elif opt in ['-f', '--fullscreen']:
-                options['fullscreen'] = True
-            elif opt in ['-w', '--windowed']:
-                options['fullscreen'] = False
-            elif opt in ['-F', '--fps']:
-                options['show_fps'] = True
-            elif opt in ['-e', '--eventstats']:
-                options['eventstats'] = True
-            elif opt in ['--dump-frame']:
-                options['dump_frame'] = True
-            elif opt in ['--dump-prefix']:
-                options['dump_prefix'] = str(arg)
-            elif opt in ['--dump-format']:
-                options['dump_format'] = str(arg)
 
-    except getopt.GetoptError, err:
-        print str(err), sys.argv, __name__
-        pymt_usage()
-        sys.exit(2)
+    # Configuration management
+    pymt_home_dir = os.path.expanduser('~/.pymt/')
+    pymt_config_fn = os.path.join(pymt_home_dir, 'config')
+    if not os.path.exists(pymt_home_dir):
+        os.mkdir(pymt_home_dir)
+
+    # Create default configuration
+    pymt_config = ConfigParser.ConfigParser()
+    pymt_config.add_section('pymt')
+    pymt_config.set('pymt', 'show_fps', '0')
+    pymt_config.set('pymt', 'show_eventstats', '0')
+    pymt_config.set('pymt', 'fullscreen', '1')
+    pymt_config.add_section('tuio')
+    pymt_config.set('tuio', 'host', '127.0.0.1')
+    pymt_config.set('tuio', 'port', '3333')
+    pymt_config.add_section('dump')
+    pymt_config.set('dump', 'enabled', '0')
+    pymt_config.set('dump', 'prefix', 'img_')
+    pymt_config.set('dump', 'format', 'jpeg')
+
+    # Read config file if exist
+    if os.path.exists(pymt_config_fn):
+        try:
+            pymt_config.read(pymt_config_fn)
+        except Exception, e:
+            print 'Warning: error while reading local configuration :', e
+    else:
+        try:
+            with open(pymt_config_fn, 'w') as fd:
+                pymt_config.write(fd)
+        except Exception, e:
+            print 'Warning: error while saving default configuration file :', e
+
+
+        # Can be overrided in command line
+        try:
+            opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwFe',
+                ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps', 'event',
+                 'dump-frame', 'dump-format=', 'dump-prefix='])
+            for opt, arg in opts:
+                if opt in ['-h', '--help']:
+                    pymt_usage()
+                    sys.exit(0)
+                elif opt in ['-p', '--port']:
+                    pymt_config.set('tuio', 'port', str(arg))
+                elif opt in ['-H', '--host']:
+                    pymt_config.set('tuio', 'host', str(arg))
+                elif opt in ['-f', '--fullscreen']:
+                    pymt_config.set('pymt', 'fullscreen', '1')
+                elif opt in ['-w', '--windowed']:
+                    pymt_config.set('pymt', 'fullscreen', '0')
+                elif opt in ['-F', '--fps']:
+                    pymt_config.set('pymt', 'show_fps', '1')
+                elif opt in ['-e', '--eventstats']:
+                    pymt_config.set('pymt', 'show_eventstats', '1')
+                elif opt in ['--dump-frame']:
+                    pymt_config.set('dump', 'enabled', '1')
+                elif opt in ['--dump-prefix']:
+                    pymt_config.set('dump', 'prefix', str(arg))
+                elif opt in ['--dump-format']:
+                    pymt_config.set('dump', 'format', str(arg))
+
+        except getopt.GetoptError, err:
+            print str(err), sys.argv, __name__
+            pymt_usage()
+            sys.exit(2)

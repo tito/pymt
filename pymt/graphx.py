@@ -159,7 +159,6 @@ class GlDisplayList:
         dl.draw()
     '''
     def __init__(self):
-        print 'dl init'
         self.dl = glGenLists(1)
         self.compiled = False
 

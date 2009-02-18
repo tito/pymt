@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import with_statement
 from pyglet import *
 from pyglet.gl import *
 from pyglet.graphics import draw
@@ -21,12 +22,13 @@ def setBrush(sprite, size=10):
     _bruch_size = size
 
 def enable_blending():
+    print 'Warning: deprecated, use "with gx_blending:" now.'
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
 def disable_blending():
+    print 'Warning: deprecated, use "with gx_blending:" now.'
     glDisable(GL_BLEND)
-
 
 def set_color(r,g,b,a=1.0):
     glColor4f(r,g,b,a)
@@ -44,96 +46,84 @@ def drawLabel(text, pos=(0,0),center=True, font_size=16):
     temp_label.y = 0
     temp_label.text = text
     temp_label.font_size=font_size
-    glPushMatrix()
-    glTranslated(pos[0], pos[1], 0.0)
-    glScaled(0.6,0.6,1)
-    temp_label.draw()
-    glPopMatrix()
+    with gx_matrix:
+        glTranslated(pos[0], pos[1], 0.0)
+        glScaled(0.6,0.6,1)
+        temp_label.draw()
     return temp_label.content_width
 
 
-#paint a line with current brush
+# paint a line with current brush
 def paintLine(points):
     p1 = (points[0], points[1])
     p2 = (points[2], points[3])
-    glEnable(GL_BLEND)
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-    glEnable(_brush_texture.target)
-    glBindTexture(_brush_texture.target, _brush_texture.id)
-    glEnable(GL_POINT_SPRITE_ARB)
-    glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE)
-    glPointSize(_bruch_size)
-    dx,dy = p2[0]-p1[0], p2[1]-p1[1]
-    dist = sqrt(dx*dx +dy*dy)
-    numsteps = max(1, int(dist)/4)
-    pointList = [0,0] * numsteps
-    for i in range(numsteps):
-        pointList[i * 2]   = p1[0] + dx* (float(i)/numsteps)
-        pointList[i * 2 + 1] = p1[1] + dy* (float(i)/numsteps)
-    draw(numsteps, GL_POINTS, ('v2f', pointList))
-    glDisable(GL_POINT_SPRITE_ARB)
-    glDisable(_brush_texture.target)
-
+    with DO(gx_blending, gx_enable(GL_POINT_SPRITE_ARB), gx_enable(_brush_texture.target)):
+        glBindTexture(_brush_texture.target, _brush_texture.id)
+        glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE)
+        glPointSize(_bruch_size)
+        dx,dy = p2[0]-p1[0], p2[1]-p1[1]
+        dist = sqrt(dx*dx +dy*dy)
+        numsteps = max(1, int(dist)/4)
+        pointList = [0,0] * numsteps
+        for i in range(numsteps):
+            pointList[i * 2]   = p1[0] + dx* (float(i)/numsteps)
+            pointList[i * 2 + 1] = p1[1] + dy* (float(i)/numsteps)
+        draw(numsteps, GL_POINTS, ('v2f', pointList))
 
 def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
                          linewidth=1.5, precision=0.5):
     x, y = pos
     w, h = size
 
-    #with smalle values the algorithm draws wierd stuff, so well make the number s bigger and do a glScale to undo
-
     if color:
         glColor4f(*color)
     glLineWidth(linewidth)
 
-    glBegin(GL_POLYGON)
+    with gx_begin(GL_POLYGON):
 
-    glVertex2f(x + radius, y)
-    glVertex2f(x + w-radius, y)
-    t = math.pi * 1.5
-    while t < math.pi * 2:
-        sx = x + w - radius + math.cos(t) * radius
-        sy = y + radius + math.sin(t) * radius
-        glVertex2f(sx, sy)
-        t += precision
+        glVertex2f(x + radius, y)
+        glVertex2f(x + w-radius, y)
+        t = math.pi * 1.5
+        while t < math.pi * 2:
+            sx = x + w - radius + math.cos(t) * radius
+            sy = y + radius + math.sin(t) * radius
+            glVertex2f(sx, sy)
+            t += precision
 
-    glVertex2f(x + w, y + radius)
-    glVertex2f(x + w, y + h - radius)
-    t = 0
-    while t < math.pi * 0.5:
-        sx = x + w - radius + math.cos(t) * radius
-        sy = y + h -radius + math.sin(t) * radius
-        glVertex2f(sx, sy)
-        t += precision
+        glVertex2f(x + w, y + radius)
+        glVertex2f(x + w, y + h - radius)
+        t = 0
+        while t < math.pi * 0.5:
+            sx = x + w - radius + math.cos(t) * radius
+            sy = y + h -radius + math.sin(t) * radius
+            glVertex2f(sx, sy)
+            t += precision
 
-    glVertex2f(x + w -radius, y + h)
-    glVertex2f(x + radius, y + h)
-    t = math.pi * 0.5
-    while t < math.pi:
-        sx = x  + radius + math.cos(t) * radius
-        sy = y + h - radius + math.sin(t) * radius
-        glVertex2f(sx, sy)
-        t += precision
+        glVertex2f(x + w -radius, y + h)
+        glVertex2f(x + radius, y + h)
+        t = math.pi * 0.5
+        while t < math.pi:
+            sx = x  + radius + math.cos(t) * radius
+            sy = y + h - radius + math.sin(t) * radius
+            glVertex2f(sx, sy)
+            t += precision
 
-    glVertex2f(x, y + h - radius)
-    glVertex2f(x, y + radius)
-    t = math.pi
-    while t < math.pi * 1.5:
-        sx = x + radius + math.cos(t) * radius
-        sy = y + radius + math.sin(t) * radius
-        glVertex2f (sx, sy)
-        t += precision
-
-    glEnd()
+        glVertex2f(x, y + h - radius)
+        glVertex2f(x, y + radius)
+        t = math.pi
+        while t < math.pi * 1.5:
+            sx = x + radius + math.cos(t) * radius
+            sy = y + radius + math.sin(t) * radius
+            glVertex2f (sx, sy)
+            t += precision
 
 
 def drawCircle(pos=(0,0), radius=1.0):
     x, y = pos[0], pos[1]
-    glPushMatrix()
-    glTranslated(x,y, 0)
-    glScaled(radius, radius,1.0)
-    gluDisk(gluNewQuadric(), 0, 1, 32,1)
-    glPopMatrix()
+    with gx_matrix:
+        glTranslated(x,y, 0)
+        glScaled(radius, radius,1.0)
+        gluDisk(gluNewQuadric(), 0, 1, 32,1)
 
 def drawTrianglePoints(points ):
     draw(3, GL_TRIANGLES, ('v2f', points))
@@ -143,20 +133,18 @@ def drawTriangle(pos, w, h):
     draw(3, GL_TRIANGLES, ('v2f', points))
 
 def drawRectangle(pos=(0,0), size=(1.0,1.0), ):
-    glBegin(GL_QUADS)
-    glVertex2f(pos[0], pos[1])
-    glVertex2f(pos[0] + size[0], pos[1])
-    glVertex2f(pos[0] + size[0], pos[1] + size[1])
-    glVertex2f(pos[0], pos[1] + size[1])
-    glEnd()
+    with gx_begin(GL_QUADS):
+        glVertex2f(pos[0], pos[1])
+        glVertex2f(pos[0] + size[0], pos[1])
+        glVertex2f(pos[0] + size[0], pos[1] + size[1])
+        glVertex2f(pos[0], pos[1] + size[1])
 
 def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0)):
-    glEnable(GL_TEXTURE_2D)
-    glBindTexture(GL_TEXTURE_2D,texture)
-    pos = ( pos[0],pos[1],   pos[0]+size[0],pos[1],   pos[0]+size[0],pos[1]+size[1],  pos[0],pos[1]+size[1] )
-    texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
-    draw(4, GL_QUADS, ('v2f', pos), ('t2f', texcoords))
-    glDisable(GL_TEXTURE_2D)
+    with gx_enable(GL_TEXTURE_2D):
+        glBindTexture(GL_TEXTURE_2D,texture)
+        pos = ( pos[0],pos[1],   pos[0]+size[0],pos[1],   pos[0]+size[0],pos[1]+size[1],  pos[0],pos[1]+size[1] )
+        texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
+        draw(4, GL_QUADS, ('v2f', pos), ('t2f', texcoords))
 
 def drawLine(points, width=5.0):
     glLineWidth (width)
@@ -193,6 +181,18 @@ class GlDisplayList:
             return
         glCallList(self.dl)
 
+class DO:
+    def __enter__(self, *args):
+        self.args = args
+
+    def __enter__(self):
+        for item in self.args:
+            item.__enter__()
+
+    def __exit__(self, type, value, traceback):
+        for item in self.args:
+            item.__exit__(type, value, traceback)
+
 
 class GlBlending:
     '''Abstraction to use blending ! Don't use directly this class.
@@ -223,9 +223,10 @@ class GlMatrix:
     '''
     def __init__(self, matrixmode=GL_MODELVIEW, do_loadidentity=False):
         self.do_loadidentity = do_loadidentity
+        self.matrixmode = matrixmode
 
     def __enter__(self):
-        glMatrixMode(GL_MODELVIEW)
+        glMatrixMode(self.matrixmode)
         glPushMatrix()
         if self.do_loadidentity:
             glLoadIdentity()
@@ -236,6 +237,29 @@ class GlMatrix:
 gx_matrix = GlMatrix()
 gx_matrix_identity = GlMatrix(do_loadidentity=True)
 
+class GlEnable:
+    def __init__(self, flag):
+        self.flag = flag
+
+    def __enter__(self):
+        glEnable(self.flag)
+
+    def __exit__(self, type, value, traceback):
+        glDisable(self.flag)
+
+gx_enable = GlEnable
+
+class GlBegin:
+    def __init__(self, flag):
+        self.flag = flag
+
+    def __enter__(self):
+        glBegin(self.flag)
+
+    def __exit__(self, type, value, traceback):
+        glEnd()
+
+gx_begin = GlBegin
 
 ### FBO, PBO, opengl stuff
 class Fbo:
@@ -254,6 +278,12 @@ class Fbo:
             glPopAttrib()
         Fbo.fbo_stack.pop()
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, Fbo.fbo_stack[-1])
+
+    def __enter__(self):
+        self.bind()
+
+    def __exit__(self, type, value, traceback):
+        self.release()
 
     def __init__(self, size=(1024,1024), push_viewport=False):
         self.framebuffer    = c_uint(0)

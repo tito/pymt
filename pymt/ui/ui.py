@@ -1,3 +1,4 @@
+from __future__ import with_statement
 from pyglet import *
 from pyglet.gl import *
 from pymt.graphx import *
@@ -225,24 +226,20 @@ class MTScatterWidget(MTWidget):
             self.init_transform(self.pos, kwargs.get('rotation'), kwargs.get('scale'))
 
     def init_transform(self, pos, angle, scale):
-        glMatrixMode(GL_MODELVIEW)
-        glPushMatrix()
-        glLoadIdentity()
-        glTranslated(pos[0], pos[1], 0)
-        glScalef(scale, scale, 1)
-        glRotated(angle,0,0,1)
-        glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
-        glPopMatrix()
+        with gx_matrix_identity:
+            glTranslated(pos[0], pos[1], 0)
+            glScalef(scale, scale, 1)
+            glRotated(angle,0,0,1)
+            glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
 
     def draw(self):
         glColor4d(*self.color)
         drawRectangle((0,0), (self.width, self.height))
 
     def on_draw(self):
-        glPushMatrix()
-        glMultMatrixf(self.transform_mat)
-        super(MTScatterWidget, self).on_draw()
-        glPopMatrix()
+		with gx_matrix:
+			glMultMatrixf(self.transform_mat)
+			super(MTScatterWidget, self).on_draw()
 
     def to_parent(self, x,y):
         self.new_point = matrix_mult(self.transform_mat, (x,y,0,1))
@@ -305,16 +302,14 @@ class MTScatterWidget(MTWidget):
             trans = p1_now - p1_start
 
         # apply to our transformation matrix
-        glPushMatrix()
-        glLoadIdentity()
-        glTranslated(trans.x, trans.y,0)
-        glTranslated(intersect.x, intersect.y,0)
-        glScaled(scale, scale,1)
-        glRotated(rotation,0,0,1)
-        glTranslated(-intersect.x, -intersect.y,0)
-        glMultMatrixf(self.transform_mat)
-        glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
-        glPopMatrix()
+        with gx_matrix_identity:
+            glTranslated(trans.x, trans.y,0)
+            glTranslated(intersect.x, intersect.y,0)
+            glScaled(scale, scale,1)
+            glRotated(rotation,0,0,1)
+            glTranslated(-intersect.x, -intersect.y,0)
+            glMultMatrixf(self.transform_mat)
+            glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
 
         # save new position of the current touch
         self.touches[touchID] = Vector(x,y)
@@ -444,10 +439,9 @@ class MTScatterImage(MTScatterWidget):
             self.image  = pyglet.sprite.Sprite(img)
 
     def draw(self):
-        glPushMatrix()
-        glScaled(float(self.width)/self.image.width, float(self.height)/self.image.height, 2.0)
-        self.image.draw()
-        glPopMatrix()
+        with gx_matrix:
+            glScaled(float(self.width)/self.image.width, float(self.height)/self.image.height, 2.0)
+            self.image.draw()
 
 
 class MTSlider(MTWidget):
@@ -494,21 +488,20 @@ class MTSlider(MTWidget):
     value = property(get_value, set_value, doc='Value of the slider')
 
     def draw(self):
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        x,y,w,h = self.x, self.y, self.width, self.height
-        p2 =self.padding/2
-        # draw outer rectangle
-        glColor4f(0.2,0.2,0.2,0.5)
-        drawRectangle(pos=(x,y), size=(w,h))
-        # draw inner rectangle
-        glColor4f(*self.color)
-        if self.orientation == 'vertical':
-            length = int((self._value - self.min) * (self.height - self.padding) / (self.max - self.min))
-            drawRectangle(pos=(x+p2,y+p2), size=(w - self.padding, length))
-        else:
-            length = int((self._value - self.min) * (self.width - self.padding) / (self.max - self.min))
-            drawRectangle(pos=(x+p2,y+p2), size=(length, h - self.padding))
+        with gx_blending:
+            x,y,w,h = self.x, self.y, self.width, self.height
+            p2 =self.padding/2
+            # draw outer rectangle
+            glColor4f(0.2,0.2,0.2,0.5)
+            drawRectangle(pos=(x,y), size=(w,h))
+            # draw inner rectangle
+            glColor4f(*self.color)
+            if self.orientation == 'vertical':
+                length = int((self._value - self.min) * (self.height - self.padding) / (self.max - self.min))
+                drawRectangle(pos=(x+p2,y+p2), size=(w - self.padding, length))
+            else:
+                length = int((self._value - self.min) * (self.width - self.padding) / (self.max - self.min))
+                drawRectangle(pos=(x+p2,y+p2), size=(length, h - self.padding))
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -604,17 +597,16 @@ class MT2DSlider(MTWidget):
     value_y = property(get_value_y, set_value_y, doc='Value of the slider (y axis)')
 
     def draw(self):
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        x,y,w,h = self.x,self.y,self.width, self.height
-        # draw outer rectangle
-        glColor4f(0.2,0.2,0.2,0.5)
-        drawRectangle(pos=(x,y), size=(w,h))
-        # draw inner circle
-        glColor4f(*self.color)
-        pos_x = int((self._value_x - self.min_x) * (self.width - self.padding*2) / (self.max_x - self.min_x))  + self.x + self.padding
-        pos_y = int((self._value_y - self.min_y) * (self.height - self.padding*2) / (self.max_y - self.min_y)) + self.y + self.padding
-        drawCircle(pos=(pos_x, pos_y), radius = self.radius)
+        with gx_blending:
+            x,y,w,h = self.x,self.y,self.width, self.height
+            # draw outer rectangle
+            glColor4f(0.2,0.2,0.2,0.5)
+            drawRectangle(pos=(x,y), size=(w,h))
+            # draw inner circle
+            glColor4f(*self.color)
+            pos_x = int((self._value_x - self.min_x) * (self.width - self.padding*2) / (self.max_x - self.min_x))  + self.x + self.padding
+            pos_y = int((self._value_y - self.min_y) * (self.height - self.padding*2) / (self.max_y - self.min_y)) + self.y + self.padding
+            drawCircle(pos=(pos_x, pos_y), radius = self.radius)
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -755,17 +747,15 @@ class MTObjectWidget(MTWidget):
     def draw(self):
         if not self.visible:
             return
-        glPushMatrix()
-        glTranslatef(self.x,self.y,0.0)
-        glRotatef(self.angle,0.0,0.0,1.0)
-        glColor3f(1.0,1.0,1.0)
-        drawRectangle((-0.5*self.width, -0.5*self.height) ,(self.width, self.height))
-        glColor3f(0.0,0.0,1.0)
-        glBegin(GL_LINES)
-        glVertex2f(0.0,0.0)
-        glVertex2f(0,-0.5*self.height)
-        glEnd()
-        glPopMatrix()
+        with gx_matrix:
+            glTranslatef(self.x,self.y,0.0)
+            glRotatef(self.angle,0.0,0.0,1.0)
+            glColor3f(1.0,1.0,1.0)
+            drawRectangle((-0.5*self.width, -0.5*self.height) ,(self.width, self.height))
+            glColor3f(0.0,0.0,1.0)
+            with gx_begin(GL_LINES):
+                glVertex2f(0.0,0.0)
+                glVertex2f(0,-0.5*self.height)
 
 class MTSvg(MTWidget):
     '''Render an svg image
@@ -843,11 +833,10 @@ class MTButtonMatrix(MTWidget):
         if self.matrix[i][j] == 'down':
             glColor4f(0,0,1,1)
 
-        glPushMatrix()
-        glTranslatef(self.width/self.matrix_size[0]*i, self.height/self.matrix_size[1]*j,0)
-        s =  (self.width/self.matrix_size[0]-self.border,self.height/self.matrix_size[1]-self.border)
-        drawRectangle(size=s)
-        glPopMatrix()
+        with gx_matrix:
+            glTranslatef(self.width/self.matrix_size[0]*i, self.height/self.matrix_size[1]*j,0)
+            s =  (self.width/self.matrix_size[0]-self.border,self.height/self.matrix_size[1]-self.border)
+            drawRectangle(size=s)
 
 
     def draw(self):

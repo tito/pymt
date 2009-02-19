@@ -1,28 +1,34 @@
+from __future__ import with_statement
 from random import randint
 from pyglet.gl import *
 
 from pymt import *
 
 
-
+vertex_dl = GlDisplayList()
 def drawVertex(x,y):
-       glPushMatrix()
-       glTranslated(x,y, 0)
-       glColor3d(1.0,1.0,1.0)
-       gluDisk(gluNewQuadric(), 0, 25, 32,1)
-       glScaled(0.75,0.75,1.0)
-       glColor3d(0.2,0.6,0.2)
-       gluDisk(gluNewQuadric(), 0, 25, 32,1)
-       glPopMatrix()
+    global vertex_dl
+    with gx_matrix:
+        glTranslated(x,y, 0)
+        if not vertex_dl.is_compiled():
+            with vertex_dl:
+                glColor3d(1.0,1.0,1.0)
+                gluDisk(gluNewQuadric(), 0, 25, 32,1)
+                glScaled(0.75,0.75,1.0)
+                glColor3d(0.2,0.6,0.2)
+                gluDisk(gluNewQuadric(), 0, 25, 32,1)
+        vertex_dl.draw()
 
+collision_dl = GlDisplayList()
 def drawCollision(x,y):
-       glPushMatrix()
-       glTranslated(x,y-5, 0)
-       with gx_blending:
-              glColor4f(1.0,0.0,0.0, 0.3)
-              drawTriangle(pos=(0,0),w=20,h=20)
-       #gluDisk(gluNewQuadric(), 0, 10, 32,1)
-       glPopMatrix()
+    global collision_dl
+    with DO(gx_matrix, gx_blending):
+        glTranslated(x,y-5, 0)
+        if not collision_dl.is_compiled():
+            with collision_dl:
+                glColor4f(1.0,0.0,0.0, 0.3)
+                drawTriangle(pos=(0,0),w=20,h=20)
+        collision_dl.draw()
 
 
 def point_inside_line_segment(point, p1, p2):

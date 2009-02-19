@@ -1,5 +1,3 @@
-from __future__ import with_statement
-
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
 PLUGIN_TITLE = 'Untangle'
@@ -16,7 +14,7 @@ import pickle
 
 
 """
-I use the EventLogger and TrialLogger classes to record all the touch input, so that I can visuakize/analyze the user interacitons for some user studies I am working on.
+I use the EventLogger and TrialLogger classes to record all the touch input, so that I can visualize/analyze the user interacitons for some user studies I am working on.
 They have absolutly nothing to do with the Graph untabgle game, i case anyone is trying to read this to learn pymt.
 """
 class EventLogger(MTWidget):
@@ -62,21 +60,24 @@ class TrialLogger(EventLogger):
 		
 	
 	def start(self):
-		self.widget_start = pickle.dumps(self.widget)
+		self.graph_start = pickle.dumps([self.widget.g.verts, self.widget.g.edges])
+		self.start_time = time.clock()
 		self.enabled = True
 		
 	
 		
 	def save(self,filename):
 		self.stop()
-		self.widget_stop = pickle.dumps(self.widget)
-		
+		self.graph_stop = pickle.dumps([self.widget.g.verts, self.widget.g.edges])
+		self.stop_time = time.clock()
 		f = open(filename,'wb')
-		data = {'graph_start': self.widget_start,
-			'widget_stop':self.widget_stop,
-			'touch_event_log': self.touches,
+		data = {
+			'graph_start' : self.graph_start,
+			'graph_stop' : self.graph_stop,
                         'start_time': self.start_time,
-                        'stop_time': self.stop_time}
+                        'stop_time': self.stop_time,
+			'touch_event_log': self.touches,
+			}
 		pickle.dump(data, f)
 		f.close()
 		
@@ -85,7 +86,7 @@ class NewGameMenu(HVLayout):
 	def __init__(self, window, **kwargs):
 		super(NewGameMenu, self).__init__(**kwargs)
 		self.window = window
-		
+		self.trial_num = 0
 		
 		b1 = MTButton(label="10 Vertices", size=(200,100))
 		b1.push_handlers(on_release=self.startNewGame10)		
@@ -123,9 +124,16 @@ class NewGameMenu(HVLayout):
 		if self.graph:
 			self.window.remove_widget(self.graph)
 		self.graph = GraphUI(size=numVerts, w=self.window, menu=self)
+
 		self.window.add_widget(self.graph)
+
+		self.trial_num += 1
+		self.log = TrialLogger(self.graph)
+		self.log.start()
+
 		self.window.remove_widget(self)
 		self.start_time = time.clock()
+
 		
 	def startNewGame10(self, touchID, x, y):
 		self.startNewGame(10)
@@ -150,6 +158,8 @@ class GraphUI(MTWidget):
 		self.done = False
 		self.num_moves_since_check = 0 #if we try to solve on every move event things get slow
 		
+		
+		
 	def draw(self):
 		self.g.draw()
 
@@ -168,6 +178,8 @@ class GraphUI(MTWidget):
 		if self.g.is_solved():
 			#self.g = Graph(15,displaySize=w.size)
 			self.done = True
+			self.menu.log.stop()
+			self.menu.log.save('trial_'+str(self.menu.trial_num)+'.pkl')
 			self.menu.stop_time =  time.clock()
 			self.menu.num_moves = self.num_moves
 			self.parent.add_widget(self.menu)
@@ -179,13 +191,12 @@ class GraphUI(MTWidget):
 	                self.touch2vertex[touchID][0] = x
 	                self.touch2vertex[touchID][1] = y
 		self.num_moves_since_check += 1
-		if self.num_moves_since_check%2 == 0:
-			self.g.is_solved()
+		if self.num_moves_since_check%4 == 0:
+			#self.g.is_solved()
 			self.num_moves_since_check = 0
 
 
 def pymt_plugin_activate(w, ctx):
-	
 	#ctx.log = TrialLogger(ctx.graph)
 	ctx.menu = NewGameMenu(w, pos=(w.width/2 -425, w.height/2))
 	w.add_widget(ctx.menu)
@@ -197,7 +208,7 @@ def pymt_plugin_deactivate(w, ctx):
 
 if __name__ == '__main__':
 	#init our window
-	w = MTWindow()
+	w = MTWindow(fullscreen=True)
 	ctx = MTContext()
 	pymt_plugin_activate(w, ctx)
 	runTouchApp()

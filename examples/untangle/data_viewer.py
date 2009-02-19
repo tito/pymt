@@ -14,42 +14,55 @@ class DataViewer(MTWidget):
 
     def draw(self):
         glPushMatrix()
-        glScaled(0.5,0.5,1.0)
+        #glScaled(0.5,0.5,1.0)
         
         
-        sorted_t = sorted(self.data['events'].keys())
         
-        first_t = self.data['events'][sorted_t[0]][0]['t']
-        last_t = self.data['events'][sorted_t[-1]][-1]['t']
+        
+        first_t = self.data['start_time']
+        last_t = self.data['stop_time']
         #print first_t, last_t
         
-        for touchID in self.data['events']:
+        for touchID in self.data['touch_event_log']:
             timekey = lambda x: x['t']
 
             
             p1 = (0,0)
             p2 = (0,0)
-            for e in self.data['events'][touchID]:
-                t = (e['t'] - first_t)/(last_t -first_t) /4.0
+            last_pos = (0,0)
+            for e in self.data['touch_event_log'][touchID]:
+                t = (e['t'] - first_t)/(last_t -first_t) 
                 #print e['t']
-                tt = (e['t'] - self.data['events'][touchID][0]['t'])/(self.data['events'][touchID][-1]['t'] - self.data['events'][touchID][0]['t'])
+                #tt = (e['t'] - self.data['touch_event_log'][touchID][0]['t'])/(self.data['touch_event_log'][touchID][-1]['t'] - self.data['touch_event_log'][touchID][0]['t'])
+                #t = tt
                 if e['type'] != 'down':
                     p2 = (e['x'], e['y'])
                     #glColor3d(0, tt, tt)
-                    glColor3d(1, 1-t, 0)
+                    glColor3d(1-t, 1-t, t)
                     drawLine(p1 + p2, width=1)
                     p1 = (e['x'], e['y'])
                     
+                    
                 if e['type'] == 'down':
                     p1 = (e['x'], e['y'])
-                    glColor3d(1, 1-t, 0)
-                    drawCircle(p1, radius=10)
+                    glColor3d(1-t, 1-t, t)
+                    drawCircle(p1, radius=8)
+                    last_pos = p1
                     
                 if e['type'] == 'up':
-                    glColor3d(1, 1-t, 0)
-                    drawCircle(p1, radius=10)
-                    
+                    glColor3d(1-t, 1-t, t)
+                    angle = Vector.angle(Vector(*last_pos),Vector(0,1) )
+                    glPushMatrix()
+                    glTranslated(p1[0], p1[1], 0)
+                    if p1[0] < last_pos[0]:
+                        glRotated(-angle, 0,0,1)
+                    else:
+                        glRotated(angle, 0,0,1)
+                    drawTriangle(pos=(0,0), w=10, h=15)
+                    glPopMatrix()
         glPopMatrix()
         
-w = MTWindow(DataViewer('single-mouse.pkl'))
+w = MTWindow()
+w.color=(0,0,0,0)
+w.add_widget(DataViewer('trial_1.pkl'))
 runTouchApp()

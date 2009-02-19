@@ -1,7 +1,7 @@
 from __future__ import with_statement
 from pymt import *
 from pyglet.gl import *
-from pymt.ui import *
+from pymt.ui.widgets import *
 
 iconPath = os.path.join(os.path.dirname(pymt.__file__), 'data', 'icons','')
 

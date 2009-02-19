@@ -5,7 +5,7 @@ from pyglet import *
 import pymt
 from pymt.mtpyglet import TouchWindow
 from pymt.ui.simulator import *
-from pymt.ui.widget import *
+from pymt.ui.widgets.widget import *
 
 class MTWindowRoot(MTWidget):
     def __init__(self, **kwargs):

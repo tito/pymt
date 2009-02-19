@@ -2,7 +2,7 @@ from __future__ import with_statement
 import pymt
 from pymt import *
 from pyglet.gl import *
-from pymt.ui import *
+from pymt.ui.widgets import *
 from pyglet.media import *
 from time import sleep
 

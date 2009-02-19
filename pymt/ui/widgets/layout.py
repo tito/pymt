@@ -1,4 +1,4 @@
-from pymt.ui.widget import MTWidget
+from pymt.ui.widgets.widget import MTWidget
 
 class HVLayout(MTWidget):
     '''Horizontal / Vertical layout.

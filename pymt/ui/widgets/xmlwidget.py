@@ -1,5 +1,5 @@
 from xml.dom import minidom, Node
-from pymt.ui.widget import MTWidget
+from pymt.ui.widgets.widget import MTWidget
 from pymt.ui.factory import MTWidgetFactory
 
 class XMLWidget(MTWidget):

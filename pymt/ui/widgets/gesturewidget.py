@@ -1,5 +1,5 @@
 from pymt.gesture import Gesture
-from pymt.ui import MTWidget
+from pymt.ui.widgets.widget import MTWidget
 from pymt.ui.factory import MTWidgetFactory
 
 class MTGestureWidget(MTWidget):

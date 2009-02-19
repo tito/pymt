@@ -4,7 +4,7 @@ from pyglet.window import key
 from pymt.graphx import *
 from pymt.mtpyglet import *
 from pymt.ui.factory import MTWidgetFactory
-from pymt.ui.widget import MTWidget
+from pymt.ui.widgets.widget import MTWidget
 
 class MTSimulator(MTWidget):
     """MTSimulator is a widget who generate touch event from mouse event"""

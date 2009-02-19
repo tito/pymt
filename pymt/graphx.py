@@ -126,11 +126,13 @@ def drawCircle(pos=(0,0), radius=1.0):
         gluDisk(gluNewQuadric(), 0, 1, 32,1)
 
 def drawTrianglePoints(points ):
-    draw(3, GL_TRIANGLES, ('v2f', points))
+    with gx_begin(GL_TRIANGLES):
+        while len(points):
+            glVertex2f(points.pop(), points.pop())
 
 def drawTriangle(pos, w, h):
-    points = (pos[0]-w/2,pos[1], pos[0]+w/2,pos[1], pos[0],pos[1]+h,)
-    draw(3, GL_TRIANGLES, ('v2f', points))
+    points = [pos[0]-w/2, pos[1], pos[0]+w/2, pos[1], pos[0], pos[1]+h]
+    drawTrianglePoints(points)
 
 def drawRectangle(pos=(0,0), size=(1.0,1.0), ):
     with gx_begin(GL_QUADS):
@@ -147,8 +149,11 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0)):
         draw(4, GL_QUADS, ('v2f', pos), ('t2f', texcoords))
 
 def drawLine(points, width=5.0):
-    glLineWidth (width)
-    draw(2,GL_LINES, ('v2f', points))
+    glLineWidth(width)
+    points = list(points)
+    with gx_begin(GL_LINES):
+        while len(points):
+            glVertex2f(points.pop(0), points.pop(0))
 
 class GlDisplayList:
     '''Abstraction to opengl display-list usage. Here is an example of usage ::

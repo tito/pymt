@@ -95,6 +95,8 @@ class MTWidget(pyglet.event.EventDispatcher):
     visible = property(_get_visible, _set_visible)
 
     def _set_x(self, x):
+        if self._x == x:
+            return
         self._x = x
         self.dispatch_event('on_move', self.x, self.y)
     def _get_x(self):
@@ -102,6 +104,8 @@ class MTWidget(pyglet.event.EventDispatcher):
     x = property(_get_x, _set_x)
 
     def _set_y(self, y):
+        if self._y == x:
+            return
         self._y = y
         self.dispatch_event('on_move', self.x, self.y)
     def _get_y(self):
@@ -109,6 +113,8 @@ class MTWidget(pyglet.event.EventDispatcher):
     y = property(_get_y, _set_y)
 
     def _set_width(self, w):
+        if self._width == w:
+            return
         self._width = w
         self.dispatch_event('on_resize', self._width, self._height)
     def _get_width(self):
@@ -116,6 +122,8 @@ class MTWidget(pyglet.event.EventDispatcher):
     width = property(_get_width, _set_width)
 
     def _set_height(self, h):
+        if self._height == h:
+            return
         self._height = h
         self.dispatch_event('on_resize', self._width, self._height)
     def _get_height(self):
@@ -125,12 +133,12 @@ class MTWidget(pyglet.event.EventDispatcher):
     def _get_center(self):
         return (self._x + self._width/2, self._y+self._height/2)
     def _set_center(self, center):
-        self._x = center[0] - self.width/2
-        self._y = center[1] - self.height/2
-        self.dispatch_event('on_move', self._x, self._y)
+        self.pos = (center[0] - self.width/2, center[1] - self.height/2)
     center = property(_get_center, _set_center)
 
     def _set_pos(self, pos):
+        if self._x == pos[0] and self._y == pos[1]:
+            return
         self._x, self._y = pos
         self.dispatch_event('on_move', self._x, self._y)
     def _get_pos(self):
@@ -138,7 +146,9 @@ class MTWidget(pyglet.event.EventDispatcher):
     pos = property(_get_pos, _set_pos)
 
     def _set_size(self, size):
-        self.width, self.height = size
+        if self._width == size[0] and self._height == size[1]:
+            return
+        self._width, self._height = size
         self.dispatch_event('on_resize', self.width, self.height)
     def _get_size(self):
         return (self.width, self.height)

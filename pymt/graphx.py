@@ -125,17 +125,17 @@ def drawCircle(pos=(0,0), radius=1.0):
         glScaled(radius, radius,1.0)
         gluDisk(gluNewQuadric(), 0, 1, 32,1)
 
-def drawTrianglePoints(points ):
-    with gx_begin(GL_TRIANGLES):
+def drawTrianglePoints(points, style=GL_TRIANGLES):
+    with gx_begin(style):
         while len(points):
             glVertex2f(points.pop(), points.pop())
 
-def drawTriangle(pos, w, h):
+def drawTriangle(pos, w, h, style=GL_TRIANGLES):
     points = [pos[0]-w/2, pos[1], pos[0]+w/2, pos[1], pos[0], pos[1]+h]
     drawTrianglePoints(points)
 
-def drawRectangle(pos=(0,0), size=(1.0,1.0), ):
-    with gx_begin(GL_QUADS):
+def drawRectangle(pos=(0,0), size=(1.0,1.0), style=GL_QUADS):
+    with gx_begin(style):
         glVertex2f(pos[0], pos[1])
         glVertex2f(pos[0] + size[0], pos[1])
         glVertex2f(pos[0] + size[0], pos[1] + size[1])

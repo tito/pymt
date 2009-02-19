@@ -77,6 +77,9 @@ class ModelViewer(GLWindow):
             self.model = bunny = OBJ('../3Dviewer/monkey.obj')
         self.rotation_matrix = (GLfloat * 16)()
         self.reset_rotation()
+        self.touch1, self.touch2 = None, None
+        self.zoom = 1.0
+        
 
     def reset_rotation(self):
         glMatrixMode(GL_MODELVIEW)
@@ -89,14 +92,31 @@ class ModelViewer(GLWindow):
         glMultMatrixf(self.rotation_matrix)
         #glRotatef(180.0, 0,0,1)
         glRotatef(90.0, 1,0,0)
+        glScalef(self.zoom, self.zoom, self.zoom)
         self.model.draw()
 
     def on_touch_down(self, touches, touchID, x, y):
         self.touch_position[touchID] = (x,y)
+        if len(self.touch_position) == 1:
+            self.touch1 = touchID
+        elif len(self.touch_position) == 2:
+            self.touch2 = touchID
+            v1 = self.touch_position[self.touch1]
+            v2 = self.touch_position[self.touch2]
+            self.scale_dist = Vector.distance(Vector(*v1), Vector(*v2))
 
     def on_touch_move(self, touches, touchID, x, y):
-        dx = 100.0*(x-self.touch_position[touchID][0])/float(self.width)
-        dy = 100.0*(y-self.touch_position[touchID][1])/float(self.height)
+        dx, dy = 0,0
+        scale = 1.0
+        if  self.touch_position.has_key(self.touch1) and self.touch_position.has_key(self.touch2):
+            v1 = self.touch_position[self.touch1]
+            v2 = self.touch_position[self.touch2]
+            new_dist = Vector.distance(Vector(*v1), Vector(*v2))
+            self.zoom *= new_dist/self.scale_dist
+            self.scale_dist = new_dist
+        else:
+            dx = 200.0*(x-self.touch_position[touchID][0])/float(self.width)
+            dy = 200.0*(y-self.touch_position[touchID][1])/float(self.height)
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLoadIdentity()

@@ -22,12 +22,15 @@ class EventLogger(MTWidget):
 		MTWidget.__init__(self)
 		self.touches = {}
 		self.enabled = False
+
 	
 	def start(self):
 		self.enabled = True
-		
+                self.start_time = time.clock()
+                
 	def stop(self):
 		self.enabled = False
+                self.stop_time = time.clock()
 		
 	def clear(self):
 		self.touches = {}
@@ -69,49 +72,130 @@ class TrialLogger(EventLogger):
 		f = open(filename,'wb')
 		data = {'graph_start': self.widget_start,
 			'widget_stop':self.widget_stop,
-			'touch_events': self.touches}
+			'touch_event_log': self.touches,
+                        'start_time': self.start_time,
+                        'stop_time': self.stop_time}
 		pickle.dump(data, f)
 		f.close()
 		
 		
+class NewGameMenu(HVLayout):
+	def __init__(self, window, **kwargs):
+		super(NewGameMenu, self).__init__(**kwargs)
+		self.window = window
+		
+		
+		b1 = MTButton(label="10 Vertices", size=(200,100))
+		b1.push_handlers(on_release=self.startNewGame10)		
+		self.add_widget(b1)
+		
+		b1 = MTButton(label="15 Vertices", size=(200,100))
+		b1.push_handlers(on_release=self.startNewGame15)		
+		self.add_widget(b1)
+		
+		b1 = MTButton(label="20 Vertices", size=(200,100))
+		b1.push_handlers(on_release=self.startNewGame20)		
+		self.add_widget(b1)
+		
+		b1 = MTButton(label="25 Vertices", size=(200,100))
+		b1.push_handlers(on_release=self.startNewGame25)		
+		self.add_widget(b1)
+		
+		self.graph = None
+		self.start_time = None
+		self.stop_time = None
+		
+	def draw(self):
+		if self.start_time and self.stop_time:
+			with gx_blending:
+				glColor4f(0,0,0,0.5)
+				drawRectangle(size=self.window.size)
+			
+			duration = str(self.stop_time - self.start_time)[:4] + " sec"
+			glColor4f(0.5,1,0.5,1)
+			drawLabel("Untangled!", pos=(self.x+425, self.y+200), font_size=64)
+			glColor4f(0.7,0.7,0.7,1)
+			drawLabel("time: "+duration+"  moves: "+str(self.num_moves), pos=(self.x+425, self.y+150), font_size=50)
+		
+	def startNewGame(self, numVerts):
+		if self.graph:
+			self.window.remove_widget(self.graph)
+		self.graph = GraphUI(size=numVerts, w=self.window, menu=self)
+		self.window.add_widget(self.graph)
+		self.window.remove_widget(self)
+		self.start_time = time.clock()
+		
+	def startNewGame10(self, touchID, x, y):
+		self.startNewGame(10)
+		
+	def startNewGame15(self, touchID, x, y):
+		self.startNewGame(15)
+		
+	def startNewGame20(self, touchID, x, y):
+		self.startNewGame(20)
+		
+	def startNewGame25(self, touchID, x, y):
+		self.startNewGame(25)
 		
 		
 class GraphUI(MTWidget):
-	def __init__(self, size=20, w=None):
-		MTWidget.__init__(self)	
+	def __init__(self, size=15, w=None, menu=None):
+		MTWidget.__init__(self)
+		self.menu = menu
 		self.g = Graph(size,displaySize=w.size)
 		self.touch2vertex = {}
+		self.num_moves = 0
+		self.done = False
+		self.num_moves_since_check = 0 #if we try to solve on every move event things get slow
 		
 	def draw(self):
 		self.g.draw()
 
 	def on_touch_down(self, touches, touchID, x,y):
+		if self.done:
+			return
 		touchedVertex = self.g.collideVerts(x,y)
 		if touchedVertex: self.touch2vertex[touchID] = touchedVertex
 	
 	def on_touch_up(self, touches, touchID,x,y):
+		if self.done:
+			return
+		self.num_moves +=1
 	        if self.touch2vertex.has_key(touchID):
 	                del self.touch2vertex[touchID]
+		if self.g.is_solved():
+			#self.g = Graph(15,displaySize=w.size)
+			self.done = True
+			self.menu.stop_time =  time.clock()
+			self.menu.num_moves = self.num_moves
+			self.parent.add_widget(self.menu)
 
 	def on_touch_move(self, touches, touchID, x, y):
+		if self.done:
+			return
 		if self.touch2vertex.has_key(touchID):
 	                self.touch2vertex[touchID][0] = x
 	                self.touch2vertex[touchID][1] = y
+		self.num_moves_since_check += 1
+		if self.num_moves_since_check%2 == 0:
+			self.g.is_solved()
+			self.num_moves_since_check = 0
 
 
 def pymt_plugin_activate(w, ctx):
-	ctx.graph = GraphUI(w=w)
+	
 	#ctx.log = TrialLogger(ctx.graph)
-	w.add_widget(ctx.graph)
+	ctx.menu = NewGameMenu(w, pos=(w.width/2 -425, w.height/2))
+	w.add_widget(ctx.menu)
 
 def pymt_plugin_deactivate(w, ctx):
-    w.remove_widget(ctx.graph)
+    w.remove_widget(ctx.menu)
 	#ctx.log.save('data.pkl')
 
 
 if __name__ == '__main__':
 	#init our window
-	w = MTWindow()
+	w = MTWindow(fullscreen=True)
 	ctx = MTContext()
 	pymt_plugin_activate(w, ctx)
 	runTouchApp()

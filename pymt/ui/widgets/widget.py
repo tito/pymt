@@ -104,7 +104,7 @@ class MTWidget(pyglet.event.EventDispatcher):
     x = property(_get_x, _set_x)
 
     def _set_y(self, y):
-        if self._y == x:
+        if self._y == y:
             return
         self._y = y
         self.dispatch_event('on_move', self.x, self.y)

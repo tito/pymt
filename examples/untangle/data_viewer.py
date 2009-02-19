@@ -15,13 +15,12 @@ class DataViewer(MTWidget):
     def draw(self):
         glPushMatrix()
         #glScaled(0.5,0.5,1.0)
-        
-        
-        
-        
+         
         first_t = self.data['start_time']
         last_t = self.data['stop_time']
         #print first_t, last_t
+        
+        time_frame = (first_t, last_t)
         
         for touchID in self.data['touch_event_log']:
             timekey = lambda x: x['t']
@@ -30,6 +29,13 @@ class DataViewer(MTWidget):
             p1 = (0,0)
             p2 = (0,0)
             last_pos = (0,0)
+            
+            starts_at = self.data['touch_event_log'][touchID][0]['t']
+            ends_at = self.data['touch_event_log'][touchID][-1]['t']
+            
+            if not (starts_at > time_frame[0] and ends_at < time_frame[1]):
+                print touchID, starts_at, ends_at, time_frame
+                continue
             for e in self.data['touch_event_log'][touchID]:
                 t = (e['t'] - first_t)/(last_t -first_t) 
                 #print e['t']
@@ -64,5 +70,5 @@ class DataViewer(MTWidget):
         
 w = MTWindow()
 w.color=(0,0,0,0)
-w.add_widget(DataViewer('trial_1.pkl'))
+w.add_widget(DataViewer('touch_25.pkl'))
 runTouchApp()

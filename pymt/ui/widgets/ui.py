@@ -212,8 +212,8 @@ class MTScatterWidget(MTWidget):
             Set the initial scaling of widget
         `do_rotation` : boolean, default to True
             Set to False for disabling rotation
-        `do_translation` : boolean, default to True
-            Set to False for disabling translation
+        `do_translation` : boolean or list, default to True
+            Set to False for disabling translation, and ['x'], ['y'] for limit translation only on x or y
         `do_scale` : boolean, default to True
             Set to False for disabling scale
     '''
@@ -229,7 +229,18 @@ class MTScatterWidget(MTWidget):
 
         self.do_scale       = kwargs.get('do_scale')
         self.do_rotation    = kwargs.get('do_rotation')
+
         self.do_translation = kwargs.get('do_translation')
+        self.do_translation_x = self.do_translation_y = 1.0
+        if type(list) == type(self.do_translation):
+            self.do_translation_x = self.do_translation_y = 0
+            while p in self.do_translation:
+                if p == 'x':
+                    self.do_translation_x = 1.0
+                elif p == 'y':
+                    self.do_translation_y = 1.0
+            self.do_translation = True
+
         self.touches        = {}
         self.transform_mat  = (GLfloat * 16)()
         if kwargs.get('translation')[0] != 0 or kwargs.get('translation')[1] != 0:
@@ -316,7 +327,7 @@ class MTScatterWidget(MTWidget):
         # apply to our transformation matrix
         with gx_matrix_identity:
             if self.do_translation:
-                glTranslated(trans.x, trans.y,0)
+                glTranslated(trans.x * self.do_translation_x, trans.y * self.do_translation_y, 0)
             glTranslated(intersect.x, intersect.y,0)
             if self.do_scale:
                 glScaled(scale, scale,1)

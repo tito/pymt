@@ -6,4 +6,4 @@ from gesturewidget import *
 from widget import *
 from xmlwidget import *
 from innerwindow import *
-
+from multisliderwidget import *

@@ -58,6 +58,7 @@ class MTMultiSlider(MTWidget):
 MTWidgetFactory.register('MTMultiSlider', MTMultiSlider)
 
 if __name__ == '__main__':
+    from pymt import *
     w = MTWindow(fullscreen=False)
     wsize = w.size
     mms = MTMultiSlider(pos = (20,20))

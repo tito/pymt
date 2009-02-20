@@ -224,6 +224,7 @@ class MTScatterWidget(MTWidget):
         kwargs.setdefault('do_scale', True)
         kwargs.setdefault('do_rotation', True)
         kwargs.setdefault('do_translation', True)
+        
 
         super(MTScatterWidget, self).__init__(**kwargs)
 
@@ -232,9 +233,9 @@ class MTScatterWidget(MTWidget):
 
         self.do_translation = kwargs.get('do_translation')
         self.do_translation_x = self.do_translation_y = 1.0
-        if type(list) == type(self.do_translation):
+        if type(self.do_translation) == list:
             self.do_translation_x = self.do_translation_y = 0
-            while p in self.do_translation:
+            for p in self.do_translation:
                 if p == 'x':
                     self.do_translation_x = 1.0
                 elif p == 'y':

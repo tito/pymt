@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-from pymt import *
+from pymt.ui.widgets.widget import MTWidget
+from pymt.ui.factory import MTWidgetFactory
+from pymt.graphx import *
 
 class MTMultiSlider(MTWidget):
     def __init__(self, **kwargs):

@@ -11,6 +11,7 @@ class MTMultiSlider(MTWidget):
         kwargs.setdefault('init_value', 0.5)
         super(MTMultiSlider, self).__init__(**kwargs)   
 
+        self.register_event_type('on_value_change')
         self._sliders = kwargs.get('sliders')
         self._spacing = kwargs.get('spacing')
         self._background_color = kwargs.get('background_color')
@@ -29,10 +30,22 @@ class MTMultiSlider(MTWidget):
             size_y = self.height * self.slider_values[slider]
             drawRectangle(pos = (pos_x, pos_y), size = (size_x, size_y))
 
+    def on_value_change(self, value):
+        pass
+    
     def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x,y):
-            self.slider_values[self.return_slider(x)] = (y - self.y) / float(self.height)
-            return True
+        if x > self.x and x < self.x + self.width:
+            current_slider = self.return_slider(x)
+            last_value = self.slider_values[current_slider]
+            self.slider_values[current_slider] = (y - self.y) / float(self.height)
+            if self.slider_values[current_slider] >= 1:
+                self.slider_values[current_slider] = 1
+            if self.slider_values[current_slider] <= 0:
+                self.slider_values[current_slider] = 0
+                
+            if not self.slider_values[current_slider] == last_value:
+                self.dispatch_event('on_value_change', self.slider_values)
+        return True
         
     def on_touch_move(self, touches, touchID, x, y):
         self.on_touch_down(touches, touchID, x, y)
@@ -43,7 +56,7 @@ class MTMultiSlider(MTWidget):
 if __name__ == '__main__':
     w = MTWindow(fullscreen=False)
     wsize = w.size
-    mms = MTMultiSlider()
+    mms = MTMultiSlider(pos = (20,20))
     w.add_widget(mms)
     runTouchApp()
     

@@ -27,7 +27,7 @@ class MTicon(MTButton):
         self.width,self.height  = (self.image.width, self.image.height)
 
     def draw(self):
-        if (self.parent.parent.to_parent(self.x,self.y)[0] >= (w.width/2-225)) & (self.parent.parent.to_parent(self.x,self.y)[0] <= (w.height/2+225)):
+        if (self.parent.parent.to_parent(self.x,self.y)[0] >= (w.width/2-256)) & (self.parent.parent.to_parent(self.x,self.y)[0] <= (w.width/2)):
             self.image.scale    = 1.0
             self.width,self.height  = (self.image.width, self.image.height)
         else:
@@ -57,7 +57,7 @@ class MTicon(MTButton):
 
 
 if __name__ == '__main__':
-    w = MTWindow(color=(0.2,0.2,0.2,1.0))
+    w = MTWindow(color=(0.2,0.2,0.2,1.0),fullscreen=False)
     plane = MTScatterWidget(color=(0.2,0.2,0.2,1.0),do_rotation=False, do_scale=False, do_translation=['x'], size=(1440,300),pos=(0,w.height/2-150))
     w.add_widget(plane)
     layme = HVLayout(padding=10, spacing=10, color=(0.2,0.2,0.2,1.0))

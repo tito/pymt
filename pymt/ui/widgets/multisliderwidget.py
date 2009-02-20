@@ -53,6 +53,8 @@ class MTMultiSlider(MTWidget):
     def return_slider(self, x):
         return int((x - self.x) / float(self.width)  * self._sliders)
             
+MTWidgetFactory.register('MTMultiSlider', MTMultiSlider)
+
 if __name__ == '__main__':
     w = MTWindow(fullscreen=False)
     wsize = w.size

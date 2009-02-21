@@ -27,16 +27,8 @@ class MTicon(MTButton):
         self.width,self.height  = (self.image.width, self.image.height)
 
     def draw(self):
-        if (self.parent.parent.to_parent(self.x,self.y)[0] >= (w.width/2-256)) & (self.parent.parent.to_parent(self.x,self.y)[0] <= (w.width/2)):
-            self.image.scale    = 1.0
-            self.width,self.height  = (self.image.width, self.image.height)
-        else:
-            self.image.scale    = 0.5
-            self.width,self.height  = (self.image.width, self.image.height)
-       
         self.image.x        = self.x
-        self.image.y        = self.y
-       
+        self.image.y        = self.y       
         self.size           = (self.image.width, self.image.height)
         self.image.draw()
         self.parent.layout()
@@ -52,7 +44,18 @@ class MTicon(MTButton):
         
     def on_touch_up(self, touches, touchID, x, y):
         if self.collide_point(x,y):
-            return        
+            return
+            
+    def on_draw(self):
+        if (self.parent.parent.to_parent(self.x,self.y)[0] >= (w.width/2-256)) & (self.parent.parent.to_parent(self.x,self.y)[0] <= (w.width/2)):
+            if self.image.scale < 1.0:
+                self.image.scale    = self.image.scale+0.07                
+            self.width,self.height  = (self.image.width, self.image.height)
+        else:
+            if self.image.scale > 0.5:
+                self.image.scale    = self.image.scale-0.07
+            self.width,self.height  = (self.image.width, self.image.height)
+        self.draw()
     
 
 

@@ -7,3 +7,4 @@ from widget import *
 from xmlwidget import *
 from innerwindow import *
 from multisliderwidget import *
+from kinetic import *

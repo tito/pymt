@@ -106,6 +106,12 @@ class MTButton(MTWidget):
         self._state = (state, 0)
     state = property(get_state, set_state, doc='Sets the state of the button, "normal" or "down"')
 
+    def on_press(self, touchID, x, y):
+        pass
+
+    def on_release(self, touchID, x, y):
+        pass
+
     def draw(self):
         # Select color
         if self._state[0] == 'down':

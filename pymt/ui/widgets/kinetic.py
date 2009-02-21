@@ -170,9 +170,6 @@ class MTKineticScrollText(MTWidget):
             self.mode = 'spinning'
             self.selected = None
 
-    def on_select(self, value):
-        pass
-
     def draw(self):
         #Draw the background
         glColor3f(*self.bgcolor)

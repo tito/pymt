@@ -1,10 +1,8 @@
+from __future__ import with_statement
 from pymt import *
-
-
 
 plugins = MTPlugins(plugin_paths=['..'])
 plugins.search_plugins()
-
 
 def gesture_add_default(gdb):
     # Circle
@@ -94,9 +92,8 @@ class MTMenu(HVLayout):
             label='Close menu', action=action_close_menu))
 
     def on_draw(self):
-        # For all next operation, enable blending
-        enable_blending()
-        super(MTMenu, self).on_draw()
+        with gx_blending:
+            super(MTMenu, self).on_draw()
 
     def on_move(self, x, y):
         pass

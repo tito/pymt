@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
 PLUGIN_TITLE = 'Untangle'
@@ -208,7 +210,7 @@ def pymt_plugin_deactivate(w, ctx):
 
 if __name__ == '__main__':
 	#init our window
-	w = MTWindow(fullscreen=True)
+	w = MTWindow()
 	ctx = MTContext()
 	pymt_plugin_activate(w, ctx)
 	runTouchApp()

@@ -16,12 +16,12 @@ __all__ = ['MTVectorSlider']
 
 ### HELP NEEDED IN THE COLORING DEPARTMENT ###
 
-#Get the linear distance between two points
 def _get_distance(Pos1, Pos2):
+    '''Get the linear distance between two points'''
     return math.sqrt((Pos2[0] - Pos1[0])**2 + (Pos2[1] - Pos1[1])**2)
 
 def prot(p, d, rp=(0, 0)):
-    '''Rotates a given point(p) d degrees clockwise around rp'''
+    '''Rotates a given point(p) d degrees counter-clockwise around rp'''
     d = -radians(d)
     p = list(p)
     p[0] -= rp[0]
@@ -62,8 +62,6 @@ class MTVectorSlider(MTWidget):
         
         #The vector hand
         self.vector = [0, 0]
-        #A vector for the x axis
-        self.xvec = (10, 0)
 
         #Vector Stuff, for the callback
         self.amplitude = _get_distance(self.pos, self.vector)
@@ -127,16 +125,20 @@ class MTVectorSlider(MTWidget):
             self.dispatch_event('on_vector_change', self.amplitude, self.angle)
     
     def draw(self):
+        #Draw Background
         set_color(*self.bgcolor)
         drawCircle(self.pos, self.radius)
         
+        #A good size for the hand, proportional to the size of the widget
+        hd = self.radius / 10
+        #Draw center of the hand
         set_color(*self.vcolor)
-        drawCircle(self.pos, 30)
+        drawCircle(self.pos, hd)
         #Rotate the triangle so its not skewed
-        l = prot((self.pos[0] - 30, self.pos[1]), self.angle-90, self.pos)
-        h = prot((self.pos[0] + 30, self.pos[1]), self.angle-90, self.pos)
+        l = prot((self.pos[0] - hd, self.pos[1]), self.angle-90, self.pos)
+        h = prot((self.pos[0] + hd, self.pos[1]), self.angle-90, self.pos)
+        #Draw triable of the hand
         with gx_begin(GL_POLYGON):
-            print h
             glVertex2f(*l)
             glVertex2f(*h)
             glVertex2f(self.vector[0], self.vector[1])

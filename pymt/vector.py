@@ -19,109 +19,109 @@ except:
     print 'Warning: you do not have numpy installed.  Computing transformations for MTScatterWidget can get painfully slow without numpy. You should install numpy: http://numpy.scipy.org/'
     from matrix import Matrix, RowVector
 
-class Vector(object):
+class Vector(list):
     '''Represents a 2D vector.'''
-    __slots__ = ('x', 'y')
-    def __init__(self, x = 0.0, y = 0.0):
-        self.x = float(x)
-        self.y = float(y)
+
+    def __init__(self, *largs):
+        if len(largs) == 1:
+            super(Vector, self).__init__(largs[0])
+        elif len(largs) == 2:
+            super(Vector, self).__init__(largs)
+        else:
+            raise Exception('Invalid vector')
+
+    def _get_x(self):
+        return self[0]
+    def _set_x(self, x):
+        self[0] = x
+    x = property(_get_x, _set_x)
+
+    def _get_y(self):
+        return self[1]
+    def _set_y(self, y):
+        self[1] = y
+    y = property(_get_y, _set_y)
+
+    def __getslice__(self, i, j):
+        try:
+            # use the list __getslice__ method and convert
+            # result to vector
+            return Vector(super(Vector, self).__getslice__(i, j))
+        except:
+            raise TypeError, 'vector::FAILURE in __getslice__'
 
     def __add__(self, val):
-        return Vector(self.x + val.x, self.y + val.y)
+        return Vector(map(lambda x, y: x + y, self, val))
 
-    def __sub__(self,val):
-        return Vector(self.x - val.x, self.y - val.y)
+    def __neg__(self):
+        return Vector(map(lambda x: -x, self))
 
-    def __iadd__(self, val):
-        self.x += val.x
-        self.y += val.y
-        return self
-
-    def __isub__(self, val):
-        self.x -= val.x
-        self.y -= val.y
-        return self
-
-    def __div__(self, val):
-        return Vector(self.x / val, self.y / val)
+    def __sub__(self, val):
+        return Vector(map(lambda x, y: x - y, self, val))
 
     def __mul__(self, val):
-        return Vector(self.x * val, self.y * val )
+        try:
+            return Vector(map(lambda x, y: x * y, self, val))
+        except:
+            return Vector(map(lambda x: x * val, self))
 
-    def __idiv__(self, val):
-        self.x = self.x / val
-        self.y = self.y / val
-        return self
+    def __rmul__(self, val):
+        return (self * val)
 
-    def __imul__(self, val):
-        self.x = self.x * val
-        self.y = self.y * val
-        return self
+    def __truediv__(self, val):
+        try:
+            return Vector(map(lambda x, y: x / y, self, val))
+        except:
+            return Vector(map(lambda x: x / val, self))
 
-    def __str__(self):
-        return '(%.1f,%.1f)' % (self.x, self.y)
+    def __div__(self, val):
+        try:
+            return Vector(map(lambda x, y: x / y, self, val))
+        except:
+            return Vector(map(lambda x: x / val, self))
+
+    def __rdiv__(self, val):
+        try:
+            return Vector(map(lambda x, y: x / y, other, val))
+        except:
+            return Vector(map(lambda x: other / x, val))
 
     def length(self):
-        return Vector.length(self)
+        '''Returns the length of a vector'''
+        return math.sqrt(self[0] ** 2 + self[1] ** 2)
 
-    def normalized(self):
-        l = length(self)
-        return Vector(self.x /l , self.y / l)
-
-    @staticmethod
-    def distanceSqrd(vec1, vec2):
+    def distance(self, to):
         '''Returns the distance between two points squared.
         Marginally faster than Distance()
         '''
-        return ((vec1.x - vec2.x)**2 + (vec1.y - vec2.y)**2)
+        return (self[0] - to[0]) ** 2 + (self[1] - to[1]) ** 2
 
-    @staticmethod
-    def distance(vec1, vec2):
-        '''Returns the distance between two points'''
-        return math.sqrt(Vector.distanceSqrd(vec1, vec2))
-
-    @staticmethod
-    def lengthSqrd(vec):
-        '''Returns the length of a vector sqaured.
-        Faster than Length(), but only  marginally'''
-        return vec.x**2 + vec.y**2
-
-    @staticmethod
-    def length(vec):
-        '''Returns the length of a vector'''
-        return math.sqrt(Vector.lengthSqrd(vec))
-
-    @staticmethod
-    def normalized(vec):
-        '''Returns the length of a vector'''
-        return math.sqrt(Vector.lengthSqrd(vec))
-
-    @staticmethod
-    def normalize(vec):
+    def normalize(self):
         '''Returns a new vector that has the same direction as vec,
         but has a length of one.'''
-        if vec.x == 0. and vec.y == 0.:
+        if self[0] == 0. and self[1] == 0.:
             return Vector(0.,0.)
-        return vec / Vector.length(vec)
+        return self / self.length()
 
-    @staticmethod
-    def dot(vec1, vec2):
+    def dot(self, a):
         '''Computes the dot product of a and b'''
-        return vec1.x * vec2.x + vec1.y * vec2.y
+        return self[0] * a[0] + self[1] * a[1]
 
-    @staticmethod
-    def angle(v1, v2):
+    def angle(self, a):
         '''Computes the angle between a and b'''
-        angle = -(180/math.pi)*math.atan2(v1.x*v2.y - v1.y*v2.x, v1.x*v2.x+v1.y*v2.y)
+        angle = -(180/math.pi) * math.atan2(
+            self[0] * a[1] - self[1] * a[0],
+            self[0] * a[0] + self[1] * a[1]
+        )
         return angle
 
-    @staticmethod
-    def rotate(v1, angle):
+    def rotate(self, angle):
         angle = math.radians(angle)
-        return Vector((v1.x * math.cos(angle)) - (v1.y * math.sin(angle)), (v1.y * math.cos(angle)) + (v1.x * math.sin(angle)))
+        return Vector((self[0] * math.cos(angle)) - (self[1] * math.sin(angle)),
+                      (self[1] * math.cos(angle)) + (self[0] * math.sin(angle)))
 
     @staticmethod
-    def line_intersection(v1,v2, v3, v4):
+    def line_intersection(v1, v2, v3, v4):
         '''
         Finds the intersection point between the lines (1)v1->v2 and (2)v3->v4
         and returns it as a vector object
@@ -129,17 +129,17 @@ class Vector(object):
         For math see: http://en.wikipedia.org/wiki/Line-line_intersection
         '''
         #linear algebar sucks...seriously!!
-        x1,x2,x3,x4 = float(v1.x), float(v2.x), float(v3.x), float(v4.x)
-        y1,y2,y3,y4 = float(v1.y), float(v2.y), float(v3.y), float(v4.y)
+        x1,x2,x3,x4 = float(v1[0]), float(v2[0]), float(v3[0]), float(v4[0])
+        y1,y2,y3,y4 = float(v1[1]), float(v2[1]), float(v3[1]), float(v4[1])
 
-        u = (x1*y2-y1*x2)
-        v = (x3*y4-y3*x4)
-        denom = (x1-x2)*(y3-y4)-(y1-y2)*(x3-x4)
+        u = (x1 * y2 - y1 * x2)
+        v = (x3 * y4 - y3 * x4)
+        denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
         if denom == 0:
             return None
 
-        px = ( u*(x3-x4) - (x1-x2)*v ) / denom
-        py = ( u*(y3-y4) - (y1-y2)*v ) / denom
+        px = ( u * (x3 - x4)  -  (x1 - x2) * v ) / denom
+        py = ( u * (y3 - y4)  -  (y1 - y2) * v ) / denom
 
         return Vector(px,py)
 

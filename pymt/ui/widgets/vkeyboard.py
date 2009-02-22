@@ -163,16 +163,18 @@ class MTVKeyboard(MTScatterWidget):
         with self.dl:
             with gx_blending:
                 set_color(0.2,0.2,0.2,0.6)
-                drawRectangle((0,0), self.size)
+                drawRoundedRectangle((0,0), self.size)
                 for w in self.children:
                     w.dispatch_event('on_draw')
 
     def _setup_keys(self, keys):
         k_width = 25
         spacing = 3
+        border_radius = 2
         color = (0.1, 0.1, 0.1, 0.7)
 
         vlayout = HVLayout(alignment='vertical', pos=(20,-2*k_width), spacing=spacing, invert_y=True)
+        key_options = {'color': color, 'border_radius': border_radius}
 
         for j in range(4):
             layout = HVLayout(spacing=spacing)
@@ -180,46 +182,46 @@ class MTVKeyboard(MTScatterWidget):
             # special keys on left
             if j == 0:
                 k_str   = MTVKeyboard.KEY_ESCAPE
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width, k_width), color=color)
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width, k_width), **key_options)
                 layout.add_widget(k_btn)
             elif j == 1:
                 k_str   = ''
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*0.5, k_width), color=color)
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*0.5, k_width), **key_options)
                 layout.add_widget(k_btn)
             elif j == 2:
                 k_str   = MTVKeyboard.KEY_CAPSLOCK
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width, k_width), color=color)
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width, k_width), **key_options)
                 layout.add_widget(k_btn)
             elif j == 3:
                 k_str   = MTVKeyboard.KEY_SHIFT
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*1.5, k_width), color=color)
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*1.5, k_width), **key_options)
                 layout.add_widget(k_btn)
 
             # regular keys
             num_keys = len(keys[j])
             for i in range(num_keys):
                 k_str   = keys[j][i]
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width, k_width), color=color)
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width, k_width), **key_options)
                 layout.add_widget(k_btn)
 
             # special keys on right
             if j == 1:
                 k_str   = MTVKeyboard.KEY_BACKSPACE
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*2.5 +3, k_width), color=color)
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*2.5 +3, k_width), **key_options)
                 layout.add_widget(k_btn)
             elif j == 2:
                 k_str   = MTVKeyboard.KEY_ENTER
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*2+3, k_width), color=color)
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*2+3, k_width), **key_options)
                 layout.add_widget(k_btn)
             elif j == 3:
                 k_str   = MTVKeyboard.KEY_SHIFT
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*1.5+3, k_width), color=color)
+                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*1.5+3, k_width), **key_options)
                 layout.add_widget(k_btn)
 
             vlayout.add_widget(layout)
 
         layout = HVLayout(spacing=3)
-        space_key = MTKeyButton(self, label=MTVKeyboard.KEY_SPACE, size=(361, k_width), color=color)
+        space_key = MTKeyButton(self, label=MTVKeyboard.KEY_SPACE, size=(361, k_width), **key_options)
         layout.add_widget(space_key)
         vlayout.add_widget(layout)
         self.add_widget(vlayout)

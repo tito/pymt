@@ -21,7 +21,7 @@ class Shader(object):
         glLinkProgram(self.program)
         message = self.get_program_log(self.program)
         if message:
-            raise ShaderException(message)
+            print message
 
     def create_shader(self, source, shadertype):
         sbuffer = c.create_string_buffer(source)
@@ -33,7 +33,7 @@ class Shader(object):
         glCompileShader(shader)
         message = self.get_shader_log(shader)
         if message:
-            raise ShaderException(message)
+            print message
         return shader
 
     def set_uniform_f(self, name, value):

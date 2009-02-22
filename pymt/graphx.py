@@ -155,6 +155,7 @@ def drawLine(points, width=5.0):
         while len(points):
             glVertex2f(points.pop(0), points.pop(0))
 
+gl_displaylist_generate = False
 class GlDisplayList:
     '''Abstraction to opengl display-list usage. Here is an example of usage ::
 
@@ -166,13 +167,23 @@ class GlDisplayList:
     def __init__(self):
         self.dl = glGenLists(1)
         self.compiled = False
+        self.do_compile = True
 
     def __enter__(self):
-        glNewList(self.dl, GL_COMPILE)
+        global gl_displaylist_generate
+        if gl_displaylist_generate:
+            self.do_compile = False
+        else:
+            gl_displaylist_generate = True
+            self.do_compile = True
+            glNewList(self.dl, GL_COMPILE)
 
     def __exit__(self, type, value, traceback):
-        glEndList()
-        self.compiled = True
+        global gl_displaylist_generate
+        if self.do_compile:
+            glEndList()
+            self.compiled = True
+            gl_displaylist_generate = False
 
     def clear(self):
         self.compiled = False

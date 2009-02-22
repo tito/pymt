@@ -25,12 +25,15 @@ class MTicon(MTButton):
         self.scale          = kwargs.get('scale')
         self.image.scale    = self.scale
         self.width,self.height  = (self.image.width, self.image.height)
+        self.texture = img.get_texture()
 
     def draw(self):
         self.image.x        = self.x
         self.image.y        = self.y       
         self.size           = (self.image.width, self.image.height)
-        self.image.draw()
+        with DO(gx_enable(GL_BLEND),gx_enable(GL_TEXTURE_2D)):
+            glColor4f(1, 1, 1, 1)
+            drawCover(self.texture.id, pos=(self.x,self.y), size=(self.image.width,self.image.height))
         self.parent.layout()
         
     def on_touch_down(self, touches, touchID, x, y):
@@ -57,22 +60,32 @@ class MTicon(MTButton):
             self.width,self.height  = (self.image.width, self.image.height)
         self.draw()
     
-
+def drawCover(texture, pos=(0,0), size=(1.0,1.0)):
+    with gx_enable(GL_TEXTURE_2D):
+        glBindTexture(GL_TEXTURE_2D,texture)
+        pos = ( pos[0],pos[1],   pos[0]+size[0],pos[1],   pos[0]+size[0],pos[1]+size[1],  pos[0],pos[1]+size[1] )
+        texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
+        draw(4, GL_QUADS, ('v2f', pos), ('t2f', texcoords))
+        pos2 = ( pos[0],pos[1]-size[1],   pos[0]+size[0],pos[1]-size[1],   pos[0]+size[0],pos[1]+size[1]-size[1],  pos[0],pos[1]+size[1]-size[1] )
+        texcoords2 = (0.0,1.0, 1.0,1.0, 1.0,0.0, 0.0,0.0)
+        color2 = (0,0,0,0.5, 0,0,0,0.5, 0.65,0.65,0.65,0.5, 0.65,0.65,0.65,0.5 )
+        draw(4, GL_QUADS, ('v2f', pos2), ('t2f', texcoords2), ('c4f', color2))  
 
 if __name__ == '__main__':
-    w = MTWindow(color=(0.2,0.2,0.2,1.0))
-    plane = MTScatterWidget(color=(0.2,0.2,0.2,1.0),do_rotation=False, do_scale=False, do_translation=['x'], size=(1440,300),pos=(0,w.height/2-150))
+    w = MTWindow(color=(0,0,0,1.0))
+    plane = MTScatterWidget(color=(0,0,0,1.0),do_rotation=False, do_scale=False, do_translation=['x'], size=(1440,300),pos=(0,w.height/2-150))
     w.add_widget(plane)
-    layme = HVLayout(padding=10, spacing=10, color=(0.2,0.2,0.2,1.0))
+    layme = HVLayout(padding=10, spacing=10, color=(0,0,0,1.0))
     plane.add_widget(layme)
-    layme.add_widget(MTicon(filename = "Browser.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "Calculator.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "Calendar.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "Chat.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "Settings.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "Graph.png",scale=0.5))
+    layme.add_widget(MTicon(filename = "browser.png",scale=0.5))
+    layme.add_widget(MTicon(filename = "calculator.png",scale=0.5))
+    layme.add_widget(MTicon(filename = "chat.png",scale=0.5))
+    layme.add_widget(MTicon(filename = "settings.png",scale=0.5))
+    layme.add_widget(MTicon(filename = "graph.png",scale=0.5))
     layme.add_widget(MTicon(filename = "iPod.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "Maps.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "Notes.png",scale=0.5))    
+    layme.add_widget(MTicon(filename = "maps.png",scale=0.5))
+    layme.add_widget(MTicon(filename = "notes.png",scale=0.5))    
+    layme.add_widget(MTicon(filename = "phone.png",scale=0.5))    
+    layme.add_widget(MTicon(filename = "weather.png",scale=0.5))    
     runTouchApp()
 

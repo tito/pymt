@@ -7,6 +7,7 @@ Thank You.
 
 '''
 
+from __future__ import with_statement
 from pymt import *
 
 class MTicon(MTButton):

@@ -82,7 +82,7 @@ if __name__ == '__main__':
     layme.add_widget(MTicon(filename = "chat.png",scale=0.5))
     layme.add_widget(MTicon(filename = "settings.png",scale=0.5))
     layme.add_widget(MTicon(filename = "graph.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "iPod.png",scale=0.5))
+    layme.add_widget(MTicon(filename = "ipod.png",scale=0.5))
     layme.add_widget(MTicon(filename = "maps.png",scale=0.5))
     layme.add_widget(MTicon(filename = "notes.png",scale=0.5))    
     layme.add_widget(MTicon(filename = "phone.png",scale=0.5))    

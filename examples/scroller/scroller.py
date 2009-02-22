@@ -74,7 +74,7 @@ def drawCover(texture, pos=(0,0), size=(1.0,1.0)):
 
 if __name__ == '__main__':
     w = MTWindow(color=(0,0,0,1.0))
-    plane = MTScatterWidget(color=(0,0,0,1.0),do_rotation=False, do_scale=False, do_translation=['x'], size=(1440,300),pos=(0,w.height/2-150))
+    plane = MTScatterPlane(color=(0,0,0,1.0),do_rotation=False, do_scale=False, do_translation=['x'], size=(1440,300),pos=(0,w.height/2-150))
     w.add_widget(plane)
     layme = HVLayout(padding=10, spacing=10, color=(0,0,0,1.0))
     plane.add_widget(layme)

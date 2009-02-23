@@ -1,8 +1,8 @@
 =========================================================
-Video - video player widget
+Simulator - implementation of multitouch with mouse
 =========================================================
 
-.. automodule:: pymt.ui.videowidget
+.. automodule:: pymt.ui.widgets.simulator
     :members:
     :undoc-members:
 

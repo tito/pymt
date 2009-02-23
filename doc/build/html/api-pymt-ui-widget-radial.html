@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Radial - a radial widget &mdash; PyMT v0.2 alpha documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '',
+          VERSION:     '0.2 alpha',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="contents" title="Global table of contents" href="contents.html" />
+    <link rel="index" title="Global index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="up" title="Widgets - all widgets" href="api-pymt-ui-widgets.html" />
+    <link rel="next" title="Simulator - implementation of multitouch with mouse" href="api-pymt-ui-widget-simulator.html" />
+    <link rel="prev" title="Multi slider - combine multiple slider easily" href="api-pymt-ui-widget-multisliderwidget.html" />
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-ui-widget-simulator.html" title="Simulator - implementation of multitouch with mouse"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-ui-widget-multisliderwidget.html" title="Multi slider - combine multiple slider easily"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+          <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
+          <li><a href="api-pymt-ui.html" accesskey="U">UI - all user interface stuff</a> &raquo;</li>
+          <li><a href="api-pymt-ui-widgets.html" accesskey="U">Widgets - all widgets</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="module-pymt.ui.widgets.radial">
+<h1>Radial - a radial widget<a class="headerlink" href="#module-pymt.ui.widgets.radial" title="Permalink to this headline">¶</a></h1>
+<p>Various radial widgets for PyMT
+Initially written by xelapond &lt;<a class="reference external" href="mailto:xelapond&#37;&#52;&#48;gmail&#46;com">xelapond<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</p>
+<dl class="class">
+<dt id="pymt.ui.widgets.radial.MTVectorSlider">
+<!--[pymt.ui.widgets.radial.MTVectorSlider]-->class <tt class="descclassname">pymt.ui.widgets.radial.</tt><tt class="descname">MTVectorSlider</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.radial.MTVectorSlider" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a slider that provides an arrow, and allows you to manipulate
+it just like any other vector, adjusting its angle and amplitude.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body">&#8216;bgcolor&#8217; : The background color of the widget
+&#8216;vcolor&#8217; : The color for the vector
+&#8216;radius&#8217;: The radius of the whole widget</td>
+</tr>
+<tr class="field"><th class="field-name" colspan="2">Parameters inherited through mtwidget:</th></tr>
+<tr><td>&nbsp;</td><td class="field-body">&#8216;pos&#8217; : Position
+&#8216;size&#8217; : Size
+&#8216;color&#8217; : Has no effect on this widget
+&#8216;visible&#8217; : visibility</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pymt.ui.widgets.radial.MTVectorSlider.collide_point">
+<!--[pymt.ui.widgets.radial.MTVectorSlider.collide_point]--><tt class="descname">collide_point</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.radial.MTVectorSlider.collide_point" title="Permalink to this definition">¶</a></dt>
+<dd>Because this widget is a circle, and this method as
+defined in MTWidget is for a square, we have to override
+it.</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.radial.MTVectorSlider.draw">
+<!--[pymt.ui.widgets.radial.MTVectorSlider.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.radial.MTVectorSlider.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.radial.MTVectorSlider.on_touch_down">
+<!--[pymt.ui.widgets.radial.MTVectorSlider.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.radial.MTVectorSlider.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.radial.MTVectorSlider.on_touch_move">
+<!--[pymt.ui.widgets.radial.MTVectorSlider.on_touch_move]--><tt class="descname">on_touch_move</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.radial.MTVectorSlider.on_touch_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.ui.widgets.radial.prot">
+<!--[pymt.ui.widgets.radial.prot]--><tt class="descclassname">pymt.ui.widgets.radial.</tt><tt class="descname">prot</tt><big>(</big><em>p</em>, <em>d</em>, <em>rp=(0</em>, <em>0)</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.radial.prot" title="Permalink to this definition">¶</a></dt>
+<dd>Rotates a given point(p) d degrees counter-clockwise around rp</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="api-pymt-ui-widget-multisliderwidget.html" title="previous chapter">Multi slider - combine multiple slider easily</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="api-pymt-ui-widget-simulator.html" title="next chapter">Simulator - implementation of multitouch with mouse</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/api-pymt-ui-widget-radial.txt">Show Source</a></li>
+            </ul>
+            <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-ui-widget-simulator.html" title="Simulator - implementation of multitouch with mouse"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-ui-widget-multisliderwidget.html" title="Multi slider - combine multiple slider easily"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+          <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
+          <li><a href="api-pymt-ui.html" accesskey="U">UI - all user interface stuff</a> &raquo;</li>
+          <li><a href="api-pymt-ui-widgets.html" accesskey="U">Widgets - all widgets</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, pymt-dev.
+      Last updated on fév 23, 2009.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>

@@ -2,7 +2,7 @@
 Gesture widget - capture and signal every gesture
 ==================================================
 
-.. automodule:: pymt.ui.gesturewidget
+.. automodule:: pymt.ui.widgets.gesturewidget
     :members:
     :undoc-members:
 

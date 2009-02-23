@@ -1,8 +1,8 @@
 =========================================================
-UI - core widgets
+Simulator - implementation of multitouch with mouse
 =========================================================
 
-.. automodule:: pymt.ui.ui
+.. automodule:: pymt.ui.widgets.simulator
     :members:
     :undoc-members:
 

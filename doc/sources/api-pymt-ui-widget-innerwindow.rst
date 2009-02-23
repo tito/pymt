@@ -1,8 +1,8 @@
 =========================================================
-Simulator - implementation of multitouch with mouse
+Inner window - a way to embedded application into another
 =========================================================
 
-.. automodule:: pymt.ui.simulator
+.. automodule:: pymt.ui.widgets.innerwindow
     :members:
     :undoc-members:
 

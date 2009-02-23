@@ -10,11 +10,10 @@
           URL_ROOT:    '',
           VERSION:     '0.2 alpha',
           COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: ''
+          FILE_SUFFIX: '.html'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/interface.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="contents" title="Global table of contents" href="contents.html" />
     <link rel="index" title="Global index" href="genindex.html" />
@@ -51,8 +50,8 @@
           <div class="body">
             
   
-  <div class="section">
-<h1 id="module-pymt.graphx">graphx - generic drawing functions<a class="headerlink" href="#module-pymt.graphx" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-pymt.graphx">
+<h1>graphx - generic drawing functions<a class="headerlink" href="#module-pymt.graphx" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="pymt.graphx.DO">
 <!--[pymt.graphx.DO]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">DO</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#pymt.graphx.DO" title="Permalink to this definition">¶</a></dt>
@@ -83,33 +82,18 @@
 <!--[pymt.graphx.GlBlending]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">GlBlending</tt><a class="headerlink" href="#pymt.graphx.GlBlending" title="Permalink to this definition">¶</a></dt>
 <dd><p>Abstraction to use blending ! Don&#8217;t use directly this class.
 We&#8217;ve got an alias you can use</p>
-<div class="system-message">
-<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">/usr/lib/python2.5/pymt/graphx.py:docstring of pymt.graphx.GlBlending</tt>, line 4)</p>
-Literal block expected; none found.</div>
-<dl class="docutils">
-<dt>with gx_blending:</dt>
-<dd># do draw function</dd>
-</dl>
+<pre>with gx_blending:
+    # do draw function</pre>
 </dd></dl>
 
 <dl class="class">
 <dt id="pymt.graphx.GlDisplayList">
 <!--[pymt.graphx.GlDisplayList]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">GlDisplayList</tt><a class="headerlink" href="#pymt.graphx.GlDisplayList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Abstraction to opengl display-list usage. Here is an example of usage</p>
-<div class="system-message">
-<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">/usr/lib/python2.5/pymt/graphx.py:docstring of pymt.graphx.GlDisplayList</tt>, line 3)</p>
-Literal block expected; none found.</div>
-<p>dl = GlDisplayList()
-with dl:</p>
-<div class="system-message">
-<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">&lt;autodoc&gt;</tt>, line 0)</p>
-Unexpected indentation.</div>
-<blockquote>
-# do draw function, like drawLabel etc...</blockquote>
-<div class="system-message">
-<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">/usr/lib/python2.5/pymt/graphx.py:docstring of pymt.graphx.GlDisplayList</tt>, line 6)</p>
-Block quote ends without a blank line; unexpected unindent.</div>
-<p>dl.draw()</p>
+<pre>dl = GlDisplayList()
+with dl:
+    # do draw function, like drawLabel etc...
+dl.draw()</pre>
 <dl class="method">
 <dt id="pymt.graphx.GlDisplayList.clear">
 <!--[pymt.graphx.GlDisplayList.clear]--><tt class="descname">clear</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.graphx.GlDisplayList.clear" title="Permalink to this definition">¶</a></dt>
@@ -167,7 +151,7 @@ We&#8217;ve got 2 alias: gx_matrix and gx_matrix_identity</p>
 
 <dl class="function">
 <dt id="pymt.graphx.drawRectangle">
-<!--[pymt.graphx.drawRectangle]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawRectangle</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(1.0</em>, <em>1.0)</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawRectangle" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.graphx.drawRectangle]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawRectangle</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(1.0</em>, <em>1.0)</em>, <em>style=7</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawRectangle" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -182,12 +166,12 @@ We&#8217;ve got 2 alias: gx_matrix and gx_matrix_identity</p>
 
 <dl class="function">
 <dt id="pymt.graphx.drawTriangle">
-<!--[pymt.graphx.drawTriangle]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawTriangle</tt><big>(</big><em>pos</em>, <em>w</em>, <em>h</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawTriangle" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.graphx.drawTriangle]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawTriangle</tt><big>(</big><em>pos</em>, <em>w</em>, <em>h</em>, <em>style=4</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawTriangle" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="pymt.graphx.drawTrianglePoints">
-<!--[pymt.graphx.drawTrianglePoints]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawTrianglePoints</tt><big>(</big><em>points</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawTrianglePoints" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.graphx.drawTrianglePoints]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawTrianglePoints</tt><big>(</big><em>points</em>, <em>style=4</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawTrianglePoints" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -268,7 +252,7 @@ We&#8217;ve got 2 alias: gx_matrix and gx_matrix_identity</p>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on fév 18, 2009.
+      Last updated on fév 23, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
     </div>
   </body>

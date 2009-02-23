@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Virtual keyboard - a on-screen keyboard &mdash; PyMT v0.2 alpha documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '',
+          VERSION:     '0.2 alpha',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="contents" title="Global table of contents" href="contents.html" />
+    <link rel="index" title="Global index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="up" title="Widgets - all widgets" href="api-pymt-ui-widgets.html" />
+    <link rel="prev" title="Video - video player widget" href="api-pymt-ui-widget-video.html" />
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-ui-widget-video.html" title="Video - video player widget"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+          <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
+          <li><a href="api-pymt-ui.html" accesskey="U">UI - all user interface stuff</a> &raquo;</li>
+          <li><a href="api-pymt-ui-widgets.html" accesskey="U">Widgets - all widgets</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="module-pymt.ui.widgets.vkeyboard">
+<h1>Virtual keyboard - a on-screen keyboard<a class="headerlink" href="#module-pymt.ui.widgets.vkeyboard" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pymt.ui.widgets.vkeyboard.MTKeyButton">
+<!--[pymt.ui.widgets.vkeyboard.MTKeyButton]-->class <tt class="descclassname">pymt.ui.widgets.vkeyboard.</tt><tt class="descname">MTKeyButton</tt><big>(</big><em>keyboard</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTKeyButton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal Class used in MTVKeyboard</p>
+<dl class="method">
+<dt id="pymt.ui.widgets.vkeyboard.MTKeyButton.on_press">
+<!--[pymt.ui.widgets.vkeyboard.MTKeyButton.on_press]--><tt class="descname">on_press</tt><big>(</big><em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTKeyButton.on_press" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.vkeyboard.MTKeyButton.on_release">
+<!--[pymt.ui.widgets.vkeyboard.MTKeyButton.on_release]--><tt class="descname">on_release</tt><big>(</big><em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTKeyButton.on_release" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.widgets.vkeyboard.MTTextInput">
+<!--[pymt.ui.widgets.vkeyboard.MTTextInput]-->class <tt class="descclassname">pymt.ui.widgets.vkeyboard.</tt><tt class="descname">MTTextInput</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTTextInput" title="Permalink to this definition">¶</a></dt>
+<dd><p>A text input widget is a simple label widget that will pop up a virtual keyboard when touched
+any input of the virtual keyboard will then have effect on the TextInput widget</p>
+<dl class="method">
+<dt id="pymt.ui.widgets.vkeyboard.MTTextInput.draw">
+<!--[pymt.ui.widgets.vkeyboard.MTTextInput.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTTextInput.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.vkeyboard.MTTextInput.hide_keyboard">
+<!--[pymt.ui.widgets.vkeyboard.MTTextInput.hide_keyboard]--><tt class="descname">hide_keyboard</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTTextInput.hide_keyboard" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.vkeyboard.MTTextInput.on_move">
+<!--[pymt.ui.widgets.vkeyboard.MTTextInput.on_move]--><tt class="descname">on_move</tt><big>(</big><em>w</em>, <em>h</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTTextInput.on_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.vkeyboard.MTTextInput.on_release">
+<!--[pymt.ui.widgets.vkeyboard.MTTextInput.on_release]--><tt class="descname">on_release</tt><big>(</big><em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTTextInput.on_release" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.vkeyboard.MTTextInput.on_text_change">
+<!--[pymt.ui.widgets.vkeyboard.MTTextInput.on_text_change]--><tt class="descname">on_text_change</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTTextInput.on_text_change" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.vkeyboard.MTTextInput.on_text_validate">
+<!--[pymt.ui.widgets.vkeyboard.MTTextInput.on_text_validate]--><tt class="descname">on_text_validate</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTTextInput.on_text_validate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.vkeyboard.MTTextInput.reposition">
+<!--[pymt.ui.widgets.vkeyboard.MTTextInput.reposition]--><tt class="descname">reposition</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTTextInput.reposition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.vkeyboard.MTTextInput.show_keyboard">
+<!--[pymt.ui.widgets.vkeyboard.MTTextInput.show_keyboard]--><tt class="descname">show_keyboard</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTTextInput.show_keyboard" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.widgets.vkeyboard.MTVKeyboard">
+<!--[pymt.ui.widgets.vkeyboard.MTVKeyboard]-->class <tt class="descclassname">pymt.ui.widgets.vkeyboard.</tt><tt class="descname">MTVKeyboard</tt><big>(</big><em>text_widget</em>, <em>pos=(0</em>, <em>0)</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTVKeyboard" title="Permalink to this definition">¶</a></dt>
+<dd><p>A virtual keyboard that can be scaled/rotate/moved</p>
+<dl class="method">
+<dt id="pymt.ui.widgets.vkeyboard.MTVKeyboard.draw">
+<!--[pymt.ui.widgets.vkeyboard.MTVKeyboard.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTVKeyboard.draw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.vkeyboard.MTVKeyboard.draw_active_children">
+<!--[pymt.ui.widgets.vkeyboard.MTVKeyboard.draw_active_children]--><tt class="descname">draw_active_children</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTVKeyboard.draw_active_children" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.vkeyboard.MTVKeyboard.on_key_down">
+<!--[pymt.ui.widgets.vkeyboard.MTVKeyboard.on_key_down]--><tt class="descname">on_key_down</tt><big>(</big><em>k_str</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTVKeyboard.on_key_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.vkeyboard.MTVKeyboard.on_key_up">
+<!--[pymt.ui.widgets.vkeyboard.MTVKeyboard.on_key_up]--><tt class="descname">on_key_up</tt><big>(</big><em>k_str</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTVKeyboard.on_key_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.vkeyboard.MTVKeyboard.update_dl">
+<!--[pymt.ui.widgets.vkeyboard.MTVKeyboard.update_dl]--><tt class="descname">update_dl</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.vkeyboard.MTVKeyboard.update_dl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="api-pymt-ui-widget-video.html" title="previous chapter">Video - video player widget</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/api-pymt-ui-widget-vkeyboard.txt">Show Source</a></li>
+            </ul>
+            <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt-ui-widget-video.html" title="Video - video player widget"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+          <li><a href="api.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li>
+          <li><a href="api-pymt-ui.html" accesskey="U">UI - all user interface stuff</a> &raquo;</li>
+          <li><a href="api-pymt-ui-widgets.html" accesskey="U">Widgets - all widgets</a> &raquo;</li>
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, pymt-dev.
+      Last updated on fév 23, 2009.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>

@@ -10,11 +10,10 @@
           URL_ROOT:    '',
           VERSION:     '0.2 alpha',
           COLLAPSE_MODINDEX: false,
-          FILE_SUFFIX: ''
+          FILE_SUFFIX: '.html'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/interface.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="contents" title="Global table of contents" href="contents.html" />
     <link rel="index" title="Global index" href="genindex.html" />
@@ -51,11 +50,11 @@
           <div class="body">
             
   
-  <div class="section">
-<h1 id="module-pymt.vector">vector - generic vector class<a class="headerlink" href="#module-pymt.vector" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-pymt.vector">
+<h1>vector - generic vector class<a class="headerlink" href="#module-pymt.vector" title="Permalink to this headline">¶</a></h1>
 <p>Generic vector class to handle Vector operation.
 For example, if you want to get length of a vector</p>
-<div class="highlight"><pre><span class="k">from</span> <span class="nn">pymt</span> <span class="k">import</span> <span class="o">*</span>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymt</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">v</span> <span class="o">=</span> <span class="n">Vector</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span> <span class="mf">5</span><span class="p">)</span>
 
 <span class="c"># get length</span>
@@ -63,62 +62,51 @@ For example, if you want to get length of a vector</p>
 </pre></div>
 <dl class="class">
 <dt id="pymt.vector.Vector">
-<!--[pymt.vector.Vector]-->class <tt class="descclassname">pymt.vector.</tt><tt class="descname">Vector</tt><big>(</big><em>x=0.0</em>, <em>y=0.0</em><big>)</big><a class="headerlink" href="#pymt.vector.Vector" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.vector.Vector]-->class <tt class="descclassname">pymt.vector.</tt><tt class="descname">Vector</tt><big>(</big><em>*largs</em><big>)</big><a class="headerlink" href="#pymt.vector.Vector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents a 2D vector.</p>
-<dl class="attribute">
+<dl class="method">
 <dt id="pymt.vector.Vector.angle">
-<!--[pymt.vector.Vector.angle]--><tt class="descname">angle</tt><a class="headerlink" href="#pymt.vector.Vector.angle" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.vector.Vector.angle]--><tt class="descname">angle</tt><big>(</big><em>a</em><big>)</big><a class="headerlink" href="#pymt.vector.Vector.angle" title="Permalink to this definition">¶</a></dt>
 <dd>Computes the angle between a and b</dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="pymt.vector.Vector.distance">
-<!--[pymt.vector.Vector.distance]--><tt class="descname">distance</tt><a class="headerlink" href="#pymt.vector.Vector.distance" title="Permalink to this definition">¶</a></dt>
-<dd>Returns the distance between two points</dd></dl>
+<!--[pymt.vector.Vector.distance]--><tt class="descname">distance</tt><big>(</big><em>to</em><big>)</big><a class="headerlink" href="#pymt.vector.Vector.distance" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the distance between two points.</dd></dl>
 
-<dl class="attribute">
-<dt id="pymt.vector.Vector.distanceSqrd">
-<!--[pymt.vector.Vector.distanceSqrd]--><tt class="descname">distanceSqrd</tt><a class="headerlink" href="#pymt.vector.Vector.distanceSqrd" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="pymt.vector.Vector.distance2">
+<!--[pymt.vector.Vector.distance2]--><tt class="descname">distance2</tt><big>(</big><em>to</em><big>)</big><a class="headerlink" href="#pymt.vector.Vector.distance2" title="Permalink to this definition">¶</a></dt>
 <dd>Returns the distance between two points squared.
-Marginally faster than Distance()</dd></dl>
+Marginally faster than distance()</dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="pymt.vector.Vector.dot">
-<!--[pymt.vector.Vector.dot]--><tt class="descname">dot</tt><a class="headerlink" href="#pymt.vector.Vector.dot" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.vector.Vector.dot]--><tt class="descname">dot</tt><big>(</big><em>a</em><big>)</big><a class="headerlink" href="#pymt.vector.Vector.dot" title="Permalink to this definition">¶</a></dt>
 <dd>Computes the dot product of a and b</dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="pymt.vector.Vector.length">
-<!--[pymt.vector.Vector.length]--><tt class="descname">length</tt><a class="headerlink" href="#pymt.vector.Vector.length" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.vector.Vector.length]--><tt class="descname">length</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.vector.Vector.length" title="Permalink to this definition">¶</a></dt>
 <dd>Returns the length of a vector</dd></dl>
-
-<dl class="attribute">
-<dt id="pymt.vector.Vector.lengthSqrd">
-<!--[pymt.vector.Vector.lengthSqrd]--><tt class="descname">lengthSqrd</tt><a class="headerlink" href="#pymt.vector.Vector.lengthSqrd" title="Permalink to this definition">¶</a></dt>
-<dd>Returns the length of a vector sqaured.
-Faster than Length(), but only  marginally</dd></dl>
 
 <dl class="attribute">
 <dt id="pymt.vector.Vector.line_intersection">
 <!--[pymt.vector.Vector.line_intersection]--><tt class="descname">line_intersection</tt><a class="headerlink" href="#pymt.vector.Vector.line_intersection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the intersection point between the lines (1)v1-&gt;v2 and (2)v3-&gt;v4
 and returns it as a vector object</p>
-<p>For math see: <a class="reference" href="http://en.wikipedia.org/wiki/Line-line_intersection">http://en.wikipedia.org/wiki/Line-line_intersection</a></p>
+<p>For math see: <a class="reference external" href="http://en.wikipedia.org/wiki/Line-line_intersection">http://en.wikipedia.org/wiki/Line-line_intersection</a></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="pymt.vector.Vector.normalize">
-<!--[pymt.vector.Vector.normalize]--><tt class="descname">normalize</tt><a class="headerlink" href="#pymt.vector.Vector.normalize" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.vector.Vector.normalize]--><tt class="descname">normalize</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.vector.Vector.normalize" title="Permalink to this definition">¶</a></dt>
 <dd>Returns a new vector that has the same direction as vec,
 but has a length of one.</dd></dl>
 
-<dl class="attribute">
-<dt id="pymt.vector.Vector.normalized">
-<!--[pymt.vector.Vector.normalized]--><tt class="descname">normalized</tt><a class="headerlink" href="#pymt.vector.Vector.normalized" title="Permalink to this definition">¶</a></dt>
-<dd>Returns the length of a vector</dd></dl>
-
-<dl class="attribute">
+<dl class="method">
 <dt id="pymt.vector.Vector.rotate">
-<!--[pymt.vector.Vector.rotate]--><tt class="descname">rotate</tt><a class="headerlink" href="#pymt.vector.Vector.rotate" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.vector.Vector.rotate]--><tt class="descname">rotate</tt><big>(</big><em>angle</em><big>)</big><a class="headerlink" href="#pymt.vector.Vector.rotate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -199,7 +187,7 @@ the transpose of teh matrix applied to the vector</dd></dl>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on fév 18, 2009.
+      Last updated on fév 23, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
     </div>
   </body>

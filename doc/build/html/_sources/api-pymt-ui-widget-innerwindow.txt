@@ -1,8 +1,8 @@
 =========================================================
-Layout - horizontal, vertical layout arrangment
+Inner window - a way to embedded application into another
 =========================================================
 
-.. automodule:: pymt.ui.layout
+.. automodule:: pymt.ui.widgets.innerwindow
     :members:
     :undoc-members:
 

@@ -311,6 +311,20 @@ class MTScatterWidget(MTWidget):
                 return tID
         return None
 
+
+    def apply_angle_scale_trans(self, angle, scale, trans, point):
+        with gx_matrix_identity:
+            if self.do_translation:
+                glTranslated(trans.x * self.do_translation_x, trans.y * self.do_translation_y, 0)
+            glTranslated(point.x, point.y,0)
+            if self.do_scale:
+                glScaled(scale, scale,1)
+            if self.do_rotation:
+                glRotated(angle,0,0,1)
+            glTranslated(-point.x, -point.y,0)
+            glMultMatrixf(self.transform_mat)
+            glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
+
     def rotate_zoom_move(self, touchID, x, y):
         # some default values, in case we dont calculate them,
         # they still need to be defined for applying the openGL transformations
@@ -349,17 +363,7 @@ class MTScatterWidget(MTWidget):
             trans = p1_now - p1_start
 
         # apply to our transformation matrix
-        with gx_matrix_identity:
-            if self.do_translation:
-                glTranslated(trans.x * self.do_translation_x, trans.y * self.do_translation_y, 0)
-            glTranslated(intersect.x, intersect.y,0)
-            if self.do_scale:
-                glScaled(scale, scale,1)
-            if self.do_rotation:
-                glRotated(rotation,0,0,1)
-            glTranslated(-intersect.x, -intersect.y,0)
-            glMultMatrixf(self.transform_mat)
-            glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
+        self.apply_angle_scale_trans(rotation, scale, trans, intersect)
 
         # save new position of the current touch
         self.touches[touchID] = Vector(x,y)

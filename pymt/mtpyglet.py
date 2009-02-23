@@ -2,7 +2,7 @@
 Soup on pyglet to provide multitouch interface.
 '''
 
-import pymt.lib.osc
+from pymt.lib import osc
 import pyglet
 from pyglet.gl import *
 

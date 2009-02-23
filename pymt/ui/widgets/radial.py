@@ -11,14 +11,14 @@ from pyglet.gl import *
 from math import *
 from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.widget import MTWidget
-
+from pymt.graphx import *
 __all__ = ['MTVectorSlider']
 
 ### HELP NEEDED IN THE COLORING DEPARTMENT ###
 
 def _get_distance(Pos1, Pos2):
     '''Get the linear distance between two points'''
-    return math.sqrt((Pos2[0] - Pos1[0])**2 + (Pos2[1] - Pos1[1])**2)
+    return sqrt((Pos2[0] - Pos1[0])**2 + (Pos2[1] - Pos1[1])**2)
 
 def prot(p, d, rp=(0, 0)):
     '''Rotates a given point(p) d degrees counter-clockwise around rp'''
@@ -35,12 +35,12 @@ class MTVectorSlider(MTWidget):
     '''
     This is a slider that provides an arrow, and allows you to manipulate
     it just like any other vector, adjusting its angle and amplitude.
-    
+
     :Parameters:
         'bgcolor' : The background color of the widget
         'vcolor' : The color for the vector
         'radius': The radius of the whole widget
-        
+
     :Parameters Inherited through MTWidget:
         'pos' : Position
         'size' : Size
@@ -55,11 +55,11 @@ class MTVectorSlider(MTWidget):
         kwargs.setdefault('radius', 200)
         kwargs.setdefault('vcolor', (1, .28, 0))
         kwargs.setdefault('bgcolor', (.2, .4, .9))
-        
+
         self.radius = kwargs.get('radius')
         self.vcolor = kwargs.get('vcolor')
         self.bgcolor = kwargs.get('bgcolor')
-        
+
         #The vector hand
         self.vector = [0, 0]
 
@@ -113,7 +113,7 @@ class MTVectorSlider(MTWidget):
             self.dispatch_event('on_aplitude_change', self.amplitude)
             self.dispatch_event('on_angle_change', self.angle)
             self.dispatch_event('on_vector_change', self.amplitude, self.angle)
-            
+
     def on_touch_move(self, touches, touchID, x, y):
         if self.collide_point(x, y):
             #The blob is in the widget, do stuff
@@ -123,12 +123,12 @@ class MTVectorSlider(MTWidget):
             self.dispatch_event('on_aplitude_change', self.amplitude)
             self.dispatch_event('on_angle_change', self.angle)
             self.dispatch_event('on_vector_change', self.amplitude, self.angle)
-    
+
     def draw(self):
         #Draw Background
         set_color(*self.bgcolor)
         drawCircle(self.pos, self.radius)
-        
+
         #A good size for the hand, proportional to the size of the widget
         hd = self.radius / 10
         #Draw center of the hand

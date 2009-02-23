@@ -912,7 +912,16 @@ class MTButtonMatrix(MTWidget):
             self.matrix[i][j] = 'down'
 
 
+class MTLabel(MTWidget):
+    def __init__(self, **kwargs):
+        kwargs.setdefault('text', 'MTLabel')
+        kwargs.setdefault('font_size', 32)
+        super(MTLabel, self).__init__(**kwargs)
+        self.text = kwargs.get('text')
+        self.font_size = kwargs.get('font_size')
 
+    def draw(self):
+        drawLabel(self.text, pos=self.pos,center=False, font_size=self.font_size)
 
 # Register all base widgets
 MTWidgetFactory.register('MTDragableWidget', MTDragableWidget)

@@ -40,13 +40,18 @@ class Shader(object):
         location = glGetUniformLocation(self.program, name)
         glUniform1f(location, value)
 
+    def set_uniform_i(self, name, value):
+        location = glGetUniformLocation(self.program, name)
+        glUniform1i(location, value)
+
     def __setitem__(self, name, value):
         """pass a variable to the shader"""
-        #print "setting", name, value
         if isinstance(value, float):
             self.set_uniform_f(name, value)
+        elif isinstance(value, int):
+            self.set_uniform_i(name, value)
         else:
-            raise TypeError("Only floats are supported so far")
+            raise TypeError("Only single floats and ints are supported so far")
 
     def use(self):
         glUseProgram(self.program)

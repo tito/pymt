@@ -11,7 +11,7 @@ setup (name='pymt',
       author_email='thomas.hansen@gmail.com',
       url='http://code.google.com/p/pymt/',
       license='GPL',
-      packages=['pymt', 'pymt.osc', 'pymt.ui', 'pymt.ui.widgets'],
+      packages=['pymt', 'pymt.lib','pymt.lib.osc', 'pymt.ui', 'pymt.ui.widgets'],
       package_dir={'pymt': 'pymt'},
       package_data={'pymt': ['data/icons/svg/*.svg', 'data/icons/*.png']}
 )

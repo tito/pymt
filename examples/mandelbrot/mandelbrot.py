@@ -28,8 +28,8 @@ uniform float zoom;
 void main()
 {
     vec2 center = vec2(-0.65,0);
-    vec3 outerColor1 = vec3(0.0,0.8,0.3);
-    vec3 outerColor2 = vec3(0.8,0.4,0.2);
+    vec3 outerColor1 = vec3(0.0,0.0,1.0);
+    vec3 outerColor2 = vec3(1.0,1.0,1.0);
 
     float real = position.x * (1.0/zoom) + center.x;
     float imag = position.y * (1.0/zoom) + center.y;
@@ -49,8 +49,11 @@ void main()
     vec3 color;
     if (r2 < 4.0)
         color = vec3(0.0);
-    else
-        color = mix(outerColor1, outerColor2, fract(float(iter)*0.05));
+    else{
+        float intensity = float(iter) + 1.0 -  (( log( log( sqrt(r2) ) )/log(2.0)  )  /log(2.0));
+        color = mix(outerColor1, outerColor2, fract(float(intensity)*0.03));
+        //color = mix(outerColor1, outerColor2, fract(float(iter)*0.05));
+    }
     gl_FragColor = vec4 (clamp(color, 0.0, 1.0), 1.0);
 }
 """
@@ -59,6 +62,8 @@ void main()
 
 
 from pymt import *
+
+
 
 
 class MandelbrotViewer(MTScatterWidget):

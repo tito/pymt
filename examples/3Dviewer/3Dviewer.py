@@ -79,7 +79,7 @@ class ModelViewer(GLWindow):
         self.reset_rotation()
         self.touch1, self.touch2 = None, None
         self.zoom = 1.0
-        
+
 
     def reset_rotation(self):
         glMatrixMode(GL_MODELVIEW)
@@ -101,17 +101,17 @@ class ModelViewer(GLWindow):
             self.touch1 = touchID
         elif len(self.touch_position) == 2:
             self.touch2 = touchID
-            v1 = self.touch_position[self.touch1]
-            v2 = self.touch_position[self.touch2]
-            self.scale_dist = Vector.distance(Vector(*v1), Vector(*v2))
+            v1 = Vector(*self.touch_position[self.touch1])
+            v2 = Vector(*self.touch_position[self.touch2])
+            self.scale_dist = v1.distance(v2)
 
     def on_touch_move(self, touches, touchID, x, y):
         dx, dy = 0,0
         scale = 1.0
         if  self.touch_position.has_key(self.touch1) and self.touch_position.has_key(self.touch2):
-            v1 = self.touch_position[self.touch1]
-            v2 = self.touch_position[self.touch2]
-            new_dist = Vector.distance(Vector(*v1), Vector(*v2))
+            v1 = Vector(*self.touch_position[self.touch1])
+            v2 = Vector(*self.touch_position[self.touch2])
+            new_dist = v1.distance(v2)
             self.zoom *= new_dist/self.scale_dist
             self.scale_dist = new_dist
         else:

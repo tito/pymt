@@ -247,7 +247,7 @@ class MTScatterWidget(MTWidget):
         kwargs.setdefault('do_scale', True)
         kwargs.setdefault('do_rotation', True)
         kwargs.setdefault('do_translation', True)
-        
+
 
         super(MTScatterWidget, self).__init__(**kwargs)
 
@@ -320,14 +320,14 @@ class MTScatterWidget(MTWidget):
         scale = 1
 
         # we definitly have one point
-        p1_start = self.touches[touchID]
+        p1_start = Vector(*self.touches[touchID])
         p1_now   = Vector(x,y)
 
         # if we have a second point, do the scale/rotate/move thing
         second_touch = self.find_second_touch(touchID)
         if second_touch:
-            p2_start = self.touches[second_touch]
-            p2_now   = self.touches[second_touch]
+            p2_start = Vector(*self.touches[second_touch])
+            p2_now   = Vector(*self.touches[second_touch])
 
             # find intersection between lines...the point around which to rotate
             intersect = Vector.line_intersection(p1_start,  p2_start,p1_now, p2_now)
@@ -335,14 +335,14 @@ class MTScatterWidget(MTWidget):
                 intersect = Vector(0,0)
 
             # compute scale factor
-            old_dist = Vector.distance(p1_start, p2_start)
-            new_dist = Vector.distance(p1_now, p2_now)
+            old_dist = p1_start.distance(p2_start)
+            new_dist = p1_now.distance(p2_now)
             scale = new_dist/old_dist
 
             # compute rotation angle
             old_line = p1_start - p2_start
             new_line = p1_now - p2_now
-            rotation = -Vector.angle(old_line, new_line)
+            rotation = -1.0 * old_line.angle(new_line)
 
         else:
             # just comnpute a translation component if we only have one point
@@ -367,7 +367,7 @@ class MTScatterWidget(MTWidget):
     def get_scale_factor(self):
         p1_trans = matrix_mult(self.transform_mat, (1,1,0,1))
         p2_trans = matrix_mult(self.transform_mat, (2,1,0,1))
-        dist_trans = Vector.distance(p1_trans, p2_trans)
+        dist_trans = p1_trans.distance(p2_trans)
         return dist_trans
 
     def on_touch_down(self, touches, touchID, x,y):

@@ -91,8 +91,13 @@ class Vector(list):
         return math.sqrt(self[0] ** 2 + self[1] ** 2)
 
     def distance(self, to):
+        '''Returns the distance between two points.'''
+        return math.sqrt((self[0] - to[0]) ** 2 + (self[1] - to[1]) ** 2)
+
+
+    def distance2(self, to):
         '''Returns the distance between two points squared.
-        Marginally faster than Distance()
+        Marginally faster than distance()
         '''
         return (self[0] - to[0]) ** 2 + (self[1] - to[1]) ** 2
 
@@ -119,6 +124,11 @@ class Vector(list):
         angle = math.radians(angle)
         return Vector((self[0] * math.cos(angle)) - (self[1] * math.sin(angle)),
                       (self[1] * math.cos(angle)) + (self[0] * math.sin(angle)))
+
+
+
+
+
 
     @staticmethod
     def line_intersection(v1, v2, v3, v4):

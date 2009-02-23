@@ -7,7 +7,7 @@ from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.widget import MTWidget
 from pymt.lib import squirtle
 from pymt.vector import *
-
+from pymt.logger import pymt_logger
 
 
 class MTRectangularWidget(MTWidget):
@@ -831,15 +831,15 @@ class MTSvg(MTWidget):
 
 		# TODO remove this ugly code, improve loader for this
         try:
-            print "loading", self.filename
+            pymt_logger.debug('loading %s' % self.filename)
             self.svg = squirtle.SVG(self.filename)
         except Exception, e:
             try:
                 svgpath = os.path.normpath(os.path.dirname(__file__) + '/../data/icons/svg/')
-                print "load failed.  trying:", svgpath+self.filename
+                pymt_logger.warning('load failed.  trying: %s' % (svgpath+self.filename))
                 self.svg = squirtle.SVG(os.path.join(svgpath, self.filename))
             except Exception, e:
-                print "Couldn't load file ", self.filename, e
+                pymt_logger.error('unable to load file %s : %s' % (self.filename, e))
 
         self.size = (self.svg.width, self.svg.height)
 

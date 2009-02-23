@@ -4,6 +4,7 @@ from pyglet import *
 from pyglet.gl import *
 from pyglet.graphics import draw
 from pyglet.text import Label
+from pymt.logger import pymt_logger
 from math import sqrt
 import math
 from shader import *
@@ -22,12 +23,12 @@ def setBrush(sprite, size=10):
     _bruch_size = size
 
 def enable_blending():
-    print 'Warning: deprecated, use "with gx_blending:" now.'
+    pymt_logger.warning('deprecated, use "with gx_blending:" now.')
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
 def disable_blending():
-    print 'Warning: deprecated, use "with gx_blending:" now.'
+    pymt_logger.warning('deprecated, use "with gx_blending:" now.')
     glDisable(GL_BLEND)
 
 def set_color(r,g,b,a=1.0):
@@ -326,7 +327,7 @@ class Fbo:
 
         status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
         if status != GL_FRAMEBUFFER_COMPLETE_EXT:
-            print 'Error in framebuffer activation'
+            pymt_logger.error('error in framebuffer activation')
 
         self.push_viewport = push_viewport
 

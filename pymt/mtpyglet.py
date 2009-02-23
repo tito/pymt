@@ -3,6 +3,7 @@ Soup on pyglet to provide multitouch interface.
 '''
 
 from pymt.lib import osc
+from pymt.logger import *
 import pyglet
 from pyglet.gl import *
 
@@ -70,7 +71,6 @@ class Tuio2DObject(object):
 	'''Ported from touchpy'''
 	self.xmot = self.xpos - self.oxpos
 	self.ymot = self.ypos - self.oypos
-	print 'foo'
 
     def depack(self, args):
         if len(args) < 5:
@@ -282,7 +282,7 @@ def runTouchApp():
 
     host = pymt.pymt_config.get('tuio', 'host')
     port = pymt.pymt_config.getint('tuio', 'port')
-    print 'Notice: listening for TUIO on port', port, 'of host', host
+    pymt_logger.info('listening for TUIO on %s:%d' % (host, port))
     evloop = TouchEventLoop(host=host, port=port)
 
     try:

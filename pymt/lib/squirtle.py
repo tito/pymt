@@ -1,11 +1,11 @@
-"""Squirtle mini-library for SVG rendering in Pyglet.
+'''Squirtle mini-library for SVG rendering in Pyglet.
 
 Example usage:
     import squirtle
     my_svg = squirtle.SVG('filename.svg')
     my_svg.draw(100, 200, angle=15)
     
-"""
+'''
 
 from pyglet.gl import *
 from xml.etree.cElementTree import parse
@@ -13,6 +13,7 @@ import re
 import math
 from ctypes import CFUNCTYPE, POINTER, byref, cast
 import sys, os
+from pymt.logger import pymt_logger
 
 if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     tess = gluNewTess()
@@ -81,7 +82,7 @@ def parse_color(c, default=None):
             raise Exception("Incorrect length for colour " + str(c) + " length " + str(len(c)))            
         return [r,g,b,255]
     except Exception, ex:
-        print 'Exception parsing color', ex
+        pymt_logger.error('exception parsing color %s' % ex)
         return None
         
 class Matrix(object):
@@ -399,7 +400,7 @@ class SVG(object):
             try:
                 self.parse_element(e)
             except Exception, ex:
-                print 'Exception while parsing element', e
+                pymt_logger.error('exception while parsing element %s: %s' % (e, ex))
                 raise
             
     def parse_element(self, e):
@@ -557,7 +558,7 @@ class SVG(object):
             try:
                 self.parse_element(c)
             except Exception, ex:
-                print 'Exception while parsing element', c
+                pymt_logger.error('exception while parsing element %s: %s' % (c, ex))
                 raise
         self.transform = oldtransform
         self.opacity = oldopacity                        
@@ -728,4 +729,4 @@ class SVG(object):
         return tlist       
 
     def warn(self, message):
-        print "Warning: SVG Parser (%s) - %s" % (self.filename, message)
+        pymt_logger.warning('svg parser on %s: %s' % (self.filename, message))

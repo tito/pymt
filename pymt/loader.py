@@ -17,6 +17,7 @@ import pyglet.image
 import pyglet.sprite
 import time
 import urllib
+from pymt.logger import pymt_logger
 
 try:
     # Used for gdk thread lock access.
@@ -224,7 +225,7 @@ class Loader(object):
                 try:
                     self.cache[name] = pyglet.image.load(name, file=fd)
                 except Exception, e:
-                    print 'Loader: unable to load image %s' % name, e
+                    pymt_logger.error('unable to load image %s : %s' % (name, e))
 
                 try:
                     gtk.gdk.threads_leave()
@@ -239,4 +240,4 @@ class Loader(object):
                     self.updatelist.append(obj)
 
             except Exception, e:
-                print 'Loader: unable to load image %s' % name, e
+                pymt_logger.error('unable to load image %s : %s' % (name, e))

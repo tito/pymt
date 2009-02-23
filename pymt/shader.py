@@ -1,6 +1,7 @@
 import ctypes as c
 from pyglet import *
 from pyglet.gl import *
+from pymt.logger import pymt_logger
 
 class ShaderException(Exception):
     pass
@@ -21,7 +22,7 @@ class Shader(object):
         glLinkProgram(self.program)
         message = self.get_program_log(self.program)
         if message:
-            print message
+            pymt_logger.debug('shader message: %s' % message)
 
     def create_shader(self, source, shadertype):
         sbuffer = c.create_string_buffer(source)
@@ -33,7 +34,7 @@ class Shader(object):
         glCompileShader(shader)
         message = self.get_shader_log(shader)
         if message:
-            print message
+            pymt_logger.debug('shader message: %s' % message)
         return shader
 
     def set_uniform_f(self, name, value):

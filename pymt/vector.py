@@ -9,6 +9,7 @@ For example, if you want to get length of a vector ::
 
 '''
 import math
+from pymt.logger import *
 
 _use_numpy = False
 
@@ -16,7 +17,10 @@ try:
     import numpy
     _use_numpy = True
 except:
-    print 'Warning: you do not have numpy installed.  Computing transformations for MTScatterWidget can get painfully slow without numpy. You should install numpy: http://numpy.scipy.org/'
+    pymt_logger.warning('you do not have numpy installed.  Computing '
+        'transformations for MTScatterWidget can get painfully '
+        'slow without numpy. You should install numpy: '
+        'http://numpy.scipy.org/')
     from matrix import Matrix, RowVector
 
 class Vector(list):

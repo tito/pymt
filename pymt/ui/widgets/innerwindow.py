@@ -59,7 +59,6 @@ class MTInnerWindow(MTScatterWidget):
         root_win.add_widget(self.container)
 
     def close(self, touchID=None, x=0, y=0):
-        print "closing window"
         self.parent.remove_widget(self)
 
     def add_widget(self, w):

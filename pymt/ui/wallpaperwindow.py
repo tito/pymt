@@ -1,4 +1,5 @@
 from pyglet import *
+from pymt.logger import pymt_logger
 from pymt.ui.window import *
 
 class MTWallpaperWindow(MTWindow):
@@ -46,7 +47,7 @@ class MTWallpaperWindow(MTWindow):
             img = pyglet.image.load(image)
             self._image = pyglet.sprite.Sprite(img)
         except Exception, e:
-            print 'Desktop: error while loading wallpaper', e
+            pymt_logger.error('error while loading wallpaper : %s', e)
     def _get_wallpaper(self):
         return self._image
     wallpaper = property(_get_wallpaper, _set_wallpaper)

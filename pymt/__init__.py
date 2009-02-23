@@ -9,17 +9,7 @@ You can visit http://code.google.com/p/pymt/ for more informations !
 
 from __future__ import with_statement
 import ConfigParser
-from mtpyglet import *
-from graphx import *
-from ui import *
-from pyglet import *
-from obj import OBJ
-from shader import *
-from vector import *
-from plugin import *
-from loader import *
-from gesture import *
-from pymt.ui import *
+from logger import pymt_logger, LOG_LEVELS
 
 import sys, getopt, os
 
@@ -45,6 +35,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_config.set('pymt', 'show_fps', '0')
     pymt_config.set('pymt', 'show_eventstats', '0')
     pymt_config.set('pymt', 'fullscreen', '1')
+    pymt_config.set('pymt', 'log_level', 'debug')
     pymt_config.add_section('tuio')
     pymt_config.set('tuio', 'host', '127.0.0.1')
     pymt_config.set('tuio', 'port', '3333')
@@ -53,18 +44,35 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_config.set('dump', 'prefix', 'img_')
     pymt_config.set('dump', 'format', 'jpeg')
 
+    level = LOG_LEVELS.get(pymt_config.get('pymt', 'log_level'))
+    pymt_logger.setLevel(level=level)
+
+    # Note: import are done after logger module initialization,
+    # and configuration applied to logger.
+    from mtpyglet import *
+    from graphx import *
+    from ui import *
+    from pyglet import *
+    from obj import OBJ
+    from shader import *
+    from vector import *
+    from plugin import *
+    from loader import *
+    from gesture import *
+    from pymt.ui import *
+
     # Read config file if exist
     if os.path.exists(pymt_config_fn):
         try:
             pymt_config.read(pymt_config_fn)
         except Exception, e:
-            print 'Warning: error while reading local configuration :', e
+            pymt_logger.warning('error while reading local configuration :', e)
     else:
         try:
             with open(pymt_config_fn, 'w') as fd:
                 pymt_config.write(fd)
         except Exception, e:
-            print 'Warning: error while saving default configuration file :', e
+            pymt_logger.warning('error while saving default configuration file :', e)
 
 
     # Can be overrided in command line
@@ -96,6 +104,6 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
                 pymt_config.set('dump', 'format', str(arg))
 
     except getopt.GetoptError, err:
-        print str(err), sys.argv, __name__
+        pymt_logger.error(err)
         pymt_usage()
         sys.exit(2)

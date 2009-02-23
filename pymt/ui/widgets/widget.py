@@ -7,6 +7,7 @@ from pyglet import *
 from pyglet.gl import *
 from pyglet.text import HTMLLabel, Label
 from pyglet.window import key
+from pymt.logger import pymt_logger
 from pymt.graphx import *
 from pymt.mtpyglet import *
 from pymt.ui.animation import *
@@ -32,11 +33,11 @@ def event_stats_activate(activate=True):
 
 def event_stats_print():
     '''Print actual event stats'''
-    print '[ Event stats ] ---------------------------------'
+    pymt_logger.info('[ Event stats ] ---------------------------------')
     global _event_stats
     for k in _event_stats:
-        print '| %6d | %s' % (_event_stats[k], k)
-    print '-------------------------------------------------'
+        pymt_logger.info('| %6d | %s' % (_event_stats[k], k))
+    pymt_logger.info('-------------------------------------------------')
 
 class MTWidget(pyglet.event.EventDispatcher):
     '''Global base for any multitouch widget.

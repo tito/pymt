@@ -38,17 +38,20 @@ class MTSimulator(MTWidget):
             self.current_drag = cursor = Tuio2DCursor(id, [x,y])
             self.touches[id] = cursor
             self.output.dispatch_event('on_touch_down', self.touches, id, x, y)
+        return True
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
         cur = self.current_drag
         cur.xpos, cur.ypos = x,y
         self.output.dispatch_event('on_touch_move', self.touches, cur.blobID, x, y)
+        return True
 
     def on_mouse_release(self, x, y, button, modifiers):
         t = self.find_touch(x,y)
         if  button == 1 and t and not(modifiers & key.MOD_CTRL):
             self.output.dispatch_event('on_touch_up', self.touches, self.current_drag.blobID, x, y)
             del self.touches[self.current_drag.blobID]
+        return True
 
 # Register all base widgets
 MTWidgetFactory.register('MTSimulator', MTSimulator)

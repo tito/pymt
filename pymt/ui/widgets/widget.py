@@ -33,11 +33,10 @@ def event_stats_activate(activate=True):
 
 def event_stats_print():
     '''Print actual event stats'''
-    pymt_logger.info('[ Event stats ] ---------------------------------')
+    pymt_logger.info('Event stats')
     global _event_stats
     for k in _event_stats:
-        pymt_logger.info('| %6d | %s' % (_event_stats[k], k))
-    pymt_logger.info('-------------------------------------------------')
+        pymt_logger.info('%6d: %s' % (_event_stats[k], k))
 
 class MTWidget(pyglet.event.EventDispatcher):
     '''Global base for any multitouch widget.
@@ -338,27 +337,33 @@ class MTWidget(pyglet.event.EventDispatcher):
 
     def on_mouse_press(self, x, y, button, modifiers):
         for w in reversed(self.children):
-            w.dispatch_event('on_mouse_press',x, y, button, modifiers)
+            if w.dispatch_event('on_mouse_press',x, y, button, modifiers):
+                return True
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
         for w in reversed(self.children):
-            w.dispatch_event('on_mouse_drag',x, y, dx, dy, button, modifiers)
+            if w.dispatch_event('on_mouse_drag',x, y, dx, dy, button, modifiers):
+                return True
 
     def on_mouse_release(self, x, y, button, modifiers):
         for w in reversed(self.children):
-            w.dispatch_event('on_mouse_release', x, y, button, modifiers)
+            if w.dispatch_event('on_mouse_release', x, y, button, modifiers):
+                return True
 
     def on_object_down(self, touches, touchID,id, x, y,angle):
         for w in reversed(self.children):
-            w.dispatch_event('on_object_down', touches, touchID,id, x, y,angle)
+            if w.dispatch_event('on_object_down', touches, touchID,id, x, y, angle):
+                return True
 
     def on_object_move(self, touches, touchID,id, x, y,angle):
         for w in reversed(self.children):
-            w.dispatch_event('on_object_move', touches, touchID,id, x, y,angle)
+            if w.dispatch_event('on_object_move', touches, touchID,id, x, y, angle):
+                return True
 
     def on_object_up(self, touches, touchID,id, x, y,angle):
         for w in reversed(self.children):
-            w.dispatch_event('on_object_up', touches, touchID,id, x, y,angle)
+            if w.dispatch_event('on_object_up', touches, touchID,id, x, y,angle):
+                return True
 
 
 # Register all base widgets

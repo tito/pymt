@@ -1,11 +1,12 @@
+from __future__ import with_statement
+from pymt import *
+import random
+
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
 PLUGIN_TITLE = 'Particles'
 PLUGIN_AUTHOR = 'Sharath Patali & Mathieu Virbel'
 PLUGIN_DESCRIPTION = 'All stars are coming under touches!'
-
-from pymt import *
-import random
 
 class ParticleObject(MTWidget):
     def __init__(self, pos=(0,0), size=(20,20), color=(1,1,1),
@@ -15,7 +16,15 @@ class ParticleObject(MTWidget):
         self.color = (random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1), self.opacity)
         self.rotation = 0
         self.zoom = 1
-        self.type = type
+        self._type = type
+        self.dl = GlDisplayList()
+
+    def _set_type(self, type):
+        self._type = type
+        self.dl.clear()
+    def _get_type(self):
+        return self._type
+    type = property(_get_type, _set_type)
 
     def animate(self):
         self.show()
@@ -40,21 +49,22 @@ class ParticleObject(MTWidget):
     def draw(self):
         if not self.visible:
             return
-        glColor4f(*self.color)
-        if self.type == 'Squares':
-            drawRectangle((self.x, self.y), self.size)
-        else:
-            drawCircle ((self.x, self.y),10)
+        if not self.dl.is_compiled():
+            with self.dl:
+                glColor4f(*self.color)
+                if self.type == 'Squares':
+                    drawRectangle(size=self.size)
+                else:
+                    drawCircle(radius=10)
+        self.dl.draw()
 
     def on_draw(self):
-        glPushMatrix()
-        glTranslatef(self.x, self.y, 0)
-        glRotated(self.rotation, 0,0,1)
-        glScalef(self.zoom, self.zoom, 1)
-        glTranslatef(-self.x, -self.y, 0)
-        glTranslatef(-self.size[0]/2, -self.size[1]/2, 0)
-        self.draw()
-        glPopMatrix()
+        with gx_matrix:
+            glTranslatef(self.x, self.y, 0)
+            glRotated(self.rotation, 0,0,1)
+            glScalef(self.zoom, self.zoom, 1)
+            #glTranslatef(-self.size[0]/2, -self.size[1]/2, 0)
+            self.draw()
 
     def on_animation_complete(self, anim):
         self.hide()
@@ -72,9 +82,9 @@ class ParticleEngine(MTWidget):
 
         pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
 
-    def draw(self):
-        enable_blending()
-        MTWidget.draw(self)
+    def on_draw(self):
+        with gx_blending:
+            super(ParticleEngine, self).on_draw()
 
     def set_type(self, type):
         for i in range(self.max):

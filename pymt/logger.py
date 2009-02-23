@@ -43,7 +43,7 @@ class ColoredFormatter(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 class ColoredLogger(logging.Logger):
-    FORMAT = "[%(levelname)-18s]%(message)s" # ($BOLD%(filename)s$RESET:%(lineno)d)"
+    FORMAT = "[%(levelname)-18s] %(message)s" # ($BOLD%(filename)s$RESET:%(lineno)d)"
     #FORMAT = "[%(levelname)-18s]%(message)s ($BOLD%(filename)s$RESET:%(lineno)d)"
     COLOR_FORMAT = formatter_message(FORMAT, True)
 
@@ -55,6 +55,6 @@ class ColoredLogger(logging.Logger):
         self.addHandler(console)
         return
 
-
 logging.setLoggerClass(ColoredLogger)
 pymt_logger = logging.getLogger('PyMT')
+

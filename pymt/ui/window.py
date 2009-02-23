@@ -122,22 +122,22 @@ class MTWindow(TouchWindow):
         return self.root.dispatch_event('on_touch_up', touches, touchID, x, y)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        self.root.dispatch_event('on_mouse_press', x, y, button, modifiers)
+        return self.root.dispatch_event('on_mouse_press', x, y, button, modifiers)
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
-        self.root.dispatch_event('on_mouse_drag', x, y, dx, dy, button, modifiers)
+        return self.root.dispatch_event('on_mouse_drag', x, y, dx, dy, button, modifiers)
 
     def on_mouse_release(self, x, y, button, modifiers):
-        self.root.dispatch_event('on_mouse_release', x, y, button, modifiers)
+        return self.root.dispatch_event('on_mouse_release', x, y, button, modifiers)
 
     def on_object_down(self, touches, touchID, id, x, y,angle):
-        self.root.dispatch_event('on_object_down', touches, touchID, id, x, y,angle)
+        return self.root.dispatch_event('on_object_down', touches, touchID, id, x, y,angle)
 
     def on_object_move(self, touches, touchID, id, x, y,angle):
-        self.root.dispatch_event('on_object_move', touches, touchID, id, x, y,angle)
+        return self.root.dispatch_event('on_object_move', touches, touchID, id, x, y,angle)
 
     def on_object_up(self, touches, touchID, id, x, y,angle):
-        self.root.dispatch_event('on_object_up', touches, touchID, id, x, y,angle)
+        return self.root.dispatch_event('on_object_up', touches, touchID, id, x, y,angle)
 
 
 class MTDisplay(MTWidget):

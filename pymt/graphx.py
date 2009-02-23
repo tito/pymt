@@ -157,7 +157,8 @@ def drawLine(points, width=5.0):
 
 gl_displaylist_generate = False
 class GlDisplayList:
-    '''Abstraction to opengl display-list usage. Here is an example of usage ::
+    '''Abstraction to opengl display-list usage. Here is an example of usage
+    ::
 
         dl = GlDisplayList()
         with dl:
@@ -213,8 +214,8 @@ class GlBlending:
     '''Abstraction to use blending ! Don't use directly this class.
     We've got an alias you can use ::
 
-    with gx_blending:
-        # do draw function
+        with gx_blending:
+            # do draw function
     '''
     def __enter__(self):
         glEnable(GL_BLEND)

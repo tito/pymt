@@ -1,21 +1,8 @@
 '''
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Object part by Felipe Carvalho
+Soup on pyglet to provide multitouch interface.
 '''
 
-import osc
+import pymt.lib.osc
 import pyglet
 from pyglet.gl import *
 
@@ -273,7 +260,6 @@ class TouchWindow(pyglet.window.Window):
 
 def pymt_usage():
     '''PyMT Usage: %s [OPTION...]
-
   -h, --help                        prints this mesage
   -f, --fullscreen                  force run in fullscreen
   -w, --windowed                    force run in window

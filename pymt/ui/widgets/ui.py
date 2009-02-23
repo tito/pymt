@@ -5,7 +5,7 @@ from pymt.graphx import *
 from math import *
 from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.widget import MTWidget
-from pymt.ui import squirtle
+from pymt.lib import squirtle
 from pymt.vector import *
 
 

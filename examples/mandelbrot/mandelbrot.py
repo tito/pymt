@@ -28,8 +28,8 @@ uniform float zoom;
 void main()
 {
     vec2 center = vec2(-0.65,0);
-    vec3 outerColor1 = vec3(0.0,1.0,0.5);
-    vec3 outerColor2 = vec3(1.0,0.5,0.3);
+    vec3 outerColor1 = vec3(0.0,0.8,0.3);
+    vec3 outerColor2 = vec3(0.8,0.4,0.2);
 
     float real = position.x * (1.0/zoom) + center.x;
     float imag = position.y * (1.0/zoom) + center.y;

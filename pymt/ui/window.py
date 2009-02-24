@@ -33,7 +33,11 @@ class MTWindow(TouchWindow):
 
         self.fps_display =  pyglet.clock.ClockDisplay()
 
-        self.key_press_handlers = []
+        self.on_key_press_handlers = []
+        self.on_text_handlers = []
+        self.on_text_motion_handlers = []
+        self.on_text_motion_select_handlers = []
+
         self.children = []
         self.color = kwargs.get('color')
 
@@ -75,17 +79,53 @@ class MTWindow(TouchWindow):
     size = property(_get_size, _set_size,
             doc='''Return width/height of window''')
 
-    def add_keyboard_handler(self, func):
-        self.key_press_handlers.append(func)
+    def add_on_key_press(self, func):
+        self.on_key_press_handlers.append(func)
 
-    def remove_keyboard_handler(self, func):
-        if func in self.key_press_handlers:
-            self.key_press_handlers.remove(func)
+    def remove_on_key_press(self, func):
+        if func in self.on_key_press_handlers:
+            self.on_key_press_handlers.remove(func)
 
-    def get_keyboard_handler(self):
-        if len(self.key_press_handlers) == 0:
+    def get_on_key_press(self):
+        if len(self.on_key_press_handlers) == 0:
             return None
-        return self.key_press_handlers[-1]
+        return self.on_key_press_handlers[-1]
+
+    def add_on_text(self, func):
+        self.on_text_handlers.append(func)
+
+    def remove_on_text(self, func):
+        if func in self.on_text_handlers:
+            self.on_text_handlers.remove(func)
+
+    def get_on_text(self):
+        if len(self.on_text_handlers) == 0:
+            return None
+        return self.on_text_handlers[-1]
+
+    def add_on_text_motion(self, func):
+        self.on_text_motion_handlers.append(func)
+
+    def remove_on_text_motion(self, func):
+        if func in self.on_text_motion_handlers:
+            self.on_text_motion_handlers.remove(func)
+
+    def get_on_text_motion(self):
+        if len(self.on_text_motion_handlers) == 0:
+            return None
+        return self.on_text_motion_handlers[-1]
+
+    def add_on_text_motion_select(self, func):
+        self.on_text_motion_select_handlers.append(func)
+
+    def remove_on_text_motion_select(self, func):
+        if func in self.on_text_motion_select_handlers:
+            self.on_text_motion_select_handlers.remove(func)
+
+    def get_on_text_motion_select(self):
+        if len(self.on_text_motion_select_handlers) == 0:
+            return None
+        return self.on_text_motion_select_handlers[-1]
 
     def add_widget(self, w):
         '''Add a widget on window'''
@@ -123,11 +163,26 @@ class MTWindow(TouchWindow):
         return self
 
     def on_key_press(self, symbol, modifiers):
-        self.key_press_handler = self.get_keyboard_handler()
-        if self.key_press_handler is not None and self.key_press_handler(symbol, modifiers):
+        handler = self.get_on_key_press()
+        if handler and handler(symbol, modifiers):
             return True
         if symbol == pyglet.window.key.ESCAPE:
             stopTouchApp()
+            return True
+
+    def on_text(self, text):
+        handler = self.get_on_text()
+        if handler and handler(text):
+            return True
+
+    def on_text_motion(self, text):
+        handler = self.get_on_text_motion()
+        if handler and handler(text):
+            return True
+
+    def on_text_motion_select(self, text):
+        handler = self.get_on_text_motion_select()
+        if handler and handler(text):
             return True
 
     def on_touch_down(self, touches, touchID, x, y):

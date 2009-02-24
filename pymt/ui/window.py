@@ -7,16 +7,6 @@ from pymt.mtpyglet import TouchWindow
 from pymt.ui.simulator import *
 from pymt.ui.widgets.widget import *
 
-class MTWindowRoot(MTWidget):
-    def __init__(self, **kwargs):
-        super(MTWindowRoot, self).__init__(**kwargs)
-
-    def draw(self):
-        pass
-
-    def get_parent_window(self):
-        return self
-
 
 class MTWindow(TouchWindow):
     '''MTWindow is a window widget who use MTSimulator
@@ -43,15 +33,16 @@ class MTWindow(TouchWindow):
 
         self.fps_display =  pyglet.clock.ClockDisplay()
 
+        self.key_press_handlers = []
+        self.children = []
         self.color = kwargs.get('color')
-        self.root = MTWindowRoot()
 
-        self.root.parent = self
+        self.parent = self
         if kwargs.get('view'):
-            self.root.add_widget(kwargs.get('view'))
+            self.add_widget(kwargs.get('view'))
 
         self.sim = MTSimulator(self)
-        self.root.add_widget(self.sim)
+        self.add_widget(self.sim)
 
         try:
             config = kwargs.get('config')
@@ -84,14 +75,28 @@ class MTWindow(TouchWindow):
     size = property(_get_size, _set_size,
             doc='''Return width/height of window''')
 
+    def add_keyboard_handler(self, func):
+        self.key_press_handlers.append(func)
+
+    def remove_keyboard_handler(self, func):
+        if func in self.key_press_handlers:
+            self.key_press_handlers.remove(func)
+
+    def get_keyboard_handler(self):
+        if len(self.key_press_handlers) == 0:
+            return None
+        return self.key_press_handlers[-1]
+
     def add_widget(self, w):
         '''Add a widget on window'''
-        self.root.add_widget(w)
+        self.children.append(w)
+        w.parent = self
         self.sim.bring_to_front()
 
     def remove_widget(self, w):
         '''Remove a widget from window'''
-        self.root.remove_widget(w)
+        self.children.remove(w)
+        w.parent = None
 
     def draw(self):
         '''Clear the window with background color'''
@@ -101,7 +106,9 @@ class MTWindow(TouchWindow):
     def on_draw(self):
         '''Clear window, and dispatch event in root widget + simulator'''
         self.draw()
-        self.root.dispatch_event('on_draw')
+        for w in self.children:
+            w.dispatch_event('on_draw')
+
         if self.show_fps:
             self.fps_display.draw()
 
@@ -112,32 +119,61 @@ class MTWindow(TouchWindow):
             #print pyglet.image.get_buffer_manager().get_color_buffer().get_texture()
             pyglet.image.get_buffer_manager().get_color_buffer().save(filename=filename)
 
+    def get_parent_window(self):
+        return self
+
+    def on_key_press(self, symbol, modifiers):
+        self.key_press_handler = self.get_keyboard_handler()
+        if self.key_press_handler is not None and self.key_press_handler(symbol, modifiers):
+            return True
+        if symbol == pyglet.window.key.ESCAPE:
+            stopTouchApp()
+            return True
+
     def on_touch_down(self, touches, touchID, x, y):
-        return self.root.dispatch_event('on_touch_down', touches, touchID, x, y)
+        for w in reversed(self.children):
+            if w.dispatch_event('on_touch_down', touches, touchID, x, y):
+                return True
 
     def on_touch_move(self, touches, touchID, x, y):
-        return self.root.dispatch_event('on_touch_move', touches, touchID, x, y)
+        for w in reversed(self.children):
+            if w.dispatch_event('on_touch_move', touches, touchID, x, y):
+                return True
 
     def on_touch_up(self, touches, touchID, x, y):
-        return self.root.dispatch_event('on_touch_up', touches, touchID, x, y)
+        for w in reversed(self.children):
+            if w.dispatch_event('on_touch_up', touches, touchID, x, y):
+                return True
 
     def on_mouse_press(self, x, y, button, modifiers):
-        return self.root.dispatch_event('on_mouse_press', x, y, button, modifiers)
+        for w in reversed(self.children):
+            if w.dispatch_event('on_mouse_press',x, y, button, modifiers):
+                return True
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
-        return self.root.dispatch_event('on_mouse_drag', x, y, dx, dy, button, modifiers)
+        for w in reversed(self.children):
+            if w.dispatch_event('on_mouse_drag',x, y, dx, dy, button, modifiers):
+                return True
 
     def on_mouse_release(self, x, y, button, modifiers):
-        return self.root.dispatch_event('on_mouse_release', x, y, button, modifiers)
+        for w in reversed(self.children):
+            if w.dispatch_event('on_mouse_release', x, y, button, modifiers):
+                return True
 
-    def on_object_down(self, touches, touchID, id, x, y,angle):
-        return self.root.dispatch_event('on_object_down', touches, touchID, id, x, y,angle)
+    def on_object_down(self, touches, touchID,id, x, y,angle):
+        for w in reversed(self.children):
+            if w.dispatch_event('on_object_down', touches, touchID,id, x, y, angle):
+                return True
 
-    def on_object_move(self, touches, touchID, id, x, y,angle):
-        return self.root.dispatch_event('on_object_move', touches, touchID, id, x, y,angle)
+    def on_object_move(self, touches, touchID,id, x, y,angle):
+        for w in reversed(self.children):
+            if w.dispatch_event('on_object_move', touches, touchID,id, x, y, angle):
+                return True
 
-    def on_object_up(self, touches, touchID, id, x, y,angle):
-        return self.root.dispatch_event('on_object_up', touches, touchID, id, x, y,angle)
+    def on_object_up(self, touches, touchID,id, x, y,angle):
+        for w in reversed(self.children):
+            if w.dispatch_event('on_object_up', touches, touchID,id, x, y,angle):
+                return True
 
 
 class MTDisplay(MTWidget):

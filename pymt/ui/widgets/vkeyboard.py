@@ -2,6 +2,7 @@ from __future__ import with_statement
 import pymt
 from pymt import *
 from pymt.ui.widgets import *
+from pyglet.window import key
 
 class MTTextInput(MTButton):
     '''
@@ -50,10 +51,12 @@ class MTTextInput(MTButton):
 
     def show_keyboard(self):
         self.get_parent_window().add_widget(self.keyboard)
+        self.get_parent_window().add_keyboard_handler(self.on_key_press)
         self.is_active_input = True
 
     def hide_keyboard(self):
         self.get_parent_window().remove_widget(self.keyboard)
+        self.get_parent_window().remove_keyboard_handler(self.on_key_press)
         self.is_active_input = False
 
     def draw(self):
@@ -64,6 +67,30 @@ class MTTextInput(MTButton):
             glColor4f(*self.color)
             drawRectangle((self.x,self.y) , (self.width, self.height))
         self.label_obj.draw()
+
+    def on_key_press(self, symbol, modifiers):
+        if symbol == key.ESCAPE:
+            self.hide_keyboard()
+            return True
+        letter = ''
+        if symbol >= key.A and symbol <= key.Z:
+            letter = key.symbol_string(symbol)
+            if modifiers & key.MOD_SHIFT:
+                letter = letter.upper()
+            else:
+                letter = letter.lower()
+        elif symbol == key.ENTER:
+            letter = MTVKeyboard.KEY_ENTER
+        elif symbol == key.SPACE:
+            letter = MTVKeyboard.KEY_SPACE
+        elif symbol == key.BACKSPACE:
+            letter = MTVKeyboard.KEY_BACKSPACE
+        if letter != '':
+            self.keyboard.on_key_down(letter)
+            self.keyboard.on_key_up(letter)
+        else:
+            pymt_logger.debug('Key %d:%d not yet handler by MTTextInput' % (symbol, modifiers))
+
 
 
 class MTKeyButton(MTButton):

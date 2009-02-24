@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from pymt.ui.widgets.widget import MTWidget
 from pymt.ui.factory import MTWidgetFactory
+from pymt.ui.widgets.widget import MTWidget
 from pymt.graphx import *
 
 class MTMultiSlider(MTWidget):
@@ -17,8 +17,20 @@ class MTMultiSlider(MTWidget):
         self._sliders = kwargs.get('sliders')
         self._spacing = kwargs.get('spacing')
         self._background_color = kwargs.get('background_color')
-        self.slider_values = [kwargs.get('init_value') for x in range(self._sliders)]        
+        self.slider_values = [kwargs.get('init_value') for x in range(self._sliders)]
         
+    def _get_background_color(self):
+        return self._background_color
+    def _set_background_color(self, bckcolor):
+        self._background_color = bckcolor
+    background_color = property(_get_background_color, _set_background_color)
+    
+    def _get_spacing(self):
+        return self._background_color
+    def _set_spacing(self, spacing):
+        self._spacing = spacing
+    spacing = property(_get_spacing, _set_spacing)
+    
     def draw(self):
         # Draw background
         glColor4f(*self._background_color)

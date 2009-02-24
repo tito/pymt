@@ -66,13 +66,13 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
         try:
             pymt_config.read(pymt_config_fn)
         except Exception, e:
-            pymt_logger.warning('error while reading local configuration :', e)
+            pymt_logger.exception('error while reading local configuration')
     else:
         try:
             with open(pymt_config_fn, 'w') as fd:
                 pymt_config.write(fd)
         except Exception, e:
-            pymt_logger.warning('error while saving default configuration file :', e)
+            pymt_logger.exception('error while saving default configuration file')
 
 
     # Can be overrided in command line

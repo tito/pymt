@@ -79,10 +79,10 @@ def parse_color(c, default=None):
             g = int(c[1], 16) * 17
             b = int(c[2], 16) * 17
         else:
-            raise Exception("Incorrect length for colour " + str(c) + " length " + str(len(c)))            
+            pymt_logger.exception('incorrect length for colour %s' % str(c))
         return [r,g,b,255]
     except Exception, ex:
-        pymt_logger.error('exception parsing color %s' % ex)
+        pymt_logger.exception('exception parsing color %s' % str(c))
         return None
         
 class Matrix(object):
@@ -400,7 +400,7 @@ class SVG(object):
             try:
                 self.parse_element(e)
             except Exception, ex:
-                pymt_logger.error('exception while parsing element %s: %s' % (e, ex))
+                pymt_logger.exception('exception while parsing element %s' % e)
                 raise
             
     def parse_element(self, e):
@@ -558,17 +558,17 @@ class SVG(object):
             try:
                 self.parse_element(c)
             except Exception, ex:
-                pymt_logger.error('exception while parsing element %s: %s' % (c, ex))
+                pymt_logger.exception('exception while parsing element %s' % c)
                 raise
         self.transform = oldtransform
-        self.opacity = oldopacity                        
+        self.opacity = oldopacity
 
     def new_path(self):
         self.x = 0
         self.y = 0
         self.close_index = 0
         self.path = []
-        self.loop = [] 
+        self.loop = []
     def close_path(self):
         self.loop.append(self.loop[0][:])
         self.path.append(self.loop)

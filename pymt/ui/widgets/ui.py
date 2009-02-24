@@ -836,10 +836,11 @@ class MTSvg(MTWidget):
         except Exception, e:
             try:
                 svgpath = os.path.normpath(os.path.dirname(__file__) + '/../data/icons/svg/')
-                pymt_logger.warning('load failed.  trying: %s' % (svgpath+self.filename))
+                pymt_logger.exception('unable to load %s' % self.filename)
+                pymt_logger.warning('trying %s' % (svgpath + self.filename))
                 self.svg = squirtle.SVG(os.path.join(svgpath, self.filename))
             except Exception, e:
-                pymt_logger.error('unable to load file %s : %s' % (self.filename, e))
+                pymt_logger.exception('unable to load file %s' % self.filename)
 
         self.size = (self.svg.width, self.svg.height)
 
@@ -924,15 +925,17 @@ class MTLabel(MTWidget):
         drawLabel(self.text, pos=self.pos,center=False, font_size=self.font_size)
 
 # Register all base widgets
-MTWidgetFactory.register('MTDragableWidget', MTDragableWidget)
-MTWidgetFactory.register('MTButton', MTButton)
-MTWidgetFactory.register('MTToggleButton', MTToggleButton)
-MTWidgetFactory.register('MTImageButton', MTImageButton)
-MTWidgetFactory.register('MTScatterWidget', MTScatterWidget)
-MTWidgetFactory.register('MTScatterImage', MTScatterImage)
-MTWidgetFactory.register('MTSlider', MTSlider)
 MTWidgetFactory.register('MT2DSlider', MT2DSlider)
+MTWidgetFactory.register('MTButton', MTButton)
 MTWidgetFactory.register('MTColorPicker', MTColorPicker)
+MTWidgetFactory.register('MTDragableWidget', MTDragableWidget)
+MTWidgetFactory.register('MTImageButton', MTImageButton)
+MTWidgetFactory.register('MTLabel', MTLabel)
 MTWidgetFactory.register('MTObjectWidget', MTObjectWidget)
+MTWidgetFactory.register('MTScatterImage', MTScatterImage)
+MTWidgetFactory.register('MTScatterPlane', MTScatterPlane)
 MTWidgetFactory.register('MTScatterSvg', MTScatterSvg)
+MTWidgetFactory.register('MTScatterWidget', MTScatterWidget)
+MTWidgetFactory.register('MTSlider', MTSlider)
 MTWidgetFactory.register('MTSvg', MTSvg)
+MTWidgetFactory.register('MTToggleButton', MTToggleButton)

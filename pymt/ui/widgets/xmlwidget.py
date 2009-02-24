@@ -1,6 +1,7 @@
 from xml.dom import minidom, Node
 from pymt.ui.widgets.widget import MTWidget
 from pymt.ui.factory import MTWidgetFactory
+from pymt.logger import pymt_logger
 
 class XMLWidget(MTWidget):
     def __init__(self, xml=None):
@@ -13,11 +14,19 @@ class XMLWidget(MTWidget):
             class_name = node.nodeName
 
             #create widget
-            nodeWidget  = MTWidgetFactory.get(class_name)()
+            try:
+                nodeWidget  = MTWidgetFactory.get(class_name)()
+            except:
+                pymt_logger.exception('unable to create widget %s' % class_name)
+                raise
 
             #set attributes
             for (name, value) in node.attributes.items():
-                nodeWidget.__setattr__(name, eval(value))
+                try:
+                    nodeWidget.__setattr__(name, eval(value))
+                except:
+                    pymt_logger.exception('unable to set %s on %s' % (name, class_name))
+                    raise
 
             #add child widgets
             for c in node.childNodes:

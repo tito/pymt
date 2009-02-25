@@ -192,7 +192,7 @@ class MTVKeyboard(MTScatterWidget):
         border_radius = 2
         color = (0.1, 0.1, 0.1, 0.7)
 
-        vlayout = HVLayout(alignment='vertical', pos=(20,-2*k_width), spacing=spacing, invert_y=True)
+        vlayout = HVLayout(alignment='vertical', pos=(20,-k_width), spacing=spacing, invert_y=True)
         key_options = {'color': color, 'border_radius': border_radius}
 
         for j in range(4):

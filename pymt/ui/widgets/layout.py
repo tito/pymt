@@ -1,6 +1,35 @@
 from pymt.ui.widgets.widget import MTWidget
 
-class HVLayout(MTWidget):
+class MTAbstractLayout(MTWidget):
+    def __init__(self, **kwargs):
+        super(MTAbstractLayout, self).__init__(**kwargs)
+        self.register_event_type('on_layout')
+        self.register_event_type('on_content_resize')
+        self.content_height = 0
+        self.content_width  = 0
+
+    def add_widget(self, widget, do_layout=True):
+        super(MTAbstractLayout, self).add_widget(widget)
+        if do_layout:
+            self.do_layout()
+
+    def do_layout(self):
+        pass
+
+    def get_parent_layout(self):
+        return self
+
+    def on_layout(self):
+        pass
+
+    def on_content_resize(self, w, h):
+        if self.parent:
+            layout = self.parent.get_parent_layout()
+            if layout:
+                layout.do_layout()
+
+
+class HVLayout(MTAbstractLayout):
     '''Horizontal / Vertical layout.
 
     :Parameters:
@@ -39,8 +68,7 @@ class HVLayout(MTWidget):
             raise Exception('Invalid alignment, only horizontal/vertical are supported')
 
         super(HVLayout, self).__init__(**kwargs)
-        self.register_event_type('on_layout')
-        self.register_event_type('on_content_resize')
+
         self.spacing        = kwargs.get('spacing')
         self.padding        = kwargs.get('padding')
         self.alignment      = kwargs.get('alignment')
@@ -48,24 +76,16 @@ class HVLayout(MTWidget):
         self.uniform_height = kwargs.get('uniform_height')
         self.invert_x       = kwargs.get('invert_x')
         self.invert_y       = kwargs.get('invert_y')
-        self.content_height = 0
-        self.content_width  = 0
 
     def add_widget(self, w):
         super(HVLayout, self).add_widget(w)
-        self.layout()
+        self.do_layout()
 
     def on_move(self, x, y):
-        self.layout()
+        self.do_layout()
         super(HVLayout, self).on_move(x, y)
 
-    def on_content_resize(self, w, h):
-        pass
-
-    def on_layout(self):
-        pass
-
-    def layout(self):
+    def do_layout(self):
         '''Recalculate position for every subwidget, fire
         on_layout when finished. If content size have changed,
         fire on_content_resize too. Uniform width/height are handled

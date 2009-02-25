@@ -162,6 +162,9 @@ class MTWindow(TouchWindow):
     def get_parent_window(self):
         return self
 
+    def get_parent_layout(self):
+        return None
+
     def on_key_press(self, symbol, modifiers):
         handler = self.get_on_key_press()
         if handler and handler(symbol, modifiers):

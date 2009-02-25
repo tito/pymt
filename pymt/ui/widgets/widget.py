@@ -251,9 +251,15 @@ class MTWidget(pyglet.event.EventDispatcher):
     def init(self):
         pass
 
-
     def get_parent_window(self):
-        return self.parent.get_parent_window()
+        if self.parent:
+            return self.parent.get_parent_window()
+        return None
+
+    def get_parent_layout(self):
+        if self.parent:
+            return self.parent.get_parent_layout()
+        return None
 
     def bring_to_front(self):
         '''Remove it from wherever it is and add it back at the top'''

@@ -157,7 +157,7 @@ class MTForm(MTAbstractFormWidget):
 
     def draw(self):
         set_color(*self.color)
-        drawRectangle(pos=self.pos, size=self.size)
+        drawRoundedRectangle(pos=self.pos, size=self.size)
 
     def get_parent_layout(self):
         return self
@@ -177,6 +177,16 @@ class MTFormLabel(MTAbstractFormWidget):
     :Parameters:
         `label` : str, default is ''
             Text of label
+        `font_name` : str, default is None
+            Font name
+        `font_size` : int, default is 16
+            Font size
+        `font_style` : str, default is None
+            Style of font, can be 'bold', 'italic', 'bolditalic'
+        `font_color` : list, default is (1,1,1,1)
+            Font color
+        `multiline` : bool, default is False
+            Indicate if label is multiline. You should indicate a width :)
         `halign` : str, default is 'center'
             Horizontal alignement, can be 'left', 'center', 'right'
         `valign` : str, default is 'center'
@@ -187,16 +197,44 @@ class MTFormLabel(MTAbstractFormWidget):
         kwargs.setdefault('label', '')
         kwargs.setdefault('halign', 'center')
         kwargs.setdefault('valign', 'center')
+        kwargs.setdefault('font_name', None)
+        kwargs.setdefault('font_size', 12)
+        kwargs.setdefault('font_style', None)
+        kwargs.setdefault('font_color', (1,1,1,1))
+        kwargs.setdefault('multiline', False)
         super(MTFormLabel, self).__init__(**kwargs)
-        self.label = kwargs.get('label')
-        self.halign = kwargs.get('halign')
-        self.valign = kwargs.get('valign')
+        self.font_name  = kwargs.get('font_name')
+        self.font_size  = kwargs.get('font_size')
+        self.font_style = kwargs.get('font_style')
+        self.font_color = kwargs.get('font_color')
+        self.multiline  = kwargs.get('multiline')
+        self.label      = kwargs.get('label')
+        self.halign     = kwargs.get('halign')
+        self.valign     = kwargs.get('valign')
 
     def _get_label(self):
         return self._label
     def _set_label(self, label):
         self._label = label
-        self._label_obj = Label(text=label, anchor_y='bottom')
+        opts = {}
+        opts['anchor_y'] = 'bottom'
+        if self.font_name:
+            opts['font_name'] = self.font_name
+        if self.font_size:
+            opts['font_size'] = self.font_size
+        if self.font_style:
+            if self.font_style in ['italic', 'bolditalic']:
+                opts['italic'] = True
+            if self.font_style in ['bold', 'bolditalic']:
+                opts['bold'] = True
+        opts['color'] = map(lambda x: x * 255, self.font_color)
+        opts['text'] = label
+        if self.multiline:
+            opts['multiline'] = self.multiline
+            opts['width'] = self.width
+            print opts
+
+        self._label_obj = Label(**opts)
         self.size = self._label_obj.content_width, self._label_obj.content_height
     label = property(_get_label, _set_label)
 
@@ -305,17 +343,70 @@ class MTFormInput(MTTextInput):
             layout.do_layout()
         super(MTFormInput, self).on_resize(w, h)
 
+class MTPopup(MTWidget):
+
+    def __init__(self, **kwargs):
+        kwargs.setdefault('title', 'Information')
+        kwargs.setdefault('content', '')
+        super(MTPopup, self).__init__(**kwargs)
+        self.title      = kwargs.get('title')
+        self.content    = kwargs.get('content')
+        self.window     = None
+
+        self.form = MTForm(layout=MTBoxLayout(
+            padding=10, spacing=10, orientation='vertical',
+            invert_y=True, uniform_width=True
+        ))
+        self.submit = MTFormButton(label='OK')
+        self.submit.push_handlers(on_release=self.action_close_popup)
+        self.form.add_widget(MTFormLabel(label=self.title, halign='left',
+                                         font_style='bold', font_size=16))
+        self.form.add_widget(MTFormLabel(label=self.content, halign='left',
+                                         multiline=True, width=self.width))
+        self.form.add_widget(self.submit)
+        super(MTPopup, self).add_widget(self.form)
+
+    def action_close_popup(self, touchID, x, y):
+        self.parent.remove_widget(self)
+
+    def add_widget(self, widget):
+        raise Exception('MTPopup cannot have children')
+
+    def on_touch_down(self, touches, touchID, x, y):
+        super(MTPopup, self).on_touch_down(touches, touchID, x, y)
+        return True
+
+    def on_touch_move(self, touches, touchID, x, y):
+        super(MTPopup, self).on_touch_move(touches, touchID, x, y)
+        return True
+
+    def on_touch_up(self, touches, touchID, x, y):
+        super(MTPopup, self).on_touch_up(touches, touchID, x, y)
+        return True
+
+    def draw(self):
+        w = self.get_parent_window()
+        if self.form.x == 0:
+            x = (w.width - self.form.width) / 2
+            y = (w.height - self.form.height) / 2
+            self.form.pos = (x, y)
+        with gx_blending:
+            glColor4f(0, 0, 0, 1)
+            drawRectangle(pos=(0,0), size=w.size)
+
+
 
 MTWidgetFactory.register('MTForm', MTForm)
 MTWidgetFactory.register('MTFormInput', MTFormInput)
 MTWidgetFactory.register('MTFormLabel', MTFormLabel)
 MTWidgetFactory.register('MTFormButton', MTFormButton)
 MTWidgetFactory.register('MTGridLayout', MTGridLayout)
+MTWidgetFactory.register('MTPopup', MTPopup)
 
 xmldef = '''<?xml version="1.0" encoding="UTF-8"?>
 <MTScatterPlane>
-    <MTForm pos="(200,200)" padding="20"
-    layout="factory.get('MTGridLayout')(cols=2, rows=5, uniform_height=True)">
+    <MTForm pos="(200,200)"
+    layout="factory.get('MTGridLayout')(spacing=20, cols=2, rows=5, uniform_height=True)">
         <MTFormLabel label="'Name'" halign="'right'"/>
         <MTFormInput id="'input_name'"/>
         <MTFormLabel label="'Surname'" halign="'right'"/>
@@ -333,4 +424,5 @@ xmldef = '''<?xml version="1.0" encoding="UTF-8"?>
 w = MTWindow()
 x = XMLWidget(xml=xmldef)
 w.add_widget(x)
+w.add_widget(MTPopup(width=300, content="Welcome to PyMT Widget Demonstration\nEnjoy this popup !"))
 runTouchApp()

@@ -1,12 +1,52 @@
 from pymt.ui.widgets.widget import MTWidget
 
 class MTAbstractLayout(MTWidget):
+    '''Abstract layout. Base class used to implement layout.
+
+    :Events:
+        `on_layout`
+            Fired when layout function have been called
+        `on_content_resize`
+            Fired when content_width or content_height have changed
+    '''
+
     def __init__(self, **kwargs):
+        if self.__class__ == MTAbstractLayout:
+            raise NotImplementedError, 'class MTAbstractLayout is abstract'
         super(MTAbstractLayout, self).__init__(**kwargs)
         self.register_event_type('on_layout')
         self.register_event_type('on_content_resize')
-        self.content_height = 0
-        self.content_width  = 0
+        self._content_height = 0
+        self._content_width  = 0
+
+    def _set_content_width(self, w):
+        if self._content_width == w:
+            return
+        self._content_width = w
+        self.dispatch_event('on_content_resize', self._content_width, self._content_height)
+    def _get_content_width(self):
+        return self._content_width
+    content_width = property(_get_content_width, _set_content_width)
+
+    def _set_content_height(self, w):
+        if self._content_height == w:
+            return
+        self._content_height = w
+        self.dispatch_event('on_content_resize', self._content_height, self._content_height)
+    def _get_content_height(self):
+        return self._content_height
+    content_height = property(_get_content_height, _set_content_height)
+
+    def _set_content_size(self, size):
+        w, h = size
+        if self._content_size == w and self._content_height == h:
+            return
+        self._content_width = w
+        self._content_height = h
+        self.dispatch_event('on_content_resize', self._content_size, self._content_height)
+    def _get_content_size(self):
+        return (self.content_width, self.content_height)
+    content_size = property(_get_content_size, _set_content_size)
 
     def add_widget(self, widget, do_layout=True):
         super(MTAbstractLayout, self).add_widget(widget)
@@ -29,8 +69,8 @@ class MTAbstractLayout(MTWidget):
                 layout.do_layout()
 
 
-class HVLayout(MTAbstractLayout):
-    '''Horizontal / Vertical layout.
+class MTBoxLayout(MTAbstractLayout):
+    '''Box layout can arrange item in horizontal or vertical orientation.
 
     :Parameters:
         `alignment` : str, default is 'horizontal'
@@ -47,12 +87,6 @@ class HVLayout(MTAbstractLayout):
             Invert X axis
         `invert_y` : bool, default to False
             Invert Y axis
-
-    :Events:
-        `on_layout`
-            Fired when layout function have been called
-        `on_content_resize`
-            Fired when content_width or content_height have changed
     '''
 
     def __init__(self, **kwargs):
@@ -67,7 +101,7 @@ class HVLayout(MTAbstractLayout):
         if kwargs.get('alignment') not in ['horizontal', 'vertical']:
             raise Exception('Invalid alignment, only horizontal/vertical are supported')
 
-        super(HVLayout, self).__init__(**kwargs)
+        super(MTBoxLayout, self).__init__(**kwargs)
 
         self.spacing        = kwargs.get('spacing')
         self.padding        = kwargs.get('padding')
@@ -78,12 +112,12 @@ class HVLayout(MTAbstractLayout):
         self.invert_y       = kwargs.get('invert_y')
 
     def add_widget(self, w):
-        super(HVLayout, self).add_widget(w)
+        super(MTBoxLayout, self).add_widget(w)
         self.do_layout()
 
     def on_move(self, x, y):
         self.do_layout()
-        super(HVLayout, self).on_move(x, y)
+        super(MTBoxLayout, self).on_move(x, y)
 
     def do_layout(self):
         '''Recalculate position for every subwidget, fire
@@ -136,11 +170,8 @@ class HVLayout(MTAbstractLayout):
             new_height = cur_y - start_y
 
         do_event_content_resize = (self.content_width != new_width) or (self.content_height != new_height)
-        self.content_width = new_width
-        self.content_height = new_height
+        self.content_size = (new_width, new_height)
         if do_event_content_resize:
-            self.dispatch_event('on_content_resize',
-                self.content_width, self.content_height)
             if self.uniform_width:
                 for w in self.children:
                     w.width = max_w_width

@@ -8,10 +8,25 @@ Thanks, tito.
 '''
 
 class MTGridLayout(MTAbstractLayout):
+    '''Grid layout arrange item in a matrix.
+
+    :Parameters:
+        `cols` : int, default is None
+            Number of columns in grid
+        `rows` : int, default is None
+            Number of rows in grid
+        `spacing` : int, default to 1
+            Spacing between widgets
+        `uniform_width` : bool, default to False
+            Try to have same width for all children
+        `uniform_height` : bool, default to False
+            Try to have same height for all children
+    '''
+
     def __init__(self, **kwargs):
         kwargs.setdefault('cols', None)
         kwargs.setdefault('rows', None)
-        kwargs.setdefault('spacing', 10)
+        kwargs.setdefault('spacing', 1)
         kwargs.setdefault('uniform_width', False)
         kwargs.setdefault('uniform_height', False)
 
@@ -93,24 +108,34 @@ class MTGridLayout(MTAbstractLayout):
             y = y + rows[row] + spacing
 
         # dispatch new content size
-        if current_height != self.content_height or current_width != self.content_width:
-            self.content_width = current_width
-            self.content_height = current_height
-            self.dispatch_event('on_content_resize', self.content_width, self.content_height)
+        self.content_size = (current_width, current_height)
 
 
-class MTFormWidget(MTWidget):
+class MTAbstractFormWidget(MTWidget):
+    '''Abstract form widget. Base class used to implement any form widget.
+    '''
+
     def __init__(self, **kwargs):
-        super(MTFormWidget, self).__init__(**kwargs)
+        if self.__class__ == MTAbstractFormWidget:
+            raise NotImplementedError, 'class MTAbstractFormWidget is abstract'
+        super(MTAbstractFormWidget, self).__init__(**kwargs)
 
     def on_resize(self, w, h):
         layout = self.get_parent_layout()
         if layout:
             layout.do_layout()
-        super(MTFormWidget, self).on_resize(w, h)
+        super(MTAbstractFormWidget, self).on_resize(w, h)
 
 
-class MTForm(MTFormWidget):
+class MTForm(MTAbstractFormWidget):
+    '''Form container : with a basic layout, you can add form widget in it,
+    and create simple container with basic event (cancel, submit...)
+
+    :Parameters:
+        `layout` : MTAbstractLayout class, default is None
+            Initial layout to be used with form
+    '''
+
     def __init__(self, **kwargs):
         kwargs.setdefault('color', (.25,.25,.25,.6))
         kwargs.setdefault('layout', None)
@@ -146,7 +171,18 @@ class MTForm(MTFormWidget):
         self.layout.do_layout()
 
 
-class MTFormLabel(MTFormWidget):
+class MTFormLabel(MTAbstractFormWidget):
+    '''Form label : a simple text label with aligmenent support
+
+    :Parameters:
+        `label` : str, default is ''
+            Text of label
+        `halign` : str, default is 'center'
+            Horizontal alignement, can be 'left', 'center', 'right'
+        `valign` : str, default is 'center'
+            Vertical alignement, can be 'top', 'center', 'bottom'
+    '''
+
     def __init__(self, **kwargs):
         kwargs.setdefault('label', '')
         kwargs.setdefault('halign', 'center')
@@ -187,6 +223,19 @@ class MTFormLabel(MTFormWidget):
 
 
 class MTFormButton(MTFormLabel):
+    '''Form button : a simple button label with aligmenent support
+
+    :Parameters:
+        `color_down` : list, default is (.5, .5, .5, .5)
+            Background color of pushed button
+
+    :Events:
+        `on_press`
+            Fired when button is pressed
+        `on_release`
+            Fired when button is released
+    '''
+
     def __init__(self, **kwargs):
         kwargs.setdefault('color_down', (.5, .5, .5, .5))
         super(MTFormButton, self).__init__(**kwargs)
@@ -230,6 +279,9 @@ class MTFormButton(MTFormLabel):
 
 
 class MTFormInput(MTTextInput):
+    '''Form input : a one-line text input, with virtual-keyboard support
+    '''
+
     def __init__(self, **kwargs):
         kwargs.setdefault('font_size', 16)
         super(MTFormInput, self).__init__(**kwargs)

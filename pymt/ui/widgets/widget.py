@@ -47,9 +47,17 @@ class MTWidget(pyglet.event.EventDispatcher):
     :Parameters:
         `pos` : list, default is (0, 0)
             Position of widget, in (x, y) format
+        `x` : int, default is None
+            X position of widget
+        `y` : int, default is None
+            Y position of widget
         `size` : list, default is (100, 100)
             Size of widget, in (width, height) format
-        `size` : list, default is (.2, .2, .2, 1)
+        `width` : int, default is None
+            width position of widget
+        `height` : int, default is None
+            height position of widget
+        `color` : list, default is (.2, .2, .2, 1)
             Color of widget, in (r, v, b, a) format
         `visible` : bool, default is True
             Visibility of widget
@@ -59,7 +67,11 @@ class MTWidget(pyglet.event.EventDispatcher):
 
     def __init__(self, **kwargs):
         kwargs.setdefault('pos', (0, 0))
+        kwargs.setdefault('x', None)
+        kwargs.setdefault('y', None)
         kwargs.setdefault('size', (100, 100))
+        kwargs.setdefault('width', None)
+        kwargs.setdefault('height', None)
         kwargs.setdefault('color', (.2, .2, .2, 1))
         kwargs.setdefault('visible', True)
         kwargs.setdefault('draw_children', True)
@@ -79,9 +91,17 @@ class MTWidget(pyglet.event.EventDispatcher):
         self.animations				= []
         self.visible				= kwargs.get('visible')
         self.draw_children          = kwargs.get('draw_children')
-
         self.register_event_type('on_resize')
         self.register_event_type('on_move')
+
+        if kwargs.get('x'):
+            self.x = kwargs.get('x')
+        if kwargs.get('y'):
+            self.y = kwargs.get('y')
+        if kwargs.get('width'):
+            self.width = kwargs.get('width')
+        if kwargs.get('height'):
+            self.height = kwargs.get('height')
 
         self.init()
 

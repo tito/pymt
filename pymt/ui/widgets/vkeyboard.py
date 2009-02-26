@@ -192,11 +192,11 @@ class MTVKeyboard(MTScatterWidget):
         border_radius = 2
         color = (0.1, 0.1, 0.1, 0.7)
 
-        vlayout = HVLayout(alignment='vertical', pos=(20,-k_width), spacing=spacing, invert_y=True)
+        vlayout = MTBoxLayout(alignment='vertical', pos=(20,-k_width), spacing=spacing, invert_y=True)
         key_options = {'color': color, 'border_radius': border_radius}
 
         for j in range(4):
-            layout = HVLayout(spacing=spacing)
+            layout = MTBoxLayout(spacing=spacing)
 
             # special keys on left
             if j == 0:
@@ -239,7 +239,7 @@ class MTVKeyboard(MTScatterWidget):
 
             vlayout.add_widget(layout)
 
-        layout = HVLayout(spacing=3)
+        layout = MTBoxLayout(spacing=3)
         space_key = MTKeyButton(self, label=MTVKeyboard.KEY_SPACE, size=(361, k_width), **key_options)
         layout.add_widget(space_key)
         vlayout.add_widget(layout)

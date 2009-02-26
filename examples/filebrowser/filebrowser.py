@@ -25,7 +25,7 @@ class MTFileBrowser(MTScatterWidget):
         self.dl = GlDisplayList()
         self.draw_children = False
         self.path = '.'
-        self.layout = HVLayout(alignment='vertical', invert_y=True, padding=30,
+        self.layout = MTBoxLayout(alignment='vertical', invert_y=True, padding=30,
                                uniform_width=True)
         self.add_widget(self.layout)
         self.widgets = {}

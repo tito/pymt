@@ -25,7 +25,7 @@ class MTInnerWindow(MTScatterWidget):
 
 
     def setup_controlls(self):
-        self.controlls = HVLayout()
+        self.controlls = MTBoxLayout()
         button_pause = MTImageButton(filename=iconPath+'pause.png', scale=0.5)
         button_pause.push_handlers(on_release=self.toggle_locked)
         self.controlls.add_widget(button_pause)

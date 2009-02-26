@@ -70,7 +70,7 @@ class MTActionButton(MTButton):
         if self.action:
             self.action(self.parent, self, self.args)
 
-class MTMenu(HVLayout):
+class MTMenu(MTBoxLayout):
     def __init__(self, **kwargs):
         kwargs.setdefault('alignment', 'vertical')
         kwargs.setdefault('uniform_width', True)

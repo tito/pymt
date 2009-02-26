@@ -84,7 +84,7 @@ class TrialLogger(EventLogger):
 		f.close()
 		
 		
-class NewGameMenu(HVLayout):
+class NewGameMenu(MTBoxLayout):
 	def __init__(self, window, **kwargs):
 		super(NewGameMenu, self).__init__(**kwargs)
 		self.window = window

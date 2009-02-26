@@ -35,7 +35,7 @@ class MTicon(MTButton):
         with DO(gx_enable(GL_BLEND),gx_enable(GL_TEXTURE_2D)):
             glColor4f(1, 1, 1, 1)
             drawCover(self.texture.id, pos=(self.x,self.y), size=(self.image.width,self.image.height))
-        self.parent.layout()
+        self.parent.do_layout()
         
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):

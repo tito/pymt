@@ -39,11 +39,11 @@ class MTAbstractLayout(MTWidget):
 
     def _set_content_size(self, size):
         w, h = size
-        if self._content_size == w and self._content_height == h:
+        if self._content_width == w and self._content_height == h:
             return
         self._content_width = w
         self._content_height = h
-        self.dispatch_event('on_content_resize', self._content_size, self._content_height)
+        self.dispatch_event('on_content_resize', self._content_width, self._content_height)
     def _get_content_size(self):
         return (self.content_width, self.content_height)
     content_size = property(_get_content_size, _set_content_size)

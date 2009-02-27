@@ -233,6 +233,16 @@ class MTWindow(TouchWindow):
             if w.dispatch_event('on_object_up', touches, touchID,id, x, y,angle):
                 return True
 
+    def on_resize(self, width, height):
+        glViewport(0, 0, width, height)
+        glMatrixMode(gl.GL_PROJECTION)
+        glLoadIdentity()
+        print "width:",width
+        print "height:",height
+        glFrustum(0, width, 0, height, 1, 1000)
+        glTranslatef(0,0,-1)
+        glMatrixMode(gl.GL_MODELVIEW)
+
 
 class MTDisplay(MTWidget):
     '''MTDisplay is a widget that draw a circle

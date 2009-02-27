@@ -59,7 +59,6 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     from plugin import *
     from loader import *
     from gesture import *
-    from pymt.ui import *
 
     # Read config file if exist
     if os.path.exists(pymt_config_fn):

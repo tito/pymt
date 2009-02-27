@@ -189,10 +189,12 @@ class MTVKeyboard(MTScatterWidget):
     def _setup_keys(self, keys):
         k_width = 25
         spacing = 3
+        padding = 30
         border_radius = 2
         color = (0.1, 0.1, 0.1, 0.7)
 
-        vlayout = MTBoxLayout(alignment='vertical', pos=(20,-k_width), spacing=spacing, invert_y=True)
+        vlayout = MTBoxLayout(orientation='vertical', pos=(padding,padding),
+                              spacing=spacing, invert_y=True)
         key_options = {'color': color, 'border_radius': border_radius}
 
         for j in range(4):
@@ -244,6 +246,9 @@ class MTVKeyboard(MTScatterWidget):
         layout.add_widget(space_key)
         vlayout.add_widget(layout)
         self.add_widget(vlayout)
+
+        self.width = vlayout.content_width + padding * 2
+        self.height = vlayout.content_height + padding * 2
 
     def draw_active_children(self):
         for key in self.active_keys:

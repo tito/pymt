@@ -108,18 +108,39 @@ class ModelViewer(GLWindow):
     def on_touch_move(self, touches, touchID, x, y):
         dx, dy = 0,0
         scale = 1.0
+        angle = 0.0
         if  self.touch_position.has_key(self.touch1) and self.touch_position.has_key(self.touch2):
             v1 = Vector(*self.touch_position[self.touch1])
             v2 = Vector(*self.touch_position[self.touch2])
             new_dist = v1.distance(v2)
-            self.zoom *= new_dist/self.scale_dist
+            zoomfactor = new_dist/self.scale_dist
+            if zoomfactor > 1.0:
+                zoomfactor = 1.0 + (zoomfactor - 1.0) * 0.5
+            else:
+                zoomfactor = 1.0 - abs(1.0 - zoomfactor ) * 0.5
+            self.zoom *= zoomfactor
             self.scale_dist = new_dist
+
+
+            # compute rotation angle
+            old_line = v1 - v2
+            new_line = None
+            if self.touch1 == touchID:
+                new_line = Vector(x,y) - v2
+            else:
+                new_line = v1 - Vector(x,y)
+
+            angle = -1.0 * old_line.angle(new_line)
+
+
+            
         else:
             dx = 200.0*(x-self.touch_position[touchID][0])/float(self.width)
             dy = 200.0*(y-self.touch_position[touchID][1])/float(self.height)
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLoadIdentity()
+        glRotatef(angle, 0,0,1)
         glRotatef(dx, 0,1,0)
         glRotatef(-dy, 1,0,0)
         glMultMatrixf(self.rotation_matrix)

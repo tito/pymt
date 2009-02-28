@@ -86,6 +86,7 @@ MTWidgetFactory.register('MTMultiSlider', MTMultiSlider)
 if __name__ == '__main__':
     from pymt import *
     w = MTWindow()
+    refs = []
     wsize = w.size
     keyb = MTTextInput(size = (35,30), font_size = 24)
     @keyb.event

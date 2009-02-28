@@ -18,7 +18,7 @@ from pymt import *
 
 w = MTWindow()
 widgets = {}
-keyb = MTTextInput(size = (35,30), font_size = 20, pos = (0, w.height - 30))
+keyb = MTTextInput(size = (35,30), font_size = 16, pos = (0, w.height - 30))
 
 def add(name, widget):
     widgets[name] = widget
@@ -29,6 +29,7 @@ def on_text_validate():
     exec keyb.label
     keyb.label = ''
     keyb.size = (35,30)
+    keyb.pos = (0, w.height - 30)
 
 w.add_widget(keyb)
 

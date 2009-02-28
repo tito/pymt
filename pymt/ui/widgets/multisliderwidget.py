@@ -86,15 +86,14 @@ MTWidgetFactory.register('MTMultiSlider', MTMultiSlider)
 if __name__ == '__main__':
     from pymt import *
     w = MTWindow()
-    refs = []
-    wsize = w.size
-    keyb = MTTextInput(size = (35,30), font_size = 24)
+    widgets = []
+    keyb = MTTextInput(size = (35,30), font_size = 20)
     @keyb.event
     def on_text_validate():
         exec keyb.label
         keyb.label = ''
         keyb.size = (35,30)
-    mms = MTMultiSlider(pos = (20,20))
+    mms = MTMultiSlider(pos = (40,40))
     w.add_widget(mms)
     w.add_widget(keyb)
     runTouchApp()

@@ -32,8 +32,10 @@ class MTicon(MTButton):
         self.image.x        = self.x
         self.image.y        = self.y       
         self.size           = (self.image.width, self.image.height)
+        #
         with DO(gx_enable(GL_BLEND),gx_enable(GL_TEXTURE_2D)):
-            glColor4f(1, 1, 1, 1)
+            glColor4f(1, 1, 1, 1)            
+            glRotatef(15, 0.0, 1.0, 0.0)
             drawCover(self.texture.id, pos=(self.x,self.y), size=(self.image.width,self.image.height))
         self.parent.do_layout()
         

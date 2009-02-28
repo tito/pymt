@@ -4,6 +4,9 @@ from pymt import *
 from pyglet.gl import *
 from pymt.ui.widgets import *
 from pyglet.media import *
+from button import *
+from slider import *
+from scatter import *
 from time import sleep
 
 iconPath = os.path.dirname(pymt.__file__) + '/data/icons/'

@@ -16,6 +16,17 @@ def _get_distance(Pos1, Pos2):
     '''Get the linear distance between two points'''
     return sqrt((Pos2[0] - Pos1[0])**2 + (Pos2[1] - Pos1[1])**2)
 
+def prot(p, d, rp=(0, 0)):
+    '''Rotates a given point(p) d degrees counter-clockwise around rp'''
+    d = -radians(d)
+    p = list(p)
+    p[0] -= rp[0]
+    p[1] -= rp[1]
+    np = [p[0]*cos(d) + p[1]*sin(d), -p[0]*sin(d) + p[1]*cos(d)]
+    np[0] += rp[0]
+    np[1] += rp[1]
+    return tuple(np)
+
 class MTVectorSlider(MTWidget):
     '''
     This is a slider that provides an arrow, and allows you to manipulate
@@ -61,8 +72,29 @@ class MTVectorSlider(MTWidget):
 
     def _calc_stuff(self):
         '''Recalculated the args for the callbacks'''
+	#AMPLITUDE
         self.amplitude = self.vector.distance(self.pos)
-	self.angle = self.vector.angle(0, 0)
+	#ANGLE
+        #Make a new vector relative to the origin
+        tvec = [self.vector[0], self.vector[1]]
+        tvec[0] -= self.pos[0]
+        tvec[1] -= self.pos[1]
+
+        #Incase python throws float div or div by zero exception, ignore them, we will be close enough
+        try:
+            self.angle = degrees(atan((int(tvec[1])/int(tvec[0]))))
+        except:
+            pass
+
+        #Ajdust quadrants so we have 0-360 degrees
+        if tvec[0] < 0 and tvec[1] > 0:
+            self.angle = 90 + (90 + self.angle)
+        elif tvec[0] < 0 and tvec[1] < 0:
+            self.angle += 180
+        elif tvec[0] > 0 and tvec[1] < 0:
+            self.angle = 270 + (self.angle + 90)
+        elif tvec[0] > 0 and tvec[1] > 0:
+            pass
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x, y):

@@ -18,7 +18,7 @@ class MTMultiSlider(MTWidget):
         self._spacing = kwargs.get('spacing')
         self._background_color = kwargs.get('background_color')
         self._init_value = kwargs.get('init_value')
-        self.slider_values = [kwargs.get('init_value') for x in range(self._sliders)]
+        self.slider_values = [self._init_value for x in range(self._sliders)]
         
     def _get_background_color(self):
         return self._background_color

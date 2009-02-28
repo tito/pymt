@@ -1,8 +1,3 @@
-'''
-Various radial widgets for PyMT
-Initially written by xelapond <xelapond@gmail.com>
-'''
-
 from __future__ import with_statement
 from __future__ import division
 
@@ -37,16 +32,12 @@ class MTVectorSlider(MTWidget):
     it just like any other vector, adjusting its angle and amplitude.
 
     :Parameters:
-        'bgcolor' : The background color of the widget
-        'vcolor' : The color for the vector
-        'radius': The radius of the whole widget
-
-    :Parameters Inherited through MTWidget:
-        'pos' : Position
-        'size' : Size
-        'color' : Has no effect on this widget
-        'visible' : visibility
-
+        'bgcolor' : tuple, default to (.2, .4, .9)
+	    The background color of the widget
+        'vcolor' : tuple, default to (1, .28, 0)
+	    The color for the vector
+        'radius': int, default to 200
+	    The radius of the whole widget
     '''
 
     def __init__(self, **kwargs):

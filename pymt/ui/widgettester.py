@@ -1,6 +1,6 @@
 '''
 You can use this file to test out your widgets or do live coding.
-Click the grey box at the top left, this will popup a keyboard.
+Click the grey box at the top left, this will popup a keyboard. (you can hit the tab key also)
 You can either use the displayed keyboard or your physical keyboard to type.
 You can now add widgets by using the widgets dictionary :
     widgets['mywidget'] = MyWidget()

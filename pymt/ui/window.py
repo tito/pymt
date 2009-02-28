@@ -237,8 +237,10 @@ class MTWindow(TouchWindow):
         glViewport(0, 0, width, height)
         glMatrixMode(gl.GL_PROJECTION)
         glLoadIdentity()
-        glFrustum(0, width, 0, height, 1, 1000)
-        glTranslatef(0,0,-1)
+        glFrustum(0, width, 0, height, 0.1, 1000)
+        glScalef(5000,5000,1)
+        glTranslatef(0,0,-500)
+
         glMatrixMode(gl.GL_MODELVIEW)
 
 

@@ -17,6 +17,13 @@ Enjoy !
 from pymt import *
 
 w = MTWindow()
+def on_key_press(symbol, modifiers):
+    if symbol == 65289:
+        if not keyb.is_active_input:
+           keyb.show_keyboard()
+        else: keyb.hide_keyboard()
+w.push_handlers(on_key_press = on_key_press)
+
 widgets = {}
 keyb = MTTextInput(size = (35,30), font_size = 16, pos = (0, w.height - 30))
 
@@ -26,7 +33,13 @@ def add(name, widget):
 
 @keyb.event
 def on_text_validate():
-    exec keyb.label
+    try:
+        exec keyb.label
+    except Exception, e:
+        print 'Error', e
+        p = MTPopup(title='Exception occured', content=str(e))
+        w.add_widget(p)
+        
     keyb.label = ''
     keyb.size = (35,30)
     keyb.pos = (0, w.height - 30)

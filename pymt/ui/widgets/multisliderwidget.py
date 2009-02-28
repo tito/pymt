@@ -17,6 +17,7 @@ class MTMultiSlider(MTWidget):
         self._sliders = kwargs.get('sliders')
         self._spacing = kwargs.get('spacing')
         self._background_color = kwargs.get('background_color')
+        self._init_value = kwargs.get('init_value')
         self.slider_values = [kwargs.get('init_value') for x in range(self._sliders)]
         
     def _get_background_color(self):
@@ -24,6 +25,19 @@ class MTMultiSlider(MTWidget):
     def _set_background_color(self, bckcolor):
         self._background_color = bckcolor
     background_color = property(_get_background_color, _set_background_color)
+    
+    def _get_sliders(self):
+        return self._sliders
+    def _set_sliders(self, quantity):
+        if quantity < self._sliders:
+            self.slider_values = self.slider_values[0:quantity]
+            self._sliders = quantity
+        if quantity > self._sliders:
+            self.slider_values = self.slider_values + list([self._init_value for x in range(quantity - self._sliders)])
+            self._sliders = quantity
+        else:
+            return
+    sliders = property(_get_sliders, _set_sliders)
     
     def _get_spacing(self):
         return self._background_color
@@ -71,7 +85,7 @@ MTWidgetFactory.register('MTMultiSlider', MTMultiSlider)
 
 if __name__ == '__main__':
     from pymt import *
-    w = MTWindow(fullscreen=False)
+    w = MTWindow()
     wsize = w.size
     keyb = MTTextInput(size = (35,30), font_size = 24)
     @keyb.event

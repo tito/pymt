@@ -18,10 +18,11 @@ from pymt.vector import Vector
 
 _id_2_widget = {}
 
-def getWidgetByID(id):
+def getWidgetById(id):
     global _id_2_widget
     if _id_2_widget.has_key(id):
         return _id_2_widget[id]
+getWidgetByID = getWidgetById
 
 _event_stats = {}
 _event_stats_activate = False
@@ -76,10 +77,9 @@ class MTWidget(pyglet.event.EventDispatcher):
         kwargs.setdefault('visible', True)
         kwargs.setdefault('draw_children', True)
 
-        global _id_2_widget
+        self._id = None
         if kwargs.has_key('id'):
             self.id = kwargs.get('id')
-            _id_2_widget[kwargs.get('id')] = self
 
         pyglet.event.EventDispatcher.__init__(self)
         self.parent					= None
@@ -104,6 +104,17 @@ class MTWidget(pyglet.event.EventDispatcher):
             self.height = kwargs.get('height')
 
         self.init()
+
+    def _set_id(self, id):
+        global _id_2_widget
+        if self._id and _id_2_widget.has_key(self._id):
+            del _id_2_widget[self._id]
+        self._id = id
+        if self._id:
+            _id_2_widget[self._id] = self
+    def _get_id(self):
+        return self._id
+    id = property(_get_id, _set_id)
 
     def _set_visible(self, visible):
         if self._visible == visible:

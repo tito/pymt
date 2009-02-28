@@ -43,14 +43,6 @@ class MTBoxLayout(MTAbstractLayout):
         self.invert_x       = kwargs.get('invert_x')
         self.invert_y       = kwargs.get('invert_y')
 
-    def add_widget(self, w):
-        super(MTBoxLayout, self).add_widget(w)
-        self.do_layout()
-
-    def on_move(self, x, y):
-        self.do_layout()
-        super(MTBoxLayout, self).on_move(x, y)
-
     def do_layout(self):
         '''Recalculate position for every subwidget, fire
         on_layout when finished. If content size have changed,

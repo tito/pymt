@@ -68,3 +68,7 @@ class MTAbstractLayout(MTWidget):
             if layout:
                 layout.do_layout()
 
+    def on_move(self, x, y):
+        self.do_layout()
+        super(MTAbstractLayout, self).on_move(x, y)
+

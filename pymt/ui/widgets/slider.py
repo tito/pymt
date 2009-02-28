@@ -71,6 +71,7 @@ class MTSlider(MTWidget):
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
             self.touchstarts.append(touchID)
+            self.on_touch_move(touches, touchID, x, y)
             return True
 
     def on_touch_move(self, touches, touchID, x, y):

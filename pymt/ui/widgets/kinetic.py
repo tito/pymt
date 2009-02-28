@@ -19,22 +19,22 @@ class MTKineticScrollText(MTWidget):
     to the one found on the iPhone.
 
     :Parameters:
-        'bgcolor' : The background color of the widget
-        'icolor' : The color for the items
-        'iscolor': The color for an item when it is selected
-        'tcolor' : Color for the text
-        'font' : Self explanitory
-        'font_size' : Self Explanitory
-        'friction ' : The Psuedo-friction of the psuedo-
-            kinetic scrolling.  I like values of around 1.1
-        'items'  : The plain-text items that you would like
-            to have within the widget.
-    
-    :Parameters Inherited through MTWidget:
-        'pos' : Position
-        'size' : Size
-        'color' : Has no effect on this widget
-        'visible' : visibility
+        'bgcolor' : tuple, defaults to (.2, .4, .9)
+            The background color of the widget
+        'icolor' : tuple, defaults to (1, 1, 1)
+            The color for the items
+        'iscolor': tuple, defaults to (1, .28, 0)
+            The color for an item when it is selected
+        'tcolor' : tuple, defaults to (0, 0, 0)
+            Color for the text
+        'font' : string, defaults to 'Tahoma'
+            Font Type
+        'font_size' : int, defaults to 16
+             Font Size
+        'friction ' : float, defaults to 1.1
+            The Psuedo-friction of the psuedo-kinetic scrolling.
+        'items'  : list, defaults to []
+            The plain-text items that you would like to have within the widget.
 
     When an item is tapped and the blob has moved less than 10
     pixels(so we know they aren't scrolling) it fires a 

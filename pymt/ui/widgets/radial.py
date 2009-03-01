@@ -8,9 +8,8 @@ from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.widget import MTWidget
 from pymt.graphx import *
 from pymt.vector import Vector
+from pymt.ui import colors
 __all__ = ['MTVectorSlider']
-
-### HELP NEEDED IN THE COLORING DEPARTMENT ###
 
 def _get_distance(Pos1, Pos2):
     '''Get the linear distance between two points'''
@@ -45,8 +44,8 @@ class MTVectorSlider(MTWidget):
         super(MTVectorSlider, self).__init__(**kwargs)
 
         kwargs.setdefault('radius', 200)
-        kwargs.setdefault('vcolor', (1, .28, 0))
-        kwargs.setdefault('bgcolor', (.2, .4, .9))
+        kwargs.setdefault('vcolor', colors.selected)
+        kwargs.setdefault('bgcolor', colors.background)
 
         self.radius = kwargs.get('radius')
         self.vcolor = kwargs.get('vcolor')

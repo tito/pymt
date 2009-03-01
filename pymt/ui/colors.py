@@ -22,7 +22,7 @@ default_css = '''
     color-selected: rgba(255, 120, 255, 255);
 
     /* color when something is pushed */
-    color-down: rgba(255, 120, 255, 255);
+    color-down: rgba(50, 50, 50, 150);
 
     /* background color of widget */
     bg-color: rgba(60, 60, 60, 150);

@@ -42,10 +42,10 @@ class MTMultiSlider(MTWidget):
     
     def draw(self):
         # Draw background
-        glColor4f(*self.bgcolor)
+        set_color(*self.bgcolor)
         drawRectangle(pos=(self.x,self.y), size=(self.width,self.height))
         # Draw sliders
-        glColor4f(*self.color)
+        set_color(*self.color)
         for slider in range(self._sliders):
             pos_x = self.x + slider * (float(self.width) / self._sliders)
             pos_y = self.y

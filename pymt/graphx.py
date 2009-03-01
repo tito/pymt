@@ -36,8 +36,11 @@ def disable_blending():
     pymt_logger.warning('deprecated, use "with gx_blending:" now.')
     glDisable(GL_BLEND)
 
-def set_color(r,g,b,a=1.0):
-    glColor4f(r,g,b,a)
+def set_color(*colors):
+    if len(colors) == 4:
+        glColor4f(*colors)
+    if len(colors) == 3:
+        glColor3f(*colors)
 
 
 def drawLabel(text, pos=(0,0),center=True, font_size=16):

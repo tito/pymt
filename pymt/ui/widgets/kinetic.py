@@ -222,14 +222,14 @@ class MTKineticScrollText(MTWidget):
             #Draw the actual item
             if str(self.selected) == str(text):
                 #Its selected, make it colorful!
-                glColor3f(*self.iscolor)
+                set_color(*self.iscolor)
             else:
-                glColor3f(*self.icolor)
+                set_color(*self.icolor)
 
             drawRectangle(pos, size)
             self.dtext(str(text), tpos)            
 
-    def dtext(self, text, pos, color=(0, 0, 0, 255)):
+    def dtext(self, text, pos, color=colors.text):
         '''Function to draw text at a given pos.
         The Label rendered is persisten throughout the life
         of this object for latency reasons.  It is kept in

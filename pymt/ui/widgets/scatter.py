@@ -8,6 +8,7 @@ from pymt.ui.widgets.widget import MTWidget
 from pymt.lib import squirtle
 from pymt.vector import *
 from pymt.logger import pymt_logger
+from pymt.ui import animation
 
 class MTScatterWidget(MTWidget):
     '''MTScatterWidget is a scatter widget based on MTWidget
@@ -51,12 +52,43 @@ class MTScatterWidget(MTWidget):
                     self.do_translation_y = 1.0
             self.do_translation = True
 
+        #For flipping animations#
+        self.zangle = 0
+
+        #Which side is currently showing
+        self.side = 'front'
+
+        #Holds children for both sides
+        self.children_front = []
+        self.children_back = []
+
+        self.children = self.children_front
+
+        self.animating = False
+
         self.touches        = {}
         self.transform_mat  = (GLfloat * 16)()
         if kwargs.get('translation')[0] != 0 or kwargs.get('translation')[1] != 0:
             self.init_transform(kwargs.get('translation'), kwargs.get('rotation'), kwargs.get('scale'))
         else:
             self.init_transform(self.pos, kwargs.get('rotation'), kwargs.get('scale'))
+
+    def add_widget(self, w, side, front=True):
+        '''Override this, because a side needs to be specififed'''
+        if side == 'front':
+            if front:
+                self.children_front.append(w)
+            else:
+                self.children_front.insert(0, w)
+        else:
+            if front:
+                self.children_back.append(w)
+            else:
+                self.children_back.insert(0, w)
+        try:
+            w.parent = self
+        except:
+            pass
 
     def init_transform(self, pos, angle, scale):
         with gx_matrix_identity:
@@ -67,7 +99,28 @@ class MTScatterWidget(MTWidget):
 
     def draw(self):
         glColor4d(*self.color)
+        glRotated(self.zangle, 0, 0, 1)
+        if self.zangle == 180:
+            self.flip_children()
         drawRectangle((0,0), (self.width, self.height))
+
+    def flip_children(self):
+        '''Flips the children
+        this has to be called exactly half way through the animation
+        so it looks like there are actually two sides'''
+        if self.side == 'front':
+            #Flip to back
+            self.side = 'back'
+            self.children = self.children_back
+        else:
+            self.side = 'front'
+            self.children = self.children_front
+
+    def flip(self):
+       '''Triggers a flipping animation'''
+       self.animating = True
+       anim = Animation(self, 'flip', self.zangle, 360, 1, 10)
+       anim.start()
 
     def on_draw(self):
 		with gx_matrix:

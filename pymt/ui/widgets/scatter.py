@@ -73,7 +73,7 @@ class MTScatterWidget(MTWidget):
         else:
             self.init_transform(self.pos, kwargs.get('rotation'), kwargs.get('scale'))
 
-    def add_widget(self, w, side, front=True):
+    def add_widget(self, w, side='front', front=True):
         '''Override this, because a side needs to be specififed'''
         if side == 'front':
             if front:

@@ -73,7 +73,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         kwargs.setdefault('size', (100, 100))
         kwargs.setdefault('width', None)
         kwargs.setdefault('height', None)
-        kwargs.setdefault('color', colors.selected)
+        kwargs.setdefault('color', colors.background)
         kwargs.setdefault('bgcolor', colors.background)
         kwargs.setdefault('visible', True)
         kwargs.setdefault('draw_children', True)

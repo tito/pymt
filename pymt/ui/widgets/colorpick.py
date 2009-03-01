@@ -5,6 +5,7 @@ from pymt.graphx import *
 from math import *
 from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.widget import MTWidget
+from pymt.ui.widgets.slider import MTSlider
 from pymt.lib import squirtle
 from pymt.vector import *
 from pymt.logger import pymt_logger

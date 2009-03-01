@@ -25,10 +25,19 @@ default_css = '''
     color-down: rgba(255, 120, 255, 255);
 
     /* background color of widget */
-    bg-color: rgba(120, 120, 120, 100);
+    bg-color: rgba(60, 60, 60, 150);
 
     /* font size */
     font-size: 10;
+}
+
+vkeyboard,
+button {
+    bg-color: rgba(20, 20, 20, 100);
+}
+
+keybutton {
+    bg-color: rgba(20, 20, 20, 200);
 }
 
 form {
@@ -51,7 +60,7 @@ kineticscrolltext {
 }
 
 window {
-    bg-color: rgb(0, 0, 0);
+    bg-color: rgb(50, 50, 50);
 }
 '''
 

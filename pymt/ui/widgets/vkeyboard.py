@@ -64,7 +64,7 @@ class MTTextInput(MTButton):
             glColor4f(0.5,0.5,0.5,0.5)
             drawRectangle((self.x,self.y) , (self.width, self.height))
         else:
-            glColor4f(*self.color)
+            glColor4f(*self.bgcolor)
             drawRectangle((self.x,self.y) , (self.width, self.height))
         self.label_obj.draw()
 
@@ -116,25 +116,32 @@ class MTVKeyboard(MTScatterWidget):
         MTScatterWidget.__init__(self, pos=(0,0), size=(400,200))
 
         # setup caps keys
-        self._setup_keys(MTVKeyboard._row_keyscaps)
-        self.children_keyscaps = self.children
-        self.children = []
-
+        self.add_widget(self._setup_keys(MTVKeyboard._row_keyscaps), side='back')
         # setup normal keys
-        self._setup_keys(MTVKeyboard._row_keys)
-        self.children_keys = self.children
+        self.add_widget(self._setup_keys(MTVKeyboard._row_keys), side='front')
 
-        self.dl             = GlDisplayList()
+        self.dlfront        = GlDisplayList()
+        self.dlback         = GlDisplayList()
         self.active_keys    = {}
         self.text_widget    = text_widget
         self.draw_children  = False
         self.is_shift       = False
         self.is_capslock    = False
 
+    def do_flip_caps(self):
+        caps = self.is_capslock
+        if self.is_shift:
+            caps = not caps
+        if caps:
+            if self.side == 'front':
+                self.flip()
+        elif self.side == 'back':
+            self.flip()
+
     def on_key_down(self, k_str):
         if k_str == MTVKeyboard.KEY_SHIFT:
             self.is_shift = True
-            self.dl.clear()
+            self.do_flip_caps()
             return True
 
     def on_key_up(self, k_str):
@@ -155,12 +162,12 @@ class MTVKeyboard(MTScatterWidget):
 
         elif k_str == MTVKeyboard.KEY_SHIFT:
             self.is_shift = False
-            self.dl.clear()
+            self.do_flip_caps()
             return True
 
         elif k_str == MTVKeyboard.KEY_CAPSLOCK:
             self.is_capslock = not self.is_capslock
-            self.dl.clear()
+            self.do_flip_caps()
             return True
 
         else:
@@ -170,30 +177,26 @@ class MTVKeyboard(MTScatterWidget):
         return True
 
     def update_dl(self):
-        use_caps = self.is_capslock
-        if self.is_shift:
-            use_caps = not use_caps
-        if use_caps:
-            self.children = self.children_keyscaps
-        else:
-            self.children = self.children_keys
-        with self.dl:
-            with gx_blending:
-                set_color(0.2,0.2,0.2,0.6)
-                drawRoundedRectangle((0,0), self.size)
-                for w in self.children:
-                    w.dispatch_event('on_draw')
+        with DO(self.dlfront, gx_blending):
+            set_color(*self.bgcolor)
+            drawRoundedRectangle((0,0), self.size)
+            for w in self.children_front:
+                w.dispatch_event('on_draw')
+        with DO(self.dlback, gx_blending):
+            set_color(*self.bgcolor)
+            drawRoundedRectangle((0,0), self.size)
+            for w in self.children_back:
+                w.dispatch_event('on_draw')
 
     def _setup_keys(self, keys):
         k_width = 25
         spacing = 3
         padding = 30
         border_radius = 2
-        color = (0.1, 0.1, 0.1, 0.7)
 
         vlayout = MTBoxLayout(orientation='vertical', pos=(padding,padding),
                               spacing=spacing, invert_y=True)
-        key_options = {'color': color, 'border_radius': border_radius}
+        key_options = {'border_radius': border_radius}
 
         for j in range(4):
             layout = MTBoxLayout(spacing=spacing)
@@ -243,19 +246,21 @@ class MTVKeyboard(MTScatterWidget):
         space_key = MTKeyButton(self, label=MTVKeyboard.KEY_SPACE, size=(361, k_width), **key_options)
         layout.add_widget(space_key)
         vlayout.add_widget(layout)
-        self.add_widget(vlayout)
-
         self.width = vlayout.content_width + padding * 2
         self.height = vlayout.content_height + padding * 2
+        return vlayout
 
     def draw_active_children(self):
         for key in self.active_keys:
             self.active_keys[key].draw()
 
     def draw(self):
-        if not self.dl.is_compiled():
+        if not self.dlfront.is_compiled() or not self.dlback.is_compiled():
             self.update_dl()
-        self.dl.draw()
+        if self.side == 'front':
+            self.dlfront.draw()
+        else:
+            self.dlback.draw()
         self.draw_active_children()
 
 # Register all base widgets

@@ -2,12 +2,13 @@
 from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.widget import MTWidget
 from pymt.graphx import *
+from pymt.ui import colors
 
 class MTMultiSlider(MTWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('sliders', 20)
-        kwargs.setdefault('color', (1,0.5,0,1))
-        kwargs.setdefault('background_color', (0.2,0.2,0.2,0.5))
+        kwargs.setdefault('color', colors.selected)
+        kwargs.setdefault('background_color', colors.background)
         kwargs.setdefault('size', (400,300))
         kwargs.setdefault('spacing', 1)
         kwargs.setdefault('init_value', 0.5)

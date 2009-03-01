@@ -9,6 +9,7 @@ from pyglet.text import Label
 from pymt.graphx import *
 from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.widget import MTWidget
+from pymt.ui import colors
 
 ### THIS NEEDS SERIOUS HELP IN THE COLOR DEPARTMENT ###
 
@@ -43,11 +44,13 @@ class MTKineticScrollText(MTWidget):
 
     '''
 
+
+
     def __init__(self, **kwargs):
-        kwargs.setdefault('bgcolor', (.2, .4, .9))
-        kwargs.setdefault('icolor', (1, 1, 1))
-        kwargs.setdefault('iscolor', (255, .28, 0))
-        kwargs.setdefault('tcolor', (0, 0, 0))
+        kwargs.setdefault('bgcolor', colors.background)
+        kwargs.setdefault('icolor', colors.item)
+        kwargs.setdefault('iscolor', colors.selected)
+        kwargs.setdefault('tcolor', colors.text)
         kwargs.setdefault('font_name', 'Tahoma')
         kwargs.setdefault('font_size', 16)
         kwargs.setdefault('friction', 1.1)

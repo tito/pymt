@@ -119,6 +119,12 @@ class MTScatterWidget(MTWidget):
             self.side = 'front'
             self.children = self.children_front
 
+    def flip_to(self, to):
+        if to == 'back' and self.side == 'front':
+            self.flip_children()
+        elif to == 'front' and self.side == 'back':
+            self.flip_children()
+
     def flip(self):
        '''Triggers a flipping animation'''
        if self.side == 'front':
@@ -129,12 +135,17 @@ class MTScatterWidget(MTWidget):
        self.anim.start()
 
     def on_draw(self):
-        if self.zangle == 90:
-            self.flip_children()
+        if self.zangle < 90:
+            self.flip_to('front')
+        else:
+            self.flip_to('back')
         with gx_matrix:
             glMultMatrixf(self.transform_mat)
             glTranslatef(self.width / 2, 0, 0)
-            glRotatef(self.zangle, 0, 1, 0)
+            if self.side == 'front':
+                glRotatef(self.zangle, 0, 1, 0)
+            else:
+                glRotatef(self.zangle + 180, 0, 1, 0)
             glTranslatef(-self.width / 2, 0, 0)
             super(MTScatterWidget, self).on_draw()
 

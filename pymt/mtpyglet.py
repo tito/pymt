@@ -27,9 +27,14 @@ def difference(set1, set2):
 
 class Tuio2DCursor(object):
 
-    def __init__(self, blobID, args):
+    def __init__(self, blobID, args, time_start=0):
         self.blobID = blobID
         self.oxpos = self.oypos = 0.0
+        self.time_start = time_start
+        self.is_timeout = False
+        self.have_event_down = False
+        self.do_event = None
+        self.is_double_tap = False
         self.depack(args)
 	self.motcalc()
 
@@ -92,11 +97,11 @@ the  righ parser on the idle function
 class TUIOGetter(object):
 
     def __init__(self,  host='127.0.0.1', port=3333):
-		global TUIO_listeners
-		TUIO_listeners.append(self)
-		self.host = host
-		self.port = port
-		self.startListening()
+        global TUIO_listeners
+        TUIO_listeners.append(self)
+        self.host = host
+        self.port = port
+        self.startListening()
 
     def startListening(self):
         #print "starting ", self
@@ -106,8 +111,8 @@ class TUIOGetter(object):
         osc.bind(self.osc_2dobj_Callback, '/tuio/2Dobj')
 
     def stopListening(self):
-		#print "stopping ", self
-		osc.dontListen()
+        #print "stopping ", self
+        osc.dontListen()
 
     def close(self):
         osc.dontListen()
@@ -135,6 +140,7 @@ class TouchEventLoop(pyglet.app.EventLoop):
         self.alive2DObj = []
         self.blobs2DCur = {}
         self.blobs2DObj = {}
+        self.clock = pyglet.clock.Clock()
         self.parser = TUIOGetter(host = host, port = port)
 
     def close(self):
@@ -142,6 +148,40 @@ class TouchEventLoop(pyglet.app.EventLoop):
             return
         self.parser.close()
         self.parser = None
+
+    def process_2dcur_events(self):
+        precision = 0.1
+        time_current = self.clock.time()
+        remove_list = []
+        for blobID in self.blobs2DCur:
+            # not timeout state, calculate !
+            cur = self.blobs2DCur[blobID]
+            if not cur.is_timeout:
+                if time_current - cur.time_start > precision:
+                    cur.is_timeout = True
+                if not cur.is_timeout:
+                    continue
+
+            # ok, now check event !
+            event_str = None
+            if not cur.have_event_down:
+                event_str = 'on_touch_down'
+                cur.have_event_down = True
+            elif cur.do_event:
+                event_str = cur.do_event
+                cur.do_event = False
+
+            # event to do ?
+            if event_str:
+                print event_str, cur
+                for l in touch_event_listeners:
+                    l.dispatch_event(event_str, self.blobs2DCur, cur.blobID,
+                        cur.xpos * l.width, l.height - l.height * cur.ypos)
+                if event_str == 'on_touch_up':
+                    remove_list.append(cur.blobID)
+        for blobID in remove_list:
+            del self.blobs2DCur[cur.blobID]
+
 
     def parse2dCur(self, args, types):
         global touch_event_listeners
@@ -151,21 +191,15 @@ class TouchEventLoop(pyglet.app.EventLoop):
             touch_move = intersection(self.alive2DCur,args[1:])
             self.alive2DCur = args[1:]
             for blobID in touch_release:
-                for l in touch_event_listeners:
-                    l.dispatch_event('on_touch_up', self.blobs2DCur, blobID, self.blobs2DCur[blobID].xpos * l.width, l.height - l.height*self.blobs2DCur[blobID].ypos)
-                    del self.blobs2DCur[blobID]
+                self.blobs2DCur[blobID].do_event = 'on_touch_up'
 
         elif args[0] == 'set':
             blobID = args[1]
             if blobID not in self.blobs2DCur:
-                self.blobs2DCur[blobID] = Tuio2DCursor(blobID,args[2:])
-                for l in touch_event_listeners:
-                    l.dispatch_event('on_touch_down', self.blobs2DCur, blobID, self.blobs2DCur[blobID].xpos * l.width, l.height - l.height*self.blobs2DCur[blobID].ypos)
-
+                self.blobs2DCur[blobID] = Tuio2DCursor(blobID, args[2:], self.clock.time())
             else:
                 self.blobs2DCur[blobID].move(args[2:])
-                for l in touch_event_listeners:
-                    l.dispatch_event('on_touch_move', self.blobs2DCur, blobID, self.blobs2DCur[blobID].xpos * l.width, l.height - l.height*self.blobs2DCur[blobID].ypos)
+                self.blobs2DCur[blobID].do_event = 'on_touch_move'
 
     def parse2dObj(self, args, types):
         global touch_event_listeners
@@ -195,16 +229,19 @@ class TouchEventLoop(pyglet.app.EventLoop):
                 for l in touch_event_listeners:
                     l.dispatch_event('on_object_move', self.blobs2DObj, blobID, self.blobs2DObj[blobID].id, self.blobs2DObj[blobID].xpos * l.width, l.height - l.height*self.blobs2DObj[blobID].ypos, self.blobs2DObj[blobID].angle)
 
-
     def idle(self):
         global tuio_event_q
         pyglet.clock.tick()
+        # process tuio
         while not tuio_event_q.empty():
             type,args, types = tuio_event_q.get()
             if type == '/tuio/2Dcur':
                 self.parse2dCur(args, types)
             if type == '/tuio/2Dobj':
                 self.parse2dObj(args, types)
+
+        # launch event ?
+        self.process_2dcur_events()
 
         for window in pyglet.app.windows:
             window.dispatch_events()

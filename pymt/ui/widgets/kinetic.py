@@ -175,7 +175,7 @@ class MTKineticScrollText(MTWidget):
 
     def draw(self):
         #Draw the background
-        glColor3f(*self.bgcolor)
+        set_color(*self.bgcolor)
         drawRectangle(self.pos, self.size)
 
         #Move the menu by the spin-down velocity

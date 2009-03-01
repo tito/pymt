@@ -44,12 +44,7 @@ form {
     bg-color: rgba(80, 80, 80, 100);
 }
 
-vectorslider {
-    bg-color: rgb(51, 51, 51);
-    slider-color: rgb(255, 127, 0);
-}
-
-multislider {
+slider, xyslider, vectorslider, multislider {
     bg-color: rgb(51, 51, 51);
     slider-color: rgb(255, 127, 0);
 }

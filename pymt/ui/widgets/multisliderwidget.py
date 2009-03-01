@@ -17,10 +17,13 @@ class MTMultiSlider(MTWidget):
         self._spacing = kwargs.get('spacing')
         self._init_value = kwargs.get('init_value')
         self.slider_values = [self._init_value for x in range(self._sliders)]
+        if kwargs.has_key('slidercolor'):
+            self.slidercolor = kwargs.get('slidercolor')
+
     
     def apply_css(self, styles):
         if styles.has_key('slider-color'):
-            self.color = styles.get('slider-color')
+            self.slidercolor = styles.get('slider-color')
         super(MTMultiSlider, self).apply_css(styles)
 
     def _get_sliders(self):
@@ -47,7 +50,7 @@ class MTMultiSlider(MTWidget):
         set_color(*self.bgcolor)
         drawRectangle(pos=(self.x,self.y), size=(self.width,self.height))
         # Draw sliders
-        set_color(*self.color)
+        set_color(*self.slidercolor)
         for slider in range(self._sliders):
             pos_x = self.x + slider * (float(self.width) / self._sliders)
             pos_y = self.y

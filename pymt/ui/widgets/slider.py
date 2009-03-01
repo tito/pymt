@@ -41,7 +41,14 @@ class MTSlider(MTWidget):
         self._value         = self.min
         if kwargs.get('value'):
             self._value = kwargs.get('value')
-
+        if kwargs.get('slidercolor'):
+            self.slidercolor = kwargs.get('slidercolor')
+    
+    def apply_css(self, styles):
+        if styles.has_key('slider-color'):
+            self.slidercolor = styles.get('slider-color')
+        super(MTSlider, self).apply_css(styles)
+            
     def on_value_change(self, value):
         pass
 
@@ -60,7 +67,7 @@ class MTSlider(MTWidget):
             glColor4f(*self.bgcolor)
             drawRectangle(pos=(x,y), size=(w,h))
             # draw inner rectangle
-            glColor4f(*self.color)
+            glColor4f(*self.slidercolor)
             if self.orientation == 'vertical':
                 length = int((self._value - self.min) * (self.height - self.padding) / (self.max - self.min))
                 drawRectangle(pos=(x+p2,y+p2), size=(w - self.padding, length))
@@ -93,8 +100,8 @@ class MTSlider(MTWidget):
         if touchID in self.touchstarts:
             self.touchstarts.remove(touchID)
 
-class MT2DSlider(MTWidget):
-    '''MT2DSlider is an implementation of a 2D slider using MTWidget.
+class MTXYSlider(MTWidget):
+    '''MTXYSlider is an implementation of a 2D slider using MTWidget.
 
     :Parameters:
         `min_x` : int, default is 20
@@ -122,7 +129,7 @@ class MT2DSlider(MTWidget):
         kwargs.setdefault('value_x', None)
         kwargs.setdefault('value_y', None)
 
-        super(MT2DSlider, self).__init__(**kwargs)
+        super(MTXYSlider, self).__init__(**kwargs)
         self.register_event_type('on_value_change')
         self.touchstarts = [] # only react to touch input that originated on this widget
         self.radius     = kwargs.get('radius')
@@ -137,6 +144,13 @@ class MT2DSlider(MTWidget):
             self._value_x = kwargs.get('value_x')
         if kwargs.get('value_y'):
             self._value_y = kwargs.get('value_y')
+        if kwargs.get('slidercolor'):
+            self.slidercolor = kwargs.get('slidercolor')
+            
+    def apply_css(self, styles):
+        if styles.has_key('slider-color'):
+            self.slidercolor = styles.get('slider-color')
+        super(MTXYSlider, self).apply_css(styles)
 
     def on_value_change(self, value_x, value_y):
         pass
@@ -168,7 +182,7 @@ class MT2DSlider(MTWidget):
             glColor4f(*self.bgcolor)
             drawRectangle(pos=(x,y), size=(w,h))
             # draw inner circle
-            glColor4f(*self.color)
+            glColor4f(*self.slidercolor)
             pos_x = int((self._value_x - self.min_x) * (self.width - self.padding*2) / (self.max_x - self.min_x))  + self.x + self.padding
             pos_y = int((self._value_y - self.min_y) * (self.height - self.padding*2) / (self.max_y - self.min_y)) + self.y + self.padding
             drawCircle(pos=(pos_x, pos_y), radius = self.radius)
@@ -199,5 +213,5 @@ class MT2DSlider(MTWidget):
         if touchID in self.touchstarts:
             self.touchstarts.remove(touchID)
 
-MTWidgetFactory.register('MT2DSlider', MT2DSlider)
+MTWidgetFactory.register('MTXYSlider', MTXYSlider)
 MTWidgetFactory.register('MTSlider', MTSlider)

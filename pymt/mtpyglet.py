@@ -29,12 +29,15 @@ class Tuio2DCursor(object):
 
     def __init__(self, blobID, args, time_start=0):
         self.blobID = blobID
+        self.dxpos = self.dypos = None
         self.oxpos = self.oypos = 0.0
         self.time_start = time_start
         self.is_timeout = False
         self.have_event_down = False
         self.do_event = None
         self.is_double_tap = False
+        self.double_tap_time = 0
+        self.no_event = False
         self.depack(args)
 	self.motcalc()
 
@@ -57,6 +60,8 @@ class Tuio2DCursor(object):
             self.xpos, self.ypos, self.xmot, self.ymot, self.mot_accel = args[0:5]
         else:
             self.xpos, self.ypos, self.xmot, self.ymot, self.mot_accel, self.Width , self.Height = args[0:7]
+        if self.dxpos is None:
+            self.dxpos, self.dypos = self.xpos, self.ypos
 
 
 class Tuio2DObject(object):
@@ -104,14 +109,12 @@ class TUIOGetter(object):
         self.startListening()
 
     def startListening(self):
-        #print "starting ", self
         osc.init()
         osc.listen(self.host, self.port)
         osc.bind(self.osc_2dcur_Callback, '/tuio/2Dcur')
         osc.bind(self.osc_2dobj_Callback, '/tuio/2Dobj')
 
     def stopListening(self):
-        #print "stopping ", self
         osc.dontListen()
 
     def close(self):
@@ -141,6 +144,8 @@ class TouchEventLoop(pyglet.app.EventLoop):
         self.blobs2DCur = {}
         self.blobs2DObj = {}
         self.clock = pyglet.clock.Clock()
+        self.double_tap_distance = pymt.pymt_config.getint('pymt', 'double_tap_distance') / 1000.0
+        self.double_tap_time = pymt.pymt_config.getint('pymt', 'double_tap_time') / 1000.0
         self.parser = TUIOGetter(host = host, port = port)
 
     def close(self):
@@ -149,18 +154,33 @@ class TouchEventLoop(pyglet.app.EventLoop):
         self.parser.close()
         self.parser = None
 
+    def find_double_tap(self, ref):
+        for blobID in self.blobs2DCur:
+            cur = self.blobs2DCur[blobID]
+            if cur.is_timeout or cur.have_event_down or cur.do_event != 'on_touch_up':
+                continue
+            distance = pymt.Vector.distance(pymt.Vector(ref.xpos, ref.ypos),
+                                            pymt.Vector(cur.xpos, cur.ypos))
+            if distance > self.double_tap_distance:
+                continue
+            return cur
+
     def process_2dcur_events(self):
-        precision = 0.1
         time_current = self.clock.time()
         remove_list = []
         for blobID in self.blobs2DCur:
             # not timeout state, calculate !
             cur = self.blobs2DCur[blobID]
             if not cur.is_timeout:
-                if time_current - cur.time_start > precision:
+                if time_current - cur.time_start > self.double_tap_time:
                     cur.is_timeout = True
                 if not cur.is_timeout:
-                    continue
+                    # at least, check double_tap_distance
+                    distance = pymt.Vector.distance(pymt.Vector(cur.dxpos, cur.dypos),
+                                                    pymt.Vector(cur.xpos, cur.ypos))
+                    if distance < self.double_tap_distance:
+                        break
+                    cur.is_timeout = True
 
             # ok, now check event !
             event_str = None
@@ -173,15 +193,19 @@ class TouchEventLoop(pyglet.app.EventLoop):
 
             # event to do ?
             if event_str:
-                print event_str, cur
-                for l in touch_event_listeners:
-                    l.dispatch_event(event_str, self.blobs2DCur, cur.blobID,
-                        cur.xpos * l.width, l.height - l.height * cur.ypos)
+                if not cur.no_event:
+                    if event_str == 'on_touch_down':
+                        xpos, ypos = cur.dxpos, cur.dypos
+                    else:
+                        xpos, ypos = cur.xpos, cur.ypos
+                    for l in touch_event_listeners:
+                        l.dispatch_event(event_str, self.blobs2DCur, cur.blobID,
+                            cur.xpos * l.width, l.height - l.height * cur.ypos)
                 if event_str == 'on_touch_up':
                     remove_list.append(cur.blobID)
-        for blobID in remove_list:
-            del self.blobs2DCur[cur.blobID]
 
+        for blobID in remove_list:
+            del self.blobs2DCur[blobID]
 
     def parse2dCur(self, args, types):
         global touch_event_listeners
@@ -191,12 +215,20 @@ class TouchEventLoop(pyglet.app.EventLoop):
             touch_move = intersection(self.alive2DCur,args[1:])
             self.alive2DCur = args[1:]
             for blobID in touch_release:
-                self.blobs2DCur[blobID].do_event = 'on_touch_up'
+                if blobID in self.blobs2DCur:
+                    self.blobs2DCur[blobID].do_event = 'on_touch_up'
 
         elif args[0] == 'set':
             blobID = args[1]
             if blobID not in self.blobs2DCur:
-                self.blobs2DCur[blobID] = Tuio2DCursor(blobID, args[2:], self.clock.time())
+                cur = Tuio2DCursor(blobID, args[2:], self.clock.time())
+                cur_double_tap = self.find_double_tap(cur)
+                if cur_double_tap:
+                    cur.is_double_tap = True
+                    cur.double_tap_time = cur.time_start - cur_double_tap.time_start
+                    cur.time_start = cur_double_tap.time_start
+                    cur_double_tap.no_event = True
+                self.blobs2DCur[blobID] = cur
             else:
                 self.blobs2DCur[blobID].move(args[2:])
                 self.blobs2DCur[blobID].do_event = 'on_touch_move'

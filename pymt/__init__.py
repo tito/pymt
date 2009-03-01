@@ -36,6 +36,8 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_config.set('pymt', 'show_eventstats', '0')
     pymt_config.set('pymt', 'fullscreen', '1')
     pymt_config.set('pymt', 'log_level', 'debug')
+    pymt_config.set('pymt', 'double_tap_time', '250')
+    pymt_config.set('pymt', 'double_tap_distance', '20')
     pymt_config.add_section('tuio')
     pymt_config.set('tuio', 'host', '127.0.0.1')
     pymt_config.set('tuio', 'port', '3333')

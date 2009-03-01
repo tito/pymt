@@ -38,7 +38,7 @@ class GLPerspectiveWidget(MTWidget):
     def draw3D(self):
         glPushAttrib(GL_VIEWPORT_BIT)
         glViewport(0,0,self.fbo.size[0], self.fbo.size[1])
-        glClearColor(*self.color)
+        glClearColor(*self.bgcolor)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)

@@ -8,6 +8,7 @@ from pymt.ui.widgets.widget import MTWidget
 from pymt.lib import squirtle
 from pymt.vector import *
 from pymt.logger import pymt_logger
+from pymt.ui import colors
 
 class MTSlider(MTWidget):
     '''MTSlider is an implementation of a scrollbar using MTWidget.
@@ -27,7 +28,8 @@ class MTSlider(MTWidget):
         kwargs.setdefault('max', 100)
         kwargs.setdefault('padding', 8)
         kwargs.setdefault('orientation', 'vertical')
-        kwargs.setdefault('color', (.8, .8, .4, 1.0))
+        kwargs.setdefault('color', colors.selected)
+        kwargs.setdefault('bgcolor', colors.background)
         kwargs.setdefault('size', (30, 400))
         kwargs.setdefault('value', None)
 
@@ -57,7 +59,7 @@ class MTSlider(MTWidget):
             x,y,w,h = self.x, self.y, self.width, self.height
             p2 =self.padding/2
             # draw outer rectangle
-            glColor4f(0.2,0.2,0.2,0.5)
+            glColor4f(*self.bgcolor)
             drawRectangle(pos=(x,y), size=(w,h))
             # draw inner rectangle
             glColor4f(*self.color)
@@ -121,7 +123,8 @@ class MT2DSlider(MTWidget):
         kwargs.setdefault('size', (200, 200))
         kwargs.setdefault('value_x', None)
         kwargs.setdefault('value_y', None)
-        kwargs.setdefault('color', (.8, .8, .4, 1.0))
+        kwargs.setdefault('color', colors.selected)
+        kwargs.setdefault('bgcolor', colors.background)
 
         super(MT2DSlider, self).__init__(**kwargs)
         self.register_event_type('on_value_change')
@@ -166,7 +169,7 @@ class MT2DSlider(MTWidget):
         with gx_blending:
             x,y,w,h = self.x,self.y,self.width, self.height
             # draw outer rectangle
-            glColor4f(0.2,0.2,0.2,0.5)
+            glColor4f(*self.bgcolor)
             drawRectangle(pos=(x,y), size=(w,h))
             # draw inner circle
             glColor4f(*self.color)

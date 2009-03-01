@@ -49,7 +49,6 @@ class MTVectorSlider(MTWidget):
 
         self.radius = kwargs.get('radius')
         self.vcolor = kwargs.get('vcolor')
-        self.bgcolor = kwargs.get('bgcolor')
 
         #The vector hand
         self.vector = Vector(0, 0)

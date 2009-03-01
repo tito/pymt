@@ -8,7 +8,7 @@ class MTMultiSlider(MTWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('sliders', 20)
         kwargs.setdefault('color', colors.selected)
-        kwargs.setdefault('background_color', colors.background)
+        kwargs.setdefault('bgcolor', colors.background)
         kwargs.setdefault('size', (400,300))
         kwargs.setdefault('spacing', 1)
         kwargs.setdefault('init_value', 0.5)
@@ -18,16 +18,9 @@ class MTMultiSlider(MTWidget):
         self.touchstarts = [] # only react to touch input that originated on this widget
         self._sliders = kwargs.get('sliders')
         self._spacing = kwargs.get('spacing')
-        self._background_color = kwargs.get('background_color')
         self._init_value = kwargs.get('init_value')
         self.slider_values = [self._init_value for x in range(self._sliders)]
-        
-    def _get_background_color(self):
-        return self._background_color
-    def _set_background_color(self, bckcolor):
-        self._background_color = bckcolor
-    background_color = property(_get_background_color, _set_background_color)
-    
+         
     def _get_sliders(self):
         return self._sliders
     def _set_sliders(self, quantity):
@@ -49,7 +42,7 @@ class MTMultiSlider(MTWidget):
     
     def draw(self):
         # Draw background
-        glColor4f(*self._background_color)
+        glColor4f(*self.bgcolor)
         drawRectangle(pos=(self.x,self.y), size=(self.width,self.height))
         # Draw sliders
         glColor4f(*self.color)

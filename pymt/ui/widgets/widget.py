@@ -13,7 +13,7 @@ from pymt.mtpyglet import *
 from pymt.ui.animation import *
 from pymt.ui.factory import *
 from pymt.vector import Vector
-
+from pymt.ui import colors
 
 
 _id_2_widget = {}
@@ -73,7 +73,8 @@ class MTWidget(pyglet.event.EventDispatcher):
         kwargs.setdefault('size', (100, 100))
         kwargs.setdefault('width', None)
         kwargs.setdefault('height', None)
-        kwargs.setdefault('color', (.2, .2, .2, 1))
+        kwargs.setdefault('color', colors.selected)
+        kwargs.setdefault('bgcolor', colors.background)
         kwargs.setdefault('visible', True)
         kwargs.setdefault('draw_children', True)
 
@@ -88,6 +89,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         self._x, self._y			= kwargs.get('pos')
         self._width, self._height	= kwargs.get('size')
         self._color					= kwargs.get('color')
+        self._bgcolor					= kwargs.get('bgcolor')
         self.animations				= []
         self.visible				= kwargs.get('visible')
         self.draw_children          = kwargs.get('draw_children')
@@ -193,6 +195,15 @@ class MTWidget(pyglet.event.EventDispatcher):
         if len(col) == 4:
             self._color = col
     color = property(_get_color, _set_color)
+    
+    def _get_bgcolor(self):
+        return self._bgcolor
+    def _set_bgcolor(self, col):
+        if len(col) == 3:
+            self._bgcolor = (col[0], col[1], col[2], 1.0)
+        if len(col) == 4:
+            self._bgcolor = col
+    bgcolor = property(_get_bgcolor, _set_bgcolor)
 
 
     def dispatch_event(self, event_type, *args):

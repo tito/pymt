@@ -159,6 +159,8 @@ class MTWindow(TouchWindow):
         for w in self.children:
             w.dispatch_event('on_draw')
 
+        self.sim.dispatch_event('on_draw')
+
         if self.show_fps:
             self.fps_display.draw()
 

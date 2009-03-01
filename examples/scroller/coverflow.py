@@ -26,16 +26,25 @@ class MTicon(MTButton):
         self.image.scale    = self.scale
         self.width,self.height  = (self.image.width, self.image.height)
         self.texture = img.get_texture()
+        self.rotation = 15
 
     def draw(self):
+        global angle
         self.image.x        = self.x
-        self.image.y        = self.y       
+        self.image.y        = self.y
         self.size           = (self.image.width, self.image.height)
         #
         with DO(gx_enable(GL_BLEND),gx_enable(GL_TEXTURE_2D)):
-            glColor4f(1, 1, 1, 1)            
-            drawCover(self.texture.id, pos=(self.x,self.y), size=(self.image.width,self.image.height))
-        self.parent.do_layout()
+
+            glColor4f(1, 1, 1, 1)
+            glPushMatrix()
+            glTranslatef(self.x,self.y,0)
+            glTranslated(self.image.width/2.0,self.image.height/2.0, 0)
+            glRotatef(self.rotation, 0.0, 1.0, 0.0)
+            glTranslated(-self.image.width/2.0,-self.image.height/2.0, 0)
+            drawCover(self.texture.id, pos=(0,0), size=(self.image.width,self.image.height))
+            #drawRectangle(size=(self.image.width,self.image.height))
+            glPopMatrix()
 
 
 
@@ -57,13 +66,11 @@ class MTicon(MTButton):
 
     def on_draw(self):
         if (self.parent.parent.to_parent(self.x,self.y)[0] >= (w.width/2-256)) & (self.parent.parent.to_parent(self.x,self.y)[0] <= (w.width/2)):
-            if self.image.scale < 1.0:
-                self.image.scale    = self.image.scale+0.07
-            self.width,self.height  = (self.image.width, self.image.height)
+            if self.rotation > 0:
+                self.rotation = self.rotation - 1
         else:
-            if self.image.scale > 0.5:
-                self.image.scale    = self.image.scale-0.07
-            self.width,self.height  = (self.image.width, self.image.height)
+            if self.rotation < 15:
+                self.rotation = self.rotation + 1
         self.draw()
 
 def drawCover(texture, pos=(0,0), size=(1.0,1.0)):
@@ -81,16 +88,16 @@ if __name__ == '__main__':
     w = MTWindow(color=(0,0,0,1.0))
     plane = MTScatterPlane(color=(0,0,0,1.0),do_rotation=False, do_scale=False, do_translation=['x'], size=(1440,300),pos=(0,w.height/2-150))
     w.add_widget(plane)
-    layme = MTBoxLayout(padding=10, spacing=10, color=(0,0,0,1.0))
+    layme = MTBoxLayout(padding=0, spacing=10,color=(0,0,0,1.0))
     plane.add_widget(layme)
-    layme.add_widget(MTicon(filename = "browser.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "calculator.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "chat.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "graph.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "settings.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "ipod.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "maps.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "notes.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "phone.png",scale=0.5))
-    layme.add_widget(MTicon(filename = "weather.png",scale=0.5))
+    layme.add_widget(MTicon(filename = "browser.png",scale=1))
+    layme.add_widget(MTicon(filename = "calculator.png",scale=1))
+    layme.add_widget(MTicon(filename = "chat.png",scale=1))
+    layme.add_widget(MTicon(filename = "graph.png",scale=1))
+    layme.add_widget(MTicon(filename = "settings.png",scale=1))
+    layme.add_widget(MTicon(filename = "ipod.png",scale=1))
+    layme.add_widget(MTicon(filename = "maps.png",scale=1))
+    layme.add_widget(MTicon(filename = "notes.png",scale=1))
+    layme.add_widget(MTicon(filename = "phone.png",scale=1))
+    layme.add_widget(MTicon(filename = "weather.png",scale=1))
     runTouchApp()

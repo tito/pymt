@@ -22,6 +22,13 @@ class MTSlider(MTWidget):
             Type of orientation, can be 'horizontal' or 'vertical'
         `value` : int, default is `min`
             Default value of slider
+        `slidercolor` : tuple
+            color of the slider in (r,g,b,a)
+    :Styles:
+        `slider-color` : color
+            Color of the slider
+        `bg-color` : color
+            Background color of the slider
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('min', 0)
@@ -118,6 +125,13 @@ class MTXYSlider(MTWidget):
             Default X value of slider
         `value_y` : int, default is `min_y`
             Default Y value of slider
+        `slidercolor` : tuple
+            color of the slider in (r,g,b,a)
+    :Styles:
+        `slider-color` : color
+            Color of the slider
+        `bg-color` : color
+            Background color of the slider 
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('min_x', 20)

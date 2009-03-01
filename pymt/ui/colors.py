@@ -55,7 +55,7 @@ kineticscrolltext {
 }
 
 window {
-    bg-color: rgb(50, 50, 50);
+    bg-color: rgb(45, 45, 45);
 }
 '''
 

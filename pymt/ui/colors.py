@@ -36,8 +36,13 @@ form {
 }
 
 vectorslider {
-    bg-color: rgb(51, 102, 230);
-    slider-color: rgb(255, 71, 0);
+    bg-color: rgb(51, 51, 51);
+    slider-color: rgb(255, 127, 0);
+}
+
+multislider {
+    bg-color: rgb(51, 51, 51);
+    slider-color: rgb(255, 127, 0);
 }
 
 kineticscrolltext {

@@ -8,7 +8,7 @@ from pymt.ui.widgets.widget import MTWidget
 from pymt.lib import squirtle
 from pymt.vector import *
 from pymt.logger import pymt_logger
-from pymt.ui import animation
+from pymt.ui.animation import Animation, AnimationAlpha
 
 class MTScatterWidget(MTWidget):
     '''MTScatterWidget is a scatter widget based on MTWidget
@@ -64,7 +64,8 @@ class MTScatterWidget(MTWidget):
 
         self.children = self.children_front
 
-        self.animating = False
+        self.anim = Animation(self, 'flip', 'zangle', 360, 1, 10, func=AnimationAlpha.ramp)
+
 
         self.touches        = {}
         self.transform_mat  = (GLfloat * 16)()
@@ -80,11 +81,16 @@ class MTScatterWidget(MTWidget):
                 self.children_front.append(w)
             else:
                 self.children_front.insert(0, w)
-        else:
+        elif side == 'back':
             if front:
                 self.children_back.append(w)
             else:
                 self.children_back.insert(0, w)
+        else:
+            #Add to both
+            self.add_widget(w, side='front', front=front)
+            self.add_widget(w, side='back', front=front)
+
         try:
             w.parent = self
         except:
@@ -99,7 +105,9 @@ class MTScatterWidget(MTWidget):
 
     def draw(self):
         glColor4d(*self.color)
-        glRotated(self.zangle, 0, 0, 1)
+        glTranslated(0, -self.width/2, 0)
+        glRotated(self.zangle, 0, 1, 0)
+        glTranslated(0, self.width/2, 0)
         if self.zangle == 180:
             self.flip_children()
         drawRectangle((0,0), (self.width, self.height))
@@ -118,9 +126,12 @@ class MTScatterWidget(MTWidget):
 
     def flip(self):
        '''Triggers a flipping animation'''
-       self.animating = True
-       anim = Animation(self, 'flip', self.zangle, 360, 1, 10)
-       anim.start()
+       if self.side == 'front':
+           self.anim.value_to = 360
+       else:
+           self.anim.value_to = 0
+       self.anim.reset()
+       self.anim.start()
 
     def on_draw(self):
 		with gx_matrix:

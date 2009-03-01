@@ -67,4 +67,3 @@ class Animation(object):
             self.widget.__setattr__(self.prop, value)
         else:
             self.widget.__dict__[self.prop] = value
-

@@ -14,5 +14,5 @@ setup (name='pymt',
       packages=['pymt', 'pymt.lib','pymt.lib.osc', 'pymt.ui', 'pymt.ui.widgets',
                'pymt.ui.widgets.layout', 'pymt.ui.widgets.form'],
       package_dir={'pymt': 'pymt'},
-      package_data={'pymt': ['data/icons/svg/*.svg', 'data/icons/*.png']}
+      package_data={'pymt': ['data/icons/svg/*.svg', 'data/icons/*.png', 'data/colors.json']}
 )

@@ -26,6 +26,9 @@ default_css = '''
 
     /* background color of widget */
     bg-color: rgba(120, 120, 120, 100);
+
+    /* font size */
+    font-size: 10;
 }
 
 form {

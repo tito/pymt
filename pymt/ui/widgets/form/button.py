@@ -18,18 +18,23 @@ class MTFormButton(MTFormLabel):
     '''
 
     def __init__(self, **kwargs):
-        kwargs.setdefault('color_down', (.5, .5, .5, .5))
         super(MTFormButton, self).__init__(**kwargs)
         self.register_event_type('on_press')
         self.register_event_type('on_release')
         self._state         = ('normal', 0)
-        self.color_down     = kwargs.get('color_down')
+        if kwargs.has_key('color_down'):
+            self.color_down = kwargs.get('color_down')
+
+    def apply_css(self, styles):
+        if styles.has_key('color-down'):
+            self.color_down = styles.get('color-down')
+        super(MTFormButton, self).apply_css(styles)
 
     def draw(self):
         if self._state[0] == 'down':
             glColor4f(*self.color_down)
         else:
-            glColor4f(*self.color)
+            glColor4f(*self.bgcolor)
         drawRoundedRectangle(pos=self.pos, size=self.size)
         super(MTFormButton, self).draw()
 

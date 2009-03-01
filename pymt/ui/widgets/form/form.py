@@ -12,7 +12,6 @@ class MTForm(MTAbstractFormWidget):
     '''
 
     def __init__(self, **kwargs):
-        kwargs.setdefault('color', (.25,.25,.25,.6))
         kwargs.setdefault('layout', None)
         super(MTForm, self).__init__(**kwargs)
         self.layout = kwargs.get('layout')
@@ -31,7 +30,7 @@ class MTForm(MTAbstractFormWidget):
         self.layout.add_widget(widget)
 
     def draw(self):
-        set_color(*self.color)
+        set_color(*self.bgcolor)
         drawRoundedRectangle(pos=self.pos, size=self.size)
 
     def get_parent_layout(self):

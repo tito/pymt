@@ -32,23 +32,26 @@ class MTVectorSlider(MTWidget):
     it just like any other vector, adjusting its angle and amplitude.
 
     :Parameters:
-        'bgcolor' : tuple, default to (.2, .4, .9)
+        `bgcolor` : tuple, default to (.2, .4, .9)
 	    The background color of the widget
-        'vcolor' : tuple, default to (1, .28, 0)
+        `vcolor` : tuple, default to (1, .28, 0)
 	    The color for the vector
-        'radius': int, default to 200
+        `radius` : int, default to 200
 	    The radius of the whole widget
+
+    :Styles:
+        `slider-color` : color
+            Color of the triangle
     '''
 
     def __init__(self, **kwargs):
         super(MTVectorSlider, self).__init__(**kwargs)
 
         kwargs.setdefault('radius', 200)
-        kwargs.setdefault('vcolor', colors.selected)
-        kwargs.setdefault('bgcolor', colors.background)
 
         self.radius = kwargs.get('radius')
-        self.vcolor = kwargs.get('vcolor')
+        if kwargs.has_key('vcolor'):
+            self.vcolor = kwargs.get('vcolor')
 
         #The vector hand
         self.vector = Vector(0, 0)
@@ -67,6 +70,11 @@ class MTVectorSlider(MTWidget):
         defined in MTWidget is for a square, we have to override
         it.'''
         return _get_distance(self.pos, (x, y)) <= self.radius
+
+    def apply_css(self, styles):
+        if styles.has_key('slider-color'):
+            self.vcolor = styles.get('slider-color')
+        super(MTVectorSlider, self).apply_css(styles)
 
     def _calc_stuff(self):
         '''Recalculated the args for the callbacks'''

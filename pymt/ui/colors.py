@@ -1,42 +1,140 @@
 from __future__ import with_statement
-
-import os
-import shutil
-import json
-
-#This could have been done just as well with OO, but I saw no compelling benefit too it
-#If it really bothers someone feel free to change it
-
 from pymt.logger import pymt_logger
 
-pymt_home_dir = os.path.expanduser('~/.pymt/')
-colors_json_dir = os.path.join(pymt_home_dir, 'colors.json')
+import os
+import sys
+import shutil
+import logging
+import re
 
-#If they don't have a colors file, give them one
-if not os.path.exists(colors_json_dir):
-    from distutils.sysconfig import get_python_lib
-    original = os.path.join(get_python_lib(), 'pymt/data/colors.json')
-    shutil.copy(original, pymt_home_dir)
-    
-    pymt_logger.info('No color configuration file found.  Creating one now in %s', pymt_home_dir + 'colors.json')
+try:
+    import cssutils
+except:
+    pymt_logger.error('You need cssutils. Go to http://cthedot.de/cssutils/ !')
+    raise
 
-#Now get the colors out of the file and into a dictionary
-with open(colors_json_dir, 'r') as json_file:
-    color_dict = json.load(json_file)
+default_css = '''
+* {
+    /* text color */
+    color: rgba(255, 255, 255, 255);
 
-#Generate local variables so you don't have to access the colors through a dict
-for key, color in color_dict.items():
-    #We cast them to tuples to force the user to use the change function to change them
-    #This way we make sure the json file is updated whever a color changes
-    exec(key + ' = tuple('  + str(color) +')')
-def change(color, value):
-    if type(value) is not tuple:
-        print 'color.change takes a tuple, not %s', type(value)
-        raise TypeError
-    exec(color + ' = ' + str(value))
-    color_dict[color] = value
-    #Delete the json file
-    os.remove(colors_json_dir)
-    #Regenerate it
-    json_file = open(colors_json_dir, 'wt')
-    json.dump(color_dict, json_file)
+    /* selected text color */
+    color-selected: rgba(255, 120, 255, 255);
+
+    /* color when something is pushed */
+    color-down: rgba(255, 120, 255, 255);
+
+    /* background color of widget */
+    bg-color: rgba(120, 120, 120, 100);
+}
+
+form {
+    bg-color: rgba(80, 80, 80, 100);
+}
+
+vectorslider {
+    bg-color: rgb(51, 102, 230);
+    slider-color: rgb(255, 71, 0);
+}
+
+kineticscrolltext {
+    item-color: rgb(100, 100, 100);
+    item-selected: rgb(150, 150, 150);
+}
+
+window {
+    bg-color: rgb(0, 0, 0);
+}
+'''
+
+def get_truncated_classname(name):
+    if name.startswith('MT'):
+        name = name[2:]
+    return name.lower()
+
+def css_get_style(widget=None, sheet=None):
+    global pymt_sheet
+    if not sheet:
+        sheet = pymt_sheet
+
+    widget_classes = list()
+    parent = [widget.__class__]
+    while parent and len(parent):
+        # take only the first parent...
+        widget_classes.append(get_truncated_classname(parent[0].__name__))
+        # don't back too far
+        if parent[0].__name__ in ['MTWidget', 'MTWindow']:
+            break
+        parent = parent[0].__bases__
+    widget_classes.append('*')
+
+    styles = dict()
+    rules = []
+
+    # first, select rules that match the widget
+    for w in pymt_sheet.cssRules:
+        rule_selected = False
+        rule_score = 0
+        # get the appropriate selector
+        for s in w.selectorList:
+            if s.element[1] not in reversed(widget_classes):
+                continue
+            # selector match !
+            rule_selected = True
+            # get the better score
+            a, b, c, d = s.specificity
+            score = b * 100 + c * 10 + d
+            if score > rule_score:
+                rule_score = score
+        # rule ok :)
+        if rule_selected:
+            rules.append([rule_score, w])
+
+    # sort by score / parent
+    #TODO
+
+    # compiles rules
+    for score, rule in rules:
+        for prop in rule.style.getProperties():
+            value = None
+
+            # color decoder with rgb / rgba
+            if prop.value.startswith('rgb'):
+                res = re.match('rgba?\((.*)\)', prop.value)
+                value = map(lambda x: int(x) / 255., re.split(',\ ?', res.groups()[0]))
+                if len(value) == 3:
+                    value.append(1)
+            elif prop.value.startswith('#'):
+                res = prop.value[1:]
+                value = [int(x, 16)/255. for x in re.split('([0-9a-f]{2})', res) if x != '']
+                if len(value) == 3:
+                    value.append(1)
+            else:
+                value = prop.value
+            styles[prop.name] = value
+
+    return styles
+
+
+if not os.path.basename(sys.argv[0]).startswith('sphinx'):
+    # Add default CSS
+    parser = cssutils.CSSParser(loglevel=logging.ERROR)
+    pymt_sheet = parser.parseString(default_css)
+
+    # Add user css if exist
+    pymt_home_dir = os.path.expanduser('~/.pymt/')
+    css_filename = os.path.join(pymt_home_dir, 'user.css')
+    if os.path.exists(css_filename):
+        user_sheet = parser.parseFile(css_filename)
+        for rule in user_sheet.cssRules:
+            pymt_sheet.add(rule)
+
+
+if __name__ == '__main__':
+    from pymt import *
+    w = MTWidget()
+    print w
+    print css_get_style(widget=w)
+    w = MTWindow()
+    print w
+    print css_get_style(widget=w)

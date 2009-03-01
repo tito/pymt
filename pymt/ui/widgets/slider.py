@@ -28,15 +28,13 @@ class MTSlider(MTWidget):
         kwargs.setdefault('max', 100)
         kwargs.setdefault('padding', 8)
         kwargs.setdefault('orientation', 'vertical')
-        kwargs.setdefault('color', colors.selected)
-        kwargs.setdefault('bgcolor', colors.background)
         kwargs.setdefault('size', (30, 400))
         kwargs.setdefault('value', None)
 
         super(MTSlider, self).__init__(**kwargs)
         self.register_event_type('on_value_change')
         self.touchstarts    = [] # only react to touch input that originated on this widget
-        self.orientation      = kwargs.get('orientation')
+        self.orientation    = kwargs.get('orientation')
         self.padding        = kwargs.get('padding')
         self.min            = kwargs.get('min')
         self.max            = kwargs.get('max')
@@ -123,8 +121,6 @@ class MT2DSlider(MTWidget):
         kwargs.setdefault('size', (200, 200))
         kwargs.setdefault('value_x', None)
         kwargs.setdefault('value_y', None)
-        kwargs.setdefault('color', colors.selected)
-        kwargs.setdefault('bgcolor', colors.background)
 
         super(MT2DSlider, self).__init__(**kwargs)
         self.register_event_type('on_value_change')

@@ -2,17 +2,14 @@
 from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.widget import MTWidget
 from pymt.graphx import *
-from pymt.ui import colors
 
 class MTMultiSlider(MTWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('sliders', 20)
-        kwargs.setdefault('color', colors.selected)
-        kwargs.setdefault('bgcolor', colors.background)
         kwargs.setdefault('size', (400,300))
         kwargs.setdefault('spacing', 1)
         kwargs.setdefault('init_value', 0.5)
-        super(MTMultiSlider, self).__init__(**kwargs)   
+        super(MTMultiSlider, self).__init__(**kwargs)
 
         self.register_event_type('on_value_change')
         self.touchstarts = [] # only react to touch input that originated on this widget
@@ -20,7 +17,7 @@ class MTMultiSlider(MTWidget):
         self._spacing = kwargs.get('spacing')
         self._init_value = kwargs.get('init_value')
         self.slider_values = [self._init_value for x in range(self._sliders)]
-         
+
     def _get_sliders(self):
         return self._sliders
     def _set_sliders(self, quantity):
@@ -33,13 +30,13 @@ class MTMultiSlider(MTWidget):
         else:
             return
     sliders = property(_get_sliders, _set_sliders)
-    
+
     def _get_spacing(self):
-        return self._background_color
+        return self._spacing
     def _set_spacing(self, spacing):
         self._spacing = spacing
     spacing = property(_get_spacing, _set_spacing)
-    
+
     def draw(self):
         # Draw background
         set_color(*self.bgcolor)
@@ -55,7 +52,7 @@ class MTMultiSlider(MTWidget):
 
     def on_value_change(self, value):
         pass
-    
+
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
             self.touchstarts.append(touchID)
@@ -72,18 +69,18 @@ class MTMultiSlider(MTWidget):
                     self.slider_values[current_slider] = 1
                 if self.slider_values[current_slider] <= 0:
                     self.slider_values[current_slider] = 0
-                    
+
                 if not self.slider_values[current_slider] == last_value:
                     self.dispatch_event('on_value_change', self.slider_values)
             return True
-    
+
     def on_touch_up(self, touches, touchID, x, y):
         if touchID in self.touchstarts:
             self.touchstarts.remove(touchID)
-        
+
     def return_slider(self, x):
         return int((x - self.x) / float(self.width)  * self._sliders)
-            
+
 MTWidgetFactory.register('MTMultiSlider', MTMultiSlider)
 
 if __name__ == '__main__':

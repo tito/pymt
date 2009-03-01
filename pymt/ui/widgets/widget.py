@@ -64,8 +64,13 @@ class MTWidget(pyglet.event.EventDispatcher):
             Visibility of widget
         `draw_children` : bool, default is True
             Indicate if children will be draw, or not
-    '''
 
+    :Styles:
+        `color` : color
+            Color of text (generic, it may not be used)
+        `bg-color` : color
+            Background color of item (generic, it may not be used)
+    '''
     def __init__(self, **kwargs):
         kwargs.setdefault('pos', (0, 0))
         kwargs.setdefault('x', None)
@@ -73,8 +78,6 @@ class MTWidget(pyglet.event.EventDispatcher):
         kwargs.setdefault('size', (100, 100))
         kwargs.setdefault('width', None)
         kwargs.setdefault('height', None)
-        kwargs.setdefault('color', colors.item)
-        kwargs.setdefault('bgcolor', colors.background)
         kwargs.setdefault('visible', True)
         kwargs.setdefault('draw_children', True)
 
@@ -88,11 +91,15 @@ class MTWidget(pyglet.event.EventDispatcher):
         self._visible				= False
         self._x, self._y			= kwargs.get('pos')
         self._width, self._height	= kwargs.get('size')
-        self._color					= kwargs.get('color')
-        self._bgcolor					= kwargs.get('bgcolor')
         self.animations				= []
         self.visible				= kwargs.get('visible')
         self.draw_children          = kwargs.get('draw_children')
+
+        if kwargs.has_key('color'):
+            self._color	= kwargs.get('color')
+        if kwargs.has_key('bg-color'):
+            self._bgcolor = kwargs.get('bgcolor')
+
         self.register_event_type('on_resize')
         self.register_event_type('on_move')
 
@@ -104,6 +111,10 @@ class MTWidget(pyglet.event.EventDispatcher):
             self.width = kwargs.get('width')
         if kwargs.get('height'):
             self.height = kwargs.get('height')
+
+        # apply css
+        style = colors.css_get_style(widget=self)
+        self.apply_css(style)
 
         self.init()
 
@@ -195,7 +206,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         if len(col) == 4:
             self._color = col
     color = property(_get_color, _set_color)
-    
+
     def _get_bgcolor(self):
         return self._bgcolor
     def _set_bgcolor(self, col):
@@ -205,6 +216,11 @@ class MTWidget(pyglet.event.EventDispatcher):
             self._bgcolor = col
     bgcolor = property(_get_bgcolor, _set_bgcolor)
 
+    def apply_css(self, styles):
+        if styles.has_key('color'):
+            self.color = styles['color']
+        if styles.has_key('bg-color'):
+            self.bgcolor = styles['bg-color']
 
     def dispatch_event(self, event_type, *args):
         '''Dispatch a single event to the attached handlers.

@@ -9,7 +9,6 @@ from pyglet.text import Label
 from pymt.graphx import *
 from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.widget import MTWidget
-from pymt.ui import colors
 
 ### THIS NEEDS SERIOUS HELP IN THE COLOR DEPARTMENT ###
 
@@ -20,37 +19,28 @@ class MTKineticScrollText(MTWidget):
     to the one found on the iPhone.
 
     :Parameters:
-        'bgcolor' : tuple, defaults to (.2, .4, .9)
-            The background color of the widget
-        'icolor' : tuple, defaults to (1, 1, 1)
-            The color for the items
-        'iscolor': tuple, defaults to (1, .28, 0)
+        `iscolor`: tuple, defaults to (1, .28, 0)
             The color for an item when it is selected
-        'tcolor' : tuple, defaults to (0, 0, 0)
-            Color for the text
-        'font' : string, defaults to 'Tahoma'
+        `font` : string, defaults to `Tahoma`
             Font Type
-        'font_size' : int, defaults to 16
+        `font_size` : int, defaults to 16
              Font Size
-        'friction ' : float, defaults to 1.1
+        `friction ` : float, defaults to 1.1
             The Psuedo-friction of the psuedo-kinetic scrolling.
-        'items'  : list, defaults to []
+        `items`  : list, defaults to []
             The plain-text items that you would like to have within the widget.
+
+    :Styles:
+        `item-color` : color
+            Color of an item
+        `item-selected` : color
+            Color of a selected item
 
     When an item is tapped and the blob has moved less than 10
     pixels(so we know they aren't scrolling) it fires a 
     callback and passes the clicked text as the argument.
-        
-
     '''
-
-
-
     def __init__(self, **kwargs):
-        kwargs.setdefault('bgcolor', colors.background)
-        kwargs.setdefault('icolor', colors.item)
-        kwargs.setdefault('iscolor', colors.selected)
-        kwargs.setdefault('tcolor', colors.text)
         kwargs.setdefault('font_name', 'Tahoma')
         kwargs.setdefault('font_size', 16)
         kwargs.setdefault('friction', 1.1)
@@ -59,10 +49,10 @@ class MTKineticScrollText(MTWidget):
         super(MTKineticScrollText, self).__init__(**kwargs)
         self.register_event_type('on_item_select')
 
-        self.bgcolor = kwargs.get('bgcolor')
-        self.icolor = kwargs.get('icolor')
-        self.iscolor = kwargs.get('iscolor')
-        self.tcolor = kwargs.get('tcolor')
+        if kwargs.has_key('iscolor'):
+            self.iscolor = kwargs.get('iscolor')
+        if kwargs.has_key('icolor'):
+            self.icolor = kwargs.get('icolor')
         self.font_name = kwargs.get('font_name')
         self.font_size = kwargs.get('font_size')
         self.friction = kwargs.get('friction')
@@ -75,7 +65,7 @@ class MTKineticScrollText(MTWidget):
         #Holds the total height for all the items and padding
         self.theight = 0
         self._calc_theight()
-        
+
         #Persistent label used for text rendering
         self.label = Label('', font_size=self.font_size, font_name=self.font_name)
 
@@ -101,6 +91,13 @@ class MTKineticScrollText(MTWidget):
 
         #Holds what is happening, touching or spinning(nothing)
         self.mode = 'spinning'
+
+    def apply_css(self, styles):
+        if styles.has_key('item-color'):
+            self.icolor = styles.get('item-color')
+        if styles.has_key('item-selected'):
+            self.iscolor = styles.get('item-selected')
+        super(MTKineticScrollText, self).apply_css(styles)
 
     def _calc_theight(self):
         '''Takes the number of items and stuff about them in
@@ -182,7 +179,7 @@ class MTKineticScrollText(MTWidget):
         self.yoffset += self.vel
         #Divide the velocity by self.friction to emulate friction
         self.vel /= self.friction
-        
+
         #This does rubberbanding
         #Trust xelapond in that all this random arithmetic kung-fu stuff works
         #If you have questions ask him
@@ -208,7 +205,7 @@ class MTKineticScrollText(MTWidget):
 
             #Calculate the position of the text within that box
             tpos = (pos[0] + 10, pos[1] + (self.iheight/2) - (self.font_size/2))
-                
+
             #Calculate the size of the item
             size = (self.size[0] - 4, self.iheight)
 
@@ -227,16 +224,18 @@ class MTKineticScrollText(MTWidget):
                 set_color(*self.icolor)
 
             drawRectangle(pos, size)
-            self.dtext(str(text), tpos)            
+            self.dtext(str(text), tpos)
 
-    def dtext(self, text, pos, color=colors.text):
+    def dtext(self, text, pos, color=None):
         '''Function to draw text at a given pos.
         The Label rendered is persisten throughout the life
         of this object for latency reasons.  It is kept in
         self.label.
         '''
+        if color is None:
+            color = self.color
         self.label.text = text
-        self.label.color = (color[0]*255, color[1]*255, color[2]*255, color[3]*255)
+        self.label.color = map(lambda x: int(x*255), color)
         self.label.x, self.label.y = pos
         self.label.draw()
 

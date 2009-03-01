@@ -22,14 +22,19 @@ class MTWindow(TouchWindow):
             Make window as fullscreen
         `config` : `Config`
             Default configuration to pass on TouchWindow
-    '''
 
+    :Styles:
+        `bg-color` : color
+            Background color of window
+    '''
     def __init__(self, **kwargs):
-        kwargs.setdefault('color', (.3, .3, .3, 1.0))
         kwargs.setdefault('view', None)
         kwargs.setdefault('fullscreen', None)
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
+
+        styles = colors.css_get_style(widget=self)
+        self.apply_css(styles)
 
         self.fps_display =  pyglet.clock.ClockDisplay()
 
@@ -39,7 +44,8 @@ class MTWindow(TouchWindow):
         self.on_text_motion_select_handlers = []
 
         self.children = []
-        self.color = kwargs.get('color')
+        if kwargs.has_key('color'):
+            self.color = kwargs.get('color')
 
         self.parent = self
         if kwargs.get('view'):
@@ -78,6 +84,10 @@ class MTWindow(TouchWindow):
         return self.get_size()
     size = property(_get_size, _set_size,
             doc='''Return width/height of window''')
+
+    def apply_css(self, styles):
+        if styles.has_key('bg-color'):
+            self.color = styles.get('bg-color')
 
     def add_on_key_press(self, func):
         self.on_key_press_handlers.append(func)

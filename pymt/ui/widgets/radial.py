@@ -112,6 +112,7 @@ class MTVectorSlider(MTWidget):
             self.dispatch_event('on_angle_change', self.angle)
             self.dispatch_event('on_vector_change', self.amplitude, self.angle)
 
+            return True
     def on_touch_move(self, touches, touchID, x, y):
         if self.collide_point(x, y):
             #The blob is in the widget, do stuff
@@ -121,6 +122,8 @@ class MTVectorSlider(MTWidget):
             self.dispatch_event('on_aplitude_change', self.amplitude)
             self.dispatch_event('on_angle_change', self.angle)
             self.dispatch_event('on_vector_change', self.amplitude, self.angle)
+
+            return True
 
     def draw(self):
         #Draw Background

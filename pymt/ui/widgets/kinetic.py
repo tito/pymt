@@ -137,6 +137,8 @@ class MTKineticScrollText(MTWidget):
             index = int(abs(x))-1
             self.selected = self.items[index]
 
+            return True
+
     def on_touch_move(self, touches, touchID, x, y):
         '''Callback for when a blob moves.
         Here we add the relative movement to the offset, 
@@ -151,6 +153,8 @@ class MTKineticScrollText(MTWidget):
             #If we moved by more then 10 pixels, deselect the selected
             if self.blobrel >= 10:
                 self.selected = None
+
+            return True
 
     def on_touch_up(self, touches, touchID, x, y):
         '''Callback for when the blob leaves the widget.
@@ -169,6 +173,8 @@ class MTKineticScrollText(MTWidget):
             self.blobrel = 0
             self.mode = 'spinning'
             self.selected = None
+
+            return True
 
     def draw(self):
         #Draw the background

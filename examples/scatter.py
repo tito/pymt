@@ -12,7 +12,7 @@ b = MTButton(label='flip', size=(100, 100), pos=(100, 100))
 s.add_widget(b, side='front')
 s.add_widget(b, side='back')
 
-f = MTVectorSlider(radius=40, pos=(40, 40))
+f = MTVectorSlider(radius=50, pos=(50, 50))
 s.add_widget(f, side='front')
 
 @b.event

@@ -253,19 +253,19 @@ class MTScatterWidget(MTWidget):
     def on_touch_move(self, touches, touchID, x, y):
 
         # if the touch isnt on teh widget we do nothing
-        if not (self.collide_point(x,y) or touchID in self.touches):
+        if not (self.collide_point(x, y) or touchID in self.touches):
             return False
+
+        #let the child widgets handle the event if they want
+        lx, ly = self.to_local(x, y)
+        if MTWidget.on_touch_move(self, touches, touchID, lx, ly):
+            return True
 
         #rotate/scale/translate
         if touchID in self.touches:
             self.rotate_zoom_move(touchID, x, y)
-            #self.dispatch_event('on_resize', int(self.width*self.get_scale_factor()), int(self.height*self.get_scale_factor()))
-            #self.dispatch_event('on_move', self.x, self.y)
-            return True
-
-        #let the child widgets handle the event if they want an we did not
-        lx, ly = self.to_local(x, y)
-        if MTWidget.on_touch_move(self, touches, touchID, lx, ly):
+            self.dispatch_event('on_resize', int(self.width*self.get_scale_factor()), int(self.height*self.get_scale_factor()))
+            self.dispatch_event('on_move', self.x, self.y)
             return True
 
         #stop porpagation if its within our bounds

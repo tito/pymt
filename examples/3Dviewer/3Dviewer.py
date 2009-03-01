@@ -10,12 +10,14 @@ from pyglet import *
 from pyglet.gl import *
 
 
-class GLWindow(MTWidget):
-    """Sets up 3d projection in on_draw function and then calls seld.draw"""
+class GLPerspectiveWidget(MTWidget):
+    """Sets up 3d projection in on_draw function and then calls seld.draw, origin in the center"""
     def __init__(self, **kargs):
-        super(GLWindow, self).__init__(**kargs)
+        super(GLPerspectiveWidget, self).__init__(**kargs)
         self.needs_redisplay = True
         self.fbo = Fbo(self.size)
+
+
 
     def on_resize(self, w, h):
         del self.fbo
@@ -67,9 +69,9 @@ class GLWindow(MTWidget):
         self.needs_redisplay = False
 
 
-class ModelViewer(GLWindow):
+class ModelViewer(GLPerspectiveWidget):
     def __init__(self, **kargs):
-        GLWindow.__init__(self, **kargs)
+        GLPerspectiveWidget.__init__(self, **kargs)
         self.touch_position = {}
         try:
             self.model = bunny = OBJ('monkey.obj')
@@ -131,9 +133,6 @@ class ModelViewer(GLWindow):
                 new_line = v1 - Vector(x,y)
 
             angle = -1.0 * old_line.angle(new_line)
-
-
-            
         else:
             dx = 200.0*(x-self.touch_position[touchID][0])/float(self.width)
             dy = 200.0*(y-self.touch_position[touchID][1])/float(self.height)

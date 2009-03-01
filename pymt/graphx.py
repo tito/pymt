@@ -17,6 +17,11 @@ _brush_texture = None
 _bruch_size = 10
 
 def setBrush(sprite, size=10):
+    """deprecated use set_brush"""
+    set_brush(sprite, size)
+    print "setBrush function is deprectead.  use set_brush() instead"
+
+def set_brush(sprite, size=10):
     global _brush_texture
     point_sprite_img = pyglet.image.load(sprite)
     _brush_texture = point_sprite_img.get_texture()
@@ -52,6 +57,10 @@ def drawLabel(text, pos=(0,0),center=True, font_size=16):
         glScaled(0.6,0.6,1)
         temp_label.draw()
     return temp_label.content_width
+
+
+
+
 
 
 # paint a line with current brush

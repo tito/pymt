@@ -8,6 +8,7 @@ from pymt.ui.widgets.widget import MTWidget
 from pymt.lib import squirtle
 from pymt.vector import *
 from pymt.logger import pymt_logger
+from pymt.ui import colors
 
 class MTButton(MTWidget):
     '''MTButton is a button implementation using MTWidget
@@ -34,7 +35,7 @@ class MTButton(MTWidget):
         kwargs.setdefault('anchor_y', 'center')
         kwargs.setdefault('font_size', 10)
         kwargs.setdefault('bold', True)
-        kwargs.setdefault('color_down', (.5, .5, .5, .5))
+        kwargs.setdefault('color_down', colors.selected)
         kwargs.setdefault('border_radius', 0)
 
         super(MTButton, self).__init__(**kwargs)
@@ -80,7 +81,7 @@ class MTButton(MTWidget):
         if self._state[0] == 'down':
             glColor4f(*self.color_down)
         else:
-            glColor4f(*self.color)
+            glColor4f(*self.bgcolor)
 
         with gx_matrix:
             glTranslatef(self.x, self.y, 0)

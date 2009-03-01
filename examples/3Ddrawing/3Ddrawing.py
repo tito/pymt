@@ -66,7 +66,7 @@ class ModelPainter(MTWidget):
         self.model = bunny = OBJ('cow.obj')
 
         #texture and FBO used for picking
-        self.picking_image = image.load('C:/ad3d/editor-textures/picking.png')
+        self.picking_image = image.load('picking.png')
         self.picking_texture = self.picking_image.get_texture()
         self.fbo = Fbo(size=self.size)
         self.painting_fbo = Fbo((1024,1024))

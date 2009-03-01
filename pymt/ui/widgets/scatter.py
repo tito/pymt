@@ -64,7 +64,7 @@ class MTScatterWidget(MTWidget):
 
         self.children = self.children_front
 
-        self.anim = Animation(self, 'flip', 'zangle', 360, 1, 10, func=AnimationAlpha.ramp)
+        self.anim = Animation(self, 'flip', 'zangle', 180, 1, 10, func=AnimationAlpha.ramp)
 
 
         self.touches        = {}
@@ -105,11 +105,6 @@ class MTScatterWidget(MTWidget):
 
     def draw(self):
         glColor4d(*self.color)
-        glTranslated(0, -self.width/2, 0)
-        glRotated(self.zangle, 0, 1, 0)
-        glTranslated(0, self.width/2, 0)
-        if self.zangle == 180:
-            self.flip_children()
         drawRectangle((0,0), (self.width, self.height))
 
     def flip_children(self):
@@ -127,16 +122,21 @@ class MTScatterWidget(MTWidget):
     def flip(self):
        '''Triggers a flipping animation'''
        if self.side == 'front':
-           self.anim.value_to = 360
+           self.anim.value_to = 180
        else:
            self.anim.value_to = 0
        self.anim.reset()
        self.anim.start()
 
     def on_draw(self):
-		with gx_matrix:
-			glMultMatrixf(self.transform_mat)
-			super(MTScatterWidget, self).on_draw()
+        if self.zangle == 90:
+            self.flip_children()
+        with gx_matrix:
+            glMultMatrixf(self.transform_mat)
+            glTranslatef(self.width / 2, 0, 0)
+            glRotatef(self.zangle, 0, 1, 0)
+            glTranslatef(-self.width / 2, 0, 0)
+            super(MTScatterWidget, self).on_draw()
 
     def to_parent(self, x,y):
         self.new_point = matrix_mult(self.transform_mat, (x,y,0,1))

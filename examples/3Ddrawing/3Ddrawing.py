@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
 PLUGIN_TITLE = '3D Painting'

@@ -1,7 +1,12 @@
 from __future__ import with_statement
 from pymt import *
 from pyglet.gl import *
-from pymt.ui.widgets import *
+from pymt.vector import *
+from pymt.ui.widgets.rectangle import MTRectangularWidget
+from pymt.ui.widgets.scatter import MTScatterWidget
+from pymt.ui.widgets.button import MTImageButton
+from pymt.ui.widgets.layout.boxlayout import MTBoxLayout
+from pymt.vector import *
 
 iconPath = os.path.join(os.path.dirname(pymt.__file__), 'data', 'icons','')
 

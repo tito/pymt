@@ -19,3 +19,4 @@ from label import *
 from colorpick import *
 from buttonmatrix import *
 from svg import *
+from rectangle import *

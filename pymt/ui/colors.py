@@ -6,12 +6,8 @@ import sys
 import shutil
 import logging
 import re
+import cssutils
 
-try:
-    import cssutils
-except:
-    pymt_logger.error('You need cssutils. Go to http://cthedot.de/cssutils/ !')
-    raise
 
 default_css = '''
 * {

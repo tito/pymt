@@ -29,12 +29,23 @@ def on_key_press(symbol, modifiers):
            keyb.show_keyboard()
         count = count + 1
         if count == len(history):
-            count = 0
+            count = len(history) - 1
         print count
         keyb.label = list(reversed(history))[count]
         
     if symbol == 65364: #down arrow
-        pass
+        if not keyb.is_active_input:
+           keyb.show_keyboard()
+        if count != -1:
+            count = count - 1
+        if count == -1:
+            count = -1
+            keyb.label = ''
+            return
+        print count
+        keyb.label = list(reversed(history))[count]
+        
+        
         
     if symbol == 65289: #tab
         if not keyb.is_active_input:

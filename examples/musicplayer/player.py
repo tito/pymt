@@ -4,7 +4,7 @@ from cStringIO import StringIO
 import glob
 #change it to your mp3 folder which has mp3's with album art, lots of error checking to be done. this code is not perfect at all
 # Message for xela:
-file_list = glob.glob('F:\\Final Fantasy\\*.mp3') 
+file_list = glob.glob('F:\\Love Songs\\*.mp3') 
 list = []
 for file in file_list:
     f=ID3(file)
@@ -60,7 +60,11 @@ class CoverArt(MTWidget):
         super(CoverArt, self).__init__(**kwargs)
         for frame in f.getall("APIC"):
             self.img                 = pyglet.image.load('Default.jpg', file=StringIO(frame.data))
-        self.image          = pyglet.sprite.Sprite(self.img)
+        try:
+            self.image          = pyglet.sprite.Sprite(self.img)
+        except AttributeError:
+            self.img                 = pyglet.image.load('Default.jpg')
+            self.image          = pyglet.sprite.Sprite(self.img)
         self.image.x        = self.x
         self.image.y        = self.y
         self.scale          = kwargs.get('scale')

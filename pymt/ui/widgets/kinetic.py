@@ -135,7 +135,7 @@ class MTKineticScrollText(MTWidget):
             rpos = x - self.pos[0], y - self.pos[1]
             x = int(self.yoffset - rpos[1])/(self.padding/2 + self.iheight)
             index = int(abs(x))-1
-            self.selected = self.items[index]
+            self.selected = self.items[index][1]
 
             return True
 
@@ -230,7 +230,7 @@ class MTKineticScrollText(MTWidget):
                 set_color(*self.icolor)
 
             drawRectangle(pos, size)
-            self.dtext(str(text), tpos)
+            self.dtext(str(text[0]), tpos)
 
     def dtext(self, text, pos, color=None):
         '''Function to draw text at a given pos.

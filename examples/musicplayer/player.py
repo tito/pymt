@@ -7,10 +7,14 @@ import glob
 file_list = glob.glob('F:\\Love Songs\\*.mp3') 
 list = []
 for file in file_list:
+    sublist = []
     f=ID3(file)
-    list.append(f["TIT2"])
+    sublist.append(f["TIT2"])
+    sublist.append(file)
+    list.append(sublist)
 
 
+#print list
 
 class fileList(MTKineticScrollText):
     def __init__(self, **kwargs):

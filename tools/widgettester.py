@@ -30,7 +30,6 @@ def on_key_press(symbol, modifiers):
         count = count + 1
         if count == len(history):
             count = len(history) - 1
-        print count
         keyb.label = list(reversed(history))[count]
         
     if symbol == 65364: #down arrow
@@ -42,7 +41,6 @@ def on_key_press(symbol, modifiers):
             count = -1
             keyb.label = ''
             return
-        print count
         keyb.label = list(reversed(history))[count]
         
         
@@ -70,7 +68,6 @@ def on_text_validate():
         p = MTPopup(title='Exception occured', content=str(e))
         w.add_widget(p)
     history.append(keyb.label)
-    print history   
     keyb.label = ''
     keyb.size = (35,30)
     keyb.pos = (0, w.height - 30)

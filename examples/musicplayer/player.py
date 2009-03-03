@@ -39,8 +39,8 @@ class MusicPlayer(MTScatterWidget):
         self.add_widget(mms,side='back')
         self.coverart = CoverArt(pos=(10,10),frame=self.f)
         self.add_widget(self.coverart,side='front')
-        self.width =  self.coverart.width+20
-        self.height =  self.coverart.height+20
+        self.width =  300
+        self.height = 300
         mms.height = self.coverart.height
         mms.width = self.coverart.width
         self.fbut = FlipButton(pos=(self.width-25,0))
@@ -60,7 +60,7 @@ class FlipButton(MTButton):
         
 class CoverArt(MTWidget):
     def __init__(self, **kwargs):
-        kwargs.setdefault('scale', 0.5)
+        #kwargs.setdefault('scale', 0.5)
         super(CoverArt, self).__init__(**kwargs)
         self.f = kwargs.get('frame')
         for self.frame in self.f.getall("APIC"):
@@ -72,20 +72,22 @@ class CoverArt(MTWidget):
             self.image          = pyglet.sprite.Sprite(self.img)
         self.image.x        = self.x
         self.image.y        = self.y
-        self.scale          = kwargs.get('scale')
+        self.scale          = 280.0/float(self.img.width)
         self.image.scale    = self.scale
-        self.size           = (self.image.width, self.image.height)
+        print "width , height :",self.img.width,self.img.height,self.scale
+        self.size           = (280, 280)
 
     def draw(self):
         self.image.x        = self.x
         self.image.y        = self.y
         self.image.scale    = self.scale
-        self.size           = (self.image.width, self.image.height)
+        self.size           = (self.img.width, self.img.height)
         self.image.draw()        
 
         
         
 if __name__ == '__main__':
     w = MTWindow(color=(0,0,0,1.0), fullscreen=True)
-    w.add_widget(MusicPlayer(size=(210,410),dir='F:\\Final Fantasy\\*.mp3')) #change directory here
+    w.add_widget(MusicPlayer(pos=(210,410),dir='F:\\Final Fantasy\\*.mp3')) #change directory here
+    w.add_widget(MusicPlayer(pos=(500,600),dir='F:\\rock on\\*.mp3')) #change directory here
     runTouchApp()

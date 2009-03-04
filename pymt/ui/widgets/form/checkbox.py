@@ -1,7 +1,9 @@
+__all__ = ['MTFormCheckbox']
+
+from ....graphx import set_color, drawRectangle
+from ...factory import MTWidgetFactory
 from abstract import MTAbstractFormWidget
-from pyglet import *
-from pymt.graphx import *
-from pymt.ui.factory import MTWidgetFactory
+from pyglet.gl import GL_LINE_LOOP
 
 class MTFormCheckbox(MTAbstractFormWidget):
     '''A simple checkbox

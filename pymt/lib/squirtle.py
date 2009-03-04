@@ -7,13 +7,15 @@ Example usage:
     
 '''
 
+__all__ = ['SVG', 'setup_gl']
+
 from pyglet.gl import *
 from xml.etree.cElementTree import parse
 import re
 import math
 from ctypes import CFUNCTYPE, POINTER, byref, cast
 import sys, os
-from pymt.logger import pymt_logger
+from ..logger import pymt_logger
 
 if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     tess = gluNewTess()

@@ -1,3 +1,4 @@
+from __future__ import with_statement
 from pymt import *
 from pyglet.gl import *
 import time
@@ -54,13 +55,11 @@ class MTSourceWidget(MTScatterWidget):
 			self.start_time = time.clock()
 		
 		def draw(self):
-				glPushMatrix()
-				enable_blending()
+			with DO(gx_blending):
 				glColor4f(*self.color)
 				drawRectangle((0,0) ,(self.width, self.height))
 				glColor4f(0.3,0.8,0.3,0.5)
 				drawTriangle(pos=(self.width*0.5,self.height*0.2), w=self.width*0.6, h=self.height*0.6)
-				glPopMatrix()		
 		
 		def testStart(self,dt):
 			self.color = (1.0, 1.0, 1.0, 0.5)

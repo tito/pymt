@@ -1,8 +1,9 @@
+__all__ = ['MTFormInput']
+
 from abstract import MTAbstractFormWidget
-from pyglet import *
-from pymt.graphx import *
-from pymt.ui.widgets.vkeyboard import MTTextInput
-from pymt.ui.factory import MTWidgetFactory
+from ....graphx import set_color, drawRectangle
+from ...factory import MTWidgetFactory
+from ..vkeyboard import MTTextInput
 
 class MTFormInput(MTTextInput):
     '''Form input : a one-line text input, with virtual-keyboard support
@@ -18,9 +19,9 @@ class MTFormInput(MTTextInput):
 
     def draw(self):
         if self.state[0] == 'down':
-            glColor4f(0.5,0.5,0.5,0.5)
+            set_color(0.5,0.5,0.5,0.5)
         else:
-            glColor4f(*self.color)
+            set_color(*self.color)
         drawRectangle(pos=self.pos, size=self.size)
         self.label_obj.x, self.label_obj.y = self.pos
         self.label_obj.draw()

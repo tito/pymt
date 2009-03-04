@@ -67,6 +67,7 @@ void main()
 
 
 from pymt import *
+from pyglet.graphics import *
 
 
 

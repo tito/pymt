@@ -5,6 +5,7 @@ PLUGIN_AUTHOR = 'Sharath Patali'
 PLUGIN_DESCRIPTION = 'This application download pictures asynchrnously and displays them as a MT Image'
 
 from pymt import *
+from pyglet.gl import *
 from urllib import urlopen
 from FlickrClient import *
 import random, sys
@@ -22,13 +23,10 @@ class FlickrPhoto(MTScatterImage):
 
     def draw(self):
         self.update_ratio()
-        glPushMatrix()
-        enable_blending()
         glColor4f(*self.color)
         drawRectangle((-6,-6),(self.width+12,self.width*self.aspectRatio+12))
         glScaled(float(self.width)/float(self.image.width), float(self.width*self.aspectRatio)/float(self.image.height), 1.0)
         self.image.draw()
-        glPopMatrix()
 
     def update_ratio(self):
         ratio = float(self.image.height)/float(self.image.width)

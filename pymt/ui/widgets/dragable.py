@@ -1,13 +1,7 @@
-from __future__ import with_statement
-from pyglet import *
-from pyglet.gl import *
-from pymt.graphx import *
-from math import *
-from pymt.ui.factory import MTWidgetFactory
-from pymt.ui.widgets.widget import MTWidget
-from pymt.lib import squirtle
-from pymt.vector import *
-from pymt.logger import pymt_logger
+__all__ = ['MTDragableWidget']
+
+from ..factory import MTWidgetFactory
+from widget import MTWidget
 
 class MTDragableWidget(MTWidget):
     '''MTDragableWidget is a moveable widget over the window'''
@@ -31,4 +25,4 @@ class MTDragableWidget(MTWidget):
             self.state = ('normal', None)
             return True
 
-MTWidgetFactor.register('MTWidgetFactory', MTWidgetFactory)
+MTWidgetFactory.register('MTDragableWidget', MTDragableWidget)

@@ -12,12 +12,14 @@ You can also load image from url ::
 
 '''
 
+__all__ = ['ProxySprite', 'ProxyImage', 'Loader']
+
 import threading
 import pyglet.image
 import pyglet.sprite
 import time
 import urllib
-from pymt.logger import pymt_logger
+from logger import pymt_logger
 
 try:
     # Used for gdk thread lock access.

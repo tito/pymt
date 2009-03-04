@@ -1,7 +1,9 @@
+__all__ = ['ShaderException', 'Shader']
+
 import ctypes as c
 from pyglet import *
 from pyglet.gl import *
-from pymt.logger import pymt_logger
+from logger import pymt_logger
 
 class ShaderException(Exception):
     pass

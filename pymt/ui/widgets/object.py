@@ -1,13 +1,11 @@
 from __future__ import with_statement
-from pyglet import *
+__all__ = ['MTObjectWidget']
+
 from pyglet.gl import *
-from pymt.graphx import *
-from math import *
-from pymt.ui.factory import MTWidgetFactory
-from pymt.ui.widgets.widget import MTWidget
-from pymt.lib import squirtle
-from pymt.vector import *
-from pymt.logger import pymt_logger
+from ...graphx import drawRectangle, gx_matrix, gx_begin, set_color
+from ..factory import MTWidgetFactory
+from math import pi
+from widget import MTWidget
 
 class MTObjectWidget(MTWidget):
     '''MTObjectWidget is a widget who draw an object on table'''
@@ -48,9 +46,9 @@ class MTObjectWidget(MTWidget):
         with gx_matrix:
             glTranslatef(self.x,self.y,0.0)
             glRotatef(self.angle,0.0,0.0,1.0)
-            glColor3f(1.0,1.0,1.0)
+            set_color(1.0,1.0,1.0)
             drawRectangle((-0.5*self.width, -0.5*self.height) ,(self.width, self.height))
-            glColor3f(0.0,0.0,1.0)
+            set_color(0.0,0.0,1.0)
             with gx_begin(GL_LINES):
                 glVertex2f(0.0,0.0)
                 glVertex2f(0,-0.5*self.height)

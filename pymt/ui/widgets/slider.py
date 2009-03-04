@@ -1,14 +1,10 @@
 from __future__ import with_statement
-from pyglet import *
+__all__ = ['MTSlider', 'MTXYSlider']
+
 from pyglet.gl import *
-from pymt.graphx import *
-from math import *
-from pymt.ui.factory import MTWidgetFactory
-from pymt.ui.widgets.widget import MTWidget
-from pymt.lib import squirtle
-from pymt.vector import *
-from pymt.logger import pymt_logger
-from pymt.ui import colors
+from ...graphx import gx_blending, drawRectangle, drawCircle, set_color
+from ..factory import MTWidgetFactory
+from widget import MTWidget
 
 class MTSlider(MTWidget):
     '''MTSlider is an implementation of a scrollbar using MTWidget.
@@ -71,10 +67,10 @@ class MTSlider(MTWidget):
             x,y,w,h = self.x, self.y, self.width, self.height
             p2 =self.padding/2
             # draw outer rectangle
-            glColor4f(*self.bgcolor)
+            set_color(*self.bgcolor)
             drawRectangle(pos=(x,y), size=(w,h))
             # draw inner rectangle
-            glColor4f(*self.slidercolor)
+            set_color(*self.slidercolor)
             if self.orientation == 'vertical':
                 length = int((self._value - self.min) * (self.height - self.padding) / (self.max - self.min))
                 drawRectangle(pos=(x+p2,y+p2), size=(w - self.padding, length))
@@ -193,10 +189,10 @@ class MTXYSlider(MTWidget):
         with gx_blending:
             x,y,w,h = self.x,self.y,self.width, self.height
             # draw outer rectangle
-            glColor4f(*self.bgcolor)
+            set_color(*self.bgcolor)
             drawRectangle(pos=(x,y), size=(w,h))
             # draw inner circle
-            glColor4f(*self.slidercolor)
+            set_color(*self.slidercolor)
             pos_x = int((self._value_x - self.min_x) * (self.width - self.padding*2) / (self.max_x - self.min_x))  + self.x + self.padding
             pos_y = int((self._value_y - self.min_y) * (self.height - self.padding*2) / (self.max_y - self.min_y)) + self.y + self.padding
             drawCircle(pos=(pos_x, pos_y), radius = self.radius)

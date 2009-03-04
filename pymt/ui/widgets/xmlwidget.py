@@ -1,7 +1,9 @@
+__all__ = ['XMLWidget']
+
 from xml.dom import minidom, Node
-from pymt.ui.widgets.widget import MTWidget
-from pymt.ui.factory import MTWidgetFactory
-from pymt.logger import pymt_logger
+from ...logger import pymt_logger
+from ..factory import MTWidgetFactory
+from widget import MTWidget
 
 class XMLWidget(MTWidget):
     def __init__(self, xml=None):

@@ -1,19 +1,15 @@
+__all__ = ['getWidgetById',
+    'event_stats_activate', 'event_stats_print',
+    'MTWidget'
+]
+
 import sys
 import os
-
-from math import *
-from math import sqrt, sin
-from pyglet import *
-from pyglet.gl import *
-from pyglet.text import HTMLLabel, Label
-from pyglet.window import key
-from pymt.logger import pymt_logger
-from pymt.graphx import *
-from pymt.mtpyglet import *
-from pymt.ui.animation import *
-from pymt.ui.factory import *
-from pymt.vector import Vector
-from pymt.ui import colors
+import pyglet
+from ...logger import pymt_logger
+from ..animation import Animation, AnimationAlpha
+from ..factory import MTWidgetFactory
+from ..colors import css_get_style
 
 
 _id_2_widget = {}
@@ -64,6 +60,8 @@ class MTWidget(pyglet.event.EventDispatcher):
             Visibility of widget
         `draw_children` : bool, default is True
             Indicate if children will be draw, or not
+        `no_css` : bool, default is False
+            Don't search/do css for this widget
 
     :Styles:
         `color` : color
@@ -71,6 +69,21 @@ class MTWidget(pyglet.event.EventDispatcher):
         `bg-color` : color
             Background color of item (generic, it may not be used)
     '''
+    visible_events = [
+        'on_draw',
+        'on_mouse_press',
+        'on_mouse_drag',
+        'on_mouse_release',
+        'on_touch_up',
+        'on_touch_move',
+        'on_touch_down',
+        'on_object_up',
+        'on_object_move',
+        'on_object_down',
+        'on_animation_complete',
+        'on_animation_reset',
+        'on_animation_start'
+    ]
     def __init__(self, **kwargs):
         kwargs.setdefault('pos', (0, 0))
         kwargs.setdefault('x', None)
@@ -80,12 +93,18 @@ class MTWidget(pyglet.event.EventDispatcher):
         kwargs.setdefault('height', None)
         kwargs.setdefault('visible', True)
         kwargs.setdefault('draw_children', True)
+        kwargs.setdefault('no_css', False)
 
         self._id = None
         if kwargs.has_key('id'):
             self.id = kwargs.get('id')
 
         pyglet.event.EventDispatcher.__init__(self)
+
+        # Registers events
+        for ev in MTWidget.visible_events:
+            self.register_event_type(ev)
+
         self.parent					= None
         self.children				= []
         self._visible				= False
@@ -113,8 +132,9 @@ class MTWidget(pyglet.event.EventDispatcher):
             self.height = kwargs.get('height')
 
         # apply css
-        style = colors.css_get_style(widget=self)
-        self.apply_css(style)
+        if not kwargs.get('no_css'):
+            style = css_get_style(widget=self)
+            self.apply_css(style)
 
         self.init()
 
@@ -133,7 +153,6 @@ class MTWidget(pyglet.event.EventDispatcher):
         if self._visible == visible:
             return
         self._visible = visible
-        self.update_event_registration()
     def _get_visible(self):
         return self._visible
     visible = property(_get_visible, _set_visible)
@@ -237,6 +256,11 @@ class MTWidget(pyglet.event.EventDispatcher):
                 Arguments to pass to the event handler.
 
         '''
+
+        # Don't dispatch event for visible widget if we are not visible
+        if event_type in MTWidget.visible_events and not self.visible:
+            return
+
         #assert event_type in self.event_types
         if event_type not in self.event_types: return
 
@@ -272,19 +296,6 @@ class MTWidget(pyglet.event.EventDispatcher):
 
 
     def update_event_registration(self):
-        evs = [ 'on_draw',
-                'on_mouse_press',
-                'on_mouse_drag',
-                'on_mouse_release',
-                'on_touch_up',
-                'on_touch_move',
-                'on_touch_down',
-                'on_object_up',
-                'on_object_move',
-                'on_object_down',
-                'on_animation_complete',
-                'on_animation_reset',
-                'on_animation_start' ]
 
         if self.visible:
             for ev in evs:

@@ -9,6 +9,10 @@ Thank You.
 
 from __future__ import with_statement
 from pymt import *
+import pyglet
+from pyglet.gl import *
+from pyglet.graphics import draw
+
 class MTicon(MTButton):
     def __init__(self, **kwargs):
         kwargs.setdefault('scale', 1.0)
@@ -32,8 +36,8 @@ class MTicon(MTButton):
         self.image.y        = self.y       
         self.size           = (self.image.width, self.image.height)
         #
-        with DO(gx_enable(GL_BLEND),gx_enable(GL_TEXTURE_2D)):
-            glColor4f(1, 1, 1, 1)            
+        with DO(gx_blending, gx_enable(GL_TEXTURE_2D)):
+            set_color(1, 1, 1, 1)
             drawCover(self.texture.id, pos=(self.x,self.y), size=(self.image.width,self.image.height))
         self.parent.do_layout()
 

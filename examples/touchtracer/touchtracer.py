@@ -23,7 +23,7 @@ def drawLabel(x,y, ID):
     crosshair.draw()
 
 
-setBrush('particle.png', 10)
+set_brush('particle.png', 10)
 touchPositions = {}
 
 class TouchTracer(MTWidget):

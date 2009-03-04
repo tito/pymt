@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
 PLUGIN_TITLE = 'Blop The Game'
@@ -8,6 +10,7 @@ PLUGIN_DESCRIPTION = 'This is a music game inspired by Bloom App.'
 from pymt import *
 from pyglet.media import *
 from pyglet.gl import *
+from pyglet.text import Label
 import random
 
 pyglet.resource.path=['music']
@@ -95,17 +98,15 @@ class bloop(MTButton):
             self.start_animations('fadeout')            
             
     def draw(self):
-        glPushMatrix()
-        enable_blending()
-        if self.highlight:
-            self.highlightalpha = self.alpha * 1.25
-            if(self.highlightalpha > 1):
-               self.highlightalpha = 1
-            glColor4f(self.highlightred, self.highlightgreen, self.highlightblue, self.highlightalpha)
-            drawCircle(pos=(self.x + self.width/2,self.y + self.height/2),radius=(self.radius*1.25))
-        glColor4f(self.red,self.green,self.blue,self.alpha)
-        drawCircle(pos=(self.x + self.width/2,self.y + self.height/2),radius=self.radius)
-        glPopMatrix()
+        with DO(gx_matrix, gx_blending):
+            if self.highlight:
+                self.highlightalpha = self.alpha * 1.25
+                if(self.highlightalpha > 1):
+                   self.highlightalpha = 1
+                glColor4f(self.highlightred, self.highlightgreen, self.highlightblue, self.highlightalpha)
+                drawCircle(pos=(self.x + self.width/2,self.y + self.height/2),radius=(self.radius*1.25))
+            glColor4f(self.red,self.green,self.blue,self.alpha)
+            drawCircle(pos=(self.x + self.width/2,self.y + self.height/2),radius=self.radius)
         
     def BloopHide(self,dt):
         self.start_animations('fadeout')

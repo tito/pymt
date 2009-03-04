@@ -1,7 +1,9 @@
 from __future__ import with_statement
-from pymt.ui.widgets.widget import MTWidget
-from pymt.ui.factory import MTWidgetFactory
-from pymt.graphx import *
+__all__ = ['MTModalWindow']
+
+from ...graphx import set_color, gx_blending, drawRectangle
+from ..factory import MTWidgetFactory
+from widget import MTWidget
 
 class MTModalWindow(MTWidget):
     '''A static window, non-movable, with a dark background.

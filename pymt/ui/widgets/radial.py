@@ -1,14 +1,13 @@
 from __future__ import with_statement
 from __future__ import division
 
-from pyglet import *
 from pyglet.gl import *
 from math import *
-from pymt.ui.factory import MTWidgetFactory
-from pymt.ui.widgets.widget import MTWidget
-from pymt.graphx import *
-from pymt.vector import Vector
-from pymt.ui import colors
+from ...graphx import drawCircle, set_color, gx_begin
+from ...vector import Vector
+from ..factory import MTWidgetFactory
+from widget import MTWidget
+
 __all__ = ['MTVectorSlider']
 
 def _get_distance(Pos1, Pos2):

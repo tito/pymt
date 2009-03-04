@@ -1,6 +1,14 @@
 from __future__ import with_statement
-from pymt.ui.widgets import *
+__all__ = ['MTTextInput', 'MTVKeyboard', 'MTKeyButton']
+
+from pyglet.text import Label
 from pyglet.window import key
+from ...graphx import set_color, drawRectangle, drawRoundedRectangle, DO, gx_blending, GlDisplayList
+from ..factory import MTWidgetFactory
+from button import MTButton
+from scatter import MTScatterWidget
+from layout.boxlayout import MTBoxLayout
+
 
 class MTTextInput(MTButton):
     '''
@@ -61,10 +69,10 @@ class MTTextInput(MTButton):
 
     def draw(self):
         if self.state[0] == 'down':
-            glColor4f(0.5,0.5,0.5,0.5)
+            set_color(0.5,0.5,0.5,0.5)
             drawRectangle((self.x,self.y) , (self.width, self.height))
         else:
-            glColor4f(*self.bgcolor)
+            set_color(*self.bgcolor)
             drawRectangle((self.x,self.y) , (self.width, self.height))
         self.label_obj.draw()
 

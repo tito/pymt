@@ -1,3 +1,5 @@
+__all__ = ['AnimationAlpha', 'Animation']
+
 from pyglet import *
 from pyglet.gl import *
 import math

@@ -1,11 +1,15 @@
-import sys
+__all__ = ['MTWindow', 'MTDisplay']
 
+import sys
 from pyglet.gl import *
 from pyglet import *
 import pymt
-from pymt.mtpyglet import TouchWindow
-from pymt.ui.simulator import *
-from pymt.ui.widgets.widget import *
+from ..mtpyglet import TouchWindow, stopTouchApp
+from ..graphx import set_color, drawCircle
+from colors import css_get_style
+from factory import MTWidgetFactory
+from widgets import MTWidget
+from simulator import MTSimulator
 
 
 class MTWindow(TouchWindow):
@@ -33,7 +37,7 @@ class MTWindow(TouchWindow):
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
 
-        styles = colors.css_get_style(widget=self)
+        styles = css_get_style(widget=self)
         self.apply_css(styles)
 
         self.fps_display =  pyglet.clock.ClockDisplay()
@@ -276,7 +280,7 @@ class MTDisplay(MTWidget):
 
     def draw(self):
         '''Draw a circle under every touches'''
-        glColor4f(*self.color)
+        set_color(*self.color)
         for id in self.touches:
             drawCircle(pos=self.touches[id], radius=self.radius)
 

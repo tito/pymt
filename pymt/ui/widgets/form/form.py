@@ -1,6 +1,8 @@
+__all__ = ['MTForm']
+
 from abstract import MTAbstractFormWidget
-from pymt.graphx import *
-from pymt.ui.factory import MTWidgetFactory
+from ....graphx import set_color, drawRoundedRectangle
+from ...factory import MTWidgetFactory
 
 class MTForm(MTAbstractFormWidget):
     '''Form container : with a basic layout, you can add form widget in it,

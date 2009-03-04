@@ -1,13 +1,11 @@
-from __future__ import with_statement
-from pyglet import *
-from pyglet.gl import *
-from pymt.graphx import *
-from math import *
-from pymt.ui.factory import MTWidgetFactory
-from pymt.ui.widgets.widget import MTWidget
-from pymt.lib import squirtle
-from pymt.vector import *
-from pymt.logger import pymt_logger
+__all__ = ['MTSvg']
+
+import os
+import squirtle
+import pymt
+from ...logger import pymt_logger
+from ..factory import MTWidgetFactory
+from widget import MTWidget
 
 class MTSvg(MTWidget):
     '''Render an svg image
@@ -33,7 +31,7 @@ class MTSvg(MTWidget):
             self.svg = squirtle.SVG(self.filename)
         except Exception, e:
             try:
-                svgpath = os.path.normpath(os.path.dirname(__file__) + '/../data/icons/svg/')
+                svgpath = os.path.join(os.path.dirname(pymt.__file__), 'data/icons/svg')
                 pymt_logger.exception('unable to load %s' % self.filename)
                 pymt_logger.warning('trying %s' % (svgpath + self.filename))
                 self.svg = squirtle.SVG(os.path.join(svgpath, self.filename))

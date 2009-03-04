@@ -3,12 +3,13 @@ Kinetic Scrolling widget for PyMT
 Initially written by Alex Teiche <xelapond@gmail.com>
 '''
 
-from pyglet import *
+__all__ = ['MTKineticScrollText']
+
 from pyglet.gl import *
 from pyglet.text import Label
-from pymt.graphx import *
-from pymt.ui.factory import MTWidgetFactory
-from pymt.ui.widgets.widget import MTWidget
+from ...graphx import set_color, drawRectangle
+from ..factory import MTWidgetFactory
+from widget import MTWidget
 
 ### THIS NEEDS SERIOUS HELP IN THE COLOR DEPARTMENT ###
 

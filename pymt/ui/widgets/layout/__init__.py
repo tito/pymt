@@ -1,2 +1,2 @@
-from boxlayout import *
-from gridlayout import *
+from boxlayout import MTBoxLayout
+from gridlayout import MTGridLayout

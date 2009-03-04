@@ -1,15 +1,14 @@
 from __future__ import with_statement
-from pyglet import *
+__all__ = ['MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane', 'MTScatterImage']
+
+import pyglet
 from pyglet.gl import *
-from pymt.graphx import *
-from math import *
-from pymt.ui.factory import MTWidgetFactory
-from pymt.ui.widgets.widget import MTWidget
-from pymt.ui.widgets.svg import MTSvg
-from pymt.lib import squirtle
-from pymt.vector import *
-from pymt.logger import pymt_logger
-from pymt.ui.animation import Animation, AnimationAlpha
+from ...graphx import drawRectangle, gx_matrix, gx_matrix_identity, set_color
+from ...vector import Vector, matrix_mult, matrix_inv_mult
+from ..animation import Animation, AnimationAlpha
+from ..factory import MTWidgetFactory
+from svg import MTSvg
+from widget import MTWidget
 
 class MTScatterWidget(MTWidget):
     '''MTScatterWidget is a scatter widget based on MTWidget
@@ -105,7 +104,7 @@ class MTScatterWidget(MTWidget):
             glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
 
     def draw(self):
-        glColor4d(*self.color)
+        set_color(*self.color)
         drawRectangle((0,0), (self.width, self.height))
 
     def flip_children(self):

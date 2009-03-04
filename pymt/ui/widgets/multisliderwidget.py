@@ -1,7 +1,8 @@
-#!/usr/bin/env python
-from pymt.ui.factory import MTWidgetFactory
-from pymt.ui.widgets.widget import MTWidget
-from pymt.graphx import *
+__all__ = ['MTMultiSlider']
+
+from ...graphx import set_color, drawRectangle
+from ..factory import MTWidgetFactory
+from widget import MTWidget
 
 class MTMultiSlider(MTWidget):
     def __init__(self, **kwargs):
@@ -20,7 +21,6 @@ class MTMultiSlider(MTWidget):
         if kwargs.has_key('slidercolor'):
             self.slidercolor = kwargs.get('slidercolor')
 
-    
     def apply_css(self, styles):
         if styles.has_key('slider-color'):
             self.slidercolor = styles.get('slider-color')

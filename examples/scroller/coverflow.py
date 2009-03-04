@@ -9,6 +9,10 @@ Thank You.
 
 from __future__ import with_statement
 from pymt import *
+import pyglet
+from pyglet.gl import *
+from pyglet.graphics import draw
+
 class MTicon(MTButton):
     def __init__(self, **kwargs):
         kwargs.setdefault('scale', 1.0)

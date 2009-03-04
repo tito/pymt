@@ -1,4 +1,5 @@
 from pymt import *
+import pyglet
 from mutagen.id3 import ID3
 from cStringIO import StringIO
 import glob

@@ -1,3 +1,5 @@
+__all__ = ['OBJ']
+
 import os
 import warnings
 

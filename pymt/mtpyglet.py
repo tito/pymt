@@ -2,13 +2,18 @@
 Soup on pyglet to provide multitouch interface.
 '''
 
-from pymt.lib import osc
-from pymt.logger import *
-import pyglet
-from pyglet.gl import *
+__all__ = [
+    'Tuio2DCursor', 'Tuio2DObject', 'TouchEventLoop', 'TouchWindow',
+    'pymt_usage', 'runTouchApp', 'stopTouchApp',
+    'startTUIO', 'stopTUIO',
+]
 
+import osc
+import pyglet
 import pymt
 import sys, getopt, os
+from logger import pymt_logger
+from pyglet.gl import *
 from Queue import Queue
 from threading import Lock
 

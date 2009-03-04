@@ -1,13 +1,11 @@
 from __future__ import with_statement
-from pyglet import *
+__all__ = ['MTButton', 'MTToggleButton', 'MTImageButton']
+
 from pyglet.gl import *
-from pymt.graphx import *
-from math import *
-from pymt.ui.factory import MTWidgetFactory
-from pymt.ui.widgets.widget import MTWidget
-from pymt.lib import squirtle
-from pymt.vector import *
-from pymt.logger import pymt_logger
+from pyglet.text import Label
+from ...graphx import drawRectangle, drawRoundedRectangle, gx_matrix, GlDisplayList, set_color
+from ..factory import MTWidgetFactory
+from widget import MTWidget
 
 class MTButton(MTWidget):
     '''MTButton is a button implementation using MTWidget
@@ -83,9 +81,9 @@ class MTButton(MTWidget):
     def draw(self):
         # Select color
         if self._state[0] == 'down':
-            glColor4f(*self.color_down)
+            set_color(*self.color_down)
         else:
-            glColor4f(*self.bgcolor)
+            set_color(*self.bgcolor)
 
         with gx_matrix:
             glTranslatef(self.x, self.y, 0)

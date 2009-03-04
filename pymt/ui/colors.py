@@ -1,6 +1,7 @@
 from __future__ import with_statement
-from pymt.logger import pymt_logger
+__all__ = ['default_css', 'css_get_style', 'get_truncated_classname', 'pymt_sheet']
 
+from ..logger import pymt_logger
 import os
 import sys
 import shutil

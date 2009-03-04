@@ -1,10 +1,12 @@
+__all__ = ['MTSimulator']
+
 from pyglet import *
 from pyglet.gl import *
 from pyglet.window import key
-from pymt.graphx import *
-from pymt.mtpyglet import *
-from pymt.ui.factory import MTWidgetFactory
-from pymt.ui.widgets.widget import MTWidget
+from ..graphx import drawCircle, set_color
+from ..mtpyglet import Tuio2DCursor
+from factory import MTWidgetFactory
+from widgets.widget import MTWidget
 
 class MTSimulator(MTWidget):
     """MTSimulator is a widget who generate touch event from mouse event"""
@@ -19,7 +21,7 @@ class MTSimulator(MTWidget):
     def draw(self):
         for t in self.touches.values():
             p = (t.xpos, t.ypos)
-            glColor4f(0.8,0.2,0.2,0.7)
+            set_color(0.8,0.2,0.2,0.7)
             drawCircle(pos=p, radius=10)
 
     def find_touch(self,x,y):

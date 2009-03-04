@@ -1,13 +1,10 @@
 from __future__ import with_statement
-from pyglet import *
+__all__ = ['MTButtonMatrix']
+
 from pyglet.gl import *
-from pymt.graphx import *
-from math import *
-from pymt.ui.factory import MTWidgetFactory
-from pymt.ui.widgets.widget import MTWidget
-from pymt.lib import squirtle
-from pymt.vector import *
-from pymt.logger import pymt_logger
+from ...graphx import set_color, drawRectangle
+from ..factory import MTWidgetFactory
+from widget import MTWidget
 
 class MTButtonMatrix(MTWidget):
     '''ButtonMatrix is a lightweight Grid of buttons/tiles
@@ -26,9 +23,9 @@ class MTButtonMatrix(MTWidget):
 
     def draw_tile(self, i, j):
         if self.matrix[i][j] == 0:
-            glColor4f(1,1,0,1)
+            set_color(1,1,0,1)
         if self.matrix[i][j] == 'down':
-            glColor4f(0,0,1,1)
+            set_color(0,0,1,1)
 
         with gx_matrix:
             glTranslatef(self.width/self.matrix_size[0]*i, self.height/self.matrix_size[1]*j,0)

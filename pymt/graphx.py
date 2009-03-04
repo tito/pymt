@@ -1,13 +1,33 @@
 #!/usr/bin/env python
 from __future__ import with_statement
+
+__all__ = [
+    # settings
+    'set_brush', 'set_color',
+    # draw
+    'paintLine',
+    'drawLabel', 'drawRoundedRectangle',
+    'drawCircle', 'drawTrianglePoints',
+    'drawTriangle', 'drawRectangle',
+    'drawTexturedRectangle', 'drawLine',
+    # class for with statement
+    'DO',
+    'GlDisplayList', 'GlBlending',
+    'GlMatrix', 'GlEnable', 'GlBegin',
+    # aliases
+    'gx_blending',
+    'gx_matrix', 'gx_matrix_identity',
+    'gx_enable', 'gx_begin',
+    # Fbo
+    'Fbo',
+]
+
 from pyglet import *
 from pyglet.gl import *
 from pyglet.graphics import draw
 from pyglet.text import Label
-from pymt.logger import pymt_logger
-from math import sqrt
+from logger import pymt_logger
 import math
-from shader import *
 
 RED = (1.0,0.0,0.0)
 GREEN = (0.0,1.0,0.0)
@@ -75,7 +95,7 @@ def paintLine(points):
         glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE)
         glPointSize(_bruch_size)
         dx,dy = p2[0]-p1[0], p2[1]-p1[1]
-        dist = sqrt(dx*dx +dy*dy)
+        dist = math.sqrt(dx*dx +dy*dy)
         numsteps = max(1, int(dist)/4)
         pointList = [0,0] * numsteps
         for i in range(numsteps):

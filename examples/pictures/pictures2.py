@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
 PLUGIN_TITLE = 'Pictures'
@@ -5,6 +7,7 @@ PLUGIN_AUTHOR = 'Thomas Hansen & Sharath'
 PLUGIN_DESCRIPTION = 'Demonstration of MTScatterWidget object'
 
 from pymt import *
+from pyglet.gl import *
 import os
 import random
 import math
@@ -26,13 +29,11 @@ class MTScatteredObj(MTScatterWidget):
 
     def draw(self):
         self.update_ratio()
-        glPushMatrix()
-        enable_blending()
-        glColor4f(0.9,0.9,0.9,1)
-        drawRectangle((-6,-6),(self.width+12,self.width*self.aspectRatio+12))
-        glScaled(float(self.width)/float(self.image.width), float(self.width*self.aspectRatio)/float(self.image.height), 1.0)
-        self.image.draw()
-        glPopMatrix()
+        with DO(gx_matrix, gx_blending):
+            glColor4f(0.9,0.9,0.9,1)
+            drawRectangle((-6,-6),(self.width+12,self.width*self.aspectRatio+12))
+            glScaled(float(self.width)/float(self.image.width), float(self.width*self.aspectRatio)/float(self.image.height), 1.0)
+            self.image.draw()
 
     def update_ratio(self):
         ratio = float(self.image.height)/float(self.image.width)

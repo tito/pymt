@@ -1,5 +1,7 @@
+__all__ = ['MTBoxLayout']
+
 from abstractlayout import MTAbstractLayout
-from pymt.ui.factory import MTWidgetFactory
+from ...factory import MTWidgetFactory
 
 class MTBoxLayout(MTAbstractLayout):
     '''Box layout can arrange item in horizontal or vertical orientation.

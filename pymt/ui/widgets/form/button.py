@@ -1,7 +1,8 @@
+__all__ = ['MTFormButton']
+
+from ....graphx import set_color, drawRoundedRectangle
+from ...factory import MTWidgetFactory
 from label import MTFormLabel
-from pyglet import *
-from pymt.graphx import *
-from pymt.ui.factory import MTWidgetFactory
 
 class MTFormButton(MTFormLabel):
     '''Form button : a simple button label with aligmenent support
@@ -32,9 +33,9 @@ class MTFormButton(MTFormLabel):
 
     def draw(self):
         if self._state[0] == 'down':
-            glColor4f(*self.color_down)
+            set_color(*self.color_down)
         else:
-            glColor4f(*self.bgcolor)
+            set_color(*self.bgcolor)
         drawRoundedRectangle(pos=self.pos, size=self.size)
         super(MTFormButton, self).draw()
 

@@ -1,4 +1,3 @@
-#from ui import *
 from layout import *
 from videowidget import *
 from vkeyboard import *
@@ -10,8 +9,8 @@ from multisliderwidget import *
 from kinetic import *
 from radial import *
 from form import *
-from modalwindow import MTModalWindow
-from popup import MTPopup
+from modalwindow import *
+from popup import *
 from button import *
 from scatter import *
 from slider import *

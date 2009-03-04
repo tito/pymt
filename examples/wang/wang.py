@@ -11,7 +11,7 @@ class Bat(MTWidget):
 		super(Bat, self).__init__(**kwargs)
 
 	def draw(self):
-		glColor3f(1, 1, 1)
+		set_color(1, 1, 1)
 		drawLine([self.va.x, self.va.y, self.vb.x, self.vb.y])
 
 class Wang(MTWidget):

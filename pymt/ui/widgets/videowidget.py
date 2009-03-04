@@ -1,12 +1,16 @@
 from __future__ import with_statement
+__all__ = ['MTVideo']
+
+import os
+import pyglet
 import pymt
-from pymt import *
 from pyglet.gl import *
-from pymt.ui.widgets import *
 from pyglet.media import *
-from button import *
-from slider import *
-from scatter import *
+from ...graphx import set_color, drawRectangle, gx_blending, DO, gx_matrix
+from ..factory import MTWidgetFactory
+from button import MTImageButton
+from slider import MTSlider
+from scatter import MTScatterWidget
 from time import sleep
 
 iconPath = os.path.dirname(pymt.__file__) + '/data/icons/'
@@ -22,8 +26,8 @@ class MTVideoPlayPause(MTImageButton):
         self.playState  = 'Pause'
 
         self.images = {} #crate a python dictionary..like a hash map
-        self.images['Play']  = pyglet.sprite.Sprite(image.load(kwargs.get('filename')))
-        self.images['Pause'] = pyglet.sprite.Sprite(image.load(kwargs.get('filename_pause')))
+        self.images['Play']  = pyglet.sprite.Sprite(pyglet.image.load(kwargs.get('filename')))
+        self.images['Pause'] = pyglet.sprite.Sprite(pyglet.image.load(kwargs.get('filename_pause')))
 
         self.scale    = 0.75
 
@@ -87,13 +91,13 @@ class MTVideoTimeline(MTSlider):
             x,y,w,h = self.x,self.y,self.width+self.padding, self.height
             p2 =self.padding/2
             # draw outer rectangle
-            glColor4f(0.2,0.2,0.2,0.5)
+            set_color(0.2,0.2,0.2,0.5)
             drawRectangle(pos=(x,y), size=(w,h))
             # draw inner rectangle
-            glColor4f(*self.color)
+            set_color(*self.color)
             self.length = int(self.width*(float(self.value)/self.max))
             drawRectangle(pos=(self.x+p2,self.y+p2+11), size=(self.length,(h-self.padding)/2))
-            glColor4f(0.713, 0.713, 0.713, 1.0)
+            set_color(0.713, 0.713, 0.713, 1.0)
             drawRectangle(pos=(self.x+p2,self.y+p2), size=(self.length,(h-self.padding)/2))
 
     def on_draw(self):
@@ -164,9 +168,9 @@ class MTVideo(MTScatterWidget):
 
     def draw(self):
         with DO(gx_matrix, gx_blending):
-            glColor4f(1,1,1,0.5)
+            set_color(1,1,1,0.5)
             drawRectangle((-10,-10),(self.texW+20,self.texH+20))
-            glColor3d(1,1,1)
+            set_color(1,1,1)
             self.player.get_texture().blit(0,0)
 
     def on_touch_down(self, touches, touchID, x, y):

@@ -1,4 +1,6 @@
-from pymt.ui.widgets.widget import MTWidget
+__all__ = ['MTAbstractLayout']
+
+from ..widget import MTWidget
 
 class MTAbstractLayout(MTWidget):
     '''Abstract layout. Base class used to implement layout.

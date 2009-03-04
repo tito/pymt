@@ -1,7 +1,8 @@
+__all__ = ['MTFormLabel']
+
 from abstract import MTAbstractFormWidget
-from pyglet import *
-from pymt.graphx import *
-from pymt.ui.factory import MTWidgetFactory
+from pyglet.text import Label
+from ...factory import MTWidgetFactory
 
 class MTFormLabel(MTAbstractFormWidget):
     '''Form label : a simple text label with aligmenent support

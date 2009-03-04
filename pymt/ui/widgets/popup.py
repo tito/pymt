@@ -1,7 +1,11 @@
+__all__ = ['MTPopup']
+
 from modalwindow import MTModalWindow
-from form import *
-from layout import *
-from pymt.ui.factory import MTWidgetFactory
+from form.form import MTForm
+from form.button import MTFormButton
+from form.label import MTFormLabel
+from layout.boxlayout import MTBoxLayout
+from ..factory import MTWidgetFactory
 
 class MTPopup(MTModalWindow):
     '''A simple implementation of a popup.

@@ -15,9 +15,9 @@ class HVMatrixButton(MTButton):
 
     def draw(self):
         if self._state[0] == 'down':
-            glColor4f(*self.color_down)
+            set_color(*self.color_down)
         else:
-            glColor4f(*self.color)
+            set_color(*self.color)
         drawRoundedRectangle(self.pos, self.size)
 
 class HVMatrix(MTWidget):

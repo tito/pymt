@@ -1,5 +1,7 @@
+__all__ = ['MTGridLayout']
+
 from abstractlayout import MTAbstractLayout
-from pymt.ui.factory import MTWidgetFactory
+from ...factory import MTWidgetFactory
 
 class MTGridLayout(MTAbstractLayout):
     '''Grid layout arrange item in a matrix.

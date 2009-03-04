@@ -1,4 +1,7 @@
 from pymt import *
+import pyglet.image
+from pyglet.gl import *
+from pyglet.text import Label
 import math
 import sys
 import subprocess

@@ -1,14 +1,10 @@
-from __future__ import with_statement
-from pyglet import *
+__all__ = ['MTColorPicker']
+
 from pyglet.gl import *
-from pymt.graphx import *
-from math import *
-from pymt.ui.factory import MTWidgetFactory
-from pymt.ui.widgets.widget import MTWidget
-from pymt.ui.widgets.slider import MTSlider
-from pymt.lib import squirtle
-from pymt.vector import *
-from pymt.logger import pymt_logger
+from ...graphx import set_color, drawRectangle
+from ..factory import MTWidgetFactory
+from widget import MTWidget
+from slider import MTSlider
 
 class MTColorPicker(MTWidget):
     '''MTColorPicker is a implementation of a color picker using MTWidget
@@ -36,10 +32,10 @@ class MTColorPicker(MTWidget):
         self.touch_positions = {}
 
     def draw(self):
-        glColor4f(0.2,0.2,0.2,0.5)
+        set_color(0.2,0.2,0.2,0.5)
         drawRectangle(pos=(self.x, self.y), size=(self.width,self.height))
 
-        glColor4f(*self.current_color)
+        set_color(*self.current_color)
         drawRectangle(pos=(self.x+10, self.y+220), size=(110,60))
 
         for i in range(len(self.sliders)):

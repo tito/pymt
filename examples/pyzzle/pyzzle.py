@@ -7,6 +7,7 @@ PLUGIN_EMAIL = 'sharath.patali@gmail.com'
 
 from pymt import *
 from pyglet import *
+from pyglet.media import *
 from pyglet.gl import *
 import random
 

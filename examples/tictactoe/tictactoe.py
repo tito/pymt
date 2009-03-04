@@ -1,4 +1,5 @@
 from pymt import *
+from pyglet.gl import *
 
 
 # PYMT Plugin integration

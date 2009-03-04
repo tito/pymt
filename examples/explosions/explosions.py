@@ -1,3 +1,4 @@
+from __future__ import with_statement
 IS_PYMT_PLUGIN = False # Activate only when it will work entirely !
 PLUGIN_TITLE = 'Explosions in the Sky'
 PLUGIN_AUTHOR = 'Riley Dutton and Sharath Patali'
@@ -7,6 +8,7 @@ PLUGIN_DESCRIPTION = 'A fun explosions game, with modes for both whack a mole an
 from pymt import *
 from pyglet.media import *
 from pyglet.gl import *
+from pyglet.text import Label
 import random
 import rabbyt.collisions
 
@@ -230,18 +232,16 @@ class bloop(MTButton):
 
     def draw(self):
         self.update()
-        glPushMatrix()
-        enable_blending()
-        if self.highlight:
-            self.highlightalpha = self.alpha * 1.25
-            if(self.highlightalpha > 1):
-               self.highlightalpha = 1
-            glColor4f(self.highlightred, self.highlightgreen, self.highlightblue, self.highlightalpha)
-            drawCircle(pos=(self.x + self.width/2,self.y + self.height/2),radius=(self.radius*1.25))
+        with DO(gx_matrix, gx_blending):
+            if self.highlight:
+                self.highlightalpha = self.alpha * 1.25
+                if(self.highlightalpha > 1):
+                   self.highlightalpha = 1
+                glColor4f(self.highlightred, self.highlightgreen, self.highlightblue, self.highlightalpha)
+                drawCircle(pos=(self.x + self.width/2,self.y + self.height/2),radius=(self.radius*1.25))
 
         glColor4f(self.red,self.green,self.blue,self.alpha)
         drawCircle(pos=(self.x + self.width/2,self.y + self.height/2),radius=self.radius)
-        glPopMatrix()
 
     def BloopHide(self,dt):
         self.start_animations('fadeout')

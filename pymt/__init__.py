@@ -9,9 +9,8 @@ You can visit http://code.google.com/p/pymt/ for more informations !
 
 from __future__ import with_statement
 import ConfigParser
-from logger import pymt_logger, LOG_LEVELS
-
 import sys, getopt, os
+from logger import pymt_logger, LOG_LEVELS
 
 def curry(fn, *cargs, **ckwargs):
     def call_fn(*fargs, **fkwargs):
@@ -27,7 +26,6 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_base = os.path.dirname(sys.modules[__name__].__file__)
     pymt_libs = os.path.join(pymt_base, 'lib')
     sys.path = [pymt_libs] + sys.path
-
 
     # Configuration management
     pymt_home_dir = os.path.expanduser('~/.pymt/')
@@ -60,7 +58,6 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     from mtpyglet import *
     from graphx import *
     from ui import *
-    from pyglet import *
     from obj import OBJ
     from shader import *
     from vector import *

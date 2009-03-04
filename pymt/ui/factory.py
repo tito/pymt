@@ -1,6 +1,7 @@
+__all__ = ['MTWidgetFactory']
 
 class MTWidgetFactory(object):
-    """Widget factory"""
+    '''Widget factory'''
 
     _widgets = {}
 

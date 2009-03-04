@@ -18,6 +18,8 @@ new gesture, and compare them ! ::
     gdb.find(g2)
 '''
 
+__all__ = ['Gesture', 'GestureDatabase', 'GesturePoint', 'GestureStroke']
+
 import math
 import pickle, base64, zlib
 from cStringIO import StringIO

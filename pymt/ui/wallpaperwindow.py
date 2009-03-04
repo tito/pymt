@@ -1,6 +1,9 @@
-from pyglet import *
-from pymt.logger import pymt_logger
-from pymt.ui.window import *
+__all__ = ['MTWallpaperWindow']
+
+import pyglet.image
+from pyglet.gl import glClearColor
+from ..logger import pymt_logger
+from window import MTWindow
 
 class MTWallpaperWindow(MTWindow):
 

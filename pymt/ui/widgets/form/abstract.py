@@ -1,4 +1,6 @@
-from pymt.ui.widgets.widget import MTWidget
+__all__ = ['MTAbstractFormWidget']
+
+from ..widget import MTWidget
 
 class MTAbstractFormWidget(MTWidget):
     '''Abstract form widget. Base class used to implement any form widget.

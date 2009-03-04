@@ -1,14 +1,18 @@
 from __future__ import with_statement
-from pymt import *
-from pyglet.gl import *
-from pymt.vector import *
-from pymt.ui.widgets.rectangle import MTRectangularWidget
-from pymt.ui.widgets.scatter import MTScatterWidget
-from pymt.ui.widgets.button import MTImageButton
-from pymt.ui.widgets.layout.boxlayout import MTBoxLayout
-from pymt.vector import *
+__all__ = ['MTInnerWindow']
 
-iconPath = os.path.join(os.path.dirname(pymt.__file__), 'data', 'icons','')
+import os
+import pymt
+from pyglet.gl import *
+from ...graphx import gx_blending, gx_matrix, drawRectangle
+from ...graphx import drawRoundedRectangle, Fbo, drawTexturedRectangle
+from ...vector import matrix_inv_mult
+from rectangle import MTRectangularWidget
+from scatter import MTScatterWidget
+from button import MTImageButton
+from layout.boxlayout import MTBoxLayout
+
+iconPath = os.path.join(os.path.dirname(pymt.__file__), 'data', 'icons', '')
 
 class MTInnerWindow(MTScatterWidget):
 

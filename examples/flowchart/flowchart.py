@@ -19,12 +19,13 @@ class SVGButton(MTButton):
 
 
 class FlowchartObject(MTScatterWidget):
-    def init(self):
+    def init(self, **kwargs):
         self.svg = MTSvg(filename='box.svg')
         self.size = (self.svg.width, self.svg.height)
         self._hide_children = False
         self.hidden_children = []
 
+        super(FlowchartObject, self).__init__(**kwargs)
         self.add_bttn = SVGButton( filename='transport-shuffle.svg', pos=(self.center[0]-15, -15), size=(30,30))
         self.add_bttn.push_handlers(on_press=self.add_new_child)
         self.add_widget(self.add_bttn)

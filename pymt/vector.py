@@ -8,8 +8,11 @@ For example, if you want to get length of a vector ::
     print Vector.length(v)
 
 '''
+
+__all__ = ['Vector', 'matrix_inv_mult', 'matrix_trans_mult', 'matrix_mult']
+
 import math
-from pymt.logger import *
+from logger import pymt_logger
 
 _use_numpy = False
 

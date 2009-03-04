@@ -1,6 +1,8 @@
-from pymt.gesture import Gesture
-from pymt.ui.widgets.widget import MTWidget
-from pymt.ui.factory import MTWidgetFactory
+__all__ = ['MTGestureWidget']
+
+from ...gesture import Gesture
+from ..factory import MTWidgetFactory
+from widget import MTWidget
 
 class MTGestureWidget(MTWidget):
     def __init__(self):

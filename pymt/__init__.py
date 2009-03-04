@@ -19,13 +19,13 @@ def curry(fn, *cargs, **ckwargs):
         return fn(*(cargs + fargs), **d)
     return call_fn
 
+# Include lib as new module.
+pymt_base = os.path.dirname(sys.modules[__name__].__file__)
+pymt_libs = os.path.join(pymt_base, 'lib')
+sys.path = [pymt_libs] + sys.path
+
 # Don't go further if we generate documentation
 if not os.path.basename(sys.argv[0]).startswith('sphinx'):
-
-    # Include lib as new module.
-    pymt_base = os.path.dirname(sys.modules[__name__].__file__)
-    pymt_libs = os.path.join(pymt_base, 'lib')
-    sys.path = [pymt_libs] + sys.path
 
     # Configuration management
     pymt_home_dir = os.path.expanduser('~/.pymt/')

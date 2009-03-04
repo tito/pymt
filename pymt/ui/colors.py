@@ -125,18 +125,17 @@ def css_get_style(widget=None, sheet=None):
     return styles
 
 
-if not os.path.basename(sys.argv[0]).startswith('sphinx'):
-    # Add default CSS
-    parser = cssutils.CSSParser(loglevel=logging.ERROR)
-    pymt_sheet = parser.parseString(default_css)
+# Add default CSS
+parser = cssutils.CSSParser(loglevel=logging.ERROR)
+pymt_sheet = parser.parseString(default_css)
 
-    # Add user css if exist
-    pymt_home_dir = os.path.expanduser('~/.pymt/')
-    css_filename = os.path.join(pymt_home_dir, 'user.css')
-    if os.path.exists(css_filename):
-        user_sheet = parser.parseFile(css_filename)
-        for rule in user_sheet.cssRules:
-            pymt_sheet.add(rule)
+# Add user css if exist
+pymt_home_dir = os.path.expanduser('~/.pymt/')
+css_filename = os.path.join(pymt_home_dir, 'user.css')
+if os.path.exists(css_filename):
+    user_sheet = parser.parseFile(css_filename)
+    for rule in user_sheet.cssRules:
+        pymt_sheet.add(rule)
 
 
 if __name__ == '__main__':

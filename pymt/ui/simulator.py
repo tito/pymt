@@ -38,6 +38,8 @@ class MTSimulator(MTWidget):
             self.counter += 1
             id = 'mouse'+str(self.counter)
             self.current_drag = cursor = Tuio2DCursor(id, [x,y])
+            if modifiers & key.MOD_SHIFT:
+                cursor.is_double_tap = True
             self.touches[id] = cursor
             self.output.dispatch_event('on_touch_down', self.touches, id, x, y)
         return True

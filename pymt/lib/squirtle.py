@@ -15,7 +15,7 @@ import re
 import math
 from ctypes import CFUNCTYPE, POINTER, byref, cast
 import sys, os
-from ..logger import pymt_logger
+from pymt.logger import pymt_logger
 
 if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     tess = gluNewTess()

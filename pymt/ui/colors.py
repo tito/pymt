@@ -28,6 +28,7 @@ default_css = '''
     font-size: 10;
 }
 
+form,
 vkeyboard,
 button {
     bg-color: rgba(20, 20, 20, 100);
@@ -35,10 +36,6 @@ button {
 
 keybutton {
     bg-color: rgba(20, 20, 20, 200);
-}
-
-form {
-    bg-color: rgba(80, 80, 80, 100);
 }
 
 slider, xyslider, vectorslider, multislider {

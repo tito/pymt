@@ -267,7 +267,7 @@ class Profiles(object):
         'color': r'{namedcolor}|{hexcolor}|{rgbcolor}|{uicolor}',
         #'color': r'(maroon|red|orange|yellow|olive|purple|fuchsia|white|lime|green|navy|blue|aqua|teal|black|silver|gray|ActiveBorder|ActiveCaption|AppWorkspace|Background|ButtonFace|ButtonHighlight|ButtonShadow|ButtonText|CaptionText|GrayText|Highlight|HighlightText|InactiveBorder|InactiveCaption|InactiveCaptionText|InfoBackground|InfoText|Menu|MenuText|Scrollbar|ThreeDDarkShadow|ThreeDFace|ThreeDHighlight|ThreeDLightShadow|ThreeDShadow|Window|WindowFrame|WindowText)|#[0-9a-f]{3}|#[0-9a-f]{6}|rgb\({w}{int}{w},{w}{int}{w},{w}{int}{w}\)|rgb\({w}{num}%{w},{w}{num}%{w},{w}{num}%{w}\)',
         'integer': r'{int}',
-        'length': r'0|{num}(em|ex|px|in|cm|mm|pt|pc)',
+        'length': r'0|{num}(em|ex|px|in|cm|mm|pt|pc|)',
         'angle': r'0|{num}(deg|grad|rad)',
         'time': r'0|{num}m?s',
         'frequency': r'0|{num}k?Hz',

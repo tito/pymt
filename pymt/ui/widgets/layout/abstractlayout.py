@@ -55,6 +55,11 @@ class MTAbstractLayout(MTWidget):
         if do_layout:
             self.do_layout()
 
+    def remove_widget(self, widget, do_layout=True):
+        super(MTAbstractLayout, self).remove_widget(widget)
+        if do_layout:
+            self.do_layout()
+
     def do_layout(self):
         pass
 

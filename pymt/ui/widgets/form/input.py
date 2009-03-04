@@ -21,7 +21,7 @@ class MTFormInput(MTTextInput):
         if self.state[0] == 'down':
             set_color(0.5,0.5,0.5,0.5)
         else:
-            set_color(*self.color)
+            set_color(*self.bgcolor)
         drawRectangle(pos=self.pos, size=self.size)
         self.label_obj.x, self.label_obj.y = self.pos
         self.label_obj.draw()
@@ -31,6 +31,13 @@ class MTFormInput(MTTextInput):
         if layout:
             layout.do_layout()
         super(MTFormInput, self).on_resize(w, h)
+
+    def _set_value(self, value):
+        self.label = value
+        self.dispatch_event('on_text_change')
+    def _get_value(self):
+        return self.label
+    value = property(_get_value, _set_value)
 
 
 # Register all base widgets

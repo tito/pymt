@@ -1,7 +1,7 @@
 __all__ = ['MTForm']
 
 from abstract import MTAbstractFormWidget
-from ....graphx import set_color, drawRoundedRectangle
+from ....graphx import set_color, drawRoundedRectangle, drawRectangle
 from ...factory import MTWidgetFactory
 
 class MTForm(MTAbstractFormWidget):
@@ -11,12 +11,16 @@ class MTForm(MTAbstractFormWidget):
     :Parameters:
         `layout` : MTAbstractLayout class, default is None
             Initial layout to be used with form
+        `border_radius` : int, default to 0
+            Border radius of background
     '''
 
     def __init__(self, **kwargs):
         kwargs.setdefault('layout', None)
+        kwargs.setdefault('border_radius', 0)
         super(MTForm, self).__init__(**kwargs)
         self.layout = kwargs.get('layout')
+        self.border_radius = kwargs.get('border_radius')
 
     def _set_layout(self, layout):
         if hasattr(self, '_layout') and self._layout:
@@ -33,7 +37,10 @@ class MTForm(MTAbstractFormWidget):
 
     def draw(self):
         set_color(*self.bgcolor)
-        drawRoundedRectangle(pos=self.pos, size=self.size)
+        if self.border_radius > 0:
+            drawRoundedRectangle(pos=self.pos, size=self.size, radius=self.border_radius)
+        else:
+            drawRectangle(pos=self.pos, size=self.size)
 
     def get_parent_layout(self):
         return self

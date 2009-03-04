@@ -31,6 +31,7 @@
 import OSC
 import socket
 from threading import Thread
+from pymt.logger import pymt_logger
 
 # globals
 outSocket = 0 
@@ -109,8 +110,9 @@ class OSCServer(Thread) :
             # when used with simulator or other tuio app that doesnt constantly send messages
             self.socket.settimeout(1.0) # make sure its not blocking forever...
             self.haveSocket=True
-        except socket.error:
-            print 'there was an error binding to ip %s and port %i , maybe the port is already taken by another process?' % (ipAddr. port)
+        except socket.error, e:
+            pymt_logger.error('Error while binding to %s:%i, maybe the port is already taken by another process ?' % (ipAddr, port))
+            pymt_logger.exception(e)
             self.haveSocket=False
 
     def run(self):

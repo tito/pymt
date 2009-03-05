@@ -41,11 +41,14 @@ class MTButton(MTWidget):
         self._button_dl     = GlDisplayList()
         self._state         = ('normal', 0)
         self.clickActions   = []
-        self.label_obj      = Label(font_size=kwargs.get('font_size'), bold=kwargs.get('bold'))
-        self.label_obj.anchor_x = kwargs.get('anchor_x')
-        self.label_obj.anchor_y = kwargs.get('anchor_y')
-        self.label_obj.text = str(kwargs.get('label'))
         self._label         = str(kwargs.get('label'))
+        self.label_obj      = Label(
+            font_size=kwargs.get('font_size'),
+            bold=kwargs.get('bold'),
+            anchor_x=kwargs.get('anchor_x'),
+            anchor_y=kwargs.get('anchor_y'),
+            text=kwargs.get('label')
+        )
         if kwargs.has_key('color_down'):
             self.color_down = kwargs.get('color_down')
         self.border_radius  = kwargs.get('border_radius')

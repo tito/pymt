@@ -40,18 +40,15 @@ MTWidgetFactory.register('MTTabs', MTTabs)
 xmlsettings = '''<?xml version="1.0" encoding="UTF-8"?>
 <MTTabs>
     <MTForm tab="'General'"
-        layout="factory.get('MTGridLayout')(spacing=20, cols=2, rows=2, uniform_height=True)">
+        layout="factory.get('MTGridLayout')(spacing=20, cols=2, rows=4, uniform_height=True)">
         <MTFormLabel label="'Fullscreen'" halign="'right'"/>
         <MTFormCheckbox halign="'left'" id="'fs_fullscreen'"/>
         <MTFormLabel label="'Show FPS'" halign="'right'"/>
         <MTFormCheckbox halign="'left'" id="'fs_fps'"/>
-    </MTForm>
-    <MTForm tab="'Touches'"
-        layout="factory.get('MTGridLayout')(spacing=20, cols=2, rows=2, uniform_height=True)">
-        <MTFormLabel label="'Detection time'" halign="'right'"/>
-        <MTFormInput halign="'left'" id="'fs_double_tap_time'"/>
-        <MTFormLabel label="'Detection distance'" halign="'right'"/>
-        <MTFormInput halign="'left'" id="'fs_double_tap_distance'"/>
+        <MTFormLabel label="'Double Tap time'" halign="'right'"/>
+        <MTFormSlider min="0" max="1000" id="'fs_double_tap_time'"/>
+        <MTFormLabel label="'Double Tap distance'" halign="'right'"/>
+        <MTFormSlider min="0" max="1000" id="'fs_double_tap_distance'"/>
     </MTForm>
     <MTForm tab="'Tuio'"
         layout="factory.get('MTGridLayout')(spacing=20, cols=2, rows=2, uniform_height=True)">
@@ -88,7 +85,7 @@ fs_tuio_port = getWidgetById('fs_tuio_port')
 # Set default values
 fs_fullscreen.checked = pymt_config.getboolean('pymt', 'fullscreen')
 fs_fps.checked = pymt_config.getboolean('pymt', 'show_fps')
-fs_double_tap_time.value = pymt_config.get('pymt', 'double_tap_time')
+fs_double_tap_time.value = pymt_config.getint('pymt', 'double_tap_time')
 fs_double_tap_distance.value = pymt_config.get('pymt', 'double_tap_distance')
 fs_tuio_host.value = pymt_config.get('tuio', 'host')
 fs_tuio_port.value = pymt_config.get('tuio', 'port')

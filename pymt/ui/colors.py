@@ -38,6 +38,7 @@ keybutton {
     bg-color: rgba(20, 20, 20, 200);
 }
 
+formslider,
 slider, xyslider, vectorslider, multislider {
     bg-color: rgb(51, 51, 51);
     slider-color: rgb(255, 127, 0);

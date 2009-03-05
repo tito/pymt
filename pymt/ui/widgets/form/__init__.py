@@ -3,3 +3,4 @@ from label import MTFormLabel
 from button import MTFormButton
 from input import MTFormInput
 from checkbox import MTFormCheckbox
+from slider import MTFormSlider

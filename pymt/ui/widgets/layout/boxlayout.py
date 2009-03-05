@@ -51,6 +51,7 @@ class MTBoxLayout(MTAbstractLayout):
         fire on_content_resize too. Uniform width/height are handled
         after on_content_resize.
         '''
+        super(MTBoxLayout, self).do_layout()
         max_width = max_height = 0
         current_width = current_height = 0
         for w in self.children:

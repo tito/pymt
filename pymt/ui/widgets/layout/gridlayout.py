@@ -48,6 +48,8 @@ class MTGridLayout(MTAbstractLayout):
         super(MTGridLayout, self).add_widget(widget)
 
     def do_layout(self):
+        super(MTGridLayout, self).do_layout()
+
         spacing = self.spacing
 
         cols = dict(zip(range(self.cols), [0 for x in range(self.cols)]))

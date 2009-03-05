@@ -15,7 +15,7 @@ class fileList(MTKineticScrollText):
     def on_item_select(self,file):
         print file
         self.player.seek(0)
-        source = pyglet.media.load(file,streaming=False)
+        source = pyglet.media.load(file,streaming=True)
         self.player.queue(source)
         if self.player.playing == True:            
             self.player.next()

@@ -30,7 +30,7 @@ class MTicon(MTButton):
         self.image.scale    = self.scale
         self.width,self.height  = (self.image.width, self.image.height)
         self.texture = img.get_texture()
-        self.rotation = 15
+        self.rotation = 45
 
     def draw(self):
         global angle
@@ -71,10 +71,10 @@ class MTicon(MTButton):
     def on_draw(self):
         if (self.parent.parent.to_parent(self.x,self.y)[0] >= (w.width/2-256)) & (self.parent.parent.to_parent(self.x,self.y)[0] <= (w.width/2)):
             if self.rotation > 0:
-                self.rotation = self.rotation - 1
+                self.rotation = self.rotation - 2
         else:
-            if self.rotation < 15:
-                self.rotation = self.rotation + 1
+            if self.rotation < 45:
+                self.rotation = self.rotation + 2
         self.draw()
 
 def drawCover(texture, pos=(0,0), size=(1.0,1.0)):

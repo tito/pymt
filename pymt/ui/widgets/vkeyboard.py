@@ -17,20 +17,25 @@ class MTTextInput(MTButton):
     '''
 
     def __init__(self, **kwargs):
+        kwargs.setdefault('font_size', 16)
+        kwargs.setdefault('font_bold', True)
+        kwargs.setdefault('anchor_x', 'left')
+        kwargs.setdefault('anchor_y', 'bottom')
         super(MTTextInput, self).__init__(**kwargs)
-        kwargs.setdefault('font_size', min(max(int(64*self.width/100.0), 9),120))
-        self.font_size = kwargs.get('font_size')
-        self.keyboard = MTVKeyboard(self)
+        self._keyboard = None
         self.original_width = self.width
-        self.label_obj = Label(text='', font_size=self.font_size, bold=True)
-        self.label_obj.anchor_x = 'left'
-        self.label_obj.anchor_y = 'bottom'
         self.is_active_input = False
         self.added_keyboard = False
         self.padding = 20
 
         self.register_event_type('on_text_change')
         self.register_event_type('on_text_validate')
+
+    def _get_keyboard(self):
+        if not self._keyboard:
+            self._keyboard = MTVKeyboard(self)
+        return self._keyboard
+    keyboard = property(_get_keyboard)
 
     def on_release(self,touchID, x, y):
         if self.is_active_input:
@@ -88,7 +93,6 @@ class MTTextInput(MTButton):
     def on_text(self, text):
         self.keyboard.text_widget.label = self.keyboard.text_widget.label + text
         self.reposition()
-
 
 
 class MTKeyButton(MTButton):
@@ -254,8 +258,8 @@ class MTVKeyboard(MTScatterWidget):
         space_key = MTKeyButton(self, label=MTVKeyboard.KEY_SPACE, size=(361, k_width), **key_options)
         layout.add_widget(space_key)
         vlayout.add_widget(layout)
-        self.width = vlayout.content_width + padding * 2
-        self.height = vlayout.content_height + padding * 2
+        self.size = (vlayout.content_width + padding * 2,
+                     vlayout.content_height + padding * 2)
         return vlayout
 
     def draw_active_children(self):

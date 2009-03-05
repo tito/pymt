@@ -58,20 +58,34 @@ def get_truncated_classname(name):
         name = name[2:]
     return name.lower()
 
+widgets_parents = {}
+def get_widget_parents(widget):
+    global widgets_parents
+    parent = [widget.__class__]
+    if not widget.__class__ in widgets_parents:
+        widget_classes = list()
+        while parent and len(parent):
+            # take only the first parent...
+            widget_classes.append(get_truncated_classname(parent[0].__name__))
+            # don't back too far
+            if parent[0].__name__ in ['MTWidget', 'MTWindow']:
+                break
+            parent = parent[0].__bases__
+        widgets_parents[widget.__class__] = widget_classes
+    return widgets_parents[widget.__class__]
+
+css_cache = {}
 def css_get_style(widget=None, sheet=None):
     global pymt_sheet
+    global css_cache
+
+    if widget.__class__ in css_cache:
+        return css_cache[widget.__class__]
+
     if not sheet:
         sheet = pymt_sheet
 
-    widget_classes = list()
-    parent = [widget.__class__]
-    while parent and len(parent):
-        # take only the first parent...
-        widget_classes.append(get_truncated_classname(parent[0].__name__))
-        # don't back too far
-        if parent[0].__name__ in ['MTWidget', 'MTWindow']:
-            break
-        parent = parent[0].__bases__
+    widget_classes = get_widget_parents(widget)
     widget_classes.append('*')
 
     styles = dict()
@@ -119,6 +133,7 @@ def css_get_style(widget=None, sheet=None):
                 value = prop.value
             styles[prop.name] = value
 
+    css_cache[widget.__class__] = styles
     return styles
 
 

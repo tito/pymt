@@ -86,7 +86,7 @@ class MTTextInput(MTButton):
             return True
         elif symbol == key.BACKSPACE:
             self.keyboard.on_key_up(MTVKeyboard.KEY_BACKSPACE)
-        elif symbol == key.ENTER:
+        elif symbol in [key.ENTER, key.NUM_ENTER]:
             self.keyboard.on_key_up(MTVKeyboard.KEY_ENTER)
 
     def on_text(self, text):

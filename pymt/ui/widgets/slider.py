@@ -31,7 +31,10 @@ class MTSlider(MTWidget):
         kwargs.setdefault('max', 100)
         kwargs.setdefault('padding', 8)
         kwargs.setdefault('orientation', 'vertical')
-        kwargs.setdefault('size', (30, 400))
+        if kwargs.get('orientation') == 'vertical':
+            kwargs.setdefault('size', (30, 400))
+        else:
+            kwargs.setdefault('size', (400, 30))
         kwargs.setdefault('value', None)
 
         super(MTSlider, self).__init__(**kwargs)

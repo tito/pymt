@@ -17,11 +17,11 @@ class MTTextInput(MTButton):
     '''
 
     def __init__(self, **kwargs):
-        kwargs.setdefault('font_size', 16)
         kwargs.setdefault('font_bold', True)
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
         super(MTTextInput, self).__init__(**kwargs)
+        self.label_obj.font_size = min(max(int(64 * self.width / 100.0), 9),120)
         self._keyboard = None
         self.original_width = self.width
         self.is_active_input = False

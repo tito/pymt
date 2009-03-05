@@ -24,10 +24,10 @@ class MTForm(MTAbstractFormWidget):
 
     def _set_layout(self, layout):
         if hasattr(self, '_layout') and self._layout:
-            super(MTForm, self).remove_widget(self._layout)
+            super(MTForm, self)._remove_widget(self._layout)
         self._layout = layout
         if self._layout:
-            super(MTForm, self).add_widget(self._layout)
+            super(MTForm, self)._add_widget(self._layout)
     def _get_layout(self):
         return self._layout
     layout = property(_get_layout, _set_layout)

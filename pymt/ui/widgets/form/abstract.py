@@ -11,6 +11,18 @@ class MTAbstractFormWidget(MTWidget):
             raise NotImplementedError, 'class MTAbstractFormWidget is abstract'
         super(MTAbstractFormWidget, self).__init__(**kwargs)
 
+    def _remove_widget(self, widget):
+        super(MTAbstractFormWidget, self).remove_widget(widget)
+
+    def _add_widget(self, widget):
+        super(MTAbstractFormWidget, self).add_widget(widget)
+
+    def add_widget(self, widget):
+        raise Exception('Cannot add widget into form widget')
+
+    def remove_widget(self, widget):
+        raise Exception('Cannot remove widget from a form widget')
+
     def on_resize(self, w, h):
         layout = self.get_parent_layout()
         if layout:

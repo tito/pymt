@@ -1,44 +1,8 @@
 from __future__ import with_statement
 from pymt import *
 
-class MTTabs(MTWidget):
-    def __init__(self, **kwargs):
-        super(MTTabs, self).__init__(**kwargs)
-        self.topbar = MTBoxLayout(orientation='horizontal')
-        self.layout = MTBoxLayout(orientation='vertical')
-        self.layout.add_widget(self.topbar)
-        super(MTTabs, self).add_widget(self.layout)
-        self.current = None
-        self.tabs = dict()
-
-    def add_widget(self, widget, tab=None):
-        if tab is None:
-            if not hasattr(widget, 'tab'):
-                raise Exception('Widget added without tab information')
-            else:
-                tab = widget.tab
-        button = MTButton(label=tab, size=(120, 40))
-        button.tab_container = self
-        @button.event
-        def on_release(touchID, x, y):
-            self.select(tab)
-        self.topbar.add_widget(button)
-        self.tabs[tab] = (button, widget)
-
-    def select(self, tab):
-        if tab not in self.tabs:
-            return
-        button, widget = self.tabs[tab]
-        if self.current:
-            self.layout.remove_widget(self.current, do_layout=False)
-        self.layout.add_widget(widget, do_layout=False)
-        self.current = widget
-        self.layout.do_layout()
-
-MTWidgetFactory.register('MTTabs', MTTabs)
-
 xmlsettings = '''<?xml version="1.0" encoding="UTF-8"?>
-<MTTabs>
+<MTTabs pos="(0,480)">
     <MTForm tab="'General'"
         layout="factory.get('MTGridLayout')(spacing=20, cols=2, rows=4, uniform_height=True)">
         <MTFormLabel label="'Fullscreen'" halign="'right'"/>

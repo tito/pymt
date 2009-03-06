@@ -1,5 +1,7 @@
+from __future__ import with_statement
 __all__ = ['MTTabs']
 
+from ...graphx import gx_blending
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 from button import MTButton
@@ -74,7 +76,8 @@ class MTTabs(MTWidget):
         self.layout.do_layout()
 
     def draw(self):
-        super(MTTabs, self).draw()
+        with gx_blending:
+            super(MTTabs, self).draw()
 
 
 MTWidgetFactory.register('MTTabs', MTTabs)

@@ -202,10 +202,11 @@ class MTVKeyboard(MTScatterWidget):
     def _setup_keys(self, keys):
         k_width = 25
         spacing = 3
-        padding = 30
+        paddingx = 60
+        paddingy = 30
         border_radius = 2
 
-        vlayout = MTBoxLayout(orientation='vertical', pos=(padding,padding),
+        vlayout = MTBoxLayout(orientation='vertical', pos=(paddingx,paddingy),
                               spacing=spacing, invert_y=True)
         key_options = {'border_radius': border_radius}
 
@@ -257,8 +258,8 @@ class MTVKeyboard(MTScatterWidget):
         space_key = MTKeyButton(self, label=MTVKeyboard.KEY_SPACE, size=(361, k_width), **key_options)
         layout.add_widget(space_key)
         vlayout.add_widget(layout)
-        self.size = (vlayout.content_width + padding * 2,
-                     vlayout.content_height + padding * 2)
+        self.size = (vlayout.content_width + paddingx * 2,
+                     vlayout.content_height + paddingy * 2)
         return vlayout
 
     def draw_active_children(self):

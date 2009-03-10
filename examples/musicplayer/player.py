@@ -12,6 +12,7 @@ class fileList(MTKineticScrollText):
         super(fileList, self).__init__(**kwargs)
         self.player = pyglet.media.Player()
 
+
     def on_item_select(self,file):
         print file
         self.player.seek(0)
@@ -47,6 +48,9 @@ class MusicPlayer(MTScatterWidget):
         self.fbut = FlipButton(pos=(self.width-25,0))
         self.add_widget(self.fbut,side='front')
         self.add_widget(self.fbut,side='back')
+        self.playpause = PlayPauseButton(player=mms.player)
+        self.add_widget(self.playpause,side='back')
+
         
 class FlipButton(MTButton):
     def __init__(self, **kwargs):
@@ -75,7 +79,6 @@ class CoverArt(MTWidget):
         self.image.y        = self.y
         self.scale          = 280.0/float(self.img.width)
         self.image.scale    = self.scale
-        print "width , height :",self.img.width,self.img.height,self.scale
         self.size           = (280, 280)
 
     def draw(self):
@@ -85,7 +88,42 @@ class CoverArt(MTWidget):
         self.size           = (self.img.width, self.img.height)
         self.image.draw()        
 
+
+class PlayPauseButton(MTImageButton):
+    '''MTVideoPlayPause is a dynamic play/pause button of the video widget'''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('filename', 'play.png')
+        kwargs.setdefault('filename_pause','pause.png')
+        kwargs.setdefault('player', None)
+        super(PlayPauseButton, self).__init__(**kwargs)
+        self.vid        = kwargs.get('player')
+        self.playState  = 'Play'
+
+        self.images = {} #crate a python dictionary..like a hash map
+        self.images['Play']  = pyglet.sprite.Sprite(pyglet.image.load('play.png'))
+        self.images['Pause'] = pyglet.sprite.Sprite(pyglet.image.load('pause.png'))
+
+        self.scale    = 0.75        
         
+    def on_draw(self):
+        if self.vid.playing == True:            
+            self.image = self.images['Pause']
+        else:
+            self.image = self.images['Play']
+        self.draw()
+
+    def on_touch_down(self, touches, touchID, x,y):
+        if self.collide_point(x,y):
+            self.state = ('down', touchID)
+            if self.playState == 'Pause':
+                self.vid.play()
+                self.playState = 'Play'
+            elif self.playState == 'Play':
+                self.vid.pause()
+                self.playState = 'Pause'
+
+            #set the correct image
+            self.image = self.images[self.playState]  #playState is one of the two strings that are used as keys/lookups in the dictionary        
         
 if __name__ == '__main__':
     w = MTWindow(color=(0,0,0,1.0), fullscreen=True)

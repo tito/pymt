@@ -6,6 +6,7 @@ from ...graphx import set_color, drawRectangle,drawRoundedRectangle, gx_matrix
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
+
 class MTButtonMatrix(MTWidget):
     '''ButtonMatrix is a lightweight Grid of buttons/tiles
       collide_point returns which matrix element was hit
@@ -24,6 +25,8 @@ class MTButtonMatrix(MTWidget):
         self.buttoncolor = kwargs.get('buttoncolor')
         self.downcolor = kwargs.get('downcolor')
         self.matrix = [[0 for i in range(self._matrix_size[1])] for j in range(self._matrix_size[0])]
+        self.last_tile = 0
+
         
     def on_value_change(self, matrix):
         pass
@@ -71,5 +74,10 @@ class MTButtonMatrix(MTWidget):
             else:
                 self.matrix[i][j] = 1
             self.dispatch_event('on_value_change', self.matrix)
+            self.last_tile = (i,j)
+            
+    def on_touch_move(self, touches, touchID, x, y):
+        if self.collide_point(x,y) != self.last_tile:
+           self.on_touch_down(touches, touchID, x, y)
 
 MTWidgetFactory.register('MTButtonMatrix', MTButtonMatrix)

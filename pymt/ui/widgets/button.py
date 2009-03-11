@@ -3,7 +3,7 @@ __all__ = ['MTButton', 'MTToggleButton', 'MTImageButton']
 
 from pyglet.gl import *
 from pyglet.text import Label
-from ...graphx import drawRectangle, drawRoundedRectangle, gx_matrix, GlDisplayList, set_color
+from ...graphx import drawRectangle, drawRoundedRectangle, gx_matrix, GlDisplayList, set_color, gx_blending, DO
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
@@ -88,7 +88,7 @@ class MTButton(MTWidget):
         else:
             set_color(*self.bgcolor)
 
-        with gx_matrix:
+        with DO(gx_matrix, gx_blending):
             glTranslatef(self.x, self.y, 0)
 
             # Construct display list if possible

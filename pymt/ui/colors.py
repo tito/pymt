@@ -36,6 +36,7 @@ button {
 
 keybutton {
     bg-color: rgba(20, 20, 20, 200);
+    color-down: rgba(200, 200, 200, 150);
 }
 
 formslider,

@@ -5,6 +5,7 @@ from pyglet.text import Label
 from pyglet.window import key
 from ...graphx import set_color, drawRectangle, drawRoundedRectangle, DO, gx_blending, GlDisplayList
 from ..factory import MTWidgetFactory
+from ..animation import Animation, AnimationAlpha
 from button import MTButton
 from scatter import MTScatterWidget
 from layout.boxlayout import MTBoxLayout
@@ -99,15 +100,33 @@ class MTKeyButton(MTButton):
     def __init__(self, keyboard, **kwargs):
         super(MTKeyButton, self).__init__(**kwargs)
         self.keyboard = keyboard
+        self._opacity = 255
+        self.add_animation('hide', 'opacity', 1, 2, 10, func=AnimationAlpha.ramp)
 
     def on_press(self, touchID, x, y):
+        self.stop_animations('hide')
+        self.opacity = 255
         self.keyboard.on_key_down(self.label)
         self.keyboard.active_keys[self] = self
 
     def on_release(self, touchID, x, y):
-        if self.keyboard.active_keys.has_key(self):
-            del self.keyboard.active_keys[self]
-            self.keyboard.on_key_up(self.label)
+        self.start_animations('hide')
+        self.keyboard.on_key_up(self.label)
+
+    def on_animation_complete(self, animation):
+        if animation.label == 'hide':
+            if self.keyboard.active_keys.has_key(self):
+                del self.keyboard.active_keys[self]
+
+    def _get_opacity(self):
+        return self._opacity
+    def _set_opacity(self, opacity):
+        # this hack only work the keybutton
+        self._opacity = opacity
+        self.color_down[3] = float(opacity) / 255.
+        self.bgcolor = self.color_down
+    opacity = property(_get_opacity, _set_opacity)
+
 
 
 class MTVKeyboard(MTScatterWidget):

@@ -36,12 +36,14 @@ class Animation(object):
         self.length     = length
         self.label      = label
         self.func       = func
+        self.want_stop  = False
 
     def get_current_value(self):
         return self.func(self.value_from, self.value_to,
                          self.length, self.frame)
 
     def start(self):
+        self.want_stop = False
         self.reset()
         pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
         self.widget.dispatch_event('on_animation_start', self)
@@ -51,7 +53,12 @@ class Animation(object):
         self.frame = 0.0
         self.widget.dispatch_event('on_animation_reset', self)
 
+    def stop(self):
+        self.want_stop = True
+
     def advance_frame(self, dt):
+        if self.want_stop:
+            return
         self.frame += self.timestep
         self.set_value_from(self.get_current_value())
         if self.frame < self.length:

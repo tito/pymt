@@ -382,6 +382,11 @@ class MTWidget(pyglet.event.EventDispatcher):
                 anim.reset()
                 anim.start()
 
+    def stop_animations(self, label='all'):
+        for anim in self.animations:
+            if anim.label == label or label == 'all':
+                anim.stop()
+
     def remove_animation(self, label):
         for anim in self.animations:
             if anim.label == label:

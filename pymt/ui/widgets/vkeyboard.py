@@ -3,7 +3,7 @@ __all__ = ['MTTextInput', 'MTVKeyboard', 'MTKeyButton']
 
 from pyglet.text import Label
 from pyglet.window import key
-from ...graphx import set_color, drawRectangle, drawRoundedRectangle, DO, gx_blending, GlDisplayList
+from ...graphx import set_color, drawRectangle, drawRoundedRectangle, DO, gx_blending, GlDisplayList, drawLine
 from ..factory import MTWidgetFactory
 from ..animation import Animation, AnimationAlpha
 from button import MTButton
@@ -73,6 +73,10 @@ class MTTextInput(MTButton):
         self.is_active_input = False
 
     def draw(self):
+        if self.is_active_input:
+            set_color(*self.bgcolor)
+            drawLine([self.center[0], self.center[1],
+                      self.keyboard.center[0], self.keyboard.center[1]])
         if self.state[0] == 'down':
             set_color(0.5,0.5,0.5,0.5)
             drawRectangle((self.x,self.y) , (self.width, self.height))

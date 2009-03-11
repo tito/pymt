@@ -229,6 +229,13 @@ class MTScatterWidget(MTWidget):
         # save new position of the current touch
         self.touches[touchID] = Vector(x,y)
 
+    def _get_center(self):
+        return self.to_parent(self.width / 2, self.height / 2)
+    def _set_center(self, center):
+        center = self.to_local(*center)
+        super(MTScatterWidget, self)._set_center(center)
+    center = property(_get_center, _set_center)
+
     def get_scale_factor(self):
         p1_trans = matrix_mult(self.transform_mat, (1,1,0,1))
         p2_trans = matrix_mult(self.transform_mat, (2,1,0,1))

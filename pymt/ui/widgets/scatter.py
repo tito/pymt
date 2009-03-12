@@ -233,8 +233,20 @@ class MTScatterWidget(MTWidget):
         return self.to_parent(self.width / 2, self.height / 2)
     def _set_center(self, center):
         center = self.to_local(*center)
-        super(MTScatterWidget, self)._set_center(center)
+        if self._x == center[0] and self._y == center[1]:
+            return
+        self._x, self._y = center
+        self.dispatch_event('on_move', self._x, self._y)
     center = property(_get_center, _set_center)
+    pos = property(_get_center, _set_center)
+
+    # Scatter widget don't have write attribute on x/y
+    def _get_x(self):
+        return self.center[0]
+    x = property(_get_x)
+    def _get_y(self):
+        return self.center[1]
+    y = property(_get_y)
 
     def get_scale_factor(self):
         p1_trans = matrix_mult(self.transform_mat, (1,1,0,1))

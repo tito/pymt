@@ -46,8 +46,7 @@ class MTMenuItem:
         self.draw (self.pos, self.size)
         
     def draw(self, p, s, blendoverride = 1):
-        '''Renders the menu in its current state'''
-        
+        '''Renders the menu in its current state'''        
         glPushAttrib (GL_ENABLE_BIT)
         glEnable(GL_BLEND)
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -120,6 +119,9 @@ class MTMenuItem:
             else:
                 self.isHiding = False
                 self.animparent.removeDrawRequestor (self)
+                self.triggerLaunch = True
+                
+                self.animparent.addTrigger (self)
                 return # we don't want the cell drawn anymore
                 
         # finally draw ourselves
@@ -178,7 +180,6 @@ class MTMenuItem:
             self.hideStartTime = datetime.datetime.now()
             self.animparent.addDrawRequestor (self)
             self.dismissMenu ()
-            self.handler ()
             
     def checkHideActive(self, o):
         for c in self.children:
@@ -209,6 +210,7 @@ class MTAnimatedMenu:
         self.menu.size = size
         self.menu.setAnimParent (self)
         self.regchildren = []
+        self.triggeredChildren = []
         
     def _parseMenu(self, menu):
         if type(menu) == dict:   # top level menu item should always be a single item
@@ -227,12 +229,24 @@ class MTAnimatedMenu:
                 m = MTMenuItem (k, v)
             mt.append (m)
         return mt
+    
+    def _performDispatches(self):
+        for k in self.triggeredChildren:
+            if self.triggeredChildren[k]:
+                self.triggeredChildren[k] -= 1
+            else:
+                f = self.triggeredChildren[k]
+                del self.triggeredChildren [k]
+                f ()
+            
         
     def draw(self):
         '''Renders the menu in its current state'''
         self.menu.draw(self.pos, self.size)
         for c in self.regchildren:
             c.drawKnown ();
+            
+        self._performDispatches()
         
     def handle(self, pos):
         '''Handle a notification event, we need to be able to determine which item was tapped'''
@@ -248,3 +262,8 @@ class MTAnimatedMenu:
         
     def removeDrawRequestor(self,c):
         self.regchildren.remove(c)
+        
+    def addTrigger(self, c):
+        # 2 frame before we call this handler, 
+        # this is done to make sure that our menu is not visible when dispatch happens
+        self.triggeredChildren [c] = 2  

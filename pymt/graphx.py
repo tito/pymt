@@ -7,6 +7,7 @@ __all__ = [
     # draw
     'paintLine',
     'drawLabel', 'drawRoundedRectangle',
+    'drawRoundedRectangleBorder',
     'drawCircle', 'drawTrianglePoints',
     'drawTriangle', 'drawRectangle',
     'drawTexturedRectangle', 'drawLine',
@@ -149,6 +150,54 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
             sy = y + radius + math.sin(t) * radius
             glVertex2f (sx, sy)
             t += precision
+
+def drawRoundedRectangleBorder(pos=(0,0), size=(100,50), radius=5, color=None,
+                         linewidth=1.5, precision=0.5):
+    x, y = pos
+    w, h = size
+
+    if color:
+        glColor4f(*color)
+    glLineWidth(linewidth)
+
+    with gx_begin(GL_LINE_LOOP):
+
+        glVertex2f(x + radius, y)
+        glVertex2f(x + w-radius, y)
+        t = math.pi * 1.5
+        while t < math.pi * 2:
+            sx = x + w - radius + math.cos(t) * radius
+            sy = y + radius + math.sin(t) * radius
+            glVertex2f(sx, sy)
+            t += precision
+
+        glVertex2f(x + w, y + radius)
+        glVertex2f(x + w, y + h - radius)
+        t = 0
+        while t < math.pi * 0.5:
+            sx = x + w - radius + math.cos(t) * radius
+            sy = y + h -radius + math.sin(t) * radius
+            glVertex2f(sx, sy)
+            t += precision
+
+        glVertex2f(x + w -radius, y + h)
+        glVertex2f(x + radius, y + h)
+        t = math.pi * 0.5
+        while t < math.pi:
+            sx = x  + radius + math.cos(t) * radius
+            sy = y + h - radius + math.sin(t) * radius
+            glVertex2f(sx, sy)
+            t += precision
+
+        glVertex2f(x, y + h - radius)
+        glVertex2f(x, y + radius)
+        t = math.pi
+        while t < math.pi * 1.5:
+            sx = x + radius + math.cos(t) * radius
+            sy = y + radius + math.sin(t) * radius
+            glVertex2f (sx, sy)
+            t += precision
+
 
 
 def drawCircle(pos=(0,0), radius=1.0):

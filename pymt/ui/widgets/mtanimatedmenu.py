@@ -231,13 +231,14 @@ class MTAnimatedMenu:
         return mt
     
     def _performDispatches(self):
-        for k in self.triggeredChildren:
-            if self.triggeredChildren[k]:
-                self.triggeredChildren[k] -= 1
+        for i, k in enumerate(self.triggeredChildren):
+            c, count = k
+            del self.triggeredChildren[i]
+            if count:
+                self.triggeredChildren.append ((c, count - 1))
             else:
-                f = self.triggeredChildren[k]
-                del self.triggeredChildren [k]
-                f ()
+                if c.handler:
+                    c.handler ()
             
         
     def draw(self):
@@ -266,4 +267,4 @@ class MTAnimatedMenu:
     def addTrigger(self, c):
         # 2 frame before we call this handler, 
         # this is done to make sure that our menu is not visible when dispatch happens
-        self.triggeredChildren [c] = 2  
+        self.triggeredChildren.append ((c, 2))  

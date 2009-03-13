@@ -3,6 +3,7 @@ from __future__ import with_statement
 from pymt.ui.widgets import MTAnimatedMenu
 from pymt import *
 from pyglet.gl import *
+import time
 
 class MenuTestApp(MTWidget):
     def __init__(self):
@@ -12,7 +13,7 @@ class MenuTestApp(MTWidget):
                                         {   'File' : 
                                             {
                                                 'New': lambda: self.doStuff('Handle New'),
-                                                'Open': lambda: self.doStuff('Handle Open'),
+                                                'Open': curry(self.doStuff, 'Handle Open'),
                                                 'Close': lambda: self.doStuff('Handle Close')
                                             },
                                             'Edit' :
@@ -26,6 +27,7 @@ class MenuTestApp(MTWidget):
         self.menu.handle ((x,y)) 
         
     def doStuff(self, x):
+        time.sleep(1)
         print str(x)
     
     def on_touch_up(self, touches, touchID,x,y):

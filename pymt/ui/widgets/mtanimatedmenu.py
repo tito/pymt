@@ -156,7 +156,6 @@ class MTMenuItem:
         if p[0] > self.pos[0] and p[0] < self.pos [0] + self.size [0] and p[1] > self.pos[1] and p [1] < self.pos[1] + self.size [1]:
             return self;
         elif self.isExpanded:
-            print 'checking children...'
             for c in self.children:
                 r = c.hittest (p)
                 if r:
@@ -179,7 +178,6 @@ class MTMenuItem:
             self.hideStartTime = datetime.datetime.now()
             self.animparent.addDrawRequestor (self)
             self.dismissMenu ()
-            print 'Dispatching handler ...'
             self.handler ()
             
     def checkHideActive(self, o):
@@ -213,7 +211,6 @@ class MTAnimatedMenu:
         self.regchildren = []
         
     def _parseMenu(self, menu):
-        print str(menu)
         if type(menu) == dict:   # top level menu item should always be a single item
             return self._getAsMenuItem(menu)[0]
         else:
@@ -222,13 +219,11 @@ class MTAnimatedMenu:
     def _getAsMenuItem (self, menu):
         mt = []
         for k, v in menu.items():
-            print k
             if type(v) == dict:
                 m = MTMenuItem (k, None)
                 for nm in self._getAsMenuItem(v):
                     m.add (nm)
             else:
-                print 'Adding handler ...'
                 m = MTMenuItem (k, v)
             mt.append (m)
         return mt

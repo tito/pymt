@@ -9,7 +9,7 @@ import os
 import random
 
 def pymt_plugin_activate(w, ctx):
-    ctx.c = MTWidget()
+    ctx.c = MTKinetic()
     for i in range (10):
         img_src = '../pictures/bilder/testpic'+str(i+1)+'.jpg'
         x = int(random.uniform(100, w.width-100))

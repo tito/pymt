@@ -3,15 +3,99 @@ Kinetic Scrolling widget for PyMT
 Initially written by Alex Teiche <xelapond@gmail.com>
 '''
 
-__all__ = ['MTKineticScrollText']
+__all__ = ['MTKinetic', 'MTKineticScrollText']
 
 from pyglet.gl import *
 from pyglet.text import Label
 from ...graphx import set_color, drawRectangle
 from ..factory import MTWidgetFactory
+from ...vector import Vector
 from widget import MTWidget
 
-### THIS NEEDS SERIOUS HELP IN THE COLOR DEPARTMENT ###
+class MTKinetic(MTWidget):
+    '''Kinetic container.
+    All widgets inside this container will have the kinetic applied
+    to the touches. Kinetic is applied only if an children is touched
+    on on_touch_down event.
+    
+    Kinetic will enter in the game when the on_touch_up append.
+    Container will continue to send on_touch_move to children, until
+    the velocity Vector is under `velstop` and sending on_touch_up ::
+
+        from pymt import *
+        k = MTKinetic()
+        # theses widget will have kinetic movement
+        MTKinetic.add_widget(MTScatterSvg(filename = 'sun.svg'))
+        MTKinetic.add_widget(MTScatterSvg(filename = 'cloud.svg'))
+        w = MTWindow()
+        w.add_widget(k)
+        runTouchApp()
+
+    Warning: In the on_touch_move/on_touch_up, the touchID will not exists in
+    the touches arguments.
+
+    :Parameters:
+        `friction` : float, defaults to 1.2
+            The Psuedo-friction of the pseudo-kinetic scrolling.
+        `velstop` : float, default to 1.0
+            The distance of velocity vector to stop animation
+    '''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('no_css', True)
+        kwargs.setdefault('friction', 1.2)
+        kwargs.setdefault('velstop', 1.0)
+        super(MTKinetic, self).__init__(**kwargs)
+        self.friction   = kwargs.get('friction')
+        self.velstop    = kwargs.get('velstop')
+        self.touch      = {} # internals
+        self.touches    = [] # from tuio, needed to simulate on_touch_down
+
+    def on_touch_down(self, touches, touchID, x, y):
+        if super(MTKinetic, self).on_touch_down(touches, touchID, x, y):
+            self.touch[touchID] = {
+                'vx': 0, 'vy': 0, 'ox': x, 'oy': y,
+                'xmot': 0, 'ymot': 0, 'mode': 'touching',
+            }
+
+    def on_touch_move(self, touches, touchID, x, y):
+        if touchID in self.touch:
+            o = self.touch[touchID]
+            o['xmot'] = x - o['ox']
+            o['ymot'] = y - o['oy']
+            o['ox'] = x
+            o['oy'] = y
+        return super(MTKinetic, self).on_touch_move(touches, touchID, x, y)
+
+    def on_touch_up(self, touches, touchID, x, y):
+        self.touches = touches
+        if touchID in self.touch:
+            o = self.touch[touchID]
+            o['vx'] = o['xmot']
+            o['vy'] = o['ymot']
+            o['mode'] = 'spinning'
+
+    def process_kinetic(self):
+        '''Processing of kinetic, called in draw time.'''
+        todelete = []
+        for touchID in self.touch:
+            o = self.touch[touchID]
+            if o['mode'] != 'spinning':
+                continue
+            o['ox'] += o['vx']
+            o['oy'] += o['vy']
+            o['vx'] /= self.friction
+            o['vy'] /= self.friction
+            if Vector(o['vx'], o['vy']).length() < self.velstop:
+                super(MTKinetic, self).on_touch_up(self.touches, touchID, o['ox'], o['oy'])
+                todelete.append(touchID)
+            else:
+                super(MTKinetic, self).on_touch_move(self.touches, touchID, o['ox'], o['oy'])
+        for touchID in todelete:
+            del self.touch[touchID]
+
+    def draw(self):
+        self.process_kinetic()
+
 
 class MTKineticScrollText(MTWidget):
     '''Kinetic Scrolling widget
@@ -247,12 +331,14 @@ class MTKineticScrollText(MTWidget):
         self.label.draw()
 
 MTWidgetFactory.register('MTKineticScrollText', MTKineticScrollText)
+MTWidgetFactory.register('MTKinetic', MTKinetic)
 
 if __name__ == '__main__':
     from pymt import *
 
     #A random list of stuff that was in my head at the time
-    list = ['Hello', 'World', 'Foo', 'bar', 'biz', 'Emacs!', 'Python!', 'PyMT!', 'Lambda!', 'IRC!', '#pymt', 'Freenode.net!', 'xmonad!']
+    list = ['Hello', 'World', 'Foo', 'bar', 'biz', 'Emacs!', 'Python!',
+            'PyMT!', 'Lambda!', 'IRC!', '#pymt', 'Freenode.net!', 'xmonad!']
 
     def on_item_select(v):
         print v

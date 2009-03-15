@@ -1,4 +1,5 @@
 from __future__ import with_statement, division
+import random
 __all__ = ['MTSlider', 'MTXYSlider', 'MTBoundarySlider']
 
 from pyglet.gl import *
@@ -313,6 +314,14 @@ class MTBoundarySlider(MTWidget):
         touches[touchID].oxpos = x  #So the first on_touch_move in a two-finger-drag doesn't teleport the widget
         touches[touchID].oypos = y  #Ditto ^
         if self.collide_point(x,y):
+            if touches[touchID].is_double_tap:
+                #Randomize the bound
+                if self.orientation == 'vertical':
+                    self.value_min = random.randrange(0, self.height)
+                    self.value_max = random.randrange(self.value_min, self.height)
+                else:
+                    self.value_min = random.randrange(0, self.width)
+                    self.value_max = random.randrange(self.value_min, self.width)
             #Decide wether we will move the upper or lower bound
             if self.orientation == 'vertical':
                 if y < (self.value_min + self.y*2 + self.value_max)/2:

@@ -3,7 +3,7 @@ import random
 __all__ = ['MTSlider', 'MTXYSlider', 'MTBoundarySlider']
 
 from pyglet.gl import *
-from ...graphx import gx_blending, drawRectangle, drawCircle, drawLabel, set_color
+from ...graphx import drawRectangle, drawCircle, drawLabel, set_color
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
@@ -67,20 +67,19 @@ class MTSlider(MTWidget):
     value = property(get_value, set_value, doc='Value of the slider')
 
     def draw(self):
-        with gx_blending:
-            x,y,w,h = self.x, self.y, self.width, self.height
-            p2 =self.padding/2
-            # draw outer rectangle
-            set_color(*self.bgcolor)
-            drawRectangle(pos=(x,y), size=(w,h))
-            # draw inner rectangle
-            set_color(*self.slidercolor)
-            if self.orientation == 'vertical':
-                length = int((self._value - self.min) * (self.height - self.padding) / (self.max - self.min))
-                drawRectangle(pos=(x+p2,y+p2), size=(w - self.padding, length))
-            else:
-                length = int((self._value - self.min) * (self.width - self.padding) / (self.max - self.min))
-                drawRectangle(pos=(x+p2,y+p2), size=(length, h - self.padding))
+        x,y,w,h = self.x, self.y, self.width, self.height
+        p2 =self.padding/2
+        # draw outer rectangle
+        set_color(*self.bgcolor)
+        drawRectangle(pos=(x,y), size=(w,h))
+        # draw inner rectangle
+        set_color(*self.slidercolor)
+        if self.orientation == 'vertical':
+            length = int((self._value - self.min) * (self.height - self.padding) / (self.max - self.min))
+            drawRectangle(pos=(x+p2,y+p2), size=(w - self.padding, length))
+        else:
+            length = int((self._value - self.min) * (self.width - self.padding) / (self.max - self.min))
+            drawRectangle(pos=(x+p2,y+p2), size=(length, h - self.padding))
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -190,16 +189,15 @@ class MTXYSlider(MTWidget):
     value_y = property(get_value_y, set_value_y, doc='Value of the slider (y axis)')
 
     def draw(self):
-        with gx_blending:
-            x,y,w,h = self.x,self.y,self.width, self.height
-            # draw outer rectangle
-            set_color(*self.bgcolor)
-            drawRectangle(pos=(x,y), size=(w,h))
-            # draw inner circle
-            set_color(*self.slidercolor)
-            pos_x = int((self._value_x - self.min_x) * (self.width - self.padding*2) / (self.max_x - self.min_x))  + self.x + self.padding
-            pos_y = int((self._value_y - self.min_y) * (self.height - self.padding*2) / (self.max_y - self.min_y)) + self.y + self.padding
-            drawCircle(pos=(pos_x, pos_y), radius = self.radius)
+        x,y,w,h = self.x,self.y,self.width, self.height
+        # draw outer rectangle
+        set_color(*self.bgcolor)
+        drawRectangle(pos=(x,y), size=(w,h))
+        # draw inner circle
+        set_color(*self.slidercolor)
+        pos_x = int((self._value_x - self.min_x) * (self.width - self.padding*2) / (self.max_x - self.min_x))  + self.x + self.padding
+        pos_y = int((self._value_y - self.min_y) * (self.height - self.padding*2) / (self.max_y - self.min_y)) + self.y + self.padding
+        drawCircle(pos=(pos_x, pos_y), radius = self.radius)
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -300,20 +298,19 @@ class MTBoundarySlider(MTWidget):
         pass
 
     def draw(self):
-        with gx_blending:
-            x, y, w, h = self.x, self.y, self.width, self.height
-            #Draw the outer rectangle(border)
-            set_color(*self.bgcolor)
-            drawRectangle(pos=(x, y), size=(w,h))
-            #Draw the slider
-            set_color(*self.slidercolor)
-            if self.orientation == 'vertical':
-                drawRectangle(pos=(self.x, self.y + self.value_min), size=(w, self.value_max-self.value_min))
-                if self.showtext:
-                    drawLabel(str(self.value_min), pos=(self.x+self.width/2, self.y+self.value_min+10), font_size=16)
-                    drawLabel(str(self.value_max), pos=(self.x+self.width/2, self.y+self.value_max-10), font_size=16)
-            elif self.orientation == 'horizontal':
-                drawRectangle(pos=(self.x + self.value_min, self.y), size=(self.value_max - self.value_min, h))
+        x, y, w, h = self.x, self.y, self.width, self.height
+        #Draw the outer rectangle(border)
+        set_color(*self.bgcolor)
+        drawRectangle(pos=(x, y), size=(w,h))
+        #Draw the slider
+        set_color(*self.slidercolor)
+        if self.orientation == 'vertical':
+            drawRectangle(pos=(self.x, self.y + self.value_min), size=(w, self.value_max-self.value_min))
+            if self.showtext:
+                drawLabel(str(self.value_min), pos=(self.x+self.width/2, self.y+self.value_min+10), font_size=16)
+                drawLabel(str(self.value_max), pos=(self.x+self.width/2, self.y+self.value_max-10), font_size=16)
+        elif self.orientation == 'horizontal':
+            drawRectangle(pos=(self.x + self.value_min, self.y), size=(self.value_max - self.value_min, h))
 
     def on_touch_down(self, touches, touchID, x, y):
         touches[touchID].oxpos = x  #So the first on_touch_move in a two-finger-drag doesn't teleport the widget

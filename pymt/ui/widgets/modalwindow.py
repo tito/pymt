@@ -1,7 +1,7 @@
 from __future__ import with_statement
 __all__ = ['MTModalWindow']
 
-from ...graphx import set_color, gx_blending, drawRectangle
+from ...graphx import set_color, drawRectangle
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
@@ -29,9 +29,8 @@ class MTModalWindow(MTWidget):
 
     def draw(self):
         w = self.get_parent_window()
-        with gx_blending:
-            set_color(0, 0, 0, 1)
-            drawRectangle(pos=(0,0), size=w.size)
+        set_color(0, 0, 0, 1)
+        drawRectangle(pos=(0,0), size=w.size)
 
 
 # Register all base widgets

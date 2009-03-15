@@ -57,11 +57,19 @@ def disable_blending():
     pymt_logger.warning('deprecated, use "with gx_blending:" now.')
     glDisable(GL_BLEND)
 
-def set_color(*colors):
+def set_color(*colors, **kwargs):
+    kwargs.setdefault('sfactor', GL_SRC_ALPHA)
+    kwargs.setdefault('dfactor', GL_ONE_MINUS_SRC_ALPHA)
     if len(colors) == 4:
         glColor4f(*colors)
+        if colors[3] == 1:
+            glDisable(GL_BLEND)
+        else:
+            glEnable(GL_BLEND)
+            glBlendFunc(kwargs.get('sfactor'), kwargs.get('dfactor'))
     if len(colors) == 3:
         glColor3f(*colors)
+        glDisable(GL_BLEND)
 
 
 def drawLabel(text, pos=(0,0),center=True, font_size=16):
@@ -110,7 +118,7 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
     w, h = size
 
     if color:
-        glColor4f(*color)
+        set_color(*color)
     glLineWidth(linewidth)
 
     with gx_begin(GL_POLYGON):
@@ -157,7 +165,7 @@ def drawRoundedRectangleBorder(pos=(0,0), size=(100,50), radius=5, color=None,
     w, h = size
 
     if color:
-        glColor4f(*color)
+        set_color(*color)
     glLineWidth(linewidth)
 
     with gx_begin(GL_LINE_LOOP):

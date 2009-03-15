@@ -126,11 +126,11 @@ class MTMenuItem:
                 
         # finally draw ourselves
         #
-        glColor4f (*bgcolor)
+        set_color(*bgcolor)
         
         drawRoundedRectangle (pos=p, size=s)
 
-        glColor4f (*bordercolor)
+        set_color(*bordercolor)
         drawRoundedRectangleBorder (pos=p, size=s, linewidth=1)
         self.label.color = (int(textcolor[0] * 255.0), int(textcolor[1] * 255.0), 
                             int(textcolor[2] * 255.0), int(textcolor[3] * 255.0))

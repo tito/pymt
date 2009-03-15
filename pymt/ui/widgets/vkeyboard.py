@@ -3,7 +3,7 @@ __all__ = ['MTTextInput', 'MTVKeyboard', 'MTKeyButton']
 
 from pyglet.text import Label
 from pyglet.window import key
-from ...graphx import set_color, drawRectangle, drawRoundedRectangle, DO, gx_blending, GlDisplayList, drawLine
+from ...graphx import set_color, drawRectangle, drawRoundedRectangle, GlDisplayList, drawLine
 from ..factory import MTWidgetFactory
 from ..animation import Animation, AnimationAlpha
 from button import MTButton
@@ -211,12 +211,12 @@ class MTVKeyboard(MTScatterWidget):
         return True
 
     def update_dl(self):
-        with DO(self.dlfront, gx_blending):
+        with self.dlfront:
             set_color(*self.bgcolor)
             drawRoundedRectangle((0,0), self.size)
             for w in self.children_front:
                 w.dispatch_event('on_draw')
-        with DO(self.dlback, gx_blending):
+        with self.dlback:
             set_color(*self.bgcolor)
             drawRoundedRectangle((0,0), self.size)
             for w in self.children_back:

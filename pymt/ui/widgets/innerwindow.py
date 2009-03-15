@@ -4,7 +4,7 @@ __all__ = ['MTInnerWindow']
 import os
 import pymt
 from pyglet.gl import *
-from ...graphx import gx_blending, gx_matrix, drawRectangle
+from ...graphx import gx_matrix, drawRectangle, set_color
 from ...graphx import drawRoundedRectangle, Fbo, drawTexturedRectangle
 from ...vector import matrix_inv_mult
 from rectangle import MTRectangularWidget
@@ -133,12 +133,11 @@ class MTInnerWindow(MTScatterWidget):
 
 
     def draw(self):
-        with gx_blending:
-            glColor4d(*self.color)
-            scaled_border = int(self.border * (1.0/self.get_scale_factor()))
-            drawRoundedRectangle((-scaled_border, -scaled_border), (self.width+scaled_border*2, self.height+scaled_border*2))
-            with gx_matrix:
-                drawRectangle(((self.width/2)-(scaled_border*2.5), -scaled_border), (scaled_border*5, -scaled_border*1.2))
+        set_color(*self.color)
+        scaled_border = int(self.border * (1.0/self.get_scale_factor()))
+        drawRoundedRectangle((-scaled_border, -scaled_border), (self.width+scaled_border*2, self.height+scaled_border*2))
+        with gx_matrix:
+            drawRectangle(((self.width/2)-(scaled_border*2.5), -scaled_border), (scaled_border*5, -scaled_border*1.2))
 
 
     def on_draw(self):
@@ -153,7 +152,6 @@ class MTInnerWindow(MTScatterWidget):
             self.draw()
             drawTexturedRectangle(self.window_fbo.texture, (0,0), self.size)
             if self.locked:
-                with gx_blending:
-                    glColor4f(0.5,0.5,1, 0.3)
-                    drawRectangle((0,0), self.size)
+                set_color(0.5,0.5,1, 0.3)
+                drawRectangle((0,0), self.size)
             self.controlls.dispatch_event('on_draw')

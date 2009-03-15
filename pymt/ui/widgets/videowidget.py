@@ -6,7 +6,7 @@ import pyglet
 import pymt
 from pyglet.gl import *
 from pyglet.media import *
-from ...graphx import set_color, drawRectangle, gx_blending, DO, gx_matrix
+from ...graphx import set_color, drawRectangle, DO, gx_matrix
 from ..factory import MTWidgetFactory
 from button import MTImageButton
 from slider import MTSlider
@@ -87,18 +87,17 @@ class MTVideoTimeline(MTSlider):
             self.vid.seek(0)
             self.length = 0
 
-        with gx_blending:
-            x,y,w,h = self.x,self.y,self.width+self.padding, self.height
-            p2 =self.padding/2
-            # draw outer rectangle
-            set_color(0.2,0.2,0.2,0.5)
-            drawRectangle(pos=(x,y), size=(w,h))
-            # draw inner rectangle
-            set_color(*self.color)
-            self.length = int(self.width*(float(self.value)/self.max))
-            drawRectangle(pos=(self.x+p2,self.y+p2+11), size=(self.length,(h-self.padding)/2))
-            set_color(0.713, 0.713, 0.713, 1.0)
-            drawRectangle(pos=(self.x+p2,self.y+p2), size=(self.length,(h-self.padding)/2))
+        x,y,w,h = self.x,self.y,self.width+self.padding, self.height
+        p2 =self.padding/2
+        # draw outer rectangle
+        set_color(0.2,0.2,0.2,0.5)
+        drawRectangle(pos=(x,y), size=(w,h))
+        # draw inner rectangle
+        set_color(*self.color)
+        self.length = int(self.width*(float(self.value)/self.max))
+        drawRectangle(pos=(self.x+p2,self.y+p2+11), size=(self.length,(h-self.padding)/2))
+        set_color(0.713, 0.713, 0.713, 1.0)
+        drawRectangle(pos=(self.x+p2,self.y+p2), size=(self.length,(h-self.padding)/2))
 
     def on_draw(self):
         if not self.visible:
@@ -167,7 +166,7 @@ class MTVideo(MTScatterWidget):
         self.timeline.hide()
 
     def draw(self):
-        with DO(gx_matrix, gx_blending):
+        with gx_matrix:
             set_color(1,1,1,0.5)
             drawRectangle((-10,-10),(self.texW+20,self.texH+20))
             set_color(1,1,1)

@@ -281,6 +281,8 @@ class MTBoundarySlider(MTWidget):
         super(MTBoundarySlider, self).apply_css(styles)
 
     def get_value(self):
+        '''Scale the value to the minimum and maximum system set by the user
+        '''
         if self.orientation == 'vertical':
             tmin = (self.value_min / self.height) * self.max
             tmax = (self.value_max / self.height) * self.max
@@ -291,6 +293,7 @@ class MTBoundarySlider(MTWidget):
         return tmin, tmax
 
     def on_value_change(self, min, max):
+        '''Event prototype'''
         pass
 
     def draw(self):
@@ -307,9 +310,10 @@ class MTBoundarySlider(MTWidget):
                 drawRectangle(pos=(self.x + self.value_min, self.y), size=(self.value_max - self.value_min, h))
 
     def on_touch_down(self, touches, touchID, x, y):
-        touches[touchID].oxpos = x
-        touches[touchID].oypos = y
+        touches[touchID].oxpos = x  #So the first on_touch_move in a two-finger-drag doesn't teleport the widget
+        touches[touchID].oypos = y  #Ditto ^
         if self.collide_point(x,y):
+            #Decide wether we will move the upper or lower bound
             if self.orientation == 'vertical':
                 if y < (self.value_min + self.y*2 + self.value_max)/2:
                     touches[touchID].side = 'value_min'
@@ -327,20 +331,25 @@ class MTBoundarySlider(MTWidget):
         
     def on_touch_move(self, touches, touchID, x, y):
         if touchID in self.touchstarts:   
+            #Either move a given bound, or shift both
             if self.orientation == 'vertical':
                 if len(self.touchstarts) >= 2:
+                    #Two or more fingers, shift the whole bound
                     rel = (y - touches[touchID].oypos)
                     self.value_min += rel
                     self.value_max += rel
                 else:
+                    #Only one, just change one bound
                     setattr(self, touches[touchID].side, y - self.y)
                     self.dispatch_event('on_value_change', *self.get_value())
             elif self.orientation == 'horizontal':
                 if len(self.touchstarts) >= 2:
+                    #Two or more fingers, shift the whole bound
                     rel = (x - touches[touchID].oxpos)
                     self.value_min += rel
                     self.value_max += rel
                 else:
+                    #Only one, just change one bound
                     setattr(self, touches[touchID].side, x - self.x)
                     self.dispatch_event('on_value_change', *self.get_value())
 

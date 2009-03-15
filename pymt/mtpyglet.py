@@ -5,7 +5,7 @@ Soup on pyglet to provide multitouch interface.
 __all__ = [
     'Tuio2DCursor', 'Tuio2DObject', 'TouchEventLoop', 'TouchWindow',
     'pymt_usage', 'runTouchApp', 'stopTouchApp',
-    'startTUIO', 'stopTUIO',
+    'startTuio', 'stopTuio',
 ]
 
 import osc
@@ -16,22 +16,18 @@ from logger import pymt_logger
 from pyglet.gl import *
 from Queue import Queue
 from threading import Lock
+from utils import intersection, difference, strtotuple
 
 
-#global to this module.  all event listeners will add themselves to this
+# All event listeners will add themselves to this
 # list upon creation
 tuio_event_q = Queue()
+tuio_listeners = []
 touch_event_listeners = []
-TUIO_listeners = []
-
-def intersection(set1, set2):
-    return filter(lambda s:s in set2, set1)
-
-def difference(set1, set2):
-    return filter(lambda s:s not in set2, set1)
 
 class Tuio2DCursor(object):
-
+    '''Represent a Tuio cursor + implementation of double-tap functionnality
+    '''
     def __init__(self, blobID, args, time_start=0):
         self.blobID = blobID
         self.dxpos = self.dypos = None
@@ -52,7 +48,7 @@ class Tuio2DCursor(object):
         self.motcalc()
 
     def motcalc(self):
-        #NOTE: This does not work with the mouse, but with a real TUIO stream it does
+        #NOTE: This does not work with the mouse, but with a real Tuio stream it does
         '''Calculates the relative movement if the tracker is not providing it'''
         '''Ported from touchpy'''
         self.xmot = self.xpos - self.oxpos
@@ -70,7 +66,8 @@ class Tuio2DCursor(object):
 
 
 class Tuio2DObject(object):
-
+    '''Represent a Tuio object
+    '''
     def __init__(self, blobID, args):
         self.blobID = blobID
         self.oxpos = self.oypos = 0.0
@@ -96,19 +93,13 @@ class Tuio2DObject(object):
             self.id, self.xpos, self.ypos, self.angle, self.Xvector, self.Yvector,self.Avector, self.xmot, self.ymot, self.Width , self.Height = args[0:11]
 
 
-
-
-'''
-In TUIOGetter , The "type" item differentiates the 2Dobj of the 2DCur , to choose
-the  righ parser on the idle function
-
-'''
-
-class TUIOGetter(object):
-
+class TuioGetter(object):
+    '''Tuio getter listen udp, and use the appropriate
+    parser for 2Dcur and 2Dobj Tuio message.
+    '''
     def __init__(self,  host='127.0.0.1', port=3333):
-        global TUIO_listeners
-        TUIO_listeners.append(self)
+        global tuio_listeners
+        tuio_listeners.append(self)
         self.host = host
         self.port = port
         self.startListening()
@@ -124,7 +115,7 @@ class TUIOGetter(object):
 
     def close(self):
         osc.dontListen()
-        TUIO_listeners.remove(self)
+        tuio_listeners.remove(self)
 
     def osc_2dcur_Callback(self, *incoming):
         global tuio_event_q
@@ -136,11 +127,12 @@ class TUIOGetter(object):
         global tuio_event_q
         message = incoming[0]
         type, types, args = message[0], message[1], message[2:]
-        tuio_event_q.put([type,args, types])
+        tuio_event_q.put([type, args, types])
 
 
 class TouchEventLoop(pyglet.app.EventLoop):
-
+    '''Main event loop. This loop dispatch Tuio message and pyglet event.
+    '''
     def __init__(self, host='127.0.0.1', port=3333):
         pyglet.app.EventLoop.__init__(self)
         self.current_frame = self.last_frame = 0
@@ -151,13 +143,21 @@ class TouchEventLoop(pyglet.app.EventLoop):
         self.clock = pyglet.clock.Clock()
         self.double_tap_distance = pymt.pymt_config.getint('pymt', 'double_tap_distance') / 1000.0
         self.double_tap_time = pymt.pymt_config.getint('pymt', 'double_tap_time') / 1000.0
-        self.parser = TUIOGetter(host = host, port = port)
+        self.parser = TuioGetter(host = host, port = port)
+        self.ignore_list = strtotuple(pymt.pymt_config.get('tuio', 'ignore'))
 
     def close(self):
         if not self.parser:
             return
         self.parser.close()
         self.parser = None
+
+    def collide_ignore(self, cur):
+        x, y = cur.xpos, cur.ypos
+        for l in self.ignore_list:
+            xmin, ymin, xmax, ymax = l
+            if x > xmin and x < xmax and y > ymin and y < ymax:
+                return True
 
     def find_double_tap(self, ref):
         for blobID in self.blobs2DCur:
@@ -215,9 +215,9 @@ class TouchEventLoop(pyglet.app.EventLoop):
     def parse2dCur(self, args, types):
         global touch_event_listeners
         if args[0] == 'alive':
-            touch_release = difference(self.alive2DCur,args[1:])
-            touch_down = difference(self.alive2DCur,args[1:])
-            touch_move = intersection(self.alive2DCur,args[1:])
+            touch_release   = difference(self.alive2DCur,args[1:])
+            touch_down      = difference(self.alive2DCur,args[1:])
+            touch_move      = intersection(self.alive2DCur,args[1:])
             self.alive2DCur = args[1:]
             for blobID in touch_release:
                 if blobID in self.blobs2DCur:
@@ -225,16 +225,24 @@ class TouchEventLoop(pyglet.app.EventLoop):
 
         elif args[0] == 'set':
             blobID = args[1]
+            # first time ?
             if blobID not in self.blobs2DCur:
+                # create cursor
                 cur = Tuio2DCursor(blobID, args[2:], self.clock.time())
+                # if cursor is in the ignore box, drop it
+                if self.collide_ignore(cur):
+                    return
+                # search for double tap
                 cur_double_tap = self.find_double_tap(cur)
                 if cur_double_tap:
                     cur.is_double_tap = True
                     cur.double_tap_time = cur.time_start - cur_double_tap.time_start
                     cur.time_start = cur_double_tap.time_start
                     cur_double_tap.no_event = True
+                # add into list
                 self.blobs2DCur[blobID] = cur
             else:
+                # cursor exist, move it :)
                 self.blobs2DCur[blobID].move(args[2:])
                 self.blobs2DCur[blobID].do_event = 'on_touch_move'
 
@@ -245,14 +253,19 @@ class TouchEventLoop(pyglet.app.EventLoop):
             return
 
         if args[0] == 'alive':
-            touch_release = difference(self.alive2DObj,args[1:])
-            touch_down = difference(self.alive2DObj,args[1:])
-            touch_move = intersection(self.alive2DObj,args[1:])
+            touch_release = difference(self.alive2DObj, args[1:])
+            touch_down = difference(self.alive2DObj, args[1:])
+            touch_move = intersection(self.alive2DObj, args[1:])
             self.alive2DObj = args[1:]
 
             for blobID in touch_release:
                 for l in touch_event_listeners:
-                    l.dispatch_event('on_object_up', self.blobs2DObj, blobID,self.blobs2DObj[blobID].id ,self.blobs2DObj[blobID].xpos * l.width, l.height - l.height*self.blobs2DObj[blobID].ypos,self.blobs2DObj[blobID].angle)
+                    l.dispatch_event('on_object_up', self.blobs2DObj, blobID,
+                        self.blobs2DObj[blobID].id,
+                        self.blobs2DObj[blobID].xpos * l.width,
+                        l.height - l.height*self.blobs2DObj[blobID].ypos,
+                        self.blobs2DObj[blobID].angle
+                    )
                     del self.blobs2DObj[blobID]
 
         elif args[0] == 'set':
@@ -260,15 +273,26 @@ class TouchEventLoop(pyglet.app.EventLoop):
             if blobID not in self.blobs2DObj:
                 self.blobs2DObj[blobID] = Tuio2DObject(blobID,args[2:])
                 for l in touch_event_listeners:
-                    l.dispatch_event('on_object_down', self.blobs2DObj, blobID, self.blobs2DObj[blobID].id,self.blobs2DObj[blobID].xpos * l.width, l.height - l.height*self.blobs2DObj[blobID].ypos, self.blobs2DObj[blobID].angle)
+                    l.dispatch_event('on_object_down', self.blobs2DObj, blobID,
+                        self.blobs2DObj[blobID].id,
+                        self.blobs2DObj[blobID].xpos * l.width,
+                        l.height - l.height*self.blobs2DObj[blobID].ypos,
+                        self.blobs2DObj[blobID].angle
+                    )
             else:
                 self.blobs2DObj[blobID].move(args[2:])
                 for l in touch_event_listeners:
-                    l.dispatch_event('on_object_move', self.blobs2DObj, blobID, self.blobs2DObj[blobID].id, self.blobs2DObj[blobID].xpos * l.width, l.height - l.height*self.blobs2DObj[blobID].ypos, self.blobs2DObj[blobID].angle)
+                    l.dispatch_event('on_object_move', self.blobs2DObj, blobID,
+                        self.blobs2DObj[blobID].id,
+                        self.blobs2DObj[blobID].xpos * l.width,
+                        l.height - l.height*self.blobs2DObj[blobID].ypos,
+                        self.blobs2DObj[blobID].angle
+                    )
 
     def idle(self):
         global tuio_event_q
         pyglet.clock.tick()
+
         # process tuio
         while not tuio_event_q.empty():
             type,args, types = tuio_event_q.get()
@@ -280,6 +304,7 @@ class TouchEventLoop(pyglet.app.EventLoop):
         # launch event ?
         self.process_2dcur_events()
 
+        # dispatch pyglet events
         for window in pyglet.app.windows:
             window.dispatch_events()
             window.dispatch_event('on_draw')
@@ -287,31 +312,45 @@ class TouchEventLoop(pyglet.app.EventLoop):
 
         return 0
 
-def stopTUIO():
-   global TUIO_listeners
-   for listener in TUIO_listeners:
-      listener.stopListening()
+def stopTuio():
+    '''Stop Tuio listening'''
+    global tuio_listeners
+    for listener in tuio_listeners:
+        listener.stopListening()
 
-def startTUIO():
-   global TUIO_listeners
-   for listener in TUIO_listeners:
-      listener.startListening()
+def startTuio():
+    '''Start Tuio listening'''
+    global tuio_listeners
+    for listener in tuio_listeners:
+        listener.startListening()
 
-#any window that inherhits this or an instance will have event handlers triggered on TUIO touch events
+#any window that inherhits this or an instance will have event handlers triggered on Tuio touch events
 class TouchWindow(pyglet.window.Window):
+    '''Base implementation of Tuio event in top of pyglet window.
 
+    :Events:
+        `on_touch_down`
+            Fired when a blob is detected
+        `on_touch_move`
+            Fired when the blob is moving
+        `on_touch_up`
+            Fired when the blob is gone
+        `on_object_down`
+            Fired when the object is detected
+        `on_object_move`
+            Fired when the object is moving
+        `on_object_up`
+            Fired when the object is gone
+    '''
     def __init__(self, config=None):
         pyglet.window.Window.__init__(self, config=config)
         self.register_event_type('on_touch_up')
         self.register_event_type('on_touch_move')
         self.register_event_type('on_touch_down')
-
         self.register_event_type('on_object_up')
         self.register_event_type('on_object_move')
         self.register_event_type('on_object_down')
-
         touch_event_listeners.append(self)
-
 
     def on_touch_down(self, touches, touchID, x, y):
         pass
@@ -322,13 +361,13 @@ class TouchWindow(pyglet.window.Window):
     def on_touch_up(self, touches, touchID, x, y):
         pass
 
-    def on_object_down(self, touches, touchID,id, x, y,angle):
+    def on_object_down(self, touches, touchID,id, x, y, angle):
         pass
 
-    def on_object_move(self, touches, touchID,id, x, y,angle):
+    def on_object_move(self, touches, touchID,id, x, y, angle):
         pass
 
-    def on_object_up(self, touches, touchID,id, x, y,angle):
+    def on_object_up(self, touches, touchID,id, x, y, angle):
         pass
 
 
@@ -337,8 +376,8 @@ def pymt_usage():
   -h, --help                        prints this mesage
   -f, --fullscreen                  force run in fullscreen
   -w, --windowed                    force run in window
-  -p, --port=x                      specify TUIO port (default 3333)
-  -H, --host=xxx.xxx.xxx.xxx        specify TUIO host (default 127.0.0.1)
+  -p, --port=x                      specify Tuio port (default 3333)
+  -H, --host=xxx.xxx.xxx.xxx        specify Tuio host (default 127.0.0.1)
   -F, --fps                         show fps in window
       --dump-frame                  dump each frame in file
       --dump-prefix                 specify a prefix for each frame file
@@ -359,7 +398,7 @@ def runTouchApp():
 
     host = pymt.pymt_config.get('tuio', 'host')
     port = pymt.pymt_config.getint('tuio', 'port')
-    pymt_logger.info('listening for TUIO on %s:%d' % (host, port))
+    pymt_logger.info('listening for Tuio on %s:%d' % (host, port))
     pymt_evloop = TouchEventLoop(host=host, port=port)
 
     try:

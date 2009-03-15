@@ -12,13 +12,6 @@ import ConfigParser
 import sys, getopt, os
 from logger import pymt_logger, LOG_LEVELS
 
-def curry(fn, *cargs, **ckwargs):
-    def call_fn(*fargs, **fkwargs):
-        d = ckwargs.copy()
-        d.update(fkwargs)
-        return fn(*(cargs + fargs), **d)
-    return call_fn
-
 # Include lib as new module.
 pymt_base = os.path.dirname(sys.modules[__name__].__file__)
 pymt_libs = os.path.join(pymt_base, 'lib')
@@ -45,6 +38,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_config.add_section('tuio')
     pymt_config.set('tuio', 'host', '127.0.0.1')
     pymt_config.set('tuio', 'port', '3333')
+    pymt_config.set('tuio', 'ignore', '[]')
     pymt_config.add_section('dump')
     pymt_config.set('dump', 'enabled', '0')
     pymt_config.set('dump', 'prefix', 'img_')
@@ -64,6 +58,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     from plugin import *
     from loader import *
     from gesture import *
+    from utils import *
 
     # Read config file if exist
     if os.path.exists(pymt_config_fn):

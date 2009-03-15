@@ -3,7 +3,7 @@ import random
 __all__ = ['MTSlider', 'MTXYSlider', 'MTBoundarySlider']
 
 from pyglet.gl import *
-from ...graphx import gx_blending, drawRectangle, drawCircle, set_color
+from ...graphx import gx_blending, drawRectangle, drawCircle, drawLabel, set_color
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
@@ -243,7 +243,7 @@ class MTBoundarySlider(MTWidget):
             The default minumum value
         `slidercolor` : tuple
             color of the slider in (r,g,b,a)
-        `show_text` : boolean, defaults to false
+        `showtext` : boolean, defaults to false
             If true, the widget will show the min/max value
 
     :Styles:
@@ -256,6 +256,7 @@ class MTBoundarySlider(MTWidget):
         kwargs.setdefault('min', 0)
         kwargs.setdefault('max', 100)
         kwargs.setdefault('orientation', 'vertical')
+        kwargs.setdefault('showtext', False)
         if kwargs.get('orientation') == 'vertical':
             kwargs.setdefault('size', (30, 400))
         else:
@@ -268,6 +269,7 @@ class MTBoundarySlider(MTWidget):
         self.padding        = kwargs.get('padding')
         self.min            = kwargs.get('min')
         self.max            = kwargs.get('max')
+        self.showtext = kwargs.get('showtext')
         if kwargs.get('slidercolor'):
             self.slidercolor = kwargs.get('slidercolor')
 
@@ -307,6 +309,9 @@ class MTBoundarySlider(MTWidget):
             set_color(*self.slidercolor)
             if self.orientation == 'vertical':
                 drawRectangle(pos=(self.x, self.y + self.value_min), size=(w, self.value_max-self.value_min))
+                if self.showtext:
+                    drawLabel(str(self.value_min), pos=(self.x+self.width/2, self.y+self.value_min+10), font_size=16)
+                    drawLabel(str(self.value_max), pos=(self.x+self.width/2, self.y+self.value_max-10), font_size=16)
             elif self.orientation == 'horizontal':
                 drawRectangle(pos=(self.x + self.value_min, self.y), size=(self.value_max - self.value_min, h))
 

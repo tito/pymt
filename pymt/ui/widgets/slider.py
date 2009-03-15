@@ -1,5 +1,5 @@
-from __future__ import with_statement
-__all__ = ['MTSlider', 'MTXYSlider']
+from __future__ import with_statement, division
+__all__ = ['MTSlider', 'MTXYSlider', 'MTBoundarySlider']
 
 from pyglet.gl import *
 from ...graphx import gx_blending, drawRectangle, drawCircle, set_color
@@ -226,5 +226,131 @@ class MTXYSlider(MTWidget):
         if touchID in self.touchstarts:
             self.touchstarts.remove(touchID)
 
+class MTBoundarySlider(MTWidget):
+    '''MTBoundarySlider is a widget that allows you to select minimum and maximum values.
+
+    :Parameters:
+        `min` : int, default is 0
+            Minimum value of slider
+        `max` : int, default is 100
+            Maximum value of slider
+        `orientation` : str, default is vertical
+            Type of orientation, can be 'horizontal' or 'vertical'
+        `value_max` : int, default is `max - (max/4)`
+            The default maximum value
+        `value_min` : int, the default is `min + (max/4)`
+            The default minumum value
+        `slidercolor` : tuple
+            color of the slider in (r,g,b,a)
+        `show_text` : boolean, defaults to false
+            If true, the widget will show the min/max value
+
+    :Styles:
+        `slider-color` : color
+            Color of the slider
+        `bg-color` : color
+            Background color of the slider
+    '''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('min', 0)
+        kwargs.setdefault('max', 100)
+        kwargs.setdefault('orientation', 'vertical')
+        if kwargs.get('orientation') == 'vertical':
+            kwargs.setdefault('size', (30, 400))
+        else:
+            kwargs.setdefault('size', (400, 30))
+
+        super(MTBoundarySlider, self).__init__(**kwargs)
+        self.register_event_type('on_value_change')
+        self.touchstarts    = [] # only react to touch input that originated on this widget
+        self.orientation    = kwargs.get('orientation')
+        self.padding        = kwargs.get('padding')
+        self.min            = kwargs.get('min')
+        self.max            = kwargs.get('max')
+        if kwargs.get('slidercolor'):
+            self.slidercolor = kwargs.get('slidercolor')
+
+        kwargs.setdefault('value_max', 1)
+        kwargs.setdefault('value_min', self.max/2)
+        self.value_max = kwargs.get('value_max')
+        self.value_min = kwargs.get('value_min')
+
+    def apply_css(self, styles):
+        if styles.has_key('slider-color'):
+            self.slidercolor = styles.get('slider-color')
+        super(MTBoundarySlider, self).apply_css(styles)
+
+    def get_value(self):
+        if self.orientation == 'vertical':
+            tmin = (self.value_min / self.height) * self.max
+            tmax = (self.value_max / self.height) * self.max
+        elif self.orientation == 'horizontal':
+            tmin = (self.value_min / self.width) * self.max
+            tmax = (self.value_max / self.width) * self.max
+
+        return tmin, tmax
+
+    def on_value_change(self, min, max):
+        pass
+
+    def draw(self):
+        with gx_blending:
+            x, y, w, h = self.x, self.y, self.width, self.height
+            #Draw the outer rectangle(border)
+            set_color(*self.bgcolor)
+            drawRectangle(pos=(x, y), size=(w,h))
+            #Draw the slider
+            set_color(*self.slidercolor)
+            if self.orientation == 'vertical':
+                drawRectangle(pos=(self.x, self.y + self.value_min), size=(w, self.value_max-self.value_min))
+            elif self.orientation == 'horizontal':
+                drawRectangle(pos=(self.x + self.value_min, self.y), size=(self.value_max - self.value_min, h))
+
+    def on_touch_down(self, touches, touchID, x, y):
+        touches[touchID].oxpos = x
+        touches[touchID].oypos = y
+        if self.collide_point(x,y):
+            if self.orientation == 'vertical':
+                if y < (self.value_min + self.y*2 + self.value_max)/2:
+                    touches[touchID].side = 'value_min'
+                else:
+                    touches[touchID].side = 'value_max'
+            elif self.orientation == 'horizontal':
+                if x < (self.value_min + self.x*2 + self.value_max)/2:
+                    touches[touchID].side = 'value_min'
+                else:
+                    touches[touchID].side = 'value_max'
+
+            self.touchstarts.append(touchID)
+            self.on_touch_move(touches, touchID, x, y)
+            return True
+        
+    def on_touch_move(self, touches, touchID, x, y):
+        if touchID in self.touchstarts:   
+            if self.orientation == 'vertical':
+                if len(self.touchstarts) >= 2:
+                    rel = (y - touches[touchID].oypos)
+                    self.value_min += rel
+                    self.value_max += rel
+                else:
+                    setattr(self, touches[touchID].side, y - self.y)
+                    self.dispatch_event('on_value_change', *self.get_value())
+            elif self.orientation == 'horizontal':
+                if len(self.touchstarts) >= 2:
+                    rel = (x - touches[touchID].oxpos)
+                    self.value_min += rel
+                    self.value_max += rel
+                else:
+                    setattr(self, touches[touchID].side, x - self.x)
+                    self.dispatch_event('on_value_change', *self.get_value())
+
+        touches[touchID].oypos = y
+        touches[touchID].oxpos = x
+
+    def on_touch_up(self, touches, touchID, x, y):
+        if touchID in self.touchstarts:
+            self.touchstarts.remove(touchID)
+
 MTWidgetFactory.register('MTXYSlider', MTXYSlider)
 MTWidgetFactory.register('MTSlider', MTSlider)
+MTWidgetFactory.register('MTBoundarySlider', MTBoundarySlider)

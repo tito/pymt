@@ -147,8 +147,9 @@ class ModelViewer(GLPerspectiveWidget):
         self.needs_redisplay = True
 
     def on_touch_up(self, touches, touchID, x, y):
-        del self.touch_position[touchID]
-        self.needs_redisplay = True
+        if touchID in self.touch_position:
+            del self.touch_position[touchID]
+            self.needs_redisplay = True
 
 def pymt_plugin_activate(root, ctx):
     ctx.mv = ModelViewer(size=(root.width,root.height))

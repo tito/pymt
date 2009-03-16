@@ -342,8 +342,8 @@ class TouchWindow(pyglet.window.Window):
         `on_object_up`
             Fired when the object is gone
     '''
-    def __init__(self, config=None):
-        pyglet.window.Window.__init__(self, config=config)
+    def __init__(self, **kwargs):
+        super(TouchWindow, self).__init__(**kwargs)
         self.register_event_type('on_touch_up')
         self.register_event_type('on_touch_move')
         self.register_event_type('on_touch_down')

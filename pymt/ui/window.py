@@ -61,8 +61,14 @@ class MTWindow(TouchWindow):
         try:
             config = kwargs.get('config')
             if not config:
-                config = Config(sample_buffers=1, samples=4, depth_size=16, double_buffer=True, vsync=1)
-            super(MTWindow, self).__init__(config)
+                config = Config()
+                config.sample_buffers = 1
+                config.samples = 4
+                config.depth_size = 16
+                config.double_buffer = True
+                config.vsync = 1
+                config.stencil_size = 1
+            super(MTWindow, self).__init__(config=config)
         except:
             super(MTWindow, self).__init__()
 

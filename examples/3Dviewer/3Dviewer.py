@@ -131,7 +131,7 @@ class ModelViewer(GLPerspectiveWidget):
                 new_line = v1 - Vector(x,y)
 
             angle = -1.0 * old_line.angle(new_line)
-        else:
+        elif touchID in self.touch_position:
             dx = 200.0*(x-self.touch_position[touchID][0])/float(self.width)
             dy = 200.0*(y-self.touch_position[touchID][1])/float(self.height)
         glMatrixMode(GL_MODELVIEW)

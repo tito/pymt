@@ -230,7 +230,6 @@ class MTKineticScrollText(MTWidget):
         to acheive the scrolling effect
         '''
         if touchID in self.touchstarts:
-            touches[touchID].motcalc()
             self.ymot = y - self.oy
             self.yoffset += self.ymot
             self.blobrel += abs(self.ymot)

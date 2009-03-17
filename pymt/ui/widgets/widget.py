@@ -205,7 +205,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         self._x, self._y = pos
         self.dispatch_event('on_move', self._x, self._y)
     def _get_pos(self):
-        return (self.x, self.y)
+        return (self._x, self._y)
     pos = property(_get_pos, _set_pos)
 
     def _set_size(self, size):

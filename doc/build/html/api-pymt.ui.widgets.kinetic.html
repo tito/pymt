@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pymt.ui.widgets.kinetic &mdash; PyMT v0.2 alpha documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2 alpha',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="up" title="PyMT - API Documentation" href="api-tree.html" />
+    <link rel="next" title="pymt.ui.widgets.label" href="api-pymt.ui.widgets.label.html" />
+    <link rel="prev" title="pymt.ui.widgets.innerwindow" href="api-pymt.ui.widgets.innerwindow.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.ui.widgets.label.html" title="pymt.ui.widgets.label"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.ui.widgets.innerwindow.html" title="pymt.ui.widgets.innerwindow"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="module-pymt.ui.widgets.kinetic">
+<h1>pymt.ui.widgets.kinetic<a class="headerlink" href="#module-pymt.ui.widgets.kinetic" title="Permalink to this headline">¶</a></h1>
+<p>Kinetic Scrolling widget for PyMT
+Initially written by Alex Teiche &lt;<a class="reference external" href="mailto:xelapond&#37;&#52;&#48;gmail&#46;com">xelapond<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</p>
+<dl class="class">
+<dt id="pymt.ui.widgets.kinetic.MTKinetic">
+<!--[pymt.ui.widgets.kinetic.MTKinetic]-->class <tt class="descclassname">pymt.ui.widgets.kinetic.</tt><tt class="descname">MTKinetic</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.kinetic.MTKinetic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kinetic container.
+All widgets inside this container will have the kinetic applied
+to the touches. Kinetic is applied only if an children is touched
+on on_touch_down event.</p>
+<p>Kinetic will enter in the game when the on_touch_up append.
+Container will continue to send on_touch_move to children, until
+the velocity Vector is under <cite>velstop</cite> and sending on_touch_up</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">from</span> <span class="nn">pymt</span> <span class="k">import</span> <span class="o">*</span>
+<span class="n">k</span> <span class="o">=</span> <span class="n">MTKinetic</span><span class="p">()</span>
+<span class="c"># theses widget will have kinetic movement</span>
+<span class="n">MTKinetic</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="n">MTScatterSvg</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="s">&#39;sun.svg&#39;</span><span class="p">))</span>
+<span class="n">MTKinetic</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="n">MTScatterSvg</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="s">&#39;cloud.svg&#39;</span><span class="p">))</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">MTWindow</span><span class="p">()</span>
+<span class="n">w</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+<span class="n">runTouchApp</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Warning: In the on_touch_move/on_touch_up, the touchID will not exists in
+the touches arguments.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>friction</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, defaults to 1.2</span></dt>
+<dd><p class="first last">The Psuedo-friction of the pseudo-kinetic scrolling.</p>
+</dd>
+<dt><cite>velstop</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to 1.0</span></dt>
+<dd><p class="first last">The distance of velocity vector to stop animation</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pymt.ui.widgets.kinetic.MTKinetic.process_kinetic">
+<!--[pymt.ui.widgets.kinetic.MTKinetic.process_kinetic]--><tt class="descname">process_kinetic</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.kinetic.MTKinetic.process_kinetic" title="Permalink to this definition">¶</a></dt>
+<dd>Processing of kinetic, called in draw time.</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.widgets.kinetic.MTKineticScrollText">
+<!--[pymt.ui.widgets.kinetic.MTKineticScrollText]-->class <tt class="descclassname">pymt.ui.widgets.kinetic.</tt><tt class="descname">MTKineticScrollText</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.kinetic.MTKineticScrollText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kinetic Scrolling widget
+It provides a vertical menu of items which you can
+scroll through by flicking your finger.  -<em>-Similar-</em>-
+to the one found on the iPhone.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><cite>iscolor</cite>: tuple, defaults to (1, .28, 0)</dt>
+<dd><p class="first last">The color for an item when it is selected</p>
+</dd>
+<dt><cite>font</cite> <span class="classifier-delimiter">:</span> <span class="classifier">string, defaults to <cite>Tahoma</cite></span></dt>
+<dd><p class="first last">Font Type</p>
+</dd>
+<dt><cite>font_size</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int, defaults to 16</span></dt>
+<dd><p class="first last">Font Size</p>
+</dd>
+<dt><a href="#id1"><span class="problematic" id="id2">`</span></a>friction ` <span class="classifier-delimiter">:</span> <span class="classifier">float, defaults to 1.1</span></dt>
+<dd><p class="first last">The Psuedo-friction of the psuedo-kinetic scrolling.</p>
+</dd>
+<dt><cite>items</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list, defaults to []</span></dt>
+<dd><p class="first last">The plain-text items that you would like to have within the widget.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Styles:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>item-color</cite> <span class="classifier-delimiter">:</span> <span class="classifier">color</span></dt>
+<dd><p class="first last">Color of an item</p>
+</dd>
+<dt><cite>item-selected</cite> <span class="classifier-delimiter">:</span> <span class="classifier">color</span></dt>
+<dd><p class="first last">Color of a selected item</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p>When an item is tapped and the blob has moved less than 10
+pixels(so we know they aren&#8217;t scrolling) it fires a 
+callback and passes the clicked text as the argument.</p>
+<dl class="method">
+<dt id="pymt.ui.widgets.kinetic.MTKineticScrollText.add">
+<!--[pymt.ui.widgets.kinetic.MTKineticScrollText.add]--><tt class="descname">add</tt><big>(</big><em>text</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.kinetic.MTKineticScrollText.add" title="Permalink to this definition">¶</a></dt>
+<dd>Function adds a new element to the widget.
+If this object is tapped, then a callback is
+called with the text as the argument</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.kinetic.MTKineticScrollText.dtext">
+<!--[pymt.ui.widgets.kinetic.MTKineticScrollText.dtext]--><tt class="descname">dtext</tt><big>(</big><em>text</em>, <em>pos</em>, <em>color=None</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.kinetic.MTKineticScrollText.dtext" title="Permalink to this definition">¶</a></dt>
+<dd>Function to draw text at a given pos.
+The Label rendered is persisten throughout the life
+of this object for latency reasons.  It is kept in
+self.label.</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.kinetic.MTKineticScrollText.on_item_select">
+<!--[pymt.ui.widgets.kinetic.MTKineticScrollText.on_item_select]--><tt class="descname">on_item_select</tt><big>(</big><em>item</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.kinetic.MTKineticScrollText.on_item_select" title="Permalink to this definition">¶</a></dt>
+<dd>Prototype for callback</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.kinetic.MTKineticScrollText.on_touch_down">
+<!--[pymt.ui.widgets.kinetic.MTKineticScrollText.on_touch_down]--><tt class="descname">on_touch_down</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.kinetic.MTKineticScrollText.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd>Callback for when a new touch appears.
+All we do here is set the friction to zero, so
+it stops as if we stopped it from spinning</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.kinetic.MTKineticScrollText.on_touch_move">
+<!--[pymt.ui.widgets.kinetic.MTKineticScrollText.on_touch_move]--><tt class="descname">on_touch_move</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.kinetic.MTKineticScrollText.on_touch_move" title="Permalink to this definition">¶</a></dt>
+<dd>Callback for when a blob moves.
+Here we add the relative movement to the offset, 
+to acheive the scrolling effect</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.kinetic.MTKineticScrollText.on_touch_up">
+<!--[pymt.ui.widgets.kinetic.MTKineticScrollText.on_touch_up]--><tt class="descname">on_touch_up</tt><big>(</big><em>touches</em>, <em>touchID</em>, <em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.kinetic.MTKineticScrollText.on_touch_up" title="Permalink to this definition">¶</a></dt>
+<dd>Callback for when the blob leaves the widget.
+Here we will set the last relative movement as
+the spin-down velocity, so it will continute to 
+spin after we let go.</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="api-pymt.ui.widgets.innerwindow.html" title="previous chapter">pymt.ui.widgets.innerwindow</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="api-pymt.ui.widgets.label.html" title="next chapter">pymt.ui.widgets.label</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/api-pymt.ui.widgets.kinetic.txt">Show Source</a></li>
+            </ul>
+          <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.ui.widgets.label.html" title="pymt.ui.widgets.label"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.ui.widgets.innerwindow.html" title="pymt.ui.widgets.innerwindow"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, pymt-dev.
+      Last updated on mars 17, 2009.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
+    </div>
+  </body>
+</html>

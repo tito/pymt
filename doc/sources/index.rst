@@ -10,7 +10,7 @@ Welcome to PyMT's documentation!
 .. toctree::
    :maxdepth: 2
 
-   api.rst
+   api-tree.rst
 
 Indices and tables
 ==================

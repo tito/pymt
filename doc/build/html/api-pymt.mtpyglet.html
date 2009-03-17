@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pymt.mtpyglet &mdash; PyMT v0.2 alpha documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2 alpha',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="up" title="PyMT - API Documentation" href="api-tree.html" />
+    <link rel="next" title="pymt.obj" href="api-pymt.obj.html" />
+    <link rel="prev" title="pymt.logger" href="api-pymt.logger.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.obj.html" title="pymt.obj"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.logger.html" title="pymt.logger"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="module-pymt.mtpyglet">
+<h1>pymt.mtpyglet<a class="headerlink" href="#module-pymt.mtpyglet" title="Permalink to this headline">¶</a></h1>
+<p>Soup on pyglet to provide multitouch interface.</p>
+<dl class="class">
+<dt id="pymt.mtpyglet.Tuio2DCursor">
+<!--[pymt.mtpyglet.Tuio2DCursor]-->class <tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">Tuio2DCursor</tt><big>(</big><em>blobID</em>, <em>args</em>, <em>time_start=0</em><big>)</big><a class="headerlink" href="#pymt.mtpyglet.Tuio2DCursor" title="Permalink to this definition">¶</a></dt>
+<dd>Represent a Tuio cursor + implementation of double-tap functionnality</dd></dl>
+
+<dl class="class">
+<dt id="pymt.mtpyglet.Tuio2DObject">
+<!--[pymt.mtpyglet.Tuio2DObject]-->class <tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">Tuio2DObject</tt><big>(</big><em>blobID</em>, <em>args</em><big>)</big><a class="headerlink" href="#pymt.mtpyglet.Tuio2DObject" title="Permalink to this definition">¶</a></dt>
+<dd>Represent a Tuio object</dd></dl>
+
+<dl class="class">
+<dt id="pymt.mtpyglet.TouchEventLoop">
+<!--[pymt.mtpyglet.TouchEventLoop]-->class <tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">TouchEventLoop</tt><big>(</big><em>host='127.0.0.1'</em>, <em>port=3333</em><big>)</big><a class="headerlink" href="#pymt.mtpyglet.TouchEventLoop" title="Permalink to this definition">¶</a></dt>
+<dd>Main event loop. This loop dispatch Tuio message and pyglet event.</dd></dl>
+
+<dl class="class">
+<dt id="pymt.mtpyglet.TouchWindow">
+<!--[pymt.mtpyglet.TouchWindow]-->class <tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">TouchWindow</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.mtpyglet.TouchWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base implementation of Tuio event in top of pyglet window.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Events:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>on_touch_down</cite></dt>
+<dd><p class="first last">Fired when a blob is detected</p>
+</dd>
+<dt><cite>on_touch_move</cite></dt>
+<dd><p class="first last">Fired when the blob is moving</p>
+</dd>
+<dt><cite>on_touch_up</cite></dt>
+<dd><p class="first last">Fired when the blob is gone</p>
+</dd>
+<dt><cite>on_object_down</cite></dt>
+<dd><p class="first last">Fired when the object is detected</p>
+</dd>
+<dt><cite>on_object_move</cite></dt>
+<dd><p class="first last">Fired when the object is moving</p>
+</dd>
+<dt><cite>on_object_up</cite></dt>
+<dd><p class="first last">Fired when the object is gone</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.mtpyglet.pymt_usage">
+<!--[pymt.mtpyglet.pymt_usage]--><tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">pymt_usage</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.mtpyglet.pymt_usage" title="Permalink to this definition">¶</a></dt>
+<dd><p>PyMT Usage: %s [OPTION...]
+-h, &#8211;help                        prints this mesage
+-f, &#8211;fullscreen                  force run in fullscreen
+-w, &#8211;windowed                    force run in window
+-p, &#8211;port=x                      specify Tuio port (default 3333)
+-H, &#8211;host=xxx.xxx.xxx.xxx        specify Tuio host (default 127.0.0.1)
+-F, &#8211;fps                         show fps in window</p>
+<blockquote>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">--dump-frame</span></kbd></td>
+<td>dump each frame in file</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--dump-prefix</span></kbd></td>
+<td>specify a prefix for each frame file</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--dump-format</span></kbd></td>
+<td>specify a format for dump</td></tr>
+</tbody>
+</table>
+</blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.mtpyglet.runTouchApp">
+<!--[pymt.mtpyglet.runTouchApp]--><tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">runTouchApp</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.mtpyglet.runTouchApp" title="Permalink to this definition">¶</a></dt>
+<dd>Static main function that starts the application loop</dd></dl>
+
+<dl class="function">
+<dt id="pymt.mtpyglet.startTuio">
+<!--[pymt.mtpyglet.startTuio]--><tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">startTuio</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.mtpyglet.startTuio" title="Permalink to this definition">¶</a></dt>
+<dd>Start Tuio listening</dd></dl>
+
+<dl class="function">
+<dt id="pymt.mtpyglet.stopTuio">
+<!--[pymt.mtpyglet.stopTuio]--><tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">stopTuio</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.mtpyglet.stopTuio" title="Permalink to this definition">¶</a></dt>
+<dd>Stop Tuio listening</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="api-pymt.logger.html" title="previous chapter">pymt.logger</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="api-pymt.obj.html" title="next chapter">pymt.obj</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/api-pymt.mtpyglet.txt">Show Source</a></li>
+            </ul>
+          <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.obj.html" title="pymt.obj"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.logger.html" title="pymt.logger"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, pymt-dev.
+      Last updated on mars 17, 2009.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
+    </div>
+  </body>
+</html>

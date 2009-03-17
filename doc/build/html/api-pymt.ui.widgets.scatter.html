@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pymt.ui.widgets.scatter &mdash; PyMT v0.2 alpha documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2 alpha',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="up" title="PyMT - API Documentation" href="api-tree.html" />
+    <link rel="next" title="pymt.ui.widgets.slider" href="api-pymt.ui.widgets.slider.html" />
+    <link rel="prev" title="pymt.ui.widgets.rectangle" href="api-pymt.ui.widgets.rectangle.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.ui.widgets.slider.html" title="pymt.ui.widgets.slider"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.ui.widgets.rectangle.html" title="pymt.ui.widgets.rectangle"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="module-pymt.ui.widgets.scatter">
+<h1>pymt.ui.widgets.scatter<a class="headerlink" href="#module-pymt.ui.widgets.scatter" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pymt.ui.widgets.scatter.MTScatterWidget">
+<!--[pymt.ui.widgets.scatter.MTScatterWidget]-->class <tt class="descclassname">pymt.ui.widgets.scatter.</tt><tt class="descname">MTScatterWidget</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.scatter.MTScatterWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>MTScatterWidget is a scatter widget based on MTWidget</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>rotation</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to 0.0</span></dt>
+<dd><p class="first last">Set initial rotation of widget</p>
+</dd>
+<dt><cite>translation</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list, default to (0,0)</span></dt>
+<dd><p class="first last">Set the initial translation of widget</p>
+</dd>
+<dt><cite>scale</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to 1.0</span></dt>
+<dd><p class="first last">Set the initial scaling of widget</p>
+</dd>
+<dt><cite>do_rotation</cite> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, default to True</span></dt>
+<dd><p class="first last">Set to False for disabling rotation</p>
+</dd>
+<dt><cite>do_translation</cite> <span class="classifier-delimiter">:</span> <span class="classifier">boolean or list, default to True</span></dt>
+<dd><p class="first last">Set to False for disabling translation, and [&#8216;x&#8217;], [&#8216;y&#8217;] for limit translation only on x or y</p>
+</dd>
+<dt><cite>do_scale</cite> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, default to True</span></dt>
+<dd><p class="first last">Set to False for disabling scale</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pymt.ui.widgets.scatter.MTScatterWidget.add_widget">
+<!--[pymt.ui.widgets.scatter.MTScatterWidget.add_widget]--><tt class="descname">add_widget</tt><big>(</big><em>w</em>, <em>side='front'</em>, <em>front=True</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.scatter.MTScatterWidget.add_widget" title="Permalink to this definition">¶</a></dt>
+<dd>Override this, because a side needs to be specififed</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.scatter.MTScatterWidget.flip">
+<!--[pymt.ui.widgets.scatter.MTScatterWidget.flip]--><tt class="descname">flip</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.scatter.MTScatterWidget.flip" title="Permalink to this definition">¶</a></dt>
+<dd>Triggers a flipping animation</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.scatter.MTScatterWidget.flip_children">
+<!--[pymt.ui.widgets.scatter.MTScatterWidget.flip_children]--><tt class="descname">flip_children</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.scatter.MTScatterWidget.flip_children" title="Permalink to this definition">¶</a></dt>
+<dd>Flips the children
+this has to be called exactly half way through the animation
+so it looks like there are actually two sides</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.widgets.scatter.MTScatterSvg">
+<!--[pymt.ui.widgets.scatter.MTScatterSvg]-->class <tt class="descclassname">pymt.ui.widgets.scatter.</tt><tt class="descname">MTScatterSvg</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.scatter.MTScatterSvg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render an svg image into a scatter widget</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>filename</cite> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Filename of image</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.widgets.scatter.MTScatterPlane">
+<!--[pymt.ui.widgets.scatter.MTScatterPlane]-->class <tt class="descclassname">pymt.ui.widgets.scatter.</tt><tt class="descname">MTScatterPlane</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.scatter.MTScatterPlane" title="Permalink to this definition">¶</a></dt>
+<dd>A Plane that transforms for zoom/rotate/pan.
+if none of the childwidgets handles the input (the background is touched), all of tehm are transformed together</dd></dl>
+
+<dl class="class">
+<dt id="pymt.ui.widgets.scatter.MTScatterImage">
+<!--[pymt.ui.widgets.scatter.MTScatterImage]-->class <tt class="descclassname">pymt.ui.widgets.scatter.</tt><tt class="descname">MTScatterImage</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.scatter.MTScatterImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>MTScatterImage is a image showed in a Scatter widget</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>filename</cite> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Filename of image</p>
+</dd>
+<dt><cite>loader</cite> <span class="classifier-delimiter">:</span> <span class="classifier">Loader instance</span></dt>
+<dd><p class="first last">Use the loader to load image</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="api-pymt.ui.widgets.rectangle.html" title="previous chapter">pymt.ui.widgets.rectangle</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="api-pymt.ui.widgets.slider.html" title="next chapter">pymt.ui.widgets.slider</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/api-pymt.ui.widgets.scatter.txt">Show Source</a></li>
+            </ul>
+          <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.ui.widgets.slider.html" title="pymt.ui.widgets.slider"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.ui.widgets.rectangle.html" title="pymt.ui.widgets.rectangle"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, pymt-dev.
+      Last updated on mars 17, 2009.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
+    </div>
+  </body>
+</html>

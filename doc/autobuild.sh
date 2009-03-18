@@ -4,6 +4,8 @@
 # @author Mathieu Virbel <tito@bankiz.org>
 #
 # This script is to generate the whole PyMT documentation
+# This is a shell script, doing bad bad bad thing.
+# Feel free to rewrite this in python :)
 #
 
 DEST_DIR=`dirname $0`/sources
@@ -22,6 +24,9 @@ echo "## Generate page for each files"
 
 # Copy template to the final rst
 cat $DEST_DIR/api-tree.tpl > $DEST_DIR/api-tree.rst
+toctree[1]=$DEST_DIR/api-tree.rst
+lasttoctree="tree"
+lastlevel=1
 
 # Iterate all the modules
 for MODULE in $(cat autobuild.list); do
@@ -29,7 +34,19 @@ for MODULE in $(cat autobuild.list); do
 	# Get informatiosn
 	FILENAME=api-$MODULE.rst
 
-	echo " + $FILENAME"
+	LEVEL=$(echo $MODULE | sed 's/[^.]//g' | wc -c)
+	LEVEL=$(($LEVEL))
+	if [ $LEVEL -gt $lastlevel ]; then
+		toctree[$LEVEL]=$DEST_DIR/api-$lasttoctree.rst
+
+		# Create toctree
+		echo """
+.. toctree::
+""" >> $DEST_DIR/api-$lasttoctree.rst
+	fi
+		
+
+	echo " + $FILENAME (l$((LEVEL)))"
 
 	# First line of doc
 	echo "import pymt
@@ -40,12 +57,17 @@ except:
 	SUMMARY=`python autobuild-module.py 2>/dev/null`
 	rm autobuild-module.py
 	echo "   SUMMARY: $SUMMARY"
+	
 
 	# Do remplacement
 	cat $DEST_DIR/api-module.tpl | sed "s/\$SUMMARY/$SUMMARY/g" | sed "s/\$MODULE/$MODULE/g" > $DEST_DIR/$FILENAME
 
 	# Add file on rst index
-	echo "    $FILENAME" >> $DEST_DIR/api-tree.rst
+	echo "    $FILENAME" >> ${toctree[$LEVEL]}
+
+	# Save this module as toctree if change
+	lasttoctree=$MODULE
+	lastlevel=$(($LEVEL))
 
 done
 

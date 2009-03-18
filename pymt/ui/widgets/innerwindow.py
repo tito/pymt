@@ -70,8 +70,7 @@ class MTInnerWindow(MTScatterWidget):
         for button in self.controls.children:
             button.scale = 0.5/self.get_scale_factor()
         self.controls.pos = self.width/2 - self.controls.children[0].width*3/2, -self.controls.children[0].height*1.7
-        for child in self.container.children:
-            child.on_resize(w,h)
+        self.container.size = (w, h)
 
     def on_touch_down(self, touches, touchID, x,y):
         lx,ly = super(MTInnerWindow, self).to_local(x,y)
@@ -96,7 +95,7 @@ class MTInnerWindow(MTScatterWidget):
         return (self.new_point.x, self.new_point.y)
 
     def collide_point(self, x,y):
-        scaled_border = int(self.border * (1.0/self.get_scale_factor()))
+        scaled_border = self.border * (1.0/self.get_scale_factor())
         local_coords = super(MTInnerWindow,self).to_local(x,y)
         left, right = -scaled_border, self.width+scaled_border*2
         bottom,top = -scaled_border,self.height+scaled_border*2
@@ -108,7 +107,7 @@ class MTInnerWindow(MTScatterWidget):
 
     def draw(self):
         set_color(*self.color)
-        scaled_border = int(self.border * (1.0/self.get_scale_factor()))
+        scaled_border = self.border * (1.0/self.get_scale_factor())
         drawRoundedRectangle((-scaled_border, -scaled_border), (self.width+scaled_border*2, self.height+scaled_border*2))
         drawRectangle(((self.width/2)-(scaled_border*2.5), -scaled_border), (scaled_border*5, -scaled_border*1.2))
 

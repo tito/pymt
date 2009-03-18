@@ -9,6 +9,8 @@ from widget import MTWidget
 from ...graphx import drawRectangle
 from ..factory import MTWidgetFactory
 
+stencil_stack = 0
+
 class MTStencilContainer(MTWidget):
     '''This container clip the children drawing to his container ::
 
@@ -24,26 +26,36 @@ class MTStencilContainer(MTWidget):
         super(MTStencilContainer, self).__init__(**kwargs)
 
     def on_draw(self):
-        # enable stencil test
-        glClearStencil(0)
-        glClear(GL_STENCIL_BUFFER_BIT)
-        glEnable(GL_STENCIL_TEST)
-        glStencilFunc(GL_NEVER, 0x0, 0x0)
-        glStencilOp(GL_INCR, GL_INCR, GL_INCR)
+		global stencil_stack
 
-        drawRectangle(pos=self.pos, size=self.size)
+		# push stack
+		glPushAttrib(GL_STENCIL_BUFFER_BIT | GL_STENCIL_TEST)
+		stencil_stack += 1
 
-        # draw inner content
-        glStencilFunc(GL_EQUAL, 0x1, 0x1)
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
+		# enable stencil test if not yet enabled
+		if not glIsEnabled(GL_STENCIL_TEST):
+			glClearStencil(0)
+			glClear(GL_STENCIL_BUFFER_BIT)
+			glEnable(GL_STENCIL_TEST)
 
-        # TODO optimize container to draw only children that match bbox
-        for w in self.children:
-            w.dispatch_event('on_draw')
+		# increment the draw buffer
+		glStencilFunc(GL_NEVER, 0x0, 0x0)
+		glStencilOp(GL_INCR, GL_INCR, GL_INCR)
+		glColorMask(0, 0, 0, 0)
+		drawRectangle(pos=self.pos, size=self.size)
+		glColorMask(1, 1, 1, 1)
 
-        glDisable(GL_STENCIL_TEST)
+		# draw inner content only when stencil match the buffer
+		glStencilFunc(GL_EQUAL, stencil_stack, stencil_stack)
+		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
 
+		# TODO optimize container to draw only children that match bbox
+		for w in self.children:
+			w.dispatch_event('on_draw')
 
+		# pop stack
+		stencil_stack -=1
+		glPopAttrib(GL_STENCIL_BUFFER_BIT | GL_STENCIL_TEST)
 
 # Register all base widgets
 MTWidgetFactory.register('MTStencilContainer', MTStencilContainer)

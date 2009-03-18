@@ -1,3 +1,7 @@
+'''
+Widgets: all the pymt widgets
+'''
+
 from layout import *
 from videowidget import *
 from vkeyboard import *
@@ -21,3 +25,4 @@ from svg import *
 from rectangle import *
 from tabs import *
 from mtanimatedmenu import *
+from stencilcontainer import *

@@ -1,3 +1,7 @@
+'''
+Form slider: a slider based on MTSlider + MTLabel
+'''
+
 __all__ = ['MTFormSlider']
 
 from ....graphx import set_color, drawRectangle
@@ -8,10 +12,19 @@ from abstract import MTAbstractFormWidget
 from label import MTFormLabel
 
 class MTFormSlider(MTAbstractFormWidget):
+    '''MTSlider is an implementation of a scrollbar using MTWidget.
+
+    :Parameters:
+        `min` : int, default is 0
+            Minimum value of slider
+        `max` : int, default is 100
+            Maximum value of slider
+        `value` : int, default is `min`
+            Default value of slider
+    '''
     def __init__(self, **kwargs):
         kwargs.setdefault('min', 0)
         kwargs.setdefault('max', 10)
-        kwargs.setdefault('orientation', 'horizontal')
         kwargs.setdefault('value', None)
         super(MTFormSlider, self).__init__(**kwargs)
         self._value = kwargs.get('min')
@@ -21,10 +34,8 @@ class MTFormSlider(MTAbstractFormWidget):
         self.slider = MTSlider(orientation='horizontal', min=kwargs.get('min'),
                               max=kwargs.get('max'), value=kwargs.get('value'),
                               size=(200,30))
-        print self.slider.size
         self.layout.add_widget(self.slider)
         self.label = MTFormLabel(label=str(int(self.value)), font_style='bold', font_size=16)
-        print self.label.size
         self.layout.add_widget(self.label)
         # FIXME: don't add 20, try to figure the good value
         # Ideal: (Label(text=str(self.max)).content_width)

@@ -1,4 +1,7 @@
-#!/usr/bin/env python
+'''
+Graphx: simplification of opengl pritimives
+'''
+
 from __future__ import with_statement
 
 __all__ = [
@@ -7,8 +10,7 @@ __all__ = [
     # draw
     'paintLine',
     'drawLabel', 'drawRoundedRectangle',
-    'drawRoundedRectangleBorder',
-    'drawCircle', 'drawTrianglePoints',
+    'drawCircle', 'drawPolygon',
     'drawTriangle', 'drawRectangle',
     'drawTexturedRectangle', 'drawLine',
     # class for with statement
@@ -37,27 +39,41 @@ BLUE = (0.0,0.0,1.0)
 _brush_texture = None
 _bruch_size = 10
 
-def setBrush(sprite, size=10):
-    """deprecated use set_brush"""
-    set_brush(sprite, size)
-    print "setBrush function is deprectead.  use set_brush() instead"
-
 def set_brush(sprite, size=10):
+    '''Define the brush to use for paint* functions
+
+    :Parameters:
+        `sprite` : string
+            Filename of image brush
+        `size` : int, default to 10
+            Size of brush
+    '''
     global _brush_texture
     point_sprite_img = pyglet.image.load(sprite)
     _brush_texture = point_sprite_img.get_texture()
     _bruch_size = size
 
-def enable_blending():
-    pymt_logger.warning('deprecated, use "with gx_blending:" now.')
-    glEnable(GL_BLEND)
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-def disable_blending():
-    pymt_logger.warning('deprecated, use "with gx_blending:" now.')
-    glDisable(GL_BLEND)
 
 def set_color(*colors, **kwargs):
+    '''Define current color to be used.
+
+        set_color(1, 0, 0, 1)
+        drawLabel('Hello', pos=(100, 0))
+        set_color(0, 1, 0, 1)
+        drawLabel('World', pos=(200, 0))
+
+    .. Note:
+        Blending is activated if alpha value != 1
+
+    :Parameters:
+        `*colors` : list
+            Can have 3 or 4 float value (between 0 and 1)
+        `sfactor` : opengl factor, default to GL_SRC_ALPHA
+            Default source factor to be used if blending is activated
+        `dfactor` : opengl factor, default to GL_ONE_MINUS_SRC_ALPHA
+            Default destination factor to be used if blending is activated
+    '''
+
     kwargs.setdefault('sfactor', GL_SRC_ALPHA)
     kwargs.setdefault('dfactor', GL_ONE_MINUS_SRC_ALPHA)
     if len(colors) == 4:
@@ -72,7 +88,21 @@ def set_color(*colors, **kwargs):
         glDisable(GL_BLEND)
 
 
-def drawLabel(text, pos=(0,0),center=True, font_size=16):
+def drawLabel(text, pos=(0,0), center=True, font_size=16):
+    '''Draw a label on the window.
+
+    :Parameters:
+        `text` : str
+            Text to be draw
+        `pos` : tuple, default to (0, 0)
+            Position of text
+        `font_size` : int, default to 16
+            Font size of label
+    
+    .. Warning:
+        Use only for debugging, it's a performance killer function.
+        The label is recreated each time the function is called !
+    '''
     temp_label = Label(text, font_size=font_size, bold=True)
     if center:
         temp_label.anchor_x = 'center'
@@ -82,8 +112,6 @@ def drawLabel(text, pos=(0,0),center=True, font_size=16):
         temp_label.anchor_y = 'bottom'
     temp_label.x = 0
     temp_label.y = 0
-    temp_label.text = text
-    temp_label.font_size=font_size
     with gx_matrix:
         glTranslated(pos[0], pos[1], 0.0)
         glScaled(0.6,0.6,1)
@@ -91,12 +119,13 @@ def drawLabel(text, pos=(0,0),center=True, font_size=16):
     return temp_label.content_width
 
 
-
-
-
-
-# paint a line with current brush
 def paintLine(points):
+    '''Paint a line with current brush ::
+
+        set_brush("mybrush.png", 10)
+        paintLine(0, 0, 20, 50)
+
+    '''
     p1 = (points[0], points[1])
     p2 = (points[2], points[3])
     with DO(gx_blending, gx_enable(GL_POINT_SPRITE_ARB), gx_enable(_brush_texture.target)):
@@ -112,8 +141,27 @@ def paintLine(points):
             pointList[i * 2 + 1] = p1[1] + dy* (float(i)/numsteps)
         draw(numsteps, GL_POINTS, ('v2f', pointList))
 
+
 def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
-                         linewidth=1.5, precision=0.5):
+                         linewidth=1.5, precision=0.5, style=GL_POLYGON):
+    '''Draw a rounded rectangle
+
+    :Parameters:
+        `pos` : tuple, default to (0, 0)
+            Position of rectangle
+        `size` : tuple, default to (100, 50)
+            Size of rectangle
+        `radius` : int, default to 5
+            Radius of corner
+        `color` : tuple, default to None
+            Color to be passed to set_color()
+        `linewidth` : float, default to 1.5
+            Line with of border
+        `precision` : float, default to 0.5
+            Precision of corner angle
+        `style` : opengl begin, default to GL_POLYGON
+            Style of the rounded rectangle (try GL_LINE_LOOP)
+    '''
     x, y = pos
     w, h = size
 
@@ -121,7 +169,7 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
         set_color(*color)
     glLineWidth(linewidth)
 
-    with gx_begin(GL_POLYGON):
+    with gx_begin(style):
 
         glVertex2f(x + radius, y)
         glVertex2f(x + w-radius, y)
@@ -158,73 +206,61 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
             sy = y + radius + math.sin(t) * radius
             glVertex2f (sx, sy)
             t += precision
-
-def drawRoundedRectangleBorder(pos=(0,0), size=(100,50), radius=5, color=None,
-                         linewidth=1.5, precision=0.5):
-    x, y = pos
-    w, h = size
-
-    if color:
-        set_color(*color)
-    glLineWidth(linewidth)
-
-    with gx_begin(GL_LINE_LOOP):
-
-        glVertex2f(x + radius, y)
-        glVertex2f(x + w-radius, y)
-        t = math.pi * 1.5
-        while t < math.pi * 2:
-            sx = x + w - radius + math.cos(t) * radius
-            sy = y + radius + math.sin(t) * radius
-            glVertex2f(sx, sy)
-            t += precision
-
-        glVertex2f(x + w, y + radius)
-        glVertex2f(x + w, y + h - radius)
-        t = 0
-        while t < math.pi * 0.5:
-            sx = x + w - radius + math.cos(t) * radius
-            sy = y + h -radius + math.sin(t) * radius
-            glVertex2f(sx, sy)
-            t += precision
-
-        glVertex2f(x + w -radius, y + h)
-        glVertex2f(x + radius, y + h)
-        t = math.pi * 0.5
-        while t < math.pi:
-            sx = x  + radius + math.cos(t) * radius
-            sy = y + h - radius + math.sin(t) * radius
-            glVertex2f(sx, sy)
-            t += precision
-
-        glVertex2f(x, y + h - radius)
-        glVertex2f(x, y + radius)
-        t = math.pi
-        while t < math.pi * 1.5:
-            sx = x + radius + math.cos(t) * radius
-            sy = y + radius + math.sin(t) * radius
-            glVertex2f (sx, sy)
-            t += precision
-
 
 
 def drawCircle(pos=(0,0), radius=1.0):
+    '''Draw a simple circle
+
+    :Parameters:
+        `pos` : tuple, default to (0, 0)
+            Position of circle
+        `radius` : float, default to 1.0
+            Radius of circle
+    '''
     x, y = pos[0], pos[1]
     with gx_matrix:
         glTranslated(x,y, 0)
         glScaled(radius, radius,1.0)
         gluDisk(gluNewQuadric(), 0, 1, 32,1)
 
-def drawTrianglePoints(points, style=GL_TRIANGLES):
+def drawPolygon(points, style=GL_TRIANGLES):
+    '''Draw polygon from points list
+
+    :Parameters:
+        `points` : list
+            List of points, length must be power of 2. (x,y,x,y...)
+        `style` : opengl begin, default to GL_TRIANGLES
+            Default type to draw (will be passed to glBegin)
+    '''
     with gx_begin(style):
         while len(points):
             glVertex2f(points.pop(), points.pop())
 
 def drawTriangle(pos, w, h, style=GL_TRIANGLES):
+    '''Draw one triangle
+
+    :Parameters:
+        `pos` : tuple
+            Position of triangle
+        `w` : int
+            Width of triangle
+        `h` : int
+            Height of triangle
+    '''
     points = [pos[0]-w/2, pos[1], pos[0]+w/2, pos[1], pos[0], pos[1]+h]
     drawTrianglePoints(points)
 
 def drawRectangle(pos=(0,0), size=(1.0,1.0), style=GL_QUADS):
+    '''Draw a simple rectangle
+
+    :Parameters:
+        `pos` : tuple, default to (0, 0)
+            Position of rectangle
+        `size` : tuple, default to (1.0, 1.0)
+            Size of rectangle
+        `style` : opengl begin, default to GL_QUADS
+            Style of rectangle (try GL_LINE_LOOP)
+    '''
     with gx_begin(style):
         glVertex2f(pos[0], pos[1])
         glVertex2f(pos[0] + size[0], pos[1])
@@ -232,13 +268,34 @@ def drawRectangle(pos=(0,0), size=(1.0,1.0), style=GL_QUADS):
         glVertex2f(pos[0], pos[1] + size[1])
 
 def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0)):
+    '''Draw a rectangle with a texture
+
+    :Parameters:
+        `texture` : int
+            OpenGL id of texture
+        `pos` : tuple, default to (0, 0)
+            Position of rectangle
+        `size` : tuple, default to (1.0, 1.0)
+            Size of rectangle
+    '''
     with gx_enable(GL_TEXTURE_2D):
         glBindTexture(GL_TEXTURE_2D,texture)
-        pos = ( pos[0],pos[1],   pos[0]+size[0],pos[1],   pos[0]+size[0],pos[1]+size[1],  pos[0],pos[1]+size[1] )
+        pos = ( pos[0], pos[1],
+                pos[0] + size[0], pos[1],
+                pos[0] + size[0], pos[1] + size[1],
+                pos[0], pos[1] + size[1])
         texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
         draw(4, GL_QUADS, ('v2f', pos), ('t2f', texcoords))
 
 def drawLine(points, width=5.0):
+    '''Draw a line
+    
+    :Parameters:
+        `points` : list
+            List of point to draw, len must be power of 2
+        `widget` : float, default to 5.0
+            Default width of line
+    '''
     glLineWidth(width)
     points = list(points)
     with gx_begin(GL_LINES):
@@ -288,6 +345,12 @@ class GlDisplayList:
         glCallList(self.dl)
 
 class DO:
+    '''A way to do multiple action in with statement ::
+
+        with DO(stmt1, stmt2):
+            print 'something'
+
+    '''
     def __init__(self, *args):
         self.args = args
 
@@ -318,8 +381,9 @@ gx_blending = GlBlending()
 
 
 class GlMatrix:
-    '''Abstraction for glPushMatrix/glPopMatrix ! Don't use directly this class.
-    We've got 2 alias: gx_matrix and gx_matrix_identity
+    '''Statement of glPushMatrix/glPopMatrix, designed to be use with "with" keyword.
+
+    Alias: gx_matrix, gx_matrix_identity ::
 
     with gx_matrix:
         # do draw function
@@ -344,6 +408,10 @@ gx_matrix = GlMatrix()
 gx_matrix_identity = GlMatrix(do_loadidentity=True)
 
 class GlEnable:
+    '''Statement of glEnable/glDisable, designed to be use with "with" keyword.
+
+    Alias: gx_enable.
+    '''
     def __init__(self, flag):
         self.flag = flag
 
@@ -356,6 +424,10 @@ class GlEnable:
 gx_enable = GlEnable
 
 class GlBegin:
+    '''Statement of glBegin/glEnd, designed to be use with "with" keyword
+
+    Alias: gx_begin.
+    '''
     def __init__(self, flag):
         self.flag = flag
 
@@ -368,7 +440,15 @@ class GlBegin:
 gx_begin = GlBegin
 
 ### FBO, PBO, opengl stuff
-class Fbo:
+class Fbo(object):
+    '''OpenGL Framebuffer abstraction.
+    It's a framebuffer you can use to draw temporary things,
+    and use it as a texture.
+
+    .. Warning:
+        It's not supported by all hardware, use with care !
+
+    '''
 
     fbo_stack = [0]
 

@@ -1,3 +1,7 @@
+'''
+Window package: provide a window + a touch display
+'''
+
 __all__ = ['MTWindow', 'MTDisplay']
 
 import sys

@@ -1,3 +1,6 @@
+'''
+Tabs widget: widget that provide tabs (like tabbed notebook)
+'''
 from __future__ import with_statement
 __all__ = ['MTTabs']
 
@@ -11,24 +14,24 @@ class MTTabs(MTWidget):
     When you add a widget into tabs, make sure
     they are at least one tab information ::
 
-    tabs = MTTabs()
-    w = MTWidget()
-    w.tab = 'Title of tab'
-    tabs.add_widget(w)
+		tabs = MTTabs()
+		w = MTWidget()
+		w.tab = 'Title of tab'
+		tabs.add_widget(w)
 
     or ::
 
-    tabs = MTTabs()
-    w = MTWidget()
-    tabs.add_widget(w, tab='Title of tab')
+		tabs = MTTabs()
+		w = MTWidget()
+		tabs.add_widget(w, tab='Title of tab')
 
 
     If you want to select a tab, use select() ::
 
-    tabs = MTTabs()
-    tabs.add_widget(MTButton(label="Hello"), tab='Tab1')
-    tabs.add_widget(MTButton(label="World"), tab='Tab2')
-    tabs.select('Tab2')
+		tabs = MTTabs()
+		tabs.add_widget(MTButton(label="Hello"), tab='Tab1')
+		tabs.add_widget(MTButton(label="World"), tab='Tab2')
+		tabs.select('Tab2')
 
     '''
     def __init__(self, **kwargs):

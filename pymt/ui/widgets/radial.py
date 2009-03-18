@@ -1,3 +1,7 @@
+'''
+Vector slider: a radial slider that provide vector manipulation
+'''
+
 from __future__ import with_statement
 from __future__ import division
 

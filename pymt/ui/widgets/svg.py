@@ -1,3 +1,6 @@
+'''
+SVG widget: widget that display an svg image
+'''
 __all__ = ['MTSvg']
 
 import os

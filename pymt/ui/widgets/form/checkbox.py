@@ -1,3 +1,7 @@
+'''
+Form checkbox: a simple checkbox
+'''
+
 __all__ = ['MTFormCheckbox']
 
 from ....graphx import set_color, drawRectangle

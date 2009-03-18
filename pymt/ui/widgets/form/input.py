@@ -1,3 +1,7 @@
+'''
+Form input: one-line text input
+'''
+
 __all__ = ['MTFormInput']
 
 from abstract import MTAbstractFormWidget

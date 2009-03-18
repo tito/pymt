@@ -1,5 +1,5 @@
 '''
-Geometric module provide some class to handle 3D Mesh.
+Geometric: module provide some class to handle 3D Mesh.
 '''
 __all__ = ['Material', 'MaterialGroup', 'Mesh']
 

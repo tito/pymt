@@ -1,3 +1,7 @@
+'''
+Gesture widget: a widget with on_gesture event implementation
+'''
+
 __all__ = ['MTGestureWidget']
 
 from ...gesture import Gesture

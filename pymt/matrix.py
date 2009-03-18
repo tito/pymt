@@ -24,6 +24,9 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 # version 1.0.0 - January 23, 2007
+'''
+Matrix: matrix implementation, used for scatter
+'''
 
 import random,math,operator
 

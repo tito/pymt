@@ -1,3 +1,7 @@
+'''
+XML widget: parse xml and create his children
+'''
+
 __all__ = ['XMLWidget']
 
 from xml.dom import minidom, Node
@@ -6,8 +10,31 @@ from ..factory import MTWidgetFactory
 from widget import MTWidget
 
 class XMLWidget(MTWidget):
-    def __init__(self, xml=None):
-        MTWidget.__init__(self)
+    '''XML widget create all his children by parsing and execute xml ::
+
+        from pymt import *
+        data = """<?xml version="1.0"?>
+        <MTKinetic>
+            <MTButton label="1" pos="(50,50)"/>
+            <MTButton label="2" pos="(250,50)"/>
+            <MTButton label="3" pos="(50,250)"/>
+        </MTKinetic>
+        """
+        w = XMLWidget(xml=data)
+
+    .. warning::
+        the value is passed to eval function. Don't provide xml from
+        untrusted source !
+
+
+    :Parameters:
+        `xml` : string, default is None
+            XML string that contain all the data
+    '''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('xml', None)
+        super(XMLWidget, self).__init__(**kwargs)
+        xml = kwargs.get('xml')
         if xml is not None:
             self.loadString(xml)
 
@@ -44,14 +71,6 @@ class XMLWidget(MTWidget):
         root = doc.documentElement
         self.add_widget(self.createNode(root))
 
-
-def showNode(node):
-	if node.nodeType == Node.ELEMENT_NODE:
-		print 'Element name: %s' % node.nodeName
-		for (name, value) in node.attributes.items():
-			print '    Attr -- Name: %s  Value: %s' % (name, value)
-		if node.attributes.get('ID') is not None:
-			print '    ID: %s' % node.attributes.get('ID').value
 
 # Register all base widgets
 MTWidgetFactory.register('XMLWidget', XMLWidget)

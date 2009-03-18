@@ -1,3 +1,7 @@
+'''
+Multislider: a multislider implementation based on MTSlider
+'''
+
 __all__ = ['MTMultiSlider']
 
 from ...graphx import set_color, drawRectangle

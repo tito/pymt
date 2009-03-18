@@ -1,3 +1,7 @@
+'''
+Video widget: provide a video container (avbin is needed.)
+'''
+
 from __future__ import with_statement
 __all__ = ['MTVideo']
 

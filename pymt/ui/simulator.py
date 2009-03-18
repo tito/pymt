@@ -1,3 +1,7 @@
+'''
+Simulator: generate touch event with mouse
+'''
+
 __all__ = ['MTSimulator']
 
 from pyglet import *

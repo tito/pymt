@@ -1,3 +1,7 @@
+'''
+Dragable widget: a moveable widget over the window
+'''
+
 __all__ = ['MTDragableWidget']
 
 from ..factory import MTWidgetFactory

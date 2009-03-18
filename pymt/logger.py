@@ -1,3 +1,7 @@
+'''
+Logger: the PyMT logger
+'''
+
 import logging
 
 __all__ = ['pymt_logger', 'LOG_LEVELS', 'COLORS']

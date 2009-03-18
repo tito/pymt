@@ -1,3 +1,7 @@
+'''
+Label: a simple text label
+'''
+
 from __future__ import with_statement
 __all__ = ['MTLabel']
 
@@ -9,6 +13,8 @@ class MTLabel(MTWidget):
     '''A simple label
 
     :Styles:
+		`text` : string, default is 'MTLabel'
+			Text of label
         `font-size` : int
             Size of font
     '''

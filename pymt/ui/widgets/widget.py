@@ -1,3 +1,7 @@
+'''
+MTWidget: Base of every widget implementation.
+'''
+
 __all__ = ['getWidgetById',
     'event_stats_activate', 'event_stats_print',
     'MTWidget'

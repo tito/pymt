@@ -1,4 +1,7 @@
-'''Base for gesture recognition. You can easily use these class to create
+'''
+Gesture: Base for gesture recognition.
+
+You can easily use these class to create
 new gesture, and compare them ! ::
 
     from pymt import *

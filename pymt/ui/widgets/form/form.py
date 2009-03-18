@@ -1,3 +1,6 @@
+'''
+Form: a form container
+'''
 __all__ = ['MTForm']
 
 from abstract import MTAbstractFormWidget

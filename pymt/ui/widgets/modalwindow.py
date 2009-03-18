@@ -1,3 +1,7 @@
+'''
+Modal window: a modal window implementation, that stop all interaction with widget on his back
+'''
+
 from __future__ import with_statement
 __all__ = ['MTModalWindow']
 

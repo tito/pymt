@@ -1,3 +1,7 @@
+'''
+Plugins: basic plugins management, used for desktop examples
+'''
+
 __all__ = ['MTContext', 'MTPlugins']
 
 import sys

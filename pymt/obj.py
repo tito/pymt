@@ -1,3 +1,6 @@
+'''
+Obj: handle 3D mesh
+'''
 __all__ = ['OBJ']
 
 import os

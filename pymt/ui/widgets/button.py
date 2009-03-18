@@ -1,3 +1,7 @@
+'''
+Button package: implement different type of button (simple, toggle, image...)
+'''
+
 from __future__ import with_statement
 __all__ = ['MTButton', 'MTToggleButton', 'MTImageButton']
 
@@ -25,6 +29,16 @@ class MTButton(MTWidget):
             Font bold of label
         `border_radius`: float, default is 0
             Radius of background border
+
+	:Styles:
+		`color-down`: color
+			Background-color of the button when it is press
+
+	:Events:
+		`on_press`
+			Fired when the button are pressed (not released)
+		`on_release`
+			Fired when the button are released
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('label', '')

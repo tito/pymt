@@ -1,5 +1,5 @@
 '''
-Soup on pyglet to provide multitouch interface.
+Pyglet: Soup on pyglet to provide multitouch interface.
 '''
 
 __all__ = [

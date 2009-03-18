@@ -1,3 +1,7 @@
+'''
+Color picker: a simple color picker with 3 slider
+'''
+
 __all__ = ['MTColorPicker']
 
 from pyglet.gl import *

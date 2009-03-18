@@ -1,4 +1,7 @@
-r'''This is the Asynchronous Loader. You can use it to load an image
+'''
+Loader: asynchronous loader, easily extensible.
+
+This is the Asynchronous Loader. You can use it to load an image
 and use it, even if data are not yet available. You must specify a default
 loading image for using a such loader ::
 

@@ -1,3 +1,7 @@
+'''
+Slider package: provide multiple slider implementation (simple, xy, boundary...)
+'''
+
 from __future__ import with_statement, division
 import random
 __all__ = ['MTSlider', 'MTXYSlider', 'MTBoundarySlider']
@@ -21,6 +25,7 @@ class MTSlider(MTWidget):
             Default value of slider
         `slidercolor` : tuple
             color of the slider in (r,g,b,a)
+
     :Styles:
         `slider-color` : color
             Color of the slider

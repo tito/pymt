@@ -1,3 +1,9 @@
+'''
+Factory: all widgets are registered through this factory
+
+It is needed for external instance, like XMLWidget.
+'''
+
 __all__ = ['MTWidgetFactory']
 
 class MTWidgetFactory(object):

@@ -1,3 +1,7 @@
+'''
+Colors: parse and handle CSS for PyMT
+'''
+
 from __future__ import with_statement
 __all__ = ['default_css', 'css_get_style', 'get_truncated_classname', 'pymt_sheet']
 

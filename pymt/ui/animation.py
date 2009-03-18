@@ -1,3 +1,7 @@
+'''
+Animation package: handle animation, and default alpha method
+'''
+
 __all__ = ['AnimationAlpha', 'Animation']
 
 from pyglet import *

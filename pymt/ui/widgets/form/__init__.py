@@ -1,3 +1,7 @@
+'''
+Form package provide label, button input, checkbox, slider...
+'''
+
 from form import MTForm
 from label import MTFormLabel
 from button import MTFormButton

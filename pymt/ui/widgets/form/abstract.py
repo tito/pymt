@@ -1,3 +1,7 @@
+'''
+Abstract form widget: base for every form widget
+'''
+
 __all__ = ['MTAbstractFormWidget']
 
 from ..widget import MTWidget

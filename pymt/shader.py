@@ -1,3 +1,7 @@
+'''
+Shader: abstraction of Shader compilation and usage
+'''
+
 __all__ = ['ShaderException', 'Shader']
 
 import ctypes as c

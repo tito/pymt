@@ -1,3 +1,7 @@
+'''
+Wallpaper window: a window with background wallpaper
+'''
+
 __all__ = ['MTWallpaperWindow']
 
 import pyglet.image
@@ -6,6 +10,14 @@ from ..logger import pymt_logger
 from window import MTWindow
 
 class MTWallpaperWindow(MTWindow):
+    '''Wallpaper window can draw a wallpaper as background.
+
+    :Parameters:
+        `wallpaper` : string, default is None
+            Filename of wallpaper
+        `position` : const, default to MTWallpaperWindow.CENTER
+            Default position of wallpaper
+    '''
 
     NOREPEAT = 0
     CENTER = 1

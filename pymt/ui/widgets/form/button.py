@@ -1,3 +1,7 @@
+'''
+Form button: button for Form
+'''
+
 __all__ = ['MTFormButton']
 
 from ....graphx import set_color, drawRoundedRectangle

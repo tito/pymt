@@ -1,3 +1,7 @@
+'''
+Popup: a simple popup that use modal window
+'''
+
 __all__ = ['MTPopup']
 
 from modalwindow import MTModalWindow

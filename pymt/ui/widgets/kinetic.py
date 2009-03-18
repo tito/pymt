@@ -1,5 +1,5 @@
 '''
-Kinetic Scrolling widget for PyMT
+Kinetic : kinetic abstraction
 Initially written by Alex Teiche <xelapond@gmail.com>
 '''
 

@@ -131,7 +131,7 @@ class MTMenuItem:
         drawRoundedRectangle (pos=p, size=s)
 
         set_color(*bordercolor)
-        drawRoundedRectangleBorder (pos=p, size=s, linewidth=1)
+        drawRoundedRectangle (pos=p, size=s, linewidth=1, style=GL_LINE_LOOP)
         self.label.color = (int(textcolor[0] * 255.0), int(textcolor[1] * 255.0), 
                             int(textcolor[2] * 255.0), int(textcolor[3] * 255.0))
         self.label.x, self.label.y = p[0] + s[0] / 2, p[1] + s[1] / 2

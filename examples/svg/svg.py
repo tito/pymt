@@ -9,9 +9,9 @@ PLUGIN_DESCRIPTION = 'This is an example of Scalable Vector Graphics using the S
 
 
 def pymt_plugin_activate(w, ctx):
-    sun = MTScatterSvg(filename = 'sun.svg', pos = (200,200))
-    cloud = MTScatterSvg(filename = 'cloud.svg', pos = (50,100))
-    ship = MTScatterSvg(filename = 'ship.svg', pos = (280,100))
+    sun = MTScatterSvg(filename = '../svg/sun.svg', pos = (200,200))
+    cloud = MTScatterSvg(filename = '../svg/cloud.svg', pos = (50,100))
+    ship = MTScatterSvg(filename = '../svg/ship.svg', pos = (280,100))
     ctx.c = MTKinetic()
     ctx.c.add_widget(sun)
     ctx.c.add_widget(cloud)

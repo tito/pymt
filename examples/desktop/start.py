@@ -75,16 +75,18 @@ class MTMenu(MTBoxLayout):
         kwargs.setdefault('orientation', 'vertical')
         kwargs.setdefault('uniform_width', True)
         kwargs.setdefault('uniform_height', True)
+        kwargs.setdefault('color', (0,0,0,0))
         super(MTMenu, self).__init__(**kwargs)
 
         self.orig_x = self.x
         self.orig_y = self.y
+        self.color = kwargs.get('color')
 
         plist = plugins.list()
         while len(plist):
             name, plugin = plist.popitem()
             infos = plugins.get_infos(plugin)
-            w = MTActionButton(label=infos.get('title'), color=self.color,
+            w = MTActionButton(label=infos.get('title'), bgcolor=self.color,
                     action=action_launch_plugin, args=[name, plugin])
             self.add_widget(w)
 

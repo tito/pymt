@@ -27,7 +27,7 @@ class MTRectangularWidget(MTWidget):
 
     def apply_css(self, styles):
         if 'bg-color' in styles:
-            self.bgcolor = kwargs.set('bg-color')
+            self.bgcolor = styles.get('bg-color')
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -45,7 +45,7 @@ class MTRectangularWidget(MTWidget):
             return True
 
     def draw(self):
-        set_color(*self.color)
+        set_color(*self.bgcolor)
         drawRectangle(self.pos, self.size)
 
 MTWidgetFactory.register('MTRectangularWidget', MTRectangularWidget)

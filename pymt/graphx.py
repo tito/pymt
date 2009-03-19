@@ -249,7 +249,7 @@ def drawTriangle(pos, w, h, style=GL_TRIANGLES):
             Height of triangle
     '''
     points = [pos[0]-w/2, pos[1], pos[0]+w/2, pos[1], pos[0], pos[1]+h]
-    drawTrianglePoints(points)
+    drawPolygon(points)
 
 def drawRectangle(pos=(0,0), size=(1.0,1.0), style=GL_QUADS):
     '''Draw a simple rectangle

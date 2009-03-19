@@ -17,7 +17,7 @@ class HVMatrixButton(MTButton):
         if self._state[0] == 'down':
             set_color(*self.color_down)
         else:
-            set_color(*self.color)
+            set_color(*self.bgcolor)
         drawRoundedRectangle(self.pos, self.size)
 
 class HVMatrix(MTWidget):

@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.colors
+Colors: parse and handle CSS for PyMT
 =========================================================
 
 .. automodule:: pymt.ui.colors
-	:members:
+    :members:
+
+.. toctree::
 

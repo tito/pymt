@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.factory
+Factory: all widgets are registered through this factory
 =========================================================
 
 .. automodule:: pymt.ui.factory
-	:members:
+    :members:
+
+.. toctree::
 

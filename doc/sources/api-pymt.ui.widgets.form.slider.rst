@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.widgets.form.slider
+Form slider: a slider based on MTSlider + MTLabel
 =========================================================
 
 .. automodule:: pymt.ui.widgets.form.slider
-	:members:
+    :members:
+
+.. toctree::
 

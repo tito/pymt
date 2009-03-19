@@ -1,7 +1,9 @@
 =========================================================
-pymt.shader
+Shader: abstraction of Shader compilation and usage
 =========================================================
 
 .. automodule:: pymt.shader
-	:members:
+    :members:
+
+.. toctree::
 

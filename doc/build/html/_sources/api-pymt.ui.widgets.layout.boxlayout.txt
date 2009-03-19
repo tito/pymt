@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.widgets.layout.boxlayout
+NO DOCUMENTATION (module pymt.ui.widgets.layout.boxlayout)
 =========================================================
 
 .. automodule:: pymt.ui.widgets.layout.boxlayout
-	:members:
+    :members:
+
+.. toctree::
 

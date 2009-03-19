@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.widgets.kinetic
+Kinetic : kinetic abstraction
 =========================================================
 
 .. automodule:: pymt.ui.widgets.kinetic
-	:members:
+    :members:
+
+.. toctree::
 

@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.widgets.tabs
+Tabs widget: widget that provide tabs (like tabbed notebook)
 =========================================================
 
 .. automodule:: pymt.ui.widgets.tabs
-	:members:
+    :members:
+
+.. toctree::
 

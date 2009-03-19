@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pymt.gesture &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Gesture: Base for gesture recognition. &mdash; PyMT v0.2 alpha documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -20,9 +20,9 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
-    <link rel="up" title="PyMT - API Documentation" href="api-tree.html" />
-    <link rel="next" title="pymt.graphx" href="api-pymt.graphx.html" />
-    <link rel="prev" title="pymt.geometric" href="api-pymt.geometric.html" /> 
+    <link rel="up" title="PyMT: a multi touch UI toolkit for pyglet." href="api-pymt.html" />
+    <link rel="next" title="Matrix: matrix implementation, used for scatter" href="api-pymt.matrix.html" />
+    <link rel="prev" title="Geometric: module provide some class to handle 3D Mesh." href="api-pymt.geometric.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,13 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.graphx.html" title="pymt.graphx"
+          <a href="api-pymt.matrix.html" title="Matrix: matrix implementation, used for scatter"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.geometric.html" title="pymt.geometric"
+          <a href="api-pymt.geometric.html" title="Geometric: module provide some class to handle 3D Mesh."
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
-          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+          <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
+          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -51,10 +52,11 @@
             
   
   <div class="section" id="module-pymt.gesture">
-<h1>pymt.gesture<a class="headerlink" href="#module-pymt.gesture" title="Permalink to this headline">¶</a></h1>
-<p>Base for gesture recognition. You can easily use these class to create
+<h1>Gesture: Base for gesture recognition.<a class="headerlink" href="#module-pymt.gesture" title="Permalink to this headline">¶</a></h1>
+<p>Gesture: Base for gesture recognition.</p>
+<p>You can easily use these class to create
 new gesture, and compare them !</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">from</span> <span class="nn">pymt</span> <span class="k">import</span> <span class="o">*</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymt</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="c"># Create a gesture</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">Gesture</span><span class="p">()</span>
@@ -178,10 +180,13 @@ Finds the length of the stroke. If a point list is given, finds the length of th
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
+            </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.geometric.html" title="previous chapter">pymt.geometric</a></p>
+            <p class="topless"><a href="api-pymt.geometric.html" title="previous chapter">Geometric: module provide some class to handle 3D Mesh.</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.graphx.html" title="next chapter">pymt.graphx</a></p>
+            <p class="topless"><a href="api-pymt.matrix.html" title="next chapter">Matrix: matrix implementation, used for scatter</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.gesture.txt">Show Source</a></li>
@@ -206,18 +211,19 @@ Finds the length of the stroke. If a point list is given, finds the length of th
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.graphx.html" title="pymt.graphx"
+          <a href="api-pymt.matrix.html" title="Matrix: matrix implementation, used for scatter"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.geometric.html" title="pymt.geometric"
+          <a href="api-pymt.geometric.html" title="Geometric: module provide some class to handle 3D Mesh."
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
-          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+          <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
+          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mars 17, 2009.
+      Last updated on mar 19, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

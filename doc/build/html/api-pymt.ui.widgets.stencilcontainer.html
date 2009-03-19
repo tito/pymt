@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Stencil container: A widget that clip drawing of children to his container &mdash; PyMT v0.2 alpha documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2 alpha',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="up" title="Widgets: all the pymt widgets" href="api-pymt.ui.widgets.html" />
+    <link rel="next" title="Button matrix: a lightweight and optimized grid of buttons" href="api-pymt.ui.widgets.buttonmatrix.html" />
+    <link rel="prev" title="MTWidget: Base of every widget implementation." href="api-pymt.ui.widgets.widget.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.ui.widgets.buttonmatrix.html" title="Button matrix: a lightweight and optimized grid of buttons"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.ui.widgets.widget.html" title="MTWidget: Base of every widget implementation."
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+          <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+      </ul>
+    </div>  
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="module-pymt.ui.widgets.stencilcontainer">
+<h1>Stencil container: A widget that clip drawing of children to his container<a class="headerlink" href="#module-pymt.ui.widgets.stencilcontainer" title="Permalink to this headline">¶</a></h1>
+<p>Stencil container: A widget that clip drawing of children to his container</p>
+<dl class="class">
+<dt id="pymt.ui.widgets.stencilcontainer.MTStencilContainer">
+<!--[pymt.ui.widgets.stencilcontainer.MTStencilContainer]-->class <tt class="descclassname">pymt.ui.widgets.stencilcontainer.</tt><tt class="descname">MTStencilContainer</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.stencilcontainer.MTStencilContainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>This container clip the children drawing to his container</p>
+<p>from pymt import *
+s = MTStencilContainer(size=(200, 200))
+s.add_widget(MTLabel(text=&#8221;plop&#8221;, pos=(100, 100), font_size=16))
+s.add_widget(MTLabel(text=&#8221;a very very long sentence !&#8221;, pos=(100, 150), font_size=16))
+w = MTWindow()
+w.add_widget(s)
+runTouchApp()</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
+            </a></p>
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="api-pymt.ui.widgets.widget.html" title="previous chapter">MTWidget: Base of every widget implementation.</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="api-pymt.ui.widgets.buttonmatrix.html" title="next chapter">Button matrix: a lightweight and optimized grid of buttons</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/api-pymt.ui.widgets.stencilcontainer.txt">Show Source</a></li>
+            </ul>
+          <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.ui.widgets.buttonmatrix.html" title="Button matrix: a lightweight and optimized grid of buttons"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api-pymt.ui.widgets.widget.html" title="MTWidget: Base of every widget implementation."
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+          <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, pymt-dev.
+      Last updated on Mar 19, 2009.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
+    </div>
+  </body>
+</html>

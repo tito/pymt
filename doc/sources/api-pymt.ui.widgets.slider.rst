@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.widgets.slider
+Slider package: provide multiple slider implementation (simple, xy, boundary...)
 =========================================================
 
 .. automodule:: pymt.ui.widgets.slider
-	:members:
+    :members:
+
+.. toctree::
 

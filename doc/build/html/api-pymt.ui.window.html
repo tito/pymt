@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pymt.ui.window &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Window package: provide a window + a touch display &mdash; PyMT v0.2 alpha documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -20,9 +20,9 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
-    <link rel="up" title="PyMT - API Documentation" href="api-tree.html" />
-    <link rel="next" title="pymt.utils" href="api-pymt.utils.html" />
-    <link rel="prev" title="pymt.ui.widgets.xmlwidget" href="api-pymt.ui.widgets.xmlwidget.html" /> 
+    <link rel="up" title="UI package: base for all ui things" href="api-pymt.ui.html" />
+    <link rel="next" title="Factory: all widgets are registered through this factory" href="api-pymt.ui.factory.html" />
+    <link rel="prev" title="Animation package: handle animation, and default alpha method" href="api-pymt.ui.animation.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,13 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.utils.html" title="pymt.utils"
+          <a href="api-pymt.ui.factory.html" title="Factory: all widgets are registered through this factory"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.xmlwidget.html" title="pymt.ui.widgets.xmlwidget"
+          <a href="api-pymt.ui.animation.html" title="Animation package: handle animation, and default alpha method"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
-          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+          <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
+          <li><a href="api-pymt.ui.html" accesskey="U">UI package: base for all ui things</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -51,7 +52,8 @@
             
   
   <div class="section" id="module-pymt.ui.window">
-<h1>pymt.ui.window<a class="headerlink" href="#module-pymt.ui.window" title="Permalink to this headline">¶</a></h1>
+<h1>Window package: provide a window + a touch display<a class="headerlink" href="#module-pymt.ui.window" title="Permalink to this headline">¶</a></h1>
+<p>Window package: provide a window + a touch display</p>
 <dl class="class">
 <dt id="pymt.ui.window.MTWindow">
 <!--[pymt.ui.window.MTWindow]-->class <tt class="descclassname">pymt.ui.window.</tt><tt class="descname">MTWindow</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.window.MTWindow" title="Permalink to this definition">¶</a></dt>
@@ -63,7 +65,7 @@ Use MTWindow as main window application.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><cite>color</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dt><cite>bgcolor</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
 <dd><p class="first last">Background color of window</p>
 </dd>
 <dt><cite>view</cite> <span class="classifier-delimiter">:</span> <span class="classifier"><cite>MTWidget</cite></span></dt>
@@ -123,12 +125,19 @@ under every touch on window</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><cite>color</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><cite>touch_color</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
 <dd><p class="first last">Color of circle under finger</p>
 </dd>
 <dt><cite>radius</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
 <dd><p class="first last">Radius of circle under finger in pixel</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Styles:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>touch-color</cite> <span class="classifier-delimiter">:</span> <span class="classifier">color</span></dt>
+<dd><p class="first last">Color of circle under finger</p>
 </dd>
 </dl>
 </td>
@@ -150,10 +159,13 @@ under every touch on window</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
+            </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.xmlwidget.html" title="previous chapter">pymt.ui.widgets.xmlwidget</a></p>
+            <p class="topless"><a href="api-pymt.ui.animation.html" title="previous chapter">Animation package: handle animation, and default alpha method</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.utils.html" title="next chapter">pymt.utils</a></p>
+            <p class="topless"><a href="api-pymt.ui.factory.html" title="next chapter">Factory: all widgets are registered through this factory</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.ui.window.txt">Show Source</a></li>
@@ -178,18 +190,19 @@ under every touch on window</p>
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.utils.html" title="pymt.utils"
+          <a href="api-pymt.ui.factory.html" title="Factory: all widgets are registered through this factory"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.xmlwidget.html" title="pymt.ui.widgets.xmlwidget"
+          <a href="api-pymt.ui.animation.html" title="Animation package: handle animation, and default alpha method"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
-          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+          <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
+          <li><a href="api-pymt.ui.html" accesskey="U">UI package: base for all ui things</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mars 17, 2009.
+      Last updated on mar 19, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

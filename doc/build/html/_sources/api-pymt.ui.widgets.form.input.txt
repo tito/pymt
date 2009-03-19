@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.widgets.form.input
+Form input: one-line text input
 =========================================================
 
 .. automodule:: pymt.ui.widgets.form.input
-	:members:
+    :members:
+
+.. toctree::
 

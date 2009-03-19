@@ -1,7 +1,9 @@
 =========================================================
-pymt.utils
+NO DOCUMENTATION (module pymt.utils)
 =========================================================
 
 .. automodule:: pymt.utils
-	:members:
+    :members:
+
+.. toctree::
 

@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.widgets.radial
+Vector slider: a radial slider that provide vector manipulation
 =========================================================
 
 .. automodule:: pymt.ui.widgets.radial
-	:members:
+    :members:
+
+.. toctree::
 

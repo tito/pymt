@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.widgets.vkeyboard
+NO DOCUMENTATION (module pymt.ui.widgets.vkeyboard)
 =========================================================
 
 .. automodule:: pymt.ui.widgets.vkeyboard
-	:members:
+    :members:
+
+.. toctree::
 

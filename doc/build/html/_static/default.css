@@ -5,7 +5,7 @@
 body {
     font-family: sans-serif;
     font-size: 100%;
-    background-color: #11303d;
+    background-color: #000000;
     color: #000;
     margin: 0;
     padding: 0;
@@ -14,7 +14,7 @@ body {
 /* :::: LAYOUT :::: */
 
 div.document {
-    background-color: #1c4e63;
+    background-color: #1c4e63 url('bg.png') top left repeat;
 }
 
 div.documentwrapper {
@@ -23,7 +23,7 @@ div.documentwrapper {
 }
 
 div.bodywrapper {
-    margin: 0 0 0 230px;
+    margin: 0 0 0 310px;
 }
 
 div.body {
@@ -37,7 +37,7 @@ div.sphinxsidebarwrapper {
 
 div.sphinxsidebar {
     float: left;
-    width: 230px;
+    width: 310px;
     margin-left: -100%;
     font-size: 90%;
 }
@@ -291,11 +291,12 @@ p.subhead {
 }
 
 a {
-    color: #355f7c;
+    color: #4488cc;
     text-decoration: none;
 }
 
 a:hover {
+    color: #4488cc;
     text-decoration: underline;
 }
 
@@ -355,6 +356,10 @@ div.body p.caption {
 
 div.body td {
     text-align: left;
+}
+
+ul {
+	color: #97de42;
 }
 
 ul.fakelist {
@@ -636,6 +641,53 @@ span.eqno {
 
 img.logo {
     border: 0;
+}
+
+/* ::: PYMT ::: */
+dl.class {
+	margin-top: 20px;
+}
+
+dl.function dt,
+dl.class dt {
+	background-color: #f0f0ff;
+	border-top: 1px solid #e0e0ef;
+	border-bottom: 1px solid #e0e0ef;
+	font-size: 11pt;
+	margin: 10px 0px;
+}
+
+table.field-list {
+	border-collapse: collapse;
+	border-top: 1px solid #e0e0e0;
+	border-bottom: 1px solid #e0e0e0;
+	font-size: 80%;
+	width: 100%;
+}
+
+table.field-list td {
+	padding: 0px;
+}
+
+table.field-list th.field-name {
+	width: 100px;
+}
+
+table.field-list th.field-name,
+table.field-list td.field-body dl dt {
+	background-color: #f0f0f0 !important;
+	border: none;
+	margin: 0px;
+	padding: 1px 5px;
+}
+
+table.field-list td.field-body dt span.classifier-delimiter,
+table.field-list td.field-body dt span.classifier {
+	color: #666666;
+}
+
+table.field-list td.field-body dd {
+	color: #444444;
 }
 
 /* :::: PRINT :::: */

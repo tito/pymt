@@ -8,9 +8,8 @@ Welcome to PyMT's documentation!
 .. automodule:: pymt
 
 .. toctree::
-   :maxdepth: 2
 
-   api-tree.rst
+   api-index.rst
 
 Indices and tables
 ==================

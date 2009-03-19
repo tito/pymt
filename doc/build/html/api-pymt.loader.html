@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pymt.loader &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Loader: asynchronous loader, easily extensible. &mdash; PyMT v0.2 alpha documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -20,9 +20,9 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
-    <link rel="up" title="PyMT - API Documentation" href="api-tree.html" />
-    <link rel="next" title="pymt.logger" href="api-pymt.logger.html" />
-    <link rel="prev" title="pymt.graphx" href="api-pymt.graphx.html" /> 
+    <link rel="up" title="PyMT: a multi touch UI toolkit for pyglet." href="api-pymt.html" />
+    <link rel="next" title="NO DOCUMENTATION (module pymt.utils)" href="api-pymt.utils.html" />
+    <link rel="prev" title="Matrix: matrix implementation, used for scatter" href="api-pymt.matrix.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,13 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.logger.html" title="pymt.logger"
+          <a href="api-pymt.utils.html" title="NO DOCUMENTATION (module pymt.utils)"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.graphx.html" title="pymt.graphx"
+          <a href="api-pymt.matrix.html" title="Matrix: matrix implementation, used for scatter"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
-          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+          <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
+          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -51,11 +52,12 @@
             
   
   <div class="section" id="module-pymt.loader">
-<h1>pymt.loader<a class="headerlink" href="#module-pymt.loader" title="Permalink to this headline">¶</a></h1>
+<h1>Loader: asynchronous loader, easily extensible.<a class="headerlink" href="#module-pymt.loader" title="Permalink to this headline">¶</a></h1>
+<p>Loader: asynchronous loader, easily extensible.</p>
 <p>This is the Asynchronous Loader. You can use it to load an image
 and use it, even if data are not yet available. You must specify a default
 loading image for using a such loader</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">from</span> <span class="nn">pymt</span> <span class="k">import</span> <span class="o">*</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymt</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">loader</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">loading_image</span><span class="o">=</span><span class="s">&#39;load.png&#39;</span><span class="p">)</span>
 <span class="n">sprite</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">sprite</span><span class="p">(</span><span class="s">&#39;mysprite.png&#39;</span><span class="p">)</span>
 </pre></div>
@@ -71,7 +73,7 @@ loading image for using a such loader</p>
 You have the same abstraction, except that he use loading_image when
 the final image are not yet available.</p>
 <p>Don&#8217;t instanciate directly, use the loader</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">from</span> <span class="nn">pymt</span> <span class="k">import</span> <span class="o">*</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymt</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">loader</span> <span class="o">=</span> <span class="n">Loader</span><span class="p">(</span><span class="n">loading_image</span><span class="o">=</span><span class="s">&#39;load.png&#39;</span><span class="p">)</span>
 <span class="n">image</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="s">&#39;myimage.png&#39;</span><span class="p">)</span>
 </pre></div>
@@ -90,10 +92,13 @@ the final image are not yet available.</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
+            </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.graphx.html" title="previous chapter">pymt.graphx</a></p>
+            <p class="topless"><a href="api-pymt.matrix.html" title="previous chapter">Matrix: matrix implementation, used for scatter</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.logger.html" title="next chapter">pymt.logger</a></p>
+            <p class="topless"><a href="api-pymt.utils.html" title="next chapter">NO DOCUMENTATION (module pymt.utils)</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.loader.txt">Show Source</a></li>
@@ -118,18 +123,19 @@ the final image are not yet available.</p>
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.logger.html" title="pymt.logger"
+          <a href="api-pymt.utils.html" title="NO DOCUMENTATION (module pymt.utils)"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.graphx.html" title="pymt.graphx"
+          <a href="api-pymt.matrix.html" title="Matrix: matrix implementation, used for scatter"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
-          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+          <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
+          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mars 17, 2009.
+      Last updated on mar 19, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

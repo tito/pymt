@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.widgets.form.abstract
+Abstract form widget: base for every form widget
 =========================================================
 
 .. automodule:: pymt.ui.widgets.form.abstract
-	:members:
+    :members:
+
+.. toctree::
 

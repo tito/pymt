@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.widgets.label
+Label: a simple text label
 =========================================================
 
 .. automodule:: pymt.ui.widgets.label
-	:members:
+    :members:
+
+.. toctree::
 

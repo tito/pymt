@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.widgets.form.form
+Form: a form container
 =========================================================
 
 .. automodule:: pymt.ui.widgets.form.form
-	:members:
+    :members:
+
+.. toctree::
 

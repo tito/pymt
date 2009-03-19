@@ -1,7 +1,9 @@
 =========================================================
-pymt.logger
+Logger: the PyMT logger
 =========================================================
 
 .. automodule:: pymt.logger
-	:members:
+    :members:
+
+.. toctree::
 

@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.widgets.form.checkbox
+Form checkbox: a simple checkbox
 =========================================================
 
 .. automodule:: pymt.ui.widgets.form.checkbox
-	:members:
+    :members:
+
+.. toctree::
 

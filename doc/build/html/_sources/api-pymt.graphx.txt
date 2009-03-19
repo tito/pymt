@@ -1,7 +1,9 @@
 =========================================================
-pymt.graphx
+Graphx: simplification of opengl pritimives
 =========================================================
 
 .. automodule:: pymt.graphx
-	:members:
+    :members:
+
+.. toctree::
 

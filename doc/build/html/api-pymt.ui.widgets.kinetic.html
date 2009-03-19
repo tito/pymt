@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pymt.ui.widgets.kinetic &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Kinetic : kinetic abstraction &mdash; PyMT v0.2 alpha documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -20,9 +20,9 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
-    <link rel="up" title="PyMT - API Documentation" href="api-tree.html" />
-    <link rel="next" title="pymt.ui.widgets.label" href="api-pymt.ui.widgets.label.html" />
-    <link rel="prev" title="pymt.ui.widgets.innerwindow" href="api-pymt.ui.widgets.innerwindow.html" /> 
+    <link rel="up" title="Widgets: all the pymt widgets" href="api-pymt.ui.widgets.html" />
+    <link rel="next" title="Multislider: a multislider implementation based on MTSlider" href="api-pymt.ui.widgets.multisliderwidget.html" />
+    <link rel="prev" title="Video widget: provide a video container (avbin is needed.)" href="api-pymt.ui.widgets.videowidget.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,13 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.label.html" title="pymt.ui.widgets.label"
+          <a href="api-pymt.ui.widgets.multisliderwidget.html" title="Multislider: a multislider implementation based on MTSlider"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.innerwindow.html" title="pymt.ui.widgets.innerwindow"
+          <a href="api-pymt.ui.widgets.videowidget.html" title="Video widget: provide a video container (avbin is needed.)"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
-          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+          <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -51,8 +52,8 @@
             
   
   <div class="section" id="module-pymt.ui.widgets.kinetic">
-<h1>pymt.ui.widgets.kinetic<a class="headerlink" href="#module-pymt.ui.widgets.kinetic" title="Permalink to this headline">¶</a></h1>
-<p>Kinetic Scrolling widget for PyMT
+<h1>Kinetic : kinetic abstraction<a class="headerlink" href="#module-pymt.ui.widgets.kinetic" title="Permalink to this headline">¶</a></h1>
+<p>Kinetic : kinetic abstraction
 Initially written by Alex Teiche &lt;<a class="reference external" href="mailto:xelapond&#37;&#52;&#48;gmail&#46;com">xelapond<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt;</p>
 <dl class="class">
 <dt id="pymt.ui.widgets.kinetic.MTKinetic">
@@ -64,7 +65,7 @@ on on_touch_down event.</p>
 <p>Kinetic will enter in the game when the on_touch_up append.
 Container will continue to send on_touch_move to children, until
 the velocity Vector is under <cite>velstop</cite> and sending on_touch_up</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">from</span> <span class="nn">pymt</span> <span class="k">import</span> <span class="o">*</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymt</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">k</span> <span class="o">=</span> <span class="n">MTKinetic</span><span class="p">()</span>
 <span class="c"># theses widget will have kinetic movement</span>
 <span class="n">MTKinetic</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="n">MTScatterSvg</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="s">&#39;sun.svg&#39;</span><span class="p">))</span>
@@ -130,6 +131,12 @@ to the one found on the iPhone.</p>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Styles:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>bg-color</cite> <span class="classifier-delimiter">:</span> <span class="classifier">color</span></dt>
+<dd><p class="first last">Background color of widget</p>
+</dd>
+<dt><cite>text-color</cite> <span class="classifier-delimiter">:</span> <span class="classifier">color</span></dt>
+<dd><p class="first last">Text color of an item</p>
+</dd>
 <dt><cite>item-color</cite> <span class="classifier-delimiter">:</span> <span class="classifier">color</span></dt>
 <dd><p class="first last">Color of an item</p>
 </dd>
@@ -196,10 +203,13 @@ spin after we let go.</dd></dl>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
+            </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.innerwindow.html" title="previous chapter">pymt.ui.widgets.innerwindow</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.videowidget.html" title="previous chapter">Video widget: provide a video container (avbin is needed.)</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.label.html" title="next chapter">pymt.ui.widgets.label</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.multisliderwidget.html" title="next chapter">Multislider: a multislider implementation based on MTSlider</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.ui.widgets.kinetic.txt">Show Source</a></li>
@@ -224,18 +234,19 @@ spin after we let go.</dd></dl>
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.label.html" title="pymt.ui.widgets.label"
+          <a href="api-pymt.ui.widgets.multisliderwidget.html" title="Multislider: a multislider implementation based on MTSlider"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.innerwindow.html" title="pymt.ui.widgets.innerwindow"
+          <a href="api-pymt.ui.widgets.videowidget.html" title="Video widget: provide a video container (avbin is needed.)"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
-          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+          <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mars 17, 2009.
+      Last updated on mar 19, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

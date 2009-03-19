@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.widgets.multisliderwidget
+Multislider: a multislider implementation based on MTSlider
 =========================================================
 
 .. automodule:: pymt.ui.widgets.multisliderwidget
-	:members:
+    :members:
+
+.. toctree::
 

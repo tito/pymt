@@ -1,7 +1,9 @@
 =========================================================
-pymt.ui.widgets.svg
+SVG widget: widget that display an svg image
 =========================================================
 
 .. automodule:: pymt.ui.widgets.svg
-	:members:
+    :members:
+
+.. toctree::
 

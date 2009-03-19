@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pymt.graphx &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Graphx: simplification of opengl pritimives &mdash; PyMT v0.2 alpha documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -20,9 +20,9 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
-    <link rel="up" title="PyMT - API Documentation" href="api-tree.html" />
-    <link rel="next" title="pymt.loader" href="api-pymt.loader.html" />
-    <link rel="prev" title="pymt.gesture" href="api-pymt.gesture.html" /> 
+    <link rel="up" title="PyMT: a multi touch UI toolkit for pyglet." href="api-pymt.html" />
+    <link rel="next" title="Geometric: module provide some class to handle 3D Mesh." href="api-pymt.geometric.html" />
+    <link rel="prev" title="Generic vector class to handle Vector operation." href="api-pymt.vector.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,13 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.loader.html" title="pymt.loader"
+          <a href="api-pymt.geometric.html" title="Geometric: module provide some class to handle 3D Mesh."
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.gesture.html" title="pymt.gesture"
+          <a href="api-pymt.vector.html" title="Generic vector class to handle Vector operation."
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
-          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+          <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
+          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -51,7 +52,284 @@
             
   
   <div class="section" id="module-pymt.graphx">
-<h1>pymt.graphx<a class="headerlink" href="#module-pymt.graphx" title="Permalink to this headline">¶</a></h1>
+<h1>Graphx: simplification of opengl pritimives<a class="headerlink" href="#module-pymt.graphx" title="Permalink to this headline">¶</a></h1>
+<p>Graphx: simplification of opengl pritimives</p>
+<dl class="function">
+<dt id="pymt.graphx.set_brush">
+<!--[pymt.graphx.set_brush]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">set_brush</tt><big>(</big><em>sprite</em>, <em>size=10</em><big>)</big><a class="headerlink" href="#pymt.graphx.set_brush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define the brush to use for paint* functions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>sprite</cite> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Filename of image brush</p>
+</dd>
+<dt><cite>size</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int, default to 10</span></dt>
+<dd><p class="first last">Size of brush</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.set_color">
+<!--[pymt.graphx.set_color]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">set_color</tt><big>(</big><em>*colors</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.graphx.set_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define current color to be used</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">set_color</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span> <span class="mf">0</span><span class="p">,</span> <span class="mf">0</span><span class="p">,</span> <span class="mf">1</span><span class="p">)</span>
+<span class="n">drawLabel</span><span class="p">(</span><span class="s">&#39;Hello&#39;</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">100</span><span class="p">,</span> <span class="mf">0</span><span class="p">))</span>
+<span class="n">set_color</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span> <span class="mf">1</span><span class="p">,</span> <span class="mf">0</span><span class="p">,</span> <span class="mf">1</span><span class="p">)</span>
+<span class="n">drawLabel</span><span class="p">(</span><span class="s">&#39;World&#39;</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">200</span><span class="p">,</span> <span class="mf">0</span><span class="p">))</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>*colors</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd><p class="first last">Can have 3 or 4 float value (between 0 and 1)</p>
+</dd>
+<dt><cite>sfactor</cite> <span class="classifier-delimiter">:</span> <span class="classifier">opengl factor, default to GL_SRC_ALPHA</span></dt>
+<dd><p class="first last">Default source factor to be used if blending is activated</p>
+</dd>
+<dt><cite>dfactor</cite> <span class="classifier-delimiter">:</span> <span class="classifier">opengl factor, default to GL_ONE_MINUS_SRC_ALPHA</span></dt>
+<dd><p class="first last">Default destination factor to be used if blending is activated</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.paintLine">
+<!--[pymt.graphx.paintLine]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">paintLine</tt><big>(</big><em>points</em><big>)</big><a class="headerlink" href="#pymt.graphx.paintLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paint a line with current brush</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">set_brush</span><span class="p">(</span><span class="s">&quot;mybrush.png&quot;</span><span class="p">,</span> <span class="mf">10</span><span class="p">)</span>
+<span class="n">paintLine</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span> <span class="mf">0</span><span class="p">,</span> <span class="mf">20</span><span class="p">,</span> <span class="mf">50</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.drawLabel">
+<!--[pymt.graphx.drawLabel]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawLabel</tt><big>(</big><em>text</em>, <em>pos=(0</em>, <em>0)</em>, <em>center=True</em>, <em>font_size=16</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a label on the window.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>text</cite> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Text to be draw</p>
+</dd>
+<dt><cite>pos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, default to (0, 0)</span></dt>
+<dd><p class="first last">Position of text</p>
+</dd>
+<dt><cite>font_size</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int, default to 16</span></dt>
+<dd><p class="first last">Font size of label</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.drawRoundedRectangle">
+<!--[pymt.graphx.drawRoundedRectangle]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawRoundedRectangle</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(100</em>, <em>50)</em>, <em>radius=5</em>, <em>color=None</em>, <em>linewidth=1.5</em>, <em>precision=0.5</em>, <em>style=9</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawRoundedRectangle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a rounded rectangle</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>pos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, default to (0, 0)</span></dt>
+<dd><p class="first last">Position of rectangle</p>
+</dd>
+<dt><cite>size</cite> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, default to (100, 50)</span></dt>
+<dd><p class="first last">Size of rectangle</p>
+</dd>
+<dt><cite>radius</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int, default to 5</span></dt>
+<dd><p class="first last">Radius of corner</p>
+</dd>
+<dt><cite>color</cite> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, default to None</span></dt>
+<dd><p class="first last">Color to be passed to set_color()</p>
+</dd>
+<dt><cite>linewidth</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to 1.5</span></dt>
+<dd><p class="first last">Line with of border</p>
+</dd>
+<dt><cite>precision</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to 0.5</span></dt>
+<dd><p class="first last">Precision of corner angle</p>
+</dd>
+<dt><cite>style</cite> <span class="classifier-delimiter">:</span> <span class="classifier">opengl begin, default to GL_POLYGON</span></dt>
+<dd><p class="first last">Style of the rounded rectangle (try GL_LINE_LOOP)</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.drawCircle">
+<!--[pymt.graphx.drawCircle]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawCircle</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>radius=1.0</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawCircle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a simple circle</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>pos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, default to (0, 0)</span></dt>
+<dd><p class="first last">Position of circle</p>
+</dd>
+<dt><cite>radius</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to 1.0</span></dt>
+<dd><p class="first last">Radius of circle</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.drawPolygon">
+<!--[pymt.graphx.drawPolygon]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawPolygon</tt><big>(</big><em>points</em>, <em>style=4</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawPolygon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw polygon from points list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>points</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd><p class="first last">List of points, length must be power of 2. (x,y,x,y...)</p>
+</dd>
+<dt><cite>style</cite> <span class="classifier-delimiter">:</span> <span class="classifier">opengl begin, default to GL_TRIANGLES</span></dt>
+<dd><p class="first last">Default type to draw (will be passed to glBegin)</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.drawTriangle">
+<!--[pymt.graphx.drawTriangle]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawTriangle</tt><big>(</big><em>pos</em>, <em>w</em>, <em>h</em>, <em>style=4</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawTriangle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw one triangle</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>pos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">tuple</span></dt>
+<dd><p class="first last">Position of triangle</p>
+</dd>
+<dt><cite>w</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Width of triangle</p>
+</dd>
+<dt><cite>h</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Height of triangle</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.drawRectangle">
+<!--[pymt.graphx.drawRectangle]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawRectangle</tt><big>(</big><em>pos=(0</em>, <em>0)</em>, <em>size=(1.0</em>, <em>1.0)</em>, <em>style=7</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawRectangle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a simple rectangle</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>pos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, default to (0, 0)</span></dt>
+<dd><p class="first last">Position of rectangle</p>
+</dd>
+<dt><cite>size</cite> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, default to (1.0, 1.0)</span></dt>
+<dd><p class="first last">Size of rectangle</p>
+</dd>
+<dt><cite>style</cite> <span class="classifier-delimiter">:</span> <span class="classifier">opengl begin, default to GL_QUADS</span></dt>
+<dd><p class="first last">Style of rectangle (try GL_LINE_LOOP)</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.drawTexturedRectangle">
+<!--[pymt.graphx.drawTexturedRectangle]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawTexturedRectangle</tt><big>(</big><em>texture</em>, <em>pos=(0</em>, <em>0)</em>, <em>size=(1.0</em>, <em>1.0)</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawTexturedRectangle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a rectangle with a texture</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>texture</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">OpenGL id of texture</p>
+</dd>
+<dt><cite>pos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, default to (0, 0)</span></dt>
+<dd><p class="first last">Position of rectangle</p>
+</dd>
+<dt><cite>size</cite> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, default to (1.0, 1.0)</span></dt>
+<dd><p class="first last">Size of rectangle</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.drawLine">
+<!--[pymt.graphx.drawLine]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">drawLine</tt><big>(</big><em>points</em>, <em>width=5.0</em><big>)</big><a class="headerlink" href="#pymt.graphx.drawLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a line</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>points</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd><p class="first last">List of point to draw, len must be power of 2</p>
+</dd>
+<dt><cite>widget</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to 5.0</span></dt>
+<dd><p class="first last">Default width of line</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.graphx.DO">
+<!--[pymt.graphx.DO]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">DO</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#pymt.graphx.DO" title="Permalink to this definition">¶</a></dt>
+<dd><p>A way to do multiple action in with statement</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">DO</span><span class="p">(</span><span class="n">stmt1</span><span class="p">,</span> <span class="n">stmt2</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;something&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="class">
 <dt id="pymt.graphx.GlDisplayList">
 <!--[pymt.graphx.GlDisplayList]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">GlDisplayList</tt><a class="headerlink" href="#pymt.graphx.GlDisplayList" title="Permalink to this definition">¶</a></dt>
@@ -76,15 +354,50 @@ We&#8217;ve got an alias you can use</p>
 <dl class="class">
 <dt id="pymt.graphx.GlMatrix">
 <!--[pymt.graphx.GlMatrix]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">GlMatrix</tt><big>(</big><em>matrixmode=5888</em>, <em>do_loadidentity=False</em><big>)</big><a class="headerlink" href="#pymt.graphx.GlMatrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abstraction for glPushMatrix/glPopMatrix ! Don&#8217;t use directly this class.
-We&#8217;ve got 2 alias: gx_matrix and gx_matrix_identity</p>
-<dl class="docutils">
-<dt>with gx_matrix:</dt>
-<dd># do draw function</dd>
-<dt>with gx_matrix_identity:</dt>
-<dd># do draw function</dd>
-</dl>
+<dd><p>Statement of glPushMatrix/glPopMatrix, designed to be use with &#8220;with&#8221; keyword.</p>
+<p>Alias: gx_matrix, gx_matrix_identity</p>
+<div class="highlight-python"><pre>with gx_matrix:
+    # do draw function
+
+with gx_matrix_identity:
+    # do draw function</pre>
+</div>
 </dd></dl>
+
+<dl class="class">
+<dt id="pymt.graphx.GlEnable">
+<!--[pymt.graphx.GlEnable]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">GlEnable</tt><big>(</big><em>flag</em><big>)</big><a class="headerlink" href="#pymt.graphx.GlEnable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Statement of glEnable/glDisable, designed to be use with &#8220;with&#8221; keyword.</p>
+<p>Alias: gx_enable.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.graphx.GlBegin">
+<!--[pymt.graphx.GlBegin]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">GlBegin</tt><big>(</big><em>flag</em><big>)</big><a class="headerlink" href="#pymt.graphx.GlBegin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Statement of glBegin/glEnd, designed to be use with &#8220;with&#8221; keyword</p>
+<p>Alias: gx_begin.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.graphx.gx_enable">
+<!--[pymt.graphx.gx_enable]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">gx_enable</tt><big>(</big><em>flag</em><big>)</big><a class="headerlink" href="#pymt.graphx.gx_enable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Statement of glEnable/glDisable, designed to be use with &#8220;with&#8221; keyword.</p>
+<p>Alias: gx_enable.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.graphx.gx_begin">
+<!--[pymt.graphx.gx_begin]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">gx_begin</tt><big>(</big><em>flag</em><big>)</big><a class="headerlink" href="#pymt.graphx.gx_begin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Statement of glBegin/glEnd, designed to be use with &#8220;with&#8221; keyword</p>
+<p>Alias: gx_begin.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.graphx.Fbo">
+<!--[pymt.graphx.Fbo]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">Fbo</tt><big>(</big><em>size=(1024</em>, <em>1024)</em>, <em>push_viewport=False</em><big>)</big><a class="headerlink" href="#pymt.graphx.Fbo" title="Permalink to this definition">¶</a></dt>
+<dd>OpenGL Framebuffer abstraction.
+It&#8217;s a framebuffer you can use to draw temporary things,
+and use it as a texture.</dd></dl>
 
 </div>
 
@@ -94,10 +407,13 @@ We&#8217;ve got 2 alias: gx_matrix and gx_matrix_identity</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
+            </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.gesture.html" title="previous chapter">pymt.gesture</a></p>
+            <p class="topless"><a href="api-pymt.vector.html" title="previous chapter">Generic vector class to handle Vector operation.</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.loader.html" title="next chapter">pymt.loader</a></p>
+            <p class="topless"><a href="api-pymt.geometric.html" title="next chapter">Geometric: module provide some class to handle 3D Mesh.</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.graphx.txt">Show Source</a></li>
@@ -122,18 +438,19 @@ We&#8217;ve got 2 alias: gx_matrix and gx_matrix_identity</p>
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.loader.html" title="pymt.loader"
+          <a href="api-pymt.geometric.html" title="Geometric: module provide some class to handle 3D Mesh."
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.gesture.html" title="pymt.gesture"
+          <a href="api-pymt.vector.html" title="Generic vector class to handle Vector operation."
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
-          <li><a href="api-tree.html" accesskey="U">PyMT - API Documentation</a> &raquo;</li> 
+          <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
+          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mars 17, 2009.
+      Last updated on mar 19, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

@@ -22,7 +22,7 @@ class MTWindow(TouchWindow):
     Use MTWindow as main window application.
 
     :Parameters:
-        `color` : list
+        `bg_color` : list
             Background color of window
         `view` : `MTWidget`
             Default view to add on window
@@ -52,8 +52,8 @@ class MTWindow(TouchWindow):
         self.on_text_motion_select_handlers = []
 
         self.children = []
-        if 'color' in kwargs:
-            self.color = kwargs.get('color')
+        if 'bg_color' in kwargs:
+            self.bgcolor = kwargs.get('bg_color')
 
         self.parent = self
         if kwargs.get('view'):
@@ -101,7 +101,7 @@ class MTWindow(TouchWindow):
 
     def apply_css(self, styles):
         if 'bg-color' in styles:
-            self.color = styles.get('bg-color')
+            self.bgcolor = styles.get('bg-color')
 
     def add_on_key_press(self, func):
         self.on_key_press_handlers.append(func)
@@ -164,7 +164,7 @@ class MTWindow(TouchWindow):
 
     def draw(self):
         '''Clear the window with background color'''
-        glClearColor(*self.color)
+        glClearColor(*self.bgcolor)
         self.clear()
 
     def on_draw(self):
@@ -275,22 +275,31 @@ class MTDisplay(MTWidget):
     under every touch on window
 
     :Parameters:
-        `color` : list
+        `touch_color` : list
             Color of circle under finger
         `radius` : int
             Radius of circle under finger in pixel
+
+    :Styles:
+        `touch-color` : color
+            Color of circle under finger
     '''
 
     def __init__(self, **kwargs):
         kwargs.setdefault('radius', 10)
-        kwargs.setdefault('color', (1.0, 1.0, 1.0, 0.4))
         super(MTDisplay, self).__init__(**kwargs)
         self.touches    = {}
         self.radius     = kwargs.get('radius')
+        if 'touch_color' in kwargs:
+            self.touch_color = kwargs.get('touch_color')
+
+    def apply_css(self, styles):
+        if 'touch-color' in styles:
+            self.touch_color = styles.get('touch-color')
 
     def draw(self):
         '''Draw a circle under every touches'''
-        set_color(*self.color)
+        set_color(*self.touch_color)
         for id in self.touches:
             drawCircle(pos=self.touches[id], radius=self.radius)
 

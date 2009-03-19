@@ -32,6 +32,11 @@ default_css = '''
     font-size: 10;
 }
 
+display {
+    /* color of touch */
+    touch-color: rgba(255, 0, 0, 255);
+}
+
 form,
 vkeyboard,
 button {

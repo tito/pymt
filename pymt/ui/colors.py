@@ -55,6 +55,7 @@ slider, xyslider, vectorslider, multislider {
 }
 
 kineticscrolltext {
+    color: rgb(255, 255, 255);
     item-color: rgb(100, 100, 100);
     item-selected: rgb(150, 150, 150);
 }

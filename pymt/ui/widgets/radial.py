@@ -36,15 +36,17 @@ class MTVectorSlider(MTWidget):
 
     :Parameters:
         `bgcolor` : tuple, default to (.2, .4, .9)
-	    The background color of the widget
+            The background color of the widget
         `vcolor` : tuple, default to (1, .28, 0)
-	    The color for the vector
+            The color for the vector
         `radius` : int, default to 200
-	    The radius of the whole widget
+            The radius of the whole widget
 
     :Styles:
         `slider-color` : color
             Color of the triangle
+        `bg-color` : color
+            Background color of the slider
     '''
 
     def __init__(self, **kwargs):
@@ -77,6 +79,8 @@ class MTVectorSlider(MTWidget):
     def apply_css(self, styles):
         if 'slider-color' in styles:
             self.vcolor = styles.get('slider-color')
+        if 'bg-color' in styles:
+            self.bgcolor = styles.get('bg-color')
         super(MTVectorSlider, self).apply_css(styles)
 
     def _calc_stuff(self):

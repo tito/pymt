@@ -55,12 +55,14 @@ class MTSlider(MTWidget):
             self._value = kwargs.get('value')
         if kwargs.get('slidercolor'):
             self.slidercolor = kwargs.get('slidercolor')
-    
+
     def apply_css(self, styles):
         if 'slider-color' in styles:
             self.slidercolor = styles.get('slider-color')
+        if 'bg-color' in styles:
+            self.bgcolor = styles.get('bg-color')
         super(MTSlider, self).apply_css(styles)
-            
+
     def on_value_change(self, value):
         pass
 
@@ -164,10 +166,12 @@ class MTXYSlider(MTWidget):
             self._value_y = kwargs.get('value_y')
         if kwargs.get('slidercolor'):
             self.slidercolor = kwargs.get('slidercolor')
-            
+
     def apply_css(self, styles):
         if 'slider-color' in styles:
             self.slidercolor = styles.get('slider-color')
+        if 'bg-color' in styles:
+            self.bgcolor = styles.get('bg-color')
         super(MTXYSlider, self).apply_css(styles)
 
     def on_value_change(self, value_x, value_y):
@@ -284,6 +288,8 @@ class MTBoundarySlider(MTWidget):
     def apply_css(self, styles):
         if 'slider-color' in styles:
             self.slidercolor = styles.get('slider-color')
+        if 'bg-color' in styles:
+            self.bgcolor = styles.get('bg-color')
         super(MTBoundarySlider, self).apply_css(styles)
 
     def get_value(self):
@@ -344,9 +350,9 @@ class MTBoundarySlider(MTWidget):
             self.touchstarts.append(touchID)
             self.on_touch_move(touches, touchID, x, y)
             return True
-        
+
     def on_touch_move(self, touches, touchID, x, y):
-        if touchID in self.touchstarts:   
+        if touchID in self.touchstarts:
             #Either move a given bound, or shift both
             if self.orientation == 'vertical':
                 if len(self.touchstarts) >= 2:

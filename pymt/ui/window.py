@@ -22,7 +22,7 @@ class MTWindow(TouchWindow):
     Use MTWindow as main window application.
 
     :Parameters:
-        `bg_color` : list
+        `bgcolor` : list
             Background color of window
         `view` : `MTWidget`
             Default view to add on window
@@ -52,8 +52,8 @@ class MTWindow(TouchWindow):
         self.on_text_motion_select_handlers = []
 
         self.children = []
-        if 'bg_color' in kwargs:
-            self.bgcolor = kwargs.get('bg_color')
+        if 'bgcolor' in kwargs:
+            self.bgcolor = kwargs.get('bgcolor')
 
         self.parent = self
         if kwargs.get('view'):

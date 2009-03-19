@@ -14,6 +14,13 @@ class MTAbstractFormWidget(MTWidget):
         if self.__class__ == MTAbstractFormWidget:
             raise NotImplementedError, 'class MTAbstractFormWidget is abstract'
         super(MTAbstractFormWidget, self).__init__(**kwargs)
+        if 'bgcolor' in kwargs:
+            self.bgcolor = kwargs.get('bgcolor')
+
+    def apply_css(self, styles):
+        if 'bg-color' in styles:
+            self.bgcolor = styles.get('bg-color')
+        super(MTAbstractFormWidget, self).apply_css(styles)
 
     def _remove_widget(self, widget):
         super(MTAbstractFormWidget, self).remove_widget(widget)

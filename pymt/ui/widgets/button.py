@@ -19,6 +19,8 @@ class MTButton(MTWidget):
             Label of button
         `color_down` : list, default is (.5, .5, .5, .5)
             Color of button when pushed
+        `bgcolor` : list
+            Background color of button
         `anchor_x`: string
             X anchor of label, refer to pyglet.label.anchor_x documentation
         `anchor_y`: string
@@ -33,6 +35,8 @@ class MTButton(MTWidget):
     :Styles:
         `color-down`: color
             Background-color of the button when it is press
+        `bg-color` : color
+            Background color of the slider
 
     :Events:
         `on_press`
@@ -65,11 +69,15 @@ class MTButton(MTWidget):
         )
         if 'color_down' in kwargs:
             self.color_down = kwargs.get('color_down')
+        if 'bgcolor' in kwargs:
+            self.bgcolor = kwargs.get('bgcolor')
         self.border_radius  = kwargs.get('border_radius')
 
     def apply_css(self, styles):
         if 'color-down' in styles:
             self.color_down = styles.get('color-down')
+        if 'bg-color' in styles:
+            self.bgcolor = styles.get('bg-color')
         super(MTButton, self).apply_css(styles)
 
     def get_label(self):

@@ -30,6 +30,10 @@ class MTScatterWidget(MTWidget):
             Set to False for disabling translation, and ['x'], ['y'] for limit translation only on x or y
         `do_scale` : boolean, default to True
             Set to False for disabling scale
+
+    :Styles:
+        `bg-color` : color
+            Background color of window
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('rotation', 0.0)
@@ -78,6 +82,10 @@ class MTScatterWidget(MTWidget):
         else:
             self.init_transform(super(MTScatterWidget, self).pos, kwargs.get('rotation'), kwargs.get('scale'))
 
+    def apply_css(self, styles):
+        if 'bg-color' in styles:
+            self.bgcolor = styles.get('bg-color')
+
     def add_widget(self, w, side='front', front=True):
         '''Override this, because a side needs to be specififed'''
         if side == 'front':
@@ -108,7 +116,7 @@ class MTScatterWidget(MTWidget):
             glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
 
     def draw(self):
-        set_color(*self.color)
+        set_color(*self.bgcolor)
         drawRectangle((0,0), (self.width, self.height))
 
     def flip_children(self):

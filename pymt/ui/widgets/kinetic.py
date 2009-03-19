@@ -116,6 +116,10 @@ class MTKineticScrollText(MTWidget):
             The plain-text items that you would like to have within the widget.
 
     :Styles:
+        `bg-color` : color
+            Background color of widget
+        `text-color` : color
+            Text color of an item
         `item-color` : color
             Color of an item
         `item-selected` : color
@@ -138,6 +142,10 @@ class MTKineticScrollText(MTWidget):
             self.iscolor = kwargs.get('iscolor')
         if 'icolor' in kwargs:
             self.icolor = kwargs.get('icolor')
+        if 'text_color' in kwargs:
+            self.text_color = kwargs.get('text_color')
+        if 'bgcolor' in kwargs:
+            self.bgcolor = kwargs.get('bgcolor')
         self.font_name = kwargs.get('font_name')
         self.font_size = kwargs.get('font_size')
         self.friction = kwargs.get('friction')
@@ -170,7 +178,7 @@ class MTKineticScrollText(MTWidget):
         '''Holds the velocity after touch_up, so 
         that the menu can do its kinetic stuff'''
         self.vel = 0
-        
+
         #Holds the total menu offset
         self.yoffset = 0
 
@@ -182,6 +190,10 @@ class MTKineticScrollText(MTWidget):
             self.icolor = styles.get('item-color')
         if 'item-selected' in styles:
             self.iscolor = styles.get('item-selected')
+        if 'text-color' in styles:
+            self.text_color = styles.get('text-color')
+        if 'bg-color' in styles:
+            self.bgcolor = styles.get('bg-color')
         super(MTKineticScrollText, self).apply_css(styles)
 
     def _calc_theight(self):
@@ -323,9 +335,9 @@ class MTKineticScrollText(MTWidget):
         self.label.
         '''
         if color is None:
-            color = self.color
+            color = self.text_color
         self.label.text = text
-        self.label.color = map(lambda x: int(x*255), color)
+        self.label.color = map(lambda x: int(x*255), text_color)
         self.label.x, self.label.y = pos
         self.label.draw()
 

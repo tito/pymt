@@ -58,20 +58,12 @@ class MTWidget(pyglet.event.EventDispatcher):
             width position of widget
         `height` : int, default is None
             height position of widget
-        `color` : list, default is (.2, .2, .2, 1)
-            Color of widget, in (r, v, b, a) format
         `visible` : bool, default is True
             Visibility of widget
         `draw_children` : bool, default is True
             Indicate if children will be draw, or not
         `no_css` : bool, default is False
             Don't search/do css for this widget
-
-    :Styles:
-        `color` : color
-            Color of text (generic, it may not be used)
-        `bg-color` : color
-            Background color of item (generic, it may not be used)
     '''
     visible_events = [
         'on_draw',
@@ -117,11 +109,6 @@ class MTWidget(pyglet.event.EventDispatcher):
         self.animations				= []
         self.visible				= kwargs.get('visible')
         self.draw_children          = kwargs.get('draw_children')
-
-        if 'color' in kwargs:
-            self._color	= kwargs.get('color')
-        if 'bg-color' in kwargs:
-            self._bgcolor = kwargs.get('bgcolor')
 
         self.register_event_type('on_resize')
         self.register_event_type('on_move')
@@ -221,29 +208,8 @@ class MTWidget(pyglet.event.EventDispatcher):
         return (self.width, self.height)
     size = property(_get_size, _set_size)
 
-    def _get_color(self):
-        return self._color
-    def _set_color(self, col):
-        if len(col) == 3:
-            self._color = (col[0], col[1], col[2], 1.0)
-        if len(col) == 4:
-            self._color = col
-    color = property(_get_color, _set_color)
-
-    def _get_bgcolor(self):
-        return self._bgcolor
-    def _set_bgcolor(self, col):
-        if len(col) == 3:
-            self._bgcolor = (col[0], col[1], col[2], 1.0)
-        if len(col) == 4:
-            self._bgcolor = col
-    bgcolor = property(_get_bgcolor, _set_bgcolor)
-
     def apply_css(self, styles):
-        if 'color' in styles:
-            self.color = styles['color']
-        if 'bg-color' in styles:
-            self.bgcolor = styles['bg-color']
+        pass
 
     def dispatch_event(self, event_type, *args):
         '''Dispatch a single event to the attached handlers.

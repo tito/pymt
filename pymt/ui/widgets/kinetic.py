@@ -134,9 +134,9 @@ class MTKineticScrollText(MTWidget):
         super(MTKineticScrollText, self).__init__(**kwargs)
         self.register_event_type('on_item_select')
 
-        if kwargs.has_key('iscolor'):
+        if 'iscolor' in kwargs:
             self.iscolor = kwargs.get('iscolor')
-        if kwargs.has_key('icolor'):
+        if 'icolor' in kwargs:
             self.icolor = kwargs.get('icolor')
         self.font_name = kwargs.get('font_name')
         self.font_size = kwargs.get('font_size')
@@ -178,9 +178,9 @@ class MTKineticScrollText(MTWidget):
         self.mode = 'spinning'
 
     def apply_css(self, styles):
-        if styles.has_key('item-color'):
+        if 'item-color' in styles:
             self.icolor = styles.get('item-color')
-        if styles.has_key('item-selected'):
+        if 'item-selected' in styles:
             self.iscolor = styles.get('item-selected')
         super(MTKineticScrollText, self).apply_css(styles)
 

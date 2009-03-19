@@ -119,7 +119,7 @@ class MTKeyButton(MTButton):
 
     def on_animation_complete(self, animation):
         if animation.label == 'hide':
-            if self.keyboard.active_keys.has_key(self):
+            if self in self.keyboard.active_keys:
                 del self.keyboard.active_keys[self]
 
     def _get_opacity(self):

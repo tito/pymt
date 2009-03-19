@@ -20,7 +20,7 @@ _id_2_widget = {}
 
 def getWidgetById(id):
     global _id_2_widget
-    if _id_2_widget.has_key(id):
+    if id in _id_2_widget:
         return _id_2_widget[id]
 getWidgetByID = getWidgetById
 
@@ -100,7 +100,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         kwargs.setdefault('no_css', False)
 
         self._id = None
-        if kwargs.has_key('id'):
+        if 'id' in kwargs:
             self.id = kwargs.get('id')
 
         pyglet.event.EventDispatcher.__init__(self)
@@ -118,9 +118,9 @@ class MTWidget(pyglet.event.EventDispatcher):
         self.visible				= kwargs.get('visible')
         self.draw_children          = kwargs.get('draw_children')
 
-        if kwargs.has_key('color'):
+        if 'color' in kwargs:
             self._color	= kwargs.get('color')
-        if kwargs.has_key('bg-color'):
+        if 'bg-color' in kwargs:
             self._bgcolor = kwargs.get('bgcolor')
 
         self.register_event_type('on_resize')
@@ -144,7 +144,7 @@ class MTWidget(pyglet.event.EventDispatcher):
 
     def _set_id(self, id):
         global _id_2_widget
-        if self._id and _id_2_widget.has_key(self._id):
+        if self._id and self._id in _id_2_widget:
             del _id_2_widget[self._id]
         self._id = id
         if self._id:
@@ -240,9 +240,9 @@ class MTWidget(pyglet.event.EventDispatcher):
     bgcolor = property(_get_bgcolor, _set_bgcolor)
 
     def apply_css(self, styles):
-        if styles.has_key('color'):
+        if 'color' in styles:
             self.color = styles['color']
-        if styles.has_key('bg-color'):
+        if 'bg-color' in styles:
             self.bgcolor = styles['bg-color']
 
     def dispatch_event(self, event_type, *args):
@@ -286,7 +286,7 @@ class MTWidget(pyglet.event.EventDispatcher):
                 global _event_stats_activate
                 if _event_stats_activate:
                     global _event_stats
-                    if not _event_stats.has_key(event_type):
+                    if not event_type in _event_stats:
                         _event_stats[event_type] = 1
                     else:
                         _event_stats[event_type] = _event_stats[event_type] + 1

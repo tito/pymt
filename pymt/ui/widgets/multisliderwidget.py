@@ -22,11 +22,11 @@ class MTMultiSlider(MTWidget):
         self._spacing = kwargs.get('spacing')
         self._init_value = kwargs.get('init_value')
         self.slider_values = [self._init_value for x in range(self._sliders)]
-        if kwargs.has_key('slidercolor'):
+        if 'slidercolor' in kwargs:
             self.slidercolor = kwargs.get('slidercolor')
 
     def apply_css(self, styles):
-        if styles.has_key('slider-color'):
+        if 'slider-color' in styles:
             self.slidercolor = styles.get('slider-color')
         super(MTMultiSlider, self).apply_css(styles)
 

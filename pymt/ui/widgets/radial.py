@@ -53,7 +53,7 @@ class MTVectorSlider(MTWidget):
         kwargs.setdefault('radius', 200)
 
         self.radius = kwargs.get('radius')
-        if kwargs.has_key('vcolor'):
+        if 'vcolor' in kwargs:
             self.vcolor = kwargs.get('vcolor')
 
         #The vector hand
@@ -75,7 +75,7 @@ class MTVectorSlider(MTWidget):
         return _get_distance(self.pos, (x, y)) <= self.radius
 
     def apply_css(self, styles):
-        if styles.has_key('slider-color'):
+        if 'slider-color' in styles:
             self.vcolor = styles.get('slider-color')
         super(MTVectorSlider, self).apply_css(styles)
 

@@ -301,7 +301,7 @@ class MTScatterWidget(MTWidget):
         MTWidget.on_touch_up(self, touches, touchID, lx, ly)
 
         #remove it from our saved touches
-        if self.touches.has_key(touchID):
+        if touchID in self.touches:
             del self.touches[touchID]
 
         #stop porpagating if its within our bounds
@@ -344,7 +344,7 @@ class MTScatterPlane(MTScatterWidget):
     def on_touch_up(self, touches, touchID, x,y):
         lx,ly = self.to_local(x,y)
         MTWidget.on_touch_up(self, touches, touchID, lx, ly)
-        if self.touches.has_key(touchID):
+        if touchID in self.touches:
             del self.touches[touchID]
             return True
 

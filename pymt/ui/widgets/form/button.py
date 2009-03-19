@@ -27,11 +27,11 @@ class MTFormButton(MTFormLabel):
         self.register_event_type('on_press')
         self.register_event_type('on_release')
         self._state         = ('normal', 0)
-        if kwargs.has_key('color_down'):
+        if 'color_down' in kwargs:
             self.color_down = kwargs.get('color_down')
 
     def apply_css(self, styles):
-        if styles.has_key('color-down'):
+        if 'color-down' in styles:
             self.color_down = styles.get('color-down')
         super(MTFormButton, self).apply_css(styles)
 

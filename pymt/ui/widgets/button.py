@@ -63,12 +63,12 @@ class MTButton(MTWidget):
             anchor_y=kwargs.get('anchor_y'),
             text=kwargs.get('label')
         )
-        if kwargs.has_key('color_down'):
+        if 'color_down' in kwargs:
             self.color_down = kwargs.get('color_down')
         self.border_radius  = kwargs.get('border_radius')
 
     def apply_css(self, styles):
-        if styles.has_key('color-down'):
+        if 'color-down' in styles:
             self.color_down = styles.get('color-down')
         super(MTButton, self).apply_css(styles)
 

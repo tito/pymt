@@ -22,11 +22,11 @@ class MTLabel(MTWidget):
         kwargs.setdefault('text', 'MTLabel')
         super(MTLabel, self).__init__(**kwargs)
         self.text = kwargs.get('text')
-        if kwargs.has_key('font_size'):
+        if 'font_size' in kwargs:
             self.font_size = kwargs.get('font_size')
 
     def apply_css(self, styles):
-        if styles.has_key('font-size'):
+        if 'font-size' in styles:
             self.font_size = int(styles.get('font-size'))
         super(MTLabel, self).apply_css(styles)
 

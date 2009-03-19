@@ -71,7 +71,7 @@ class MTColorPicker(MTWidget):
                 self.update_color()
                 return True
 
-        if self.touch_positions.has_key(touchID):
+        if touchID in self.touch_positions:
             self.x += x - self.touch_positions[touchID][0]
             self.y += y - self.touch_positions[touchID][1]
             self.touch_positions[touchID] = (x,y,touchID)
@@ -82,7 +82,7 @@ class MTColorPicker(MTWidget):
             if s.on_touch_up(touches, touchID, x, y):
                 self.update_color()
                 return True
-        if self.touch_positions.has_key(touchID):
+        if touchID in self.touch_positions:
             del self.touch_positions[touchID]
 
 MTWidgetFactory.register('MTColorPicker', MTColorPicker)

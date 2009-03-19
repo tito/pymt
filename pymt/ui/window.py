@@ -52,7 +52,7 @@ class MTWindow(TouchWindow):
         self.on_text_motion_select_handlers = []
 
         self.children = []
-        if kwargs.has_key('color'):
+        if 'color' in kwargs:
             self.color = kwargs.get('color')
 
         self.parent = self
@@ -100,7 +100,7 @@ class MTWindow(TouchWindow):
             doc='''Return width/height of window''')
 
     def apply_css(self, styles):
-        if styles.has_key('bg-color'):
+        if 'bg-color' in styles:
             self.color = styles.get('bg-color')
 
     def add_on_key_press(self, func):
@@ -301,7 +301,7 @@ class MTDisplay(MTWidget):
         self.touches[touchID] = (x,y)
 
     def on_touch_up(self, touches, touchID, x, y):
-        if self.touches.has_key(touchID):
+        if touchID in self.touches:
             del self.touches[touchID]
 
 

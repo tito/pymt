@@ -16,17 +16,17 @@ class MTGestureWidget(MTWidget):
         self.db = []
 
     def on_touch_down(self, touches, touchID, x, y):
-        if not self.points.has_key(touchID):
+        if not touchID in self.points:
             self.points[touchID] = []
         self.points[touchID].append((x, y))
 
     def on_touch_move(self, touches, touchID, x, y):
-        if not self.points.has_key(touchID):
+        if not touchID in self.points:
             return
         self.points[touchID].append((x, y))
 
     def on_touch_up(self, touches, touchID, x, y):
-        if not self.points.has_key(touchID):
+        if not touchID in self.points:
             return
         self.points[touchID].append((x, y))
 

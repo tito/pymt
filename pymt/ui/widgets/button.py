@@ -30,15 +30,15 @@ class MTButton(MTWidget):
         `border_radius`: float, default is 0
             Radius of background border
 
-	:Styles:
-		`color-down`: color
-			Background-color of the button when it is press
+    :Styles:
+        `color-down`: color
+            Background-color of the button when it is press
 
-	:Events:
-		`on_press`
-			Fired when the button are pressed (not released)
-		`on_release`
-			Fired when the button are released
+    :Events:
+        `on_press`
+            Fired when the button are pressed (not released)
+        `on_release`
+            Fired when the button are released
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('label', '')

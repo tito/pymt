@@ -55,7 +55,7 @@ def set_brush(sprite, size=10):
 
 
 def set_color(*colors, **kwargs):
-    '''Define current color to be used.
+    '''Define current color to be used ::
 
         set_color(1, 0, 0, 1)
         drawLabel('Hello', pos=(100, 0))
@@ -120,7 +120,8 @@ def drawLabel(text, pos=(0,0), center=True, font_size=16):
 
 
 def paintLine(points):
-    '''Paint a line with current brush ::
+    '''Paint a line with current brush
+    ::
 
         set_brush("mybrush.png", 10)
         paintLine(0, 0, 20, 50)
@@ -345,7 +346,8 @@ class GlDisplayList:
         glCallList(self.dl)
 
 class DO:
-    '''A way to do multiple action in with statement ::
+    '''A way to do multiple action in with statement
+    ::
 
         with DO(stmt1, stmt2):
             print 'something'
@@ -385,11 +387,11 @@ class GlMatrix:
 
     Alias: gx_matrix, gx_matrix_identity ::
 
-    with gx_matrix:
-        # do draw function
+        with gx_matrix:
+            # do draw function
 
-    with gx_matrix_identity:
-        # do draw function
+        with gx_matrix_identity:
+            # do draw function
     '''
     def __init__(self, matrixmode=GL_MODELVIEW, do_loadidentity=False):
         self.do_loadidentity = do_loadidentity

@@ -57,6 +57,8 @@ class MTVectorSlider(MTWidget):
         self.radius = kwargs.get('radius')
         if 'vcolor' in kwargs:
             self.vcolor = kwargs.get('vcolor')
+        if 'bgcolor' in kwargs:
+            self.bgcolor = kwargs.get('bgcolor')
 
         #The vector hand
         self.vector = Vector(0, 0)

@@ -49,7 +49,7 @@ keybutton {
 }
 
 formslider,
-slider, xyslider, vectorslider, multislider {
+slider, xyslider, vectorslider, multislider, boundaryslider {
     bg-color: rgb(51, 51, 51);
     slider-color: rgb(255, 127, 0);
 }

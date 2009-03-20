@@ -55,6 +55,8 @@ class MTSlider(MTWidget):
             self._value = kwargs.get('value')
         if kwargs.get('slidercolor'):
             self.slidercolor = kwargs.get('slidercolor')
+        if kwargs.get('bgcolor'):
+            self.slidercolor = kwargs.get('bgcolor')
 
     def apply_css(self, styles):
         if 'slider-color' in styles:
@@ -166,6 +168,8 @@ class MTXYSlider(MTWidget):
             self._value_y = kwargs.get('value_y')
         if kwargs.get('slidercolor'):
             self.slidercolor = kwargs.get('slidercolor')
+        if kwargs.get('bgcolor'):
+            self.slidercolor = kwargs.get('bgcolor')
 
     def apply_css(self, styles):
         if 'slider-color' in styles:
@@ -279,6 +283,8 @@ class MTBoundarySlider(MTWidget):
         self.showtext = kwargs.get('showtext')
         if kwargs.get('slidercolor'):
             self.slidercolor = kwargs.get('slidercolor')
+        if kwargs.get('bgcolor'):
+            self.slidercolor = kwargs.get('bgcolor')
 
         kwargs.setdefault('value_max', 1)
         kwargs.setdefault('value_min', self.max/2)

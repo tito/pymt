@@ -648,6 +648,7 @@ dl.class {
 	margin-top: 20px;
 }
 
+dl.exception dt,
 dl.function dt,
 dl.class dt {
 	background-color: #f0f0ff;

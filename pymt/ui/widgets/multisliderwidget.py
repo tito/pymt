@@ -24,10 +24,14 @@ class MTMultiSlider(MTWidget):
         self.slider_values = [self._init_value for x in range(self._sliders)]
         if 'slidercolor' in kwargs:
             self.slidercolor = kwargs.get('slidercolor')
+        if 'bgcolor' in kwargs:
+            self.bgcolor = kwargs.get('bgcolor')
 
     def apply_css(self, styles):
         if 'slider-color' in styles:
             self.slidercolor = styles.get('slider-color')
+        if 'bg-color' in styles:
+            self.bgcolor = styles.get('bg-color')
         super(MTMultiSlider, self).apply_css(styles)
 
     def _get_sliders(self):

@@ -382,7 +382,6 @@ def runTouchApp():
 
     host = pymt.pymt_config.get('tuio', 'host')
     port = pymt.pymt_config.getint('tuio', 'port')
-    pymt_logger.info('listening for Tuio on %s:%d' % (host, port))
     pymt_evloop = TouchEventLoop(host=host, port=port)
 
     try:
@@ -398,6 +397,7 @@ def runTouchApp():
 def stopTouchApp():
     global pymt_evloop
     pymt_logger.info('Leaving application in progress...')
+    pymt_evloop.close()
     pymt_evloop.exit()
 
 

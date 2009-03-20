@@ -29,13 +29,13 @@
 """
 
 import OSC
-import socket
+import socket, os, time, errno
 from threading import Thread
 from pymt.logger import pymt_logger
 
 # globals
-outSocket = 0 
-addressManager = 0 
+outSocket = 0
+addressManager = 0
 oscThread = 0
 
 
@@ -47,7 +47,7 @@ def init() :
     global outSocket, addressManager
     outSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     addressManager = OSC.CallbackManager()
-    
+
 
 def bind(func, oscaddress):
     """ bind given oscaddresses with given functions in address manager
@@ -103,37 +103,61 @@ def createBinaryMsg(oscAddress, dataArray):
 class OSCServer(Thread) :
     def __init__(self, ipAddr='127.0.0.1', port = 9001) :
         Thread.__init__(self)
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        try :
-            self.socket.bind( (ipAddr, port) )
-            # felipe noticed this line will cause pymt to stop listening
-            # when used with simulator or other tuio app that doesnt constantly send messages
-            self.socket.settimeout(1.0) # make sure its not blocking forever...
-            self.haveSocket=True
-        except socket.error, e:
-            pymt_logger.error('Error while binding to %s:%i, maybe the port is already taken by another process ?' % (ipAddr, port))
-            pymt_logger.exception(e)
-            self.haveSocket=False
+        self.ipAddr = ipAddr
+        self.port = port
+        self.isRunning = True
 
     def run(self):
-        if self.haveSocket :
-            self.isRunning = True
-            while self.isRunning:
-                try:
-                    while 1:
-                        addressManager.handle( self.socket.recv(1024) ) # self.socket.recvfrom(2**13)
-                except:
-                    return "no data arrived" # not data arrived
+        self.haveSocket = False
+        # create socket
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+        # fix trouble if python leave without cleaning well the socket
+        # not needed under windows, he can reuse addr even if the socket
+        # are in fin2 or wait state.
+        if os.name in ['posix', 'mac'] and hasattr(socket, 'SO_REUSEADDR'):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+        # try to bind the socket, retry if necessary
+        while not self.haveSocket and self.isRunning:
+            try :
+                self.socket.bind((self.ipAddr, self.port))
+                self.socket.settimeout(0.5)
+                self.haveSocket = True
+
+            except socket.error, e:
+                error, message = e.args
+
+                # special handle for EADDRINUSE
+                if error == errno.EADDRINUSE:
+                    pymt_logger.error('Address %s:%i already in use, retry in 2 second' % (self.ipAddr, self.port))
+                else:
+                    pymt_logger.exception(e)
+                self.haveSocket = False
+
+                # sleep 1 second before retry
+                time.sleep(2)
+
+        pymt_logger.info('listening for Tuio on %s:%i' % (self.ipAddr, self.port))
+
+        while self.isRunning:
+            try:
+                addressManager.handle( self.socket.recv(1024) ) # self.socket.recvfrom(2**13)
+            except Exception, e:
+                if type(e) == socket.timeout:
+                    continue
+                pymt_logger.error('Error in Tuio recv()')
+                pymt_logger.exception(e)
+                return "no data arrived" # not data arrived
 
 def listen(ipAddr='127.0.0.1', port = 9001) :
-    """  creates a new thread listening to that port 
+    """  creates a new thread listening to that port
     defaults to ipAddr='127.0.0.1', port 9001
     """
     global oscThread
     oscThread = OSCServer(ipAddr, port)
     oscThread.start()
-    
+
 
 def dontListen() :
     """ closes the socket and kills the thread
@@ -143,7 +167,7 @@ def dontListen() :
         oscThread.socket.close()
         oscThread.isRunning = 0 # kill it and free the socket
         oscThread = 0
-        
+
 
 
 ##########################################
@@ -152,21 +176,21 @@ def createListener(ipAddr='127.0.0.1', port = 9001) :
     """ returns a blocked socket. This is part of the old system, better use now listen()
     """
     l = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    
+
     try :
         l.bind( (ipAddr, port) )
     except socket.error:
         print 'there was an error binding to ip %s and port %i , maybe the port is already taken by another process?' % (ipAddr. port)
         return 0
-    
+
     l.setblocking(0) # if not this it waits for msgs to arrive blocking other events
 ##    l.settimeout(0) # does same as line above but avobe only boolean, this takes float
-    
+
     return l
 
 def getOSC(inSocket):
     """try to get incoming OSC on the socket and send it to callback manager (for osc addresses).
-    This is part of the old system that was pulling, better use now listen() 
+    This is part of the old system that was pulling, better use now listen()
     """
     try:
         while 1:
@@ -182,6 +206,8 @@ if __name__ == '__main__':
     # example of how to use oscAPI
     init()
     listen() # defaults to "127.0.0.1", 9001
+    import time
+    time.sleep(5)
 
     # add addresses to callback manager
     def printStuff(msg):
@@ -206,10 +232,4 @@ if __name__ == '__main__':
     sendBundle(bundle) # defaults to "127.0.0.1", 9000
 
     dontListen()  # finally close the connection bfore exiting or program
-    print 'osc leave'
-
-
-
-
-
 

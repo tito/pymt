@@ -12,9 +12,6 @@ class Bat(MTWidget):
         self.va = va
         self.vb = vb
         super(Bat, self).__init__(**kwargs)
-        
-        self.w = math.fabs(self.vb.x)
-        self.h = math.fabs(self.vb.y)
 
     def draw(self):
         set_color(1, 1, 1)
@@ -44,8 +41,7 @@ class Ball(MTWidget):
         self.image.draw()      
         
     def on_draw(self):
-        self.x, self.y = self.x + self.dx, self.y + self.dy
-        
+        self.x, self.y = self.x + self.dx, self.y + self.dy        
         if self.y + self.img.height*0.5 >= w.height or self.y <= 0:
             self.dy = -self.dy
         if self.x + self.img.width*0.5 >= w.width or self.x <= 0:
@@ -54,13 +50,13 @@ class Ball(MTWidget):
 
 def collide(a, b): 
     """ Basic rectangle collision """
-    if a.y + a.h < b.y:
+    if a.y + a.h < b.va.y:
          return False
-    if a.y > b.y + b.h:
+    if a.y > b.vb.y:
          return False
-    if a.x + a.w < b.x:
+    if a.x + a.w < b.va.x:
         return False
-    if a.x > b.x + b.w:
+    if a.x >  b.vb.x:
         return False
 
     return True    
@@ -82,7 +78,6 @@ class Wang(MTWidget):
             if collide(self.ball, b):
                 self.ball.dx = -self.ball.dx + random.randint(0, 4)
                 self.ball.dy = -self.ball.dy + random.randint(0, 4)
-                print "here"
                 # Make sure the ball isn't going too fast
                 if self.ball.dx > 6:
                     self.ball.dx = 6

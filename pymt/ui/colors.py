@@ -1,5 +1,24 @@
 '''
-Colors: parse and handle CSS for PyMT
+Colors: css & themes
+
+Currently, the default css is included in this file.
+You can easily extend the default style by create a css file
+in your ~/.pymt/user.css.
+
+Exemple of user.css ::
+
+    * {
+        /* increase the font-size of every widget */
+        font-size: 18;
+    }
+
+.. warning::
+    Only class name of widget is currently use to search CSS.
+
+We cannot describe how to style every widget in this class.
+If you want to known which attribute is needed to style a widget,
+please look on the widget documentation.
+
 '''
 
 from __future__ import with_statement
@@ -66,6 +85,8 @@ window {
 '''
 
 def get_truncated_classname(name):
+    '''Return the css-ized name of a class
+    (remove the MT prefix, and all in lowercase)'''
     if name.startswith('MT'):
         name = name[2:]
     return name.lower()
@@ -87,7 +108,16 @@ def get_widget_parents(widget):
     return widgets_parents[widget.__class__]
 
 css_cache = {}
-def css_get_style(widget=None, sheet=None):
+def css_get_style(widget, sheet=None):
+    '''Return a dict() with all the style for the widget.
+
+    :Parameters:
+        `widget` : class
+            Widget to search CSS
+        `sheet` : sheet
+            Custom style sheet to use (instead of pymt_sheet)
+    '''
+
     global pymt_sheet
     global css_cache
 

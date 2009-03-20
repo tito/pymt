@@ -27,6 +27,43 @@ touch_event_listeners = []
 
 class Tuio2DCursor(object):
     '''Represent a Tuio cursor + implementation of double-tap functionnality
+
+    .. note::
+        All properties are read-only.
+
+    :Properties:
+        `blobID` : string
+            Id of blob, returned by simulator or tracker
+        `xpos` : float, default to None
+            X position
+        `ypos` : float, default to None
+            Y position
+        `xmot` : float, default to None (tracker only)
+            X motion vector
+        `ymot` : float, default to None (tracker only)
+            Y motion vector
+        `mot_accel` : float, default to None (tracker only)
+            Motion vector acceleration
+        `dxpos` : float, default to None
+            X start position of double tap detection
+        `dypos` : float, default to None
+            Y start position of double tap detection
+        `oxpos` : float, default to 0.0
+            X position of last movement
+        `oypos` : float, default to 0.0
+            Y position of last movement
+        `is_double_tap` : bool, default to False
+            Indicate if the Cursor is a double-tap
+        `double_tap_time` : float, default to 0
+            Time elasped between 2 tap, in seconds
+        `is_timeout` : bool, default to False
+            Indicate if the double-tap detection is timeout
+        `have_event_down` : bool, default to False
+            Indicate if the on_touch_down is already done
+        `do_event` : string, default to None
+            Next event to be fire
+        `no_event` : boolean, default to False
+            Indicate if the blob must stop event generation
     '''
     def __init__(self, blobID, args, time_start=0):
         self.blobID = blobID
@@ -58,6 +95,27 @@ class Tuio2DCursor(object):
 
 class Tuio2DObject(object):
     '''Represent a Tuio object
+
+    .. note::
+        All properties are read-only.
+
+    :Properties:
+        `blobID` : string
+            Id of blob, returned by tracker
+        `oxpos` : float, default to 0.0
+            X position of last movement
+        `oypos` : float, default to 0.0
+            Y position of last movement
+        `xpos` : float, default to None
+            X position
+        `ypos` : float, default to None
+            Y position
+        `angle` : float, default to None
+            Rotation angle of object
+        `xmot` : float, default to None
+            X motion vector
+        `ymot` : float, default to None
+            Y motion vector
     '''
     def __init__(self, blobID, args):
         self.blobID = blobID
@@ -80,6 +138,12 @@ class Tuio2DObject(object):
 class TuioGetter(object):
     '''Tuio getter listen udp, and use the appropriate
     parser for 2Dcur and 2Dobj Tuio message.
+
+    :Parameters:
+        `host` : string, default to '127.0.0.1'
+            IP to listen
+        `port` : int, default to 3333
+            Port to listen
     '''
     def __init__(self,  host='127.0.0.1', port=3333):
         global tuio_listeners
@@ -89,12 +153,14 @@ class TuioGetter(object):
         self.startListening()
 
     def startListening(self):
+        '''Start listening osc message'''
         osc.init()
         osc.listen(self.host, self.port)
         osc.bind(self.osc_2dcur_Callback, '/tuio/2Dcur')
         osc.bind(self.osc_2dobj_Callback, '/tuio/2Dobj')
 
     def stopListening(self):
+        '''Stop listening osc message'''
         osc.dontListen()
 
     def close(self):
@@ -116,6 +182,12 @@ class TuioGetter(object):
 
 class TouchEventLoop(pyglet.app.EventLoop):
     '''Main event loop. This loop dispatch Tuio message and pyglet event.
+
+    :Parameters:
+        `host` : string, default to '127.0.0.1'
+            IP to listen
+        `port` : int, default to 3333
+            Port to listen
     '''
     def __init__(self, host='127.0.0.1', port=3333):
         pyglet.app.EventLoop.__init__(self)
@@ -297,13 +369,21 @@ class TouchEventLoop(pyglet.app.EventLoop):
         return 0
 
 def stopTuio():
-    '''Stop Tuio listening'''
+    '''Stop Tuio listening
+    
+    .. note::
+        This function is designed to be used in non-graphic app.
+    '''
     global tuio_listeners
     for listener in tuio_listeners:
         listener.stopListening()
 
 def startTuio():
-    '''Start Tuio listening'''
+    '''Start Tuio listening.
+    
+    .. note::
+        This function is designed to be used in non-graphic app.
+    '''
     global tuio_listeners
     for listener in tuio_listeners:
         listener.startListening()
@@ -357,15 +437,16 @@ class TouchWindow(pyglet.window.Window):
 
 def pymt_usage():
     '''PyMT Usage: %s [OPTION...]
-  -h, --help                        prints this mesage
-  -f, --fullscreen                  force run in fullscreen
-  -w, --windowed                    force run in window
-  -p, --port=x                      specify Tuio port (default 3333)
-  -H, --host=xxx.xxx.xxx.xxx        specify Tuio host (default 127.0.0.1)
-  -F, --fps                         show fps in window
-      --dump-frame                  dump each frame in file
-      --dump-prefix                 specify a prefix for each frame file
-      --dump-format                 specify a format for dump
+
+    -h, --help                  prints this mesage
+    -f, --fullscreen            force run in fullscreen
+    -w, --windowed              force run in window
+    -p port, --port=post        specify Tuio port (default 3333)
+    -H host, --host=host        specify Tuio host (default 127.0.0.1)
+    -F, --fps                   show fps in window
+    --dump-frame                dump each frame in file
+    --dump-prefix               specify a prefix for each frame file
+    --dump-format               specify a format for dump
     '''
     print pymt_usage.__doc__ % (os.path.basename(sys.argv[0]))
 

@@ -1,11 +1,17 @@
+'''
+Utils: generic toolbox
+'''
+
 __all__ = ['intersection', 'difference', 'curry', 'strtotuple']
 
 import re
 
 def intersection(set1, set2):
+    '''Return intersection between 2 list'''
     return filter(lambda s:s in set2, set1)
 
 def difference(set1, set2):
+    '''Return difference between 2 list'''
     return filter(lambda s:s not in set2, set1)
 
 def curry(fn, *cargs, **ckwargs):
@@ -16,6 +22,15 @@ def curry(fn, *cargs, **ckwargs):
     return call_fn
 
 def strtotuple(s):
+    '''Convert a tuple string into tuple,
+    with some security check. Designed to be used
+    with eval() function ::
+
+        a = (12, 54, 68)
+        b = str(a)         # return '(12, 54, 68)'
+        c = strtotuple(b)  # return (12, 54, 68)
+
+    '''
     # security
     if not re.match('^[,.0-9 ()\[\]]*$', s):
         raise Exception('Invalid characters in string for tuple conversion')

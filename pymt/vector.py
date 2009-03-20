@@ -1,4 +1,4 @@
-'''Generic vector class to handle Vector operation.
+'''Vector: class to handle Vector operation.
 For example, if you want to get length of a vector ::
 
     from pymt import *

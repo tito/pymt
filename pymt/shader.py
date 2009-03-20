@@ -1,5 +1,5 @@
 '''
-Shader: abstraction of Shader compilation and usage
+Shader: abstract compilation and usage
 '''
 
 __all__ = ['ShaderException', 'Shader']
@@ -10,10 +10,18 @@ from pyglet.gl import *
 from logger import pymt_logger
 
 class ShaderException(Exception):
+    '''Exception launched by shader in error case'''
     pass
 
 class Shader(object):
+    '''Create a vertex or fragment shader
 
+    :Parameters:
+        `vertex_source` : string, default to None
+            Source code for vertex shader
+        `fragment_source` : string, default to None
+            Source code for fragment shader
+    '''
     def __init__(self, vertex_source=None, fragment_source=None):
         self.program = glCreateProgram()
 
@@ -61,15 +69,19 @@ class Shader(object):
             raise TypeError("Only single floats and ints are supported so far")
 
     def use(self):
+        '''Use the shader'''
         glUseProgram(self.program)
 
     def stop(self):
+        '''Stop using the shader'''
         glUseProgram(0)
 
     def get_shader_log(self, shader):
+        '''Return the shader log'''
         return self.get_log(shader, glGetShaderInfoLog)
 
     def get_program_log(self, shader):
+        '''Return the program log'''
         return self.get_log(shader, glGetProgramInfoLog)
 
     def get_log(self, obj, func):
@@ -78,3 +90,4 @@ class Shader(object):
         written = c.c_int()
         func(obj, 4096, c.pointer(written), buffer_pointer)
         return log_buffer.value
+

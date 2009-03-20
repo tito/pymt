@@ -5,13 +5,13 @@ This is the Asynchronous Loader. You can use it to load an image
 and use it, even if data are not yet available. You must specify a default
 loading image for using a such loader ::
 
- from pymt import *
- loader = Loader(loading_image='load.png')
- sprite = loader.sprite('mysprite.png')
+    from pymt import *
+    loader = Loader(loading_image='load.png')
+    sprite = loader.sprite('mysprite.png')
 
 You can also load image from url ::
 
- sprite = loader.sprite('http://mysite.com/test.png')
+    sprite = loader.sprite('http://mysite.com/test.png')
 
 '''
 
@@ -141,6 +141,16 @@ class ProxyImage(pyglet.image.AbstractImage):
 
 
 class ProxySprite(pyglet.sprite.Sprite):
+    '''ProxySprite is a derivation of Sprite of pyglet.
+    You have the same abstraction, except that he use loading_image when
+    the final image are not yet available.
+
+    Don't instanciate directly, use the loader ::
+
+        from pymt import *
+        loader = Loader(loading_image='load.png')
+        image = loader.sprite('myimage.png')
+    '''
     def __init__(self, img, x=0, y=0, blend_src=770, blend_dest=771, batch=None, group=None, usage='dynamic'):
         self._internal_image = img
         if isinstance(self._internal_image, ProxyImage):
@@ -151,6 +161,15 @@ class ProxySprite(pyglet.sprite.Sprite):
         self.image = self._internal_image
 
 class Loader(object):
+    '''Base for loading image in an asynchronous way.
+    Current loader is based on pyglet.image.load method, and can
+    create only Sprite and Image pyglet object.
+    
+    .. note::
+        It'll be reworked in the next version to support loading
+        of other object.
+
+    '''
     def __init__(self, loading_image, async=True):
         self.cache = {}
         self.loadlist = {}
@@ -161,6 +180,7 @@ class Loader(object):
         pyglet.clock.schedule_interval(self._run_update, 1/2.0)
 
     def image(self, name, async=None):
+        '''Load an image, and return a ProxyImage'''
         # get data cache
         data = self.get_image(name)
         if data:
@@ -188,6 +208,7 @@ class Loader(object):
         return obj
 
     def sprite(self, name, async=None):
+        '''Load an sprite, and return a ProxySprite'''
         img = self.image(name, async)
         return ProxySprite(img)
 

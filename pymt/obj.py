@@ -12,7 +12,16 @@ from graphx import *
 from geometric import *
 
 class OBJ:
+    '''3D object representation.
 
+    :Parameters:
+        `filename` : string
+            Filename of object
+        `file` : File object, default to None
+            Use file instead of filename if possible
+        `path` : string, default to None
+            Use custom path for material
+    '''
     def __init__(self, filename, file=None, path=None):
         self.materials = {}
         self.meshes = {}        # Name mapping
@@ -140,6 +149,7 @@ class OBJ:
                 warnings.warn('Parse error in %s.' % filename)
 
     def draw(self):
+        '''Draw the object on screen'''
         for mesh in self.mesh_list:
             mesh.draw()
 

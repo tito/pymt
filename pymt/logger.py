@@ -1,5 +1,24 @@
 '''
 Logger: the PyMT logger
+
+Fifferents level are available :
+    - debug
+    - info
+    - warning
+    - error
+    - critical
+
+Examples of usage ::
+
+    from pymt.logger import pymt_logger
+    pymt_logger.notice('This is a notice')
+    pymt_logger.debug('This is a notice')
+
+    try:
+        raise Exception('bleh')
+    except Exception, e
+        pymt_logger.exception(e)
+
 '''
 
 import logging

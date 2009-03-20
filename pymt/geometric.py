@@ -10,7 +10,8 @@ from pyglet.gl import *
 
 class Material(object):
     '''
-    This is the material class
+    Material class to handle attribute like light (ambient, diffuse, specular,
+    emmission, shininess), opacity, texture...
     '''
     diffuse = [.8, .8, .8]
     ambient = [.2, .2, .2]
@@ -24,6 +25,7 @@ class Material(object):
         self.name = name
 
     def apply(self, face=pyglet.gl.GL_FRONT_AND_BACK):
+        '''Apply the material on current context'''
         if self.texture:
             glEnable(self.texture.target)
             glBindTexture(self.texture.target, self.texture.id)
@@ -41,6 +43,9 @@ class Material(object):
         glMaterialf(face, GL_SHININESS, self.shininess)
 
 class MaterialGroup(object):
+    '''
+    Groups of material
+    '''
     def __init__(self, material):
         self.material = material
 
@@ -49,6 +54,9 @@ class MaterialGroup(object):
         self.array = None
 
 class Mesh(object):
+    '''
+    Class to store a mesh in T2F_N3F_V3F format.
+    '''
     def __init__(self, name):
         self.name = name
         self.groups = []
@@ -58,6 +66,7 @@ class Mesh(object):
         self.list = None
 
     def draw(self):
+        '''Draw the mesh on screen (using display list if compiled)'''
         if self.list:
             glCallList(self.list)
             return
@@ -76,6 +85,7 @@ class Mesh(object):
         glPopClientAttrib()
 
     def compile(self):
+        '''Compile the mesh in display list'''
         if self.list:
             return
         list = glGenLists(1)

@@ -18,76 +18,90 @@ class Bat(MTWidget):
         drawLine([self.va.x, self.va.y, self.vb.x, self.vb.y])
 
 class Ball(MTWidget):
-    """ Pong ball that will bounce of walls and paddles """
+    '''Pong ball that will bounce of walls and paddles'''
 
     def __init__(self, **kwargs):
+        '''Init position and a random speed. Also ball is not out yet'''
+        kwargs.setdefault('radius', 50)
+
         super(Ball, self).__init__(**kwargs)
-        """ Init position and a random speed. Also ball is not out yet """
-        self.dx = random.randint(2, 6)
-        self.dy = random.randint(2, 6)
-        self.img                 = pyglet.image.load('ball.png')
-        self.image          = pyglet.sprite.Sprite(self.img)
-        self.image.x        = random.randint(100, 400)
-        self.image.y        = random.randint(100, 200)
-        self.size           = (100, 100)
-        self.h = self.img.height * 0.5
-        self.w = self.img.width * 0.5
-        
+
+        self.radius     = kwargs.get('radius')
+        self.dx         = 1
+        self.dy         = 0
+        self.image      = pyglet.sprite.Sprite(pyglet.image.load('ball.png'))
+        self.pos        = random.randint(100, 400), random.randint(100, 200)
+        self.owidth     = self.image.width
+        self.old_pos    = self.pos
+        print self.image.width
+
     def draw(self):
-        self.image.x        = self.x
-        self.image.y        = self.y
-        self.image.scale    = 0.5
-        self.size           = (self.img.width, self.img.height)
-        self.image.draw()      
-        
+        # update position
+        self.image.x, self.image.y = self.x - self.radius, self.y - self.radius
+        self.image.scale           = self.scale
+        self.image.draw()
+
     def on_draw(self):
-        self.x, self.y = self.x + self.dx, self.y + self.dy        
-        if self.y + self.img.height*0.5 >= w.height or self.y <= 0:
+        # update scale if necessary
+        self.scale = (self.radius * 2) / float(self.owidth)
+        self.size  = (self.radius * 2, self.radius * 2)
+
+        if self.y + self.radius >= w.height or self.y - self.radius <= 0:
             self.dy = -self.dy
-        if self.x + self.img.width*0.5 >= w.width or self.x <= 0:
+        if self.x + self.radius >= w.width or self.x - self.radius <= 0:
             self.dx = -self.dx
+
+        self.old_pos = self.pos
+        self.pos = self.x + self.dx, self.y + self.dy
+        self.cpos = ((Vector(self.pos) - Vector(self.old_pos)).normalize() * self.radius) + Vector(self.old_pos)
+        print self.dx, self.dy
+
         self.draw()
 
-def collide(a, b): 
-    """ Basic rectangle collision """
-    if a.y + a.h < b.va.y:
-         return False
-    if a.y > b.vb.y:
-         return False
-    if a.x + a.w < b.va.x:
-        return False
-    if a.x >  b.vb.x:
-        return False
-
-    return True    
+def collide(ball, bat):
+    '''2 line collisions'''
+    v = Vector.line_intersection(
+        ball.old_pos, ball.cpos,
+        bat.va, bat.vb
+    )
+    if not v:
+        return None
+    if not Vector.in_bbox(v, ball.old_pos, ball.cpos):
+        return None
+    if not Vector.in_bbox(v, bat.va, bat.vb):
+        return None
+    return v
 
 class Wang(MTWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('mindist', 200)
         super(Wang, self).__init__(**kwargs)
-        self.ball = Ball()
+        self.ball = Ball(radius=30)
         self.add_widget(self.ball)
         self.touchs = {}
         self.bats = []
         self.mindist = kwargs.get('mindist')
 
-        
+
     def draw(self):
         for b in self.bats:
             b.draw()
-            if collide(self.ball, b):
-                self.ball.dx = -self.ball.dx + random.randint(0, 4)
-                self.ball.dy = -self.ball.dy + random.randint(0, 4)
-                # Make sure the ball isn't going too fast
-                if self.ball.dx > 6:
-                    self.ball.dx = 6
-
-                if self.ball.dx < -6:
-                    self.ball.dx = -6
-
-                if self.ball.dy > 6:
-                    self.ball.dx > 6
-            
+            v = collide(self.ball, b)
+            if not v:
+                continue
+            self.ball.pos = self.ball.old_pos
+            angle = Vector.angle(Vector(self.ball.old_pos) - v, Vector(b.va) - v)
+            print 'before', angle
+            angle *= 2
+            angle -= 90
+            if angle < 0:
+                angle += 360
+            angle = angle % 360
+            print 'after', angle
+            self.ball.dx, self.ball.dy = Vector.rotate(
+                Vector(self.ball.dx, self.ball.dy), angle
+            )
+            continue
 
     def update_bat(self):
         self.bats = []
@@ -96,8 +110,10 @@ class Wang(MTWidget):
         keys = self.touchs.keys()
         for ka in keys:
             va = self.touchs[ka]
-            for kb in keys[1:]:
+            for kb in keys:
                 vb = self.touchs[kb]
+                if va == vb:
+                    continue
                 if Vector.distance(va, vb) < self.mindist:
                     self.bats.append(Bat(va, vb))
 

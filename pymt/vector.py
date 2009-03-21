@@ -101,7 +101,6 @@ class Vector(list):
         '''Returns the distance between two points.'''
         return math.sqrt((self[0] - to[0]) ** 2 + (self[1] - to[1]) ** 2)
 
-
     def distance2(self, to):
         '''Returns the distance between two points squared.
         Marginally faster than distance()
@@ -128,14 +127,10 @@ class Vector(list):
         return angle
 
     def rotate(self, angle):
+        '''Rotate the vector'''
         angle = math.radians(angle)
         return Vector((self[0] * math.cos(angle)) - (self[1] * math.sin(angle)),
                       (self[1] * math.cos(angle)) + (self[0] * math.sin(angle)))
-
-
-
-
-
 
     @staticmethod
     def line_intersection(v1, v2, v3, v4):
@@ -159,6 +154,13 @@ class Vector(list):
         py = ( u * (y3 - y4)  -  (y1 - y2) * v ) / denom
 
         return Vector(px,py)
+
+    @staticmethod
+    def in_bbox(point, a, b):
+        return ((point[0] <= a[0] and point[0] >= b[0] or
+                 point[0] <= b[0] and point[0] >= a[0]) and
+                (point[1] <= a[1] and point[1] >= b[1] or
+                 point[1] <= b[1] and point[1] >= a[1]))
 
 
 def matrix_inv_mult(m, v):

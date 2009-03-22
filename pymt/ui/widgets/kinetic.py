@@ -3,14 +3,16 @@ Kinetic : kinetic abstraction
 Initially written by Alex Teiche <xelapond@gmail.com>
 '''
 
-__all__ = ['MTKinetic', 'MTKineticScrollText']
+__all__ = ['MTKinetic', 'MTKineticContainer', 'MTKineticContainerObject', 'MTKineticScrollText']
 
 from pyglet.gl import *
 from pyglet.text import Label
 from ...graphx import set_color, drawRectangle
 from ..factory import MTWidgetFactory
 from ...vector import Vector
+from stencilcontainer import MTStencilContainer
 from widget import MTWidget
+from button import MTButton
 
 class MTKinetic(MTWidget):
     '''Kinetic container.
@@ -42,7 +44,7 @@ class MTKinetic(MTWidget):
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('no_css', True)
-        kwargs.setdefault('friction', 1.2)
+        kwargs.setdefault('friction', 1.01)
         kwargs.setdefault('velstop', 1.0)
         super(MTKinetic, self).__init__(**kwargs)
         self.friction   = kwargs.get('friction')
@@ -96,6 +98,140 @@ class MTKinetic(MTWidget):
     def draw(self):
         self.process_kinetic()
 
+class MTKineticContainer(MTStencilContainer):
+    '''This is a kinetic container widget, that allows you to make
+    a kinetic list scrolling in either direction.
+
+    '''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('friction', 1.2)
+        kwargs.setdefault('padding_x', 4)
+        kwargs.setdefault('padding_y', 4)
+        kwargs.setdefault('w_limit', 1)
+        kwargs.setdefault('h_limit', 0)
+        kwargs.setdefault('do_x', True)
+        kwargs.setdefault('do_y', True)
+
+        super(MTKineticContainer, self).__init__(**kwargs)
+        
+        self.friction = kwargs.get('friction')
+        self.padding_x = kwargs.get('padding_x')
+        self.padding_y = kwargs.get('padding_y')
+        self.w_limit = kwargs.get('w_limit')
+        self.h_limit = kwargs.get('h_limit')
+        if self.w_limit and self.h_limit:
+            raise Exception('You cannot limit both axes')
+        elif not(self.w_limit or self.h_limit):
+            raise Exception('You must limit at least one axis')
+
+        self.do_x = kwargs.get('do_x')
+        self.do_y = kwargs.get('do_y')
+
+        #X and Y translation vectors for the kinetic movement
+        self.vx = 0
+        self.vy = 0
+
+        self.childmap = {}
+
+        self.touch = {} #For extra blob stats
+
+    def add(self, item, callback=None):
+        self.children.append(item)
+        if callback:
+            self.childmap[item] = callback
+
+        if not self.h_limit and (len(self.children) % self.w_limit) == 0:
+            self.do_layout()
+
+    def _get_total_width(self, items, axis):
+        total = 0
+        if axis == 'width':
+            for item in items:
+                total += item.width + self.padding_x
+        elif axis == 'height':
+            for item in items:
+                total+= item.height + self.padding_y
+
+        return total
+
+    def do_layout(self):
+       #Limit is on width
+        if not self.h_limit:
+            t = 0
+            x = self.x + (self.width/2) - (self._get_total_width(
+                    (self.children[z] for z in range(t, t+self.w_limit)), 'width')/2)
+            y = 0
+            i = 0
+            for c in self.children:
+                i += 1
+                c.x = x + self.padding_x
+                c.y = y
+                x += c.width + self.padding_x
+                if i == self.w_limit:
+                    #Take the largest height in the current row
+                    y += self.padding_y + max(map(lambda x: x.height, 
+                                                  (self.children[x] for x in range(t, t+self.w_limit))))
+                    x = self.x + (self.width/2) - (self._get_total_width(
+                            (self.children[x] for x in range(t, t+self.w_limit)), 'width')/2)
+                    i = 0
+                    t += self.w_limit
+
+    def on_touch_down(self, touches, touchID, x, y):
+        if self.collide_point(x, y):
+            self.vx = self.vy = 0 #Stop kinetic movement
+            self.touch[touchID] = {
+                'ox': x, 
+                'oy': y,
+                'xmot': 0, 
+                'ymot': 0, 
+                'travelx' : 0, #How far the blob has traveled total in the x axis
+                'travely' : 0, #^
+            }
+            
+    def on_touch_move(self, touches, touchID, x, y):
+        if touchID in self.touch:
+            t = self.touch[touchID]
+            t['xmot'] = x - t['ox']
+            t['ymot'] = y - t['oy']
+            t['ox'] = x
+            t['oy'] = y
+            t['travelx'] += abs(t['xmot'])
+            t['travely'] += abs(t['ymot'])
+            self.move_children((t['xmot'], t['ymot']))
+    
+    def on_touch_up(self, touches, touchID, x, y):
+        if touchID in self.touch:
+            t = self.touch[touchID]
+            self.vx = t['xmot']
+            self.vy = t['ymot']
+            #If any of them have been tapped, tell them
+            for child in self.children:
+                if child.collide_point(x, y):
+                    if t['travelx'] <= 40 and self.do_x:
+                        #child.dispatch_event('on_select', touches, touchID, x, y)
+                        child.on_select(touches, touchID, x, y)
+                    elif t['travely'] <= 40 and self.do_y:
+                        #child.dispatch_event('on_select', touches, touchID, x, y)
+                        child.on_select(touches, touchID, x, y)
+            
+    def move_children(self, vector):
+        for child in self.children:
+            child.x += (vector[0] * self.do_x)
+            child.y += (vector[1] * self.do_y)
+
+    def process_kinetic(self):
+        self.move_children((self.vx, self.vy))
+
+        self.vx /= self.friction
+        self.vy /= self.friction
+
+    def on_draw(self):
+        super(MTKineticContainer, self).on_draw()
+        self.process_kinetic()
+
+class MTKineticContainerObject(MTButton):
+    def on_select(self, touches, touchID, x, y):
+        import sys; sys.exit()
 
 class MTKineticScrollText(MTWidget):
     '''Kinetic Scrolling widget
@@ -343,6 +479,8 @@ class MTKineticScrollText(MTWidget):
 
 MTWidgetFactory.register('MTKineticScrollText', MTKineticScrollText)
 MTWidgetFactory.register('MTKinetic', MTKinetic)
+MTWidgetFactory.register('MTKineticContainerObject', MTKineticContainerObject)
+MTWidgetFactory.register('MTKineticContainer', MTKineticContainer)
 
 if __name__ == '__main__':
     from pymt import *

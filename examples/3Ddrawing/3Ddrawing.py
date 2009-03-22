@@ -124,7 +124,7 @@ class ModelPainter(MTWidget):
                 self.draw()
 
         #display teh FBO contents
-        glColor3f(1,1,1)
+        set_color(1,1,1)
         drawTexturedRectangle(self.fbo.texture, size=self.size)
         #drawTexturedRectangle(self.painting_fbo.texture, size=(256,256))
         #drawTexturedRectangle(self.picking_texture.id,pos=(256,0), size=(256,256))

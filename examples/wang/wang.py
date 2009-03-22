@@ -27,19 +27,19 @@ class Ball(MTWidget):
         super(Ball, self).__init__(**kwargs)
 
         self.radius     = kwargs.get('radius')
-        self.dx         = 1
+        self.dx         = 0.03
         self.dy         = 0
         self.image      = pyglet.sprite.Sprite(pyglet.image.load('ball.png'))
         self.pos        = random.randint(100, 400), random.randint(100, 200)
         self.owidth     = self.image.width
         self.old_pos    = self.pos
-        print self.image.width
 
     def draw(self):
         # update position
         self.image.x, self.image.y = self.x - self.radius, self.y - self.radius
         self.image.scale           = self.scale
         self.image.draw()
+        drawLine((self.pos[0], self.pos[1], self.cpos[0], self.cpos[1]))
 
     def on_draw(self):
         # update scale if necessary
@@ -54,7 +54,7 @@ class Ball(MTWidget):
         self.old_pos = self.pos
         self.pos = self.x + self.dx, self.y + self.dy
         self.cpos = ((Vector(self.pos) - Vector(self.old_pos)).normalize() * self.radius) + Vector(self.old_pos)
-        print self.dx, self.dy
+
 
         self.draw()
 
@@ -86,21 +86,17 @@ class Wang(MTWidget):
     def draw(self):
         for b in self.bats:
             b.draw()
-            v = collide(self.ball, b)
-            if not v:
+            collide_point = collide(self.ball, b)
+            if not collide_point:
                 continue
             self.ball.pos = self.ball.old_pos
-            angle = Vector.angle(Vector(self.ball.old_pos) - v, Vector(b.va) - v)
-            print 'before', angle
-            angle *= 2
-            angle -= 90
-            if angle < 0:
-                angle += 360
-            angle = angle % 360
-            print 'after', angle
-            self.ball.dx, self.ball.dy = Vector.rotate(
-                Vector(self.ball.dx, self.ball.dy), angle
-            )
+            angle = Vector.angle(collide_point - Vector(self.ball.old_pos), collide_point - Vector(b.va))
+            print 'AVANT', self.ball.dx, self.ball.dy, angle
+            angle = - 2 * angle
+#            if Vector.dot_vector(Vector(self.ball.old_pos) - collide_point, Vector(b.va) - collide_point) > 0:
+ #               angle = - angle
+            self.ball.dx, self.ball.dy = Vector(self.ball.dx, self.ball.dy).rotate(angle)
+            print 'APRES', self.ball.dx, self.ball.dy, angle
             continue
 
     def update_bat(self):

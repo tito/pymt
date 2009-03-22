@@ -20,6 +20,7 @@ class FlickrPhoto(MTScatterImage):
         super(FlickrPhoto, self).__init__(**kwargs)
         self.aspectRatio = 1.33
         self.update_ratio()
+        self.color = kwargs.get('color')
 
     def draw(self):
         self.update_ratio()
@@ -90,7 +91,7 @@ class flickrControl(MTWidget):
     '''This widget handles the controls text input and the search button'''
     def __init__(self, **kwargs):
         super(flickrControl, self).__init__(**kwargs)
-        self.text_input = MTTextInput(pos=(105,0),size=(100,100))
+        self.text_input = MTTextInput(pos=(105,0),size=(100,100),font_size=24)
         self.add_widget(self.text_input)
         self.flickSearch = flickrSearchButton(text_widget=self.text_input)
         self.add_widget(self.flickSearch)

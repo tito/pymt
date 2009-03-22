@@ -6,7 +6,7 @@ from __future__ import with_statement
 
 __all__ = [
     # settings
-    'set_brush', 'set_color',
+    'set_brush', 'set_brush_size', 'set_color',
     # draw
     'paintLine',
     'drawLabel', 'drawRoundedRectangle',
@@ -36,22 +36,37 @@ RED = (1.0,0.0,0.0)
 GREEN = (0.0,1.0,0.0)
 BLUE = (0.0,0.0,1.0)
 
+_brush_filename = ''
 _brush_texture = None
-_bruch_size = 10
+_brush_size = 10
 
-def set_brush(sprite, size=10):
+def set_brush(sprite, size=None):
     '''Define the brush to use for paint* functions
 
     :Parameters:
         `sprite` : string
             Filename of image brush
-        `size` : int, default to 10
+        `size` : int, default to None
             Size of brush
     '''
-    global _brush_texture
+    global _brush_filename, _brush_size, _brush_texture
+    if size:
+        _brush_size = size
+    if sprite == _brush_filename:
+        return
     point_sprite_img = pyglet.image.load(sprite)
     _brush_texture = point_sprite_img.get_texture()
-    _bruch_size = size
+
+
+def set_brush_size(size):
+    '''Define the size of current brush
+
+    :Parameters:
+        `size` : int
+            Size of brush
+    '''
+    global _brush_size
+    _brush_size = size
 
 
 def set_color(*colors, **kwargs):
@@ -127,12 +142,16 @@ def paintLine(points):
         paintLine(0, 0, 20, 50)
 
     '''
+    global _brush_texture, _brush_size
+    if not _brush_texture:
+        pymt_logger.warning('No brush set to paint line, abort')
+        return
     p1 = (points[0], points[1])
     p2 = (points[2], points[3])
     with DO(gx_blending, gx_enable(GL_POINT_SPRITE_ARB), gx_enable(_brush_texture.target)):
         glBindTexture(_brush_texture.target, _brush_texture.id)
         glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE)
-        glPointSize(_bruch_size)
+        glPointSize(_brush_size)
         dx,dy = p2[0]-p1[0], p2[1]-p1[1]
         dist = math.sqrt(dx*dx +dy*dy)
         numsteps = max(1, int(dist)/4)
@@ -221,7 +240,7 @@ def drawCircle(pos=(0,0), radius=1.0):
     x, y = pos[0], pos[1]
     with gx_matrix:
         glTranslated(x,y, 0)
-        glScaled(radius, radius,1.0)
+        glScaled(radius, radius, 1.0)
         gluDisk(gluNewQuadric(), 0, 1, 32,1)
 
 def drawPolygon(points, style=GL_TRIANGLES):

@@ -1,9 +1,8 @@
 '''
 Kinetic : kinetic abstraction
-Initially written by Alex Teiche <xelapond@gmail.com>
 '''
 
-__all__ = ['MTKinetic', 'MTKineticContainer', 'MTKineticContainerObject', 'MTKineticScrollText']
+__all__ = ['MTKinetic', 'MTKineticList', 'MTKineticObject', 'MTKineticItem', 'MTKineticImage']
 
 from pyglet.gl import *
 from pyglet.text import Label
@@ -12,7 +11,9 @@ from ..factory import MTWidgetFactory
 from ...vector import Vector
 from stencilcontainer import MTStencilContainer
 from widget import MTWidget
-from button import MTButton
+from button import MTButton, MTToggleButton, MTImageButton
+from ..animation import Animation, AnimationAlpha
+from vkeyboard import MTTextInput
 
 class MTKinetic(MTWidget):
     '''Kinetic container.
@@ -98,10 +99,55 @@ class MTKinetic(MTWidget):
     def draw(self):
         self.process_kinetic()
 
-class MTKineticContainer(MTStencilContainer):
+class MTKineticList(MTStencilContainer):
     '''This is a kinetic container widget, that allows you to make
     a kinetic list scrolling in either direction.
 
+    :Parameters:
+        `friction` : float, defaults to 1.2
+            The Psuedo-friction of the pseudo-kinetic scrolling.
+        `padding_x` : int, defaults to 4
+            The spacing between scrolling items on the x axis
+         `padding_y` : int, defaults to 4
+            The spacing between scrolling items on the y axis
+        `w_limit` : int, defaults to 1
+            The limit of items that will appear horizontally.
+            When this is set to a non-zero value the width(in
+            terms of items in the kinetic list) will be w_limit, 
+            and the height will continually expand.
+        `h_limit` : int, defaults to 0
+            Exect opposite of w_limit.  If I didn't make either 
+            this or w_limit clear go bug xelapond
+        `do_x` : bool, defaults to False
+            Enable scrolling on the X axis
+        `do_y` : bool, defaults to True
+            Enable scrolling on the Y axis
+        `title` : string, defaults to <Title Goes Here>
+            Sets the title of the widget, which appears in 20 
+            point font at the top
+        `deletable` : bool, defaults to True
+            When enabled it allows you to delete children by
+            entering delete mode(red button in upper left)
+        `searchable` : bool, defaults to True
+            When enabled it allows you to enter search mode
+            and filter items
+
+    :Styles:
+        `title-color` : color
+             Color of the title bar
+        `bg-color` : color
+             Background color of the widget
+
+    :Events:
+        `on_press` 
+            Fired when a specific item has been tapped and moved
+            less then forty pixels(so we know they tapped it, didn't
+            try and scroll).  It sends the item tapped, and the return
+            item(if none was defined it sends None)
+
+        `on_delete`
+            Fired when an item gets deleted.  Passes that item and the 
+            return item(None if not provided).
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('friction', 1.2)
@@ -109,10 +155,15 @@ class MTKineticContainer(MTStencilContainer):
         kwargs.setdefault('padding_y', 4)
         kwargs.setdefault('w_limit', 1)
         kwargs.setdefault('h_limit', 0)
-        kwargs.setdefault('do_x', True)
+        kwargs.setdefault('do_x', False)
         kwargs.setdefault('do_y', True)
+        kwargs.setdefault('title', '<Title Goes Here>')
+        kwargs.setdefault('deletable', True)
+        kwargs.setdefault('searchable', True)
 
-        super(MTKineticContainer, self).__init__(**kwargs)
+        super(MTKineticList, self).__init__(**kwargs)
+        self.register_event_type('on_press')
+        self.register_event_type('on_delete')
         
         self.friction = kwargs.get('friction')
         self.padding_x = kwargs.get('padding_x')
@@ -123,27 +174,161 @@ class MTKineticContainer(MTStencilContainer):
             raise Exception('You cannot limit both axes')
         elif not(self.w_limit or self.h_limit):
             raise Exception('You must limit at least one axis')
-
+        
         self.do_x = kwargs.get('do_x')
         self.do_y = kwargs.get('do_y')
+        self.titletext = kwargs.get('title')
+        self.deletable = kwargs.get('deletable')
+        self.searchable = kwargs.get('searchable')
 
         #X and Y translation vectors for the kinetic movement
         self.vx = 0
         self.vy = 0
 
-        self.childmap = {}
+        #Holds widgets not a part of the scrolling(search button, etc)
+        self.widgets = []
+
+        #Title Text
+        self.title = Label(font_size=18, 
+                           bold=True, 
+                           anchor_x='center',
+                           anchor_y='center', 
+                           text=self.titletext)
+        self.title.x = self.width/2 + self.x
+        self.title.y = self.height - 20 + self.y
+
+        #Delete Button
+        if self.deletable:
+            self.db = MTToggleButton(label='X', 
+                               bgcolor=(1, 0, 0, .5), 
+                               bold=True, 
+                               pos=(self.x + self.width - 80, self.y + self.height - 40), 
+                               size=(80, 40))
+            self.db.on_press = self.toggle_delete
+            self.widgets.append(self.db)
+
+        #Search Button and Input Text Area
+        if self.searchable:
+            self.sb = MTToggleButton(label='S',  #Button
+                               bgcolor=(0, 1, 0, .5),
+                               bold=True,
+                               pos=(self.x, self.y + self.width - 40),
+                               size=(80, 40))
+
+            self.sb.on_press = self.toggle_search
+            self.sb.parent = self
+            self.widgets.append(self.sb)
+
+            self.sinput = MTTextInput(pos=(self.x, self.y + self.height - 40), size=(80, 40))  #Text Input area
+            self.sinput.parent = self
+            self.sinput.on_text_change = self.apply_filter
+            self.widgets.append(self.sinput)
+
+        #Animations to hide and show the search text input box
+        self.a_sinput_in = Animation(self.sinput, 'Move In', 'y', self.y + self.height - 40 - self.sinput.size[1], 1, 10)
+        self.a_sinput_out = Animation(self.sinput, 'Move Out', 'y', self.y + self.height - self.sinput.size[1], 1, 10)
+
+        #How far to offset the axes(used for scrolling/panning)
+        self.xoffset = 0
+        self.yoffset = 0
+        
+        self.childmap = {}  #Maps between items in the kinetic list and the item we return('callback' param in self.add, defaults to None')
+        self.pchildren = []  #Holds all the current children
+        #Self the children just holds the children currently being displayed
 
         self.touch = {} #For extra blob stats
 
+    def apply_css(self, styles):
+        if 'title-color' in styles:
+            self.slidercolor = styles.get('title-color')
+        if 'bg-color' in styles:
+            self.bgcolor = styles.get('bg-color')
+        super(MTKineticList, self).apply_css(styles)
+
+    def on_press(self, child, callback):
+        pass
+
+    def on_delete(self, child, callback):
+        pass
+
     def add(self, item, callback=None):
+        '''Add an item to the kinetic scrolling area.
+        item is the item you would like to add to the list
+        callback is an optional arg that is returned when you
+        tap the item(through on_press).  It is optional.
+        '''
         self.children.append(item)
+        self.pchildren.append(item)
+        item.parent = self
         if callback:
             self.childmap[item] = callback
+        else:
+            self.childmap[item] = None
 
-        if not self.h_limit and (len(self.children) % self.w_limit) == 0:
-            self.do_layout()
+    def delete_item(self, item):
+        '''Given item, that item is removed from the kinetic list
+        and the on_delete event is dispatched
+        '''
+        self.dispatch_event('on_delete', item, self.childmap[item])
+        self.children.remove(item)
+        self.pchildren.remove(item)
+        try: 
+            del self.childmap[item]
+        except:
+            pass
+
+    def toggle_delete(self, touchID, x, y):
+        '''Toggles the delete buttons on items
+        Attached to the on_press handler of the delete button(self.db)
+        '''
+        for child in self.children:
+            if self.db.get_state() == 'down':
+                child.show_delete()
+            else:
+                child.hide_delete()
+
+    def toggle_search(self, touchID, x, y):
+        '''Toggles the search area
+        Attached to the on_press handler of self.sb(the green search button)
+        '''
+        if self.sb.get_state() == 'down':
+            self.a_sinput_in.reset()
+            self.a_sinput_in.start()
+        else:
+            try:
+                self.sinput.hide_keyboard()
+            except:
+                #There isn't a keyboard, so it throws a ValueError
+                pass
+            self.sinput.label = ''
+            self.a_sinput_out.reset() 
+            self.a_sinput_out.start()
+            self.endsearch()
+
+    def apply_filter(self):
+        '''Applies the filter in self.sinput to the current children set
+        Attached to the on_text_change handler of self.sinput
+        '''
+        self.search(self.sinput.label, 'label')
+
+    def filter(self, pattern, attr):
+        '''Given an attribute of the children, and a pattern, return
+        a list of the children with which pattern is in attr
+        '''
+        return filter(lambda c: pattern in str(getattr(c, attr)), self.pchildren)
+        
+    def search(self, pattern, attr):
+        '''Apply a search pattern to the current set of children'''
+        self.children = self.filter(pattern, attr)
+
+    def endsearch(self):
+        '''Resets the children set to the full set'''
+        self.children = self.pchildren
 
     def _get_total_width(self, items, axis):
+        '''Given a list of items and an axis, return the space
+        they take up(in pixels)
+        '''
         total = 0
         if axis == 'width':
             for item in items:
@@ -155,29 +340,71 @@ class MTKineticContainer(MTStencilContainer):
         return total
 
     def do_layout(self):
+        '''Apply layout to all the items'''
        #Limit is on width
         if not self.h_limit:
             t = 0
-            x = self.x + (self.width/2) - (self._get_total_width(
-                    (self.children[z] for z in range(t, t+self.w_limit)), 'width')/2)
-            y = 0
+            try:
+                x = self.x + (self.width/2) - (self._get_total_width(
+                        (self.children[z] for z in range(t, t+self.w_limit)), 'width')/2) + self.xoffset
+            except:
+                x = self.x + (self.width/2) - (self._get_total_width(
+                        (self.children[z] for z in range(t, len(self.children)-1)), 'width')/2) + self.xoffset
+            y = self.yoffset
             i = 0
             for c in self.children:
                 i += 1
-                c.x = x + self.padding_x
-                c.y = y
+                c.kx = x + self.padding_x
+                c.ky = y
                 x += c.width + self.padding_x
                 if i == self.w_limit:
                     #Take the largest height in the current row
                     y += self.padding_y + max(map(lambda x: x.height, 
                                                   (self.children[x] for x in range(t, t+self.w_limit))))
-                    x = self.x + (self.width/2) - (self._get_total_width(
-                            (self.children[x] for x in range(t, t+self.w_limit)), 'width')/2)
+                    try:
+                        x = self.x + (self.width/2) - (self._get_total_width(
+                                (self.children[z] for z in range(t, t+self.w_limit)), 'width')/2) + self.xoffset
+                    except:
+                        x = self.x + (self.width/2) - (self._get_total_width(
+                                (self.children[z] for z in range(t, len(self.children)-1)), 'width')/2) + self.xoffset
+
                     i = 0
                     t += self.w_limit
+        #Limit on height
+        if not self.w_limit:
+            t = 0
+            try:
+                y = self.y - (self._get_total_width(
+                        (self.children[z] for z in range(t, t+self.w_limit)), 'height')) + self.yoffset
+            except:
+                y = self.y - (self._get_total_width(
+                        (self.children[z] for z in range(t, len(self.children)-1)), 'height')) + self.yoffset
+            x = self.xoffset
+            i = 0
+            for c in self.children:
+                i += 1
+                c.kx = x
+                c.ky = y + self.padding_y
+                y += c.height + self.padding_y
+                if i == self.h_limit:
+                    #Take the largest width in the current row
+                    x += self.padding_x + max(map(lambda x: x.width, 
+                                                  (self.children[x] for x in range(t, t+self.h_limit))))
+                    try:
+                        y = self.y - (self._get_total_width(
+                                (self.children[z] for z in range(t, t+self.w_limit)), 'height')) + self.yoffset
+                    except:
+                        y = self.y - (self._get_total_width(
+                                (self.children[z] for z in range(t, len(self.children)-1)), 'height')) + self.yoffset
+
+                    i = 0
+                    t += self.h_limit
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x, y):
+            for w in self.widgets:
+                if w.on_touch_down(touches, touchID, x, y):
+                    return True
             self.vx = self.vy = 0 #Stop kinetic movement
             self.touch[touchID] = {
                 'ox': x, 
@@ -190,6 +417,9 @@ class MTKineticContainer(MTStencilContainer):
             
     def on_touch_move(self, touches, touchID, x, y):
         if touchID in self.touch:
+            for w in self.widgets:
+                if w.on_touch_move(touches, touchID, x, y):
+                    return True
             t = self.touch[touchID]
             t['xmot'] = x - t['ox']
             t['ymot'] = y - t['oy']
@@ -197,10 +427,14 @@ class MTKineticContainer(MTStencilContainer):
             t['oy'] = y
             t['travelx'] += abs(t['xmot'])
             t['travely'] += abs(t['ymot'])
-            self.move_children((t['xmot'], t['ymot']))
+            self.xoffset += t['xmot'] * self.do_x
+            self.yoffset += t['ymot'] * self.do_y
     
     def on_touch_up(self, touches, touchID, x, y):
         if touchID in self.touch:
+            for w in self.widgets:
+                if w.on_touch_up(touches, touchID, x, y):
+                    return True
             t = self.touch[touchID]
             self.vx = t['xmot']
             self.vy = t['ymot']
@@ -208,294 +442,124 @@ class MTKineticContainer(MTStencilContainer):
             for child in self.children:
                 if child.collide_point(x, y):
                     if t['travelx'] <= 40 and self.do_x:
-                        #child.dispatch_event('on_select', touches, touchID, x, y)
-                        child.on_select(touches, touchID, x, y)
+                        if not child.on_press(touches, touchID, x, y):
+                            print 'dispatch'
+                            self.dispatch_event('on_press', child, self.childmap[child])
+                            child.dispatch_event('on_press', touches, touchID, x, y)
                     elif t['travely'] <= 40 and self.do_y:
-                        #child.dispatch_event('on_select', touches, touchID, x, y)
-                        child.on_select(touches, touchID, x, y)
-            
-    def move_children(self, vector):
-        for child in self.children:
-            child.x += (vector[0] * self.do_x)
-            child.y += (vector[1] * self.do_y)
+                        if not child.on_press(touches, touchID, x, y):
+                            self.dispatch_event('on_press', child, self.childmap[child])
+                            child.dispatch_event('on_press',touches, touchID, x, y)
 
     def process_kinetic(self):
-        self.move_children((self.vx, self.vy))
+        '''Apply kinetic movement to all the items'''
+        self.xoffset += self.vx * self.do_x
+        self.yoffset += self.vy * self.do_y
 
         self.vx /= self.friction
         self.vy /= self.friction
 
-    def on_draw(self):
-        super(MTKineticContainer, self).on_draw()
-        self.process_kinetic()
-
-class MTKineticContainerObject(MTButton):
-    def on_select(self, touches, touchID, x, y):
-        import sys; sys.exit()
-
-class MTKineticScrollText(MTWidget):
-    '''Kinetic Scrolling widget
-    It provides a vertical menu of items which you can
-    scroll through by flicking your finger.  -*-Similar-*-
-    to the one found on the iPhone.
-
-    :Parameters:
-        `iscolor`: tuple, defaults to (1, .28, 0)
-            The color for an item when it is selected
-        `font` : string, defaults to `Tahoma`
-            Font Type
-        `font_size` : int, defaults to 16
-             Font Size
-        `friction ` : float, defaults to 1.1
-            The Psuedo-friction of the psuedo-kinetic scrolling.
-        `items`  : list, defaults to []
-            The plain-text items that you would like to have within the widget.
-
-    :Styles:
-        `bg-color` : color
-            Background color of widget
-        `text-color` : color
-            Text color of an item
-        `item-color` : color
-            Color of an item
-        `item-selected` : color
-            Color of a selected item
-
-    When an item is tapped and the blob has moved less than 10
-    pixels(so we know they aren't scrolling) it fires a 
-    callback and passes the clicked text as the argument.
-    '''
-    def __init__(self, **kwargs):
-        kwargs.setdefault('font_name', 'Tahoma')
-        kwargs.setdefault('font_size', 16)
-        kwargs.setdefault('friction', 1.1)
-        kwargs.setdefault('items', [])
-
-        super(MTKineticScrollText, self).__init__(**kwargs)
-        self.register_event_type('on_item_select')
-
-        if 'iscolor' in kwargs:
-            self.iscolor = kwargs.get('iscolor')
-        if 'icolor' in kwargs:
-            self.icolor = kwargs.get('icolor')
-        if 'text_color' in kwargs:
-            self.text_color = kwargs.get('text_color')
-        if 'bgcolor' in kwargs:
-            self.bgcolor = kwargs.get('bgcolor')
-        self.font_name = kwargs.get('font_name')
-        self.font_size = kwargs.get('font_size')
-        self.friction = kwargs.get('friction')
-        self.items = kwargs.get('items')
-
-        #Item height
-        self.iheight = 40
-        #Item padding
-        self.padding = 10
-        #Holds the total height for all the items and padding
-        self.theight = 0
-        self._calc_theight()
-
-        #Persistent label used for text rendering
-        self.label = Label('', font_size=self.font_size, font_name=self.font_name)
-
-        #Holds blobs that started on this widget, so we only react to them
-        self.touchstarts = []
-
-        #Holds the old Y value so relative can be calculated
-        self.oy = 0
-        #Holds the relative Y value
-        self.ymot = 0
-        #Holds the total movement of the blob
-        self.blobrel = 0
-
-        #Holds the currently selected item
-        self.selected = None
-
-        '''Holds the velocity after touch_up, so 
-        that the menu can do its kinetic stuff'''
-        self.vel = 0
-
-        #Holds the total menu offset
-        self.yoffset = 0
-
-        #Holds what is happening, touching or spinning(nothing)
-        self.mode = 'spinning'
-
-    def apply_css(self, styles):
-        if 'item-color' in styles:
-            self.icolor = styles.get('item-color')
-        if 'item-selected' in styles:
-            self.iscolor = styles.get('item-selected')
-        if 'text-color' in styles:
-            self.text_color = styles.get('text-color')
-        if 'bg-color' in styles:
-            self.bgcolor = styles.get('bg-color')
-        super(MTKineticScrollText, self).apply_css(styles)
-
-    def _calc_theight(self):
-        '''Takes the number of items and stuff about them in
-        and sets self.theight to the total height in pixels of
-        all of them'''
-        self.theight = len(self.items)*(self.iheight + self.padding/2)
-
-    def on_item_select(self, item):
-        '''Prototype for callback'''
-        pass
-
-    def add(self, text):
-        '''Function adds a new element to the widget.
-        If this object is tapped, then a callback is
-        called with the text as the argument
-        '''
-        #TODO:  Allow this to take arbitrary objects with a '.text' attribute
-
-        self.list.append(text)
-        self._calc_theight()
-
-    def on_touch_down(self, touches, touchID, x, y):
-        '''Callback for when a new touch appears.
-        All we do here is set the friction to zero, so
-        it stops as if we stopped it from spinning
-        '''
-        if self.collide_point(x, y):
-            self.touchstarts.append(touchID)
-            #If it is currently spinning down, stop it
-            self.vel = 0
-            self.oy = y
-            self.mode = 'touching'
-            #Figure out which item they are touching and select it
-            #This works, if you have questions ask xelapond
-            rpos = x - self.pos[0], y - self.pos[1]
-            x = int(self.yoffset - rpos[1])/(self.padding/2 + self.iheight)
-            index = int(abs(x))-1
-            self.selected = self.items[index][1]
-
-            return True
-
-    def on_touch_move(self, touches, touchID, x, y):
-        '''Callback for when a blob moves.
-        Here we add the relative movement to the offset, 
-        to acheive the scrolling effect
-        '''
-        if touchID in self.touchstarts:
-            self.ymot = y - self.oy
-            self.yoffset += self.ymot
-            self.blobrel += abs(self.ymot)
-            self.oy = y
-            #If we moved by more then 10 pixels, deselect the selected
-            if self.blobrel >= 10:
-                self.selected = None
-
-            return True
-
-    def on_touch_up(self, touches, touchID, x, y):
-        '''Callback for when the blob leaves the widget.
-        Here we will set the last relative movement as
-        the spin-down velocity, so it will continute to 
-        spin after we let go.
-        '''
-        if touchID in self.touchstarts:
-            self.vel = self.ymot
-            self.ymot = 0
-            if self.blobrel <= 10:
-                #They intended on clicking the item below their finger
-                #Fire a callback
-                self.dispatch_event('on_item_select', self.selected)
-
-            self.blobrel = 0
-            self.mode = 'spinning'
-            self.selected = None
-
-            return True
-
     def draw(self):
-        #Draw the background
         set_color(*self.bgcolor)
-        drawRectangle(self.pos, self.size)
+        drawRectangle(self.pos, self.size)  #background
+        super(MTKineticList, self).on_draw()
+        set_color(*self.bgcolor)
+        drawRectangle((self.x, self.height + self.y - 40), (self.width, 40))  #Title Bar
+        self.title.draw()
+        for w in self.widgets:
+            w.on_draw()
 
-        #Move the menu by the spin-down velocity
-        self.yoffset += self.vel
-        #Divide the velocity by self.friction to emulate friction
-        self.vel /= self.friction
+    def on_draw(self):
+        self.draw()
+        self.do_layout()
+        self.process_kinetic()
+        
+class MTKineticObject(MTWidget):
+    def __init__(self, **kwargs):
+        kwargs.setdefault('deletable', True)
+        
+        super(MTKineticObject, self).__init__(**kwargs)
 
-        #This does rubberbanding
-        #Trust xelapond in that all this random arithmetic kung-fu stuff works
-        #If you have questions ask him
-        if (self.yoffset*-1) + self.size[1] - self.iheight >= self.theight and self.mode == 'spinning':
-            self.yoffset = -self.theight + self.size[1] - 1 - self.iheight
-            self.vel *= -1
-            self.vel /= 2
-        elif self.yoffset >= self.iheight and self.mode == 'spinning':
-            self.yoffset = self.iheight
-            self.vel *= -1
-            self.vel /= 2
+        #List of attributes that can be searched
+        self.attr_search = ['label']
 
-        #Loop through all the items and draw them
-        num = -1
-        for text in self.items:
-            num += 1
-            #Calculate the position of the current item
-            pos = [0, 0]
-            #FIXME: Make this less ugly/make more sense?
-            #Or we could just let it be with faith that it works and will continue to do so
-            pos[1] = self.pos[1] + num*(self.iheight + self.padding/2) + self.yoffset #Y position
-            pos[0] = self.pos[0] + 2
+        self.deletable = kwargs.get('deletable')
 
-            #Calculate the position of the text within that box
-            tpos = (pos[0] + 10, pos[1] + (self.iheight/2) - (self.font_size/2))
+        #Delete Button
+        self.db = MTButton(label='', 
+                                      size=(40, 40), 
+                                      pos=(self.x + self.width-40, self.y + self.height-40),
+                                      bgcolor=(1, 0, 0, 0))
+        self.db.hide()
+        self.db.on_press = self.delete
+        self.add_widget(self.db)
 
-            #Calculate the size of the item
-            size = (self.size[0] - 4, self.iheight)
+        self.xoffset = self.yoffset = 0  #In case the widget has to move itself while still having kinetic movement applied
+        self.kx = self.ky = 0  #The position values that the kinetic container edits.  We do this so we can break free and move ourself it necessary
 
-            #If the item will be partially off the screen either way, then don't draw it
-            #TODO:  Draw only part of it
-            if pos[1] + size[1] > self.pos[1] + self.size[1]:
-                break
-            elif pos[1] < self.pos[1]:
-                continue
+        self.db_alpha = 0
+        self.a_show = Animation(self, 'Show Button Alpha', 'db_alpha', .5, 1, 5)
+        self.a_hide = Animation(self, 'Hide Button Alpha', 'db_alpha', 0, 1, 5)
+        self.a_delete_w = Animation(self, 'Deleting Self W', 'width', 0, 1, 10)
+        self.a_delete_h = Animation(self, 'Deleting Self H', 'height', 0, 1, 10)
+        self.a_delete_x = Animation(self, 'Deleting Self X', 'xoffset', self.kx + self.width/2, 1, 10)
+        self.a_delete_y = Animation(self, 'Deleting Self Y', 'yoffset', self.ky + self.height/2, 1, 10)
 
-            #Draw the actual item
-            if str(self.selected) == str(text):
-                #Its selected, make it colorful!
-                set_color(*self.iscolor)
-            else:
-                set_color(*self.icolor)
+        self.free = False #Set to true if you want to break free from the grasp of a kinetic widget
 
-            drawRectangle(pos, size)
-            self.dtext(str(text[0]), tpos)
+    def show_delete(self):
+        self.db.show()
+        self.a_show.reset()
+        self.a_show.start()
 
-    def dtext(self, text, pos, color=None):
-        '''Function to draw text at a given pos.
-        The Label rendered is persisten throughout the life
-        of this object for latency reasons.  It is kept in
-        self.label.
-        '''
-        if color is None:
-            color = self.text_color
-        self.label.text = text
-        self.label.color = map(lambda x: int(x*255), text_color)
-        self.label.x, self.label.y = pos
-        self.label.draw()
+    def hide_delete(self):
+        self.a_hide.reset()
+        self.a_hide.start()
+        
+    def on_animation_complete(self, anim):
+        if anim == self.a_hide:
+            self.db.hide()
+        elif anim == self.a_delete_w:  
+            '''We don't check Y because then it gets called 
+            twice and throws an exception because its already 
+            been deleted, and a try...except... isn't really worth it
+            '''
+            self.parent.delete_item(self)
+        
+    def on_draw(self):
+        if not self.free:
+            self.x, self.y = self.kx + self.xoffset, self.ky + self.yoffset
+        self.db.pos = (self.x + self.width-40, self.y + self.height-40)
+        self.db.bgcolor = (1, 0, 0, self.db_alpha)
+        super(MTKineticObject, self).on_draw()
 
-MTWidgetFactory.register('MTKineticScrollText', MTKineticScrollText)
+    def delete(self, touchID, x, y):
+        self.db.hide()  #So it doesn't poke out at the end(we aren't scaling it)
+        self.a_delete_x.reset()
+        self.a_delete_y.reset()
+        self.a_delete_w.reset()
+        self.a_delete_h.reset()
+        self.a_delete_x.start()
+        self.a_delete_y.start()
+        self.a_delete_w.start()
+        self.a_delete_h.start()
+
+    def on_press(self,touches, touchID, x, y):
+        if self.db.visible and self.db.on_touch_down(touches, touchID, x, y):
+            return True
+
+class MTKineticItem(MTButton, MTKineticObject):
+    def on_press(self, touches, touchID, x, y):
+        if self.db.visible and self.db.on_touch_down(touches, touchID, x, y):
+            return True
+
+class MTKineticImage(MTImageButton, MTKineticObject):
+    def on_press(self, touches, touchID, x, y):
+        if self.db.visible and self.db.on_touch_down(touches, touchID, x, y):
+            return True
+
 MTWidgetFactory.register('MTKinetic', MTKinetic)
-MTWidgetFactory.register('MTKineticContainerObject', MTKineticContainerObject)
-MTWidgetFactory.register('MTKineticContainer', MTKineticContainer)
-
-if __name__ == '__main__':
-    from pymt import *
-
-    #A random list of stuff that was in my head at the time
-    list = ['Hello', 'World', 'Foo', 'bar', 'biz', 'Emacs!', 'Python!',
-            'PyMT!', 'Lambda!', 'IRC!', '#pymt', 'Freenode.net!', 'xmonad!']
-
-    def on_item_select(v):
-        print v
-
-    w = MTWindow(fullscreen=False)
-    wsize = w.size
-    mms = MTKineticScrollText(pos=(20,20), size=(200, 400), items=list)
-    mms.push_handlers('on_item_select', on_item_select)
-    w.add_widget(mms)
-    runTouchApp()
-
+MTWidgetFactory.register('MTKineticObject', MTKineticObject)
+MTWidgetFactory.register('MTKineticList', MTKineticList)
+MTWidgetFactory.register('MTKineticItem', MTKineticItem)
+MTWidgetFactory.register('MTKineticImage', MTKineticImage)

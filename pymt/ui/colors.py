@@ -74,9 +74,13 @@ slider, xyslider, vectorslider, multislider, boundaryslider {
 }
 
 kineticscrolltext {
-    color: rgb(255, 255, 255);
+    color: rgba(255, 255, 255, 127);
     item-color: rgb(100, 100, 100);
     item-selected: rgb(150, 150, 150);
+}
+
+kineticcontainer {
+    bg-color: rgba(90, 90, 90, 127)
 }
 
 window {

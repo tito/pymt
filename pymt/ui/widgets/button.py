@@ -169,7 +169,6 @@ class MTToggleButton(MTButton):
             self.dispatch_event('on_release', touchID, x,y)
             return True
 
-
 class MTImageButton(MTButton):
     '''MTImageButton is a enhanced MTButton
     that draw an image instead of a text.
@@ -203,6 +202,7 @@ class MTImageButton(MTButton):
         self.image.scale    = self.scale
         self.size           = (self.image.width, self.image.height)
         self.image.draw()
+
 
 MTWidgetFactory.register('MTToggleButton', MTToggleButton)
 MTWidgetFactory.register('MTButton', MTButton)

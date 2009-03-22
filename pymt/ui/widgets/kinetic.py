@@ -45,7 +45,7 @@ class MTKinetic(MTWidget):
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('no_css', True)
-        kwargs.setdefault('friction', 1.01)
+        kwargs.setdefault('friction', 1.2)
         kwargs.setdefault('velstop', 1.0)
         super(MTKinetic, self).__init__(**kwargs)
         self.friction   = kwargs.get('friction')

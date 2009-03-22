@@ -185,6 +185,9 @@ class MTKineticList(MTStencilContainer):
         self.vx = 0
         self.vy = 0
 
+        #Hold the total size of all the kinetic items and padding
+        self.total_size = [0, 0]
+
         #Holds widgets not a part of the scrolling(search button, etc)
         self.widgets = []
 
@@ -271,7 +274,10 @@ class MTKineticList(MTStencilContainer):
         '''
         self.dispatch_event('on_delete', item, self.childmap[item])
         self.children.remove(item)
-        self.pchildren.remove(item)
+        try:
+            self.pchildren.remove(item)
+        except:
+            pass
         try: 
             del self.childmap[item]
         except:
@@ -350,7 +356,7 @@ class MTKineticList(MTStencilContainer):
             except:
                 x = self.x + (self.width/2) - (self._get_total_width(
                         (self.children[z] for z in range(t, len(self.children)-1)), 'width')/2) + self.xoffset
-            y = self.yoffset
+            y = self.yoffset + self.y
             i = 0
             for c in self.children:
                 i += 1
@@ -379,7 +385,7 @@ class MTKineticList(MTStencilContainer):
             except:
                 y = self.y - (self._get_total_width(
                         (self.children[z] for z in range(t, len(self.children)-1)), 'height')) + self.yoffset
-            x = self.xoffset
+            x = self.xoffset + self.x
             i = 0
             for c in self.children:
                 i += 1

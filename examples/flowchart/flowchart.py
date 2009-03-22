@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 
+# PYMT Plugin integration
+IS_PYMT_PLUGIN = True
+PLUGIN_TITLE = 'Flowchart'
+PLUGIN_AUTHOR = 'Thomas Hansen'
+PLUGIN_EMAIL = 'thomas.hansen@gmail.com'
+
+
 from pymt import *
+from pyglet.gl import *
 
 class SVGButton(MTButton):
     def __init__(self, **kwargs):
@@ -19,13 +27,14 @@ class SVGButton(MTButton):
 
 
 class FlowchartObject(MTScatterWidget):
-    def init(self, **kwargs):
-        self.svg = MTSvg(filename='box.svg')
+    def __init__(self, **kwargs):
+        super(FlowchartObject, self).__init__(**kwargs)
+
+        self.svg = MTSvg(filename='../flowchart/box.svg')
         self.size = (self.svg.width, self.svg.height)
         self._hide_children = False
         self.hidden_children = []
 
-        super(FlowchartObject, self).__init__(**kwargs)
         self.add_bttn = SVGButton( filename='transport-shuffle.svg', pos=(self.center[0]-15, -15), size=(30,30))
         self.add_bttn.push_handlers(on_press=self.add_new_child)
         self.add_widget(self.add_bttn)
@@ -81,7 +90,7 @@ class FlowchartObject(MTScatterWidget):
             x2,y2 = child.to_parent(*child.center) #to here
             angle = Vector.angle(Vector(0,1), Vector(x1-x2,y1-y2))
             offset = Vector.rotate(Vector(20,0),-angle)
-            drawTrianglePoints((x1-offset.x,y1-offset.y,x1+offset.x,y1+offset.y,x2,y2))
+            drawPolygon((x1-offset.x,y1-offset.y,x1+offset.x,y1+offset.y,x2,y2))
 
     def draw_connections(self):
         offset = Vector(0,0)
@@ -99,14 +108,17 @@ class FlowchartObject(MTScatterWidget):
         self.svg.draw()
 
 
+def pymt_plugin_activate(root, ctx):
+    ctx.plane = MTScatterPlane()
+    ctx.plane.add_widget(FlowchartObject())
+    root.add_widget(ctx.plane)
 
+def pymt_plugin_deactivate(root, ctx):
+    root.remove_widget(ctx.plane)
 
-
-
-if __name__ == "__main__":
-    win = MTWindow()
-    c = MTScatterPlane()
-    root = FlowchartObject()
-    c.add_widget(root)
-    win.add_widget(c)
+if __name__ == '__main__':
+    w = MTWindow()
+    ctx = MTContext()
+    pymt_plugin_activate(w, ctx)
     runTouchApp()
+    pymt_plugin_deactivate(w, ctx)

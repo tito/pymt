@@ -316,6 +316,9 @@ class MTKineticList(MTStencilContainer):
         Attached to the on_text_change handler of self.sinput
         '''
         self.search(self.sinput.label, 'label')
+        #Move them so you don't have to scroll up to see them
+        self.yoffset = self.padding_y
+        self.xoffset = self.padding_x
 
     def filter(self, pattern, attr):
         '''Given an attribute of the children, and a pattern, return

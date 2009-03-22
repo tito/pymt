@@ -20,9 +20,9 @@ class Canvas(MTWidget):
         self.bgcolor = (0.8,0.8,0.7,1.0)
         self.color = (0,1,0,1.0)
         try:
-            setBrush('../touchtracer/particle.png')
+            set_brush('../touchtracer/particle.png')
         except:
-            setBrush('touchtracer/particle.png')
+            set_brush('touchtracer/particle.png')
         self.clear()
 
     def clear(self):

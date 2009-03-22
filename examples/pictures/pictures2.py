@@ -23,8 +23,7 @@ class MTScatteredObj(MTScatterWidget):
         self.image  = loader.sprite(img_src)
         self.aspectRatio = float(self.image.height)/float(self.image.width)
         MTScatterWidget.__init__(self, pos=pos, size=(size[0],size[0]*self.aspectRatio), rotation=rotation)
-        self.x = self.x - int(self.x/4)
-        self.y = self.y - int(self.y/4)
+        self.pos = self.x - int(self.x/4), self.y - int(self.y/4)
 
 
     def draw(self):
@@ -44,7 +43,7 @@ class MTScatteredObj(MTScatterWidget):
 
 
 class ShadowSurface(MTWidget):
-    def __init__(self, pos=(0,0), size=(100,100), bg_image='back.jpg', **kargs):
+    def __init__(self, pos=(0,0), size=(100,100), bg_image='../pictures/back.jpg', **kargs):
         MTWidget.__init__(self, pos=pos, size=size)
 
         self.bg_image = pyglet.sprite.Sprite(pyglet.image.load(bg_image))

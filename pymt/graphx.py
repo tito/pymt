@@ -233,6 +233,7 @@ def drawPolygon(points, style=GL_TRIANGLES):
         `style` : opengl begin, default to GL_TRIANGLES
             Default type to draw (will be passed to glBegin)
     '''
+    points = list(points)
     with gx_begin(style):
         while len(points):
             glVertex2f(points.pop(), points.pop())

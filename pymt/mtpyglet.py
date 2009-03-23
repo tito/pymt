@@ -5,7 +5,7 @@ Pyglet: Soup on pyglet to provide multitouch interface.
 __all__ = [
     'Tuio2DCursor', 'Tuio2DObject', 'TouchEventLoop', 'TouchWindow',
     'pymt_usage', 'runTouchApp', 'stopTouchApp',
-    'startTuio', 'stopTuio',
+    'startTuio', 'stopTuio', 'getFrameDt'
 ]
 
 import osc
@@ -24,6 +24,12 @@ from utils import intersection, difference, strtotuple
 tuio_event_q = Queue()
 tuio_listeners = []
 touch_event_listeners = []
+frame_dt = 0.01 # init to a non-zero value, to prevent user zero division
+
+def getFrameDt():
+    '''Return the last delta between old and new frame.'''
+    global frame_dt
+    return frame_dt
 
 class Tuio2DCursor(object):
     '''Represent a Tuio cursor + implementation of double-tap functionnality
@@ -191,7 +197,6 @@ class TouchEventLoop(pyglet.app.EventLoop):
     '''
     def __init__(self, host='127.0.0.1', port=3333):
         pyglet.app.EventLoop.__init__(self)
-        self.current_frame = self.last_frame = 0
         self.alive2DCur = []
         self.alive2DObj = []
         self.blobs2DCur = {}
@@ -347,7 +352,9 @@ class TouchEventLoop(pyglet.app.EventLoop):
 
     def idle(self):
         global tuio_event_q
-        pyglet.clock.tick()
+        global frame_dt
+
+        frame_dt = pyglet.clock.tick()
 
         # process tuio
         while not tuio_event_q.empty():

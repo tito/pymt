@@ -27,7 +27,7 @@ class Ball(MTWidget):
         super(Ball, self).__init__(**kwargs)
 
         self.radius     = kwargs.get('radius')
-        self.dx         = 0.03
+        self.dx         = 200
         self.dy         = 0
         self.image      = pyglet.sprite.Sprite(pyglet.image.load('ball.png'))
         self.pos        = random.randint(100, 400), random.randint(100, 200)
@@ -52,7 +52,8 @@ class Ball(MTWidget):
             self.dx = -self.dx
 
         self.old_pos = self.pos
-        self.pos = self.x + self.dx, self.y + self.dy
+        dt = getFrameDt()
+        self.pos = self.x + self.dx * dt, self.y + self.dy * dt
         self.cpos = ((Vector(self.pos) - Vector(self.old_pos)).normalize() * self.radius) + Vector(self.old_pos)
 
 

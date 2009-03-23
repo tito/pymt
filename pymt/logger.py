@@ -21,7 +21,7 @@ Examples of usage ::
 
 '''
 
-import logging
+import logging, os
 
 __all__ = ['pymt_logger', 'LOG_LEVELS', 'COLORS']
 
@@ -55,6 +55,10 @@ LOG_LEVELS = {
     'critical': logging.CRITICAL
 }
 
+use_color = True
+if os.name == 'nt':
+    use_color = False
+
 class ColoredFormatter(logging.Formatter):
     def __init__(self, msg, use_color = True):
         logging.Formatter.__init__(self, msg)
@@ -70,7 +74,7 @@ class ColoredFormatter(logging.Formatter):
 class ColoredLogger(logging.Logger):
     FORMAT = "[%(levelname)-18s] %(message)s" # ($BOLD%(filename)s$RESET:%(lineno)d)"
     #FORMAT = "[%(levelname)-18s]%(message)s ($BOLD%(filename)s$RESET:%(lineno)d)"
-    COLOR_FORMAT = formatter_message(FORMAT, True)
+    COLOR_FORMAT = formatter_message(FORMAT, use_color)
 
     def __init__(self, name):
         logging.Logger.__init__(self, name, logging.DEBUG)

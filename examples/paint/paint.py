@@ -96,7 +96,7 @@ class Canvas(MTWidget):
     def __init__(self, min=0, max=100, pos=(0,0), size=(640,480)):
         MTWidget.__init__(self, pos=pos, size=size)
         self.touch_positions = {}
-        self.fbo = Fbo((self.width, self.height), push_viewport=False)
+        self.fbo = Fbo((self.width, self.height), with_depthbuffer=False)
         self.bgcolor = (0,0,0,1)
         self.color = (0,1,0,1.0)
         set_brush('../paint/brushes/brush_particle.png')

@@ -479,7 +479,7 @@ class Fbo(object):
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
         if self.push_viewport:
             glPushAttrib(GL_VIEWPORT_BIT)
-            glViewport(0,0,self.size[0], self.size[1])
+            glViewport(0, 0, self.size[0], self.size[1])
 
     def release(self):
         if self.push_viewport:
@@ -493,19 +493,23 @@ class Fbo(object):
     def __exit__(self, type, value, traceback):
         self.release()
 
-    def __init__(self, size=(1024,1024), push_viewport=False):
+    def __init__(self, size=(1024,1024), push_viewport=False, with_depthbuffer=True):
         self.framebuffer    = c_uint(0)
         self.depthbuffer    = c_uint(0)
         self.texture        = c_uint(0)
         self.size           = size
+        self.with_depthbuffer = with_depthbuffer
 
         glGenFramebuffersEXT(1,byref(self.framebuffer))
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
+        if self.framebuffer.value == 0:
+            raise 'Failed to initialize framebuffer'
 
-        glGenRenderbuffersEXT(1, byref(self.depthbuffer));
-        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, self.depthbuffer)
-        glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, size[0], size[1])
-        glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, self.depthbuffer)
+        if self.with_depthbuffer:
+            glGenRenderbuffersEXT(1, byref(self.depthbuffer));
+            glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, self.depthbuffer)
+            glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, size[0], size[1])
+            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, self.depthbuffer)
 
         glGenTextures(1, byref(self.texture))
         glBindTexture(GL_TEXTURE_2D, self.texture)
@@ -524,4 +528,5 @@ class Fbo(object):
 
     def __del__(self):
         glDeleteFramebuffersEXT(1, byref(self.framebuffer))
-        glDeleteRenderbuffersEXT(1, byref(self.depthbuffer))
+        if self.with_depthbuffer:
+            glDeleteRenderbuffersEXT(1, byref(self.depthbuffer))

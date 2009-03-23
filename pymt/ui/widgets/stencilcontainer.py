@@ -55,7 +55,7 @@ class MTStencilContainer(MTWidget):
 
 		# pop stack
 		stencil_stack -=1
-		glPopAttrib(GL_STENCIL_BUFFER_BIT | GL_STENCIL_TEST)
+		glPopAttrib()
 
 # Register all base widgets
 MTWidgetFactory.register('MTStencilContainer', MTStencilContainer)

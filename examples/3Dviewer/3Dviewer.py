@@ -15,13 +15,11 @@ class GLPerspectiveWidget(MTWidget):
     def __init__(self, **kargs):
         super(GLPerspectiveWidget, self).__init__(**kargs)
         self.needs_redisplay = True
-        self.fbo = Fbo(self.size)
-
-
+        self.fbo = Fbo(size=self.size)
 
     def on_resize(self, w, h):
         del self.fbo
-        self.fbo = Fbo(self.size)
+        self.fbo = Fbo(size=self.size)
         self.needs_redisplay = True
 
     def on_draw(self):

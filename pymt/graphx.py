@@ -22,11 +22,13 @@ __all__ = [
     'gx_matrix', 'gx_matrix_identity',
     'gx_enable', 'gx_begin',
     # Fbo
-    'Fbo',
+    'Fbo', 'HardwareFbo', 'SoftwareFbo'
 ]
 
+from pymt import pymt_config
 from pyglet import *
 from pyglet.gl import *
+from pyglet.image import Texture, TextureRegion
 from pyglet.graphics import draw
 from pyglet.text import Label
 from logger import pymt_logger
@@ -300,12 +302,17 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0)):
             Size of rectangle
     '''
     with gx_enable(GL_TEXTURE_2D):
-        glBindTexture(GL_TEXTURE_2D,texture)
+        if type(texture) in (Texture, TextureRegion):
+            glBindTexture(GL_TEXTURE_2D, texture.id)
+            t = texture.tex_coords
+            texcoords = (t[0], t[1], t[3], t[4], t[6], t[7], t[9], t[10])
+        else:
+            glBindTexture(GL_TEXTURE_2D, texture)
+            texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
         pos = ( pos[0], pos[1],
                 pos[0] + size[0], pos[1],
                 pos[0] + size[0], pos[1] + size[1],
                 pos[0], pos[1] + size[1])
-        texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
         draw(4, GL_QUADS, ('v2f', pos), ('t2f', texcoords))
 
 def drawLine(points, width=5.0):
@@ -462,17 +469,90 @@ class GlBegin:
 gx_begin = GlBegin
 
 ### FBO, PBO, opengl stuff
-class Fbo(object):
-    '''OpenGL Framebuffer abstraction.
+class AbstractFbo(object):
+    '''Abstraction of Framebuffer implementation.
     It's a framebuffer you can use to draw temporary things,
     and use it as a texture.
 
-    .. Warning:
+    .. note::
+        You cannot use this class, use Fbo alias.
+
+    .. warning::
+        Depend of implementation, texture can be a TextureRegion, or a long.
+
+    :Parameters:
+        `size` : tuple, default to (1024, 1024)
+            Size of FBO
+        `push_viewport` : bool, default to False
+            Indicate if viewport must be pushed
+        `with_depthbuffer` : bool, default to True
+            Indicate if depthbuffer must be applied
+    '''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('size', (1024, 1024))
+        kwargs.setdefault('push_viewport', False)
+        kwargs.setdefault('with_depthbuffer', True)
+        self.size               = kwargs.get('size')
+        self.with_depthbuffer   = kwargs.get('with_depthbuffer')
+        self.push_viewport      = kwargs.get('push_viewport')
+
+    def bind(self):
+        pass
+
+    def release(self):
+        pass
+
+    def __enter__(self):
+        self.bind()
+
+    def __exit__(self, type, value, traceback):
+        self.release()
+
+
+class HardwareFbo(AbstractFbo):
+    '''OpenGL Framebuffer, hardware implementation.
+
+    .. warning::
         It's not supported by all hardware, use with care !
 
     '''
-
     fbo_stack = [0]
+
+    def __init__(self, **kwargs):
+        super(HardwareFbo, self).__init__(**kwargs)
+        self.framebuffer    = c_uint(0)
+        self.depthbuffer    = c_uint(0)
+        self.texture        = c_uint(0)
+
+        glGenFramebuffersEXT(1, byref(self.framebuffer))
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
+        if self.framebuffer.value == 0:
+            raise 'Failed to initialize framebuffer'
+
+        if self.with_depthbuffer:
+            glGenRenderbuffersEXT(1, byref(self.depthbuffer));
+            glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, self.depthbuffer)
+            glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT,
+                                     self.size[0], self.size[1])
+            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, self.depthbuffer)
+
+        glGenTextures(1, byref(self.texture))
+        glBindTexture(GL_TEXTURE_2D, self.texture)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.size[0], self.size[1], 0,GL_RGB, GL_UNSIGNED_BYTE, 0)
+        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, self.texture, 0)
+        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0)
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0)
+
+        status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+        if status != GL_FRAMEBUFFER_COMPLETE_EXT:
+            pymt_logger.error('error in framebuffer activation')
+
+    def __del__(self):
+        glDeleteFramebuffersEXT(1, byref(self.framebuffer))
+        if self.with_depthbuffer:
+            glDeleteRenderbuffersEXT(1, byref(self.depthbuffer))
 
     def bind(self):
         Fbo.fbo_stack.append(self.framebuffer)
@@ -487,46 +567,53 @@ class Fbo(object):
         Fbo.fbo_stack.pop()
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, Fbo.fbo_stack[-1])
 
-    def __enter__(self):
-        self.bind()
 
-    def __exit__(self, type, value, traceback):
+class SoftwareFbo(AbstractFbo):
+    '''OpenGL Framebuffer, software implementation.
+
+    .. warning::
+        Poor performance, but you can use it in hardware don't support real
+        Fbo extensions...
+
+    '''
+    def __init__(self, **kwargs):
+        super(SoftwareFbo, self).__init__(**kwargs)
+        self.texture        = None
+        self.texture = Texture.create(self.size[0], self.size[1])
+
+        # Hack to initialize a empty buffer.
+        self.bind()
         self.release()
 
-    def __init__(self, size=(1024,1024), push_viewport=False, with_depthbuffer=True):
-        self.framebuffer    = c_uint(0)
-        self.depthbuffer    = c_uint(0)
-        self.texture        = c_uint(0)
-        self.size           = size
-        self.with_depthbuffer = with_depthbuffer
 
-        glGenFramebuffersEXT(1,byref(self.framebuffer))
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
-        if self.framebuffer.value == 0:
-            raise 'Failed to initialize framebuffer'
+    def bind(self):
+        glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        glClearColor(0,0,0,0)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-        if self.with_depthbuffer:
-            glGenRenderbuffersEXT(1, byref(self.depthbuffer));
-            glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, self.depthbuffer)
-            glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, size[0], size[1])
-            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, self.depthbuffer)
+        if self.push_viewport:
+            glPushAttrib(GL_VIEWPORT_BIT)
+            glViewport(0, 0, self.size[0], self.size[1])
 
-        glGenTextures(1, byref(self.texture))
-        glBindTexture(GL_TEXTURE_2D, self.texture)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size[0], size[1], 0,GL_RGB, GL_UNSIGNED_BYTE, 0)
-        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, self.texture, 0)
-        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0)
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0)
+        set_color(1,1,1)
+        drawTexturedRectangle(self.texture, size=self.size)
 
-        status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-        if status != GL_FRAMEBUFFER_COMPLETE_EXT:
-            pymt_logger.error('error in framebuffer activation')
+    def release(self):
+        if self.push_viewport:
+            glPopAttrib()
+        glBindTexture(self.texture.target, self.texture.id)
+        pyglet.image.get_buffer_manager().get_color_buffer().blit_to_texture(
+            self.texture.target, 0, 0, 0, 0)
+        glPopAttrib()
 
-        self.push_viewport = push_viewport
+# check if Fbo is supported by gl
+if not 'GL_EXT_framebuffer_object' in gl_info.get_extensions():
+    pymt_config.set('graphics', 'fbo', 'software')
 
-    def __del__(self):
-        glDeleteFramebuffersEXT(1, byref(self.framebuffer))
-        if self.with_depthbuffer:
-            glDeleteRenderbuffersEXT(1, byref(self.depthbuffer))
+# decide what to use
+if pymt_config.get('graphics', 'fbo') == 'hardware':
+    pymt_logger.info('Fbo will use hardware Framebuffer')
+    Fbo = HardwareFbo
+else:
+    pymt_logger.info('Fbo will use software Framebuffer')
+    Fbo = SoftwareFbo

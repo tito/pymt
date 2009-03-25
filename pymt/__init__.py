@@ -36,6 +36,8 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_config.set('pymt', 'log_level', 'debug')
     pymt_config.set('pymt', 'double_tap_time', '250')
     pymt_config.set('pymt', 'double_tap_distance', '20')
+    pymt_config.add_section('graphics')
+    pymt_config.set('graphics', 'fbo', 'hardware')
     pymt_config.add_section('tuio')
     pymt_config.set('tuio', 'host', '127.0.0.1')
     pymt_config.set('tuio', 'port', '3333')
@@ -47,19 +49,6 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
 
     level = LOG_LEVELS.get(pymt_config.get('pymt', 'log_level'))
     pymt_logger.setLevel(level=level)
-
-    # Note: import are done after logger module initialization,
-    # and configuration applied to logger.
-    from mtpyglet import *
-    from graphx import *
-    from ui import *
-    from obj import OBJ
-    from shader import *
-    from vector import *
-    from plugin import *
-    from loader import *
-    from gesture import *
-    from utils import *
 
     # Read config file if exist
     if os.path.exists(pymt_config_fn):
@@ -73,6 +62,19 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
                 pymt_config.write(fd)
         except Exception, e:
             pymt_logger.exception('error while saving default configuration file')
+
+    # Note: import are done after logger module initialization,
+    # and configuration applied to logger.
+    from mtpyglet import *
+    from graphx import *
+    from ui import *
+    from obj import OBJ
+    from shader import *
+    from vector import *
+    from plugin import *
+    from loader import *
+    from gesture import *
+    from utils import *
 
 
     # Can be overrided in command line

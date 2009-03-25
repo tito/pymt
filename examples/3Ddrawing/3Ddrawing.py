@@ -71,7 +71,7 @@ class ModelPainter(MTWidget):
         self.picking_image = image.load('picking.png')
         self.picking_texture = self.picking_image.get_texture()
         self.fbo = Fbo(size=self.size)
-        self.painting_fbo = Fbo((1024,1024))
+        self.painting_fbo = Fbo(size=(1024,1024))
 
         #initialize the painting buffer as white
         with self.painting_fbo:

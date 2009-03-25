@@ -11,9 +11,8 @@ PLUGIN_DESCRIPTION = 'This is a simple paint canvas.'
 
 class PaintBrushLayout(MTBoxLayout):
     def draw(self):
-        set_color(0, 0, 0, 1)
+        set_color(0, 0, 0, 0.7)
         drawRectangle(self.pos, self.size)
-
 
 
 class MTPaintColorPicker(MTWidget):
@@ -96,7 +95,7 @@ class Canvas(MTWidget):
     def __init__(self, min=0, max=100, pos=(0,0), size=(640,480)):
         MTWidget.__init__(self, pos=pos, size=size)
         self.touch_positions = {}
-        self.fbo = Fbo((self.width, self.height), with_depthbuffer=False)
+        self.fbo = Fbo(size=(self.width, self.height), with_depthbuffer=False)
         self.bgcolor = (0,0,0,1)
         self.color = (0,1,0,1.0)
         set_brush('../paint/brushes/brush_particle.png')
@@ -111,11 +110,11 @@ class Canvas(MTWidget):
 
     def draw(self):
         set_color(1,1,1,1)
-        drawTexturedRectangle( self.fbo.texture, size=(self.width, self.height))
+        drawTexturedRectangle(self.fbo.texture, size=(self.width, self.height))
 
     def on_resize(self, w, h):
         del self.fbo
-        self.fbo = Fbo((w, h), push_viewport=False)
+        self.fbo = Fbo(size=(w, h), push_viewport=False)
 
     def on_touch_down(self, touches, touchID, x, y):
         self.touch_positions[touchID] = (x,y)

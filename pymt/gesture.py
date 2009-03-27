@@ -158,33 +158,38 @@ class GestureStroke:
         # If there is only one point or the length is 0, don't normalize
         if len(self.points) <= 1 or self.stroke_length(self.points) == 0.0:
             return False
-
-        # Calulcate how long each point should be in the stroke
-        target_stroke_size = self.stroke_length(self.points)/sample_points
+        
+        # Calculate how long each point should be in the stroke
+        target_stroke_size = self.stroke_length(self.points)/float(sample_points)
         new_points = list()
         new_points.append(self.points[0])
         target_index = 0
 
-        while self.stroke_length(new_points) < self.stroke_length():
-            fromPt = new_points[-1] # Start from the last point in the new_points list
-            for i in xrange(target_index, len(self.points)):
-                distance = self.points_distance(fromPt, self.points[i])
-                # When the distance between the start point to a point in the old stroke
-                # is >= target distance, calculate where to place the new point
-                if distance >= target_stroke_size:
-                    x_size = self.points[i].x - fromPt.x
-                    y_size = self.points[i].y - fromPt.y
-                    ratio = target_stroke_size/distance
-                    to_x = x_size * ratio + fromPt.x
-                    to_y = y_size * ratio + fromPt.y
-                    new_points.append(GesturePoint(to_x, to_y))
-                    target_index = i # Stopped at this point in the old list
-                    break
-            # If we somehow reach the end of the old point list without the new stroke
-            # reaching the old stroke length, break the loop
-            if self.stroke_length(new_points) < self.stroke_length():
-                new_points.append(self.points[-1])
-                break
+        # We loop on the points
+        prev = self.points[0]
+        src_distance = 0.0
+        dst_distance = target_stroke_size
+        for curr in self.points[1:]:
+            d = self.points_distance( prev, curr )
+            if d > 0:
+                prev = curr
+                src_distance = src_distance+d
+
+                # The new point need to be inserted into the 
+                # segment [prev, curr]
+                while dst_distance < src_distance:
+                     x_dir = curr.x - prev.x
+                     y_dir = curr.y - prev.y
+                     ratio = (src_distance-dst_distance)/d
+                     to_x = x_dir * ratio + prev.x
+                     to_y = y_dir * ratio + prev.y
+                     new_points.append(GesturePoint(to_x, to_y))
+                     dst_distance=self.stroke_length(self.points)/float(sample_points)*(len(new_points))
+
+        # If this happens, we are into troubles...
+        if not len(new_points) == sample_points:
+            raise ValueError("Invalid number of strokes points; got %d while it should be %d" %(len(new_points), sample_points))
+
         self.points = new_points
         return True
 

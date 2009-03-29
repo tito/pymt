@@ -77,8 +77,9 @@ class ColoredLogger(logging.Logger):
     COLOR_FORMAT = formatter_message(FORMAT, use_color)
 
     def __init__(self, name):
+        global use_color
         logging.Logger.__init__(self, name, logging.DEBUG)
-        color_formatter = ColoredFormatter(self.COLOR_FORMAT)
+        color_formatter = ColoredFormatter(self.COLOR_FORMAT, use_color=use_color)
         console = logging.StreamHandler()
         console.setFormatter(color_formatter)
         self.addHandler(console)

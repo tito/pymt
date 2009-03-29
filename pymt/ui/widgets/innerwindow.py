@@ -13,25 +13,54 @@ from ...graphx import drawRoundedRectangle, drawTexturedRectangle
 from ...vector import matrix_inv_mult
 from rectangle import MTRectangularWidget
 from scatter import MTScatterWidget
-from button import MTImageButton
+from button import MTImageButton, MTButton
 from layout.boxlayout import MTBoxLayout
 
 iconPath = os.path.join(os.path.dirname(pymt.__file__), 'data', 'icons', '')
+
+class MTInnerWindowContainer(MTRectangularWidget):
+    def __init__(self, **kwargs):
+        super(MTInnerWindowContainer, self).__init__(**kwargs)
+
+    def add_on_key_press(self, *largs, **kwargs):
+        return self.parent.parent.get_parent_window().add_on_key_press(*largs, **kwargs)
+    def remove_on_key_press(self, *largs, **kwargs):
+        return self.parent.parent.get_parent_window().remove_on_key_press(*largs, **kwargs)
+    def get_on_key_press(self, *largs, **kwargs):
+        return self.parent.parent.get_parent_window().get_on_key_press(*largs, **kwargs)
+
+    def add_on_text(self, *largs, **kwargs):
+        return self.parent.parent.get_parent_window().add_on_text(*largs, **kwargs)
+    def remove_on_text(self, *largs, **kwargs):
+        return self.parent.parent.get_parent_window().remove_on_text(*largs, **kwargs)
+    def get_on_text(self, *largs, **kwargs):
+        return self.parent.parent.get_parent_window().get_on_text(*largs, **kwargs)
+
+    def add_on_text_motion(self, *largs, **kwargs):
+        return self.parent.parent.get_parent_window().add_on_text_motion(*largs, **kwargs)
+    def remove_on_text_motion(self, *largs, **kwargs):
+        return self.parent.parent.get_parent_window().remove_on_text_motion(*largs, **kwargs)
+    def get_on_text_motion(self, *largs, **kwargs):
+        return self.parent.parent.get_parent_window().get_on_text_motion(*largs, **kwargs)
+
+    def add_on_text_motion_select(self, *largs, **kwargs):
+        return self.parent.parent.get_parent_window().add_on_text_motion_select(*largs, **kwargs)
+    def remove_on_text_motion_select(self, *largs, **kwargs):
+        return self.parent.parent.get_parent_window().remove_on_text_motion_select(*largs, **kwargs)
+    def get_on_text_motion_select(self, *largs, **kwargs):
+        return self.parent.parent.get_parent_window().get_on_text_motion_select(*largs, **kwargs)
+
 
 class MTInnerWindow(MTScatterWidget):
 
     def __init__(self, **kargs):
         super(MTInnerWindow, self).__init__(**kargs)
-
         self.color=(1,1,1,0.5)
         self.border = 20
         self.__w = self.__h = 0
-
-        self.container = MTRectangularWidget(pos=(0,0),size=self.size)
+        self.container = MTInnerWindowContainer(pos=(0,0), size=self.size, bgcolor=(0,0,0))
         super(MTInnerWindow, self).add_widget(self.container)
-
         self.setup_controls()
-
 
     def setup_controls(self):
         self.controls = MTBoxLayout()
@@ -46,12 +75,34 @@ class MTInnerWindow(MTScatterWidget):
 
         self.controls.pos = self.width/2, -button_fullscreen.height*1.7
 
-    def fullscreen(self,touchID=None, x=0, y=0):
+    def fullscreen(self, *largs, **kwargs):
         root_win = self.parent.get_parent_window()
+
+        # save state for restore
+        self.old_children = root_win.children
+        self.old_size = self.size
+
+        # set new children
         root_win.children = []
-        self.container.size = root_win.parent.size
-        root_win.add_widget(root_win.parent.sim)
+        root_win.add_widget(root_win.sim)
         root_win.add_widget(self.container)
+
+        btn_unfullscreen = MTButton(pos=(root_win.width-50, root_win.height-50),
+                                    size=(50,50), label='Back')
+        btn_unfullscreen.push_handlers(on_release=self.unfullscreen)
+        root_win.add_widget(btn_unfullscreen)
+        self.size = root_win.size
+
+    def unfullscreen(self, *largs, **kwargs):
+        # restore old widget
+        root_win = self.parent.get_parent_window()
+        root_win.children = self.old_children
+
+        # reset container parent
+        self.container.parent = self
+
+        # set old size
+        self.size = self.old_size
 
     def close(self, touchID=None, x=0, y=0):
         self.parent.remove_widget(self)

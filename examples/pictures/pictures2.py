@@ -50,8 +50,8 @@ class ShadowSurface(MTWidget):
         self.bg_image.scale = float(self.width)/self.bg_image.width
 
 
-        self.fbo = Fbo(self.size)
-        self.fbo2 = Fbo(self.size) #a second one to blur the texture of teh first one
+        self.fbo = Fbo(size=self.size)
+        self.fbo2 = Fbo(size=self.size) #a second one to blur the texture of teh first one
 
         #A shader that will draw every pixel that is drawn by OpenGL calls as black..no matter what
         shadow_shader_src = """

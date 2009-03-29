@@ -433,13 +433,13 @@ class TouchWindow(pyglet.window.Window):
     def on_touch_up(self, touches, touchID, x, y):
         pass
 
-    def on_object_down(self, touches, touchID,id, x, y, angle):
+    def on_object_down(self, objects, objectID, id, x, y, angle):
         pass
 
-    def on_object_move(self, touches, touchID,id, x, y, angle):
+    def on_object_move(self, objects, objectID, id, x, y, angle):
         pass
 
-    def on_object_up(self, touches, touchID,id, x, y, angle):
+    def on_object_up(self, objects, objectID, id, x, y, angle):
         pass
 
 

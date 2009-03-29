@@ -244,19 +244,19 @@ class MTWindow(TouchWindow):
             if w.dispatch_event('on_mouse_release', x, y, button, modifiers):
                 return True
 
-    def on_object_down(self, touches, touchID,id, x, y,angle):
+    def on_object_down(self, objects, objectID, id, x, y,angle):
         for w in reversed(self.children):
-            if w.dispatch_event('on_object_down', touches, touchID,id, x, y, angle):
+            if w.dispatch_event('on_object_down', objects, objectID, id, x, y, angle):
                 return True
 
-    def on_object_move(self, touches, touchID,id, x, y,angle):
+    def on_object_move(self, objects, objectID, id, x, y,angle):
         for w in reversed(self.children):
-            if w.dispatch_event('on_object_move', touches, touchID,id, x, y, angle):
+            if w.dispatch_event('on_object_move', objects, objectID, id, x, y, angle):
                 return True
 
-    def on_object_up(self, touches, touchID,id, x, y,angle):
+    def on_object_up(self, objects, objectID, id, x, y,angle):
         for w in reversed(self.children):
-            if w.dispatch_event('on_object_up', touches, touchID,id, x, y,angle):
+            if w.dispatch_event('on_object_up', objects, objectID, id, x, y,angle):
                 return True
 
     def on_resize(self, width, height):

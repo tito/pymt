@@ -168,40 +168,6 @@ def dontListen() :
         oscThread.isRunning = 0 # kill it and free the socket
         oscThread = 0
 
-
-
-##########################################
-# OLD METHOD before chris implemented threads ## in case someone wants to use it ..
-def createListener(ipAddr='127.0.0.1', port = 9001) :
-    """ returns a blocked socket. This is part of the old system, better use now listen()
-    """
-    l = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-    try :
-        l.bind( (ipAddr, port) )
-    except socket.error:
-        print 'there was an error binding to ip %s and port %i , maybe the port is already taken by another process?' % (ipAddr. port)
-        return 0
-
-    l.setblocking(0) # if not this it waits for msgs to arrive blocking other events
-##    l.settimeout(0) # does same as line above but avobe only boolean, this takes float
-
-    return l
-
-def getOSC(inSocket):
-    """try to get incoming OSC on the socket and send it to callback manager (for osc addresses).
-    This is part of the old system that was pulling, better use now listen()
-    """
-    try:
-        while 1:
-            addressManager.handle( inSocket.recv(1024) ) # self.socket.recvfrom(2**13)
-    except:
-        return "no data arrived" # not data arrived
-##########################################
-
-
-
-
 if __name__ == '__main__':
     # example of how to use oscAPI
     init()

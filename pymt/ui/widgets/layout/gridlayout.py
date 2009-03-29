@@ -1,3 +1,7 @@
+'''
+Grid layout: arrange widget in a grid
+'''
+
 __all__ = ['MTGridLayout']
 
 from abstractlayout import MTAbstractLayout

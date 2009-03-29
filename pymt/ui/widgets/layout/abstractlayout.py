@@ -1,3 +1,6 @@
+'''
+Abstract layout: layout base for implementation
+'''
 __all__ = ['MTAbstractLayout']
 
 from ..widget import MTWidget

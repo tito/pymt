@@ -1,3 +1,7 @@
+'''
+Box layout: arrange widget in horizontal or vertical
+'''
+
 __all__ = ['MTBoxLayout']
 
 from abstractlayout import MTAbstractLayout

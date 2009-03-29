@@ -51,7 +51,7 @@ class Crayon(MTWidget):
 if __name__ == '__main__':
 
     w = MTWindow()
-    picking_buffer  = Fbo(w.size)
+    picking_buffer  = Fbo()
     c = Crayon()
     w.add_widget(c)
     runTouchApp()

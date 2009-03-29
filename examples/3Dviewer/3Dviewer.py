@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
 PLUGIN_TITLE = '3D Viewver'
@@ -24,13 +26,10 @@ class GLPerspectiveWidget(MTWidget):
 
     def on_draw(self):
         if self.needs_redisplay:
-            self.fbo.bind()
-            glClear(GL_COLOR_BUFFER_BIT)
-            self.draw3D()
-            self.fbo.release()
+            with self.fbo:
+                self.draw3D()
         glColor3f(1,1,1)
         drawTexturedRectangle(self.fbo.texture, size=self.size)
-
 
     def draw3D(self):
         glPushAttrib(GL_VIEWPORT_BIT)
@@ -69,10 +68,7 @@ class ModelViewer(GLPerspectiveWidget):
     def __init__(self, **kargs):
         GLPerspectiveWidget.__init__(self, **kargs)
         self.touch_position = {}
-        try:
-            self.model = bunny = OBJ('monkey.obj')
-        except:
-            self.model = bunny = OBJ('../3Dviewer/monkey.obj')
+        self.model = bunny = OBJ('../3Dviewer/monkey.obj')
         self.rotation_matrix = (GLfloat * 16)()
         self.reset_rotation()
         self.touch1, self.touch2 = None, None
@@ -93,7 +89,18 @@ class ModelViewer(GLPerspectiveWidget):
         glScalef(self.zoom, self.zoom, self.zoom)
         self.model.draw()
 
+    def check_touches(self, touches):
+        if self.touch1 and not self.touch1 in touches:
+            if self.touch1 in self.touch_position:
+                del self.touch_position[self.touch1]
+            self.touch1 = None
+        if self.touch2 and not self.touch2 in touches:
+            if self.touch2 in self.touch_position:
+                del self.touch_position[self.touch2]
+            self.touch2 = None
+
     def on_touch_down(self, touches, touchID, x, y):
+        self.check_touches(touches)
         self.touch_position[touchID] = (x,y)
         if len(self.touch_position) == 1:
             self.touch1 = touchID
@@ -104,6 +111,7 @@ class ModelViewer(GLPerspectiveWidget):
             self.scale_dist = v1.distance(v2)
 
     def on_touch_move(self, touches, touchID, x, y):
+        self.check_touches(touches)
         dx, dy = 0,0
         scale = 1.0
         angle = 0.0
@@ -145,6 +153,7 @@ class ModelViewer(GLPerspectiveWidget):
         self.needs_redisplay = True
 
     def on_touch_up(self, touches, touchID, x, y):
+        self.check_touches(touches)
         if touchID in self.touch_position:
             del self.touch_position[touchID]
             self.needs_redisplay = True

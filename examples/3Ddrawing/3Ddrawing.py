@@ -115,17 +115,16 @@ class ModelPainter(MTWidget):
 
     def on_draw(self):
         #draw into FBO
-        with self.fbo:
-            glClearColor(0,0,0,0)
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-            with self.perspective:
-                glEnable(GL_TEXTURE_2D)
-                glBindTexture(GL_TEXTURE_2D, self.painting_fbo.texture)
-                self.draw()
+        with self.perspective:
+            set_color(1,1,1)
+            glEnable(GL_TEXTURE_2D)
+            set_texture(texture=self.painting_fbo.texture,
+                        target=GL_TEXTURE_2D)
+            self.draw()
 
         #display teh FBO contents
-        set_color(1,1,1)
-        drawTexturedRectangle(self.fbo.texture, size=self.size)
+        #set_color(1,1,1)
+        #drawTexturedRectangle(self.fbo.texture, size=self.size)
         #drawTexturedRectangle(self.painting_fbo.texture, size=(256,256))
         #drawTexturedRectangle(self.picking_texture.id,pos=(256,0), size=(256,256))
 
@@ -143,7 +142,8 @@ class ModelPainter(MTWidget):
         glDisable(GL_LIGHTING)
         glColor3f(1,1,1)
         glEnable(GL_TEXTURE_2D)
-        glBindTexture(self.picking_texture.target, self.picking_texture.id)
+        set_texture(texture=self.picking_texture,
+                    target=self.picking_texture.target)
         self.draw()
 
 

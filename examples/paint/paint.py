@@ -113,6 +113,8 @@ class Canvas(MTWidget):
         drawTexturedRectangle(self.fbo.texture, size=(self.width, self.height))
 
     def on_resize(self, w, h):
+        if self.fbo.size == (w, h):
+            return
         del self.fbo
         self.fbo = Fbo(size=(w, h), push_viewport=False)
 
@@ -147,7 +149,8 @@ def pymt_plugin_activate(root, ctx):
 
     ctx.canvas = Canvas(pos=(40,40),size=(root.width,root.height))
     def resizeCanvas(w,h):
-        ctx.canvas.dispatch_event('on_resize',w,h)
+        ctx.canvas.size = (w, h)
+        ctx.btnclear.pos = (0, root.height - 50)
     root.push_handlers(on_resize=resizeCanvas)
 
     root.add_widget(ctx.canvas)

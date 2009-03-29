@@ -586,8 +586,8 @@ class SoftwareFbo(AbstractFbo):
     '''
     def __init__(self, **kwargs):
         super(SoftwareFbo, self).__init__(**kwargs)
-        self.texture        = None
         self.texture = Texture.create(self.size[0], self.size[1])
+        self.oldtexture = pyglet.image.get_buffer_manager().get_color_buffer().get_texture()
 
         # Hack to initialize a empty buffer.
         self.bind()
@@ -595,24 +595,48 @@ class SoftwareFbo(AbstractFbo):
 
 
     def bind(self):
-        glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+        # Save current buffer
+        buffer = pyglet.image.get_buffer_manager().get_color_buffer()
+        glBindTexture(GL_TEXTURE_2D, self.oldtexture.id)
+        buffer.blit_to_texture(GL_TEXTURE_2D, 0, 0, 0, 0)
+
+        # Push current attrib
+        glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_TEST | GL_STENCIL_BUFFER_BIT)
         glClearColor(0,0,0,0)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        glDisable(GL_STENCIL_TEST)
 
+        # Save viewport if asked
         if self.push_viewport:
             glPushAttrib(GL_VIEWPORT_BIT)
             glViewport(0, 0, self.size[0], self.size[1])
 
+        # Draw old Framebuffer
         set_color(1,1,1)
         drawTexturedRectangle(self.texture, size=self.size)
 
     def release(self):
+        # Restore viewport
         if self.push_viewport:
             glPopAttrib()
+
+        # Copy current buffer into fbo texture
         glBindTexture(self.texture.target, self.texture.id)
-        pyglet.image.get_buffer_manager().get_color_buffer().blit_to_texture(
-            self.texture.target, 0, 0, 0, 0)
+        buffer = pyglet.image.get_buffer_manager().get_color_buffer()
+        glReadBuffer(buffer.gl_buffer)
+        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, self.size[0], self.size[1])
+
+        # Restore old buffer
+        glPushMatrix()
+        glLoadIdentity()
+        set_color(1,1,1)
+        drawTexturedRectangle(self.oldtexture, size=(self.oldtexture.width,
+                                                     self.oldtexture.height))
+        glPopMatrix()
+
         glPopAttrib()
+
 
 # check if Fbo is supported by gl
 if not 'GL_EXT_framebuffer_object' in gl_info.get_extensions():

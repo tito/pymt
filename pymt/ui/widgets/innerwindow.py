@@ -19,6 +19,11 @@ from layout.boxlayout import MTBoxLayout
 iconPath = os.path.join(os.path.dirname(pymt.__file__), 'data', 'icons', '')
 
 class MTInnerWindowContainer(MTRectangularWidget):
+    '''Container used to simulate a window for children of MTInnerWindow.
+
+    .. note::
+        Don't use this class directly !
+    '''
     def __init__(self, **kwargs):
         super(MTInnerWindowContainer, self).__init__(**kwargs)
 
@@ -52,7 +57,12 @@ class MTInnerWindowContainer(MTRectangularWidget):
 
 
 class MTInnerWindow(MTScatterWidget):
+    '''InnerWindow are a wrapper to render an application inside another
+    application, and work like a multitouch window manager. With innerwindow,
+    you can move / rotate / fullscreen an application.
 
+    Checkout the `desktop` example to check how it work !
+    '''
     def __init__(self, **kargs):
         super(MTInnerWindow, self).__init__(**kargs)
         self.color=(1,1,1,0.5)

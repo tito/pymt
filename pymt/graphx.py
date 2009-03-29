@@ -7,6 +7,7 @@ from __future__ import with_statement
 __all__ = [
     # settings
     'set_brush', 'set_brush_size', 'set_color',
+    'set_texture',
     # draw
     'paintLine',
     'drawLabel', 'drawRoundedRectangle',
@@ -104,6 +105,13 @@ def set_color(*colors, **kwargs):
         glColor3f(*colors)
         glDisable(GL_BLEND)
 
+def set_texture(texture, target=None):
+    '''Same as glBindTexture, except he can take integer/long or
+    Texture/TextureRegion'''
+    if type(texture) in (Texture, TextureRegion):
+        glBindTexture(target, texture.id)
+    else:
+        glBindTexture(target, texture)
 
 def drawLabel(text, pos=(0,0), center=True, font_size=16):
     '''Draw a label on the window.

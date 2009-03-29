@@ -5,7 +5,7 @@
 from pymt import * 
 import pyglet
 
-import math
+from math import sqrt
 import win32com.client
 import time
 	
@@ -41,7 +41,7 @@ class GEcamera:
 		googleEarth.SetCameraParams(self.lat, self.lon, self.alt, self.altMode,self.rnge, self.tilt, self.azimuth, self.speed)
 		
 
-class Touch(pyglet.app.EventLoop):
+class Touch(TouchEventLoop):
     def __init__(self, config=None):
         global touch_event_listeners
         self.register_event_type('on_touch_up')

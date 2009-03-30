@@ -1,3 +1,7 @@
+'''
+VKeyboard: Virtual keyboard + Text input
+'''
+
 from __future__ import with_statement
 __all__ = ['MTTextInput', 'MTVKeyboard', 'MTKeyButton']
 
@@ -13,10 +17,16 @@ from layout.boxlayout import MTBoxLayout
 
 class MTTextInput(MTButton):
     '''
-    A text input widget is a simple label widget that will pop up a virtual keyboard when touched
-    any input of the virtual keyboard will then have effect on the TextInput widget
-    '''
+    A text input widget is a simple label widget that will pop up
+    a virtual keyboard when touched any input of the virtual keyboard
+    will then have effect on the TextInput widget.
 
+    :Events:
+        `on_text_change` ()
+            Fired when the content of text input is changed
+        `on_text_validate` ()
+            Fired when the text is validate (when ENTER is hit on keyboard)
+    '''
     def __init__(self, **kwargs):
         kwargs.setdefault('font_bold', True)
         kwargs.setdefault('anchor_x', 'left')

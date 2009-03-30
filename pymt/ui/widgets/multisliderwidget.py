@@ -1,5 +1,5 @@
 '''
-Multislider: a multislider implementation based on MTSlider
+Multislider: a multi slider implementation
 '''
 
 __all__ = ['MTMultiSlider']
@@ -9,6 +9,31 @@ from ..factory import MTWidgetFactory
 from widget import MTWidget
 
 class MTMultiSlider(MTWidget):
+    '''Multi slider widget look like an equalizer widget.
+
+    :Parameters:
+        `sliders` : int, default to 20
+            Number of sliders
+        `spacing` : int, default to 1
+            Spacing between slider
+        `init_value` : float, default to 0.5
+            Start value of all sliders
+        `slidercolor` : tuple
+            Color of slider
+        `bgcolor` : tuple
+            Background color of slider
+
+    :Styles:
+        `slider-color` : color
+            Color of slider
+        `bg-color` : color
+            Background color of slider
+
+    :Events:
+        `on_value_change` (int value)
+            Fired when the value of one slider change
+
+    '''
     def __init__(self, **kwargs):
         kwargs.setdefault('sliders', 20)
         kwargs.setdefault('size', (400,300))
@@ -45,7 +70,8 @@ class MTMultiSlider(MTWidget):
             self._sliders = quantity
         else:
             return
-    sliders = property(_get_sliders, _set_sliders)
+    sliders = property(_get_sliders, _set_sliders,
+                       doc='Get/set the number of sliders')
 
     def _get_spacing(self):
         return self._spacing

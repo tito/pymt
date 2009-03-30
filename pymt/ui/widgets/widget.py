@@ -1,5 +1,5 @@
 '''
-MTWidget: Base of every widget implementation.
+Widget: Base of every widget implementation.
 '''
 
 __all__ = ['getWidgetById',
@@ -64,6 +64,28 @@ class MTWidget(pyglet.event.EventDispatcher):
             Indicate if children will be draw, or not
         `no_css` : bool, default is False
             Don't search/do css for this widget
+
+    :Events:
+        `on_draw` ()
+            Used to draw the widget and his children.
+        `on_mouse_press` (int x, int y, int button, int modifiers)
+            Fired when mouse is pressed
+        `on_mouse_release` (int x, int y, int button, int modifiers)
+            Fired when mouse is release
+        `on_mouse_drag` (int x, int y, int dx, int dy, int button, int modifiers)
+            Fired when mouse is draw
+        `on_touch_down` (list:Tuio2dCursor touches, int touchID, int x, int y)
+            Fired when a blob appear
+        `on_touch_move` (list:Tuio2dCursor touches, int touchID, int x, int y)
+            Fired when a blob is moving
+        `on_touch_up` (list:Tuio2dCursor touches, int touchID, int x, int y)
+            Fired when a blob disappear
+        `on_object_down` (list:Tuio2dObject objects, int objectID, int x, int y, float angle)
+            Fired when an object appear
+        `on_object_move` (list:Tuio2dObject objects, int objectID, int x, int y, float angle)
+            Fired when an object is moving
+        `on_object_up` (list:Tuio2dObject objects, int objectID, int x, int y, float angle)
+            Fired when an object disappear
     '''
     visible_events = [
         'on_draw',
@@ -138,7 +160,7 @@ class MTWidget(pyglet.event.EventDispatcher):
             _id_2_widget[self._id] = self
     def _get_id(self):
         return self._id
-    id = property(_get_id, _set_id)
+    id = property(_get_id, _set_id, doc='str: id of widget')
 
     def _set_visible(self, visible):
         if self._visible == visible:
@@ -146,7 +168,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         self._visible = visible
     def _get_visible(self):
         return self._visible
-    visible = property(_get_visible, _set_visible)
+    visible = property(_get_visible, _set_visible, doc='bool: visibility of widget')
 
     def _set_x(self, x):
         if self._x == x:
@@ -155,7 +177,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         self.dispatch_event('on_move', self.x, self.y)
     def _get_x(self):
         return self._x
-    x = property(_get_x, _set_x)
+    x = property(_get_x, _set_x, doc='int: X position of widget')
 
     def _set_y(self, y):
         if self._y == y:
@@ -164,7 +186,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         self.dispatch_event('on_move', self.x, self.y)
     def _get_y(self):
         return self._y
-    y = property(_get_y, _set_y)
+    y = property(_get_y, _set_y, doc='int: Y position of widget')
 
     def _set_width(self, w):
         if self._width == w:
@@ -173,7 +195,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         self.dispatch_event('on_resize', self._width, self._height)
     def _get_width(self):
         return self._width
-    width = property(_get_width, _set_width)
+    width = property(_get_width, _set_width, doc='int: width of widget')
 
     def _set_height(self, h):
         if self._height == h:
@@ -182,13 +204,13 @@ class MTWidget(pyglet.event.EventDispatcher):
         self.dispatch_event('on_resize', self._width, self._height)
     def _get_height(self):
         return self._height
-    height = property(_get_height, _set_height)
+    height = property(_get_height, _set_height, doc='int: height of widget')
 
     def _get_center(self):
         return (self._x + self._width/2, self._y+self._height/2)
     def _set_center(self, center):
         self.pos = (center[0] - self.width/2, center[1] - self.height/2)
-    center = property(_get_center, _set_center)
+    center = property(_get_center, _set_center, doc='tuple(x, y): center of widget')
 
     def _set_pos(self, pos):
         if self._x == pos[0] and self._y == pos[1]:
@@ -197,7 +219,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         self.dispatch_event('on_move', self._x, self._y)
     def _get_pos(self):
         return (self._x, self._y)
-    pos = property(_get_pos, _set_pos)
+    pos = property(_get_pos, _set_pos, doc='tuple(x, y): position of widget')
 
     def _set_size(self, size):
         if self._width == size[0] and self._height == size[1]:
@@ -206,9 +228,12 @@ class MTWidget(pyglet.event.EventDispatcher):
         self.dispatch_event('on_resize', self.width, self.height)
     def _get_size(self):
         return (self.width, self.height)
-    size = property(_get_size, _set_size)
+    size = property(_get_size, _set_size,
+                    doc='tuple(width, height): width/height of widget')
 
     def apply_css(self, styles):
+        '''Called at __init__ time to applied css attribute in current class.
+        '''
         pass
 
     def dispatch_event(self, event_type, *args):
@@ -266,7 +291,6 @@ class MTWidget(pyglet.event.EventDispatcher):
 
 
     def update_event_registration(self):
-
         if self.visible:
             for ev in evs:
                 self.register_event_type(ev)
@@ -277,12 +301,14 @@ class MTWidget(pyglet.event.EventDispatcher):
                 if ev in self.event_types:
                     self.event_types.remove(ev)
 
-    def to_local(self,x,y):
+    def to_local(self, x, y):
+        '''Return the (x,y) coordinate in the local plan of widget'''
         lx = (x - self.x)
         ly = (y - self.y)
-        return (lx,ly)
+        return (lx, ly)
 
     def collide_point(self, x, y):
+        '''Test if the (x,y) is in widget bounding box'''
         if( x > self.x  and x < self.x + self.width and
            y > self.y and y < self.y + self.height  ):
             return True
@@ -291,11 +317,13 @@ class MTWidget(pyglet.event.EventDispatcher):
         pass
 
     def get_parent_window(self):
+        '''Return the parent window of widget'''
         if self.parent:
             return self.parent.get_parent_window()
         return None
 
     def get_parent_layout(self):
+        '''Return the parent layout of widget'''
         if self.parent:
             return self.parent.get_parent_layout()
         return None
@@ -307,9 +335,11 @@ class MTWidget(pyglet.event.EventDispatcher):
             self.parent.children.append(self)
 
     def hide(self):
+        '''Hide the widget'''
         self.visible = False
 
     def show(self):
+        '''Show the widget'''
         self.visible = True
 
     def on_draw(self):
@@ -322,9 +352,12 @@ class MTWidget(pyglet.event.EventDispatcher):
                 w.dispatch_event('on_draw')
 
     def draw(self):
+        '''Handle the draw of widget.
+        Derivate this method to draw your widget.'''
         pass
 
     def add_widget(self, w, front=True):
+        '''Add a widget in the children list.'''
         if front:
             self.children.append(w)
         else:
@@ -335,6 +368,7 @@ class MTWidget(pyglet.event.EventDispatcher):
             pass
 
     def remove_widget(self, w):
+        '''Remove a widget from the children list'''
         try:
             self.children.remove(w)
         except:
@@ -342,22 +376,26 @@ class MTWidget(pyglet.event.EventDispatcher):
 
     def add_animation(self, label, prop, to , timestep, length,
                       func=AnimationAlpha.ramp):
+        '''Add an animation in widget.'''
         anim = Animation(self, label, prop, to, timestep, length, func=func)
         self.animations.append(anim)
         return anim
 
     def start_animations(self, label='all'):
+        '''Start all widget animation that match the label'''
         for anim in self.animations:
             if anim.label == label or label == 'all':
                 anim.reset()
                 anim.start()
 
     def stop_animations(self, label='all'):
+        '''Stop all widget animation that match the label'''
         for anim in self.animations:
             if anim.label == label or label == 'all':
                 anim.stop()
 
     def remove_animation(self, label):
+        '''Remove widget animation that match the label'''
         for anim in self.animations:
             if anim.label == label:
                 self.animations.remove(anim)

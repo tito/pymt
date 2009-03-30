@@ -1,5 +1,9 @@
 '''
-Video widget: provide a video container (avbin is needed.)
+Video widget: provide a video container
+
+.. warning::
+    Library avbin is needed for using MTVideoPlayer.
+    Check http://code.google.com/p/avbin/ for more information.
 '''
 
 from __future__ import with_statement
@@ -134,7 +138,7 @@ class MTVideo(MTScatterWidget):
           video = MTVideo(video='source_file')
 
     :Parameters:
-        `video` : stsize=iw.size, r
+        `video` : str
             Filename of video
 
     '''

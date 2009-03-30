@@ -1,5 +1,5 @@
 '''
-Kinetic : kinetic abstraction
+Kinetic: kinetic abstraction
 '''
 
 __all__ = ['MTKinetic', 'MTKineticList', 'MTKineticObject', 'MTKineticItem', 'MTKineticImage']

@@ -9,7 +9,7 @@ class MTAbstractLayout(MTWidget):
     '''Abstract layout. Base class used to implement layout.
 
     :Property:
-        `auto_layout` : bool, default to Trye
+        `auto_layout` : bool, default to True
             Do layout when appropriate
 
     :Events:

@@ -9,6 +9,12 @@ from ..factory import MTWidgetFactory
 from widget import MTWidget
 
 class MTGestureWidget(MTWidget):
+    '''Detect a stroke, it in a Gesture and dispatch it in an event.
+
+    :Events:
+        `on_gesture` (Gesture g, int x, int y)
+            Fired when a stroke is finished
+    '''
     def __init__(self):
         super(MTGestureWidget, self).__init__()
         self.register_event_type('on_gesture')

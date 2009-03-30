@@ -1,5 +1,5 @@
 '''
-Stencil container: A widget that clip drawing of children to his container
+Stencil container: clip drawing of children to his container
 '''
 
 __all__ = ['MTStencilContainer']
@@ -12,7 +12,8 @@ from ..factory import MTWidgetFactory
 stencil_stack = 0
 
 class MTStencilContainer(MTWidget):
-    '''This container clip the children drawing to his container ::
+    '''This container clip the children drawing to his
+    container ::
 
         from pymt import *
         s = MTStencilContainer(size=(200, 200))

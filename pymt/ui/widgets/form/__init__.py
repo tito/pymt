@@ -1,5 +1,5 @@
 '''
-Form package provide label, button input, checkbox, slider...
+Form package: label, button input, checkbox, slider...
 '''
 
 from form import MTForm

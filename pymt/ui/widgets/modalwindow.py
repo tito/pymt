@@ -1,5 +1,5 @@
 '''
-Modal window: a modal window implementation, that stop all interaction with widget on his back
+Modal window: stop all interaction with background widget
 '''
 
 from __future__ import with_statement

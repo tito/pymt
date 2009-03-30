@@ -102,9 +102,7 @@ class Vector(list):
         return math.sqrt((self[0] - to[0]) ** 2 + (self[1] - to[1]) ** 2)
 
     def distance2(self, to):
-        '''Returns the distance between two points squared.
-        Marginally faster than distance()
-        '''
+        '''Returns the distance between two points squared.'''
         return (self[0] - to[0]) ** 2 + (self[1] - to[1]) ** 2
 
     def normalize(self):
@@ -157,6 +155,7 @@ class Vector(list):
 
     @staticmethod
     def in_bbox(point, a, b):
+        '''Return a true if `point` is in bbox defined by `a` and `b`'''
         return ((point[0] <= a[0] and point[0] >= b[0] or
                  point[0] <= b[0] and point[0] >= a[0]) and
                 (point[1] <= a[1] and point[1] >= b[1] or

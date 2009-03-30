@@ -12,6 +12,7 @@ class MTContext(object):
         pass
 
 class MTPlugins(object):
+    '''Scan the examples directory, and extract the plugins in.'''
     def __init__(self, plugin_paths=['../examples/']):
         self.plugin_paths = plugin_paths
         self.plugins = {}
@@ -41,11 +42,13 @@ class MTPlugins(object):
                     pass
 
     def list(self):
+        '''Return a list of plugin'''
         if not self.plugins_loaded:
             self.search_plugins()
         return self.plugins
 
     def get_plugin(self, name):
+        '''Return a module from a name'''
         return self.plugins[name]
 
     def get_key(self, plugin, key, default_value=''):
@@ -55,6 +58,7 @@ class MTPlugins(object):
             return default_value
 
     def get_infos(self, plugin):
+        '''Return a dict info from module'''
         return {
             'title': self.get_key(plugin, 'PLUGIN_TITLE'),
             'author': self.get_key(plugin, 'PLUGIN_AUTHOR'),
@@ -64,10 +68,12 @@ class MTPlugins(object):
         }
 
     def activate(self, plugin, container):
+        '''Activate a plugin'''
         ctx = MTContext()
         plugin.pymt_plugin_activate(container, ctx)
 
     def deactivate(self, plugin, container):
+        '''Deactivate a plugin'''
         # XXX TODO: remember each context for each plugin instance !
         ctx = MTContext()
         try:

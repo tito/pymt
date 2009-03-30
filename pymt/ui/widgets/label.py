@@ -10,12 +10,14 @@ from ..factory import MTWidgetFactory
 from widget import MTWidget
 
 class MTLabel(MTWidget):
-    '''A simple label
+    '''A simple label.
+    ::
+        label = MTLabel(text='Plop world')
 
-    :Styles:
-		`text` : string, default is 'MTLabel'
-			Text of label
-        `font-size` : int
+    :Parameters:
+        `text` : string, default is 'MTLabel'
+            Text of label
+        `font_size` : int
             Size of font
     '''
     def __init__(self, **kwargs):

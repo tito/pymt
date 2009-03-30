@@ -15,8 +15,21 @@ class MTButtonMatrix(MTWidget):
     '''ButtonMatrix is a lightweight Grid of buttons/tiles
       collide_point returns which matrix element was hit
       draw_tile(i,j) draws the  tile @ matrix position (i,j)
-    '''
 
+    :Parameters:
+        `matrix_size` : tuple, default to (3, 3)
+            Matrix size
+        `border` : int, default to 5
+            Size of border
+        `buttoncolor` : color, default to (.2, .2, .2, 1)
+            Color of background
+        `downcolor` : color, default to (0, .5, 1, 1)
+            Color when the button is pushed
+    
+    :Events:
+        `on_value_change` (matrix)
+            Fired when a button is pushed
+    '''
     def __init__(self,**kwargs):
         kwargs.setdefault('matrix_size', (3,3))
         kwargs.setdefault('border', 5)
@@ -31,16 +44,16 @@ class MTButtonMatrix(MTWidget):
         self.matrix = [[0 for i in range(self._matrix_size[1])] for j in range(self._matrix_size[0])]
         self.last_tile = 0
 
-        
     def on_value_change(self, matrix):
         pass
-    
+
     def _get_matrix_size(self):
         return self._matrix_size
     def _set_matrix_size(self, size):
         self._matrix_size = size
         self.matrix = [[0 for i in range(self._matrix_size[1])] for j in range(self._matrix_size[0])]
-    matrix_size = property(_get_matrix_size,_set_matrix_size)
+    matrix_size = property(_get_matrix_size,_set_matrix_size,
+                           doc='Return size of matrix')
 
     def draw_tile(self, i, j):
         if self.matrix[i][j] == 0:
@@ -79,7 +92,7 @@ class MTButtonMatrix(MTWidget):
                 self.matrix[i][j] = 1
             self.dispatch_event('on_value_change', self.matrix)
             self.last_tile = (i,j)
-            
+
     def on_touch_move(self, touches, touchID, x, y):
         if self.collide_point(x,y) != self.last_tile:
            self.on_touch_down(touches, touchID, x, y)

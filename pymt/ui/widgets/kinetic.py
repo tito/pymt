@@ -35,8 +35,9 @@ class MTKinetic(MTWidget):
         w.add_widget(k)
         runTouchApp()
 
-    Warning: In the on_touch_move/on_touch_up, the touchID will not exists in
-    the touches arguments.
+    .. warning::
+        In the on_touch_move/on_touch_up, the touchID will not exists in
+        the touches arguments.
 
     :Parameters:
         `friction` : float, defaults to 10
@@ -114,7 +115,7 @@ class MTKineticList(MTStencilContainer):
                 acceleration = 1 + friction * frame_delta_time
         `padding_x` : int, defaults to 4
             The spacing between scrolling items on the x axis
-         `padding_y` : int, defaults to 4
+        `padding_y` : int, defaults to 4
             The spacing between scrolling items on the y axis
         `w_limit` : int, defaults to 1
             The limit of items that will appear horizontally.
@@ -145,13 +146,12 @@ class MTKineticList(MTStencilContainer):
              Background color of the widget
 
     :Events:
-        `on_press`
+        `on_press` (child, callback)
             Fired when a specific item has been tapped and moved
             less then forty pixels(so we know they tapped it, didn't
             try and scroll).  It sends the item tapped, and the return
             item(if none was defined it sends None)
-
-        `on_delete`
+        `on_delete` (child, callback)
             Fired when an item gets deleted.  Passes that item and the
             return item(None if not provided).
     '''

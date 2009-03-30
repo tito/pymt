@@ -14,7 +14,6 @@ class MTModalWindow(MTWidget):
     Ideal to add popup or some other things. ModalWindow capture
     all touchs events.
     '''
-
     def __init__(self, **kwargs):
         kwargs.setdefault('color', (0,0,0,1))
         super(MTModalWindow, self).__init__(**kwargs)

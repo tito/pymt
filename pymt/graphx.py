@@ -638,9 +638,13 @@ class SoftwareFbo(AbstractFbo):
 
 
 import os
-if not os.path.basename(sys.argv[0]).startswith('sphinx'):
-
-    # check if Fbo is supported by gl
+if os.path.basename(sys.argv[0]).startswith('sphinx'):
+    # Bad hack for sphinx
+    # He don't like when Fbo is announced in __all__,
+    # and not defined in source
+    Fbo = HardwareFbo
+else:
+    # Check if Fbo is supported by gl
     from . import pymt_config
     if not 'GL_EXT_framebuffer_object' in gl_info.get_extensions():
         pymt_config.set('graphics', 'fbo', 'software')

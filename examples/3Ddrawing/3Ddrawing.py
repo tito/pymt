@@ -1,5 +1,3 @@
-from __future__ import with_statement
-
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
 PLUGIN_TITLE = '3D Painting'
@@ -13,6 +11,7 @@ from pyglet.gl import *
 
 
 set_brush('particle.png', 20)
+
 
 
 class GL3DPerspective:
@@ -75,7 +74,7 @@ class ModelPainter(MTWidget):
 
         #initialize the painting buffer as white
         with self.painting_fbo:
-            glClearColor(1,1,1,0)
+            glClearColor(1,1,1,1)
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         #stuff for rotating and keeping track of touches
@@ -86,6 +85,7 @@ class ModelPainter(MTWidget):
         self.zoom = 3.0
 
         self.mode = 'painting'
+        self.has_moved = True
 
 
     def on_resize(self, w, h):
@@ -111,19 +111,20 @@ class ModelPainter(MTWidget):
         glMultMatrixf(self.rotation_matrix)
         glGetFloatv(GL_MODELVIEW_MATRIX, self.rotation_matrix)
         glPopMatrix()
+        self.has_moved = True
 
 
     def on_draw(self):
         #draw into FBO
+        glClearColor(0.3,0.6,0.3,0)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         with self.perspective:
-            set_color(1,1,1)
             glEnable(GL_TEXTURE_2D)
-            set_texture(texture=self.painting_fbo.texture,
-                        target=GL_TEXTURE_2D)
+            glBindTexture(GL_TEXTURE_2D, self.painting_fbo.texture)
             self.draw()
 
         #display teh FBO contents
-        #set_color(1,1,1)
+        glColor3f(1,1,1)
         #drawTexturedRectangle(self.fbo.texture, size=self.size)
         #drawTexturedRectangle(self.painting_fbo.texture, size=(256,256))
         #drawTexturedRectangle(self.picking_texture.id,pos=(256,0), size=(256,256))
@@ -142,28 +143,30 @@ class ModelPainter(MTWidget):
         glDisable(GL_LIGHTING)
         glColor3f(1,1,1)
         glEnable(GL_TEXTURE_2D)
-        set_texture(texture=self.picking_texture,
-                    target=self.picking_texture.target)
+        glBindTexture(self.picking_texture.target, self.picking_texture.id)
         self.draw()
 
 
     def pick(self, x,y):
         pick = None
         with self.fbo:
-            glClearColor(0,0,0,0)
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-            with self.perspective:
-                self.draw_picking()
+            if self.has_moved:
+                glClearColor(0,0,0,0)
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+                with self.perspective:
+                    self.draw_picking()
+                self.has_moved = False
             pick = (GLubyte * 3)()
-            glReadPixels(x, y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pick)
+            glReadPixels(int(x), int(y), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pick)
         return pick[0]*4, 1024 - pick[1]*4
 
     def paint(self, x, y):
         x,y =  self.pick(x,y)
 
         with self.painting_fbo:
-            glColor3f(1,0,0)
-            paintLine([x,y,x,y])
+            glColor3f(0.1,0.1,0)
+            drawCircle(pos=(x,y), radius=8)
+            #paintLine([x,y,x,y])
 
 
     def on_touch_down(self, touches, touchID, x, y):

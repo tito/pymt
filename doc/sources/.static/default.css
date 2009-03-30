@@ -648,14 +648,33 @@ dl.class {
 	margin-top: 20px;
 }
 
+dl.attribute dt,
 dl.exception dt,
 dl.function dt,
+dl.method dt,
 dl.class dt {
-	background-color: #f0f0ff;
+	background: #f0f0ff url('element-method-16.png') center left no-repeat;
 	border-top: 1px solid #e0e0ef;
 	border-bottom: 1px solid #e0e0ef;
 	font-size: 11pt;
 	margin: 10px 0px;
+	padding-left: 20px;
+}
+
+dl.class dl.method dt {
+	background-image: url('element-method-16.png');
+}
+
+dl.class dt {
+	background-image: url('element-class-16.png')
+}
+
+dl.attribute dt {
+	background-image: url('element-field-16.png')
+}
+
+.field-list dl dt {
+	background-image: none;
 }
 
 table.field-list {

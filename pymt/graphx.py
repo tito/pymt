@@ -26,7 +26,6 @@ __all__ = [
     'Fbo', 'HardwareFbo', 'SoftwareFbo'
 ]
 
-from pymt import pymt_config
 from pyglet import *
 from pyglet.gl import *
 from pyglet.image import Texture, TextureRegion
@@ -638,14 +637,19 @@ class SoftwareFbo(AbstractFbo):
         glPopAttrib()
 
 
-# check if Fbo is supported by gl
-if not 'GL_EXT_framebuffer_object' in gl_info.get_extensions():
-    pymt_config.set('graphics', 'fbo', 'software')
+import os
+if not os.path.basename(sys.argv[0]).startswith('sphinx'):
 
-# decide what to use
-if pymt_config.get('graphics', 'fbo') == 'hardware':
-    pymt_logger.info('Fbo will use hardware Framebuffer')
-    Fbo = HardwareFbo
-else:
-    pymt_logger.info('Fbo will use software Framebuffer')
-    Fbo = SoftwareFbo
+    # check if Fbo is supported by gl
+    from . import pymt_config
+    if not 'GL_EXT_framebuffer_object' in gl_info.get_extensions():
+        pymt_config.set('graphics', 'fbo', 'software')
+
+    if not os.path.basename(sys.argv[0]).startswith('sphinx'):
+        # decide what to use
+        if pymt_config.get('graphics', 'fbo') == 'hardware':
+            pymt_logger.info('Fbo will use hardware Framebuffer')
+            Fbo = HardwareFbo
+        else:
+            pymt_logger.info('Fbo will use software Framebuffer')
+            Fbo = SoftwareFbo

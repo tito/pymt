@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Scatter package: provide lot of widgets based on scatter (base, svg, plane, image...) &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Scatter package: provide lot of widgets based on scatter (base, svg, plane, image...) &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,10 +19,10 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="Widgets: all the pymt widgets" href="api-pymt.ui.widgets.html" />
-    <link rel="next" title="NO DOCUMENTATION (module pymt.ui.widgets.vkeyboard)" href="api-pymt.ui.widgets.vkeyboard.html" />
-    <link rel="prev" title="SVG widget: widget that display an svg image" href="api-pymt.ui.widgets.svg.html" /> 
+    <link rel="next" title="Slider package: provide multiple slider implementation (simple, xy, boundary...)" href="api-pymt.ui.widgets.slider.html" />
+    <link rel="prev" title="Rectangle widget: draw a rectangle of his pos/size" href="api-pymt.ui.widgets.rectangle.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,14 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.vkeyboard.html" title="NO DOCUMENTATION (module pymt.ui.widgets.vkeyboard)"
+          <a href="api-pymt.ui.widgets.slider.html" title="Slider package: provide multiple slider implementation (simple, xy, boundary...)"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.svg.html" title="SVG widget: widget that display an svg image"
+          <a href="api-pymt.ui.widgets.rectangle.html" title="Rectangle widget: draw a rectangle of his pos/size"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U"><strong>Widgets</strong>:  all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,12 +52,13 @@
             
   
   <div class="section" id="module-pymt.ui.widgets.scatter">
-<h1>Scatter package: provide lot of widgets based on scatter (base, svg, plane, image...)<a class="headerlink" href="#module-pymt.ui.widgets.scatter" title="Permalink to this headline">¶</a></h1>
+<h1><strong>Scatter package</strong>:  provide lot of widgets based on scatter (base, svg, plane, image...)<a class="headerlink" href="#module-pymt.ui.widgets.scatter" title="Permalink to this headline">¶</a></h1>
 <p>Scatter package: provide lot of widgets based on scatter (base, svg, plane, image...)</p>
 <dl class="class">
 <dt id="pymt.ui.widgets.scatter.MTScatterWidget">
 <!--[pymt.ui.widgets.scatter.MTScatterWidget]-->class <tt class="descclassname">pymt.ui.widgets.scatter.</tt><tt class="descname">MTScatterWidget</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.scatter.MTScatterWidget" title="Permalink to this definition">¶</a></dt>
-<dd><p>MTScatterWidget is a scatter widget based on MTWidget</p>
+<dd><p>Bases: <a title="pymt.ui.widgets.widget.MTWidget" class="reference external" href="api-pymt.ui.widgets.widget.html#pymt.ui.widgets.widget.MTWidget"><tt class="xref docutils literal"><span class="pre">pymt.ui.widgets.widget.MTWidget</span></tt></a></p>
+<p>MTScatterWidget is a scatter widget based on MTWidget</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -115,7 +116,8 @@ so it looks like there are actually two sides</dd></dl>
 <dl class="class">
 <dt id="pymt.ui.widgets.scatter.MTScatterSvg">
 <!--[pymt.ui.widgets.scatter.MTScatterSvg]-->class <tt class="descclassname">pymt.ui.widgets.scatter.</tt><tt class="descname">MTScatterSvg</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.scatter.MTScatterSvg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Render an svg image into a scatter widget</p>
+<dd><p>Bases: <a title="pymt.ui.widgets.scatter.MTScatterWidget" class="reference internal" href="#pymt.ui.widgets.scatter.MTScatterWidget"><tt class="xref docutils literal"><span class="pre">pymt.ui.widgets.scatter.MTScatterWidget</span></tt></a></p>
+<p>Render an svg image into a scatter widget</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -134,13 +136,16 @@ so it looks like there are actually two sides</dd></dl>
 <dl class="class">
 <dt id="pymt.ui.widgets.scatter.MTScatterPlane">
 <!--[pymt.ui.widgets.scatter.MTScatterPlane]-->class <tt class="descclassname">pymt.ui.widgets.scatter.</tt><tt class="descname">MTScatterPlane</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.scatter.MTScatterPlane" title="Permalink to this definition">¶</a></dt>
-<dd>A Plane that transforms for zoom/rotate/pan.
-if none of the childwidgets handles the input (the background is touched), all of tehm are transformed together</dd></dl>
+<dd><p>Bases: <a title="pymt.ui.widgets.scatter.MTScatterWidget" class="reference internal" href="#pymt.ui.widgets.scatter.MTScatterWidget"><tt class="xref docutils literal"><span class="pre">pymt.ui.widgets.scatter.MTScatterWidget</span></tt></a></p>
+<p>A Plane that transforms for zoom/rotate/pan.
+if none of the childwidgets handles the input (the background is touched), all of tehm are transformed together</p>
+</dd></dl>
 
 <dl class="class">
 <dt id="pymt.ui.widgets.scatter.MTScatterImage">
 <!--[pymt.ui.widgets.scatter.MTScatterImage]-->class <tt class="descclassname">pymt.ui.widgets.scatter.</tt><tt class="descname">MTScatterImage</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.scatter.MTScatterImage" title="Permalink to this definition">¶</a></dt>
-<dd><p>MTScatterImage is a image showed in a Scatter widget</p>
+<dd><p>Bases: <a title="pymt.ui.widgets.scatter.MTScatterWidget" class="reference internal" href="#pymt.ui.widgets.scatter.MTScatterWidget"><tt class="xref docutils literal"><span class="pre">pymt.ui.widgets.scatter.MTScatterWidget</span></tt></a></p>
+<p>MTScatterImage is a image showed in a Scatter widget</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -171,9 +176,9 @@ if none of the childwidgets handles the input (the background is touched), all o
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.svg.html" title="previous chapter">SVG widget: widget that display an svg image</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.rectangle.html" title="previous chapter"><strong>Rectangle widget</strong>:  draw a rectangle of his pos/size</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.vkeyboard.html" title="next chapter">NO DOCUMENTATION (module pymt.ui.widgets.vkeyboard)</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.slider.html" title="next chapter"><strong>Slider package</strong>:  provide multiple slider implementation (simple, xy, boundary...)</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.ui.widgets.scatter.txt">Show Source</a></li>
@@ -198,19 +203,19 @@ if none of the childwidgets handles the input (the background is touched), all o
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.vkeyboard.html" title="NO DOCUMENTATION (module pymt.ui.widgets.vkeyboard)"
+          <a href="api-pymt.ui.widgets.slider.html" title="Slider package: provide multiple slider implementation (simple, xy, boundary...)"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.svg.html" title="SVG widget: widget that display an svg image"
+          <a href="api-pymt.ui.widgets.rectangle.html" title="Rectangle widget: draw a rectangle of his pos/size"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U"><strong>Widgets</strong>:  all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

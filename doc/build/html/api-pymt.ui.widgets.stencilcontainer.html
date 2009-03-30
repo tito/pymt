@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Stencil container: A widget that clip drawing of children to his container &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Stencil container: clip drawing of children to his container &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,10 +19,10 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="Widgets: all the pymt widgets" href="api-pymt.ui.widgets.html" />
-    <link rel="next" title="Button matrix: a lightweight and optimized grid of buttons" href="api-pymt.ui.widgets.buttonmatrix.html" />
-    <link rel="prev" title="MTWidget: Base of every widget implementation." href="api-pymt.ui.widgets.widget.html" /> 
+    <link rel="next" title="SVG widget: widget that display an svg image" href="api-pymt.ui.widgets.svg.html" />
+    <link rel="prev" title="Slider package: provide multiple slider implementation (simple, xy, boundary...)" href="api-pymt.ui.widgets.slider.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,14 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.buttonmatrix.html" title="Button matrix: a lightweight and optimized grid of buttons"
+          <a href="api-pymt.ui.widgets.svg.html" title="SVG widget: widget that display an svg image"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.widget.html" title="MTWidget: Base of every widget implementation."
+          <a href="api-pymt.ui.widgets.slider.html" title="Slider package: provide multiple slider implementation (simple, xy, boundary...)"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U"><strong>Widgets</strong>:  all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,19 +52,23 @@
             
   
   <div class="section" id="module-pymt.ui.widgets.stencilcontainer">
-<h1>Stencil container: A widget that clip drawing of children to his container<a class="headerlink" href="#module-pymt.ui.widgets.stencilcontainer" title="Permalink to this headline">¶</a></h1>
-<p>Stencil container: A widget that clip drawing of children to his container</p>
+<h1><strong>Stencil container</strong>:  clip drawing of children to his container<a class="headerlink" href="#module-pymt.ui.widgets.stencilcontainer" title="Permalink to this headline">¶</a></h1>
+<p>Stencil container: clip drawing of children to his container</p>
 <dl class="class">
 <dt id="pymt.ui.widgets.stencilcontainer.MTStencilContainer">
 <!--[pymt.ui.widgets.stencilcontainer.MTStencilContainer]-->class <tt class="descclassname">pymt.ui.widgets.stencilcontainer.</tt><tt class="descname">MTStencilContainer</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.stencilcontainer.MTStencilContainer" title="Permalink to this definition">¶</a></dt>
-<dd><p>This container clip the children drawing to his container</p>
-<p>from pymt import *
-s = MTStencilContainer(size=(200, 200))
-s.add_widget(MTLabel(text=&#8221;plop&#8221;, pos=(100, 100), font_size=16))
-s.add_widget(MTLabel(text=&#8221;a very very long sentence !&#8221;, pos=(100, 150), font_size=16))
-w = MTWindow()
-w.add_widget(s)
-runTouchApp()</p>
+<dd><p>Bases: <a title="pymt.ui.widgets.widget.MTWidget" class="reference external" href="api-pymt.ui.widgets.widget.html#pymt.ui.widgets.widget.MTWidget"><tt class="xref docutils literal"><span class="pre">pymt.ui.widgets.widget.MTWidget</span></tt></a></p>
+<p>This container clip the children drawing to his
+container</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">from</span> <span class="nn">pymt</span> <span class="k">import</span> <span class="o">*</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">MTStencilContainer</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mf">200</span><span class="p">,</span> <span class="mf">200</span><span class="p">))</span>
+<span class="n">s</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="n">MTLabel</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s">&quot;plop&quot;</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">100</span><span class="p">,</span> <span class="mf">100</span><span class="p">),</span> <span class="n">font_size</span><span class="o">=</span><span class="mf">16</span><span class="p">))</span>
+<span class="n">s</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="n">MTLabel</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s">&quot;a very very long sentence !&quot;</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="p">(</span><span class="mf">100</span><span class="p">,</span> <span class="mf">150</span><span class="p">),</span> <span class="n">font_size</span><span class="o">=</span><span class="mf">16</span><span class="p">))</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">MTWindow</span><span class="p">()</span>
+<span class="n">w</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">runTouchApp</span><span class="p">()</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -79,9 +83,9 @@ runTouchApp()</p>
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.widget.html" title="previous chapter">MTWidget: Base of every widget implementation.</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.slider.html" title="previous chapter"><strong>Slider package</strong>:  provide multiple slider implementation (simple, xy, boundary...)</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.buttonmatrix.html" title="next chapter">Button matrix: a lightweight and optimized grid of buttons</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.svg.html" title="next chapter"><strong>SVG widget</strong>:  widget that display an svg image</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.ui.widgets.stencilcontainer.txt">Show Source</a></li>
@@ -106,19 +110,19 @@ runTouchApp()</p>
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.buttonmatrix.html" title="Button matrix: a lightweight and optimized grid of buttons"
+          <a href="api-pymt.ui.widgets.svg.html" title="SVG widget: widget that display an svg image"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.widget.html" title="MTWidget: Base of every widget implementation."
+          <a href="api-pymt.ui.widgets.slider.html" title="Slider package: provide multiple slider implementation (simple, xy, boundary...)"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U"><strong>Widgets</strong>:  all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on Mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

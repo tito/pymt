@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>XML widget: parse xml and create his children &mdash; PyMT v0.2 alpha documentation</title>
+    <title>XML widget: parse xml and create his children &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,10 +19,10 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="Widgets: all the pymt widgets" href="api-pymt.ui.widgets.html" />
-    <link rel="next" title="Video widget: provide a video container (avbin is needed.)" href="api-pymt.ui.widgets.videowidget.html" />
-    <link rel="prev" title="Button matrix: a lightweight and optimized grid of buttons" href="api-pymt.ui.widgets.buttonmatrix.html" /> 
+    <link rel="next" title="Form package: label, button input, checkbox, slider..." href="api-pymt.ui.widgets.form.html" />
+    <link rel="prev" title="Widget: Base of every widget implementation." href="api-pymt.ui.widgets.widget.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,14 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.videowidget.html" title="Video widget: provide a video container (avbin is needed.)"
+          <a href="api-pymt.ui.widgets.form.html" title="Form package: label, button input, checkbox, slider..."
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.buttonmatrix.html" title="Button matrix: a lightweight and optimized grid of buttons"
+          <a href="api-pymt.ui.widgets.widget.html" title="Widget: Base of every widget implementation."
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U"><strong>Widgets</strong>:  all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,13 +52,14 @@
             
   
   <div class="section" id="module-pymt.ui.widgets.xmlwidget">
-<h1>XML widget: parse xml and create his children<a class="headerlink" href="#module-pymt.ui.widgets.xmlwidget" title="Permalink to this headline">¶</a></h1>
+<h1><strong>XML widget</strong>:  parse xml and create his children<a class="headerlink" href="#module-pymt.ui.widgets.xmlwidget" title="Permalink to this headline">¶</a></h1>
 <p>XML widget: parse xml and create his children</p>
 <dl class="class">
 <dt id="pymt.ui.widgets.xmlwidget.XMLWidget">
 <!--[pymt.ui.widgets.xmlwidget.XMLWidget]-->class <tt class="descclassname">pymt.ui.widgets.xmlwidget.</tt><tt class="descname">XMLWidget</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.xmlwidget.XMLWidget" title="Permalink to this definition">¶</a></dt>
-<dd><p>XML widget create all his children by parsing and execute xml</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymt</span> <span class="kn">import</span> <span class="o">*</span>
+<dd><p>Bases: <a title="pymt.ui.widgets.widget.MTWidget" class="reference external" href="api-pymt.ui.widgets.widget.html#pymt.ui.widgets.widget.MTWidget"><tt class="xref docutils literal"><span class="pre">pymt.ui.widgets.widget.MTWidget</span></tt></a></p>
+<p>XML widget create all his children by parsing and execute xml</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">from</span> <span class="nn">pymt</span> <span class="k">import</span> <span class="o">*</span>
 <span class="n">data</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;&lt;?xml version=&quot;1.0&quot;?&gt;</span>
 <span class="s">&lt;MTKinetic&gt;</span>
 <span class="s">    &lt;MTButton label=&quot;1&quot; pos=&quot;(50,50)&quot;/&gt;</span>
@@ -101,9 +102,9 @@ untrusted source !</p>
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.buttonmatrix.html" title="previous chapter">Button matrix: a lightweight and optimized grid of buttons</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.widget.html" title="previous chapter"><strong>Widget</strong>:  Base of every widget implementation.</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.videowidget.html" title="next chapter">Video widget: provide a video container (avbin is needed.)</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.form.html" title="next chapter"><strong>Form package</strong>:  label, button input, checkbox, slider...</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.ui.widgets.xmlwidget.txt">Show Source</a></li>
@@ -128,19 +129,19 @@ untrusted source !</p>
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.videowidget.html" title="Video widget: provide a video container (avbin is needed.)"
+          <a href="api-pymt.ui.widgets.form.html" title="Form package: label, button input, checkbox, slider..."
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.buttonmatrix.html" title="Button matrix: a lightweight and optimized grid of buttons"
+          <a href="api-pymt.ui.widgets.widget.html" title="Widget: Base of every widget implementation."
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U"><strong>Widgets</strong>:  all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

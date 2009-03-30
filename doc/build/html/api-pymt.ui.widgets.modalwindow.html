@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Modal window: a modal window implementation, that stop all interaction with widget on his back &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Modal window: stop all interaction with background widget &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,10 +19,10 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="Widgets: all the pymt widgets" href="api-pymt.ui.widgets.html" />
-    <link rel="next" title="Color picker: a simple color picker with 3 slider" href="api-pymt.ui.widgets.colorpick.html" />
-    <link rel="prev" title="Gesture widget: a widget with on_gesture event implementation" href="api-pymt.ui.widgets.gesturewidget.html" /> 
+    <link rel="next" title="Multislider: a multi slider implementation" href="api-pymt.ui.widgets.multisliderwidget.html" />
+    <link rel="prev" title="Label: a simple text label" href="api-pymt.ui.widgets.label.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,14 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.colorpick.html" title="Color picker: a simple color picker with 3 slider"
+          <a href="api-pymt.ui.widgets.multisliderwidget.html" title="Multislider: a multi slider implementation"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.gesturewidget.html" title="Gesture widget: a widget with on_gesture event implementation"
+          <a href="api-pymt.ui.widgets.label.html" title="Label: a simple text label"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U"><strong>Widgets</strong>:  all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,14 +52,16 @@
             
   
   <div class="section" id="module-pymt.ui.widgets.modalwindow">
-<h1>Modal window: a modal window implementation, that stop all interaction with widget on his back<a class="headerlink" href="#module-pymt.ui.widgets.modalwindow" title="Permalink to this headline">¶</a></h1>
-<p>Modal window: a modal window implementation, that stop all interaction with widget on his back</p>
+<h1><strong>Modal window</strong>:  stop all interaction with background widget<a class="headerlink" href="#module-pymt.ui.widgets.modalwindow" title="Permalink to this headline">¶</a></h1>
+<p>Modal window: stop all interaction with background widget</p>
 <dl class="class">
 <dt id="pymt.ui.widgets.modalwindow.MTModalWindow">
 <!--[pymt.ui.widgets.modalwindow.MTModalWindow]-->class <tt class="descclassname">pymt.ui.widgets.modalwindow.</tt><tt class="descname">MTModalWindow</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.modalwindow.MTModalWindow" title="Permalink to this definition">¶</a></dt>
-<dd>A static window, non-movable, with a dark background.
+<dd><p>Bases: <a title="pymt.ui.widgets.widget.MTWidget" class="reference external" href="api-pymt.ui.widgets.widget.html#pymt.ui.widgets.widget.MTWidget"><tt class="xref docutils literal"><span class="pre">pymt.ui.widgets.widget.MTWidget</span></tt></a></p>
+<p>A static window, non-movable, with a dark background.
 Ideal to add popup or some other things. ModalWindow capture
-all touchs events.</dd></dl>
+all touchs events.</p>
+</dd></dl>
 
 </div>
 
@@ -73,9 +75,9 @@ all touchs events.</dd></dl>
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.gesturewidget.html" title="previous chapter">Gesture widget: a widget with on_gesture event implementation</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.label.html" title="previous chapter"><strong>Label</strong>:  a simple text label</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.colorpick.html" title="next chapter">Color picker: a simple color picker with 3 slider</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.multisliderwidget.html" title="next chapter"><strong>Multislider</strong>:  a multi slider implementation</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.ui.widgets.modalwindow.txt">Show Source</a></li>
@@ -100,19 +102,19 @@ all touchs events.</dd></dl>
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.colorpick.html" title="Color picker: a simple color picker with 3 slider"
+          <a href="api-pymt.ui.widgets.multisliderwidget.html" title="Multislider: a multi slider implementation"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.gesturewidget.html" title="Gesture widget: a widget with on_gesture event implementation"
+          <a href="api-pymt.ui.widgets.label.html" title="Label: a simple text label"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U"><strong>Widgets</strong>:  all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

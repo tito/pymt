@@ -1,9 +1,10 @@
-=========================================================
-NO DOCUMENTATION (module pymt.ui.widgets.layout.abstractlayout)
-=========================================================
+===================================================================
+**Abstract layout**:  layout base for implementation
+===================================================================
 
 .. automodule:: pymt.ui.widgets.layout.abstractlayout
     :members:
+    :show-inheritance:
 
 .. toctree::
 

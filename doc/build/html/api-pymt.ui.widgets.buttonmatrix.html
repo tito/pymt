@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Button matrix: a lightweight and optimized grid of buttons &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Button matrix: a lightweight and optimized grid of buttons &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,10 +19,10 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="Widgets: all the pymt widgets" href="api-pymt.ui.widgets.html" />
-    <link rel="next" title="XML widget: parse xml and create his children" href="api-pymt.ui.widgets.xmlwidget.html" />
-    <link rel="prev" title="Stencil container: A widget that clip drawing of children to his container" href="api-pymt.ui.widgets.stencilcontainer.html" /> 
+    <link rel="next" title="Color picker: a simple color picker with 3 slider" href="api-pymt.ui.widgets.colorpick.html" />
+    <link rel="prev" title="Button package: implement different type of button" href="api-pymt.ui.widgets.button.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,14 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.xmlwidget.html" title="XML widget: parse xml and create his children"
+          <a href="api-pymt.ui.widgets.colorpick.html" title="Color picker: a simple color picker with 3 slider"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.stencilcontainer.html" title="Stencil container: A widget that clip drawing of children to his container"
+          <a href="api-pymt.ui.widgets.button.html" title="Button package: implement different type of button"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U"><strong>Widgets</strong>:  all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,14 +52,52 @@
             
   
   <div class="section" id="module-pymt.ui.widgets.buttonmatrix">
-<h1>Button matrix: a lightweight and optimized grid of buttons<a class="headerlink" href="#module-pymt.ui.widgets.buttonmatrix" title="Permalink to this headline">¶</a></h1>
+<h1><strong>Button matrix</strong>:  a lightweight and optimized grid of buttons<a class="headerlink" href="#module-pymt.ui.widgets.buttonmatrix" title="Permalink to this headline">¶</a></h1>
 <p>Button matrix: a lightweight and optimized grid of buttons</p>
 <dl class="class">
 <dt id="pymt.ui.widgets.buttonmatrix.MTButtonMatrix">
 <!--[pymt.ui.widgets.buttonmatrix.MTButtonMatrix]-->class <tt class="descclassname">pymt.ui.widgets.buttonmatrix.</tt><tt class="descname">MTButtonMatrix</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.buttonmatrix.MTButtonMatrix" title="Permalink to this definition">¶</a></dt>
-<dd>ButtonMatrix is a lightweight Grid of buttons/tiles
-collide_point returns which matrix element was hit
-draw_tile(i,j) draws the  tile &#64; matrix position (i,j)</dd></dl>
+<dd><p>Bases: <a title="pymt.ui.widgets.widget.MTWidget" class="reference external" href="api-pymt.ui.widgets.widget.html#pymt.ui.widgets.widget.MTWidget"><tt class="xref docutils literal"><span class="pre">pymt.ui.widgets.widget.MTWidget</span></tt></a></p>
+<dl class="docutils">
+<dt>ButtonMatrix is a lightweight Grid of buttons/tiles</dt>
+<dd>collide_point returns which matrix element was hit
+draw_tile(i,j) draws the  tile &#64; matrix position (i,j)</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><cite>matrix_size</cite> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, default to (3, 3)</span></dt>
+<dd><p class="first last">Matrix size</p>
+</dd>
+<dt><cite>border</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int, default to 5</span></dt>
+<dd><p class="first last">Size of border</p>
+</dd>
+<dt><cite>buttoncolor</cite> <span class="classifier-delimiter">:</span> <span class="classifier">color, default to (.2, .2, .2, 1)</span></dt>
+<dd><p class="first last">Color of background</p>
+</dd>
+<dt><cite>downcolor</cite> <span class="classifier-delimiter">:</span> <span class="classifier">color, default to (0, .5, 1, 1)</span></dt>
+<dd><p class="first last">Color when the button is pushed</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Events:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>on_value_change</cite> (matrix)</dt>
+<dd><p class="first last">Fired when a button is pushed</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pymt.ui.widgets.buttonmatrix.MTButtonMatrix.matrix_size">
+<!--[pymt.ui.widgets.buttonmatrix.MTButtonMatrix.matrix_size]--><tt class="descname">matrix_size</tt><a class="headerlink" href="#pymt.ui.widgets.buttonmatrix.MTButtonMatrix.matrix_size" title="Permalink to this definition">¶</a></dt>
+<dd>Return size of matrix</dd></dl>
+
+</dd></dl>
 
 </div>
 
@@ -73,9 +111,9 @@ draw_tile(i,j) draws the  tile &#64; matrix position (i,j)</dd></dl>
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.stencilcontainer.html" title="previous chapter">Stencil container: A widget that clip drawing of children to his container</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.button.html" title="previous chapter"><strong>Button package</strong>:  implement different type of button</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.xmlwidget.html" title="next chapter">XML widget: parse xml and create his children</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.colorpick.html" title="next chapter"><strong>Color picker</strong>:  a simple color picker with 3 slider</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.ui.widgets.buttonmatrix.txt">Show Source</a></li>
@@ -100,19 +138,19 @@ draw_tile(i,j) draws the  tile &#64; matrix position (i,j)</dd></dl>
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.xmlwidget.html" title="XML widget: parse xml and create his children"
+          <a href="api-pymt.ui.widgets.colorpick.html" title="Color picker: a simple color picker with 3 slider"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.stencilcontainer.html" title="Stencil container: A widget that clip drawing of children to his container"
+          <a href="api-pymt.ui.widgets.button.html" title="Button package: implement different type of button"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U"><strong>Widgets</strong>:  all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

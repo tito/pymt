@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Button package: implement different type of button (simple, toggle, image...) &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Button package: implement different type of button &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,10 +19,10 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="Widgets: all the pymt widgets" href="api-pymt.ui.widgets.html" />
-    <link rel="next" title="NO DOCUMENTATION (module pymt.ui.widgets.mtanimatedmenu)" href="api-pymt.ui.widgets.mtanimatedmenu.html" />
-    <link rel="prev" title="Rectangle widget: draw a rectangle of his pos/size" href="api-pymt.ui.widgets.rectangle.html" /> 
+    <link rel="next" title="Button matrix: a lightweight and optimized grid of buttons" href="api-pymt.ui.widgets.buttonmatrix.html" />
+    <link rel="prev" title="Widgets: all the pymt widgets" href="api-pymt.ui.widgets.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,14 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.mtanimatedmenu.html" title="NO DOCUMENTATION (module pymt.ui.widgets.mtanimatedmenu)"
+          <a href="api-pymt.ui.widgets.buttonmatrix.html" title="Button matrix: a lightweight and optimized grid of buttons"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.rectangle.html" title="Rectangle widget: draw a rectangle of his pos/size"
+          <a href="api-pymt.ui.widgets.html" title="Widgets: all the pymt widgets"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U"><strong>Widgets</strong>:  all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,12 +52,13 @@
             
   
   <div class="section" id="module-pymt.ui.widgets.button">
-<h1>Button package: implement different type of button (simple, toggle, image...)<a class="headerlink" href="#module-pymt.ui.widgets.button" title="Permalink to this headline">¶</a></h1>
-<p>Button package: implement different type of button (simple, toggle, image...)</p>
+<h1><strong>Button package</strong>:  implement different type of button<a class="headerlink" href="#module-pymt.ui.widgets.button" title="Permalink to this headline">¶</a></h1>
+<p>Button package: implement different type of button</p>
 <dl class="class">
 <dt id="pymt.ui.widgets.button.MTButton">
 <!--[pymt.ui.widgets.button.MTButton]-->class <tt class="descclassname">pymt.ui.widgets.button.</tt><tt class="descname">MTButton</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.button.MTButton" title="Permalink to this definition">¶</a></dt>
-<dd><p>MTButton is a button implementation using MTWidget</p>
+<dd><p>Bases: <a title="pymt.ui.widgets.widget.MTWidget" class="reference external" href="api-pymt.ui.widgets.widget.html#pymt.ui.widgets.widget.MTWidget"><tt class="xref docutils literal"><span class="pre">pymt.ui.widgets.widget.MTWidget</span></tt></a></p>
+<p>MTButton is a button implementation using MTWidget</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -122,12 +123,15 @@
 <dl class="class">
 <dt id="pymt.ui.widgets.button.MTToggleButton">
 <!--[pymt.ui.widgets.button.MTToggleButton]-->class <tt class="descclassname">pymt.ui.widgets.button.</tt><tt class="descname">MTToggleButton</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.button.MTToggleButton" title="Permalink to this definition">¶</a></dt>
-<dd>Toggle button implementation, based on MTButton</dd></dl>
+<dd><p>Bases: <a title="pymt.ui.widgets.button.MTButton" class="reference internal" href="#pymt.ui.widgets.button.MTButton"><tt class="xref docutils literal"><span class="pre">pymt.ui.widgets.button.MTButton</span></tt></a></p>
+<p>Toggle button implementation, based on MTButton</p>
+</dd></dl>
 
 <dl class="class">
 <dt id="pymt.ui.widgets.button.MTImageButton">
 <!--[pymt.ui.widgets.button.MTImageButton]-->class <tt class="descclassname">pymt.ui.widgets.button.</tt><tt class="descname">MTImageButton</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.button.MTImageButton" title="Permalink to this definition">¶</a></dt>
-<dd><p>MTImageButton is a enhanced MTButton
+<dd><p>Bases: <a title="pymt.ui.widgets.button.MTButton" class="reference internal" href="#pymt.ui.widgets.button.MTButton"><tt class="xref docutils literal"><span class="pre">pymt.ui.widgets.button.MTButton</span></tt></a></p>
+<p>MTImageButton is a enhanced MTButton
 that draw an image instead of a text.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -159,9 +163,9 @@ that draw an image instead of a text.</p>
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.rectangle.html" title="previous chapter">Rectangle widget: draw a rectangle of his pos/size</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.html" title="previous chapter"><strong>Widgets</strong>:  all the pymt widgets</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.mtanimatedmenu.html" title="next chapter">NO DOCUMENTATION (module pymt.ui.widgets.mtanimatedmenu)</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.buttonmatrix.html" title="next chapter"><strong>Button matrix</strong>:  a lightweight and optimized grid of buttons</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.ui.widgets.button.txt">Show Source</a></li>
@@ -186,19 +190,19 @@ that draw an image instead of a text.</p>
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.mtanimatedmenu.html" title="NO DOCUMENTATION (module pymt.ui.widgets.mtanimatedmenu)"
+          <a href="api-pymt.ui.widgets.buttonmatrix.html" title="Button matrix: a lightweight and optimized grid of buttons"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.rectangle.html" title="Rectangle widget: draw a rectangle of his pos/size"
+          <a href="api-pymt.ui.widgets.html" title="Widgets: all the pymt widgets"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U"><strong>Widgets</strong>:  all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>NO DOCUMENTATION (module pymt.utils) &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Utils: generic toolbox &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,10 +19,10 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="PyMT: a multi touch UI toolkit for pyglet." href="api-pymt.html" />
-    <link rel="next" title="UI package: base for all ui things" href="api-pymt.ui.html" />
-    <link rel="prev" title="Loader: asynchronous loader, easily extensible." href="api-pymt.loader.html" /> 
+    <link rel="next" title="Vector: class to handle Vector operation." href="api-pymt.vector.html" />
+    <link rel="prev" title="Shader: abstract compilation and usage" href="api-pymt.shader.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,14 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.html" title="UI package: base for all ui things"
+          <a href="api-pymt.vector.html" title="Vector: class to handle Vector operation."
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.loader.html" title="Loader: asynchronous loader, easily extensible."
+          <a href="api-pymt.shader.html" title="Shader: abstract compilation and usage"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
+          <li><a href="api-pymt.html" accesskey="U"><strong>PyMT</strong>:  a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,7 +52,31 @@
             
   
   <div class="section" id="module-pymt.utils">
-<h1>NO DOCUMENTATION (module pymt.utils)<a class="headerlink" href="#module-pymt.utils" title="Permalink to this headline">¶</a></h1>
+<h1><strong>Utils</strong>:  generic toolbox<a class="headerlink" href="#module-pymt.utils" title="Permalink to this headline">¶</a></h1>
+<p>Utils: generic toolbox</p>
+<dl class="function">
+<dt id="pymt.utils.intersection">
+<!--[pymt.utils.intersection]--><tt class="descclassname">pymt.utils.</tt><tt class="descname">intersection</tt><big>(</big><em>set1</em>, <em>set2</em><big>)</big><a class="headerlink" href="#pymt.utils.intersection" title="Permalink to this definition">¶</a></dt>
+<dd>Return intersection between 2 list</dd></dl>
+
+<dl class="function">
+<dt id="pymt.utils.difference">
+<!--[pymt.utils.difference]--><tt class="descclassname">pymt.utils.</tt><tt class="descname">difference</tt><big>(</big><em>set1</em>, <em>set2</em><big>)</big><a class="headerlink" href="#pymt.utils.difference" title="Permalink to this definition">¶</a></dt>
+<dd>Return difference between 2 list</dd></dl>
+
+<dl class="function">
+<dt id="pymt.utils.strtotuple">
+<!--[pymt.utils.strtotuple]--><tt class="descclassname">pymt.utils.</tt><tt class="descname">strtotuple</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#pymt.utils.strtotuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a tuple string into tuple,
+with some security check. Designed to be used
+with eval() function</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mf">12</span><span class="p">,</span> <span class="mf">54</span><span class="p">,</span> <span class="mf">68</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>         <span class="c"># return &#39;(12, 54, 68)&#39;</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">strtotuple</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>  <span class="c"># return (12, 54, 68)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 
 
@@ -65,9 +89,9 @@
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.loader.html" title="previous chapter">Loader: asynchronous loader, easily extensible.</a></p>
+            <p class="topless"><a href="api-pymt.shader.html" title="previous chapter"><strong>Shader</strong>:  abstract compilation and usage</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.ui.html" title="next chapter">UI package: base for all ui things</a></p>
+            <p class="topless"><a href="api-pymt.vector.html" title="next chapter"><strong>Vector</strong>:  class to handle Vector operation.</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.utils.txt">Show Source</a></li>
@@ -92,19 +116,19 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.html" title="UI package: base for all ui things"
+          <a href="api-pymt.vector.html" title="Vector: class to handle Vector operation."
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.loader.html" title="Loader: asynchronous loader, easily extensible."
+          <a href="api-pymt.shader.html" title="Shader: abstract compilation and usage"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
+          <li><a href="api-pymt.html" accesskey="U"><strong>PyMT</strong>:  a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Generic vector class to handle Vector operation. &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Vector: class to handle Vector operation. &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,10 +19,10 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="PyMT: a multi touch UI toolkit for pyglet." href="api-pymt.html" />
-    <link rel="next" title="Graphx: simplification of opengl pritimives" href="api-pymt.graphx.html" />
-    <link rel="prev" title="Pyglet: Soup on pyglet to provide multitouch interface." href="api-pymt.mtpyglet.html" /> 
+    <link rel="next" title="UI package: base for all ui things" href="api-pymt.ui.html" />
+    <link rel="prev" title="Utils: generic toolbox" href="api-pymt.utils.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,14 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.graphx.html" title="Graphx: simplification of opengl pritimives"
+          <a href="api-pymt.ui.html" title="UI package: base for all ui things"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.mtpyglet.html" title="Pyglet: Soup on pyglet to provide multitouch interface."
+          <a href="api-pymt.utils.html" title="Utils: generic toolbox"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
+          <li><a href="api-pymt.html" accesskey="U"><strong>PyMT</strong>:  a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,10 +52,10 @@
             
   
   <div class="section" id="module-pymt.vector">
-<h1>Generic vector class to handle Vector operation.<a class="headerlink" href="#module-pymt.vector" title="Permalink to this headline">¶</a></h1>
-<p>Generic vector class to handle Vector operation.
+<h1><strong>Vector</strong>:  class to handle Vector operation.<a class="headerlink" href="#module-pymt.vector" title="Permalink to this headline">¶</a></h1>
+<p>Vector: class to handle Vector operation.
 For example, if you want to get length of a vector</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pymt</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">from</span> <span class="nn">pymt</span> <span class="k">import</span> <span class="o">*</span>
 <span class="n">v</span> <span class="o">=</span> <span class="n">Vector</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span> <span class="mf">5</span><span class="p">)</span>
 
 <span class="c"># get length</span>
@@ -65,7 +65,8 @@ For example, if you want to get length of a vector</p>
 <dl class="class">
 <dt id="pymt.vector.Vector">
 <!--[pymt.vector.Vector]-->class <tt class="descclassname">pymt.vector.</tt><tt class="descname">Vector</tt><big>(</big><em>*largs</em><big>)</big><a class="headerlink" href="#pymt.vector.Vector" title="Permalink to this definition">¶</a></dt>
-<dd><p>Represents a 2D vector.</p>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">list</span></tt></p>
+<p>Represents a 2D vector.</p>
 <dl class="method">
 <dt id="pymt.vector.Vector.angle">
 <!--[pymt.vector.Vector.angle]--><tt class="descname">angle</tt><big>(</big><em>a</em><big>)</big><a class="headerlink" href="#pymt.vector.Vector.angle" title="Permalink to this definition">¶</a></dt>
@@ -79,13 +80,17 @@ For example, if you want to get length of a vector</p>
 <dl class="method">
 <dt id="pymt.vector.Vector.distance2">
 <!--[pymt.vector.Vector.distance2]--><tt class="descname">distance2</tt><big>(</big><em>to</em><big>)</big><a class="headerlink" href="#pymt.vector.Vector.distance2" title="Permalink to this definition">¶</a></dt>
-<dd>Returns the distance between two points squared.
-Marginally faster than distance()</dd></dl>
+<dd>Returns the distance between two points squared.</dd></dl>
 
 <dl class="method">
 <dt id="pymt.vector.Vector.dot">
 <!--[pymt.vector.Vector.dot]--><tt class="descname">dot</tt><big>(</big><em>a</em><big>)</big><a class="headerlink" href="#pymt.vector.Vector.dot" title="Permalink to this definition">¶</a></dt>
 <dd>Computes the dot product of a and b</dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.vector.Vector.in_bbox">
+<!--[pymt.vector.Vector.in_bbox]--><tt class="descname">in_bbox</tt><a class="headerlink" href="#pymt.vector.Vector.in_bbox" title="Permalink to this definition">¶</a></dt>
+<dd>Return a true if <cite>point</cite> is in bbox defined by <cite>a</cite> and <cite>b</cite></dd></dl>
 
 <dl class="method">
 <dt id="pymt.vector.Vector.length">
@@ -105,6 +110,11 @@ and returns it as a vector object</p>
 <!--[pymt.vector.Vector.normalize]--><tt class="descname">normalize</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.vector.Vector.normalize" title="Permalink to this definition">¶</a></dt>
 <dd>Returns a new vector that has the same direction as vec,
 but has a length of one.</dd></dl>
+
+<dl class="method">
+<dt id="pymt.vector.Vector.rotate">
+<!--[pymt.vector.Vector.rotate]--><tt class="descname">rotate</tt><big>(</big><em>angle</em><big>)</big><a class="headerlink" href="#pymt.vector.Vector.rotate" title="Permalink to this definition">¶</a></dt>
+<dd>Rotate the vector</dd></dl>
 
 </dd></dl>
 
@@ -138,9 +148,9 @@ the matrix applied to the vector</dd></dl>
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.mtpyglet.html" title="previous chapter">Pyglet: Soup on pyglet to provide multitouch interface.</a></p>
+            <p class="topless"><a href="api-pymt.utils.html" title="previous chapter"><strong>Utils</strong>:  generic toolbox</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.graphx.html" title="next chapter">Graphx: simplification of opengl pritimives</a></p>
+            <p class="topless"><a href="api-pymt.ui.html" title="next chapter"><strong>UI package</strong>:  base for all ui things</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.vector.txt">Show Source</a></li>
@@ -165,19 +175,19 @@ the matrix applied to the vector</dd></dl>
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.graphx.html" title="Graphx: simplification of opengl pritimives"
+          <a href="api-pymt.ui.html" title="UI package: base for all ui things"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.mtpyglet.html" title="Pyglet: Soup on pyglet to provide multitouch interface."
+          <a href="api-pymt.utils.html" title="Utils: generic toolbox"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
+          <li><a href="api-pymt.html" accesskey="U"><strong>PyMT</strong>:  a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

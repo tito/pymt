@@ -1,9 +1,10 @@
-=========================================================
-Shader: abstraction of Shader compilation and usage
-=========================================================
+===================================================================
+**Shader**:  abstract compilation and usage
+===================================================================
 
 .. automodule:: pymt.shader
     :members:
+    :show-inheritance:
 
 .. toctree::
 

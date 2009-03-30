@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Pyglet: Soup on pyglet to provide multitouch interface. &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Pyglet: Soup on pyglet to provide multitouch interface. &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,9 +19,9 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="PyMT: a multi touch UI toolkit for pyglet." href="api-pymt.html" />
-    <link rel="next" title="Generic vector class to handle Vector operation." href="api-pymt.vector.html" />
+    <link rel="next" title="Obj: handle 3D mesh" href="api-pymt.obj.html" />
     <link rel="prev" title="Logger: the PyMT logger" href="api-pymt.logger.html" /> 
   </head>
   <body>
@@ -35,14 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.vector.html" title="Generic vector class to handle Vector operation."
+          <a href="api-pymt.obj.html" title="Obj: handle 3D mesh"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="api-pymt.logger.html" title="Logger: the PyMT logger"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
+          <li><a href="api-pymt.html" accesskey="U"><strong>PyMT</strong>:  a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,27 +52,150 @@
             
   
   <div class="section" id="module-pymt.mtpyglet">
-<h1>Pyglet: Soup on pyglet to provide multitouch interface.<a class="headerlink" href="#module-pymt.mtpyglet" title="Permalink to this headline">¶</a></h1>
+<h1><strong>Pyglet</strong>:  Soup on pyglet to provide multitouch interface.<a class="headerlink" href="#module-pymt.mtpyglet" title="Permalink to this headline">¶</a></h1>
 <p>Pyglet: Soup on pyglet to provide multitouch interface.</p>
 <dl class="class">
 <dt id="pymt.mtpyglet.Tuio2DCursor">
 <!--[pymt.mtpyglet.Tuio2DCursor]-->class <tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">Tuio2DCursor</tt><big>(</big><em>blobID</em>, <em>args</em>, <em>time_start=0</em><big>)</big><a class="headerlink" href="#pymt.mtpyglet.Tuio2DCursor" title="Permalink to this definition">¶</a></dt>
-<dd>Represent a Tuio cursor + implementation of double-tap functionnality</dd></dl>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">object</span></tt></p>
+<p>Represent a Tuio cursor + implementation of double-tap functionnality</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">All properties are read-only.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Properties:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>blobID</cite> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Id of blob, returned by simulator or tracker</p>
+</dd>
+<dt><cite>xpos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to None</span></dt>
+<dd><p class="first last">X position</p>
+</dd>
+<dt><cite>ypos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to None</span></dt>
+<dd><p class="first last">Y position</p>
+</dd>
+<dt><cite>xmot</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to None (tracker only)</span></dt>
+<dd><p class="first last">X motion vector</p>
+</dd>
+<dt><cite>ymot</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to None (tracker only)</span></dt>
+<dd><p class="first last">Y motion vector</p>
+</dd>
+<dt><cite>mot_accel</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to None (tracker only)</span></dt>
+<dd><p class="first last">Motion vector acceleration</p>
+</dd>
+<dt><cite>dxpos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to None</span></dt>
+<dd><p class="first last">X start position of double tap detection</p>
+</dd>
+<dt><cite>dypos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to None</span></dt>
+<dd><p class="first last">Y start position of double tap detection</p>
+</dd>
+<dt><cite>oxpos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to 0.0</span></dt>
+<dd><p class="first last">X position of last movement</p>
+</dd>
+<dt><cite>oypos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to 0.0</span></dt>
+<dd><p class="first last">Y position of last movement</p>
+</dd>
+<dt><cite>is_double_tap</cite> <span class="classifier-delimiter">:</span> <span class="classifier">bool, default to False</span></dt>
+<dd><p class="first last">Indicate if the Cursor is a double-tap</p>
+</dd>
+<dt><cite>double_tap_time</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to 0</span></dt>
+<dd><p class="first last">Time elasped between 2 tap, in seconds</p>
+</dd>
+<dt><cite>is_timeout</cite> <span class="classifier-delimiter">:</span> <span class="classifier">bool, default to False</span></dt>
+<dd><p class="first last">Indicate if the double-tap detection is timeout</p>
+</dd>
+<dt><cite>have_event_down</cite> <span class="classifier-delimiter">:</span> <span class="classifier">bool, default to False</span></dt>
+<dd><p class="first last">Indicate if the on_touch_down is already done</p>
+</dd>
+<dt><cite>do_event</cite> <span class="classifier-delimiter">:</span> <span class="classifier">string, default to None</span></dt>
+<dd><p class="first last">Next event to be fire</p>
+</dd>
+<dt><cite>no_event</cite> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, default to False</span></dt>
+<dd><p class="first last">Indicate if the blob must stop event generation</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="class">
 <dt id="pymt.mtpyglet.Tuio2DObject">
 <!--[pymt.mtpyglet.Tuio2DObject]-->class <tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">Tuio2DObject</tt><big>(</big><em>blobID</em>, <em>args</em><big>)</big><a class="headerlink" href="#pymt.mtpyglet.Tuio2DObject" title="Permalink to this definition">¶</a></dt>
-<dd>Represent a Tuio object</dd></dl>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">object</span></tt></p>
+<p>Represent a Tuio object</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">All properties are read-only.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Properties:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>blobID</cite> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Id of blob, returned by tracker</p>
+</dd>
+<dt><cite>oxpos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to 0.0</span></dt>
+<dd><p class="first last">X position of last movement</p>
+</dd>
+<dt><cite>oypos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to 0.0</span></dt>
+<dd><p class="first last">Y position of last movement</p>
+</dd>
+<dt><cite>xpos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to None</span></dt>
+<dd><p class="first last">X position</p>
+</dd>
+<dt><cite>ypos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to None</span></dt>
+<dd><p class="first last">Y position</p>
+</dd>
+<dt><cite>angle</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to None</span></dt>
+<dd><p class="first last">Rotation angle of object</p>
+</dd>
+<dt><cite>xmot</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to None</span></dt>
+<dd><p class="first last">X motion vector</p>
+</dd>
+<dt><cite>ymot</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float, default to None</span></dt>
+<dd><p class="first last">Y motion vector</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="class">
 <dt id="pymt.mtpyglet.TouchEventLoop">
 <!--[pymt.mtpyglet.TouchEventLoop]-->class <tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">TouchEventLoop</tt><big>(</big><em>host='127.0.0.1'</em>, <em>port=3333</em><big>)</big><a class="headerlink" href="#pymt.mtpyglet.TouchEventLoop" title="Permalink to this definition">¶</a></dt>
-<dd>Main event loop. This loop dispatch Tuio message and pyglet event.</dd></dl>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">pyglet.app.EventLoop</span></tt></p>
+<p>Main event loop. This loop dispatch Tuio message and pyglet event.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>host</cite> <span class="classifier-delimiter">:</span> <span class="classifier">string, default to &#8216;127.0.0.1&#8217;</span></dt>
+<dd><p class="first last">IP to listen</p>
+</dd>
+<dt><cite>port</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int, default to 3333</span></dt>
+<dd><p class="first last">Port to listen</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="class">
 <dt id="pymt.mtpyglet.TouchWindow">
 <!--[pymt.mtpyglet.TouchWindow]-->class <tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">TouchWindow</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.mtpyglet.TouchWindow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base implementation of Tuio event in top of pyglet window.</p>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">pyglet.window.Window</span></tt></p>
+<p>Base implementation of Tuio event in top of pyglet window.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -106,18 +229,32 @@
 <dl class="function">
 <dt id="pymt.mtpyglet.pymt_usage">
 <!--[pymt.mtpyglet.pymt_usage]--><tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">pymt_usage</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.mtpyglet.pymt_usage" title="Permalink to this definition">¶</a></dt>
-<dd><p>PyMT Usage: %s [OPTION...]
--h, &#8211;help                        prints this mesage
--f, &#8211;fullscreen                  force run in fullscreen
--w, &#8211;windowed                    force run in window
--p, &#8211;port=x                      specify Tuio port (default 3333)
--H, &#8211;host=xxx.xxx.xxx.xxx        specify Tuio host (default 127.0.0.1)
--F, &#8211;fps                         show fps in window</p>
-<blockquote>
+<dd><p>PyMT Usage: %s [OPTION...]</p>
 <table class="docutils option-list" frame="void" rules="none">
 <col class="option" />
 <col class="description" />
 <tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
+<td>prints this mesage</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-f</span>, <span class="option">--fullscreen</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>force run in fullscreen</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-w</span>, <span class="option">--windowed</span></kbd></td>
+<td>force run in window</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-p <var>port</var></span>, <span class="option">--port=<var>post</var></span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>specify Tuio port (default 3333)</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-H <var>host</var></span>, <span class="option">--host=<var>host</var></span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>specify Tuio host (default 127.0.0.1)</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-F</span>, <span class="option">--fps</span></kbd></td>
+<td>show fps in window</td></tr>
 <tr><td class="option-group">
 <kbd><span class="option">--dump-frame</span></kbd></td>
 <td>dump each frame in file</td></tr>
@@ -129,7 +266,6 @@
 <td>specify a format for dump</td></tr>
 </tbody>
 </table>
-</blockquote>
 </dd></dl>
 
 <dl class="function">
@@ -140,12 +276,27 @@
 <dl class="function">
 <dt id="pymt.mtpyglet.startTuio">
 <!--[pymt.mtpyglet.startTuio]--><tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">startTuio</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.mtpyglet.startTuio" title="Permalink to this definition">¶</a></dt>
-<dd>Start Tuio listening</dd></dl>
+<dd><p>Start Tuio listening.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function is designed to be used in non-graphic app.</p>
+</div>
+</dd></dl>
 
 <dl class="function">
 <dt id="pymt.mtpyglet.stopTuio">
 <!--[pymt.mtpyglet.stopTuio]--><tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">stopTuio</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.mtpyglet.stopTuio" title="Permalink to this definition">¶</a></dt>
-<dd>Stop Tuio listening</dd></dl>
+<dd><p>Stop Tuio listening</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function is designed to be used in non-graphic app.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.mtpyglet.getFrameDt">
+<!--[pymt.mtpyglet.getFrameDt]--><tt class="descclassname">pymt.mtpyglet.</tt><tt class="descname">getFrameDt</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.mtpyglet.getFrameDt" title="Permalink to this definition">¶</a></dt>
+<dd>Return the last delta between old and new frame.</dd></dl>
 
 </div>
 
@@ -159,9 +310,9 @@
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.logger.html" title="previous chapter">Logger: the PyMT logger</a></p>
+            <p class="topless"><a href="api-pymt.logger.html" title="previous chapter"><strong>Logger</strong>:  the PyMT logger</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.vector.html" title="next chapter">Generic vector class to handle Vector operation.</a></p>
+            <p class="topless"><a href="api-pymt.obj.html" title="next chapter"><strong>Obj</strong>:  handle 3D mesh</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.mtpyglet.txt">Show Source</a></li>
@@ -186,19 +337,19 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.vector.html" title="Generic vector class to handle Vector operation."
+          <a href="api-pymt.obj.html" title="Obj: handle 3D mesh"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="api-pymt.logger.html" title="Logger: the PyMT logger"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
+          <li><a href="api-pymt.html" accesskey="U"><strong>PyMT</strong>:  a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Widgets: all the pymt widgets &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Widgets: all the pymt widgets &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,10 +19,10 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="API documentation for PyMT" href="api-index.html" />
-    <link rel="next" title="Rectangle widget: draw a rectangle of his pos/size" href="api-pymt.ui.widgets.rectangle.html" />
-    <link rel="prev" title="Simulator: generate touch event with mouse" href="api-pymt.ui.simulator.html" /> 
+    <link rel="next" title="Button package: implement different type of button" href="api-pymt.ui.widgets.button.html" />
+    <link rel="prev" title="Window package: provide a window + a touch display" href="api-pymt.ui.window.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,12 +35,12 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.rectangle.html" title="Rectangle widget: draw a rectangle of his pos/size"
+          <a href="api-pymt.ui.widgets.button.html" title="Button package: implement different type of button"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.simulator.html" title="Simulator: generate touch event with mouse"
+          <a href="api-pymt.ui.window.html" title="Window package: provide a window + a touch display"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li> 
       </ul>
     </div>  
@@ -51,115 +51,110 @@
             
   
   <div class="section" id="module-pymt.ui.widgets">
-<h1>Widgets: all the pymt widgets<a class="headerlink" href="#module-pymt.ui.widgets" title="Permalink to this headline">¶</a></h1>
+<h1><strong>Widgets</strong>:  all the pymt widgets<a class="headerlink" href="#module-pymt.ui.widgets" title="Permalink to this headline">¶</a></h1>
 <p>Widgets: all the pymt widgets</p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.rectangle.html">Rectangle widget: draw a rectangle of his pos/size</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.button.html"><strong>Button package</strong>:  implement different type of button</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.button.html">Button package: implement different type of button (simple, toggle, image...)</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.buttonmatrix.html"><strong>Button matrix</strong>:  a lightweight and optimized grid of buttons</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.mtanimatedmenu.html">NO DOCUMENTATION (module pymt.ui.widgets.mtanimatedmenu)</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.colorpick.html"><strong>Color picker</strong>:  a simple color picker with 3 slider</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.widget.html">MTWidget: Base of every widget implementation.</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.gesturewidget.html"><strong>Gesture widget</strong>:  a widget with on_gesture event implementation</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.stencilcontainer.html">Stencil container: A widget that clip drawing of children to his container</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.innerwindow.html"><strong>Inner window</strong>:  a lightweight window with fullscreen and resize ability</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.buttonmatrix.html">Button matrix: a lightweight and optimized grid of buttons</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.kinetic.html"><strong>Kinetic</strong>:  kinetic abstraction</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.xmlwidget.html">XML widget: parse xml and create his children</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.label.html"><strong>Label</strong>:  a simple text label</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.videowidget.html">Video widget: provide a video container (avbin is needed.)</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.modalwindow.html"><strong>Modal window</strong>:  stop all interaction with background widget</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.kinetic.html">Kinetic : kinetic abstraction</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.multisliderwidget.html"><strong>Multislider</strong>:  a multi slider implementation</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.multisliderwidget.html">Multislider: a multislider implementation based on MTSlider</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.popup.html"><strong>Popup</strong>:  a simple popup that use modal window</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.gesturewidget.html">Gesture widget: a widget with on_gesture event implementation</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.radial.html"><strong>Vector slider</strong>:  a radial slider that provide vector manipulation</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.modalwindow.html">Modal window: a modal window implementation, that stop all interaction with widget on his back</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.rectangle.html"><strong>Rectangle widget</strong>:  draw a rectangle of his pos/size</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.colorpick.html">Color picker: a simple color picker with 3 slider</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.scatter.html"><strong>Scatter package</strong>:  provide lot of widgets based on scatter (base, svg, plane, image...)</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.innerwindow.html">Inner window: a lightweight window with fullscreen and resize ability</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.slider.html"><strong>Slider package</strong>:  provide multiple slider implementation (simple, xy, boundary...)</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.slider.html">Slider package: provide multiple slider implementation (simple, xy, boundary...)</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.stencilcontainer.html"><strong>Stencil container</strong>:  clip drawing of children to his container</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.radial.html">Vector slider: a radial slider that provide vector manipulation</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.svg.html"><strong>SVG widget</strong>:  widget that display an svg image</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.popup.html">Popup: a simple popup that use modal window</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.tabs.html"><strong>Tabs widget</strong>:  widget that provide tabs (like tabbed notebook)</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.tabs.html">Tabs widget: widget that provide tabs (like tabbed notebook)</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.videowidget.html"><strong>Video widget</strong>:  provide a video container</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.svg.html">SVG widget: widget that display an svg image</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.vkeyboard.html"><strong>VKeyboard</strong>:  Virtual keyboard + Text input</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.scatter.html">Scatter package: provide lot of widgets based on scatter (base, svg, plane, image...)</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.widget.html"><strong>Widget</strong>:  Base of every widget implementation.</a><ul class="simple">
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.vkeyboard.html">NO DOCUMENTATION (module pymt.ui.widgets.vkeyboard)</a><ul class="simple">
-</ul>
-</li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.label.html">Label: a simple text label</a><ul class="simple">
+<li class="toctree-l1"><a class="reference external" href="api-pymt.ui.widgets.xmlwidget.html"><strong>XML widget</strong>:  parse xml and create his children</a><ul class="simple">
 </ul>
 </li>
 </ul>
@@ -175,9 +170,9 @@
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.ui.simulator.html" title="previous chapter">Simulator: generate touch event with mouse</a></p>
+            <p class="topless"><a href="api-pymt.ui.window.html" title="previous chapter"><strong>Window package</strong>:  provide a window + a touch display</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.rectangle.html" title="next chapter">Rectangle widget: draw a rectangle of his pos/size</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.button.html" title="next chapter"><strong>Button package</strong>:  implement different type of button</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.ui.widgets.txt">Show Source</a></li>
@@ -202,18 +197,18 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.rectangle.html" title="Rectangle widget: draw a rectangle of his pos/size"
+          <a href="api-pymt.ui.widgets.button.html" title="Button package: implement different type of button"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.simulator.html" title="Simulator: generate touch event with mouse"
+          <a href="api-pymt.ui.window.html" title="Window package: provide a window + a touch display"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on Mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

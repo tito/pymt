@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Window package: provide a window + a touch display &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Window package: provide a window + a touch display &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,10 +19,10 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="UI package: base for all ui things" href="api-pymt.ui.html" />
-    <link rel="next" title="Factory: all widgets are registered through this factory" href="api-pymt.ui.factory.html" />
-    <link rel="prev" title="Animation package: handle animation, and default alpha method" href="api-pymt.ui.animation.html" /> 
+    <link rel="next" title="Widgets: all the pymt widgets" href="api-pymt.ui.widgets.html" />
+    <link rel="prev" title="Wallpaper window: a window with background wallpaper" href="api-pymt.ui.wallpaperwindow.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,14 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.factory.html" title="Factory: all widgets are registered through this factory"
+          <a href="api-pymt.ui.widgets.html" title="Widgets: all the pymt widgets"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.animation.html" title="Animation package: handle animation, and default alpha method"
+          <a href="api-pymt.ui.wallpaperwindow.html" title="Wallpaper window: a window with background wallpaper"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.html" accesskey="U">UI package: base for all ui things</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.html" accesskey="U"><strong>UI package</strong>:  base for all ui things</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,12 +52,13 @@
             
   
   <div class="section" id="module-pymt.ui.window">
-<h1>Window package: provide a window + a touch display<a class="headerlink" href="#module-pymt.ui.window" title="Permalink to this headline">¶</a></h1>
+<h1><strong>Window package</strong>:  provide a window + a touch display<a class="headerlink" href="#module-pymt.ui.window" title="Permalink to this headline">¶</a></h1>
 <p>Window package: provide a window + a touch display</p>
 <dl class="class">
 <dt id="pymt.ui.window.MTWindow">
 <!--[pymt.ui.window.MTWindow]-->class <tt class="descclassname">pymt.ui.window.</tt><tt class="descname">MTWindow</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.window.MTWindow" title="Permalink to this definition">¶</a></dt>
-<dd><p>MTWindow is a window widget who use MTSimulator
+<dd><p>Bases: <a title="pymt.mtpyglet.TouchWindow" class="reference external" href="api-pymt.mtpyglet.html#pymt.mtpyglet.TouchWindow"><tt class="xref docutils literal"><span class="pre">pymt.mtpyglet.TouchWindow</span></tt></a></p>
+<p>MTWindow is a window widget who use MTSimulator
 for generating touch event with mouse.
 Use MTWindow as main window application.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -119,7 +120,8 @@ Use MTWindow as main window application.</p>
 <dl class="class">
 <dt id="pymt.ui.window.MTDisplay">
 <!--[pymt.ui.window.MTDisplay]-->class <tt class="descclassname">pymt.ui.window.</tt><tt class="descname">MTDisplay</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.window.MTDisplay" title="Permalink to this definition">¶</a></dt>
-<dd><p>MTDisplay is a widget that draw a circle
+<dd><p>Bases: <a title="pymt.ui.widgets.widget.MTWidget" class="reference external" href="api-pymt.ui.widgets.widget.html#pymt.ui.widgets.widget.MTWidget"><tt class="xref docutils literal"><span class="pre">pymt.ui.widgets.widget.MTWidget</span></tt></a></p>
+<p>MTDisplay is a widget that draw a circle
 under every touch on window</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -163,9 +165,9 @@ under every touch on window</p>
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.ui.animation.html" title="previous chapter">Animation package: handle animation, and default alpha method</a></p>
+            <p class="topless"><a href="api-pymt.ui.wallpaperwindow.html" title="previous chapter"><strong>Wallpaper window</strong>:  a window with background wallpaper</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.ui.factory.html" title="next chapter">Factory: all widgets are registered through this factory</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.html" title="next chapter"><strong>Widgets</strong>:  all the pymt widgets</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.ui.window.txt">Show Source</a></li>
@@ -190,19 +192,19 @@ under every touch on window</p>
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.factory.html" title="Factory: all widgets are registered through this factory"
+          <a href="api-pymt.ui.widgets.html" title="Widgets: all the pymt widgets"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.animation.html" title="Animation package: handle animation, and default alpha method"
+          <a href="api-pymt.ui.wallpaperwindow.html" title="Wallpaper window: a window with background wallpaper"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.html" accesskey="U">UI package: base for all ui things</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.html" accesskey="U"><strong>UI package</strong>:  base for all ui things</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

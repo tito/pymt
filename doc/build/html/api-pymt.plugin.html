@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Plugins: basic plugins management, used for desktop examples &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Plugins: basic plugins management, used for desktop examples &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,9 +19,9 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="PyMT: a multi touch UI toolkit for pyglet." href="api-pymt.html" />
-    <link rel="next" title="Shader: abstraction of Shader compilation and usage" href="api-pymt.shader.html" />
+    <link rel="next" title="Shader: abstract compilation and usage" href="api-pymt.shader.html" />
     <link rel="prev" title="Obj: handle 3D mesh" href="api-pymt.obj.html" /> 
   </head>
   <body>
@@ -35,14 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.shader.html" title="Shader: abstraction of Shader compilation and usage"
+          <a href="api-pymt.shader.html" title="Shader: abstract compilation and usage"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="api-pymt.obj.html" title="Obj: handle 3D mesh"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
+          <li><a href="api-pymt.html" accesskey="U"><strong>PyMT</strong>:  a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,8 +52,40 @@
             
   
   <div class="section" id="module-pymt.plugin">
-<h1>Plugins: basic plugins management, used for desktop examples<a class="headerlink" href="#module-pymt.plugin" title="Permalink to this headline">¶</a></h1>
+<h1><strong>Plugins</strong>:  basic plugins management, used for desktop examples<a class="headerlink" href="#module-pymt.plugin" title="Permalink to this headline">¶</a></h1>
 <p>Plugins: basic plugins management, used for desktop examples</p>
+<dl class="class">
+<dt id="pymt.plugin.MTPlugins">
+<!--[pymt.plugin.MTPlugins]-->class <tt class="descclassname">pymt.plugin.</tt><tt class="descname">MTPlugins</tt><big>(</big><em>plugin_paths=</em><span class="optional">[</span>, <em>'../examples/'</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#pymt.plugin.MTPlugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">object</span></tt></p>
+<p>Scan the examples directory, and extract the plugins in.</p>
+<dl class="method">
+<dt id="pymt.plugin.MTPlugins.activate">
+<!--[pymt.plugin.MTPlugins.activate]--><tt class="descname">activate</tt><big>(</big><em>plugin</em>, <em>container</em><big>)</big><a class="headerlink" href="#pymt.plugin.MTPlugins.activate" title="Permalink to this definition">¶</a></dt>
+<dd>Activate a plugin</dd></dl>
+
+<dl class="method">
+<dt id="pymt.plugin.MTPlugins.deactivate">
+<!--[pymt.plugin.MTPlugins.deactivate]--><tt class="descname">deactivate</tt><big>(</big><em>plugin</em>, <em>container</em><big>)</big><a class="headerlink" href="#pymt.plugin.MTPlugins.deactivate" title="Permalink to this definition">¶</a></dt>
+<dd>Deactivate a plugin</dd></dl>
+
+<dl class="method">
+<dt id="pymt.plugin.MTPlugins.get_infos">
+<!--[pymt.plugin.MTPlugins.get_infos]--><tt class="descname">get_infos</tt><big>(</big><em>plugin</em><big>)</big><a class="headerlink" href="#pymt.plugin.MTPlugins.get_infos" title="Permalink to this definition">¶</a></dt>
+<dd>Return a dict info from module</dd></dl>
+
+<dl class="method">
+<dt id="pymt.plugin.MTPlugins.get_plugin">
+<!--[pymt.plugin.MTPlugins.get_plugin]--><tt class="descname">get_plugin</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#pymt.plugin.MTPlugins.get_plugin" title="Permalink to this definition">¶</a></dt>
+<dd>Return a module from a name</dd></dl>
+
+<dl class="method">
+<dt id="pymt.plugin.MTPlugins.list">
+<!--[pymt.plugin.MTPlugins.list]--><tt class="descname">list</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.plugin.MTPlugins.list" title="Permalink to this definition">¶</a></dt>
+<dd>Return a list of plugin</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -66,9 +98,9 @@
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.obj.html" title="previous chapter">Obj: handle 3D mesh</a></p>
+            <p class="topless"><a href="api-pymt.obj.html" title="previous chapter"><strong>Obj</strong>:  handle 3D mesh</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.shader.html" title="next chapter">Shader: abstraction of Shader compilation and usage</a></p>
+            <p class="topless"><a href="api-pymt.shader.html" title="next chapter"><strong>Shader</strong>:  abstract compilation and usage</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.plugin.txt">Show Source</a></li>
@@ -93,19 +125,19 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.shader.html" title="Shader: abstraction of Shader compilation and usage"
+          <a href="api-pymt.shader.html" title="Shader: abstract compilation and usage"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="api-pymt.obj.html" title="Obj: handle 3D mesh"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
+          <li><a href="api-pymt.html" accesskey="U"><strong>PyMT</strong>:  a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Logger: the PyMT logger &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Logger: the PyMT logger &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,10 +19,10 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="PyMT: a multi touch UI toolkit for pyglet." href="api-pymt.html" />
     <link rel="next" title="Pyglet: Soup on pyglet to provide multitouch interface." href="api-pymt.mtpyglet.html" />
-    <link rel="prev" title="Shader: abstraction of Shader compilation and usage" href="api-pymt.shader.html" /> 
+    <link rel="prev" title="Loader: asynchronous loader, easily extensible." href="api-pymt.loader.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,11 +38,11 @@
           <a href="api-pymt.mtpyglet.html" title="Pyglet: Soup on pyglet to provide multitouch interface."
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.shader.html" title="Shader: abstraction of Shader compilation and usage"
+          <a href="api-pymt.loader.html" title="Loader: asynchronous loader, easily extensible."
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
+          <li><a href="api-pymt.html" accesskey="U"><strong>PyMT</strong>:  a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,8 +52,29 @@
             
   
   <div class="section" id="module-pymt.logger">
-<h1>Logger: the PyMT logger<a class="headerlink" href="#module-pymt.logger" title="Permalink to this headline">¶</a></h1>
+<h1><strong>Logger</strong>:  the PyMT logger<a class="headerlink" href="#module-pymt.logger" title="Permalink to this headline">¶</a></h1>
 <p>Logger: the PyMT logger</p>
+<dl class="docutils">
+<dt>Fifferents level are available :</dt>
+<dd><ul class="first last simple">
+<li>debug</li>
+<li>info</li>
+<li>warning</li>
+<li>error</li>
+<li>critical</li>
+</ul>
+</dd>
+</dl>
+<p>Examples of usage</p>
+<div class="highlight-python"><pre>from pymt.logger import pymt_logger
+pymt_logger.notice('This is a notice')
+pymt_logger.debug('This is a notice')
+
+try:
+    raise Exception('bleh')
+except Exception, e
+    pymt_logger.exception(e)</pre>
+</div>
 </div>
 
 
@@ -66,9 +87,9 @@
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.shader.html" title="previous chapter">Shader: abstraction of Shader compilation and usage</a></p>
+            <p class="topless"><a href="api-pymt.loader.html" title="previous chapter"><strong>Loader</strong>:  asynchronous loader, easily extensible.</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.mtpyglet.html" title="next chapter">Pyglet: Soup on pyglet to provide multitouch interface.</a></p>
+            <p class="topless"><a href="api-pymt.mtpyglet.html" title="next chapter"><strong>Pyglet</strong>:  Soup on pyglet to provide multitouch interface.</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.logger.txt">Show Source</a></li>
@@ -96,16 +117,16 @@
           <a href="api-pymt.mtpyglet.html" title="Pyglet: Soup on pyglet to provide multitouch interface."
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.shader.html" title="Shader: abstraction of Shader compilation and usage"
+          <a href="api-pymt.loader.html" title="Loader: asynchronous loader, easily extensible."
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
+          <li><a href="api-pymt.html" accesskey="U"><strong>PyMT</strong>:  a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

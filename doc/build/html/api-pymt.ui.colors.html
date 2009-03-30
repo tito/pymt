@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Colors: parse and handle CSS for PyMT &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Colors: css &amp; themes &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,10 +19,10 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="UI package: base for all ui things" href="api-pymt.ui.html" />
-    <link rel="next" title="Simulator: generate touch event with mouse" href="api-pymt.ui.simulator.html" />
-    <link rel="prev" title="Wallpaper window: a window with background wallpaper" href="api-pymt.ui.wallpaperwindow.html" /> 
+    <link rel="next" title="Factory: all widgets are registered through this factory" href="api-pymt.ui.factory.html" />
+    <link rel="prev" title="Animation package: handle animation, and default alpha method" href="api-pymt.ui.animation.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,14 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.simulator.html" title="Simulator: generate touch event with mouse"
+          <a href="api-pymt.ui.factory.html" title="Factory: all widgets are registered through this factory"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.wallpaperwindow.html" title="Wallpaper window: a window with background wallpaper"
+          <a href="api-pymt.ui.animation.html" title="Animation package: handle animation, and default alpha method"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.html" accesskey="U">UI package: base for all ui things</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.html" accesskey="U"><strong>UI package</strong>:  base for all ui things</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,8 +52,52 @@
             
   
   <div class="section" id="module-pymt.ui.colors">
-<h1>Colors: parse and handle CSS for PyMT<a class="headerlink" href="#module-pymt.ui.colors" title="Permalink to this headline">¶</a></h1>
-<p>Colors: parse and handle CSS for PyMT</p>
+<h1><strong>Colors</strong>:  css &amp; themes<a class="headerlink" href="#module-pymt.ui.colors" title="Permalink to this headline">¶</a></h1>
+<p>Colors: css &amp; themes</p>
+<p>Currently, the default css is included in this file.
+You can easily extend the default style by create a css file
+in your ~/.pymt/user.css.</p>
+<p>Exemple of user.css</p>
+<div class="highlight-python"><pre>* {
+    /* increase the font-size of every widget */
+    font-size: 18;
+}</pre>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Only class name of widget is currently use to search CSS.</p>
+</div>
+<p>We cannot describe how to style every widget in this class.
+If you want to known which attribute is needed to style a widget,
+please look on the widget documentation.</p>
+<dl class="function">
+<dt id="pymt.ui.colors.css_get_style">
+<!--[pymt.ui.colors.css_get_style]--><tt class="descclassname">pymt.ui.colors.</tt><tt class="descname">css_get_style</tt><big>(</big><em>widget</em>, <em>sheet=None</em><big>)</big><a class="headerlink" href="#pymt.ui.colors.css_get_style" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dict() with all the style for the widget.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>widget</cite> <span class="classifier-delimiter">:</span> <span class="classifier">class</span></dt>
+<dd><p class="first last">Widget to search CSS</p>
+</dd>
+<dt><cite>sheet</cite> <span class="classifier-delimiter">:</span> <span class="classifier">sheet</span></dt>
+<dd><p class="first last">Custom style sheet to use (instead of pymt_sheet)</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.ui.colors.get_truncated_classname">
+<!--[pymt.ui.colors.get_truncated_classname]--><tt class="descclassname">pymt.ui.colors.</tt><tt class="descname">get_truncated_classname</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#pymt.ui.colors.get_truncated_classname" title="Permalink to this definition">¶</a></dt>
+<dd>Return the css-ized name of a class
+(remove the MT prefix, and all in lowercase)</dd></dl>
+
 </div>
 
 
@@ -66,9 +110,9 @@
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.ui.wallpaperwindow.html" title="previous chapter">Wallpaper window: a window with background wallpaper</a></p>
+            <p class="topless"><a href="api-pymt.ui.animation.html" title="previous chapter"><strong>Animation package</strong>:  handle animation, and default alpha method</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.ui.simulator.html" title="next chapter">Simulator: generate touch event with mouse</a></p>
+            <p class="topless"><a href="api-pymt.ui.factory.html" title="next chapter"><strong>Factory</strong>:  all widgets are registered through this factory</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.ui.colors.txt">Show Source</a></li>
@@ -93,19 +137,19 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.simulator.html" title="Simulator: generate touch event with mouse"
+          <a href="api-pymt.ui.factory.html" title="Factory: all widgets are registered through this factory"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.wallpaperwindow.html" title="Wallpaper window: a window with background wallpaper"
+          <a href="api-pymt.ui.animation.html" title="Animation package: handle animation, and default alpha method"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.html" accesskey="U">UI package: base for all ui things</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.html" accesskey="U"><strong>UI package</strong>:  base for all ui things</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

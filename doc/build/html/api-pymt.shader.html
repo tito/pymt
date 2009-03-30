@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Shader: abstraction of Shader compilation and usage &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Shader: abstract compilation and usage &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,9 +19,9 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="PyMT: a multi touch UI toolkit for pyglet." href="api-pymt.html" />
-    <link rel="next" title="Logger: the PyMT logger" href="api-pymt.logger.html" />
+    <link rel="next" title="Utils: generic toolbox" href="api-pymt.utils.html" />
     <link rel="prev" title="Plugins: basic plugins management, used for desktop examples" href="api-pymt.plugin.html" /> 
   </head>
   <body>
@@ -35,14 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.logger.html" title="Logger: the PyMT logger"
+          <a href="api-pymt.utils.html" title="Utils: generic toolbox"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="api-pymt.plugin.html" title="Plugins: basic plugins management, used for desktop examples"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
+          <li><a href="api-pymt.html" accesskey="U"><strong>PyMT</strong>:  a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,8 +52,58 @@
             
   
   <div class="section" id="module-pymt.shader">
-<h1>Shader: abstraction of Shader compilation and usage<a class="headerlink" href="#module-pymt.shader" title="Permalink to this headline">¶</a></h1>
-<p>Shader: abstraction of Shader compilation and usage</p>
+<h1><strong>Shader</strong>:  abstract compilation and usage<a class="headerlink" href="#module-pymt.shader" title="Permalink to this headline">¶</a></h1>
+<p>Shader: abstract compilation and usage</p>
+<dl class="exception">
+<dt id="pymt.shader.ShaderException">
+<!--[pymt.shader.ShaderException]-->exception <tt class="descclassname">pymt.shader.</tt><tt class="descname">ShaderException</tt><a class="headerlink" href="#pymt.shader.ShaderException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>Exception launched by shader in error case</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.shader.Shader">
+<!--[pymt.shader.Shader]-->class <tt class="descclassname">pymt.shader.</tt><tt class="descname">Shader</tt><big>(</big><em>vertex_source=None</em>, <em>fragment_source=None</em><big>)</big><a class="headerlink" href="#pymt.shader.Shader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">object</span></tt></p>
+<p>Create a vertex or fragment shader</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>vertex_source</cite> <span class="classifier-delimiter">:</span> <span class="classifier">string, default to None</span></dt>
+<dd><p class="first last">Source code for vertex shader</p>
+</dd>
+<dt><cite>fragment_source</cite> <span class="classifier-delimiter">:</span> <span class="classifier">string, default to None</span></dt>
+<dd><p class="first last">Source code for fragment shader</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pymt.shader.Shader.get_program_log">
+<!--[pymt.shader.Shader.get_program_log]--><tt class="descname">get_program_log</tt><big>(</big><em>shader</em><big>)</big><a class="headerlink" href="#pymt.shader.Shader.get_program_log" title="Permalink to this definition">¶</a></dt>
+<dd>Return the program log</dd></dl>
+
+<dl class="method">
+<dt id="pymt.shader.Shader.get_shader_log">
+<!--[pymt.shader.Shader.get_shader_log]--><tt class="descname">get_shader_log</tt><big>(</big><em>shader</em><big>)</big><a class="headerlink" href="#pymt.shader.Shader.get_shader_log" title="Permalink to this definition">¶</a></dt>
+<dd>Return the shader log</dd></dl>
+
+<dl class="method">
+<dt id="pymt.shader.Shader.stop">
+<!--[pymt.shader.Shader.stop]--><tt class="descname">stop</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.shader.Shader.stop" title="Permalink to this definition">¶</a></dt>
+<dd>Stop using the shader</dd></dl>
+
+<dl class="method">
+<dt id="pymt.shader.Shader.use">
+<!--[pymt.shader.Shader.use]--><tt class="descname">use</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.shader.Shader.use" title="Permalink to this definition">¶</a></dt>
+<dd>Use the shader</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -66,9 +116,9 @@
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.plugin.html" title="previous chapter">Plugins: basic plugins management, used for desktop examples</a></p>
+            <p class="topless"><a href="api-pymt.plugin.html" title="previous chapter"><strong>Plugins</strong>:  basic plugins management, used for desktop examples</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.logger.html" title="next chapter">Logger: the PyMT logger</a></p>
+            <p class="topless"><a href="api-pymt.utils.html" title="next chapter"><strong>Utils</strong>:  generic toolbox</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.shader.txt">Show Source</a></li>
@@ -93,19 +143,19 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.logger.html" title="Logger: the PyMT logger"
+          <a href="api-pymt.utils.html" title="Utils: generic toolbox"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="api-pymt.plugin.html" title="Plugins: basic plugins management, used for desktop examples"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
+          <li><a href="api-pymt.html" accesskey="U"><strong>PyMT</strong>:  a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

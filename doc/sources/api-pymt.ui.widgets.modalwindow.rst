@@ -1,9 +1,10 @@
-=========================================================
-Modal window: a modal window implementation, that stop all interaction with widget on his back
-=========================================================
+===================================================================
+**Modal window**:  stop all interaction with background widget
+===================================================================
 
 .. automodule:: pymt.ui.widgets.modalwindow
     :members:
+    :show-inheritance:
 
 .. toctree::
 

@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>MTWidget: Base of every widget implementation. &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Widget: Base of every widget implementation. &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,10 +19,10 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="Widgets: all the pymt widgets" href="api-pymt.ui.widgets.html" />
-    <link rel="next" title="Stencil container: A widget that clip drawing of children to his container" href="api-pymt.ui.widgets.stencilcontainer.html" />
-    <link rel="prev" title="NO DOCUMENTATION (module pymt.ui.widgets.mtanimatedmenu)" href="api-pymt.ui.widgets.mtanimatedmenu.html" /> 
+    <link rel="next" title="XML widget: parse xml and create his children" href="api-pymt.ui.widgets.xmlwidget.html" />
+    <link rel="prev" title="VKeyboard: Virtual keyboard + Text input" href="api-pymt.ui.widgets.vkeyboard.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,14 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.stencilcontainer.html" title="Stencil container: A widget that clip drawing of children to his container"
+          <a href="api-pymt.ui.widgets.xmlwidget.html" title="XML widget: parse xml and create his children"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.mtanimatedmenu.html" title="NO DOCUMENTATION (module pymt.ui.widgets.mtanimatedmenu)"
+          <a href="api-pymt.ui.widgets.vkeyboard.html" title="VKeyboard: Virtual keyboard + Text input"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U"><strong>Widgets</strong>:  all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,8 +52,8 @@
             
   
   <div class="section" id="module-pymt.ui.widgets.widget">
-<h1>MTWidget: Base of every widget implementation.<a class="headerlink" href="#module-pymt.ui.widgets.widget" title="Permalink to this headline">¶</a></h1>
-<p>MTWidget: Base of every widget implementation.</p>
+<h1><strong>Widget</strong>:  Base of every widget implementation.<a class="headerlink" href="#module-pymt.ui.widgets.widget" title="Permalink to this headline">¶</a></h1>
+<p>Widget: Base of every widget implementation.</p>
 <dl class="function">
 <dt id="pymt.ui.widgets.widget.event_stats_activate">
 <!--[pymt.ui.widgets.widget.event_stats_activate]--><tt class="descclassname">pymt.ui.widgets.widget.</tt><tt class="descname">event_stats_activate</tt><big>(</big><em>activate=True</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.event_stats_activate" title="Permalink to this definition">¶</a></dt>
@@ -67,14 +67,15 @@
 <dl class="class">
 <dt id="pymt.ui.widgets.widget.MTWidget">
 <!--[pymt.ui.widgets.widget.MTWidget]-->class <tt class="descclassname">pymt.ui.widgets.widget.</tt><tt class="descname">MTWidget</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget" title="Permalink to this definition">¶</a></dt>
-<dd><p>Global base for any multitouch widget.
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">pyglet.event.EventDispatcher</span></tt></p>
+<p>Global base for any multitouch widget.
 Implement event for mouse, object, touch and animation.</p>
 <p>Event are dispatched through widget only if it&#8217;s visible.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
 <dt><cite>pos</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list, default is (0, 0)</span></dt>
 <dd><p class="first last">Position of widget, in (x, y) format</p>
 </dd>
@@ -105,12 +106,71 @@ Implement event for mouse, object, touch and animation.</p>
 </dl>
 </td>
 </tr>
+<tr class="field"><th class="field-name">Events:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>on_draw</cite> ()</dt>
+<dd><p class="first last">Used to draw the widget and his children.</p>
+</dd>
+<dt><cite>on_mouse_press</cite> (int x, int y, int button, int modifiers)</dt>
+<dd><p class="first last">Fired when mouse is pressed</p>
+</dd>
+<dt><cite>on_mouse_release</cite> (int x, int y, int button, int modifiers)</dt>
+<dd><p class="first last">Fired when mouse is release</p>
+</dd>
+<dt><cite>on_mouse_drag</cite> (int x, int y, int dx, int dy, int button, int modifiers)</dt>
+<dd><p class="first last">Fired when mouse is draw</p>
+</dd>
+<dt><cite>on_touch_down</cite> (list:Tuio2dCursor touches, int touchID, int x, int y)</dt>
+<dd><p class="first last">Fired when a blob appear</p>
+</dd>
+<dt><cite>on_touch_move</cite> (list:Tuio2dCursor touches, int touchID, int x, int y)</dt>
+<dd><p class="first last">Fired when a blob is moving</p>
+</dd>
+<dt><cite>on_touch_up</cite> (list:Tuio2dCursor touches, int touchID, int x, int y)</dt>
+<dd><p class="first last">Fired when a blob disappear</p>
+</dd>
+<dt><cite>on_object_down</cite> (list:Tuio2dObject objects, int objectID, int x, int y, float angle)</dt>
+<dd><p class="first last">Fired when an object appear</p>
+</dd>
+<dt><cite>on_object_move</cite> (list:Tuio2dObject objects, int objectID, int x, int y, float angle)</dt>
+<dd><p class="first last">Fired when an object is moving</p>
+</dd>
+<dt><cite>on_object_up</cite> (list:Tuio2dObject objects, int objectID, int x, int y, float angle)</dt>
+<dd><p class="first last">Fired when an object disappear</p>
+</dd>
+</dl>
+</td>
+</tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="pymt.ui.widgets.widget.MTWidget.add_animation">
+<!--[pymt.ui.widgets.widget.MTWidget.add_animation]--><tt class="descname">add_animation</tt><big>(</big><em>label</em>, <em>prop</em>, <em>to</em>, <em>timestep</em>, <em>length</em>, <em>func=&lt;function ramp at 0x3cbb1b8&gt;</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.add_animation" title="Permalink to this definition">¶</a></dt>
+<dd>Add an animation in widget.</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.widget.MTWidget.add_widget">
+<!--[pymt.ui.widgets.widget.MTWidget.add_widget]--><tt class="descname">add_widget</tt><big>(</big><em>w</em>, <em>front=True</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.add_widget" title="Permalink to this definition">¶</a></dt>
+<dd>Add a widget in the children list.</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.widget.MTWidget.apply_css">
+<!--[pymt.ui.widgets.widget.MTWidget.apply_css]--><tt class="descname">apply_css</tt><big>(</big><em>styles</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.apply_css" title="Permalink to this definition">¶</a></dt>
+<dd>Called at __init__ time to applied css attribute in current class.</dd></dl>
+
 <dl class="method">
 <dt id="pymt.ui.widgets.widget.MTWidget.bring_to_front">
 <!--[pymt.ui.widgets.widget.MTWidget.bring_to_front]--><tt class="descname">bring_to_front</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.bring_to_front" title="Permalink to this definition">¶</a></dt>
 <dd>Remove it from wherever it is and add it back at the top</dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.ui.widgets.widget.MTWidget.center">
+<!--[pymt.ui.widgets.widget.MTWidget.center]--><tt class="descname">center</tt><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.center" title="Permalink to this definition">¶</a></dt>
+<dd>tuple(x, y): center of widget</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.widget.MTWidget.collide_point">
+<!--[pymt.ui.widgets.widget.MTWidget.collide_point]--><tt class="descname">collide_point</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.collide_point" title="Permalink to this definition">¶</a></dt>
+<dd>Test if the (x,y) is in widget bounding box</dd></dl>
 
 <dl class="method">
 <dt id="pymt.ui.widgets.widget.MTWidget.dispatch_event">
@@ -138,6 +198,97 @@ the <tt class="docutils literal"><span class="pre">dispatch_events</span></tt> m
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="pymt.ui.widgets.widget.MTWidget.draw">
+<!--[pymt.ui.widgets.widget.MTWidget.draw]--><tt class="descname">draw</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.draw" title="Permalink to this definition">¶</a></dt>
+<dd>Handle the draw of widget.
+Derivate this method to draw your widget.</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.widget.MTWidget.get_parent_layout">
+<!--[pymt.ui.widgets.widget.MTWidget.get_parent_layout]--><tt class="descname">get_parent_layout</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.get_parent_layout" title="Permalink to this definition">¶</a></dt>
+<dd>Return the parent layout of widget</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.widget.MTWidget.get_parent_window">
+<!--[pymt.ui.widgets.widget.MTWidget.get_parent_window]--><tt class="descname">get_parent_window</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.get_parent_window" title="Permalink to this definition">¶</a></dt>
+<dd>Return the parent window of widget</dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.ui.widgets.widget.MTWidget.height">
+<!--[pymt.ui.widgets.widget.MTWidget.height]--><tt class="descname">height</tt><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.height" title="Permalink to this definition">¶</a></dt>
+<dd>int: height of widget</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.widget.MTWidget.hide">
+<!--[pymt.ui.widgets.widget.MTWidget.hide]--><tt class="descname">hide</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.hide" title="Permalink to this definition">¶</a></dt>
+<dd>Hide the widget</dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.ui.widgets.widget.MTWidget.id">
+<!--[pymt.ui.widgets.widget.MTWidget.id]--><tt class="descname">id</tt><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.id" title="Permalink to this definition">¶</a></dt>
+<dd>str: id of widget</dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.ui.widgets.widget.MTWidget.pos">
+<!--[pymt.ui.widgets.widget.MTWidget.pos]--><tt class="descname">pos</tt><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.pos" title="Permalink to this definition">¶</a></dt>
+<dd>tuple(x, y): position of widget</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.widget.MTWidget.remove_animation">
+<!--[pymt.ui.widgets.widget.MTWidget.remove_animation]--><tt class="descname">remove_animation</tt><big>(</big><em>label</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.remove_animation" title="Permalink to this definition">¶</a></dt>
+<dd>Remove widget animation that match the label</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.widget.MTWidget.remove_widget">
+<!--[pymt.ui.widgets.widget.MTWidget.remove_widget]--><tt class="descname">remove_widget</tt><big>(</big><em>w</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.remove_widget" title="Permalink to this definition">¶</a></dt>
+<dd>Remove a widget from the children list</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.widget.MTWidget.show">
+<!--[pymt.ui.widgets.widget.MTWidget.show]--><tt class="descname">show</tt><big>(</big><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.show" title="Permalink to this definition">¶</a></dt>
+<dd>Show the widget</dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.ui.widgets.widget.MTWidget.size">
+<!--[pymt.ui.widgets.widget.MTWidget.size]--><tt class="descname">size</tt><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.size" title="Permalink to this definition">¶</a></dt>
+<dd>tuple(width, height): width/height of widget</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.widget.MTWidget.start_animations">
+<!--[pymt.ui.widgets.widget.MTWidget.start_animations]--><tt class="descname">start_animations</tt><big>(</big><em>label='all'</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.start_animations" title="Permalink to this definition">¶</a></dt>
+<dd>Start all widget animation that match the label</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.widget.MTWidget.stop_animations">
+<!--[pymt.ui.widgets.widget.MTWidget.stop_animations]--><tt class="descname">stop_animations</tt><big>(</big><em>label='all'</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.stop_animations" title="Permalink to this definition">¶</a></dt>
+<dd>Stop all widget animation that match the label</dd></dl>
+
+<dl class="method">
+<dt id="pymt.ui.widgets.widget.MTWidget.to_local">
+<!--[pymt.ui.widgets.widget.MTWidget.to_local]--><tt class="descname">to_local</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.to_local" title="Permalink to this definition">¶</a></dt>
+<dd>Return the (x,y) coordinate in the local plan of widget</dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.ui.widgets.widget.MTWidget.visible">
+<!--[pymt.ui.widgets.widget.MTWidget.visible]--><tt class="descname">visible</tt><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.visible" title="Permalink to this definition">¶</a></dt>
+<dd>bool: visibility of widget</dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.ui.widgets.widget.MTWidget.width">
+<!--[pymt.ui.widgets.widget.MTWidget.width]--><tt class="descname">width</tt><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.width" title="Permalink to this definition">¶</a></dt>
+<dd>int: width of widget</dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.ui.widgets.widget.MTWidget.x">
+<!--[pymt.ui.widgets.widget.MTWidget.x]--><tt class="descname">x</tt><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.x" title="Permalink to this definition">¶</a></dt>
+<dd>int: X position of widget</dd></dl>
+
+<dl class="attribute">
+<dt id="pymt.ui.widgets.widget.MTWidget.y">
+<!--[pymt.ui.widgets.widget.MTWidget.y]--><tt class="descname">y</tt><a class="headerlink" href="#pymt.ui.widgets.widget.MTWidget.y" title="Permalink to this definition">¶</a></dt>
+<dd>int: Y position of widget</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -152,9 +303,9 @@ the <tt class="docutils literal"><span class="pre">dispatch_events</span></tt> m
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.mtanimatedmenu.html" title="previous chapter">NO DOCUMENTATION (module pymt.ui.widgets.mtanimatedmenu)</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.vkeyboard.html" title="previous chapter"><strong>VKeyboard</strong>:  Virtual keyboard + Text input</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.ui.widgets.stencilcontainer.html" title="next chapter">Stencil container: A widget that clip drawing of children to his container</a></p>
+            <p class="topless"><a href="api-pymt.ui.widgets.xmlwidget.html" title="next chapter"><strong>XML widget</strong>:  parse xml and create his children</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.ui.widgets.widget.txt">Show Source</a></li>
@@ -179,19 +330,19 @@ the <tt class="docutils literal"><span class="pre">dispatch_events</span></tt> m
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.stencilcontainer.html" title="Stencil container: A widget that clip drawing of children to his container"
+          <a href="api-pymt.ui.widgets.xmlwidget.html" title="XML widget: parse xml and create his children"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.ui.widgets.mtanimatedmenu.html" title="NO DOCUMENTATION (module pymt.ui.widgets.mtanimatedmenu)"
+          <a href="api-pymt.ui.widgets.vkeyboard.html" title="VKeyboard: Virtual keyboard + Text input"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.ui.widgets.html" accesskey="U">Widgets: all the pymt widgets</a> &raquo;</li> 
+          <li><a href="api-pymt.ui.widgets.html" accesskey="U"><strong>Widgets</strong>:  all the pymt widgets</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

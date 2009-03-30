@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Graphx: simplification of opengl pritimives &mdash; PyMT v0.2 alpha documentation</title>
+    <title>Graphx: simplification of opengl pritimives &mdash; PyMT v0.2 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2 alpha',
+        VERSION:     '0.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,10 +19,10 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="PyMT v0.2 alpha documentation" href="index.html" />
+    <link rel="top" title="PyMT v0.2 documentation" href="index.html" />
     <link rel="up" title="PyMT: a multi touch UI toolkit for pyglet." href="api-pymt.html" />
-    <link rel="next" title="Geometric: module provide some class to handle 3D Mesh." href="api-pymt.geometric.html" />
-    <link rel="prev" title="Generic vector class to handle Vector operation." href="api-pymt.vector.html" /> 
+    <link rel="next" title="Loader: asynchronous loader, easily extensible." href="api-pymt.loader.html" />
+    <link rel="prev" title="Gesture: Base for gesture recognition." href="api-pymt.gesture.html" /> 
   </head>
   <body>
     <div class="related">
@@ -35,14 +35,14 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.geometric.html" title="Geometric: module provide some class to handle 3D Mesh."
+          <a href="api-pymt.loader.html" title="Loader: asynchronous loader, easily extensible."
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.vector.html" title="Generic vector class to handle Vector operation."
+          <a href="api-pymt.gesture.html" title="Gesture: Base for gesture recognition."
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
+          <li><a href="api-pymt.html" accesskey="U"><strong>PyMT</strong>:  a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>  
     <div class="document">
@@ -52,11 +52,11 @@
             
   
   <div class="section" id="module-pymt.graphx">
-<h1>Graphx: simplification of opengl pritimives<a class="headerlink" href="#module-pymt.graphx" title="Permalink to this headline">¶</a></h1>
+<h1><strong>Graphx</strong>:  simplification of opengl pritimives<a class="headerlink" href="#module-pymt.graphx" title="Permalink to this headline">¶</a></h1>
 <p>Graphx: simplification of opengl pritimives</p>
 <dl class="function">
 <dt id="pymt.graphx.set_brush">
-<!--[pymt.graphx.set_brush]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">set_brush</tt><big>(</big><em>sprite</em>, <em>size=10</em><big>)</big><a class="headerlink" href="#pymt.graphx.set_brush" title="Permalink to this definition">¶</a></dt>
+<!--[pymt.graphx.set_brush]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">set_brush</tt><big>(</big><em>sprite</em>, <em>size=None</em><big>)</big><a class="headerlink" href="#pymt.graphx.set_brush" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define the brush to use for paint* functions</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -66,7 +66,26 @@
 <dt><cite>sprite</cite> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd><p class="first last">Filename of image brush</p>
 </dd>
-<dt><cite>size</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int, default to 10</span></dt>
+<dt><cite>size</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int, default to None</span></dt>
+<dd><p class="first last">Size of brush</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.set_brush_size">
+<!--[pymt.graphx.set_brush_size]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">set_brush_size</tt><big>(</big><em>size</em><big>)</big><a class="headerlink" href="#pymt.graphx.set_brush_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define the size of current brush</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><cite>size</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
 <dd><p class="first last">Size of brush</p>
 </dd>
 </dl>
@@ -106,6 +125,12 @@
 </tbody>
 </table>
 </dd></dl>
+
+<dl class="function">
+<dt id="pymt.graphx.set_texture">
+<!--[pymt.graphx.set_texture]--><tt class="descclassname">pymt.graphx.</tt><tt class="descname">set_texture</tt><big>(</big><em>texture</em>, <em>target=None</em><big>)</big><a class="headerlink" href="#pymt.graphx.set_texture" title="Permalink to this definition">¶</a></dt>
+<dd>Same as glBindTexture, except he can take integer/long or
+Texture/TextureRegion</dd></dl>
 
 <dl class="function">
 <dt id="pymt.graphx.paintLine">
@@ -394,10 +419,37 @@ with gx_matrix_identity:
 
 <dl class="class">
 <dt id="pymt.graphx.Fbo">
-<!--[pymt.graphx.Fbo]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">Fbo</tt><big>(</big><em>size=(1024</em>, <em>1024)</em>, <em>push_viewport=False</em><big>)</big><a class="headerlink" href="#pymt.graphx.Fbo" title="Permalink to this definition">¶</a></dt>
-<dd>OpenGL Framebuffer abstraction.
-It&#8217;s a framebuffer you can use to draw temporary things,
-and use it as a texture.</dd></dl>
+<!--[pymt.graphx.Fbo]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">Fbo</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.graphx.Fbo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">pymt.graphx.AbstractFbo</span></tt></p>
+<p>OpenGL Framebuffer, hardware implementation.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">It&#8217;s not supported by all hardware, use with care !</p>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.graphx.HardwareFbo">
+<!--[pymt.graphx.HardwareFbo]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">HardwareFbo</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.graphx.HardwareFbo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">pymt.graphx.AbstractFbo</span></tt></p>
+<p>OpenGL Framebuffer, hardware implementation.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">It&#8217;s not supported by all hardware, use with care !</p>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="pymt.graphx.SoftwareFbo">
+<!--[pymt.graphx.SoftwareFbo]-->class <tt class="descclassname">pymt.graphx.</tt><tt class="descname">SoftwareFbo</tt><big>(</big><em>**kwargs</em><big>)</big><a class="headerlink" href="#pymt.graphx.SoftwareFbo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref docutils literal"><span class="pre">pymt.graphx.AbstractFbo</span></tt></p>
+<p>OpenGL Framebuffer, software implementation.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Poor performance, but you can use it in hardware don&#8217;t support real
+Fbo extensions...</p>
+</div>
+</dd></dl>
 
 </div>
 
@@ -411,9 +463,9 @@ and use it as a texture.</dd></dl>
               <img class="logo" src="_static/pymt-logo.png" alt="Logo"/>
             </a></p>
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api-pymt.vector.html" title="previous chapter">Generic vector class to handle Vector operation.</a></p>
+            <p class="topless"><a href="api-pymt.gesture.html" title="previous chapter"><strong>Gesture</strong>:  Base for gesture recognition.</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api-pymt.geometric.html" title="next chapter">Geometric: module provide some class to handle 3D Mesh.</a></p>
+            <p class="topless"><a href="api-pymt.loader.html" title="next chapter"><strong>Loader</strong>:  asynchronous loader, easily extensible.</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="_sources/api-pymt.graphx.txt">Show Source</a></li>
@@ -438,19 +490,19 @@ and use it as a texture.</dd></dl>
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api-pymt.geometric.html" title="Geometric: module provide some class to handle 3D Mesh."
+          <a href="api-pymt.loader.html" title="Loader: asynchronous loader, easily extensible."
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api-pymt.vector.html" title="Generic vector class to handle Vector operation."
+          <a href="api-pymt.gesture.html" title="Gesture: Base for gesture recognition."
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PyMT v0.2 alpha documentation</a> &raquo;</li>
+        <li><a href="index.html">PyMT v0.2 documentation</a> &raquo;</li>
           <li><a href="api-index.html" accesskey="U">API documentation for PyMT</a> &raquo;</li>
-          <li><a href="api-pymt.html" accesskey="U">PyMT: a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
+          <li><a href="api-pymt.html" accesskey="U"><strong>PyMT</strong>:  a multi touch UI toolkit for pyglet.</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, pymt-dev.
-      Last updated on mar 19, 2009.
+      Last updated on mars 30, 2009.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
     </div>
   </body>

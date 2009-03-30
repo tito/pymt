@@ -1,9 +1,10 @@
-=========================================================
-Window package: provide a window + a touch display
-=========================================================
+===================================================================
+**Window package**:  provide a window + a touch display
+===================================================================
 
 .. automodule:: pymt.ui.window
     :members:
+    :show-inheritance:
 
 .. toctree::
 

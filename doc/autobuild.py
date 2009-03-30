@@ -33,9 +33,10 @@ for name, module, filename in l:
 packages.sort()
 
 # Create index
-api_index = '''=========================================================
+api_index = \
+'''===================================================================
 API documentation for PyMT
-=========================================================
+===================================================================
 
 .. toctree::
 
@@ -46,12 +47,14 @@ for package in packages:
 writefile('api-index.rst', api_index)
 
 # Create index for all packages
-template = '''=========================================================
+template = \
+'''===================================================================
 $SUMMARY
-=========================================================
+===================================================================
 
 .. automodule:: $PACKAGE
     :members:
+    :show-inheritance:
 
 .. toctree::
 
@@ -59,12 +62,19 @@ $SUMMARY
 for package in packages:
 	try:
 		summary = [x for x in sys.modules[package].__doc__.split("\n") if len(x) > 1][0]
+		try:
+			title, content = summary.split(':', 1)
+			summary = '**%s**: %s' % (title, content)
+		except:
+			pass
 	except:
 		summary = 'NO DOCUMENTATION (package %s)' % package
 	t = template.replace('$SUMMARY', summary).replace('$PACKAGE', package)
 
 	# search modules
-	for module in modules:
+	m = modules.keys()
+	m.sort()
+	for module in m:
 		packagemodule = module.rsplit('.', 1)[0]
 		if packagemodule != package:
 			continue
@@ -73,9 +83,16 @@ for package in packages:
 	writefile('api-%s.rst' % package, t)
 
 # Create index for all module
-for module in modules:
+m = modules.keys()
+m.sort()
+for module in m:
 	try:
 		summary = [x for x in sys.modules[module].__doc__.split("\n") if len(x) > 1][0]
+		try:
+			title, content = summary.split(':', 1)
+			summary = '**%s**: %s' % (title, content)
+		except:
+			pass
 	except:
 		summary = 'NO DOCUMENTATION (module %s)' % module
 	t = template.replace('$SUMMARY', summary).replace('$PACKAGE', module)

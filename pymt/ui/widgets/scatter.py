@@ -60,20 +60,21 @@ class MTScatterWidget(MTWidget):
                     self.do_translation_y = 1.0
             self.do_translation = True
 
-        #For flipping animations#
-        self.zangle = 0
+        # Cache to_local value
+        self.__to_local = (-9999, 9999) # Invalid cache for the first run
+        self.__to_local_x = 0
+        self.__to_local_y = 0
 
-        #Which side is currently showing
+        # For flipping animations
+        self.zangle = 0
         self.side = 'front'
 
-        #Holds children for both sides
+        # Holds children for both sides
         self.children_front = []
         self.children_back = []
-
         self.children = self.children_front
 
         self.anim = Animation(self, 'flip', 'zangle', 180, 1, 10, func=AnimationAlpha.ramp)
-
 
         self.touches        = {}
         self.transform_mat  = (GLfloat * 16)()
@@ -166,7 +167,11 @@ class MTScatterWidget(MTWidget):
         return (self.new_point.x, self.new_point.y)
 
     def to_local(self,x,y):
+        if self.__to_local == (x, y):
+            return (self.__to_local_x, self.__to_local_y)
+        self.__to_local = (x, y)
         self.new_point = matrix_inv_mult(self.transform_mat, (x,y,0,1))
+        self.__to_local_x, self.__to_local_y = self.new_point.x, self.new_point.y
         return (self.new_point.x, self.new_point.y)
 
     def collide_point(self, x,y):
@@ -289,7 +294,7 @@ class MTScatterWidget(MTWidget):
 
         #let the child widgets handle the event if they want
         lx, ly = self.to_local(x, y)
-        if MTWidget.on_touch_move(self, touches, touchID, lx, ly):
+        if super(MTScatterWidget, self).on_touch_move(touches, touchID, lx, ly):
             return True
 
         #rotate/scale/translate
@@ -306,7 +311,7 @@ class MTScatterWidget(MTWidget):
     def on_touch_up(self, touches, touchID, x,y):
         #if the touch isnt on the widget we do nothing
         lx,ly = self.to_local(x,y)
-        MTWidget.on_touch_up(self, touches, touchID, lx, ly)
+        super(MTScatterWidget, self).on_touch_up(touches, touchID, lx, ly)
 
         #remove it from our saved touches
         if touchID in self.touches:

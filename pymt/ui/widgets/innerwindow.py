@@ -151,7 +151,7 @@ class MTInnerWindow(MTScatterWidget):
             return True
         return super(MTInnerWindow, self).on_touch_up( touches, touchID, x,y)
 
-    def to_local(self,x,y):
+    def to_local(self, x, y):
         self.new_point = matrix_inv_mult(self.transform_mat, (x,y,0,1)) * self.get_scale_factor()
         return (self.new_point.x, self.new_point.y)
 

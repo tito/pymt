@@ -1,7 +1,7 @@
 import random
 from pymt import *
 
-w = MTWindow(fullscreen=False)
+w = MTWindow()
 
 b = MTButton(label='Hello, World!', pos=(40, 40), size=(200, 200))
 w.add_widget(b)

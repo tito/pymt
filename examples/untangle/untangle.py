@@ -25,23 +25,23 @@ class EventLogger(MTWidget):
 		self.touches = {}
 		self.enabled = False
 
-	
+
 	def start(self):
 		self.enabled = True
                 self.start_time = time.clock()
-                
+
 	def stop(self):
 		self.enabled = False
                 self.stop_time = time.clock()
-		
+
 	def clear(self):
 		self.touches = {}
-	
+
 	def on_touch_down(self, touches, touchID, x,y):
 		if self.enabled:
 			event = {'type':'down', 'id':touchID, 'x':x, 'y':y, 't':time.clock() }
 			self.touches[touchID] = [event,]
-	
+
 	def on_touch_up(self, touches, touchID,x,y):
 		if self.enabled:
 			event = {'type':'up', 'id':touchID, 'x':x, 'y':y, 't':time.clock() }
@@ -59,15 +59,15 @@ class TrialLogger(EventLogger):
 		self.widget = widget
 		widget.parent.add_widget(self)
 		self.widget_start = None
-		
-	
+
+
 	def start(self):
 		self.graph_start = pickle.dumps([self.widget.g.verts, self.widget.g.edges])
 		self.start_time = time.clock()
 		self.enabled = True
-		
-	
-		
+
+
+
 	def save(self,filename):
 		self.stop()
 		self.graph_stop = pickle.dumps([self.widget.g.verts, self.widget.g.edges])
@@ -82,46 +82,46 @@ class TrialLogger(EventLogger):
 			}
 		pickle.dump(data, f)
 		f.close()
-		
-		
+
+
 class NewGameMenu(MTBoxLayout):
 	def __init__(self, window, **kwargs):
 		super(NewGameMenu, self).__init__(**kwargs)
 		self.window = window
 		self.trial_num = 0
-		
+
 		b1 = MTButton(label="10 Vertices", size=(200,100))
-		b1.push_handlers(on_release=self.startNewGame10)		
+		b1.push_handlers(on_release=self.startNewGame10)
 		self.add_widget(b1)
-		
+
 		b1 = MTButton(label="15 Vertices", size=(200,100))
-		b1.push_handlers(on_release=self.startNewGame15)		
+		b1.push_handlers(on_release=self.startNewGame15)
 		self.add_widget(b1)
-		
+
 		b1 = MTButton(label="20 Vertices", size=(200,100))
-		b1.push_handlers(on_release=self.startNewGame20)		
+		b1.push_handlers(on_release=self.startNewGame20)
 		self.add_widget(b1)
-		
+
 		b1 = MTButton(label="25 Vertices", size=(200,100))
-		b1.push_handlers(on_release=self.startNewGame25)		
+		b1.push_handlers(on_release=self.startNewGame25)
 		self.add_widget(b1)
-		
+
 		self.graph = None
 		self.start_time = None
 		self.stop_time = None
-		
+
 	def draw(self):
 		if self.start_time and self.stop_time:
 			with gx_blending:
 				glColor4f(0,0,0,0.5)
 				drawRectangle(size=self.window.size)
-			
+
 			duration = str(self.stop_time - self.start_time)[:4] + " sec"
 			glColor4f(0.5,1,0.5,1)
 			drawLabel("Untangled!", pos=(self.x+425, self.y+200), font_size=64)
 			glColor4f(0.7,0.7,0.7,1)
 			drawLabel("time: "+duration+"  moves: "+str(self.num_moves), pos=(self.x+425, self.y+150), font_size=50)
-		
+
 	def startNewGame(self, numVerts):
 		if self.graph:
 			self.window.remove_widget(self.graph)
@@ -136,20 +136,20 @@ class NewGameMenu(MTBoxLayout):
 		self.window.remove_widget(self)
 		self.start_time = time.clock()
 
-		
+
 	def startNewGame10(self, touchID, x, y):
 		self.startNewGame(10)
-		
+
 	def startNewGame15(self, touchID, x, y):
 		self.startNewGame(15)
-		
+
 	def startNewGame20(self, touchID, x, y):
 		self.startNewGame(20)
-		
+
 	def startNewGame25(self, touchID, x, y):
 		self.startNewGame(25)
-		
-		
+
+
 class GraphUI(MTWidget):
 	def __init__(self, size=15, w=None, menu=None):
 		MTWidget.__init__(self)
@@ -159,9 +159,9 @@ class GraphUI(MTWidget):
 		self.num_moves = 0
 		self.done = False
 		self.num_moves_since_check = 0 #if we try to solve on every move event things get slow
-		
-		
-		
+
+
+
 	def draw(self):
 		self.g.draw()
 
@@ -170,7 +170,7 @@ class GraphUI(MTWidget):
 			return
 		touchedVertex = self.g.collideVerts(x,y)
 		if touchedVertex: self.touch2vertex[touchID] = touchedVertex
-	
+
 	def on_touch_up(self, touches, touchID,x,y):
 		if self.done:
 			return
@@ -204,7 +204,10 @@ def pymt_plugin_activate(w, ctx):
 	w.add_widget(ctx.menu)
 
 def pymt_plugin_deactivate(w, ctx):
-    w.remove_widget(ctx.menu)
+    try:
+        w.remove_widget(ctx.menu)
+    except:
+        pass
 	#ctx.log.save('data.pkl')
 
 

@@ -369,10 +369,8 @@ class MTWidget(pyglet.event.EventDispatcher):
 
     def remove_widget(self, w):
         '''Remove a widget from the children list'''
-        try:
+        if w in self.children:
             self.children.remove(w)
-        except:
-            pass
 
     def add_animation(self, label, prop, to , timestep, length,
                       func=AnimationAlpha.ramp):

@@ -120,6 +120,9 @@ class MTInnerWindow(MTScatterWidget):
     def add_widget(self, w):
         self.container.add_widget(w)
 
+    def remove_widget(self, w):
+        self.container.remove_widget(w)
+
     def get_parent_window(self):
         return self.container
 

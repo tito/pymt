@@ -34,6 +34,8 @@ class MTWindow(TouchWindow):
             Height of window
         `vsync` : bool
             Vsync window
+        `display` : int
+            Display index to use
         `config` : `Config`
             Default configuration to pass on TouchWindow
 
@@ -74,24 +76,43 @@ class MTWindow(TouchWindow):
         params = {}
 
         if 'width' in kwargs:
-            params['width'] = pymt.pymt_config.getint('graphics', 'width')
-        else:
             params['width'] = kwargs.get('width')
+        else:
+            params['width'] = pymt.pymt_config.getint('graphics', 'width')
 
         if 'height' in kwargs:
-            params['height'] = pymt.pymt_config.getint('graphics', 'height')
-        else:
             params['height'] = kwargs.get('height')
+        else:
+            params['height'] = pymt.pymt_config.getint('graphics', 'height')
 
         if 'vsync' in kwargs:
-            params['vsync'] = pymt.pymt_config.getint('graphics', 'vsync')
-        else:
             params['vsync'] = kwargs.get('vsync')
+        else:
+            params['vsync'] = pymt.pymt_config.getint('graphics', 'vsync')
 
         if 'fullscreen' in kwargs:
-            params['fullscreen'] = pymt.pymt_config.getboolean('pymt', 'fullscreen')
-        else:
             params['fullscreen'] = kwargs.get('fullscreen')
+        else:
+            params['fullscreen'] = pymt.pymt_config.getboolean('pymt', 'fullscreen')
+
+        displayidx = -1
+        if 'display' in kwargs:
+            displayidx = kwargs.get('display')
+        else:
+            displayidx = pymt.pymt_config.getint('graphics', 'display')
+
+        if displayidx >= 0:
+            display = window.get_platform().get_default_display()
+            screens = display.get_screens()
+            i = 0
+            for screen in screens:
+                pymt.pymt_logger.debug('Detected display %d: %s' % (i, str(screen)))
+                i += 1
+            try:
+                params['screen'] = screens[displayidx]
+            except Exception, e:
+                pymt.pymt_logger.error('Invalid display specified %d' % displayidx)
+                pymt.pymt_logger.exception(e)
 
         # create window
         try:

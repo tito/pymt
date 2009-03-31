@@ -95,6 +95,9 @@ Configuration
   # force fbo type
   fbo = (hardware|software)
 
+  # display number (use -1 for current display)
+  display = <integer>
+
   [tuio]
 
   # listening ip

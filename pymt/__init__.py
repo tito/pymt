@@ -41,6 +41,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_config.set('graphics', 'width', '640')
     pymt_config.set('graphics', 'height', '480')
     pymt_config.set('graphics', 'vsync', '1')
+    pymt_config.set('graphics', 'display', '-1')
     pymt_config.add_section('tuio')
     pymt_config.set('tuio', 'host', '127.0.0.1')
     pymt_config.set('tuio', 'port', '3333')
@@ -84,7 +85,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwFe',
             ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps', 'event',
-             'size=', 'dump-frame', 'dump-format=', 'dump-prefix='])
+             'display=', 'size=', 'dump-frame', 'dump-format=', 'dump-prefix='])
         for opt, arg in opts:
             if opt in ['-h', '--help']:
                 pymt_usage()
@@ -111,6 +112,8 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
                 w, h = str(arg).split('x')
                 pymt_config.set('graphics', 'width', w)
                 pymt_config.set('graphics', 'height', h)
+            elif opt in ['--display']:
+                pymt_config.set('graphics', 'display', str(arg))
 
     except getopt.GetoptError, err:
         pymt_logger.error(err)

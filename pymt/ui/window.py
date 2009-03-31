@@ -75,25 +75,26 @@ class MTWindow(TouchWindow):
         # get window params, user options before config option
         params = {}
 
-        if 'width' in kwargs:
-            params['width'] = kwargs.get('width')
+        if 'fullscreen' in kwargs:
+            params['fullscreen'] = kwargs.get('fullscreen')
         else:
-            params['width'] = pymt.pymt_config.getint('graphics', 'width')
+            params['fullscreen'] = pymt.pymt_config.getboolean('pymt', 'fullscreen')
 
-        if 'height' in kwargs:
-            params['height'] = kwargs.get('height')
-        else:
-            params['height'] = pymt.pymt_config.getint('graphics', 'height')
+        if not params['fullscreen']:
+            if 'width' in kwargs:
+                params['width'] = kwargs.get('width')
+            else:
+                params['width'] = pymt.pymt_config.getint('graphics', 'width')
+
+            if 'height' in kwargs:
+                params['height'] = kwargs.get('height')
+            else:
+                params['height'] = pymt.pymt_config.getint('graphics', 'height')
 
         if 'vsync' in kwargs:
             params['vsync'] = kwargs.get('vsync')
         else:
             params['vsync'] = pymt.pymt_config.getint('graphics', 'vsync')
-
-        if 'fullscreen' in kwargs:
-            params['fullscreen'] = kwargs.get('fullscreen')
-        else:
-            params['fullscreen'] = pymt.pymt_config.getboolean('pymt', 'fullscreen')
 
         displayidx = -1
         if 'display' in kwargs:

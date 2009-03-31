@@ -32,12 +32,15 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_config.add_section('pymt')
     pymt_config.set('pymt', 'show_fps', '0')
     pymt_config.set('pymt', 'show_eventstats', '0')
-    pymt_config.set('pymt', 'fullscreen', '1')
     pymt_config.set('pymt', 'log_level', 'debug')
     pymt_config.set('pymt', 'double_tap_time', '250')
     pymt_config.set('pymt', 'double_tap_distance', '20')
     pymt_config.add_section('graphics')
     pymt_config.set('graphics', 'fbo', 'hardware')
+    pymt_config.set('graphics', 'fullscreen', '1')
+    pymt_config.set('graphics', 'width', '640')
+    pymt_config.set('graphics', 'height', '480')
+    pymt_config.set('graphics', 'vsync', '1')
     pymt_config.add_section('tuio')
     pymt_config.set('tuio', 'host', '127.0.0.1')
     pymt_config.set('tuio', 'port', '3333')
@@ -81,7 +84,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwFe',
             ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps', 'event',
-             'dump-frame', 'dump-format=', 'dump-prefix='])
+             'size=', 'dump-frame', 'dump-format=', 'dump-prefix='])
         for opt, arg in opts:
             if opt in ['-h', '--help']:
                 pymt_usage()
@@ -104,6 +107,10 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
                 pymt_config.set('dump', 'prefix', str(arg))
             elif opt in ['--dump-format']:
                 pymt_config.set('dump', 'format', str(arg))
+            elif opt in ['--size']:
+                w, h = str(arg).split('x')
+                pymt_config.set('graphics', 'width', w)
+                pymt_config.set('graphics', 'height', h)
 
     except getopt.GetoptError, err:
         pymt_logger.error(err)

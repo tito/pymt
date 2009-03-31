@@ -452,6 +452,7 @@ def pymt_usage():
     -p port, --port=post        specify Tuio port (default 3333)
     -H host, --host=host        specify Tuio host (default 127.0.0.1)
     -F, --fps                   show fps in window
+    --size=640x480              size of window
     --dump-frame                dump each frame in file
     --dump-prefix               specify a prefix for each frame file
     --dump-format               specify a format for dump

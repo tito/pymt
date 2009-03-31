@@ -28,6 +28,12 @@ class MTWindow(TouchWindow):
             Default view to add on window
         `fullscreen` : bool
             Make window as fullscreen
+        `width` : int
+            Width of window
+        `height` : int
+            Height of window
+        `vsync` : bool
+            Vsync window
         `config` : `Config`
             Default configuration to pass on TouchWindow
 
@@ -36,32 +42,58 @@ class MTWindow(TouchWindow):
             Background color of window
     '''
     def __init__(self, **kwargs):
-        kwargs.setdefault('view', None)
-        kwargs.setdefault('fullscreen', None)
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
 
+        # apply styles for window
         styles = css_get_style(widget=self)
         self.apply_css(styles)
+        if 'bgcolor' in kwargs:
+            self.bgcolor = kwargs.get('bgcolor')
 
+        # initialize fps clock
         self.fps_display =  pyglet.clock.ClockDisplay()
 
+        # initialize handlers list
         self.on_key_press_handlers = []
         self.on_text_handlers = []
         self.on_text_motion_handlers = []
         self.on_text_motion_select_handlers = []
 
         self.children = []
-        if 'bgcolor' in kwargs:
-            self.bgcolor = kwargs.get('bgcolor')
-
         self.parent = self
-        if kwargs.get('view'):
+
+        # add view + simulator
+        if 'view' in kwargs:
             self.add_widget(kwargs.get('view'))
 
         self.sim = MTSimulator(self)
         self.add_widget(self.sim)
 
+        # get window params, user options before config option
+        params = {}
+
+        if 'width' in kwargs:
+            params['width'] = pymt.pymt_config.getint('graphics', 'width')
+        else:
+            params['width'] = kwargs.get('width')
+
+        if 'height' in kwargs:
+            params['height'] = pymt.pymt_config.getint('graphics', 'height')
+        else:
+            params['height'] = kwargs.get('height')
+
+        if 'vsync' in kwargs:
+            params['vsync'] = pymt.pymt_config.getint('graphics', 'vsync')
+        else:
+            params['vsync'] = kwargs.get('vsync')
+
+        if 'fullscreen' in kwargs:
+            params['fullscreen'] = pymt.pymt_config.getboolean('pymt', 'fullscreen')
+        else:
+            params['fullscreen'] = kwargs.get('fullscreen')
+
+        # create window
         try:
             config = kwargs.get('config')
             if not config:
@@ -70,18 +102,12 @@ class MTWindow(TouchWindow):
                 config.samples = 4
                 config.depth_size = 16
                 config.double_buffer = True
-                config.vsync = 1
                 config.stencil_size = 1
-            super(MTWindow, self).__init__(config=config)
+            super(MTWindow, self).__init__(config=config, **params)
         except:
-            super(MTWindow, self).__init__()
+            super(MTWindow, self).__init__(**params)
 
-        # use user-options before local options
-        if kwargs.get('fullscreen') is None:
-            self.set_fullscreen(pymt.pymt_config.getboolean('pymt', 'fullscreen'))
-        else:
-            self.set_fullscreen(kwargs.get('fullscreen'))
-
+        # show fps if asked
         self.show_fps = kwargs.get('show_fps')
         if pymt.pymt_config.getboolean('pymt', 'show_fps'):
             self.show_fps = True
@@ -266,7 +292,6 @@ class MTWindow(TouchWindow):
         glFrustum(-width/2, width/2, -height/2, height/2, 0.1, 1000)
         glScalef(5000,5000,1)
         glTranslatef(-width/2,-height/2,-500)
-
         glMatrixMode(gl.GL_MODELVIEW)
 
 

@@ -58,6 +58,66 @@ There is an API reference included in doc/build/html/.
 There is some simple example apps in the examples folder that should get
 you started for now.
 
+Configuration
+-------------
+
+  [pymt]
+
+  # show/hide fps
+  show_fps = (0|1)
+
+  # display event stats at end
+  show_eventstats = (0|1)
+
+  # set log level
+  log_level = (debug|info|warning|error|critical)
+
+  # detection time of double tap
+  double_tap_time = <integer>
+
+  # max distance allowed for double tap
+  double_tap_distance = <integer>
+
+  [graphics]
+
+  # activate fullscreen
+  fullscreen = (0|1)
+
+  # width of window
+  width = <integer>
+
+  # height of window
+  height = <integer>
+
+  # force vsync
+  vsync = (0|1)
+
+  # force fbo type
+  fbo = (hardware|software)
+
+  [tuio]
+
+  # listening ip
+  host = <ip>
+
+  # listening port
+  port = <integer>
+
+  # ignore list
+  ignore = [(xmin, ymin, xmax, ymax), ...]
+
+  [dump]
+
+  # activate record of frames
+  enabled = (0|1)
+
+  # prefix to use for dump
+  prefix = <string>
+
+  # format of dump image
+  format = <jpeg|png>
+
+
 
 Other python/MT resources
 -------------------------

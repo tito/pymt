@@ -331,9 +331,15 @@ def drawLine(points, width=5.0):
         `widget` : float, default to 5.0
             Default width of line
     '''
+    style = GL_LINES
     glLineWidth(width)
     points = list(points)
-    with gx_begin(GL_LINES):
+    l = len(points)
+    if l < 4:
+        return
+    if l > 4:
+        style = GL_LINE_STRIP
+    with gx_begin(GL_LINE_STRIP):
         while len(points):
             glVertex2f(points.pop(0), points.pop(0))
 

@@ -16,7 +16,6 @@ import sys, getopt, os
 from logger import pymt_logger
 from pyglet.gl import *
 from Queue import Queue
-from threading import Lock
 from utils import intersection, difference, strtotuple
 
 

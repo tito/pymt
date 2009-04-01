@@ -1,4 +1,4 @@
-"""     simpleOSC 0.2
+'''    simpleOSC 0.2
     ixi software - July, 2006
     www.ixi-software.net
 
@@ -26,7 +26,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
     Thanks for the support to Buchsenhausen, Innsbruck, Austria.
-"""
+'''
 
 import OSC
 import socket, os, time, errno
@@ -35,36 +35,35 @@ from pymt.logger import pymt_logger
 
 # globals
 outSocket = 0
-addressManager = 0
-oscThread = 0
-
-
-
+addressManager = None
+oscThreads = {}
 
 def init() :
-    """ instantiates address manager and outsocket as globals
-    """
+    '''instantiates address manager and outsocket as globals
+    '''
     global outSocket, addressManager
+    if addressManager is not None:
+        return
     outSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     addressManager = OSC.CallbackManager()
 
 
 def bind(func, oscaddress):
-    """ bind given oscaddresses with given functions in address manager
-    """
+    '''bind given oscaddresses with given functions in address manager
+    '''
     addressManager.add(func, oscaddress)
 
 
 def sendMsg(oscAddress, dataArray=[], ipAddr='127.0.0.1', port=9000) :
-    """create and send normal OSC msgs
+    '''create and send normal OSC msgs
         defaults to '127.0.0.1', port 9000
-    """
+    '''
     outSocket.sendto( createBinaryMsg(oscAddress, dataArray),  (ipAddr, port))
 
 
 def createBundle():
-    """create bundled type of OSC messages
-    """
+    '''create bundled type of OSC messages
+    '''
     b = OSC.OSCMessage()
     b.address = ""
     b.append("#bundle")
@@ -74,27 +73,27 @@ def createBundle():
 
 
 def appendToBundle(bundle, oscAddress, dataArray):
-    """create OSC mesage and append it to a given bundle
-    """
+    '''create OSC mesage and append it to a given bundle
+    '''
     bundle.append( createBinaryMsg(oscAddress, dataArray),  'b')
 
 
 def sendBundle(bundle, ipAddr='127.0.0.1', port=9000) :
-    """convert bundle to a binary and send it
-    """
+    '''convert bundle to a binary and send it
+    '''
     outSocket.sendto(bundle.message, (ipAddr, port))
 
 
 def createBinaryMsg(oscAddress, dataArray):
-    """create and return general type binary OSC msg
-    """
+    '''create and return general type binary OSC msg
+    '''
     m = OSC.OSCMessage()
     m.address = oscAddress
 
-    for x in dataArray:  ## append each item of the array to the message
+    for x in dataArray:
         m.append(x)
 
-    return m.getBinary() # get the actual OSC to send
+    return m.getBinary()
 
 
 
@@ -135,38 +134,48 @@ class OSCServer(Thread) :
                     pymt_logger.exception(e)
                 self.haveSocket = False
 
-                # sleep 1 second before retry
+                # sleep 2 second before retry
                 time.sleep(2)
 
         pymt_logger.info('listening for Tuio on %s:%i' % (self.ipAddr, self.port))
 
         while self.isRunning:
             try:
-                addressManager.handle( self.socket.recv(1024) ) # self.socket.recvfrom(2**13)
+                addressManager.handle(self.socket.recv(1024))
             except Exception, e:
                 if type(e) == socket.timeout:
                     continue
                 pymt_logger.error('Error in Tuio recv()')
                 pymt_logger.exception(e)
-                return "no data arrived" # not data arrived
+                return 'no data arrived'
 
-def listen(ipAddr='127.0.0.1', port = 9001) :
-    """  creates a new thread listening to that port
+def listen(ipAddr='127.0.0.1', port = 9001):
+    '''Creates a new thread listening to that port
     defaults to ipAddr='127.0.0.1', port 9001
-    """
-    global oscThread
-    oscThread = OSCServer(ipAddr, port)
-    oscThread.start()
+    '''
+    global oscThreads
+    id = '%s:%d' % (ipAddr, port)
+    if id in oscThreads:
+        return
+    print 'Add thread', id
+    oscThreads[id] = OSCServer(ipAddr, port)
+    oscThreads[id].start()
+    return id
 
 
-def dontListen() :
-    """ closes the socket and kills the thread
-    """
-    global oscThread
-    if oscThread :
-        oscThread.socket.close()
-        oscThread.isRunning = 0 # kill it and free the socket
-        oscThread = 0
+def dontListen(id = None):
+    '''closes the socket and kills the thread
+    '''
+    global oscThreads
+    if id and id in oscThreads:
+        ids = [id]
+    else:
+        ids = oscThreads.keys()
+    for id in ids:
+        print 'Close thread', id
+        oscThreads[id].socket.close()
+        oscThreads[id].isRunning = 0
+        del oscThreads[id]
 
 if __name__ == '__main__':
     # example of how to use oscAPI
@@ -177,8 +186,8 @@ if __name__ == '__main__':
 
     # add addresses to callback manager
     def printStuff(msg):
-        """deals with "print" tagged OSC addresses
-        """
+        '''deals with "print" tagged OSC addresses
+        '''
         print "printing in the printStuff function ", msg
         print "the oscaddress is ", msg[0]
         print "the value is ", msg[2]

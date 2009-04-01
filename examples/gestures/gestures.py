@@ -1,17 +1,108 @@
 from pymt import *
 
 class CaptureGesture(MTGestureWidget):
-    def __init__(self, gdb):
+    def __init__(self, gdb, bgcolor=(.4,.4,.4, .8)):
         super(CaptureGesture, self).__init__()
         self.gdb = gdb
+        self.bgcolor = bgcolor
+        self.lastgesture = None
+        self.lastbest = None
+
+    def on_touch_down(self, touches, touchID, x, y):
+        if not self.collide_point(x, y):
+            return
+        super(CaptureGesture, self).on_touch_down(touches, touchID, x, y)
+
+    def on_touch_move(self, touches, touchID, x, y):
+        if not self.collide_point(x, y):
+            return
+        super(CaptureGesture, self).on_touch_move(touches, touchID, x, y)
+
+    def on_touch_up(self, touches, touchID, x, y):
+        super(CaptureGesture, self).on_touch_up(touches, touchID, x, y)
+        if not self.collide_point(x, y):
+            return
 
     def on_gesture(self, gesture, x, y):
         # try to find gesture from database
-        best = self.gdb.find(gesture, minscore=0.9)
+        best = self.gdb.find(gesture, minscore=0.5)
         if not best:
             print 'No gesture found\nString version of your last gesture :\n', self.gdb.gesture_to_str(gesture)
         else:
             print 'Gesture found, score', best[0], ':', best[1].label
+        self.lastgesture = gesture
+        self.lastbest = best
+
+    def draw(self):
+        # draw background
+        set_color(*self.bgcolor)
+        drawRectangle(pos=self.pos, size=self.size)
+
+        # draw current trace
+        set_color(1,1,1)
+        for trace in self.points:
+            l = []
+            for p in self.points[trace]:
+                l.append(p[0])
+                l.append(p[1])
+            drawLine(l)
+
+        # draw last gesture
+        scoretext = ''
+        if self.lastbest:
+            if self.lastbest[0] < 0.8:
+                set_color(1, 0.2, .2, .8)
+                scoretext = 'bad'
+            elif self.lastbest[0] < 0.9:
+                set_color(1, 0.5, .0, .8)
+                scoretext = 'medium'
+            elif self.lastbest[0] < 0.95:
+                set_color(0.2, 0.8, .2, .8)
+                scoretext = 'good'
+            else:
+                set_color(0.2, 1, .2, .8)
+                scoretext = 'excellent !'
+        else:
+            set_color(.3, .3, .3, .8)
+        s = self.width * 0.1
+        drawRectangle(pos=(self.pos[0], self.pos[1] + self.height), size=(s*2, s*2))
+        set_color(1,1,1,.8)
+        if self.lastgesture:
+            l = []
+            for p in self.lastgesture.strokes[0].points:
+                l.append(self.pos[0] + s + p.x * s)
+                l.append(self.pos[1] + s + self.height + p.y * s)
+            drawLine(l)
+
+        if self.lastbest:
+            labeltext = 'Gesture found : %s' % self.lastbest[1].label
+            labeltext2 = 'Score is %f, %s' % (self.lastbest[0], scoretext)
+        else:
+            labeltext = 'No gesture found'
+            labeltext2 = ''
+        drawLabel(text=labeltext, pos=(self.pos[0] + s*3, self.pos[1] + self.height + s * 0.8 + self.height * 0.07),
+                font_size=self.height * 0.07, center=False)
+        drawLabel(text=labeltext2, pos=(self.pos[0] + s*3, self.pos[1] + self.height + s * 0.8),
+                font_size=self.height * 0.07, center=False)
+
+class GestureUI(MTWidget):
+    def __init__(self, gdb, **kwargs):
+        super(GestureUI, self).__init__(**kwargs)
+        self.gdb = gdb
+        self.capture = CaptureGesture(gdb)
+        self.add_widget(self.capture)
+        self.title = MTLabel(text='Gesture Recognition Example')
+        self.add_widget(self.title)
+
+    def on_draw(self):
+        if not self.parent:
+            return
+        w, h = self.parent.size
+        self.capture.pos = 0.1 * w, 0.1 * h
+        self.capture.size = 0.8 * w, 0.5 * h
+        self.title.pos = 0.1 * w, 0.88 * h
+        self.title.font_size = h * 0.07
+        super(GestureUI, self).on_draw()
 
 if __name__ == '__main__':
     gdb = GestureDatabase()
@@ -52,6 +143,7 @@ if __name__ == '__main__':
     g.id = 'close'
     gdb.add_gesture(g)
 
-    w = MTWindow(fullscreen=False)
-    w.add_widget(CaptureGesture(gdb))
+    w = MTWindow()
+    ui = GestureUI(gdb)
+    w.add_widget(ui)
     runTouchApp()

@@ -24,6 +24,7 @@ new gesture, and compare them ! ::
 __all__ = ['Gesture', 'GestureDatabase', 'GesturePoint', 'GestureStroke']
 
 import math
+from vector import *
 import pickle, base64, zlib
 from cStringIO import StringIO
 
@@ -36,7 +37,7 @@ class GestureDatabase(object):
         '''Add a new gesture in database'''
         self.db.append(gesture)
 
-    def find(self, gesture, minscore=0.9):
+    def find(self, gesture, minscore=0.9, rotation_invariant=True):
         '''Find current gesture in database'''
         if not gesture:
             return
@@ -44,7 +45,7 @@ class GestureDatabase(object):
         best = None
         bestscore = minscore
         for g in self.db:
-            score = g.get_score(gesture)
+            score = g.get_score(gesture, rotation_invariant)
             if score < bestscore:
                 continue
             bestscore = score
@@ -295,6 +296,17 @@ class Gesture:
             stroke.normalize_stroke(stroke_samples)
         self.gesture_product = self.dot_product(self)
 
+    def get_rigid_rotation(self, dstpts):
+        """
+        Extract the rotation to apply to a group of points to minimize the
+        distance to a second group of points. The two groups of points are
+        assumed to be centered. This is a simple version that just pick
+        an angle based on the first point of the gesture.
+        """
+        target = Vector( [dstpts.strokes[0].points[0].x, dstpts.strokes[0].points[0].y]  )
+        source = Vector( [self.strokes[0].points[0].x, self.strokes[0].points[0].y] )
+        return source.angle(target)
+
     def dot_product(self, comparison_gesture):
         ''' Calculates the dot product of the gesture with another gesture '''
         if len(comparison_gesture.strokes) != len(self.strokes):
@@ -307,9 +319,28 @@ class Gesture:
                 dot_product += my_point.x * cmp_point.x + my_point.y * cmp_point.y
         return dot_product
 
-    def get_score(self, comparison_gesture):
+    def rotate( self, angle ):
+        g = Gesture()
+        for stroke in self.strokes:
+            tmp = []
+            for j in stroke.points:
+                v = Vector([j.x, j.y]).rotate(angle)
+                tmp.append( v )
+            g.add_stroke( tmp )
+        g.gesture_product = g.dot_product(g)
+        return g
+
+    def get_score(self, comparison_gesture, rotation_invariant=True):
         ''' Returns the matching score of the gesture against another gesture '''
         if isinstance(comparison_gesture, Gesture):
+            if rotation_invariant:
+                # get orientation 
+                angle = self.get_rigid_rotation( comparison_gesture )
+
+                # rotate the gesture to be in the same frame. 
+                comparison_gesture = comparison_gesture.rotate( angle )
+
+            # this is the normal "orientation" code.
             score = self.dot_product(comparison_gesture)
             if score < 0:
                 return score

@@ -157,7 +157,6 @@ def listen(ipAddr='127.0.0.1', port = 9001):
     id = '%s:%d' % (ipAddr, port)
     if id in oscThreads:
         return
-    print 'Add thread', id
     oscThreads[id] = OSCServer(ipAddr, port)
     oscThreads[id].start()
     return id
@@ -172,7 +171,6 @@ def dontListen(id = None):
     else:
         ids = oscThreads.keys()
     for id in ids:
-        print 'Close thread', id
         oscThreads[id].socket.close()
         oscThreads[id].isRunning = 0
         del oscThreads[id]

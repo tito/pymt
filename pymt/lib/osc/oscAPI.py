@@ -30,28 +30,33 @@
 
 import OSC
 import socket, os, time, errno
-from threading import Thread
+from threading import Thread, Lock
 from pymt.logger import pymt_logger
 
 # globals
 outSocket = 0
 addressManager = None
 oscThreads = {}
+oscLock = None
 
 def init() :
     '''instantiates address manager and outsocket as globals
     '''
-    global outSocket, addressManager
+    global outSocket, addressManager, oscLock
     if addressManager is not None:
         return
     outSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    oscLock = Lock()
     addressManager = OSC.CallbackManager()
 
 
 def bind(func, oscaddress):
     '''bind given oscaddresses with given functions in address manager
     '''
+    global oscLock, addressManager
+    oscLock.acquire()
     addressManager.add(func, oscaddress)
+    oscLock.release()
 
 
 def sendMsg(oscAddress, dataArray=[], ipAddr='127.0.0.1', port=9000) :
@@ -141,7 +146,10 @@ class OSCServer(Thread) :
 
         while self.isRunning:
             try:
-                addressManager.handle(self.socket.recv(1024))
+                message = self.socket.recv(1024)
+                oscLock.acquire()
+                addressManager.handle(message)
+                oscLock.release()
             except Exception, e:
                 if type(e) == socket.timeout:
                     continue

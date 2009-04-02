@@ -40,6 +40,7 @@ class MTGestureWidget(MTWidget):
         g = Gesture()
         g.add_stroke(self.points[touchID])
         g.normalize()
+        g.touchID = touchID
 
         # dispatch gesture
         self.dispatch_event('on_gesture', g, x, y)

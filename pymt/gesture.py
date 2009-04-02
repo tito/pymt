@@ -219,6 +219,7 @@ class Gesture:
         Gesture([tolerance=float])
         Creates a new gesture with an optional matching tolerance value
         '''
+        self.touchID = 0
         self.strokes = list()
         if tolerance is None:
             self.tolerance = Gesture.DEFAULT_TOLERANCE
@@ -297,12 +298,16 @@ class Gesture:
         self.gesture_product = self.dot_product(self)
 
     def get_rigid_rotation(self, dstpts):
-        """
+        '''
         Extract the rotation to apply to a group of points to minimize the
         distance to a second group of points. The two groups of points are
         assumed to be centered. This is a simple version that just pick
         an angle based on the first point of the gesture.
-        """
+        '''
+        if len(self.strokes) < 1 or len(self.strokes[0].points) < 1:
+            return 0
+        if len(dstpts.strokes) < 1 or len(dstpts.strokes[0].points) < 1:
+            return 0
         target = Vector( [dstpts.strokes[0].points[0].x, dstpts.strokes[0].points[0].y]  )
         source = Vector( [self.strokes[0].points[0].x, self.strokes[0].points[0].y] )
         return source.angle(target)
@@ -342,7 +347,7 @@ class Gesture:
 
             # this is the normal "orientation" code.
             score = self.dot_product(comparison_gesture)
-            if score < 0:
+            if score <= 0:
                 return score
             score /= math.sqrt(self.gesture_product * comparison_gesture.gesture_product)
             return score

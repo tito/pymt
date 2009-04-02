@@ -36,7 +36,7 @@ class MTicon(MTButton):
         self.image.y        = self.y       
         self.size           = (self.image.width, self.image.height)
         #
-        with DO(gx_blending, gx_enable(GL_TEXTURE_2D)):
+        with DO(gx_enable(GL_TEXTURE_2D)):
             set_color(1, 1, 1, 1)
             drawCover(self.texture.id, pos=(self.x,self.y), size=(self.image.width,self.image.height))
         self.parent.do_layout()
@@ -76,14 +76,15 @@ def drawCover(texture, pos=(0,0), size=(1.0,1.0)):
         pos = ( pos[0],pos[1],   pos[0]+size[0],pos[1],   pos[0]+size[0],pos[1]+size[1],  pos[0],pos[1]+size[1] )
         texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
         draw(4, GL_QUADS, ('v2f', pos), ('t2f', texcoords))
+        set_color(1, 1, 1, 0.999, dfactor=GL_ONE_MINUS_SRC_COLOR)
         pos2 = ( pos[0],pos[1]-size[1],   pos[0]+size[0],pos[1]-size[1],   pos[0]+size[0],pos[1]+size[1]-size[1],  pos[0],pos[1]+size[1]-size[1] )
         texcoords2 = (0.0,1.0, 1.0,1.0, 1.0,0.0, 0.0,0.0)
         color2 = (0,0,0,0.5, 0,0,0,0.5, 0.65,0.65,0.65,0.5, 0.65,0.65,0.65,0.5 )
         draw(4, GL_QUADS, ('v2f', pos2), ('t2f', texcoords2), ('c4f', color2))
 
 if __name__ == '__main__':
-    w = MTWindow(color=(0,0,0,1.0))
-    plane = MTScatterPlane(color=(0,0,0,1.0),do_rotation=False, do_scale=False, do_translation=['x'], size=(1440,300),pos=(0,w.height/2-150))
+    w = MTWindow(bgcolor=(0,0,0,1.0))
+    plane = MTScatterPlane(bgcolor=(0,0,0,1.0),do_rotation=False, do_scale=False, do_translation=['x'], size=(1440,300),pos=(0,w.height/2-150))
     w.add_widget(plane)
     layme = MTBoxLayout(padding=10, spacing=10, color=(0,0,0,1.0))
     plane.add_widget(layme)

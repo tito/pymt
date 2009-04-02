@@ -73,6 +73,12 @@ class CaptureGesture(MTGestureWidget):
                 l.append(self.pos[0] + s + p.x * s)
                 l.append(self.pos[1] + s + self.height + p.y * s)
             drawLine(l)
+            set_color(1,1,1,.4)
+            l = []
+            for p in self.lastgesture.strokes[0].screenpoints:
+                l.append(p[0])
+                l.append(p[1])
+            drawLine(l)
 
         if self.lastbest:
             labeltext = 'Gesture found : %s' % self.lastbest[1].label

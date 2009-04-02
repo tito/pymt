@@ -90,6 +90,7 @@ class GestureStroke:
     def __init__(self):
         ''' A stroke in the gesture '''
         self.points = list()
+        self.screenpoints = list()
 
     # These return the min and max coordinates of the stroke
     @property
@@ -119,6 +120,7 @@ class GestureStroke:
         Adds a point to the stroke
         '''
         self.points.append(GesturePoint(x, y))
+        self.screenpoints.append((x, y))
 
     def scale_stroke(self, scale_factor):
         '''

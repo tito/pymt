@@ -78,7 +78,7 @@ class MTWindow(TouchWindow):
         if 'fullscreen' in kwargs:
             params['fullscreen'] = kwargs.get('fullscreen')
         else:
-            params['fullscreen'] = pymt.pymt_config.getboolean('pymt', 'fullscreen')
+            params['fullscreen'] = pymt.pymt_config.getboolean('graphics', 'fullscreen')
 
         if not params['fullscreen']:
             if 'width' in kwargs:

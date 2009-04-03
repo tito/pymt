@@ -72,7 +72,7 @@ class MTicon(MTButton):
 
 def drawCover(texture, pos=(0,0), size=(1.0,1.0)):
     with gx_enable(GL_TEXTURE_2D):
-        glBindTexture(GL_TEXTURE_2D,texture)
+        set_texture(texture, GL_TEXTURE_2D)
         pos = ( pos[0],pos[1],   pos[0]+size[0],pos[1],   pos[0]+size[0],pos[1]+size[1],  pos[0],pos[1]+size[1] )
         texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
         draw(4, GL_QUADS, ('v2f', pos), ('t2f', texcoords))

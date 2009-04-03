@@ -7,7 +7,7 @@ from __future__ import with_statement
 __all__ = [
     # settings
     'set_brush', 'set_brush_size', 'set_color',
-    'set_texture',
+    'set_texture', 'get_texture_id', 'get_texture_target',
     # draw
     'paintLine',
     'drawLabel', 'drawRoundedRectangle',
@@ -104,13 +104,30 @@ def set_color(*colors, **kwargs):
         glColor3f(*colors)
         glDisable(GL_BLEND)
 
+def get_texture_id(texture):
+    '''Return the openid of texture'''
+    if isinstance(texture, TextureRegion):
+        return texture.owner.id
+    elif isinstance(texture, Texture):
+        return texture.id
+    else:
+        return texture
+
+def get_texture_target(texture):
+    '''Return the target of texture. If none, return GL_TEXTURE_2D'''
+    if isinstance(texture, TextureRegion):
+        return texture.owner.target
+    elif isinstance(texture, Texture):
+        return texture.target
+    else:
+        return GL_TEXTURE_2D
+
 def set_texture(texture, target=None):
     '''Same as glBindTexture, except he can take integer/long or
     Texture/TextureRegion'''
-    if type(texture) in (Texture, TextureRegion):
-        glBindTexture(target, texture.id)
-    else:
-        glBindTexture(target, texture)
+    if target is None:
+        target = get_texture_target(texture)
+    glBindTexture(target, get_texture_id(texture))
 
 def drawLabel(text, pos=(0,0), center=True, font_size=16):
     '''Draw a label on the window.
@@ -158,7 +175,7 @@ def paintLine(points):
     p1 = (points[0], points[1])
     p2 = (points[2], points[3])
     with DO(gx_blending, gx_enable(GL_POINT_SPRITE_ARB), gx_enable(_brush_texture.target)):
-        glBindTexture(_brush_texture.target, _brush_texture.id)
+        set_texture(_brush_texture.id, target=_brush_texture.target)
         glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE)
         glPointSize(_brush_size)
         dx,dy = p2[0]-p1[0], p2[1]-p1[1]
@@ -309,12 +326,11 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0)):
             Size of rectangle
     '''
     with gx_enable(GL_TEXTURE_2D):
+        set_texture(texture, target=GL_TEXTURE_2D)
         if type(texture) in (Texture, TextureRegion):
-            glBindTexture(GL_TEXTURE_2D, texture.id)
             t = texture.tex_coords
             texcoords = (t[0], t[1], t[3], t[4], t[6], t[7], t[9], t[10])
         else:
-            glBindTexture(GL_TEXTURE_2D, texture)
             texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
         pos = ( pos[0], pos[1],
                 pos[0] + size[0], pos[1],
@@ -509,6 +525,17 @@ class AbstractFbo(object):
         self.with_depthbuffer   = kwargs.get('with_depthbuffer')
         self.push_viewport      = kwargs.get('push_viewport')
 
+        # create texture
+        self.texture            = Texture.create(self.size[0], self.size[1])
+
+        # get real size (can be the same)
+        if isinstance(self.texture, TextureRegion):
+            self.realsize = self.texture.owner.width, self.texture.owner.height
+        elif isinstance(self.texture, Texture):
+            self.realsize = self.texture.width, self.texture.height
+        else:
+            raise 'Unknown type(self.texture). Please send a bug report on pymt dev.'
+
     def bind(self):
         pass
 
@@ -535,7 +562,6 @@ class HardwareFbo(AbstractFbo):
         super(HardwareFbo, self).__init__(**kwargs)
         self.framebuffer    = c_uint(0)
         self.depthbuffer    = c_uint(0)
-        self.texture        = c_uint(0)
 
         glGenFramebuffersEXT(1, byref(self.framebuffer))
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
@@ -546,15 +572,16 @@ class HardwareFbo(AbstractFbo):
             glGenRenderbuffersEXT(1, byref(self.depthbuffer));
             glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, self.depthbuffer)
             glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT,
-                                     self.size[0], self.size[1])
+                                     self.realsize[0], self.realsize[1])
             glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, self.depthbuffer)
 
-        glGenTextures(1, byref(self.texture))
-        glBindTexture(GL_TEXTURE_2D, self.texture)
+        set_texture(self.texture)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.size[0], self.size[1], 0,GL_RGB, GL_UNSIGNED_BYTE, 0)
-        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, self.texture, 0)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.realsize[0], self.realsize[1],
+                0, GL_RGB, GL_UNSIGNED_BYTE, 0)
+        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+                GL_TEXTURE_2D, get_texture_id(self.texture), 0)
         glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0)
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0)
 
@@ -591,7 +618,6 @@ class SoftwareFbo(AbstractFbo):
     '''
     def __init__(self, **kwargs):
         super(SoftwareFbo, self).__init__(**kwargs)
-        self.texture = Texture.create(self.size[0], self.size[1])
         self.oldtexture = pyglet.image.get_buffer_manager().get_color_buffer().get_texture()
 
         # Hack to initialize a empty buffer.
@@ -603,7 +629,7 @@ class SoftwareFbo(AbstractFbo):
 
         # Save current buffer
         buffer = pyglet.image.get_buffer_manager().get_color_buffer()
-        glBindTexture(GL_TEXTURE_2D, self.oldtexture.id)
+        set_texture(self.oldtexture, target=GL_TEXTURE_2D)
         buffer.blit_to_texture(GL_TEXTURE_2D, 0, 0, 0, 0)
 
         # Push current attrib
@@ -627,7 +653,7 @@ class SoftwareFbo(AbstractFbo):
             glPopAttrib()
 
         # Copy current buffer into fbo texture
-        glBindTexture(self.texture.target, self.texture.id)
+        set_texture(self.texture, target=GL_TEXTURE_2D);
         buffer = pyglet.image.get_buffer_manager().get_color_buffer()
         glReadBuffer(buffer.gl_buffer)
         glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, self.size[0], self.size[1])

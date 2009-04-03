@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
 PLUGIN_TITLE = '3D Painting'
@@ -10,7 +12,7 @@ from pyglet import *
 from pyglet.gl import *
 
 
-set_brush('particle.png', 20)
+set_brush('../3Ddrawing/particle.png', 20)
 
 
 
@@ -64,10 +66,10 @@ class ModelPainter(MTWidget):
         self.perspective = GL3DPerspective()
 
         #load the obj model file
-        self.model = bunny = OBJ('cow.obj')
+        self.model = bunny = OBJ('../3Ddrawing/cow.obj')
 
         #texture and FBO used for picking
-        self.picking_image = image.load('picking.png')
+        self.picking_image = image.load('../3Ddrawing/picking.png')
         self.picking_texture = self.picking_image.get_texture()
         self.fbo = Fbo(size=self.size)
         self.painting_fbo = Fbo(size=(1024,1024))
@@ -120,7 +122,7 @@ class ModelPainter(MTWidget):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         with self.perspective:
             glEnable(GL_TEXTURE_2D)
-            glBindTexture(GL_TEXTURE_2D, self.painting_fbo.texture)
+            set_texture(self.painting_fbo.texture, GL_TEXTURE_2D)
             self.draw()
 
         #display teh FBO contents
@@ -143,7 +145,7 @@ class ModelPainter(MTWidget):
         glDisable(GL_LIGHTING)
         glColor3f(1,1,1)
         glEnable(GL_TEXTURE_2D)
-        glBindTexture(self.picking_texture.target, self.picking_texture.id)
+        set_texture(self.picking_texture.texture)
         self.draw()
 
 

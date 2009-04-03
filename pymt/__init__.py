@@ -95,9 +95,9 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
             elif opt in ['-H', '--host']:
                 pymt_config.set('tuio', 'host', str(arg))
             elif opt in ['-f', '--fullscreen']:
-                pymt_config.set('pymt', 'fullscreen', '1')
+                pymt_config.set('graphics', 'fullscreen', '1')
             elif opt in ['-w', '--windowed']:
-                pymt_config.set('pymt', 'fullscreen', '0')
+                pymt_config.set('graphics', 'fullscreen', '0')
             elif opt in ['-F', '--fps']:
                 pymt_config.set('pymt', 'show_fps', '1')
             elif opt in ['-e', '--eventstats']:

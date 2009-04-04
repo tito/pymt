@@ -47,7 +47,7 @@ fs_tuio_host = getWidgetById('fs_tuio_host')
 fs_tuio_port = getWidgetById('fs_tuio_port')
 
 # Set default values
-fs_fullscreen.checked = pymt_config.getboolean('pymt', 'fullscreen')
+fs_fullscreen.checked = pymt_config.getboolean('graphics', 'fullscreen')
 fs_fps.checked = pymt_config.getboolean('pymt', 'show_fps')
 fs_double_tap_time.value = pymt_config.getint('pymt', 'double_tap_time')
 fs_double_tap_distance.value = pymt_config.get('pymt', 'double_tap_distance')

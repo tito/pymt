@@ -103,7 +103,7 @@ class MTMenu(MTBoxLayout):
             label='Close Menu', action=action_close_menu))
 
         self.add_widget(MTActionButton(
-            label='       Close PyMT       ', action=action_close_all))
+            label='            Close PyMT             ', action=action_close_all))
 
     def on_draw(self):
         with gx_blending:
@@ -148,7 +148,7 @@ if __name__ == '__main__':
     gesture_add_default(gdb)
 
     # Create background window
-    w = MTWallpaperWindow(wallpaper='regal_p.jpg')
+    w = MTWallpaperWindow(wallpaper='wallpaper.jpg')
     g = MTGestureDetector(gdb)
     w.add_widget(g)
 

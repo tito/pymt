@@ -1,6 +1,6 @@
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
-PLUGIN_TITLE = 'mandelbrot Viewer'
+PLUGIN_TITLE = 'Mandelbrot Viewer'
 PLUGIN_AUTHOR = 'Thomas Hansen'
 PLUGIN_DESCRIPTION = 'Uses a fragment shader to draw the mandelbrot set, so you can just keep zooming and zooming and zoomming :)'
 

@@ -1,6 +1,6 @@
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
-PLUGIN_TITLE = 'Pictures'
+PLUGIN_TITLE = 'Picture Viewer'
 PLUGIN_AUTHOR = 'Thomas Hansen'
 PLUGIN_DESCRIPTION = 'Demonstration of MTScatterImage object'
 

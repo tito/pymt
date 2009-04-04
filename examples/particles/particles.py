@@ -6,7 +6,7 @@ import random
 
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
-PLUGIN_TITLE = 'Particles'
+PLUGIN_TITLE = 'Particles Sandbox'
 PLUGIN_AUTHOR = 'Sharath Patali & Mathieu Virbel'
 PLUGIN_DESCRIPTION = 'All stars are coming under touches!'
 

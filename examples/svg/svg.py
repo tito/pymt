@@ -3,7 +3,7 @@ from pymt import *
 
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
-PLUGIN_TITLE = 'SVG Example'
+PLUGIN_TITLE = 'SVG Viewer'
 PLUGIN_AUTHOR = 'Nathanaël Lécaudé'
 PLUGIN_DESCRIPTION = 'This is an example of Scalable Vector Graphics using the Squirtle library for pyglet.'
 

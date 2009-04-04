@@ -2,7 +2,7 @@ from __future__ import with_statement
 
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
-PLUGIN_TITLE = 'Untangle'
+PLUGIN_TITLE = 'Untangle Game'
 PLUGIN_AUTHOR = 'Thomas Hansen'
 PLUGIN_EMAIL = 'thomas.hansen@gmail.com'
 PLUGIN_DESCRIPTION = 'Untangle game !'

@@ -103,7 +103,7 @@ class MTMenu(MTBoxLayout):
             label='Close Menu', action=action_close_menu))
 
         self.add_widget(MTActionButton(
-            label='       Close Application       ', action=action_close_all))
+            label='       Close PyMT       ', action=action_close_all))
 
     def on_draw(self):
         with gx_blending:
@@ -123,9 +123,9 @@ class MTGestureDetector(MTGestureWidget):
         super(MTGestureDetector, self).__init__(**kwargs)
         self.gdb = gdb
 
-    def draw(self):
-        drawLabel('Draw a nui-wave to show menu',
-            pos=(10, 10), center=False, font_size=20)
+    #def draw(self):
+        #drawLabel('Draw a nui-wave to show menu',
+            #pos=(10, 10), center=False, font_size=20)
 
     def on_gesture(self, gesture, x, y):
         try:
@@ -148,7 +148,7 @@ if __name__ == '__main__':
     gesture_add_default(gdb)
 
     # Create background window
-    w = MTWallpaperWindow(wallpaper='wallpaper.jpg')
+    w = MTWallpaperWindow(wallpaper='regal_p.jpg')
     g = MTGestureDetector(gdb)
     w.add_widget(g)
 

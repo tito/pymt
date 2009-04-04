@@ -1,6 +1,6 @@
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
-PLUGIN_TITLE = 'Flicker Searcher'
+PLUGIN_TITLE = 'Flickr Viewer'
 PLUGIN_AUTHOR = 'Sharath Patali'
 PLUGIN_DESCRIPTION = 'This application download pictures asynchrnously and displays them as a MT Image'
 

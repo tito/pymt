@@ -2,7 +2,7 @@ from __future__ import with_statement
 
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
-PLUGIN_TITLE = '3D Viewver'
+PLUGIN_TITLE = '3D Viewer'
 PLUGIN_AUTHOR = 'Thomas Hansen'
 PLUGIN_EMAIL = 'thomas.hansen@gmail.com'
 

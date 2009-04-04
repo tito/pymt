@@ -4,7 +4,7 @@ from pyglet.gl import *
 
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
-PLUGIN_TITLE = 'TicTacToe'
+PLUGIN_TITLE = 'TicTacToe Game'
 PLUGIN_AUTHOR = 'Thomas hansen'
 PLUGIN_DESCRIPTION = 'Tic Tac Toe game!'
 

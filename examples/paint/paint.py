@@ -4,7 +4,7 @@ from glob import glob
 
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
-PLUGIN_TITLE = 'GL Paint'
+PLUGIN_TITLE = 'Paint Sandbox'
 PLUGIN_AUTHOR = 'Thomas Hansen'
 PLUGIN_EMAIL = 'thomas.hansen@gmail.com'
 PLUGIN_DESCRIPTION = 'This is a simple paint canvas.'

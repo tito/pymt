@@ -100,7 +100,7 @@ class MTMenu(MTBoxLayout):
             self.add_widget(w)
 
         self.add_widget(MTActionButton(
-            label='Close menu', action=action_close_menu))
+            label='Close Menu', action=action_close_menu))
 
         self.add_widget(MTActionButton(
             label='       Close Application       ', action=action_close_all))
@@ -123,9 +123,9 @@ class MTGestureDetector(MTGestureWidget):
         super(MTGestureDetector, self).__init__(**kwargs)
         self.gdb = gdb
 
-    '''def draw(self):
+    def draw(self):
         drawLabel('Draw a nui-wave to show menu',
-            pos=(10, 10), center=False, font_size=20)'''
+            pos=(10, 10), center=False, font_size=20)
 
     def on_gesture(self, gesture, x, y):
         try:

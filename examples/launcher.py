@@ -1,5 +1,5 @@
 #!/usr/bin/env python
 
-import subprocess
-proc = subprocess.Popen(['python', 'start.py'], cwd='desktop')
+import subprocess, sys
+proc = subprocess.Popen(['python', 'start.py'] + sys.argv[1:], cwd='desktop')
 proc.wait()

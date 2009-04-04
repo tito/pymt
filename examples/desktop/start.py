@@ -50,7 +50,10 @@ def gesture_add_default(gdb):
 def action_close_menu(menu, w, args):
     menu.parent.remove_widget(menu)
     del menu
-
+    
+def action_close_all(menu, w, args):
+    sys.exit()
+    
 def action_launch_plugin(menu, w, args):
     name, plugin = args
 
@@ -99,6 +102,9 @@ class MTMenu(MTBoxLayout):
         self.add_widget(MTActionButton(
             label='Close menu', action=action_close_menu))
 
+        self.add_widget(MTActionButton(
+            label='       Close Application       ', action=action_close_all))
+
     def on_draw(self):
         with gx_blending:
             super(MTMenu, self).on_draw()
@@ -117,9 +123,9 @@ class MTGestureDetector(MTGestureWidget):
         super(MTGestureDetector, self).__init__(**kwargs)
         self.gdb = gdb
 
-    def draw(self):
+    '''def draw(self):
         drawLabel('Draw a nui-wave to show menu',
-            pos=(10, 10), center=False, font_size=20)
+            pos=(10, 10), center=False, font_size=20)'''
 
     def on_gesture(self, gesture, x, y):
         try:

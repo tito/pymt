@@ -24,8 +24,9 @@ class MTSlider(MTWidget):
         `value` : int, default is `min`
             Default value of slider
         `slidercolor` : tuple
-            color of the slider in (r,g,b,a)
-
+            Color of the slider in (r,g,b,a)
+        `bgcolor` : tuple
+            Background color
     :Styles:
         `slider-color` : color
             Color of the slider
@@ -56,7 +57,7 @@ class MTSlider(MTWidget):
         if kwargs.get('slidercolor'):
             self.slidercolor = kwargs.get('slidercolor')
         if kwargs.get('bgcolor'):
-            self.slidercolor = kwargs.get('bgcolor')
+            self.bgcolor = kwargs.get('bgcolor')
 
     def apply_css(self, styles):
         if 'slider-color' in styles:

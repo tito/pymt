@@ -129,7 +129,7 @@ def set_texture(texture, target=None):
         target = get_texture_target(texture)
     glBindTexture(target, get_texture_id(texture))
 
-def drawLabel(text, pos=(0,0), center=True, font_size=16):
+def drawLabel(text, pos=(0,0), **kwargs):
     '''Draw a label on the window.
 
     :Parameters:
@@ -139,24 +139,26 @@ def drawLabel(text, pos=(0,0), center=True, font_size=16):
             Position of text
         `font_size` : int, default to 16
             Font size of label
+        `center` : bool, default to True
+            Indicate if pos is center or left-right of label
     
     .. Warning:
         Use only for debugging, it's a performance killer function.
         The label is recreated each time the function is called !
     '''
-    temp_label = Label(text, font_size=font_size, bold=True)
-    if center:
-        temp_label.anchor_x = 'center'
-        temp_label.anchor_y = 'center'
+    kwargs.setdefault('font_size', 16)
+    kwargs.setdefault('center', True)
+    if kwargs.get('center'):
+        kwargs.setdefault('anchor_x', 'center')
+        kwargs.setdefault('anchor_y', 'center')
     else:
-        temp_label.anchor_x = 'left'
-        temp_label.anchor_y = 'bottom'
+        kwargs.setdefault('anchor_x', 'left')
+        kwargs.setdefault('anchor_y', 'bottom')
+    del kwargs['center']
+    temp_label = Label(text, **kwargs)
     temp_label.x = 0
     temp_label.y = 0
-    with gx_matrix:
-        glTranslated(pos[0], pos[1], 0.0)
-        glScaled(0.6,0.6,1)
-        temp_label.draw()
+    temp_label.draw()
     return temp_label.content_width
 
 

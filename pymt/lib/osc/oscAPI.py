@@ -37,17 +37,19 @@ from pymt.logger import pymt_logger
 outSocket = 0
 addressManager = None
 oscThreads = {}
-oscLock = None
+oscLock = Lock()
 
 def init() :
     '''instantiates address manager and outsocket as globals
     '''
     global outSocket, addressManager, oscLock
+    oscLock.acquire()
     if addressManager is not None:
+        oscLock.release()
         return
     outSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    oscLock = Lock()
     addressManager = OSC.CallbackManager()
+    oscLock.release()
 
 
 def bind(func, oscaddress):
@@ -63,7 +65,9 @@ def sendMsg(oscAddress, dataArray=[], ipAddr='127.0.0.1', port=9000) :
     '''create and send normal OSC msgs
         defaults to '127.0.0.1', port 9000
     '''
+    oscLock.acquire()
     outSocket.sendto( createBinaryMsg(oscAddress, dataArray),  (ipAddr, port))
+    oscLock.release()
 
 
 def createBundle():
@@ -80,13 +84,17 @@ def createBundle():
 def appendToBundle(bundle, oscAddress, dataArray):
     '''create OSC mesage and append it to a given bundle
     '''
+    oscLock.acquire()
     bundle.append( createBinaryMsg(oscAddress, dataArray),  'b')
+    oscLock.release()
 
 
 def sendBundle(bundle, ipAddr='127.0.0.1', port=9000) :
     '''convert bundle to a binary and send it
     '''
+    oscLock.acquire()
     outSocket.sendto(bundle.message, (ipAddr, port))
+    oscLock.release()
 
 
 def createBinaryMsg(oscAddress, dataArray):
@@ -142,7 +150,9 @@ class OSCServer(Thread) :
                 # sleep 2 second before retry
                 time.sleep(2)
 
+        oscLock.acquire()
         pymt_logger.info('listening for Tuio on %s:%i' % (self.ipAddr, self.port))
+        oscLock.release()
 
         while self.isRunning:
             try:

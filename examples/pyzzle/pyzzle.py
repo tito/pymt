@@ -19,7 +19,7 @@ class PyzzleEngine(MTWidget):
         self.gridHolders = {}
         self.player = Player()
         self.player.volume = 0.0
-        self.source = pyglet.media.load('super-fly.avi')
+        self.source = pyglet.media.load('../videoplayer/super-fly.avi')
         self.sourceDuration = self.source.duration
         self.player.queue(self.source)
         self.player.eos_action = 'loop'

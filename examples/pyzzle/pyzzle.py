@@ -19,34 +19,28 @@ class PyzzleEngine(MTWidget):
         self.gridHolders = {}
         self.player = Player()
         self.player.volume = 0.0
-        self.source = pyglet.media.load('../videoplayer/super-fly.avi')
+        self.source = pyglet.media.load('super-fly.avi')
         self.sourceDuration = self.source.duration
         self.player.queue(self.source)
         self.player.eos_action = 'loop'
         self.width = self.player.get_texture().width
         self.height = self.player.get_texture().height
         self.player.play()
-        #puzzle_texture = pyglet.image.load('simpson.jpg')
-        puzzle_seq = pyglet.image.ImageGrid(self.player.get_texture(),4,4)
+        puzzle_seq = pyglet.image.ImageGrid(self.player.get_texture(),4,3)
         
-        self.griddy = MTGridLayout(rows=4,cols=4,spacing=1)
+        self.griddy = MTGridLayout(rows=4,cols=3,spacing=1)
         for i in range(self.max):
-            self.gridHolders[i] = gridHolder(size=(puzzle_seq[i].width,puzzle_seq[i].height))
+            self.gridHolders[i] = MTRectangularWidget(size=(puzzle_seq[i].width,puzzle_seq[i].height))
             self.griddy.add_widget(self.gridHolders[i])
-              
-        self.griddy.x = int((self.griddy.width))
-        self.griddy.y = int((self.griddy.height))
         self.add_widget(self.griddy) 
+        
         self.griddy.pos = (int(w.width/2-self.griddy._get_content_width()/2),int(w.height/2-self.griddy._get_content_height()/2))
-        self.griddy._get_content_width()
         
         for i in range(self.max):
             self.pieces[i] = PyzzleObject(image=puzzle_seq[i],grid=self.griddy)
             self.add_widget(self.pieces[i])
         
-class gridHolder(MTRectangularWidget):
-    def __init__(self, **kwargs):
-        super(gridHolder, self).__init__(**kwargs)
+
 
             
 class PyzzleObject(MTWidget):
@@ -81,20 +75,19 @@ class PyzzleObject(MTWidget):
     def on_touch_up(self, touches, touchID, x, y):
         if self.state[1] == touchID:
             self.state = ('normal', None)
-            for i in range(4):
-                for j in range(4):
-                    if(((self.center[0]>=int(self.grid.x+self.image.width*i)) & \
-                    (self.center[0]<=int(self.grid.x+self.image.width+self.image.width*i))) &\
-                    ((self.center[1]>=int(self.grid.y+self.image.height*j)) & \
-                    (self.center[1]<=int(self.grid.y+self.image.height+self.image.height*j)))
+            for i in range(self.grid.rows):
+                for j in range(self.grid.cols):
+                    if(((self.center[0]>=int(self.grid.x+self.image.width*j)) & \
+                    (self.center[0]<=int(self.grid.x+self.image.width+self.image.width*j))) &\
+                    ((self.center[1]>=int(self.grid.y+self.image.height*i)) & \
+                    (self.center[1]<=int(self.grid.y+self.image.height+self.image.height*i)))
                     ):
-                        #print "inside ",int(self.grid.x+self.image.width*i),int(self.grid.y+self.image.height*j)
-                        self.center = int(self.grid.x+self.image.width*i+self.image.width/2),int(self.grid.y+self.image.height*j+self.image.height/2)
+                        self.center = int(self.grid.x+self.image.width*j+self.image.width/2),int(self.grid.y+self.image.height*i+self.image.height/2)
             return True
 
 if __name__ == '__main__':
     w = MTWindow()
-    pyzzle = PyzzleEngine(max=16)
+    pyzzle = PyzzleEngine(max=12)
     w.add_widget(pyzzle)
     runTouchApp()
  

@@ -156,8 +156,7 @@ def drawLabel(text, pos=(0,0), **kwargs):
         kwargs.setdefault('anchor_y', 'bottom')
     del kwargs['center']
     temp_label = Label(text, **kwargs)
-    temp_label.x = 0
-    temp_label.y = 0
+    temp_label.x, temp_label.y = pos
     temp_label.draw()
     return temp_label.content_width
 

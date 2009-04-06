@@ -1,6 +1,6 @@
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
-PLUGIN_TITLE = 'Pyzzle Game'
+PLUGIN_TITLE = 'Pyzzle a multitouch video puzzle'
 PLUGIN_AUTHOR = 'Sharath Patali'
 PLUGIN_EMAIL = 'sharath.patali@gmail.com'
 
@@ -16,7 +16,9 @@ class PyzzleEngine(MTWidget):
         MTWidget.__init__(self, **kargs)
         self.max        = max
         self.pieces  = {}
+        self.gridHolders = {}
         self.player = Player()
+        self.player.volume = 0.0
         self.source = pyglet.media.load('../videoplayer/super-fly.avi')
         self.sourceDuration = self.source.duration
         self.player.queue(self.source)
@@ -26,18 +28,26 @@ class PyzzleEngine(MTWidget):
         self.player.play()
         #puzzle_texture = pyglet.image.load('simpson.jpg')
         puzzle_seq = pyglet.image.ImageGrid(self.player.get_texture(),4,4)
-
-        print "COunt: ",len(puzzle_seq)    
+        
+        self.griddy = MTGridLayout(rows=4,cols=4,spacing=1)
+        for i in range(self.max):
+            self.gridHolders[i] = gridHolder(size=(puzzle_seq[i].width,puzzle_seq[i].height))
+            self.griddy.add_widget(self.gridHolders[i])
+              
+        self.griddy.x = int((self.griddy.width))
+        self.griddy.y = int((self.griddy.height))
+        self.add_widget(self.griddy) 
+        self.griddy.pos = (int(w.width/2-self.griddy._get_content_width()/2),int(w.height/2-self.griddy._get_content_height()/2))
+        self.griddy._get_content_width()
         
         for i in range(self.max):
-            self.pieces[i] = PyzzleObject(image=puzzle_seq[i])
+            self.pieces[i] = PyzzleObject(image=puzzle_seq[i],grid=self.griddy)
             self.add_widget(self.pieces[i])
-                        
-    """def draw(self):
-        glPushMatrix()
-        glColor4f(0,0,0,1)
-        drawLine((0,0,self.width,self.height), width=5.0)
-        glPopMatrix()"""
+        
+class gridHolder(MTRectangularWidget):
+    def __init__(self, **kwargs):
+        super(gridHolder, self).__init__(**kwargs)
+
             
 class PyzzleObject(MTWidget):
     def __init__(self, **kwargs):
@@ -48,8 +58,8 @@ class PyzzleObject(MTWidget):
         self.width = self.image.width
         self.height = self.image.height
         self.state = ('normal', None)
-        
-    
+        self.grid = kwargs.get('grid')
+
     def draw(self):
         glPushMatrix()
         glColor4f(1,1,1,1)
@@ -71,18 +81,20 @@ class PyzzleObject(MTWidget):
     def on_touch_up(self, touches, touchID, x, y):
         if self.state[1] == touchID:
             self.state = ('normal', None)
+            for i in range(4):
+                for j in range(4):
+                    if(((self.center[0]>=int(self.grid.x+self.image.width*i)) & \
+                    (self.center[0]<=int(self.grid.x+self.image.width+self.image.width*i))) &\
+                    ((self.center[1]>=int(self.grid.y+self.image.height*j)) & \
+                    (self.center[1]<=int(self.grid.y+self.image.height+self.image.height*j)))
+                    ):
+                        #print "inside ",int(self.grid.x+self.image.width*i),int(self.grid.y+self.image.height*j)
+                        self.center = int(self.grid.x+self.image.width*i+self.image.width/2),int(self.grid.y+self.image.height*j+self.image.height/2)
             return True
-        
-def pymt_plugin_activate(root, ctx):
-    ctx.pyzzle = PyzzleEngine(max=16)
-    root.add_widget(ctx.pyzzle)
-
-def pymt_plugin_deactivate(root, ctx):
-    root.remove_widget(ctx.pyzzle)        
 
 if __name__ == '__main__':
     w = MTWindow()
-    ctx = MTContext()
-    pymt_plugin_activate(w, ctx)
+    pyzzle = PyzzleEngine(max=16)
+    w.add_widget(pyzzle)
     runTouchApp()
-    pymt_plugin_deactivate(w, ctx)    
+ 

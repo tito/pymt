@@ -25,3 +25,4 @@ from svg import *
 from rectangle import *
 from tabs import *
 from stencilcontainer import *
+from flippable import *

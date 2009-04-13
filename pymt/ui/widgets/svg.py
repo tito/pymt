@@ -45,5 +45,8 @@ class MTSvg(MTWidget):
 
     def draw(self, **kwargs):
         self.svg.draw(self.x, self.y, **kwargs)
+	
+    def set_svg(self, filename):
+        self.svg = squirtle.SVG(filename)
 
 MTWidgetFactory.register('MTSvg', MTSvg)

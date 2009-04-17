@@ -429,6 +429,7 @@ class MTKineticList(MTStencilContainer):
                 'travelx' : 0, #How far the blob has traveled total in the x axis
                 'travely' : 0, #^
             }
+            return True
 
     def on_touch_move(self, touches, touchID, x, y):
         if touchID in self.touch:
@@ -444,7 +445,8 @@ class MTKineticList(MTStencilContainer):
             t['travely'] += abs(t['ymot'])
             self.xoffset += t['xmot'] * self.do_x
             self.yoffset += t['ymot'] * self.do_y
-
+            return True
+            
     def on_touch_up(self, touches, touchID, x, y):
         if touchID in self.touch:
             for w in self.widgets:
@@ -465,6 +467,7 @@ class MTKineticList(MTStencilContainer):
                         if not child.on_press(touches, touchID, x, y):
                             self.dispatch_event('on_press', child, self.childmap[child])
                             child.dispatch_event('on_press',touches, touchID, x, y)
+            return True
 
     def process_kinetic(self):
         '''Apply kinetic movement to all the items'''

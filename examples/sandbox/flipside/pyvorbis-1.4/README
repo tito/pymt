@@ -1,0 +1,98 @@
+pyvorbis - a Python wrapper for the Ogg/Vorbis library
+
+Ogg/Vorbis is available at http://www.xiph.org
+
+This is the Vorbis module. You will need to download and install the
+Python ogg module (available wherever you got this) before you can
+build the vorbis module.
+
+Access this module via "import ogg.vorbis" or "from ogg.vorbis import
+*". You can now write Python programs to encode and decode Ogg Vorbis
+files (encoding is quite a bit more involved). The module is
+self-documenting, though I need to update quite a bit of it. Look at
+test/ogg123.py, test/short.py, and test/enc.py for very simple
+demonstrations of the module interface.
+
+And if anyone is wondering why I have things separated into a main
+module "ogg" and a submodule "ogg.vorbis", vorbis is the audio subset
+of the ogg bitstream. In the future there will likely be a video part
+of the ogg bistream, and nothing in the ogg modulue really has to know
+about anything specific in the vorbis module.
+ 
+To build, you need the distutils package, availible from
+http://www.python.org/sigs/distutils-sig/download.html (it comes with
+Python 2.0). Run config_unix.py first to generate a Setup file. Then
+run "python setup.py build" to build and then as root run "python
+setup.py install".  You may need to run config_unix.py with a
+"--prefix" option if you installed your ogg or vorbis libraries in a
+weird place. You can also pass --with-ogg-dir and --with-vorbis-dir
+arguments if they're installed separately. If you have problems with
+the configure script, check the output of conifg.log for specific
+errors.
+
+To decode, you'll basically want to create a VorbisFile object and
+read data from that.  You can then write the data to a sound
+device. I've used both the pyao wrapper (also by me) and the
+linuxsounddev module present in Python2.0.
+
+To encode, you need to feed a VorbisDSPState object PCM data as one
+array of floating point values ranging from -1.0 ... 1.0 per
+channel. You can do this in pure Python, but it almost doubles the
+time it takes to encode. The other option is to read data using the
+python "wave" module and write it to the VorbisDSPState directly using
+the x.write_wav(mywave.readframes(n)) call. This will only work with
+16-bit Wave files.
+
+Perhaps you are wondering how much of a performance hit you'll be
+taking using the Python bindings versus straight C. Well, I've tried
+to make things as fast as possible, but of course nothing's
+perfect. Decoding a file, top reports about the same CPU usage for my
+ogg123.py and the C implementation of ogg123. For encoding, it's about
+twice as slow as oggenc if you're using my test enc.py file (parsing
+the wave file somewhat by hand). If you use the write_wav function,
+it's only about 3% slower than oggenc.
+
+
+
+Vorbis Comment
+--------------
+
+A frequent question is how to edit and then write comments. This was
+not possible until recently. To implement this, I have taken the code
+from the vorbiscomment program, which is by Michael Smith and released
+under the LGPL. It has not been modified by me (Andrew).
+
+There was an old way of dealing with VorbisComment objects, which
+sucked, so I won't tell you how to use it. It still works but is
+deprecated.
+
+The current way of using VorbisComment objects is just to convert to
+and from Python dictionaries. Note that there can be multiple entries
+per key and that keys are case-insensitive 7-bit ASCII, because that's
+how vorbis comments work. So I might do:
+
+>>> import ogg.vorbis
+>>> v = {'mykey' : ['myval1', 'myval2']}
+>>> v['artist'] = u'andrew' # Unicode string for Python >= 1.6
+>>> print v
+{'artist': 'andrew', 'mykey': ['myval1', 'myval2']}
+>>> comments = ogg.vorbis.VorbisComment(v)
+
+There, we made a comment object from a dictionary. The values of the
+dictionary are either strings or lists or strings. We can also convert
+back to a dictionary, though it'll look a little different:
+
+>>> print comments.as_dict()
+{'ARTIST': [u'andrew'], 'MYKEY': ['myval1', 'myval2']}
+
+We could also have gotten a comment object from a vorbis file:
+
+>>> import ogg.vorbis
+>>> f = ogg.vorbis.VorbisFile('test.ogg')
+>>> print f.comment().as_dict()
+
+To write the comments to an existing ogg/vorbis file, call v.write_to
+or v.append_to. The former will add lots of keys, so if you already
+have an artist key, and you add another, you now have two arist keys
+in that file. Note that currently the VENDOR tag (which is special)
+doesn't get written to the file. I'll have to look into that.

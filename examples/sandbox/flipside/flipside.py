@@ -73,14 +73,15 @@ class AlbumFloater(MTScatterImage):
         self.album = kwargs.get('album')
         self.artist = kwargs.get('artist')
         
-        self.album_lbl = MTLabel(text=self.album, font_size=12, pos=(5, 3))
-        self.artist_lbl = MTLabel(text=self.artist, font_size=12, pos=(5, 16))
-        self.rect = MTRectangularWidget(pos=(0, 0), size=(self.width, 40))
-
-        self.add_widget(self.rect, 'front')
-        self.add_widget(self.album_lbl, 'front')
-        self.add_widget(self.artist_lbl, 'front')
-
+        if self.artist or self.album:
+            self.album_lbl = MTLabel(text=self.album, font_size=12, pos=(5, 3))
+            self.artist_lbl = MTLabel(text=self.artist, font_size=12, pos=(5, 16))
+            self.rect = MTRectangularWidget(pos=(0, 0), size=(self.width, 40))
+        
+            self.add_widget(self.rect, 'front')
+            self.add_widget(self.album_lbl, 'front')
+            self.add_widget(self.artist_lbl, 'front')
+        
     def on_touch_down(self, touches, touchID, x, y):
         if touches[touchID].is_double_tap:
             self.flip()

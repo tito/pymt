@@ -50,15 +50,21 @@ class AlbumFloater(MTScatterImage):
     def on_touch_down(self, touches, touchID, x, y):
         if touches[touchID].is_double_tap:
             self.flip()
-        else:
-            print 'foo!'
-            super(AlbumFloater, self).on_touch_down(touches, touchID, x, y)
-            print self.children
 
-    def on_touch_move(self, touches, touchID, x, y):
-        super(AlbumFloater, self).on_touch_move(touches, touchID, x, y)
-        
-    
+        ###TODO: FIGURE OUT WHY IT WORKS THIS WAY AND NOT: super(AlbumFloater, self).on_touch_down(self, touches, touchID, x, y)###
+        # if the touch isnt on teh widget we do nothing
+        if not self.collide_point(x,y):
+            return False
+
+        # let the child widgets handle the event if they want
+        lx,ly = self.to_local(x,y)
+        if super(MTScatterWidget, self).on_touch_down(touches, touchID, lx, ly):
+            return True
+
+        # if teh children didnt handle it, we bring to front & keep track of touches for rotate/scale/zoom action
+        self.bring_to_front()
+        self.touches[touchID] = Vector(x,y)
+        return True
         
 #MUSIC_DIR = '/home/alex/Music'
 #music_tree = os.walk(MUSIC_DIR)
@@ -68,8 +74,8 @@ w = MTWindow(fullscreen=False, size=(600, 600))
 k = MTKinetic()
 w.add_widget(k)
 
-#p = MTScatterPlane()
-#k.add_widget(p)
+p = MTScatterPlane()
+k.add_widget(p)
 
 s = AlbumFloater(filename='/home/alex/Desktop/cover.jpg')
 
@@ -83,6 +89,6 @@ for file in glob.glob('/home/alex/Music/Pink Floyd/Wish You Were Here/*.ogg'):
 
 
 
-k.add_widget(s)
+p.add_widget(s)
 
 runTouchApp()

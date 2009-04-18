@@ -233,9 +233,9 @@ class MTKineticList(MTStencilContainer):
             self.sinput.on_text_change = self.apply_filter
             self.widgets.append(self.sinput)
 
-        #Animations to hide and show the search text input box
-        self.a_sinput_in = Animation(self.sinput, 'Move In', 'y', self.y + self.height - 40 - self.sinput.size[1], 1, 10)
-        self.a_sinput_out = Animation(self.sinput, 'Move Out', 'y', self.y + self.height - self.sinput.size[1], 1, 10)
+            #Animations to hide and show the search text input box
+            self.a_sinput_in = Animation(self.sinput, 'Move In', 'y', self.y + self.height - 40 - self.sinput.size[1], 1, 10)
+            self.a_sinput_out = Animation(self.sinput, 'Move Out', 'y', self.y + self.height - self.sinput.size[1], 1, 10)
 
         #How far to offset the axes(used for scrolling/panning)
         self.xoffset = 0

@@ -1,4 +1,4 @@
-import os
+import os, sys
 from pymt import *
 from pymt.logger import pymt_logger
 import pyglet
@@ -10,8 +10,8 @@ MUSIC_TYPES = {'ogg' : ogg.Open}
 IMAGE_TYPES = ['jpg', 'png']
 
 def get_file_ext(file):
-    return file.split('/').pop().split('.').pop().lower()
- 
+    return os.path.splitext(file)[1][1:]
+
 def get_comments(file):
     ext = get_file_ext(file)
     if ext in MUSIC_TYPES:
@@ -26,10 +26,10 @@ class PlayManager(MTScatterWidget):
         super(PlayManager, self).__init__(**kwargs)
         self.player = pyglet.media.Player()
 
-        self.play = MTButton(label='Play!', 
+        self.btnplay = MTButton(label='Play!', 
                              bold=True)
-        self.play.on_press = lambda x, y, z: self.player.play()
-        self.children.append(self.play)
+        self.btnplay.on_press = lambda x, y, z: self.player.play()
+        self.children.append(self.btnplay)
 
     def play(self, file):
         self.player.seek(0)
@@ -167,7 +167,12 @@ Root Music Dir
       ---Song ...
       ---Song n
 '''
+current_dir = os.path.dirname(__file__)
 MUSIC_DIR = '/home/alex/Music'
+music_tree = None
+if len(sys.argv) > 1 and os.path.exists(sys.argv[-1]):
+    MUSIC_DIR = sys.argv[-1]
+pymt_logger.info('Loading music from %s' % MUSIC_DIR)
 music_tree = os.walk(MUSIC_DIR)
 
 albums = []
@@ -191,21 +196,26 @@ for branch in music_tree:
         cover = filter(lambda x: get_file_ext(x) in IMAGE_TYPES, branch[2]).pop(0)
         cover = os.path.join(path, cover)
     except:
-        cover = '/home/alex/Desktop/cover.jpg'
+        cover = os.path.join(current_dir, 'cover.jpg')
+        if not os.path.exists(cover):
+            cover = '/home/alex/Desktop/cover.jpg'
     if branch[2]:
         t = path.split('/')
         album = t.pop()
         artist = t.pop()
-        a = AlbumFloater(filename=cover, player=player, album=album, artist=artist)
+        a = None
         for song in songs:
             file = os.path.join(path, song)
             com = get_comments(file)
             if not com:
                 #The file is not supported, skip it
                 continue
+            if a is None:
+                a = AlbumFloater(filename=cover, player=player, album=album, artist=artist)
             a.list.add_song(file, com)
-        a.list.sort()
-        p.add_widget(a)
+        if a:
+            a.list.sort()
+            p.add_widget(a)
 
 
 

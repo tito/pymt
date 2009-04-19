@@ -49,7 +49,8 @@ class MTButton(MTWidget):
         kwargs.setdefault('anchor_x', 'center')
         kwargs.setdefault('anchor_y', 'center')
         kwargs.setdefault('font_size', 10)
-        kwargs.setdefault('bold', True)
+        kwargs.setdefault('font_name', '')
+        kwargs.setdefault('bold', False)
         kwargs.setdefault('border_radius', 0)
 
         super(MTButton, self).__init__(**kwargs)
@@ -61,6 +62,7 @@ class MTButton(MTWidget):
         self.clickActions   = []
         self._label         = str(kwargs.get('label'))
         self.label_obj      = Label(
+            font_name=kwargs.get('font_name'),
             font_size=kwargs.get('font_size'),
             bold=kwargs.get('bold'),
             anchor_x=kwargs.get('anchor_x'),

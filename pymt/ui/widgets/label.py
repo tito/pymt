@@ -33,6 +33,6 @@ class MTLabel(MTWidget):
         super(MTLabel, self).apply_css(styles)
 
     def draw(self):
-        drawLabel(self.text, pos=self.pos,center=False, font_size=self.font_size)
+        drawLabel(self.text, pos=self.pos, center=False, font_size=self.font_size)
 
 MTWidgetFactory.register('MTLabel', MTLabel)

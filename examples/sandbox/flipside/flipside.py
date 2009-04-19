@@ -22,8 +22,14 @@ def get_comments(file):
 
 class PlayManager(MTScatterWidget):
     def __init__(self, **kwargs):
+        kwargs['pos'] = (300, 300)
         super(PlayManager, self).__init__(**kwargs)
         self.player = pyglet.media.Player()
+
+        self.play = MTButton(label='Play!', 
+                             bold=True)
+        self.play.on_press = lambda x, y, z: self.player.play()
+        self.children.append(self.play)
 
     def play(self, file):
         self.player.seek(0)
@@ -33,6 +39,12 @@ class PlayManager(MTScatterWidget):
             self.player.next()
         else:
             self.player.play()
+
+    def queue(self, file):
+        source = pyglet.media.load(file, streaming=True)
+        self.player.queue(source)
+        print file
+        print 'foo'
 
 class KineticSong(MTKineticItem):
     def __init__(self, **kwargs):
@@ -52,6 +64,14 @@ class SongList(MTKineticList):
         
         super(SongList, self).__init__(**kwargs)
         self.player = kwargs.get('player')
+
+        self.pb = MTButton(label='Play', 
+                           bgcolor=(0, 1, 0, .5), 
+                           bold=True, pos=(self.x, self.y+self.height-40),
+                           size=(80, 40))
+
+        self.pb.on_press = lambda x, y, z: map(lambda s: self.player.queue(s.path), reversed(self.children))
+        self.widgets.append(self.pb)
 
     def add_song(self, path, comments):
         print path

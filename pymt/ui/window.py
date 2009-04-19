@@ -5,6 +5,7 @@ Window package: provide a window + a touch display
 __all__ = ['MTWindow', 'MTDisplay']
 
 import sys
+import pyglet
 from pyglet.gl import *
 from pyglet import *
 import pymt

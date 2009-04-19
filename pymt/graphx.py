@@ -266,7 +266,7 @@ def drawCircle(pos=(0,0), radius=1.0):
     '''
     x, y = pos[0], pos[1]
     with gx_matrix:
-        glTranslated(x,y, 0)
+        glTranslated(x, y, 0)
         glScaled(radius, radius, 1.0)
         gluDisk(gluNewQuadric(), 0, 1, 32,1)
 

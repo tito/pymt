@@ -8,14 +8,15 @@ from mutagen import oggvorbis as ogg
 try:
     import sqlalchemy as sql
     from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
-    from sqlalchemy.orm import mapper, sesionmaker
+    from sqlalchemy.orm import mapper, sessionmaker
 except:
     pymt_logger.critical("You are missing SQLAlchemy, which is needed for FlipSide to run")
     sys.exit()
 
 def LetThemKnowTheTruth(x):
-    pymt.logger.critical("You have MP3 Files!  Those suck!  Convert them to ogg and delete them!")
-    pymt.logger.info("btw, if you want to implement an mp3 handler, xelapond would be very appreciative:)")
+    pymt_logger.critical("You have MP3 Files!  Those suck!  Convert them to ogg and delete them!")
+    pymt_logger.info("btw, if you want to implement an mp3 handler, xelapond would be very appreciative:)")
+    print x
     del x #Kill the mp3 file
 
 #TODO: Add more music types and handlers
@@ -32,6 +33,19 @@ def get_comments(file):
     else:
         pymt_logger.warning('File "%s" is not recognized by FlipSide', file)
         return None
+
+def parse_comments(file):
+    ext = get_file_ext(file)
+    comments = get_comments(file)
+    if ext == 'ogg':
+        return {
+            'title' : str(comments['title'].pop()),
+            'path' : file,
+            'album' : str(comments['album'].pop()),
+            'artist' : str(comments['artist'].pop()),
+            'date' : str(comments['date'].pop()),
+            'tracknumber' : str(comments['tracknumber'].pop())
+            }
 
 class PlayManager(MTScatterWidget):
     def __init__(self, **kwargs):
@@ -184,7 +198,7 @@ if len(sys.argv) > 1 and os.path.exists(sys.argv[-1]):
 pymt_logger.info('Loading music from %s' % MUSIC_DIR)
 music_tree = os.walk(MUSIC_DIR)
 
-albums = []
+'''albums = []
 
 player = PlayManager()
 
@@ -196,13 +210,57 @@ w.add_widget(k)
 p = MTScatterPlane()
 k.add_widget(p)
 
-p.add_widget(player)
+p.add_widget(player)'''
 
+class SQLSongObject(object):
+    '''This holds all the info about a song, and it is usually used within the 
+    KineticSong objects.  I just felt it would be nice to separate the kinetic
+    code from the song metadata.  When the ORM is used this is where it all gets
+    put
+    '''
+    def __init__(self, title, path, album, artist, date, tracknumber):
+        self.title = title
+        self.path = path
+        self.album = album
+        self.artist = artist
+        self.date = date
+        self.tracknumber = tracknumber
 
+    def __repr__(self):
+        return "<Song('%s', '%s', '%s', '%s', '%s', '%s')>" % (self.title, self.path, self.album, self.artist, self.date, self.tracknumber)
+            
+
+#SQL Stuff
+
+engine = sql.create_engine('sqlite:///:memory:', echo=True)
+
+metadata = MetaData()
+songs_table = Table('songs', metadata,
+                   Column('title', String, primary_key=True),
+                   Column('path', String),
+                   Column('album', String),
+                   Column('artist', String),
+                   Column('date', String),
+                   Column('tracknumber', Integer)
+                   )
+
+metadata.create_all(engine)
+
+mapper(SQLSongObject, songs_table)
+
+session = sessionmaker(bind=engine)()
 
 ## NEW METHOD##
 for branch in music_tree:
-    
+    for song in branch[2]:
+        path = os.path.join(branch[0], song)
+        comments = parse_comments(path)
+        if comments:
+            sqlsong = SQLSongObject(**comments)
+            session.add(sqlsong)
+
+
+print session.query(SQLSongObject).filter_by(artist='Pink Floyd').all()
 
 '''
 for branch in music_tree:
@@ -235,4 +293,4 @@ for branch in music_tree:
 '''
 
 
-runTouchApp()
+#runTouchApp()

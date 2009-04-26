@@ -86,9 +86,9 @@ class CaptureGesture(MTGestureWidget):
         else:
             labeltext = 'No gesture found'
             labeltext2 = ''
-        drawLabel(text=labeltext, pos=(self.pos[0] + s*3, self.pos[1] + self.height + s * 0.8 + self.height * 0.07),
+        drawLabel(label=labeltext, pos=(self.pos[0] + s*3, self.pos[1] + self.height + s * 0.8 + self.height * 0.07),
                 font_size=self.height * 0.07, center=False)
-        drawLabel(text=labeltext2, pos=(self.pos[0] + s*3, self.pos[1] + self.height + s * 0.8),
+        drawLabel(label=labeltext2, pos=(self.pos[0] + s*3, self.pos[1] + self.height + s * 0.8),
                 font_size=self.height * 0.07, center=False)
 
 class GestureUI(MTWidget):
@@ -97,7 +97,7 @@ class GestureUI(MTWidget):
         self.gdb = gdb
         self.capture = CaptureGesture(gdb)
         self.add_widget(self.capture)
-        self.title = MTLabel(text='Gesture Recognition Example')
+        self.title = MTLabel(label='Gesture Recognition Example')
         self.add_widget(self.title)
 
     def on_draw(self):

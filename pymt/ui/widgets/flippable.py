@@ -17,8 +17,8 @@ class MTFlippableWidget(MTWidget):
 
         from pymt import *
         s = MTFlippableWidget()
-        s.add_widget(MTLabel(text="Front"), side='front')
-        s.add_widget(MTLabel(text="Back"), side='back')
+        s.add_widget(MTLabel(label="Front"), side='front')
+        s.add_widget(MTLabel(label="Back"), side='back')
         w = MTWindow()
         w.add_widget(s)
         @s.event

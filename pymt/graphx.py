@@ -129,11 +129,11 @@ def set_texture(texture, target=None):
         target = get_texture_target(texture)
     glBindTexture(target, get_texture_id(texture))
 
-def drawLabel(text, pos=(0,0), **kwargs):
+def drawLabel(label, pos=(0,0), **kwargs):
     '''Draw a label on the window.
 
     :Parameters:
-        `text` : str
+        `label` : str
             Text to be draw
         `pos` : tuple, default to (0, 0)
             Position of text
@@ -155,7 +155,7 @@ def drawLabel(text, pos=(0,0), **kwargs):
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
     del kwargs['center']
-    temp_label = Label(text, **kwargs)
+    temp_label = Label(label, **kwargs)
     temp_label.x, temp_label.y = pos
     temp_label.draw()
     return temp_label.content_width

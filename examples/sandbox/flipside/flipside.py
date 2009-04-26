@@ -22,6 +22,12 @@ def LetThemKnowTheTruth(x):
 #TODO: Add more music types and handlers
 MUSIC_TYPES = {'ogg' : ogg.Open, 'mp3' : LetThemKnowTheTruth}
 IMAGE_TYPES = ['jpg', 'png']
+MUSIC_DIR = os.path.expanduser('~/Music/')
+
+current_dir = os.path.dirname(__file__)
+if len(sys.argv) > 1 and os.path.exists(sys.argv[-1]):
+    MUSIC_DIR = sys.argv[-1]
+pymt_logger.info('Loading music from %s' % MUSIC_DIR)
 
 def get_file_ext(file):
     return os.path.splitext(file)[1][1:]
@@ -82,29 +88,33 @@ class KineticSong(MTKineticItem):
         kwargs['size'] = (300, 40)
         super(KineticSong, self).__init__(**kwargs)'''
 
-class KineticSong(MTKineticItem):
-    '''This holds all the info about a song, and it is usually used within the 
-    KineticSong objects.  I just felt it would be nice to separate the kinetic
-    code from the song metadata.  When the ORM is used this is where it all gets
-    put
-    '''
-    def __init__(self, title, path, album, artist, date, tracknumber, albumart, **kwargs):
+class SQLSongMeta(object):
+    def __init__(self, title, path, album, artist, date, tracknumber, albumart):
         self.title = title
         self.path = path
         self.album = album
         self.artist = artist
         self.date = date
         self.tracknumber = tracknumber
-        self.albumart = albumart 
-        print self.title
-        kwargs['label'] = self.title
-        kwargs['size'] = (300, 40)
-        super(KineticSong, self).__init__(**kwargs)
-        
+        self.albumart = albumart
 
     def __repr__(self):
         return "<Song('%s', '%s', '%s', '%s', '%s', '%s')>" % (self.title, self.path, self.album, self.artist, self.date, self.tracknumber)
 
+class KineticSong(MTKineticItem):
+    '''This holds all the info about a song, and it is usually used within the 
+    KineticSong objects.  I just felt it would be nice to separate the kinetic
+    code from the song metadata.  When the ORM is used this is where it all gets
+    put
+    '''
+    def __init__(self, meta, **kwargs):
+        self.meta = meta
+        kwargs['label'] = self.meta.title
+        kwargs['size'] = (300, 40)
+        super(KineticSong, self).__init__(**kwargs)
+        
+
+ 
 class SongList(MTKineticList):
     def __init__(self, **kwargs):
         kwargs.setdefault('pos', (45, 0))
@@ -124,7 +134,7 @@ class SongList(MTKineticList):
         self.widgets.append(self.pb)
 
     def on_press(self, child, callback):
-        self.player.play(child.path)
+        self.player.play(child.meta.path)
 
 class AlbumFloater(MTScatterImage):
     def __init__(self, **kwargs):
@@ -171,51 +181,7 @@ class AlbumFloater(MTScatterImage):
         
 
 
-#Set this to your music directory
-'''FlipSide expects your directory to be formatted as follows:
-Root Music Dir
----Artist 1
-   ---Album 1
-      ---Song 1
-      ---Song 2
-      ---Song ...
-      ---Song n
-   ---Album 2
-      ---Song 1
-      ---Song 2
-      ---Song ...
-      ---Song n
-   ---Album n
-      ---Song 1
-      ---Song 2
-      ---Song ...
-      ---Song n
----Artist 2
-   ---Album 1
-      ---Song 1
-      ---Song 2
-      ---Song ...
-      ---Song n
-   ---Album 2
-      ---Song 1
-      ---Song 2
-      ---Song ...
-      ---Song n
-   ---Album n
-      ---Song 1
-      ---Song 2
-      ---Song ...
-      ---Song n
-'''
-current_dir = os.path.dirname(__file__)
-MUSIC_DIR = '/home/alex/Music'
-music_tree = None
-if len(sys.argv) > 1 and os.path.exists(sys.argv[-1]):
-    MUSIC_DIR = sys.argv[-1]
-pymt_logger.info('Loading music from %s' % MUSIC_DIR)
-music_tree = os.walk(MUSIC_DIR)
 
-albums = []
 
 player = PlayManager()
 
@@ -231,7 +197,7 @@ p.add_widget(player)
             
 #SQL Stuff
 
-engine = sql.create_engine('sqlite:///:memory:', echo=False, echo_pool=False)
+engine = sql.create_engine('sqlite:///library.sql', echo=False, echo_pool=False)
 
 metadata = MetaData()
 songs_table = Table('songs', metadata,
@@ -247,39 +213,43 @@ songs_table = Table('songs', metadata,
 
 metadata.create_all(engine)
 
-mapper(KineticSong, songs_table)
+mapper(SQLSongMeta, songs_table)
 
 session = sessionmaker(bind=engine, echo_uow=False)()
 
+SCAN_MUSIC = True
+
 ## NEW METHOD##
 #Find all the music in MUSIC_DIR and put it in our SQL DB
-for branch in music_tree:
-    try:
-        cover = os.path.join(branch[0], filter(lambda x: get_file_ext(x) in IMAGE_TYPES, branch[2]).pop())
-    except:
-        cover = 'cover_default.jpg'
+if SCAN_MUSIC:
+    music_tree = os.walk(MUSIC_DIR)
+    for branch in music_tree:
+        try:
+            cover = os.path.join(branch[0], filter(lambda x: get_file_ext(x) in IMAGE_TYPES, branch[2]).pop())
+        except:
+            cover = 'cover_default.jpg'
 
-    for file in branch[2]:
-        path = os.path.join(branch[0], file)
-        comments = parse_comments(path)
-        if comments:
-            comments['albumart'] = cover
-            song = KineticSong(**comments)
-            session.add(song)
+        for file in branch[2]:
+            path = os.path.join(branch[0], file)
+            comments = parse_comments(path)
+            if comments:
+                comments['albumart'] = cover
+                song = SQLSongMeta(**comments)
+                session.add(song)
         
 #Create a list of every album in the database
 #We use list(set()) so each album only appears once
-albums = [str(e[0]) for e in set(session.query(KineticSong.album).all())]
+albums = [str(e[0]) for e in set(session.query(SQLSongMeta.album).all())]
 
 for album in albums:
-    songs = session.query(KineticSong).filter(KineticSong.album==album).order_by(KineticSong.tracknumber)
+    songs = session.query(SQLSongMeta).filter(SQLSongMeta.album==album).order_by(SQLSongMeta.tracknumber)
     f = AlbumFloater(filename=songs[0].albumart, player=player, album=album, artist=songs[0].artist)
     for song in songs:
-        f.list.add(song)
+        f.list.add(KineticSong(meta=song))
         
     p.add_widget(f)
 
-
+session.commit()
 '''
 
 

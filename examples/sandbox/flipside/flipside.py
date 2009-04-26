@@ -5,8 +5,21 @@ import pyglet
 from mutagen import id3
 from mutagen import oggvorbis as ogg
 
+try:
+    import sqlalchemy as sql
+    from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
+    from sqlalchemy.orm import mapper, sesionmaker
+except:
+    pymt_logger.critical("You are missing SQLAlchemy, which is needed for FlipSide to run")
+    sys.exit()
+
+def LetThemKnowTheTruth(x):
+    pymt.logger.critical("You have MP3 Files!  Those suck!  Convert them to ogg and delete them!")
+    pymt.logger.info("btw, if you want to implement an mp3 handler, xelapond would be very appreciative:)")
+    del x #Kill the mp3 file
+
 #TODO: Add more music types and handlers
-MUSIC_TYPES = {'ogg' : ogg.Open}
+MUSIC_TYPES = {'ogg' : ogg.Open, 'mp3' : LetThemKnowTheTruth}
 IMAGE_TYPES = ['jpg', 'png']
 
 def get_file_ext(file):
@@ -43,8 +56,6 @@ class PlayManager(MTScatterWidget):
     def queue(self, file):
         source = pyglet.media.load(file, streaming=True)
         self.player.queue(source)
-        print file
-        print 'foo'
 
 class KineticSong(MTKineticItem):
     def __init__(self, **kwargs):
@@ -76,14 +87,12 @@ class SongList(MTKineticList):
     def add_song(self, path, comments):
         print path
         self.add(KineticSong(comments=comments, path=path))
-        #self.sort()
 
     def sort(self):
         self.pchildren.sort(lambda *l: (lambda x, y: y - x)(*[int(i.comments['tracknumber'].pop()) for i in l]))
         self.children = self.pchildren
 
     def on_press(self, child, callback):
-        print child
         self.player.play(child.path)
 
 class AlbumFloater(MTScatterImage):
@@ -189,6 +198,13 @@ k.add_widget(p)
 
 p.add_widget(player)
 
+
+
+## NEW METHOD##
+for branch in music_tree:
+    
+
+'''
 for branch in music_tree:
     path = branch[0]
     songs = filter(lambda x: get_file_ext(x) in MUSIC_TYPES, branch[2])
@@ -198,7 +214,7 @@ for branch in music_tree:
     except:
         cover = os.path.join(current_dir, 'cover.jpg')
         if not os.path.exists(cover):
-            cover = '/home/alex/Desktop/cover.jpg'
+            cover = 'cover_default .jpg'
     if branch[2]:
         t = path.split('/')
         album = t.pop()
@@ -216,7 +232,7 @@ for branch in music_tree:
         if a:
             a.list.sort()
             p.add_widget(a)
-
+'''
 
 
 runTouchApp()

@@ -37,6 +37,8 @@ def get_comments(file):
 def parse_comments(file):
     ext = get_file_ext(file)
     comments = get_comments(file)
+    def str(x):
+        return x
     if ext == 'ogg':
         return {
             'title' : str(comments['title'].pop()),
@@ -236,7 +238,7 @@ p.add_widget(player)
             
 #SQL Stuff
 
-engine = sql.create_engine('sqlite:///:memory:', echo=False)
+engine = sql.create_engine('sqlite:///:memory:', echo=False, echo_pool=False)
 
 metadata = MetaData()
 songs_table = Table('songs', metadata,
@@ -254,7 +256,7 @@ metadata.create_all(engine)
 
 mapper(KineticSong, songs_table)
 
-session = sessionmaker(bind=engine)()
+session = sessionmaker(bind=engine, echo_uow=False)()
 
 ## NEW METHOD##
 #Find all the music in MUSIC_DIR and put it in our SQL DB
@@ -273,20 +275,23 @@ for branch in music_tree:
         
 #Create a list of every album in the database
 #We use list(set()) so each album only appears once
-albums = list(set(session.query(KineticSong)))
+albums = [str(e[0]) for e in set(session.query(KineticSong.album).all())]
+
+print albums
 
 for album in albums:
-    print 'album'
-    songs = session.query(KineticSong).filter(KineticSong.album==album).all()
-    print
+    songs = session.query(KineticSong).filter(KineticSong.album==album).order_by(KineticSong.tracknumber)
     print songs
-    print
     f = AlbumFloater(filename=songs[0].albumart, player=player, album=album, artist=songs[0].artist)
     for song in songs:
-        print '---' + song.title
+        print song
         f.list.add_widget(song)
+    p.add_widget(f)
+
 
 '''
+
+
 for branch in music_tree:
     path = branch[0]
     songs = filter(lambda x: get_file_ext(x) in MUSIC_TYPES, branch[2])
@@ -317,4 +322,4 @@ for branch in music_tree:
 '''
 
 
-#runTouchApp()
+runTouchApp()

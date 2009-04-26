@@ -266,8 +266,8 @@ class MTKineticList(MTStencilContainer):
         callback is an optional arg that is returned when you
         tap the item(through on_press).  It is optional.
         '''
-        self.children.append(item)
-        self.pchildren.append(item)
+        self.children.insert(0, item)
+        self.pchildren.insert(0, item)
         item.parent = self
         if callback:
             self.childmap[item] = callback

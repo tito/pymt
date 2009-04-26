@@ -123,14 +123,6 @@ class SongList(MTKineticList):
         self.pb.on_press = lambda x, y, z: map(lambda s: self.player.queue(s.path), reversed(self.children))
         self.widgets.append(self.pb)
 
-    def add_song(self, song):
-        print path
-        self.add(song)
-
-    def sort(self):
-        #self.pchildren.sort(lambda *l: (lambda x, y: y - x)(*[int(i.comments['tracknumber'].pop()) for i in l]))
-        self.children = self.pchildren
-
     def on_press(self, child, callback):
         self.player.play(child.path)
 
@@ -263,14 +255,15 @@ session = sessionmaker(bind=engine, echo_uow=False)()
 #Find all the music in MUSIC_DIR and put it in our SQL DB
 for branch in music_tree:
     try:
-        cover = filter(lambda x: get_file_ext(x) in IMAGE_TYPES, branch[2]).pop()
+        cover = os.path.join(branch[0], filter(lambda x: get_file_ext(x) in IMAGE_TYPES, branch[2]).pop())
     except:
-        pass
+        cover = 'cover_default.jpg'
+
     for file in branch[2]:
         path = os.path.join(branch[0], file)
         comments = parse_comments(path)
         if comments:
-            comments['albumart'] = os.path.join(branch[0], cover)
+            comments['albumart'] = cover
             song = KineticSong(**comments)
             session.add(song)
         
@@ -278,17 +271,12 @@ for branch in music_tree:
 #We use list(set()) so each album only appears once
 albums = [str(e[0]) for e in set(session.query(KineticSong.album).all())]
 
-print albums
-
 for album in albums:
     songs = session.query(KineticSong).filter(KineticSong.album==album).order_by(KineticSong.tracknumber)
-    print songs
     f = AlbumFloater(filename=songs[0].albumart, player=player, album=album, artist=songs[0].artist)
     for song in songs:
-        print '---' + song.title
         f.list.add(song)
         
-    f.list.sort()
     p.add_widget(f)
 
 

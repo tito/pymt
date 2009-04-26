@@ -44,7 +44,7 @@ def parse_comments(file):
             'album' : str(comments['album'].pop()),
             'artist' : str(comments['artist'].pop()),
             'date' : str(comments['date'].pop()),
-            'tracknumber' : str(comments['tracknumber'].pop())
+            'tracknumber' : int(comments['tracknumber'].pop())
             }
 
 class PlayManager(MTScatterWidget):
@@ -70,7 +70,7 @@ class PlayManager(MTScatterWidget):
     def queue(self, file):
         source = pyglet.media.load(file, streaming=True)
         self.player.queue(source)
-
+'''
 class KineticSong(MTKineticItem):
     def __init__(self, **kwargs):
         self.path = kwargs.get('path')
@@ -78,7 +78,29 @@ class KineticSong(MTKineticItem):
         self.name = self.comments['title']
         kwargs['label'] = self.name.pop()
         kwargs['size'] = (300, 40)
+        super(KineticSong, self).__init__(**kwargs)'''
+
+class KineticSong(MTKineticItem):
+    '''This holds all the info about a song, and it is usually used within the 
+    KineticSong objects.  I just felt it would be nice to separate the kinetic
+    code from the song metadata.  When the ORM is used this is where it all gets
+    put
+    '''
+    def __init__(self, title, path, album, artist, date, tracknumber, albumart, **kwargs):
+        self.title = title
+        self.path = path
+        self.album = album
+        self.artist = artist
+        self.date = date
+        self.tracknumber = tracknumber
+        self.albumart = albumart 
+        kwargs['name'] = self.title
+        kwargs['size'] = (300, 40)
         super(KineticSong, self).__init__(**kwargs)
+        
+
+    def __repr__(self):
+        return "<Song('%s', '%s', '%s', '%s', '%s', '%s')>" % (self.title, self.path, self.album, self.artist, self.date, self.tracknumber)
 
 class SongList(MTKineticList):
     def __init__(self, **kwargs):
@@ -98,9 +120,9 @@ class SongList(MTKineticList):
         self.pb.on_press = lambda x, y, z: map(lambda s: self.player.queue(s.path), reversed(self.children))
         self.widgets.append(self.pb)
 
-    def add_song(self, path, comments):
+    def add_song(self, song):
         print path
-        self.add(KineticSong(comments=comments, path=path))
+        self.add(song)
 
     def sort(self):
         self.pchildren.sort(lambda *l: (lambda x, y: y - x)(*[int(i.comments['tracknumber'].pop()) for i in l]))
@@ -198,7 +220,7 @@ if len(sys.argv) > 1 and os.path.exists(sys.argv[-1]):
 pymt_logger.info('Loading music from %s' % MUSIC_DIR)
 music_tree = os.walk(MUSIC_DIR)
 
-'''albums = []
+albums = []
 
 player = PlayManager()
 
@@ -210,57 +232,59 @@ w.add_widget(k)
 p = MTScatterPlane()
 k.add_widget(p)
 
-p.add_widget(player)'''
-
-class SQLSongObject(object):
-    '''This holds all the info about a song, and it is usually used within the 
-    KineticSong objects.  I just felt it would be nice to separate the kinetic
-    code from the song metadata.  When the ORM is used this is where it all gets
-    put
-    '''
-    def __init__(self, title, path, album, artist, date, tracknumber):
-        self.title = title
-        self.path = path
-        self.album = album
-        self.artist = artist
-        self.date = date
-        self.tracknumber = tracknumber
-
-    def __repr__(self):
-        return "<Song('%s', '%s', '%s', '%s', '%s', '%s')>" % (self.title, self.path, self.album, self.artist, self.date, self.tracknumber)
+p.add_widget(player)
             
-
 #SQL Stuff
 
-engine = sql.create_engine('sqlite:///:memory:', echo=True)
+engine = sql.create_engine('sqlite:///:memory:', echo=False)
 
 metadata = MetaData()
 songs_table = Table('songs', metadata,
-                   Column('title', String, primary_key=True),
+                   Column('id', Integer, primary_key=True),
+                   Column('title', String),
                    Column('path', String),
                    Column('album', String),
                    Column('artist', String),
                    Column('date', String),
-                   Column('tracknumber', Integer)
+                   Column('tracknumber', Integer),
+                   Column('albumart', String)
                    )
 
 metadata.create_all(engine)
 
-mapper(SQLSongObject, songs_table)
+mapper(KineticSong, songs_table)
 
 session = sessionmaker(bind=engine)()
 
 ## NEW METHOD##
+#Find all the music in MUSIC_DIR and put it in our SQL DB
 for branch in music_tree:
-    for song in branch[2]:
-        path = os.path.join(branch[0], song)
+    try:
+        cover = filter(lambda x: get_file_ext(x) in IMAGE_TYPES, branch[2]).pop()
+    except:
+        pass
+    for file in branch[2]:
+        path = os.path.join(branch[0], file)
         comments = parse_comments(path)
         if comments:
-            sqlsong = SQLSongObject(**comments)
-            session.add(sqlsong)
+            comments['albumart'] = os.path.join(branch[0], cover)
+            song = KineticSong(**comments)
+            session.add(song)
+        
+#Create a list of every album in the database
+#We use list(set()) so each album only appears once
+albums = list(set(session.query(KineticSong)))
 
-
-print session.query(SQLSongObject).filter_by(artist='Pink Floyd').all()
+for album in albums:
+    print 'album'
+    songs = session.query(KineticSong).filter(KineticSong.album==album).all()
+    print
+    print songs
+    print
+    f = AlbumFloater(filename=songs[0].albumart, player=player, album=album, artist=songs[0].artist)
+    for song in songs:
+        print '---' + song.title
+        f.list.add_widget(song)
 
 '''
 for branch in music_tree:

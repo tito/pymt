@@ -96,7 +96,8 @@ class KineticSong(MTKineticItem):
         self.date = date
         self.tracknumber = tracknumber
         self.albumart = albumart 
-        kwargs['name'] = self.title
+        print self.title
+        kwargs['label'] = self.title
         kwargs['size'] = (300, 40)
         super(KineticSong, self).__init__(**kwargs)
         
@@ -127,7 +128,7 @@ class SongList(MTKineticList):
         self.add(song)
 
     def sort(self):
-        self.pchildren.sort(lambda *l: (lambda x, y: y - x)(*[int(i.comments['tracknumber'].pop()) for i in l]))
+        #self.pchildren.sort(lambda *l: (lambda x, y: y - x)(*[int(i.comments['tracknumber'].pop()) for i in l]))
         self.children = self.pchildren
 
     def on_press(self, child, callback):
@@ -284,8 +285,10 @@ for album in albums:
     print songs
     f = AlbumFloater(filename=songs[0].albumart, player=player, album=album, artist=songs[0].artist)
     for song in songs:
-        print song
-        f.list.add_widget(song)
+        print '---' + song.title
+        f.list.add(song)
+        
+    f.list.sort()
     p.add_widget(f)
 
 

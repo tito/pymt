@@ -45,7 +45,7 @@ Dependencies
 ------------
 
   * python (>= 2.5, < 3.0) - http://python.org
-  * pyglet (>= 1.1.2) - http://www.pyglet.org
+  * pyglet (== 1.1.2) - http://www.pyglet.org
   * csound (audio, optional) - http://www.csound.com
   * ounk (audio, optional) - http://code.google.com/p/ounk/
   * avbin (video, optional) - http://code.google.com/p/avbin/

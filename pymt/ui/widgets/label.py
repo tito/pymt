@@ -16,7 +16,7 @@ class MTLabel(MTWidget):
         label = MTLabel(label='Plop world')
 
     :Parameters:
-        `label` : string, default is ''
+        `label`: string, default is ''
             Text of label
         `anchor_x`: string
             X anchor of label, refer to pyglet.label.anchor_x documentation
@@ -28,8 +28,12 @@ class MTLabel(MTWidget):
             Font size of label
         `bold`: bool, default is True
             Font bold of label
+        `color`:  tuple, default is (1,1,1,1)
+            Color of label
         `multiline`: bool, default is False
             Activate multiline
+        `halign`: str, default is 'left'
+            Horizontal alignment, can be 'left', 'center', 'right'.
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('label', '')
@@ -39,8 +43,14 @@ class MTLabel(MTWidget):
         kwargs.setdefault('font_size', 10)
         kwargs.setdefault('bold', False)
         kwargs.setdefault('multiline', False)
+        kwargs.setdefault('color', (1,1,1,1))
+        kwargs.setdefault('halign', 'left')
 
         super(MTLabel, self).__init__(**kwargs)
+
+        color = kwargs.get('color')
+        if len(color) == 3:
+            color[3] = 1
 
         self.label_obj = Label(
             font_name=kwargs.get('font_name'),
@@ -49,7 +59,9 @@ class MTLabel(MTWidget):
             anchor_x=kwargs.get('anchor_x'),
             anchor_y=kwargs.get('anchor_y'),
             multiline=kwargs.get('multiline'),
+            halign=kwargs.get('halign'),
             width=self.width,
+            color=map(lambda x: int(x * 255), kwargs.get('color')),
             text=''
         )
         self.label = str(kwargs.get('label'))

@@ -282,7 +282,8 @@ def drawPolygon(points, style=GL_TRIANGLES):
     points = list(points)
     with gx_begin(style):
         while len(points):
-            glVertex2f(points.pop(), points.pop())
+            y, x = points.pop(), points.pop()
+            glVertex2f(x, y)
 
 def drawTriangle(pos, w, h, style=GL_TRIANGLES):
     '''Draw one triangle

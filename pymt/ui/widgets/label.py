@@ -85,9 +85,34 @@ class MTLabel(MTWidget):
             self.height = self.label_obj.content_height
     label = property(get_label, set_label)
 
+    def set_color(self, color):
+        if len(color) == 3:
+            color[4] = 1
+        color = map(lambda x: float(x) * 255., color)
+        self.label_obj.color = color
+    def get_color(self):
+        return map(lambda x: float(x) / 255., self.label_obj.color)
+    color = property(get_color, set_color)
+
     def draw(self):
         if len(self._label):
             self.label_obj.x, self.label_obj.y = self.pos[0], self.pos[1]
             self.label_obj.draw()
+
+    # maps some attribute directly on label_obj
+
+    shared_attributes = ('font_name', 'font_size', 'bold', 'anchor_x',
+                         'anchor_y', 'multiline', ) # halign not in pyglet
+
+    def __getattribute__(self, name):
+        if name in MTLabel.shared_attributes:
+            return self.label_obj.__getattribute__(name)
+        return super(MTLabel, self).__getattribute__(name)
+
+    def __setattr__(self, name, value):
+        if name in MTLabel.shared_attributes:
+            return self.label_obj.__setattr__(name, value)
+        return super(MTLabel, self).__setattr__(name, value)
+
 
 MTWidgetFactory.register('MTLabel', MTLabel)

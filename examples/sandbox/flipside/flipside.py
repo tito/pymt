@@ -1,17 +1,18 @@
-import os, sys
+import os 
+import sys
+from optparse import OptionParser
+
+import pyglet
+
 from pymt import *
 from pymt.logger import pymt_logger
-import pyglet
+
 from mutagen import id3
 from mutagen import oggvorbis as ogg
 
-try:
-    import sqlalchemy as sql
-    from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
-    from sqlalchemy.orm import mapper, sessionmaker
-except:
-    pymt_logger.critical("You are missing SQLAlchemy, which is needed for FlipSide to run")
-    sys.exit()
+import sqlalchemy as sql
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
+from sqlalchemy.orm import mapper, sessionmaker
 
 def LetThemKnowTheTruth(x):
     pymt_logger.critical("You have MP3 Files!  Those suck!  Convert them to ogg and delete them!")
@@ -22,12 +23,8 @@ def LetThemKnowTheTruth(x):
 #TODO: Add more music types and handlers
 MUSIC_TYPES = {'ogg' : ogg.Open, 'mp3' : LetThemKnowTheTruth}
 IMAGE_TYPES = ['jpg', 'png']
-MUSIC_DIR = os.path.expanduser('~/Music/')
 
 current_dir = os.path.dirname(__file__)
-if len(sys.argv) > 1 and os.path.exists(sys.argv[-1]):
-    MUSIC_DIR = sys.argv[-1]
-pymt_logger.info('Loading music from %s' % MUSIC_DIR)
 
 def get_file_ext(file):
     return os.path.splitext(file)[1][1:]
@@ -43,8 +40,6 @@ def get_comments(file):
 def parse_comments(file):
     ext = get_file_ext(file)
     comments = get_comments(file)
-    def str(x):
-        return x
     if ext == 'ogg':
         return {
             'title' : str(comments['title'].pop()),
@@ -78,15 +73,7 @@ class PlayManager(MTScatterWidget):
     def queue(self, file):
         source = pyglet.media.load(file, streaming=True)
         self.player.queue(source)
-'''
-class KineticSong(MTKineticItem):
-    def __init__(self, **kwargs):
-        self.path = kwargs.get('path')
-        self.comments = kwargs.get('comments')
-        self.name = self.comments['title']
-        kwargs['label'] = self.name.pop()
-        kwargs['size'] = (300, 40)
-        super(KineticSong, self).__init__(**kwargs)'''
+
 
 class SQLSongMeta(object):
     def __init__(self, title, path, album, artist, date, tracknumber, albumart):
@@ -101,6 +88,7 @@ class SQLSongMeta(object):
     def __repr__(self):
         return "<Song('%s', '%s', '%s', '%s', '%s', '%s')>" % (self.title, self.path, self.album, self.artist, self.date, self.tracknumber)
 
+
 class KineticSong(MTKineticItem):
     '''This holds all the info about a song, and it is usually used within the 
     KineticSong objects.  I just felt it would be nice to separate the kinetic
@@ -114,7 +102,6 @@ class KineticSong(MTKineticItem):
         super(KineticSong, self).__init__(**kwargs)
         
 
- 
 class SongList(MTKineticList):
     def __init__(self, **kwargs):
         kwargs.setdefault('pos', (45, 0))
@@ -135,6 +122,7 @@ class SongList(MTKineticList):
 
     def on_press(self, child, callback):
         self.player.play(child.meta.path)
+
 
 class AlbumFloater(MTScatterImage):
     def __init__(self, **kwargs):
@@ -178,109 +166,103 @@ class AlbumFloater(MTScatterImage):
         self.bring_to_front()
         self.touches[touchID] = Vector(x,y)
         return True
-        
+  
+def main():
+    # Parse command line options
+    parser = OptionParser()
+    parser.add_option('-d', '--directory',
+                      action='store',
+                      type='string',
+                      default='~/Music',
+                      dest='directory',
+                      help="The directory to search for Music Files")
+    parser.add_option('-s', '--scan',
+                      action='store_true',
+                      dest='scan',
+                      help='Scan for music files and load them into the library')
+    #parser.add_option('-r', '--reset'
 
+    opts, args = parser.parse_args()
+    if args:
+        pymt_logger.warning("FlipSide doesn't know what to do with: %s")
 
+    if opts.scan and not os.path.exists(opts.directory):
+        pymt_logger.warning("Your specified music directory %s does not exist")
+        sys.exit()
 
+    w = MTWindow()
 
-player = PlayManager()
+    k = MTKinetic()
+    w.add_widget(k)
 
-w = MTWindow()
+    p = MTScatterPlane()
+    k.add_widget(p)
 
-k = MTKinetic()
-w.add_widget(k)
-
-p = MTScatterPlane()
-k.add_widget(p)
-
-p.add_widget(player)
+    player = PlayManager()
+    p.add_widget(player)
             
-#SQL Stuff
+    #SQL Stuff
+    if not os.path.exists('library.sql'):
+        #There is no library, lets generate one
+        pymt_logger.warning("You don't have a music library!  To generate one, flipside.py -d /path/to/music -s")
+        sys.exit()
 
-engine = sql.create_engine('sqlite:///library.sql', echo=False, echo_pool=False)
+    engine = sql.create_engine('sqlite:///library.sql', echo=False, echo_pool=False)
 
-metadata = MetaData()
-songs_table = Table('songs', metadata,
-                   Column('id', Integer, primary_key=True),
-                   Column('title', String),
-                   Column('path', String),
-                   Column('album', String),
-                   Column('artist', String),
-                   Column('date', String),
-                   Column('tracknumber', Integer),
-                   Column('albumart', String)
-                   )
+    metadata = MetaData()
+    songs_table = Table('songs', metadata,
+                        Column('id', Integer, primary_key=True),
+                        Column('title', String),
+                        Column('path', String),
+                        Column('album', String),
+                        Column('artist', String),
+                        Column('date', String),
+                        Column('tracknumber', Integer),
+                        Column('albumart', String)
+                        )
 
-metadata.create_all(engine)
+    metadata.create_all(engine)
 
-mapper(SQLSongMeta, songs_table)
+    mapper(SQLSongMeta, songs_table)
 
-session = sessionmaker(bind=engine, echo_uow=False)()
+    session = sessionmaker(bind=engine, echo_uow=False)()
 
-SCAN_MUSIC = True
+    ## NEW METHOD##
+    #Find all the music in MUSIC_DIR and put it in our SQL DB
+    if opts.scan:
+        music_tree = os.walk(os.path.expanduser(opts.directory))
+        for branch in music_tree:
+            try:
+                cover = os.path.join(branch[0], filter(lambda x: get_file_ext(x) in IMAGE_TYPES, branch[2]).pop())
+            except:
+                cover = 'cover_default.jpg'
 
-## NEW METHOD##
-#Find all the music in MUSIC_DIR and put it in our SQL DB
-if SCAN_MUSIC:
-    music_tree = os.walk(MUSIC_DIR)
-    for branch in music_tree:
-        try:
-            cover = os.path.join(branch[0], filter(lambda x: get_file_ext(x) in IMAGE_TYPES, branch[2]).pop())
-        except:
-            cover = 'cover_default.jpg'
+            for file in branch[2]:
+                path = os.path.join(branch[0], file)
+                comments = parse_comments(path)
+                if comments:
+                    comments['albumart'] = cover
+                    song = SQLSongMeta(**comments)
+                    session.add(song)
 
-        for file in branch[2]:
-            path = os.path.join(branch[0], file)
-            comments = parse_comments(path)
-            if comments:
-                comments['albumart'] = cover
-                song = SQLSongMeta(**comments)
-                session.add(song)
+        session.commit()
         
-#Create a list of every album in the database
-#We use list(set()) so each album only appears once
-albums = [str(e[0]) for e in set(session.query(SQLSongMeta.album).all())]
+    #Create a list of every album in the database
+    #We use list(set()) so each album only appears once
+    #The list comprehension is to get it out of the list tuple and out of unicode
+    albums = [str(e[0]) for e in set(session.query(SQLSongMeta.album).all())]
 
-for album in albums:
-    songs = session.query(SQLSongMeta).filter(SQLSongMeta.album==album).order_by(SQLSongMeta.tracknumber)
-    f = AlbumFloater(filename=songs[0].albumart, player=player, album=album, artist=songs[0].artist)
-    for song in songs:
-        f.list.add(KineticSong(meta=song))
-        
-    p.add_widget(f)
-
-session.commit()
-'''
-
-
-for branch in music_tree:
-    path = branch[0]
-    songs = filter(lambda x: get_file_ext(x) in MUSIC_TYPES, branch[2])
-    try:
-        cover = filter(lambda x: get_file_ext(x) in IMAGE_TYPES, branch[2]).pop(0)
-        cover = os.path.join(path, cover)
-    except:
-        cover = os.path.join(current_dir, 'cover.jpg')
-        if not os.path.exists(cover):
-            cover = 'cover_default .jpg'
-    if branch[2]:
-        t = path.split('/')
-        album = t.pop()
-        artist = t.pop()
-        a = None
+    for album in albums:
+        #Get a list of every song in the album "album" in the order that they appear on the CD
+        songs = session.query(SQLSongMeta).filter(SQLSongMeta.album==album).order_by(SQLSongMeta.tracknumber)
+        f = AlbumFloater(filename=songs[0].albumart, player=player, album=album, artist=songs[0].artist)
         for song in songs:
-            file = os.path.join(path, song)
-            com = get_comments(file)
-            if not com:
-                #The file is not supported, skip it
-                continue
-            if a is None:
-                a = AlbumFloater(filename=cover, player=player, album=album, artist=artist)
-            a.list.add_song(file, com)
-        if a:
-            a.list.sort()
-            p.add_widget(a)
-'''
+            #Add all the songs on the album to the floater
+            f.list.add(KineticSong(meta=song))
+        
+        p.add_widget(f)
 
+    runTouchApp()
 
-runTouchApp()
+if __name__ == '__main__':
+    main()

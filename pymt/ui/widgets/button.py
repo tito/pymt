@@ -52,6 +52,7 @@ class MTButton(MTWidget):
         kwargs.setdefault('font_name', '')
         kwargs.setdefault('bold', False)
         kwargs.setdefault('border_radius', 0)
+        kwargs.setdefault('multiline', False)
 
         super(MTButton, self).__init__(**kwargs)
         self.register_event_type('on_press')
@@ -67,7 +68,8 @@ class MTButton(MTWidget):
             bold=kwargs.get('bold'),
             anchor_x=kwargs.get('anchor_x'),
             anchor_y=kwargs.get('anchor_y'),
-            text=kwargs.get('label')
+            text=kwargs.get('label'),
+            multiline=kwargs.get('multiline')
         )
         if 'color_down' in kwargs:
             self.color_down = kwargs.get('color_down')

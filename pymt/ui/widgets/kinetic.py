@@ -6,7 +6,7 @@ __all__ = ['MTKinetic', 'MTKineticList', 'MTKineticObject', 'MTKineticItem', 'MT
 
 from pyglet.gl import *
 from pyglet.text import Label
-from ...graphx import set_color, drawRectangle
+from ...graphx import set_color, drawRectangle, GlDisplayList
 from ..factory import MTWidgetFactory
 from ...vector import Vector
 from ...mtpyglet import getFrameDt

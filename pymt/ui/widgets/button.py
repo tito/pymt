@@ -53,12 +53,12 @@ class MTButton(MTWidget):
         kwargs.setdefault('bold', False)
         kwargs.setdefault('border_radius', 0)
         kwargs.setdefault('multiline', False)
+        kwargs.setdefault('width', 0)
 
-        super(MTButton, self).__init__(**kwargs)
         self.register_event_type('on_press')
         self.register_event_type('on_release')
 
-        self._button_dl     = GlDisplayList()
+        self.button_dl     = GlDisplayList()
         self._state         = ('normal', 0)
         self.clickActions   = []
         self._label         = str(kwargs.get('label'))
@@ -69,13 +69,17 @@ class MTButton(MTWidget):
             anchor_x=kwargs.get('anchor_x'),
             anchor_y=kwargs.get('anchor_y'),
             text=kwargs.get('label'),
-            multiline=kwargs.get('multiline')
+            multiline=kwargs.get('multiline'),
+            width=kwargs.get('width')
         )
         if 'color_down' in kwargs:
             self.color_down = kwargs.get('color_down')
         if 'bgcolor' in kwargs:
             self.bgcolor = kwargs.get('bgcolor')
         self.border_radius  = kwargs.get('border_radius')
+
+        super(MTButton, self).__init__(**kwargs)
+
 
     def apply_css(self, styles):
         if 'color-down' in styles:
@@ -89,7 +93,7 @@ class MTButton(MTWidget):
     def set_label(self, text):
         self._label = str(text)
         self.label_obj.text = self._label
-        self._button_dl.clear()
+        self.button_dl.clear()
     label = property(get_label, set_label)
 
     def get_state(self):
@@ -105,7 +109,7 @@ class MTButton(MTWidget):
         pass
 
     def on_resize(self, w, h):
-        self._button_dl.clear()
+        self.button_dl.clear()
 
     def draw(self):
         # Select color
@@ -118,8 +122,8 @@ class MTButton(MTWidget):
             glTranslatef(self.x, self.y, 0)
 
             # Construct display list if possible
-            if not self._button_dl.is_compiled():
-                with self._button_dl:
+            if not self.button_dl.is_compiled():
+                with self.button_dl:
                     if self.border_radius > 0:
                         drawRoundedRectangle(size=self.size, radius=self.border_radius)
                     else:
@@ -127,7 +131,7 @@ class MTButton(MTWidget):
                     if len(self._label):
                         self.label_obj.x, self.label_obj.y = self.width/2 , self.height/2
                         self.label_obj.draw()
-            self._button_dl.draw()
+            self.button_dl.draw()
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):

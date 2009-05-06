@@ -149,7 +149,24 @@ class MTWidget(pyglet.event.EventDispatcher):
             style = css_get_style(widget=self)
             self.apply_css(style)
 
+        self.inner_animations = []
+
         self.init()
+
+    def __setattr__(self, name, value, inner=False):
+        if hasattr(self, 'inner_animations'):
+            label = '__%s' % name
+            if name in self.inner_animations and not inner:
+                # remove old animation
+                self.stop_animations(label=label)
+                self.remove_animation(label=label)
+                # add new
+                self.add_animation(label=label,
+                    prop=name, to=value, timestep=1./60, length=1.,
+                    inner=True)
+                self.start_animations(label=label)
+            print 'set for', self, 'attribute', name, '=', value
+        super(MTWidget, self).__setattr__(name, value)
 
     def _set_id(self, id):
         global _id_2_widget
@@ -372,10 +389,9 @@ class MTWidget(pyglet.event.EventDispatcher):
         if w in self.children:
             self.children.remove(w)
 
-    def add_animation(self, label, prop, to , timestep, length,
-                      func=AnimationAlpha.ramp):
+    def add_animation(self, *largs, **kwargs):
         '''Add an animation in widget.'''
-        anim = Animation(self, label, prop, to, timestep, length, func=func)
+        anim = Animation(self, *largs, **kwargs)
         self.animations.append(anim)
         return anim
 

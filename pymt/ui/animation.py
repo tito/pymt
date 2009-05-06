@@ -29,7 +29,7 @@ class AnimationAlpha(object):
 class Animation(object):
     """Class to animate property over the time"""
     def __init__(self, widget, label, prop, to, timestep, length,
-                 func=AnimationAlpha.ramp):
+                 func=AnimationAlpha.ramp, inner=False):
         self.widget     = widget
         self.frame      = 0.0
         self.prop       = prop
@@ -40,6 +40,8 @@ class Animation(object):
         self.label      = label
         self.func       = func
         self.want_stop  = False
+        self.running    = False
+        self.inner      = inner
 
     def get_current_value(self):
         return self.func(self.value_from, self.value_to,
@@ -49,6 +51,7 @@ class Animation(object):
         self.want_stop = False
         self.reset()
         pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
+        self.running = True
         self.widget.dispatch_event('on_animation_start', self)
 
     def reset(self):
@@ -67,6 +70,7 @@ class Animation(object):
         if self.frame < self.length:
             pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
         else:
+            self.running = False
             self.widget.dispatch_event('on_animation_complete', self)
 
     def get_value_from(self):
@@ -76,6 +80,12 @@ class Animation(object):
 
     def set_value_from(self, value):
         if hasattr(self.widget, self.prop):
-            self.widget.__setattr__(self.prop, value)
+            kwargs = {}
+            if self.inner:
+                kwargs['inner'] = True
+            try:
+                self.widget.__setattr__(self.prop, value, **kwargs)
+            except:
+                self.widget.__setattr__(self.prop, value)
         else:
             self.widget.__dict__[self.prop] = value

@@ -30,6 +30,9 @@ class MTScatterWidget(MTWidget):
             Set to False for disabling translation, and ['x'], ['y'] for limit translation only on x or y
         `do_scale` : boolean, default to True
             Set to False for disabling scale
+        `scale_min` : float, default to 0.01
+            Minimum scale allowed. Don't set to 0, or you can have error with singular matrix.
+            The 0.01 mean you can de-zoom up to 10000% (1/0.01*100).
 
     :Styles:
         `bg-color` : color
@@ -42,10 +45,12 @@ class MTScatterWidget(MTWidget):
         kwargs.setdefault('do_scale', True)
         kwargs.setdefault('do_rotation', True)
         kwargs.setdefault('do_translation', True)
+        kwargs.setdefault('scale_min', 0.01)
 
 
         super(MTScatterWidget, self).__init__(**kwargs)
 
+        self.scale_min      = kwargs.get('scale_min')
         self.do_scale       = kwargs.get('do_scale')
         self.do_rotation    = kwargs.get('do_rotation')
 
@@ -77,6 +82,7 @@ class MTScatterWidget(MTWidget):
         self.anim = Animation(self, 'flip', 'zangle', 180, 1, 10, func=AnimationAlpha.ramp)
 
         self.touches        = {}
+        self.scale          = 1
         self.transform_mat  = (GLfloat * 16)()
         if kwargs.get('translation')[0] != 0 or kwargs.get('translation')[1] != 0:
             self.init_transform(kwargs.get('translation'), kwargs.get('rotation'), kwargs.get('scale'))
@@ -110,6 +116,9 @@ class MTScatterWidget(MTWidget):
             pass
 
     def init_transform(self, pos, angle, scale):
+        if scale < self.scale_min:
+            scale = self.scale_min
+        self.scale = scale
         with gx_matrix_identity:
             glTranslated(pos[0], pos[1], 0)
             glScalef(scale, scale, 1)
@@ -191,6 +200,11 @@ class MTScatterWidget(MTWidget):
 
 
     def apply_angle_scale_trans(self, angle, scale, trans, point):
+        old_scale = self.scale
+        self.scale *= scale
+        if self.scale < self.scale_min:
+            self.scale = old_scale
+            scale = 1
         with gx_matrix_identity:
             if self.do_translation:
                 glTranslated(trans.x * self.do_translation_x, trans.y * self.do_translation_y, 0)
@@ -228,8 +242,10 @@ class MTScatterWidget(MTWidget):
 
             # compute scale factor
             old_dist = p1_start.distance(p2_start)
+            if old_dist < 1:
+                old_dist = 1
             new_dist = p1_now.distance(p2_now)
-            scale = new_dist/old_dist
+            scale = new_dist / old_dist
 
             # compute rotation angle
             old_line = p1_start - p2_start
@@ -265,11 +281,23 @@ class MTScatterWidget(MTWidget):
         return self.center[1]
     y = property(_get_y)
 
-    def get_scale_factor(self):
-        p1_trans = matrix_mult(self.transform_mat, (1,1,0,1))
-        p2_trans = matrix_mult(self.transform_mat, (2,1,0,1))
-        dist_trans = p1_trans.distance(p2_trans)
-        return dist_trans
+    def get_scale_factor(self, use_gl=False):
+        '''Return the current scale factor.
+        By default, the calculated scale is returned. You can set use_gl to
+        calculate scale factor with opengl operation. Precision is not the
+        same between them.
+
+        Exemple for a scale factor :
+            OpenGL version:     0.50279381376
+            Calculated version: 0.502793060813
+        '''
+        if use_gl:
+            p1_trans = matrix_mult(self.transform_mat, (1,1,0,1))
+            p2_trans = matrix_mult(self.transform_mat, (2,1,0,1))
+            dist_trans = p1_trans.distance(p2_trans)
+            return dist_trans
+        else:
+            return self.scale
 
     def on_touch_down(self, touches, touchID, x,y):
         # if the touch isnt on teh widget we do nothing

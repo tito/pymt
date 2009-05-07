@@ -196,13 +196,20 @@ class MTImageButton(MTButton):
             raise Exception('No filename given to MTImageButton')
 
         super(MTImageButton, self).__init__(**kwargs)
-        img                 = pyglet.image.load(kwargs.get('filename'))
-        self.image          = pyglet.sprite.Sprite(img)
+        self.filename		= kwargs.get('filename')
         self.image.x        = self.x
         self.image.y        = self.y
         self.scale          = kwargs.get('scale')
         self.image.scale    = self.scale
         self.size           = (self.image.width, self.image.height)
+
+    def _get_filename(self):
+        return self._filename
+    def _set_filename(self, filename):
+        self._filename = filename
+        img            = pyglet.image.load(filename)
+        self.image     = pyglet.sprite.Sprite(img)
+    filename = property(_get_filename, _set_filename)
 
     def draw(self):
         self.image.x        = self.x

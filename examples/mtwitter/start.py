@@ -8,6 +8,14 @@ from pymt import *
 w = MTWindow(fullscreen=True)
 sz = w.size
 
+#Exit Button
+exitButton = MTButton(label="X", pos=(sz[0]-30, sz[1]-30), size=(30, 30))
+w.add_widget(exitButton)
+
+@exitButton.event
+def on_press(touchID, x, y):
+	sys.exit()
+
 #Create Twitter API interface and login
 api = twitter.Api(username=sys.argv[1], password=sys.argv[2])
 

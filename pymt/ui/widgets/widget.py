@@ -149,24 +149,9 @@ class MTWidget(pyglet.event.EventDispatcher):
             style = css_get_style(widget=self)
             self.apply_css(style)
 
-        self.inner_animations = []
+        self.a_properties = {}
 
         self.init()
-
-    def __setattr__(self, name, value, inner=False):
-        if hasattr(self, 'inner_animations'):
-            label = '__%s' % name
-            if name in self.inner_animations and not inner:
-                # remove old animation
-                self.stop_animations(label=label)
-                self.remove_animation(label=label)
-                # add new
-                self.add_animation(label=label,
-                    prop=name, to=value, timestep=1./60, length=1.,
-                    inner=True)
-                self.start_animations(label=label)
-            print 'set for', self, 'attribute', name, '=', value
-        super(MTWidget, self).__setattr__(name, value)
 
     def _set_id(self, id):
         global _id_2_widget
@@ -413,6 +398,52 @@ class MTWidget(pyglet.event.EventDispatcher):
         for anim in self.animations:
             if anim.label == label:
                 self.animations.remove(anim)
+
+    def enable_inner_animation(self, props, **kwargs):
+        '''Activate inner animation for listed properties'''
+        props = list(props)
+        accepted_kw = ['timestep', 'length', 'func']
+        for k in kwargs:
+            if k not in accepted_kw:
+                raise Exception('Invalid keyword %s' % k)
+        for prop in props:
+            self.a_properties[prop] = kwargs
+
+    def disable_inner_animation(self, props):
+        '''Deactivate inner animation for listed properties'''
+        props = list(props)
+        for prop in props:
+            if prop in self.a_properties:
+                del self.a_properties[prop]
+
+    def update_inner_animation(self):
+        if not hasattr(self, 'a_properties'):
+            return
+        if len(self.a_properties):
+            self.__setattr__ = self.__setattr_inner_animation__
+        else:
+            self.__setattr__ = super(MTWidget, self).__setattr__
+
+    def __setattr__(self, name, value, inner=False):
+        if hasattr(self, 'a_properties') and len(self.a_properties) \
+            and name in self.a_properties and not inner:
+            label = '__%s' % name
+            kw = self.a_properties[name]
+            kw.setdefault('timestep', 1./60)
+            kw.setdefault('length', 1.)
+            kw['inner'] = True
+            kw['prop']  = name
+            kw['to']    = value
+
+            # remove old animation
+            self.stop_animations(label=label)
+            self.remove_animation(label=label)
+
+            # add new
+            self.add_animation(label=label, **kw)
+            self.start_animations(label=label)
+        else:
+            super(MTWidget, self).__setattr__(name, value)
 
     def on_resize(self, w, h):
         for c in self.children:

@@ -14,7 +14,7 @@ class Box(MTWidget):
 if __name__ == '__main__':
     w = MTWindow()
     box = Box(pos=(300, 300), size=(100, 100))
-    box.inner_animations = ['x', 'y', 'width', 'height']
+    box.enable_inner_animation(props=('x', 'y', 'width', 'height'), func=AnimationAlpha.sin)
     btn = MTButton(label='Click')
     @btn.event
     def on_press(*largs):

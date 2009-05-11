@@ -64,6 +64,9 @@ class MTWidget(pyglet.event.EventDispatcher):
             Indicate if children will be draw, or not
         `no_css` : bool, default is False
             Don't search/do css for this widget
+        `inner_animation` : custom, default is ()
+            You can activate default inner animation with this keyword
+            Format is: ('pos', ('size': {func=AnimationAlpha.sin}), )
 
     :Events:
         `on_draw` ()
@@ -112,6 +115,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         kwargs.setdefault('visible', True)
         kwargs.setdefault('draw_children', True)
         kwargs.setdefault('no_css', False)
+        kwargs.setdefault('inner_animation', ())
 
         self._id = None
         if 'id' in kwargs:
@@ -150,6 +154,11 @@ class MTWidget(pyglet.event.EventDispatcher):
             self.apply_css(style)
 
         self.a_properties = {}
+        for prop in kwargs.get('inner_animation'):
+            kw = dict()
+            if type(prop) in (list, tuple):
+                prop, kw = prop
+            self.enable_inner_animation(prop, **kw)
 
         self.init()
 
@@ -401,7 +410,10 @@ class MTWidget(pyglet.event.EventDispatcher):
 
     def enable_inner_animation(self, props, **kwargs):
         '''Activate inner animation for listed properties'''
-        props = list(props)
+        if type(props) == tuple:
+            props = list(props)
+        elif type(props) == str:
+            props = [props, ]
         accepted_kw = ['timestep', 'length', 'func']
         for k in kwargs:
             if k not in accepted_kw:

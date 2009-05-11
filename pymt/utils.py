@@ -2,7 +2,8 @@
 Utils: generic toolbox
 '''
 
-__all__ = ['intersection', 'difference', 'curry', 'strtotuple']
+__all__ = ['intersection', 'difference', 'curry', 'strtotuple',
+           'get_color_from_hex']
 
 import re
 
@@ -44,3 +45,11 @@ def strtotuple(s):
         raise Exception('Conversion failed')
     return r
 
+def get_color_from_hex(s):
+    if s.startswith('#'):
+        return get_color_from_hex(s[1:])
+
+    value = [int(x, 16)/255. for x in re.split('([0-9a-f]{2})', s) if x != '']
+    if len(value) == 3:
+        value.append(1)
+    return value

@@ -44,8 +44,16 @@ class Animation(object):
         self.inner      = inner
 
     def get_current_value(self):
-        return self.func(self.value_from, self.value_to,
-                         self.length, self.frame)
+        l = self.length
+        f = self.frame
+        a = self.value_from
+        b = self.value_to
+
+        if type(a) in (list, tuple):
+            if len(a) != len(b):
+                raise Exception()
+            return map(lambda x: self.func(a[x], b[x], l, f), xrange(len(a)))
+        return self.func(a, b, l, f)
 
     def start(self):
         self.want_stop = False

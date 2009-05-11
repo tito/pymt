@@ -72,13 +72,14 @@ class MTButton(MTWidget):
             multiline=kwargs.get('multiline'),
             width=kwargs.get('width')
         )
+
+        super(MTButton, self).__init__(**kwargs)
+
         if 'color_down' in kwargs:
             self.color_down = kwargs.get('color_down')
         if 'bgcolor' in kwargs:
             self.bgcolor = kwargs.get('bgcolor')
         self.border_radius  = kwargs.get('border_radius')
-
-        super(MTButton, self).__init__(**kwargs)
 
 
     def apply_css(self, styles):

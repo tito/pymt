@@ -214,9 +214,14 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
 
     if color:
         set_color(*color)
-    glLineWidth(linewidth)
 
-    with gx_begin(style):
+    style_enable = GL_POLYGON_SMOOTH
+    if style in (GL_LINE_LOOP, GL_LINE_STRIP, GL_LINES):
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
+        glLineWidth(linewidth)
+        style_enable = GL_LINE_SMOOTH
+
+    with DO(gx_enable(style_enable), gx_blending, gx_begin(style)):
 
         glVertex2f(x + radius, y)
         glVertex2f(x + w-radius, y)
@@ -253,7 +258,6 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
             sy = y + radius + math.sin(t) * radius
             glVertex2f (sx, sy)
             t += precision
-
 
 def drawCircle(pos=(0,0), radius=1.0):
     '''Draw a simple circle
@@ -419,7 +423,7 @@ class DO:
             item.__enter__()
 
     def __exit__(self, type, value, traceback):
-        for item in self.args:
+        for item in reversed(self.args):
             item.__exit__(type, value, traceback)
 
 

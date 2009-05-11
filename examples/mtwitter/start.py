@@ -6,6 +6,15 @@ from pymt import *
 
 #Spawn Multi-Touch Window
 w = MTWindow(fullscreen=True)
+sz = w.size
+
+#Exit Button
+exitButton = MTButton(label="X", pos=(sz[0]-30, sz[1]-30), size=(30, 30))
+w.add_widget(exitButton)
+
+@exitButton.event
+def on_press(touchID, x, y):
+	sys.exit()
 
 #Create Twitter API interface and login
 api = twitter.Api(username=sys.argv[1], password=sys.argv[2])
@@ -21,7 +30,7 @@ k.add_widget(p)
 FriendListScatter = MTScatterWidget(size=(500, 500))
 p.add_widget(FriendListScatter)
 
-friendList = MTKineticList(searchable=False, deletable=False,size=(400, 500), pos=(50,0), title="Friends")
+friendList = MTKineticList(searchable=False, deletable=False, size=(400, 500), pos=(50,0), title="Friends")
 FriendListScatter.add_widget(friendList)
 
 twitFriends = api.GetFriends()
@@ -50,5 +59,20 @@ def on_press(item, callback):
 	@TimelineExitButton.event
 	def on_press(touchID, x, y):
 		p.remove_widget(FriendTimelineScatter)
-	
+		
+#Status Update Window
+statusInput = MTTextInput()
+w.add_widget(statusInput)
+
+@statusInput.event
+def on_text_validate():
+	if len(statusInput.label) > 140:
+		statusPostError = MTPopup(title="ERROR!", content="Warning, your status update is larger than 140 characters, please shorten your post.", size=(300, 150))
+		w.add_widget(statusPostError)
+	else:
+		api.PostUpdate(statusInput.label)
+		statusPostSucess = MTPopup(title="SUCESS!", content="Your post has been successfully sent to twitter.")
+		w.add_widget(statusPostSucess)
+		statusInput.label = ""
+
 runTouchApp()

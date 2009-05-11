@@ -347,12 +347,18 @@ class MTKineticList(MTStencilContainer):
         total = 0
         if axis == 'width':
             for item in items:
-                total += item.width + self.padding_x
+                total += (item.width + self.padding_x)
         elif axis == 'height':
             for item in items:
-                total+= item.height + self.padding_y
+                total+= (item.height + self.padding_y)
 
         return total
+
+    def goto_head(self):
+        if not self.h_limit:
+            self.yoffset = -self._get_total_width(self.children, 'height')/self.w_limit + self.size[1] - 100
+        else:
+            self.xoffset = self._get_total_width(self.children, 'width')/self.h_limit + self.size[0] - 100
 
     def do_layout(self):
         '''Apply layout to all the items'''

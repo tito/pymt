@@ -1,0 +1,10 @@
+=============
+MTwitter
+=============
+
+Dependencies:
+simplejson
+
+How To Use:
+
+python start.py [username] [password]

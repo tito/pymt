@@ -1,0 +1,20 @@
+Depend dot graph maker
+======================
+
+It's a tool to generated dependicies between files.
+
+Dependices
+----------
+
+ * graphviz
+ * find + grep
+
+
+Usage
+-----
+
+ cd pymt
+ python tools/depend/depend.py > depend.dot
+ dot -Tjpg depend.dot > depend.jpg
+
+NOTE: You can use dot or fdp to generate graph.

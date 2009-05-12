@@ -42,6 +42,8 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_config.set('graphics', 'height', '480')
     pymt_config.set('graphics', 'vsync', '1')
     pymt_config.set('graphics', 'display', '-1')
+    pymt_config.set('graphics', 'polygon_smooth', '0')
+    pymt_config.set('graphics', 'line_smooth', '1')
     pymt_config.add_section('tuio')
     pymt_config.set('tuio', 'host', '127.0.0.1')
     pymt_config.set('tuio', 'port', '3333')

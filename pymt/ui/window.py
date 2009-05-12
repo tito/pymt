@@ -44,6 +44,7 @@ class MTWindow(TouchWindow):
         `bg-color` : color
             Background color of window
     '''
+    have_multisample = None
     def __init__(self, **kwargs):
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
@@ -141,12 +142,49 @@ class MTWindow(TouchWindow):
         self.dump_format    = pymt.pymt_config.get('dump', 'format')
         self.dump_idx       = 0
 
+        # init some gl
+        self.init_gl()
+
     def _set_size(self, size):
         self.set_size(*size)
     def _get_size(self):
         return self.get_size()
     size = property(_get_size, _set_size,
             doc='''Return width/height of window''')
+
+    def init_gl(self):
+        # check if window have multisample
+        if MTWindow.have_multisample is None:
+            s = (GLint)()
+            glGetIntegerv(GL_SAMPLES, s)
+            if s.value > 0:
+                pymt.pymt_logger.debug('Multisampling is available (%d)' % s.value)
+                MTWindow.have_multisample = True
+            else:
+                pymt.pymt_logger.debug('Multisampling is not available')
+                MTWindow.have_multisample = False
+
+        polygon_smooth = pymt.pymt_config.getint('graphics', 'polygon_smooth')
+        if polygon_smooth:
+            if polygon_smooth == 1:
+                hint = GL_FASTEST
+            else:
+                hint = GL_NICEST
+            if MTWindow.have_multisample:
+                glEnable(GL_MULTISAMPLE_ARB)
+                glHint(GL_MULTISAMPLE_FILTER_HINT_NV, hint)
+            else:
+                glEnable(GL_POLYGON_SMOOTH)
+                glHint(GL_POLYGON_SMOOTH_HINT, hint)
+
+        line_smooth = pymt.pymt_config.getint('graphics', 'line_smooth')
+        if line_smooth:
+            if line_smooth == 1:
+                hint = GL_FASTEST
+            else:
+                hint = GL_NICEST
+            glHint(GL_LINE_SMOOTH_HINT, hint)
+            glEnable(GL_LINE_SMOOTH)
 
     def apply_css(self, styles):
         if 'bg-color' in styles:

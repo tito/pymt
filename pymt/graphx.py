@@ -32,7 +32,8 @@ from pyglet.image import Texture, TextureRegion
 from pyglet.graphics import draw
 from pyglet.text import Label
 from logger import pymt_logger
-import math
+from . import pymt_config
+import math, os
 
 RED = (1.0,0.0,0.0)
 GREEN = (0.0,1.0,0.0)
@@ -215,13 +216,7 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
     if color:
         set_color(*color)
 
-    style_enable = GL_POLYGON_SMOOTH
-    if style in (GL_LINE_LOOP, GL_LINE_STRIP, GL_LINES):
-        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
-        glLineWidth(linewidth)
-        style_enable = GL_LINE_SMOOTH
-
-    with DO(gx_enable(style_enable), gx_blending, gx_begin(style)):
+    with DO(gx_blending, gx_begin(style)):
 
         glVertex2f(x + radius, y)
         glVertex2f(x + w-radius, y)
@@ -675,7 +670,6 @@ class SoftwareFbo(AbstractFbo):
         glPopAttrib()
 
 
-import os
 if os.path.basename(sys.argv[0]).startswith('sphinx'):
     # Bad hack for sphinx
     # He don't like when Fbo is announced in __all__,
@@ -683,15 +677,14 @@ if os.path.basename(sys.argv[0]).startswith('sphinx'):
     Fbo = HardwareFbo
 else:
     # Check if Fbo is supported by gl
-    from . import pymt_config
     if not 'GL_EXT_framebuffer_object' in gl_info.get_extensions():
         pymt_config.set('graphics', 'fbo', 'software')
 
     if not os.path.basename(sys.argv[0]).startswith('sphinx'):
         # decide what to use
         if pymt_config.get('graphics', 'fbo') == 'hardware':
-            pymt_logger.info('Fbo will use hardware Framebuffer')
+            pymt_logger.debug('Fbo will use hardware Framebuffer')
             Fbo = HardwareFbo
         else:
-            pymt_logger.info('Fbo will use software Framebuffer')
+            pymt_logger.debug('Fbo will use software Framebuffer')
             Fbo = SoftwareFbo

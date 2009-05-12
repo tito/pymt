@@ -32,7 +32,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_config.add_section('pymt')
     pymt_config.set('pymt', 'show_fps', '0')
     pymt_config.set('pymt', 'show_eventstats', '0')
-    pymt_config.set('pymt', 'log_level', 'debug')
+    pymt_config.set('pymt', 'log_level', 'info')
     pymt_config.set('pymt', 'double_tap_time', '250')
     pymt_config.set('pymt', 'double_tap_distance', '20')
     pymt_config.add_section('graphics')
@@ -53,9 +53,6 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_config.set('dump', 'prefix', 'img_')
     pymt_config.set('dump', 'format', 'jpeg')
 
-    level = LOG_LEVELS.get(pymt_config.get('pymt', 'log_level'))
-    pymt_logger.setLevel(level=level)
-
     # Read config file if exist
     if os.path.exists(pymt_config_fn):
         try:
@@ -68,6 +65,10 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
                 pymt_config.write(fd)
         except Exception, e:
             pymt_logger.exception('error while saving default configuration file')
+
+    # Set level of logger
+    level = LOG_LEVELS.get(pymt_config.get('pymt', 'log_level'))
+    pymt_logger.setLevel(level=level)
 
     # Note: import are done after logger module initialization,
     # and configuration applied to logger.

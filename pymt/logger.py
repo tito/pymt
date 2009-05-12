@@ -42,7 +42,7 @@ def formatter_message(message, use_color = True):
 COLORS = {
     'WARNING': YELLOW,
     'INFO': GREEN,
-    'DEBUG': BLUE,
+    'DEBUG': CYAN,
     'CRITICAL': RED,
     'ERROR': RED
 }

@@ -75,10 +75,10 @@ class MTBeautifulButton(MTButton):
                     if len(self._label):
                         if self.do_textshadow:
                             with gx_blending:
-                                self.label_obj.x, self.label_obj.y = self.width/2, self.height/2
+                                self.label_obj.x, self.label_obj.y = self.width/2 -1 , self.height/2 + 1
                                 self.label_obj.color = (22, 22, 22, 63)
                                 self.label_obj.draw()
-                        self.label_obj.x, self.label_obj.y = self.width/2 + 1 , self.height/2 + 1
+                        self.label_obj.x, self.label_obj.y = self.width/2 , self.height/2
                         self.label_obj.color = (255, 255, 255, 255)
                         self.label_obj.draw()
             self.button_dl.draw()

@@ -429,9 +429,13 @@ class GlBlending:
         with gx_blending:
             # do draw function
     '''
+    def __init__(self, sfactor=GL_SRC_ALPHA, dfactor=GL_ONE_MINUS_SRC_ALPHA):
+        self.sfactor = sfactor
+        self.dfactor = dfactor
+
     def __enter__(self):
         glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glBlendFunc(self.sfactor, self.dfactor)
 
     def __exit__(self, type, value, traceback):
         glDisable(GL_BLEND)

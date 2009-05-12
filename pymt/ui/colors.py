@@ -84,7 +84,7 @@ kineticcontainer {
 }
 
 window {
-    bg-color: rgb(45, 45, 45);
+    bg-color: rgb(20, 20, 20);
 }
 '''
 

@@ -14,12 +14,13 @@ __all__ = [
     'drawCircle', 'drawPolygon',
     'drawTriangle', 'drawRectangle',
     'drawTexturedRectangle', 'drawLine',
+    'drawRectangleAlpha', 'drawRoundedRectangleAlpha',
     # class for with statement
     'DO',
     'GlDisplayList', 'GlBlending',
     'GlMatrix', 'GlEnable', 'GlBegin',
     # aliases
-    'gx_blending',
+    'gx_blending', 'gx_alphablending',
     'gx_matrix', 'gx_matrix_identity',
     'gx_enable', 'gx_begin',
     # Fbo
@@ -213,6 +214,11 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
     x, y = pos
     w, h = size
 
+    if size[0] < radius * 2:
+        radius = size[0] / 2
+    if size[1] < radius * 2:
+        radius = size[1] / 2
+
     if color:
         set_color(*color)
 
@@ -360,6 +366,114 @@ def drawLine(points, width=5.0):
         while len(points):
             glVertex2f(points.pop(0), points.pop(0))
 
+def drawRoundedRectangleAlpha(pos=(0,0), size=(100,50), radius=5, alpha=(1,1,1,1),
+                         linewidth=1.5, precision=0.5, style=GL_TRIANGLE_FAN):
+    '''Draw a rounded rectangle alpha layer.
+
+    :Parameters:
+        `pos` : tuple, default to (0, 0)
+            Position of rectangle
+        `size` : tuple, default to (100, 50)
+            Size of rectangle
+        `radius` : int, default to 5
+            Radius of corner
+        `alpha` : list, default to (1, 1, 1, 1)
+            Alpha to set in each corner (top, right, bottom, left)
+        `linewidth` : float, default to 1.5
+            Line with of border
+        `precision` : float, default to 0.5
+            Precision of corner angle
+        `style` : opengl begin, default to GL_POLYGON
+            Style of the rounded rectangle (try GL_LINE_LOOP)
+    '''
+    x, y = pos
+    w, h = size
+
+    if size[0] < radius * 2:
+        radius = size[0] / 2
+    if size[1] < radius * 2:
+        radius = size[1] / 2
+
+    midalpha = 0
+    for a in alpha:
+        midalpha += a
+    midalpha /= len(alpha)
+
+    c0 = (1,1,1,midalpha)
+    c1 = (1,1,1,alpha[0]) #topleft
+    c2 = (1,1,1,alpha[2]) #bottomleft
+    c3 = (1,1,1,alpha[1]) #topright
+    c4 = (1,1,1,alpha[3]) #bottomright
+
+    with DO(gx_alphablending, gx_begin(style)):
+
+        glColor4f(*c0)
+        glVertex2f(x + w/2, y + h/2)
+        glColor4f(*c1)
+        glVertex2f(x + radius, y)
+        glColor4f(*c3)
+        glVertex2f(x + w-radius, y)
+        t = math.pi * 1.5
+        while t < math.pi * 2:
+            sx = x + w - radius + math.cos(t) * radius
+            sy = y + radius + math.sin(t) * radius
+            glVertex2f(sx, sy)
+            t += precision
+
+        glVertex2f(x + w, y + radius)
+        glColor4f(*c4)
+        glVertex2f(x + w, y + h - radius)
+        t = 0
+        while t < math.pi * 0.5:
+            sx = x + w - radius + math.cos(t) * radius
+            sy = y + h -radius + math.sin(t) * radius
+            glVertex2f(sx, sy)
+            t += precision
+
+        glVertex2f(x + w -radius, y + h)
+        glColor4f(*c2)
+        glVertex2f(x + radius, y + h)
+        t = math.pi * 0.5
+        while t < math.pi:
+            sx = x  + radius + math.cos(t) * radius
+            sy = y + h - radius + math.sin(t) * radius
+            glVertex2f(sx, sy)
+            t += precision
+
+        glVertex2f(x, y + h - radius)
+        glColor4f(*c1)
+        glVertex2f(x, y + radius)
+        t = math.pi
+        while t < math.pi * 1.5:
+            sx = x + radius + math.cos(t) * radius
+            sy = y + radius + math.sin(t) * radius
+            glVertex2f (sx, sy)
+            t += precision
+        glVertex2f(x + radius, y)
+
+def drawRectangleAlpha(pos=(0,0), size=(1.0,1.0), alpha=(1,1,1,1), style=GL_QUADS):
+    '''Draw an rectangle alpha layer.
+
+    :Parameters:
+        `pos` : tuple, default to (0, 0)
+            Position of rectangle
+        `size` : tuple, default to (1.0, 1.0)
+            Size of rectangle
+        `alpha` : list, default to (1, 1, 1, 1)
+            Alpha to set in each corner (top, right, bottom, left)
+        `style` : opengl begin, default to GL_QUADS
+            Style of rectangle (try GL_LINE_LOOP)
+    '''
+    with DO(gx_alphablending, gx_begin(style)):
+        glColor4f(1, 1, 1, alpha[0])
+        glVertex2f(pos[0], pos[1])
+        glColor4f(1, 1, 1, alpha[1])
+        glVertex2f(pos[0] + size[0], pos[1])
+        glColor4f(1, 1, 1, alpha[2])
+        glVertex2f(pos[0] + size[0], pos[1] + size[1])
+        glColor4f(1, 1, 1, alpha[3])
+        glVertex2f(pos[0], pos[1] + size[1])
+
 gl_displaylist_generate = False
 class GlDisplayList:
     '''Abstraction to opengl display-list usage. Here is an example of usage
@@ -441,6 +555,7 @@ class GlBlending:
         glDisable(GL_BLEND)
 
 gx_blending = GlBlending()
+gx_alphablending = GlBlending(sfactor=GL_DST_COLOR, dfactor=GL_ONE_MINUS_SRC_ALPHA)
 
 
 class GlMatrix:

@@ -14,7 +14,6 @@ from pyglet import *
 import time
 import pickle
 
-
 """
 I use the EventLogger and TrialLogger classes to record all the touch input, so that I can visualize/analyze the user interacitons for some user studies I am working on.
 They have absolutly nothing to do with the Graph untabgle game, i case anyone is trying to read this to learn pymt.

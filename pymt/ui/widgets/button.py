@@ -72,6 +72,8 @@ class MTButton(MTWidget):
         super(MTButton, self).apply_css(styles)
         for k in ('border-radius', 'draw-border', 'draw-text-shadow', 'draw-alpha-background'):
             self.style[k] = int(self.style[k])
+        for k in ('border-precision', ):
+            self.style[k] = float(self.style[k])
         if self.label_obj is not None:
             self.update_label()
 
@@ -119,12 +121,16 @@ class MTButton(MTWidget):
             # Construct display list if possible
             if not self.button_dl.is_compiled():
                 with self.button_dl:
+                    k = { 'radius': self.style['border-radius'],
+                          'precision': self.style['border-precision'],
+                          'size': self.size }
+
                     if self.style['border-radius'] > 0:
-                        drawRoundedRectangle(size=self.size, radius=self.style['border-radius'])
+                        drawRoundedRectangle(**k)
                         if self.style['draw-border']:
-                            drawRoundedRectangle(size=self.size, radius=self.border_radius, style=GL_LINE_LOOP)
+                            drawRoundedRectangle(style=GL_LINE_LOOP, **k)
                         if self.style['draw-alpha-background']:
-                            drawRoundedRectangleAlpha(size=self.size, radius=self.style['border-radius'], alpha=(1,1,.5,.5))
+                            drawRoundedRectangleAlpha(alpha=(1,1,.5,.5), **k)
                     else:
                         drawRectangle(size=self.size)
                         if self.style['draw-border']:

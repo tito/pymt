@@ -22,7 +22,7 @@ please look on the widget documentation.
 '''
 
 from __future__ import with_statement
-__all__ = ['default_css', 'css_get_style', 'get_truncated_classname', 'pymt_sheet']
+__all__ = ['default_css', 'css_get_style', 'get_truncated_classname', 'pymt_sheet', 'css_add_sheet']
 
 from ..logger import pymt_logger
 import os
@@ -219,6 +219,9 @@ if os.path.exists(css_filename):
     for rule in user_sheet.cssRules:
         pymt_sheet.add(rule)
 
+def css_add_sheet(text):
+	global pymt_sheet
+	pymt_sheet.cssText += text
 
 if __name__ == '__main__':
     from pymt import *

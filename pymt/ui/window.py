@@ -23,8 +23,6 @@ class MTWindow(TouchWindow):
     Use MTWindow as main window application.
 
     :Parameters:
-        `bgcolor` : list
-            Background color of window
         `view` : `MTWidget`
             Default view to add on window
         `fullscreen` : bool
@@ -52,8 +50,6 @@ class MTWindow(TouchWindow):
         # apply styles for window
         styles = css_get_style(widget=self)
         self.apply_css(styles)
-        if 'bgcolor' in kwargs:
-            self.bgcolor = kwargs.get('bgcolor')
 
         # initialize fps clock
         self.fps_display =  pyglet.clock.ClockDisplay()
@@ -186,10 +182,6 @@ class MTWindow(TouchWindow):
             glHint(GL_LINE_SMOOTH_HINT, hint)
             glEnable(GL_LINE_SMOOTH)
 
-    def apply_css(self, styles):
-        if 'bg-color' in styles:
-            self.bgcolor = styles.get('bg-color')
-
     def add_on_key_press(self, func):
         self.on_key_press_handlers.append(func)
 
@@ -251,7 +243,7 @@ class MTWindow(TouchWindow):
 
     def draw(self):
         '''Clear the window with background color'''
-        glClearColor(*self.bgcolor)
+        glClearColor(*self.style.get('bg-color'))
         self.clear()
 
     def on_draw(self):

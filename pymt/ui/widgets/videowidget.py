@@ -101,7 +101,7 @@ class MTVideoTimeline(MTSlider):
         set_color(0.2,0.2,0.2,0.5)
         drawRectangle(pos=(x,y), size=(w,h))
         # draw inner rectangle
-        set_color(*self.bgcolor)
+        set_color(*self.style.get('bg-color'))
         self.length = int(self.width*(float(self.value)/self.max))
         drawRectangle(pos=(self.x+p2,self.y+p2+11), size=(self.length,(h-self.padding)/2))
         set_color(0.713, 0.713, 0.713, 1.0)

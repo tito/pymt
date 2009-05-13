@@ -11,8 +11,8 @@ from label import MTFormLabel
 class MTFormButton(MTFormLabel):
     '''Form button : a simple button label with aligmenent support
 
-    :Parameters:
-        `color_down` : list, default is (.5, .5, .5, .5)
+    :Styles:
+        `color-down` : list
             Background color of pushed button
 
     :Events:
@@ -27,19 +27,12 @@ class MTFormButton(MTFormLabel):
         self.register_event_type('on_press')
         self.register_event_type('on_release')
         self._state         = ('normal', 0)
-        if 'color_down' in kwargs:
-            self.color_down = kwargs.get('color_down')
-
-    def apply_css(self, styles):
-        if 'color-down' in styles:
-            self.color_down = styles.get('color-down')
-        super(MTFormButton, self).apply_css(styles)
 
     def draw(self):
         if self._state[0] == 'down':
-            set_color(*self.color_down)
+            set_color(*self.style.get('color-down'))
         else:
-            set_color(*self.bgcolor)
+            set_color(*self.style.get('bg-color'))
         drawRoundedRectangle(pos=self.pos, size=self.size)
         super(MTFormButton, self).draw()
 

@@ -23,10 +23,6 @@ class MTSlider(MTWidget):
             Type of orientation, can be 'horizontal' or 'vertical'
         `value` : int, default is `min`
             Default value of slider
-        `slidercolor` : tuple
-            Color of the slider in (r,g,b,a)
-        `bgcolor` : tuple
-            Background color
     :Styles:
         `slider-color` : color
             Color of the slider
@@ -54,17 +50,6 @@ class MTSlider(MTWidget):
         self._value         = self.min
         if kwargs.get('value'):
             self._value = kwargs.get('value')
-        if kwargs.get('slidercolor'):
-            self.slidercolor = kwargs.get('slidercolor')
-        if kwargs.get('bgcolor'):
-            self.bgcolor = kwargs.get('bgcolor')
-
-    def apply_css(self, styles):
-        if 'slider-color' in styles:
-            self.slidercolor = styles.get('slider-color')
-        if 'bg-color' in styles:
-            self.bgcolor = styles.get('bg-color')
-        super(MTSlider, self).apply_css(styles)
 
     def on_value_change(self, value):
         pass
@@ -80,10 +65,10 @@ class MTSlider(MTWidget):
         x,y,w,h = self.x, self.y, self.width, self.height
         p2 =self.padding/2
         # draw outer rectangle
-        set_color(*self.bgcolor)
+        set_color(*self.style.get('bg-color'))
         drawRectangle(pos=(x,y), size=(w,h))
         # draw inner rectangle
-        set_color(*self.slidercolor)
+        set_color(*self.style.get('slider-color'))
         if self.orientation == 'vertical':
             length = int((self._value - self.min) * (self.height - self.padding) / (self.max - self.min))
             drawRectangle(pos=(x+p2,y+p2), size=(w - self.padding, length))
@@ -134,8 +119,6 @@ class MTXYSlider(MTWidget):
             Default X value of slider
         `value_y` : int, default is `min_y`
             Default Y value of slider
-        `slidercolor` : tuple
-            color of the slider in (r,g,b,a)
     :Styles:
         `slider-color` : color
             Color of the slider
@@ -167,17 +150,6 @@ class MTXYSlider(MTWidget):
             self._value_x = kwargs.get('value_x')
         if kwargs.get('value_y'):
             self._value_y = kwargs.get('value_y')
-        if kwargs.get('slidercolor'):
-            self.slidercolor = kwargs.get('slidercolor')
-        if kwargs.get('bgcolor'):
-            self.slidercolor = kwargs.get('bgcolor')
-
-    def apply_css(self, styles):
-        if 'slider-color' in styles:
-            self.slidercolor = styles.get('slider-color')
-        if 'bg-color' in styles:
-            self.bgcolor = styles.get('bg-color')
-        super(MTXYSlider, self).apply_css(styles)
 
     def on_value_change(self, value_x, value_y):
         pass
@@ -205,10 +177,10 @@ class MTXYSlider(MTWidget):
     def draw(self):
         x,y,w,h = self.x,self.y,self.width, self.height
         # draw outer rectangle
-        set_color(*self.bgcolor)
+        set_color(*self.style.get('bg-color'))
         drawRectangle(pos=(x,y), size=(w,h))
         # draw inner circle
-        set_color(*self.slidercolor)
+        set_color(*self.style.get('slider-color'))
         pos_x = int((self._value_x - self.min_x) * (self.width - self.padding*2) / (self.max_x - self.min_x))  + self.x + self.padding
         pos_y = int((self._value_y - self.min_y) * (self.height - self.padding*2) / (self.max_y - self.min_y)) + self.y + self.padding
         drawCircle(pos=(pos_x, pos_y), radius = self.radius)
@@ -253,8 +225,6 @@ class MTBoundarySlider(MTWidget):
             The default maximum value
         `value_min` : int, the default is `min + (max/4)`
             The default minumum value
-        `slidercolor` : tuple
-            color of the slider in (r,g,b,a)
         `showtext` : boolean, defaults to false
             If true, the widget will show the min/max value
 
@@ -282,22 +252,11 @@ class MTBoundarySlider(MTWidget):
         self.min            = kwargs.get('min')
         self.max            = kwargs.get('max')
         self.showtext = kwargs.get('showtext')
-        if kwargs.get('slidercolor'):
-            self.slidercolor = kwargs.get('slidercolor')
-        if kwargs.get('bgcolor'):
-            self.slidercolor = kwargs.get('bgcolor')
 
         kwargs.setdefault('value_max', 1)
         kwargs.setdefault('value_min', self.max/2)
         self.value_max = kwargs.get('value_max')
         self.value_min = kwargs.get('value_min')
-
-    def apply_css(self, styles):
-        if 'slider-color' in styles:
-            self.slidercolor = styles.get('slider-color')
-        if 'bg-color' in styles:
-            self.bgcolor = styles.get('bg-color')
-        super(MTBoundarySlider, self).apply_css(styles)
 
     def get_value(self):
         '''Scale the value to the minimum and maximum system set by the user
@@ -318,10 +277,10 @@ class MTBoundarySlider(MTWidget):
     def draw(self):
         x, y, w, h = self.x, self.y, self.width, self.height
         #Draw the outer rectangle(border)
-        set_color(*self.bgcolor)
+        set_color(*self.get('bg-color'))
         drawRectangle(pos=(x, y), size=(w,h))
         #Draw the slider
-        set_color(*self.slidercolor)
+        set_color(*self.get('slider-color'))
         if self.orientation == 'vertical':
             drawRectangle(pos=(self.x, self.y + self.value_min), size=(w, self.value_max-self.value_min))
             if self.showtext:

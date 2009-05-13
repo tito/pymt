@@ -14,36 +14,30 @@ class MTFormLabel(MTAbstractFormWidget):
     :Parameters:
         `label` : str, default is ''
             Text of label
-        `font_name` : str, default is None
-            Font name
-        `font_size` : int, default is 16
-            Font size
-        `font_style` : str, default is None
-            Style of font, can be 'bold', 'italic', 'bolditalic'
-        `font_color` : list, default is (1,1,1,1)
-            Font color
         `multiline` : bool, default is False
             Indicate if label is multiline. You should indicate a width :)
         `halign` : str, default is 'center'
             Horizontal alignement, can be 'left', 'center', 'right'
         `valign` : str, default is 'center'
             Vertical alignement, can be 'top', 'center', 'bottom'
+
+    :Styles:
+        `font-name` : str
+            Font name
+        `font-size` : int
+            Font size
+        `font-weight` : str
+            Style of font, can be 'bold', 'italic', 'bolditalic'
+        `font-color` : list
+            Font color
     '''
 
     def __init__(self, **kwargs):
         kwargs.setdefault('label', '')
         kwargs.setdefault('halign', 'center')
         kwargs.setdefault('valign', 'center')
-        kwargs.setdefault('font_name', None)
-        kwargs.setdefault('font_size', 12)
-        kwargs.setdefault('font_style', None)
-        kwargs.setdefault('font_color', (1,1,1,1))
         kwargs.setdefault('multiline', False)
         super(MTFormLabel, self).__init__(**kwargs)
-        self.font_name  = kwargs.get('font_name')
-        self.font_size  = kwargs.get('font_size')
-        self.font_style = kwargs.get('font_style')
-        self.font_color = kwargs.get('font_color')
         self.multiline  = kwargs.get('multiline')
         self.label      = kwargs.get('label')
         self.halign     = kwargs.get('halign')
@@ -56,15 +50,15 @@ class MTFormLabel(MTAbstractFormWidget):
         opts = {}
         opts['anchor_y'] = 'bottom'
         if self.font_name:
-            opts['font_name'] = self.font_name
+            opts['font_name'] = self.style.get('font-name')
         if self.font_size:
-            opts['font_size'] = self.font_size
-        if self.font_style:
-            if self.font_style in ['italic', 'bolditalic']:
+            opts['font_size'] = self.style.get('font-size')
+        if self.style.get('font-weight'):
+            if self.style.get('font-weight') in ['italic', 'bolditalic']:
                 opts['italic'] = True
-            if self.font_style in ['bold', 'bolditalic']:
+            if self.style.get('font-weight') in ['bold', 'bolditalic']:
                 opts['bold'] = True
-        opts['color'] = map(lambda x: x * 255, self.font_color)
+        opts['color'] = map(lambda x: x * 255, self.style.get('font-color'))
         opts['text'] = label
         if self.multiline:
             opts['multiline'] = self.multiline

@@ -12,22 +12,12 @@ from widget import MTWidget
 class MTRectangularWidget(MTWidget):
     '''A rectangular widget that only propagates and handles events if the event was within its bounds
     
-    :Properties:
-        `bgcolor` : list (optional)
-            Background color of widget
-
     :Styles:
         `bg-color` : color
             Background color of widget
     '''
     def __init__(self, **kwargs):
         super(MTRectangularWidget, self).__init__(**kwargs)
-        if 'bgcolor' in kwargs:
-            self.bgcolor = kwargs.get('bgcolor')
-
-    def apply_css(self, styles):
-        if 'bg-color' in styles:
-            self.bgcolor = styles.get('bg-color')
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -45,7 +35,7 @@ class MTRectangularWidget(MTWidget):
             return True
 
     def draw(self):
-        set_color(*self.bgcolor)
+        set_color(*self.style.get('bg-color'))
         drawRectangle(self.pos, self.size)
 
 MTWidgetFactory.register('MTRectangularWidget', MTRectangularWidget)

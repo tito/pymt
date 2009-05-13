@@ -23,9 +23,9 @@ class MTFormInput(MTTextInput):
 
     def draw(self):
         if self.state[0] == 'down':
-            set_color(0.5,0.5,0.5,0.5)
+            set_color(*self.style.get('color-down'))
         else:
-            set_color(*self.bgcolor)
+            set_color(*self.style.get('bg-color'))
         drawRectangle(pos=self.pos, size=self.size)
         self.label_obj.x, self.label_obj.y = self.pos
         self.label_obj.draw()

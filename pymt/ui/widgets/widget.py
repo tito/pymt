@@ -155,6 +155,7 @@ class MTWidget(pyglet.event.EventDispatcher):
             self.height = kwargs.get('height')
 
         # apply css
+        self.style = {}
         self.css_classname = kwargs.get('class')
         if not kwargs.get('no_css'):
             style = css_get_style(widget=self)
@@ -256,7 +257,7 @@ class MTWidget(pyglet.event.EventDispatcher):
     def apply_css(self, styles):
         '''Called at __init__ time to applied css attribute in current class.
         '''
-        pass
+        self.style.update(styles)
 
     def dispatch_event(self, event_type, *args):
         '''Dispatch a single event to the attached handlers.

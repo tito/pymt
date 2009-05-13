@@ -28,7 +28,6 @@ class MTTextInput(MTButton):
             Fired when the text is validate (when ENTER is hit on keyboard)
     '''
     def __init__(self, **kwargs):
-        kwargs.setdefault('font_bold', True)
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
         super(MTTextInput, self).__init__(**kwargs)
@@ -84,14 +83,14 @@ class MTTextInput(MTButton):
 
     def draw(self):
         if self.is_active_input:
-            set_color(*self.bgcolor)
+            set_color(*self.style.get('bg-color'))
             drawLine([self.center[0], self.center[1],
                       self.keyboard.center[0], self.keyboard.center[1]])
         if self.state[0] == 'down':
             set_color(0.5,0.5,0.5,0.5)
             drawRectangle((self.x,self.y) , (self.width, self.height))
         else:
-            set_color(*self.bgcolor)
+            set_color(*self.style.get('bg-color'))
             drawRectangle((self.x,self.y) , (self.width, self.height))
         self.label_obj.draw()
 
@@ -137,8 +136,8 @@ class MTKeyButton(MTButton):
     def _set_opacity(self, opacity):
         # this hack only work the keybutton
         self._opacity = opacity
-        self.color_down[3] = float(opacity) / 255.
-        self.bgcolor = self.color_down
+        self.style['color-down'][3] = float(opacity) / 255.
+        self.style['bg-color'] = self.style['color-down']
     opacity = property(_get_opacity, _set_opacity)
 
 
@@ -222,12 +221,12 @@ class MTVKeyboard(MTScatterWidget):
 
     def update_dl(self):
         with self.dlfront:
-            set_color(*self.bgcolor)
+            set_color(*self.style.get('bg-color'))
             drawRoundedRectangle((0,0), self.size)
             for w in self.children_front:
                 w.dispatch_event('on_draw')
         with self.dlback:
-            set_color(*self.bgcolor)
+            set_color(*self.style.get('bg-color'))
             drawRoundedRectangle((0,0), self.size)
             for w in self.children_back:
                 w.dispatch_event('on_draw')

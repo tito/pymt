@@ -12,7 +12,7 @@ from widget import MTWidget
 from ..animation import Animation, AnimationAlpha
 
 class MTFlippableWidget(MTWidget):
-    ''' This is wrapper widget using which you can make a 
+    ''' This is wrapper widget using which you can make a
         widget have two sides and you can flip between the sides ::
 
         from pymt import *
@@ -25,12 +25,12 @@ class MTFlippableWidget(MTWidget):
         def on_touch_down(touches, touchID, x, y):
             s.flip()
         runTouchApp()
-        
+
     :Parameters:
         `side` : front or back, defaults to add to both sides
-            This parameter tells which side to add the widget front or back.        
+            This parameter tells which side to add the widget front or back.
     '''
-    
+
     def __init__(self, **kwargs):
         super(MTFlippableWidget, self).__init__(**kwargs)
         # For flipping animations
@@ -43,8 +43,7 @@ class MTFlippableWidget(MTWidget):
         self.children = self.children_front
 
         self.anim = Animation(self, 'flip', 'zangle', 180, 1, 10, func=AnimationAlpha.ramp)
-        self.bgcolor =(0.2,0.2,0.2)
-        
+
     def add_widget(self, w, side='front', front=True):
         if side == 'front':
             if front:
@@ -68,7 +67,7 @@ class MTFlippableWidget(MTWidget):
 
     def draw(self):
         with gx_matrix:
-            set_color(*self.bgcolor)
+            set_color(self.style.get('bg-color'))
             drawRectangle((0,0), (self.width, self.height))
 
     def flip_children(self):
@@ -111,7 +110,7 @@ class MTFlippableWidget(MTWidget):
             else:
                 glRotatef(self.zangle + 180, 0, 1, 0)
             glTranslatef(-self.width / 2, 0, 0)
-            super(MTFlippableWidget, self).on_draw()            
-            
+            super(MTFlippableWidget, self).on_draw()
+
  # Register all base widgets
 MTWidgetFactory.register('MTFlippableWidget', MTFlippableWidget)

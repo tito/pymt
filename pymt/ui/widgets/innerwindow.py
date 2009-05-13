@@ -68,7 +68,7 @@ class MTInnerWindow(MTScatterWidget):
         self.color=(1,1,1,0.5)
         self.border = 20
         self.__w = self.__h = 0
-        self.container = MTInnerWindowContainer(pos=(0,0), size=self.size, bgcolor=(0,0,0))
+        self.container = MTInnerWindowContainer(pos=(0,0), size=self.size, style={'bg-color':(0,0,0)})
         super(MTInnerWindow, self).add_widget(self.container)
         self.setup_controls()
 

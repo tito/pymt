@@ -38,17 +38,24 @@ default_css = '''
     /* text color */
     color: rgba(255, 255, 255, 255);
 
-    /* selected text color */
-    color-selected: rgba(255, 120, 255, 255);
-
     /* color when something is pushed */
     color-down: rgba(50, 50, 50, 150);
 
     /* background color of widget */
     bg-color: rgba(60, 60, 60, 150);
 
-    /* font size */
+    /* fonts */
     font-size: 10;
+    font-name: "";
+    font-weight: normal; /* normal, bold, italic, bolditalic */
+
+    /* borders */
+    border-radius: 0;
+}
+
+vectorslider {
+    slider-color: rgba(255, 71, 0, 255);
+    bg-color: rgba(51, 102, 230);
 }
 
 display {
@@ -58,6 +65,7 @@ display {
 
 form,
 vkeyboard,
+flippablewidget,
 button {
     bg-color: rgba(20, 20, 20, 100);
 }

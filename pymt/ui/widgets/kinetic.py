@@ -140,8 +140,6 @@ class MTKineticList(MTStencilContainer):
             and filter items
 
     :Styles:
-        `title-color` : color
-             Color of the title bar
         `bg-color` : color
              Background color of the widget
 
@@ -209,20 +207,18 @@ class MTKineticList(MTStencilContainer):
         #Delete Button
         if self.deletable:
             self.db = MTToggleButton(label='X',
-                               bgcolor=(1, 0, 0, .5),
-                               bold=True,
                                pos=(self.x + self.width - 80, self.y + self.height - 40),
-                               size=(80, 40))
+                               size=(80, 40)
+                               style={'bg-color': (1, 0, 0, .5), 'bold': True})
             self.db.on_press = self.toggle_delete
             self.widgets.append(self.db)
 
         #Search Button and Input Text Area
         if self.searchable:
             self.sb = MTToggleButton(label='S',  #Button
-                               bgcolor=(0, 1, 0, .5),
-                               bold=True,
                                pos=(self.x, self.y + self.width - 40),
-                               size=(80, 40))
+                               size=(80, 40),
+                               style={'bg-color': (0, 1, 0, .5), 'bold': True})
 
             self.sb.on_press = self.toggle_search
             self.sb.parent = self
@@ -246,13 +242,6 @@ class MTKineticList(MTStencilContainer):
         #Self the children just holds the children currently being displayed
 
         self.touch = {} #For extra blob stats
-
-    def apply_css(self, styles):
-        if 'title-color' in styles:
-            self.slidercolor = styles.get('title-color')
-        if 'bg-color' in styles:
-            self.bgcolor = styles.get('bg-color')
-        super(MTKineticList, self).apply_css(styles)
 
     def on_press(self, child, callback):
         pass
@@ -452,7 +441,7 @@ class MTKineticList(MTStencilContainer):
             self.xoffset += t['xmot'] * self.do_x
             self.yoffset += t['ymot'] * self.do_y
             return True
-            
+
     def on_touch_up(self, touches, touchID, x, y):
         if touchID in self.touch:
             for w in self.widgets:
@@ -485,11 +474,14 @@ class MTKineticList(MTStencilContainer):
         self.vy /= 1 + (self.friction * dt)
 
     def draw(self):
-        set_color(*self.bgcolor)
-        drawRectangle(self.pos, self.size)  #background
+        # background
+        set_color(*self.style.get('bg-color'))
+        drawRectangle(self.pos, self.size)
         super(MTKineticList, self).on_draw()
-        set_color(*self.bgcolor)
-        drawRectangle((self.x, self.height + self.y - 40), (self.width, 40))  #Title Bar
+
+        # title bar
+        set_color(*self.style.get('bg-color'))
+        drawRectangle((self.x, self.height + self.y - 40), (self.width, 40))
         self.title.draw()
         for w in self.widgets:
             w.on_draw()
@@ -514,7 +506,7 @@ class MTKineticObject(MTWidget):
         self.db = MTButton(label='',
                                       size=(40, 40),
                                       pos=(self.x + self.width-40, self.y + self.height-40),
-                                      bgcolor=(1, 0, 0, 0))
+                                      style={'bg-color':(1, 0, 0, 0)})
         self.db.hide()
         self.db.on_press = self.delete
         self.add_widget(self.db)
@@ -555,7 +547,7 @@ class MTKineticObject(MTWidget):
         if not self.free:
             self.x, self.y = self.kx + self.xoffset, self.ky + self.yoffset
         self.db.pos = (self.x + self.width-40, self.y + self.height-40)
-        self.db.bgcolor = (1, 0, 0, self.db_alpha)
+        self.db.style['bg-color'] = (1, 0, 0, self.db_alpha)
         super(MTKineticObject, self).on_draw()
 
     def delete(self, touchID, x, y):

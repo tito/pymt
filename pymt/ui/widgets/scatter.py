@@ -89,10 +89,6 @@ class MTScatterWidget(MTWidget):
         else:
             self.init_transform(super(MTScatterWidget, self).pos, kwargs.get('rotation'), kwargs.get('scale'))
 
-    def apply_css(self, styles):
-        if 'bg-color' in styles:
-            self.bgcolor = styles.get('bg-color')
-
     def add_widget(self, w, side='front', front=True):
         '''Override this, because a side needs to be specififed'''
         if side == 'front':
@@ -126,7 +122,7 @@ class MTScatterWidget(MTWidget):
             glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
 
     def draw(self):
-        set_color(*self.bgcolor)
+        set_color(*self.style.get('bg-color'))
         drawRectangle((0,0), (self.width, self.height))
 
     def flip_children(self):

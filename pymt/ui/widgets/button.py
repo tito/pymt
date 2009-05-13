@@ -17,20 +17,12 @@ class MTButton(MTWidget):
     :Parameters:
         `label` : string, default is ''
             Label of button
-        `color_down` : list, default is (.5, .5, .5, .5)
-            Color of button when pushed
-        `bgcolor` : list
-            Background color of button
-        `anchor_x`: string
+        `anchor_x` : string
             X anchor of label, refer to pyglet.label.anchor_x documentation
-        `anchor_y`: string
+        `anchor_y` : string
             Y anchor of label, refer to pyglet.label.anchor_x documentation
-        `font_size`: integer, default is 10
-            Font size of label
-        `bold`: bool, default is True
-            Font bold of label
-        `border_radius`: float, default is 0
-            Radius of background border
+        `multiline` : bool, default is False
+            Indicate if button is a multiline button
 
     :Styles:
         `color-down`: color
@@ -50,44 +42,44 @@ class MTButton(MTWidget):
         kwargs.setdefault('anchor_y', 'center')
         kwargs.setdefault('font_size', 10)
         kwargs.setdefault('font_name', '')
-        kwargs.setdefault('bold', False)
-        kwargs.setdefault('border_radius', 0)
         kwargs.setdefault('multiline', False)
         kwargs.setdefault('width', 0)
 
         self.register_event_type('on_press')
         self.register_event_type('on_release')
 
-        self.button_dl     = GlDisplayList()
+        self.button_dl      = GlDisplayList()
         self._state         = ('normal', 0)
-        self.clickActions   = []
         self._label         = str(kwargs.get('label'))
-        self.label_obj      = Label(
-            font_name=kwargs.get('font_name'),
-            font_size=kwargs.get('font_size'),
-            bold=kwargs.get('bold'),
-            anchor_x=kwargs.get('anchor_x'),
-            anchor_y=kwargs.get('anchor_y'),
-            text=kwargs.get('label'),
-            multiline=kwargs.get('multiline'),
-            width=kwargs.get('width')
-        )
+        self.label_obj      = None
 
         super(MTButton, self).__init__(**kwargs)
 
-        if 'color_down' in kwargs:
-            self.color_down = kwargs.get('color_down')
-        if 'bgcolor' in kwargs:
-            self.bgcolor = kwargs.get('bgcolor')
-        self.border_radius  = kwargs.get('border_radius')
-
+        fw = self.style.get('font-weight')
+        self.label_obj      = Label(
+            font_name = self.style.get('font-name'),
+            font_size = int(self.style.get('font-size')),
+            bold = (fw in ('bold', 'bolditalic')),
+            italic = (fw in ('italic', 'bolditalic')),
+            anchor_x = kwargs.get('anchor_x'),
+            anchor_y = kwargs.get('anchor_y'),
+            text = kwargs.get('label'),
+            multiline = kwargs.get('multiline'),
+            width = kwargs.get('width')
+        )
 
     def apply_css(self, styles):
-        if 'color-down' in styles:
-            self.color_down = styles.get('color-down')
-        if 'bg-color' in styles:
-            self.bgcolor = styles.get('bg-color')
         super(MTButton, self).apply_css(styles)
+        if self.label_obj is not None:
+            self.update_label()
+
+    def update_label(self):
+        fw = self.style.get('font-weight')
+        self.label_obj.font_name = self.style.get('font-name')
+        self.label_obj.font_size = self.style.get('font-size')
+        self.label_obj.bold = (fw in ('bold', 'bolditalic'))
+        self.label_obj.italic = (fw in ('italic', 'bolditalic'))
+        self.button_dl.clear()
 
     def get_label(self):
         return self._label
@@ -115,9 +107,9 @@ class MTButton(MTWidget):
     def draw(self):
         # Select color
         if self._state[0] == 'down':
-            set_color(*self.color_down)
+            set_color(*self.style['color-down'])
         else:
-            set_color(*self.bgcolor)
+            set_color(*self.style['bg-color'])
 
         with gx_matrix:
             glTranslatef(self.x, self.y, 0)
@@ -125,8 +117,8 @@ class MTButton(MTWidget):
             # Construct display list if possible
             if not self.button_dl.is_compiled():
                 with self.button_dl:
-                    if self.border_radius > 0:
-                        drawRoundedRectangle(size=self.size, radius=self.border_radius)
+                    if int(self.style['border-radius']) > 0:
+                        drawRoundedRectangle(size=self.size, radius=int(self.style['border-radius']))
                     else:
                         drawRectangle(size=self.size)
                     if len(self._label):

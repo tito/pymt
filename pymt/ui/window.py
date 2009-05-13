@@ -46,10 +46,16 @@ class MTWindow(TouchWindow):
     def __init__(self, **kwargs):
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
+        kwargs.setdefault('style', {})
 
         # apply styles for window
-        styles = css_get_style(widget=self)
-        self.apply_css(styles)
+        self.cssstyle = {}
+        style = css_get_style(widget=self)
+        self.apply_css(style)
+
+        # apply inline css
+        if len(kwargs.get('style')):
+            self.apply_css(kwargs.get('style'))
 
         # initialize fps clock
         self.fps_display =  pyglet.clock.ClockDisplay()
@@ -140,6 +146,9 @@ class MTWindow(TouchWindow):
 
         # init some gl
         self.init_gl()
+
+    def apply_css(self, styles):
+        self.cssstyle.update(styles)
 
     def _set_size(self, size):
         self.set_size(*size)
@@ -243,7 +252,7 @@ class MTWindow(TouchWindow):
 
     def draw(self):
         '''Clear the window with background color'''
-        glClearColor(*self.style.get('bg-color'))
+        glClearColor(*self.cssstyle.get('bg-color'))
         self.clear()
 
     def on_draw(self):

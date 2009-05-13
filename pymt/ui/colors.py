@@ -48,6 +48,7 @@ default_css = '''
     font-size: 10;
     font-name: "";
     font-weight: normal; /* normal, bold, italic, bolditalic */
+    font-color: rgba(255, 255, 255, 255);
 
     /* borders */
     border-radius: 0;
@@ -67,7 +68,7 @@ form,
 vkeyboard,
 flippablewidget,
 button {
-    bg-color: rgba(20, 20, 20, 100);
+    bg-color: rgba(60, 60, 60, 100);
 }
 
 keybutton {
@@ -173,7 +174,9 @@ def css_get_style(widget, sheet=None):
             value = None
 
             # color decoder with rgb / rgba
-            if prop.value.startswith('rgb'):
+            if len(prop.value) >= 2 and prop.value[0] in ('"', "'") and prop.value[-1] in ('"', "'"):
+                value = prop.value[1:-1]
+            elif prop.value.startswith('rgb'):
                 res = re.match('rgba?\((.*)\)', prop.value)
                 value = map(lambda x: int(x) / 255., re.split(',\ ?', res.groups()[0]))
                 if len(value) == 3:

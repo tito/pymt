@@ -208,7 +208,7 @@ class MTKineticList(MTStencilContainer):
         if self.deletable:
             self.db = MTToggleButton(label='X',
                                pos=(self.x + self.width - 80, self.y + self.height - 40),
-                               size=(80, 40)
+                               size=(80, 40),
                                style={'bg-color': (1, 0, 0, .5), 'bold': True})
             self.db.on_press = self.toggle_delete
             self.widgets.append(self.db)

@@ -112,9 +112,8 @@ class NewGameMenu(MTBoxLayout):
 
 	def draw(self):
 		if self.start_time and self.stop_time:
-			with gx_blending:
-				glColor4f(0,0,0,0.5)
-				drawRectangle(size=self.window.size)
+			set_color(0,0,0,0.5)
+			drawRectangle(size=self.window.size)
 
 			duration = str(self.stop_time - self.start_time)[:4] + " sec"
 			glColor4f(0.5,1,0.5,1)

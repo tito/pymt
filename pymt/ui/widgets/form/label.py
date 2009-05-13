@@ -49,16 +49,16 @@ class MTFormLabel(MTAbstractFormWidget):
         self._label = label
         opts = {}
         opts['anchor_y'] = 'bottom'
-        if self.font_name:
+        if self.style.get('font-name') != '':
             opts['font_name'] = self.style.get('font-name')
-        if self.font_size:
-            opts['font_size'] = self.style.get('font-size')
+        if int(self.style.get('font-size')) > 0:
+            opts['font_size'] = int(self.style.get('font-size'))
         if self.style.get('font-weight'):
             if self.style.get('font-weight') in ['italic', 'bolditalic']:
                 opts['italic'] = True
             if self.style.get('font-weight') in ['bold', 'bolditalic']:
                 opts['bold'] = True
-        opts['color'] = map(lambda x: x * 255, self.style.get('font-color'))
+        opts['color'] = map(lambda x: int(x * 255), self.style.get('font-color'))
         opts['text'] = label
         if self.multiline:
             opts['multiline'] = self.multiline

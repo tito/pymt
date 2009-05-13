@@ -52,6 +52,7 @@ default_css = '''
 
     /* borders */
     border-radius: 0;
+    border-width: 1.5;
 }
 
 vectorslider {
@@ -69,6 +70,18 @@ vkeyboard,
 flippablewidget,
 button {
     bg-color: rgba(60, 60, 60, 100);
+
+    /* background alpha layer */
+    draw-alpha-background: 0;
+    alpha-background: 1, 1, 1, 1;
+
+    /* text shadow */
+    draw-text-shadow: 0;
+    text-shadow-color: rgba(22, 22, 22, 63);
+    text-shadow-position: -1 1;
+
+    /* additional border */
+    draw-border: 0;
 }
 
 keybutton {
@@ -94,6 +107,14 @@ kineticcontainer {
 
 window {
     bg-color: rgb(20, 20, 20);
+}
+
+button.better {
+    bg-color: rgb(50, 50, 50);
+    draw-text-shadow: 1;
+    draw-alpha-background: 1;
+    border-radius: 8;
+    font-size: 11;
 }
 '''
 

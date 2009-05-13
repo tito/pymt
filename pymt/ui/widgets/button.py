@@ -7,7 +7,7 @@ __all__ = ['MTButton', 'MTToggleButton', 'MTImageButton']
 
 from pyglet.gl import *
 from pyglet.text import Label
-from ...graphx import drawRectangle, drawRoundedRectangle, gx_matrix, GlDisplayList, set_color
+from ...graphx import drawRectangle, drawRoundedRectangle, gx_matrix, GlDisplayList, set_color, drawRectangleAlpha, drawRoundedRectangleAlpha, gx_blending
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
@@ -70,6 +70,8 @@ class MTButton(MTWidget):
 
     def apply_css(self, styles):
         super(MTButton, self).apply_css(styles)
+        for k in ('border-radius', 'draw-border', 'draw-text-shadow', 'draw-alpha-background'):
+            self.style[k] = int(self.style[k])
         if self.label_obj is not None:
             self.update_label()
 
@@ -117,12 +119,26 @@ class MTButton(MTWidget):
             # Construct display list if possible
             if not self.button_dl.is_compiled():
                 with self.button_dl:
-                    if int(self.style['border-radius']) > 0:
-                        drawRoundedRectangle(size=self.size, radius=int(self.style['border-radius']))
+                    if self.style['border-radius'] > 0:
+                        drawRoundedRectangle(size=self.size, radius=self.style['border-radius'])
+                        if self.style['draw-border']:
+                            drawRoundedRectangle(size=self.size, radius=self.border_radius, style=GL_LINE_LOOP)
+                        if self.style['draw-alpha-background']:
+                            drawRoundedRectangleAlpha(size=self.size, radius=self.style['border-radius'], alpha=(1,1,.5,.5))
                     else:
                         drawRectangle(size=self.size)
+                        if self.style['draw-border']:
+                            drawRectangle(size=self.size, style=GL_LINE_LOOP)
+                        if self.style['draw-alpha-background']:
+                            drawRectangleAlpha(size=self.size, alpha=(1,1,.5,.5))
                     if len(self._label):
+                        if self.style['draw-text-shadow']:
+                            with gx_blending:
+                                self.label_obj.x, self.label_obj.y = self.width/2 -1 , self.height/2 + 1
+                                self.label_obj.color = map(lambda x: int(255 * x), self.style['text-shadow-color'])
+                                self.label_obj.draw()
                         self.label_obj.x, self.label_obj.y = self.width/2 , self.height/2
+                        self.label_obj.color = map(lambda x: int(255 * x), self.style['font-color'])
                         self.label_obj.draw()
             self.button_dl.draw()
 

@@ -63,7 +63,11 @@ class MTWidget(pyglet.event.EventDispatcher):
         `draw_children` : bool, default is True
             Indicate if children will be draw, or not
         `no_css` : bool, default is False
-            Don't search/do css for this widget
+            Don't search/do CSS for this widget
+		`style` : dict, default to {}
+			Add inline CSS
+		`class` : str, default is ''
+			CSS class of this widget
         `inner_animation` : custom, default is ()
             You can activate default inner animation with this keyword
             Format is: ('pos', ('size': {func=AnimationAlpha.sin}), )
@@ -115,6 +119,8 @@ class MTWidget(pyglet.event.EventDispatcher):
         kwargs.setdefault('visible', True)
         kwargs.setdefault('draw_children', True)
         kwargs.setdefault('no_css', False)
+        kwargs.setdefault('class', '')
+        kwargs.setdefault('style', {})
         kwargs.setdefault('inner_animation', ())
 
         self._id = None
@@ -149,9 +155,14 @@ class MTWidget(pyglet.event.EventDispatcher):
             self.height = kwargs.get('height')
 
         # apply css
+        self.css_classname = kwargs.get('class')
         if not kwargs.get('no_css'):
             style = css_get_style(widget=self)
             self.apply_css(style)
+
+        # apply inline css
+        if len(kwargs.get('style')):
+            self.apply_css(kwargs.get('style'))
 
         self.a_properties = {}
         for prop in kwargs.get('inner_animation'):

@@ -108,14 +108,6 @@ kineticcontainer {
 window {
     bg-color: rgb(20, 20, 20);
 }
-
-button.better {
-    bg-color: rgb(50, 50, 50);
-    draw-text-shadow: 1;
-    draw-alpha-background: 1;
-    border-radius: 8;
-    font-size: 11;
-}
 '''
 
 def get_truncated_classname(name):

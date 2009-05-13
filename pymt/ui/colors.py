@@ -53,6 +53,7 @@ default_css = '''
     /* borders */
     border-radius: 0;
     border-width: 1.5;
+	border-precision: 1;
 }
 
 vectorslider {
@@ -147,8 +148,11 @@ def css_get_style(widget, sheet=None):
     global pymt_sheet
     global css_cache
 
-    if widget.__class__ in css_cache:
-        return css_cache[widget.__class__]
+    if not hasattr(widget, 'cls'):
+        widget.__setattr__('cls', '')
+    idwidget = str(widget.__class__) + ':' + widget.cls
+    if idwidget in css_cache:
+        return css_cache[idwidget]
 
     if not sheet:
         sheet = pymt_sheet
@@ -165,8 +169,13 @@ def css_get_style(widget, sheet=None):
         rule_score = 0
         # get the appropriate selector
         for s in w.selectorList:
-            if s.element[1] not in reversed(widget_classes):
-                continue
+            if s.element is not None:
+                if s.element[1] not in reversed(widget_classes):
+                    continue
+            if s.specificity[2] == 1:
+                cssclass = s.selectorText.split('.')[1:]
+                if widget.cls not in cssclass:
+                    continue
             # selector match !
             rule_selected = True
             # get the better score
@@ -203,7 +212,7 @@ def css_get_style(widget, sheet=None):
                 value = prop.value
             styles[prop.name] = value
 
-    css_cache[widget.__class__] = styles
+    css_cache[idwidget] = styles
     return styles
 
 

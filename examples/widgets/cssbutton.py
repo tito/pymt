@@ -1,7 +1,7 @@
 from pymt import *
 
 additional_css = '''
-button.listvertices {
+button.btnA {
 	draw-text-shadow: 1;
 	draw-alpha-background: 1;
 	bg-color: #ff5c00;
@@ -15,5 +15,7 @@ button.listvertices {
 css_add_sheet(additional_css)
 
 m = MTWindow()
-m.add_widget(MTButton(label="Coucou", pos=(100, 100)))
+m.add_widget(MTButton(label='Coucou', pos=(100, 100)))
+m.add_widget(MTButton(label='Coucou', cls='btnA', pos=(100, 210)))
+#m.add_widget(MTButton(label='Coucou', pos=(100, 320)))
 runTouchApp()

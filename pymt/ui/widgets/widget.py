@@ -66,7 +66,7 @@ class MTWidget(pyglet.event.EventDispatcher):
             Don't search/do CSS for this widget
 		`style` : dict, default to {}
 			Add inline CSS
-		`class` : str, default is ''
+		`cls` : str, default is ''
 			CSS class of this widget
         `inner_animation` : custom, default is ()
             You can activate default inner animation with this keyword
@@ -119,7 +119,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         kwargs.setdefault('visible', True)
         kwargs.setdefault('draw_children', True)
         kwargs.setdefault('no_css', False)
-        kwargs.setdefault('class', '')
+        kwargs.setdefault('cls', '')
         kwargs.setdefault('style', {})
         kwargs.setdefault('inner_animation', ())
 
@@ -156,7 +156,7 @@ class MTWidget(pyglet.event.EventDispatcher):
 
         # apply css
         self.style = {}
-        self.css_classname = kwargs.get('class')
+        self.cls = kwargs.get('cls')
         if not kwargs.get('no_css'):
             style = css_get_style(widget=self)
             self.apply_css(style)

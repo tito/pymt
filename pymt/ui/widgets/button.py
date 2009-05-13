@@ -29,6 +29,26 @@ class MTButton(MTWidget):
             Background-color of the button when it is press
         `bg-color` : color
             Background color of the slider
+        `font-name` : str
+            Name of font to use
+        `font-size` : int
+            Size of font in pixel
+        `font-style` : str
+            Style of font, can be "bold", "italic" or "bolditalic"
+        `draw-border` : bool
+            Indicate if the border must be drawed or not
+        `border-radius` : int
+            Size of radius in pixel
+        `border-radius-precision` : float
+            Precision of the radius drawing (1 mean no precision)
+        `draw-text-shadow` : bool
+            Indicate if the text shadow must be drawed
+        `text-shadow-color` : color
+            Color of the text shadow
+        `text-shadow-position` : x y
+            Relative position of shadow text
+        `draw-alpha-background` : bool
+            Indicate if the alpha background must be drawed
 
     :Events:
         `on_press`
@@ -40,8 +60,6 @@ class MTButton(MTWidget):
         kwargs.setdefault('label', '')
         kwargs.setdefault('anchor_x', 'center')
         kwargs.setdefault('anchor_y', 'center')
-        kwargs.setdefault('font_size', 10)
-        kwargs.setdefault('font_name', '')
         kwargs.setdefault('multiline', False)
         kwargs.setdefault('width', 0)
 
@@ -70,10 +88,6 @@ class MTButton(MTWidget):
 
     def apply_css(self, styles):
         super(MTButton, self).apply_css(styles)
-        for k in ('border-radius', 'draw-border', 'draw-text-shadow', 'draw-alpha-background'):
-            self.style[k] = int(self.style[k])
-        for k in ('border-precision', ):
-            self.style[k] = float(self.style[k])
         if self.label_obj is not None:
             self.update_label()
 
@@ -122,7 +136,7 @@ class MTButton(MTWidget):
             if not self.button_dl.is_compiled():
                 with self.button_dl:
                     k = { 'radius': self.style['border-radius'],
-                          'precision': self.style['border-precision'],
+                          'precision': self.style['border-radius-precision'],
                           'size': self.size }
 
                     if self.style['border-radius'] > 0:
@@ -130,17 +144,18 @@ class MTButton(MTWidget):
                         if self.style['draw-border']:
                             drawRoundedRectangle(style=GL_LINE_LOOP, **k)
                         if self.style['draw-alpha-background']:
-                            drawRoundedRectangleAlpha(alpha=(1,1,.5,.5), **k)
+                            drawRoundedRectangleAlpha(alpha=self.style['alpha-background'], **k)
                     else:
                         drawRectangle(size=self.size)
                         if self.style['draw-border']:
                             drawRectangle(size=self.size, style=GL_LINE_LOOP)
                         if self.style['draw-alpha-background']:
-                            drawRectangleAlpha(size=self.size, alpha=(1,1,.5,.5))
+                            drawRectangleAlpha(size=self.size, alpha=self.style['alpha-background'])
                     if len(self._label):
                         if self.style['draw-text-shadow']:
                             with gx_blending:
-                                self.label_obj.x, self.label_obj.y = self.width/2 -1 , self.height/2 + 1
+                                sx, sy = self.style['text-shadow-position']
+                                self.label_obj.x, self.label_obj.y = self.width/2 + sx , self.height/2 + sy
                                 self.label_obj.color = map(lambda x: int(255 * x), self.style['text-shadow-color'])
                                 self.label_obj.draw()
                         self.label_obj.x, self.label_obj.y = self.width/2 , self.height/2

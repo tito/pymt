@@ -22,9 +22,11 @@ please look on the widget documentation.
 '''
 
 from __future__ import with_statement
-__all__ = ['default_css', 'css_get_style', 'get_truncated_classname', 'pymt_sheet', 'css_add_sheet']
+__all__ = ['default_css', 'css_get_style', 'get_truncated_classname',
+           'pymt_sheet', 'css_add_sheet']
 
 from ..logger import pymt_logger
+from parser import *
 import os
 import sys
 import shutil
@@ -32,7 +34,32 @@ import logging
 import re
 import cssutils
 
+# Auto conversion from css to a special type.
+auto_convert = {
+    'color':                    parse_color,
+    'color-down':               parse_color,
+    'bg-color':                 parse_color,
+    'slider-color':             parse_color,
+    'font-size':                parse_int,
+    'font-name':                parse_string,
+    'font-weight':              parse_string,
+    'font-color':               parse_color,
+    'border-width':             parse_float,
+    'border-radius':            parse_int,
+    'border-radius-precision':  parse_float,
+    'slider-color':             parse_color,
+    'touch-color':              parse_color,
+    'draw-text-shadow':         parse_bool,
+    'draw-border':              parse_bool,
+    'draw-alpha-background':    parse_bool,
+    'text-shadow-color':        parse_color,
+    'text-shadow-position':     parse_int2,
+    'alpha-background':         parse_float4,
+    'item-color':               parse_color,
+    'item-selected':            parse_color,
+}
 
+# Default CSS of PyMT
 default_css = '''
 * {
     /* text color */
@@ -51,9 +78,9 @@ default_css = '''
     font-color: rgba(255, 255, 255, 255);
 
     /* borders */
-    border-radius: 0;
     border-width: 1.5;
-	border-precision: 1;
+    border-radius: 0;
+	border-radius-precision: 1;
 }
 
 vectorslider {
@@ -74,7 +101,7 @@ button {
 
     /* background alpha layer */
     draw-alpha-background: 0;
-    alpha-background: 1, 1, 1, 1;
+    alpha-background: 1 1 0.5 0.5;
 
     /* text shadow */
     draw-text-shadow: 0;
@@ -193,23 +220,14 @@ def css_get_style(widget, sheet=None):
     # compiles rules
     for score, rule in rules:
         for prop in rule.style.getProperties():
-            value = None
-
-            # color decoder with rgb / rgba
-            if len(prop.value) >= 2 and prop.value[0] in ('"', "'") and prop.value[-1] in ('"', "'"):
-                value = prop.value[1:-1]
-            elif prop.value.startswith('rgb'):
-                res = re.match('rgba?\((.*)\)', prop.value)
-                value = map(lambda x: int(x) / 255., re.split(',\ ?', res.groups()[0]))
-                if len(value) == 3:
-                    value.append(1)
-            elif prop.value.startswith('#'):
-                res = prop.value[1:]
-                value = [int(x, 16)/255. for x in re.split('([0-9a-f]{2})', res) if x != '']
-                if len(value) == 3:
-                    value.append(1)
-            else:
-                value = prop.value
+            value = prop.value
+            if prop.name in auto_convert:
+                try:
+                    value = auto_convert[prop.name](prop.value)
+                except:
+                    pymt_logger.exception(
+                        'Error while convert %s: %s' % (prop.name, prop.value))
+                    pass
             styles[prop.name] = value
 
     css_cache[idwidget] = styles

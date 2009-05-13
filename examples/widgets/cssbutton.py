@@ -8,7 +8,7 @@ button.btnA {
 	draw-border: 1;
 	border-radius: 20;
 	font-size: 16;
-	border-precision: .1;
+	border-radius-precision: .1;
 }
 '''
 

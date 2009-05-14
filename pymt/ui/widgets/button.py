@@ -7,7 +7,9 @@ __all__ = ['MTButton', 'MTToggleButton', 'MTImageButton']
 
 from pyglet.gl import *
 from pyglet.text import Label
-from ...graphx import drawRectangle, drawRoundedRectangle, gx_matrix, GlDisplayList, set_color, drawRectangleAlpha, drawRoundedRectangleAlpha, gx_blending
+from ...graphx import GlDisplayList, set_color, gx_blending
+from ...graphxcss import drawCSSRectangle
+from ...utils import get_color_for_pyglet
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
@@ -123,45 +125,31 @@ class MTButton(MTWidget):
         self.button_dl.clear()
 
     def draw(self):
-        # Select color
         if self._state[0] == 'down':
             set_color(*self.style['color-down'])
         else:
             set_color(*self.style['bg-color'])
 
-        with gx_matrix:
-            glTranslatef(self.x, self.y, 0)
+        if not self.button_dl.is_compiled():
+            with self.button_dl:
+                drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
+                self.draw_label()
+        self.button_dl.draw()
 
-            # Construct display list if possible
-            if not self.button_dl.is_compiled():
-                with self.button_dl:
-                    if self.style['border-radius'] > 0:
-                        k = { 'radius': self.style['border-radius'],
-                              'precision': self.style['border-radius-precision'],
-                              'size': self.size }
-
-                        drawRoundedRectangle(**k)
-                        if self.style['draw-border']:
-                            drawRoundedRectangle(style=GL_LINE_LOOP, **k)
-                        if self.style['draw-alpha-background']:
-                            drawRoundedRectangleAlpha(alpha=self.style['alpha-background'], **k)
-                    else:
-                        drawRectangle(size=self.size)
-                        if self.style['draw-border']:
-                            drawRectangle(size=self.size, style=GL_LINE_LOOP)
-                        if self.style['draw-alpha-background']:
-                            drawRectangleAlpha(size=self.size, alpha=self.style['alpha-background'])
-                    if len(self._label):
-                        if self.style['draw-text-shadow']:
-                            with gx_blending:
-                                sx, sy = self.style['text-shadow-position']
-                                self.label_obj.x, self.label_obj.y = self.width/2 + sx , self.height/2 + sy
-                                self.label_obj.color = map(lambda x: int(255 * x), self.style['text-shadow-color'])
-                                self.label_obj.draw()
-                        self.label_obj.x, self.label_obj.y = self.width/2 , self.height/2
-                        self.label_obj.color = map(lambda x: int(255 * x), self.style['font-color'])
-                        self.label_obj.draw()
-            self.button_dl.draw()
+    def draw_label(self):
+        if len(self._label) <= 0:
+            return
+        if self.style['draw-text-shadow']:
+            with gx_blending:
+                tsp = self.style['text-shadow-position']
+                self.label_obj.x, self.label_obj.y = \
+                    map(lambda x: self.pos[x] + self.size[x] / 2 + tsp[x], xrange(2))
+                self.label_obj.color = get_color_for_pyglet(self.style['text-shadow-color'])
+                self.label_obj.draw()
+        self.label_obj.x, self.label_obj.y = \
+            map(lambda x: self.pos[x] + self.size[x] / 2, xrange(2))
+        self.label_obj.color = get_color_for_pyglet(self.style['font-color'])
+        self.label_obj.draw()
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):

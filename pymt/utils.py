@@ -3,7 +3,7 @@ Utils: generic toolbox
 '''
 
 __all__ = ['intersection', 'difference', 'curry', 'strtotuple',
-           'get_color_from_hex']
+           'get_color_from_hex', 'get_color_for_pyglet']
 
 import re
 
@@ -53,3 +53,7 @@ def get_color_from_hex(s):
     if len(value) == 3:
         value.append(1)
     return value
+
+def get_color_for_pyglet(c):
+    return map(lambda x: int(255 * x), c)
+

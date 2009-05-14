@@ -14,11 +14,13 @@ import tokenize2
 import types
 import xml.dom
 
+'''
 try:
     from _fetchgae import _defaultFetcher
 except ImportError, e:
     from _fetch import _defaultFetcher
-    
+'''
+
 log = errorhandler.ErrorHandler()
 
 class _BaseClass(object):

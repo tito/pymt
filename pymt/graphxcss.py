@@ -7,7 +7,7 @@ __all__ = ['drawCSSRectangle']
 from graphx import *
 from pyglet.gl import GL_LINE_LOOP
 
-def drawCSSRectangle(pos=(0,0), size=(100,100), style={}):
+def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
     '''Draw a rectangle with CSS
 
     :Styles:
@@ -18,6 +18,15 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}):
         * alpha-background
 
     '''
+
+    # hack to remove prefix in style
+    if prefix is not None:
+        prefix += '-'
+        newstyle = {}
+        for k in style:
+            if prefix in k:
+                newstyle[k.replace(prefix, '')] = style[k]
+        style = newstyle
 
     style.setdefault('border-radius', 0)
     style.setdefault('border-radius-precision', .1)

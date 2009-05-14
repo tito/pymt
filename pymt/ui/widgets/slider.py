@@ -8,6 +8,7 @@ __all__ = ['MTSlider', 'MTXYSlider', 'MTBoundarySlider']
 
 from pyglet.gl import *
 from ...graphx import drawRectangle, drawCircle, drawLabel, set_color, drawRoundedRectangle, drawRectangleAlpha, drawRoundedRectangleAlpha
+from ...graphxcss import drawCSSRectangle
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
@@ -74,41 +75,11 @@ class MTSlider(MTWidget):
 
         # draw outer rectangle
         set_color(*self.style.get('bg-color'))
-        if self.style['border-radius'] > 0:
-            k = { 'radius': self.style['border-radius'],
-                  'precision': self.style['border-radius-precision'],
-                  'size': self.size,
-                  'pos': self.pos }
-            drawRoundedRectangle(**k)
-            if self.style['draw-border']:
-                drawRoundedRectangle(style=GL_LINE_LOOP, **k)
-            if self.style['draw-alpha-background']:
-                drawRoundedRectangleAlpha(alpha=self.style['alpha-background'], **k)
-        else:
-            drawRectangle(pos=self.pos, size=self.size)
-            if self.style['draw-border']:
-                drawRectangle(pos=self.pos, size=self.size, style=GL_LINE_LOOP)
-            if self.style['draw-alpha-background']:
-                drawRectangleAlpha(pos=self.pos, size=self.size, alpha=self.style['alpha-background'])
+        drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
 
         # draw inner rectangle
         set_color(*self.style.get('slider-color'))
-        if self.style['slider-border-radius'] > 0:
-            k = { 'radius': self.style['slider-border-radius'],
-                  'precision': self.style['slider-border-radius-precision'],
-                  'size': size,
-                  'pos': pos }
-            drawRoundedRectangle(**k)
-            if self.style['draw-slider-border']:
-                drawRoundedRectangle(style=GL_LINE_LOOP, **k)
-            if self.style['draw-slider-alpha-background']:
-                drawRoundedRectangleAlpha(alpha=self.style['slider-alpha-background'], **k)
-        else:
-            drawRectangle(pos=pos, size=size)
-            if self.style['draw-slider-border']:
-                drawRectangle(pos=pos, size=size, style=GL_LINE_LOOP)
-            if self.style['draw-slider-alpha-background']:
-                drawRectangleAlpha(pos=pos, size=size, alpha=self.style['slider-alpha-background'])
+        drawCSSRectangle(pos=pos, size=size, style=self.style, prefix='slider')
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):

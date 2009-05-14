@@ -7,7 +7,7 @@ import random
 __all__ = ['MTSlider', 'MTXYSlider', 'MTBoundarySlider']
 
 from pyglet.gl import *
-from ...graphx import drawRectangle, drawCircle, drawLabel, set_color
+from ...graphx import drawRectangle, drawCircle, drawLabel, set_color, drawRoundedRectangle, drawRectangleAlpha, drawRoundedRectangleAlpha
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
@@ -28,11 +28,12 @@ class MTSlider(MTWidget):
             Color of the slider
         `bg-color` : color
             Background color of the slider
+        `padding` : int
+            Padding of content
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('min', 0)
         kwargs.setdefault('max', 100)
-        kwargs.setdefault('padding', 8)
         kwargs.setdefault('orientation', 'vertical')
         if kwargs.get('orientation') == 'vertical':
             kwargs.setdefault('size', (30, 400))
@@ -44,7 +45,6 @@ class MTSlider(MTWidget):
         self.register_event_type('on_value_change')
         self.touchstarts    = [] # only react to touch input that originated on this widget
         self.orientation    = kwargs.get('orientation')
-        self.padding        = kwargs.get('padding')
         self.min            = kwargs.get('min')
         self.max            = kwargs.get('max')
         self._value         = self.min
@@ -62,19 +62,53 @@ class MTSlider(MTWidget):
     value = property(get_value, set_value, doc='Value of the slider')
 
     def draw(self):
-        x,y,w,h = self.x, self.y, self.width, self.height
-        p2 =self.padding/2
+        p2 = self.style['padding'] / 2
+        if self.orientation == 'vertical':
+            length = int((self._value - self.min) * (self.height - self.style['padding']) / (self.max - self.min))
+            pos = self.x + p2, self.y + p2
+            size = self.width - self.style['padding'], length
+        else:
+            length = int((self._value - self.min) * (self.width - self.style['padding']) / (self.max - self.min))
+            pos = self.x + p2, self.y + p2
+            size = length, self.height - self.style['padding']
+
         # draw outer rectangle
         set_color(*self.style.get('bg-color'))
-        drawRectangle(pos=(x,y), size=(w,h))
+        if self.style['border-radius'] > 0:
+            k = { 'radius': self.style['border-radius'],
+                  'precision': self.style['border-radius-precision'],
+                  'size': self.size,
+                  'pos': self.pos }
+            drawRoundedRectangle(**k)
+            if self.style['draw-border']:
+                drawRoundedRectangle(style=GL_LINE_LOOP, **k)
+            if self.style['draw-alpha-background']:
+                drawRoundedRectangleAlpha(alpha=self.style['alpha-background'], **k)
+        else:
+            drawRectangle(pos=self.pos, size=self.size)
+            if self.style['draw-border']:
+                drawRectangle(pos=self.pos, size=self.size, style=GL_LINE_LOOP)
+            if self.style['draw-alpha-background']:
+                drawRectangleAlpha(pos=self.pos, size=self.size, alpha=self.style['alpha-background'])
+
         # draw inner rectangle
         set_color(*self.style.get('slider-color'))
-        if self.orientation == 'vertical':
-            length = int((self._value - self.min) * (self.height - self.padding) / (self.max - self.min))
-            drawRectangle(pos=(x+p2,y+p2), size=(w - self.padding, length))
+        if self.style['slider-border-radius'] > 0:
+            k = { 'radius': self.style['slider-border-radius'],
+                  'precision': self.style['slider-border-radius-precision'],
+                  'size': size,
+                  'pos': pos }
+            drawRoundedRectangle(**k)
+            if self.style['draw-slider-border']:
+                drawRoundedRectangle(style=GL_LINE_LOOP, **k)
+            if self.style['draw-slider-alpha-background']:
+                drawRoundedRectangleAlpha(alpha=self.style['slider-alpha-background'], **k)
         else:
-            length = int((self._value - self.min) * (self.width - self.padding) / (self.max - self.min))
-            drawRectangle(pos=(x+p2,y+p2), size=(length, h - self.padding))
+            drawRectangle(pos=pos, size=size)
+            if self.style['draw-slider-border']:
+                drawRectangle(pos=pos, size=size, style=GL_LINE_LOOP)
+            if self.style['draw-slider-alpha-background']:
+                drawRectangleAlpha(pos=pos, size=size, alpha=self.style['slider-alpha-background'])
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):

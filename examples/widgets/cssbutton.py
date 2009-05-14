@@ -1,21 +1,45 @@
 from pymt import *
 
 additional_css = '''
-button.btnA {
-	draw-text-shadow: 1;
+.simple {
 	draw-alpha-background: 1;
-	bg-color: #ff5c00;
 	draw-border: 1;
+	draw-slider-alpha-background: 1;
+	draw-slider-border: 1;
+	draw-text-shadow: 1;
+}
+
+.colored {
+	bg-color: #ff5c00;
 	border-radius: 20;
-	font-size: 16;
 	border-radius-precision: .1;
+	font-size: 16;
+	slider-border-radius-precision: .1;
+	slider-border-radius: 10;
+}
+
+slider.colored {
+	bg-color: #222222;
 }
 '''
 
 css_add_sheet(additional_css)
 
 m = MTWindow()
-m.add_widget(MTButton(label='Coucou', pos=(100, 100)))
-m.add_widget(MTButton(label='Coucou', cls='btnA', pos=(100, 210)))
-#m.add_widget(MTButton(label='Coucou', pos=(100, 320)))
+
+h = MTBoxLayout(padding=20, spacing=20)
+
+v = MTBoxLayout(orientation='vertical', padding=20, spacing=20)
+v.add_widget(MTButton(label='Coucou'))
+v.add_widget(MTButton(label='Coucou', cls='simple'))
+v.add_widget(MTButton(label='Coucou', cls=('simple', 'colored')))
+h.add_widget(v)
+
+v2 = MTBoxLayout(orientation='vertical', padding=20, spacing=20)
+v2.add_widget(MTSlider(orientation='horizontal', value=50))
+v2.add_widget(MTSlider(cls='simple', orientation='horizontal', value=50))
+v2.add_widget(MTSlider(cls=('simple', 'colored'), orientation='horizontal', value=50))
+h.add_widget(v2)
+
+m.add_widget(h)
 runTouchApp()

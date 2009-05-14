@@ -57,6 +57,12 @@ auto_convert = {
     'alpha-background':         parse_float4,
     'item-color':               parse_color,
     'item-selected':            parse_color,
+	'padding':                  parse_int,
+    'slider-border-radius':     parse_int,
+    'slider-border-radius-precision': parse_float,
+    'slider-alpha-background':  parse_float4,
+    'draw-slider-border':       parse_bool,
+    'draw-slider-alpha-background': parse_bool,
 }
 
 # Default CSS of PyMT
@@ -81,6 +87,16 @@ default_css = '''
     border-width: 1.5;
     border-radius: 0;
 	border-radius-precision: 1;
+    draw-border: 0;
+
+    /* background alpha layer */
+    draw-alpha-background: 0;
+    alpha-background: 1 1 0.5 0.5;
+
+    /* text shadow */
+    draw-text-shadow: 0;
+    text-shadow-color: rgba(22, 22, 22, 63);
+    text-shadow-position: -1 1;
 }
 
 vectorslider {
@@ -98,18 +114,6 @@ vkeyboard,
 flippablewidget,
 button {
     bg-color: rgba(60, 60, 60, 100);
-
-    /* background alpha layer */
-    draw-alpha-background: 0;
-    alpha-background: 1 1 0.5 0.5;
-
-    /* text shadow */
-    draw-text-shadow: 0;
-    text-shadow-color: rgba(22, 22, 22, 63);
-    text-shadow-position: -1 1;
-
-    /* additional border */
-    draw-border: 0;
 }
 
 keybutton {
@@ -119,8 +123,14 @@ keybutton {
 
 formslider,
 slider, xyslider, vectorslider, multislider, boundaryslider {
+    padding: 8;
     bg-color: rgb(51, 51, 51);
     slider-color: rgb(255, 127, 0);
+    draw-slider-border: 0;
+    slider-border-radius: 0;
+    slider-border-radius-precision: 1;
+    draw-slider-alpha-background: 0;
+    slider-alpha-background: 1 1 .5 .5;
 }
 
 kineticscrolltext {
@@ -177,7 +187,10 @@ def css_get_style(widget, sheet=None):
 
     if not hasattr(widget, 'cls'):
         widget.__setattr__('cls', '')
-    idwidget = str(widget.__class__) + ':' + widget.cls
+    if type(widget.cls) == str:
+        idwidget = str(widget.__class__) + ':' + widget.cls
+    else:
+        idwidget = str(widget.__class__) + ':' + '.'.join(widget.cls)
     if idwidget in css_cache:
         return css_cache[idwidget]
 
@@ -196,13 +209,23 @@ def css_get_style(widget, sheet=None):
         rule_score = 0
         # get the appropriate selector
         for s in w.selectorList:
+            rule_stop_processing = False
             if s.element is not None:
                 if s.element[1] not in reversed(widget_classes):
                     continue
             if s.specificity[2] == 1:
                 cssclass = s.selectorText.split('.')[1:]
-                if widget.cls not in cssclass:
-                    continue
+                if type(widget.cls) == str:
+                    if widget.cls not in cssclass:
+                        rule_stop_processing = True
+                        continue
+                else:
+                    rule_stop_processing = True
+                    for c in widget.cls:
+                        if c in cssclass:
+                            rule_stop_processing = False
+            if rule_stop_processing:
+                continue
             # selector match !
             rule_selected = True
             # get the better score

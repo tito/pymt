@@ -135,11 +135,11 @@ class MTButton(MTWidget):
             # Construct display list if possible
             if not self.button_dl.is_compiled():
                 with self.button_dl:
-                    k = { 'radius': self.style['border-radius'],
-                          'precision': self.style['border-radius-precision'],
-                          'size': self.size }
-
                     if self.style['border-radius'] > 0:
+                        k = { 'radius': self.style['border-radius'],
+                              'precision': self.style['border-radius-precision'],
+                              'size': self.size }
+
                         drawRoundedRectangle(**k)
                         if self.style['draw-border']:
                             drawRoundedRectangle(style=GL_LINE_LOOP, **k)

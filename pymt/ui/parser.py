@@ -19,6 +19,8 @@ def parse_color(text):
             value.append(1)
     elif text.startswith('#'):
         res = text[1:]
+        if len(res) == 3:
+            res = ''.join(map(lambda x: x+x, res))
         value = [int(x, 16)/255. for x in re.split('([0-9a-f]{2})', res) if x != '']
         if len(value) == 3:
             value.append(1)

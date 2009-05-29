@@ -27,7 +27,7 @@ class MTButton(MTWidget):
             Indicate if button is a multiline button
 
     :Styles:
-        `color-down`: color
+        `color-down` : color
             Background-color of the button when it is press
         `bg-color` : color
             Background color of the slider

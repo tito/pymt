@@ -23,7 +23,7 @@ please look on the widget documentation.
 
 from __future__ import with_statement
 __all__ = ['default_css', 'css_get_style', 'get_truncated_classname',
-           'pymt_sheet', 'css_add_sheet']
+           'pymt_sheet', 'css_add_sheet', 'css_get_widget_id']
 
 from ..logger import pymt_logger
 from parser import *
@@ -109,6 +109,7 @@ display {
     touch-color: rgba(255, 0, 0, 255);
 }
 
+colorpicker,
 form,
 vkeyboard,
 flippablewidget,
@@ -171,6 +172,15 @@ def get_widget_parents(widget):
         widgets_parents[widget.__class__] = widget_classes
     return widgets_parents[widget.__class__]
 
+def css_get_widget_id(widget):
+    if not hasattr(widget, 'cls'):
+        widget.__setattr__('cls', '')
+    if type(widget.cls) == str:
+        idwidget = str(widget.__class__) + ':' + widget.cls
+    else:
+        idwidget = str(widget.__class__) + ':' + '.'.join(widget.cls)
+    return idwidget
+
 css_cache = {}
 def css_get_style(widget, sheet=None):
     '''Return a dict() with all the style for the widget.
@@ -185,12 +195,7 @@ def css_get_style(widget, sheet=None):
     global pymt_sheet
     global css_cache
 
-    if not hasattr(widget, 'cls'):
-        widget.__setattr__('cls', '')
-    if type(widget.cls) == str:
-        idwidget = str(widget.__class__) + ':' + widget.cls
-    else:
-        idwidget = str(widget.__class__) + ':' + '.'.join(widget.cls)
+    idwidget = css_get_widget_id(widget)
     if idwidget in css_cache:
         return css_cache[idwidget]
 

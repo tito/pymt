@@ -74,6 +74,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     # and configuration applied to logger.
     from mtpyglet import *
     from graphx import *
+    from graphxcss import *
     from ui import *
     from obj import OBJ
     from shader import *

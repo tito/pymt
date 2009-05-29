@@ -2,15 +2,18 @@
 Color picker: a simple color picker with 3 slider
 '''
 
+from __future__ import with_statement
 __all__ = ['MTColorPicker']
 
 from pyglet.gl import *
-from ...graphx import set_color, drawRectangle
+from ...graphx import set_color, drawRectangle, GlDisplayList
+from ...graphxcss import drawCSSRectangle
 from ..factory import MTWidgetFactory
-from widget import MTWidget
+from layout import MTBoxLayout
+from scatter import MTScatterWidget
 from slider import MTSlider
 
-class MTColorPicker(MTWidget):
+class MTColorPicker(MTScatterWidget):
     '''MTColorPicker is a implementation of a color picker using MTWidget
 
     :Parameters:
@@ -20,69 +23,51 @@ class MTColorPicker(MTWidget):
             Maximum value of slider
         `targets` : list, default is []
             List of widget to be affected by change
+        `values` : list, default is [77, 77, 77]
+            Default value of slider for RGB (0-255)
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('min', 0)
         kwargs.setdefault('max', 255)
-        kwargs.setdefault('target', [])
+        kwargs.setdefault('values', [77, 77, 77])
+        kwargs.setdefault('targets', [])
+        self.dl = GlDisplayList()
         super(MTColorPicker, self).__init__(**kwargs)
+        self.size = (130, 290)
         self.targets = kwargs.get('targets')
         self.sliders = [ MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), slidercolor=(1,0,0,1)),
                         MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), slidercolor=(0,1,0,1)),
                         MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), slidercolor=(0,0,1,1)) ]
+        vbox = MTBoxLayout(spacing=10, padding=10)
         for slider in self.sliders:
             slider.value = 77
+            slider.push_handlers(on_value_change=self.update_color)
+            vbox.add_widget(slider)
+        self.add_widget(vbox)
         self.update_color()
         self.touch_positions = {}
 
+    def apply_css(self, styles):
+        super(MTColorPicker, self).apply_css(styles)
+        self.dl.clear()
+
     def draw(self):
-        set_color(0.2,0.2,0.2,0.5)
-        drawRectangle(pos=(self.x, self.y), size=(self.width,self.height))
+        if not self.dl.is_compiled():
+            with self.dl:
+                set_color(*self.style['bg-color'])
+                drawCSSRectangle(size=self.size, style=self.style)
 
-        set_color(*self.current_color)
-        drawRectangle(pos=(self.x+10, self.y+220), size=(110,60))
+                set_color(*self.current_color)
+                drawRectangle(pos=(10, 220), size=(110, 60))
+        self.dl.draw()
 
-        for i in range(len(self.sliders)):
-            self.sliders[i].x = 10 + self.x + i*40
-            self.sliders[i].y = 10 + self.y
-            self.sliders[i].draw()
-
-    def update_color(self):
-        r = self.sliders[0].value/255.0
-        g = self.sliders[1].value/255.0
-        b = self.sliders[2].value/255.0
+    def update_color(self, *largs):
+        r = self.sliders[0].value / 255.
+        g = self.sliders[1].value / 255.
+        b = self.sliders[2].value / 255.
         for w in self.targets:
-            w.color = (r,g,b,1)
-        self.current_color = (r,g,b,1.0)
-
-    def on_touch_down(self, touches, touchID, x, y):
-        for s in self.sliders:
-            if s.on_touch_down(touches, touchID, x, y):
-                self.update_color()
-                return True
-
-        if self.collide_point(x,y):
-            self.touch_positions[touchID] = (x,y,touchID)
-            return True
-
-    def on_touch_move(self, touches, touchID, x, y):
-        for s in self.sliders:
-            if s.on_touch_move(touches, touchID, x, y):
-                self.update_color()
-                return True
-
-        if touchID in self.touch_positions:
-            self.x += x - self.touch_positions[touchID][0]
-            self.y += y - self.touch_positions[touchID][1]
-            self.touch_positions[touchID] = (x,y,touchID)
-            return True
-
-    def on_touch_up(self, touches, touchID, x, y):
-        for s in self.sliders:
-            if s.on_touch_up(touches, touchID, x, y):
-                self.update_color()
-                return True
-        if touchID in self.touch_positions:
-            del self.touch_positions[touchID]
+            w.color = (r, g, b, 1)
+        self.current_color = (r, g, b, 1.0)
+        self.dl.clear()
 
 MTWidgetFactory.register('MTColorPicker', MTColorPicker)

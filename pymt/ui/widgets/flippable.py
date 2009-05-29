@@ -12,8 +12,8 @@ from widget import MTWidget
 from ..animation import Animation, AnimationAlpha
 
 class MTFlippableWidget(MTWidget):
-    ''' This is wrapper widget using which you can make a
-        widget have two sides and you can flip between the sides ::
+    '''This is wrapper widget using which you can make a
+    widget have two sides and you can flip between the sides ::
 
         from pymt import *
         s = MTFlippableWidget()
@@ -26,13 +26,10 @@ class MTFlippableWidget(MTWidget):
             s.flip()
         runTouchApp()
 
-    :Parameters:
-        `side` : front or back, defaults to add to both sides
-            This parameter tells which side to add the widget front or back.
     '''
-
     def __init__(self, **kwargs):
         super(MTFlippableWidget, self).__init__(**kwargs)
+
         # For flipping animations
         self.zangle = 0
         self.side = 'front'
@@ -45,6 +42,15 @@ class MTFlippableWidget(MTWidget):
         self.anim = Animation(self, 'flip', 'zangle', 180, 1, 10, func=AnimationAlpha.ramp)
 
     def add_widget(self, w, side='front', front=True):
+        '''Add a widget on a side.
+
+        :Parameters:
+            `front` : boolean, default is True
+                Indicate if the widget must be top added or bottom added in the list.
+            `side` : string, default is 'front'
+                Specify which side you want to add widget.
+                (can be one of 'front', 'back' or '', defaults to add to both sides)
+        '''
         if side == 'front':
             if front:
                 self.children_front.append(w)
@@ -56,7 +62,6 @@ class MTFlippableWidget(MTWidget):
             else:
                 self.children_back.insert(0, w)
         else:
-            #Add to both
             self.add_widget(w, side='front', front=front)
             self.add_widget(w, side='back', front=front)
 
@@ -68,14 +73,12 @@ class MTFlippableWidget(MTWidget):
     def draw(self):
         with gx_matrix:
             set_color(self.style.get('bg-color'))
-            drawRectangle((0,0), (self.width, self.height))
+            drawCSSRectangle(pos=(0,0), size=self.size, style=self.style)
 
     def flip_children(self):
-        '''Flips the children
-        this has to be called exactly half way through the animation
-        so it looks like there are actually two sides'''
+        # This has to be called exactly half way through the animation
+        # so it looks like there are actually two sides'''
         if self.side == 'front':
-            #Flip to back
             self.side = 'back'
             self.children = self.children_back
         else:
@@ -83,6 +86,7 @@ class MTFlippableWidget(MTWidget):
             self.children = self.children_front
 
     def flip_to(self, to):
+        '''Flip to the requested side ('front' or 'back')'''
         if to == 'back' and self.side == 'front':
             self.flip_children()
         elif to == 'front' and self.side == 'back':

@@ -4,9 +4,9 @@ Multislider: a multi slider implementation
 
 __all__ = ['MTMultiSlider']
 
-from ...graphx import set_color, drawRectangle
-from ..factory import MTWidgetFactory
-from widget import MTWidget
+from ....graphx import set_color, drawRectangle
+from ...factory import MTWidgetFactory
+from ..widget import MTWidget
 
 class MTMultiSlider(MTWidget):
     '''Multi slider widget look like an equalizer widget.

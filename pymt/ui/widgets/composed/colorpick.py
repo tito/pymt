@@ -6,12 +6,12 @@ from __future__ import with_statement
 __all__ = ['MTColorPicker']
 
 from pyglet.gl import *
-from ...graphx import set_color, drawRectangle, GlDisplayList
-from ...graphxcss import drawCSSRectangle
-from ..factory import MTWidgetFactory
-from layout import MTBoxLayout
-from scatter import MTScatterWidget
-from slider import MTSlider
+from ....graphx import set_color, drawRectangle, GlDisplayList
+from ....graphxcss import drawCSSRectangle
+from ...factory import MTWidgetFactory
+from ..layout import MTBoxLayout
+from ..scatter import MTScatterWidget
+from ..slider import MTSlider
 
 class MTColorPicker(MTScatterWidget):
     '''MTColorPicker is a implementation of a color picker using MTWidget

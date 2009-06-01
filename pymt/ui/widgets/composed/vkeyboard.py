@@ -7,12 +7,12 @@ __all__ = ['MTTextInput', 'MTVKeyboard', 'MTKeyButton']
 
 from pyglet.text import Label
 from pyglet.window import key
-from ...graphx import set_color, drawRectangle, drawRoundedRectangle, GlDisplayList, drawLine
-from ..factory import MTWidgetFactory
-from ..animation import Animation, AnimationAlpha
-from button import MTButton
-from scatter import MTScatterWidget
-from layout.boxlayout import MTBoxLayout
+from ....graphx import set_color, drawRectangle, drawRoundedRectangle, GlDisplayList, drawLine
+from ...factory import MTWidgetFactory
+from ...animation import Animation, AnimationAlpha
+from ..button import MTButton
+from ..scatter import MTScatterWidget
+from ..layout.boxlayout import MTBoxLayout
 
 
 class MTTextInput(MTButton):

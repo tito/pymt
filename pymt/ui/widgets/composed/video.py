@@ -14,11 +14,11 @@ import pyglet
 import pymt
 from pyglet.gl import *
 from pyglet.media import *
-from ...graphx import set_color, drawRectangle, DO, gx_matrix
-from ..factory import MTWidgetFactory
-from button import MTImageButton
-from slider import MTSlider
-from scatter import MTScatterWidget
+from ....graphx import set_color, drawRectangle, DO, gx_matrix
+from ...factory import MTWidgetFactory
+from ..button import MTImageButton
+from ..slider import MTSlider
+from ..scatter import MTScatterWidget
 from time import sleep
 
 iconPath = os.path.dirname(pymt.__file__) + '/data/icons/'

@@ -15,6 +15,7 @@ setup (name='pymt',
                 'pymt.lib.cssutils.css',
                 'pymt.lib.cssutils.stylesheets',
                 'pymt.ui', 'pymt.ui.widgets',
+                'pymt.ui.widgets.composed',
                'pymt.ui.widgets.layout', 'pymt.ui.widgets.form'],
       package_dir={'pymt': 'pymt'},
       package_data={'pymt': ['data/icons/svg/*.svg', 'data/icons/*.png']}

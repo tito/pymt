@@ -33,7 +33,6 @@ from pyglet.image import Texture, TextureRegion
 from pyglet.graphics import draw
 from pyglet.text import Label
 from logger import pymt_logger
-from . import pymt_config
 import math, os
 
 RED = (1.0,0.0,0.0)
@@ -795,6 +794,7 @@ if os.path.basename(sys.argv[0]).startswith('sphinx'):
     # and not defined in source
     Fbo = HardwareFbo
 else:
+    from . import pymt_config
     # Check if Fbo is supported by gl
     if not 'GL_EXT_framebuffer_object' in gl_info.get_extensions():
         pymt_config.set('graphics', 'fbo', 'software')

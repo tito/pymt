@@ -35,7 +35,8 @@ class MTStencilContainer(MTWidget):
             stencilUse()
 
             # draw childrens
-            super(MTStencilContainer, self).on_draw()
+            for w in self.children:
+                w.dispatch_event('on_draw')
 
 # Register all base widgets
 MTWidgetFactory.register('MTStencilContainer', MTStencilContainer)

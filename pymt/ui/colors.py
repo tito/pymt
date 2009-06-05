@@ -147,6 +147,10 @@ kineticcontainer {
 window {
     bg-color: rgb(20, 20, 20);
 }
+
+modalwindow {
+	bg-color: rgba(0, 0, 0, 200);
+}
 '''
 
 def get_truncated_classname(name):

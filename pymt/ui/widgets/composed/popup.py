@@ -4,12 +4,12 @@ Popup: a simple popup that use modal window
 
 __all__ = ['MTPopup']
 
-from modalwindow import MTModalWindow
-from form.form import MTForm
-from form.button import MTFormButton
-from form.label import MTFormLabel
-from layout.boxlayout import MTBoxLayout
-from ..factory import MTWidgetFactory
+from ..modalwindow import MTModalWindow
+from ..form.form import MTForm
+from ..form.button import MTFormButton
+from ..form.label import MTFormLabel
+from ..layout.boxlayout import MTBoxLayout
+from ...factory import MTWidgetFactory
 
 class MTPopup(MTModalWindow):
     '''A simple implementation of a popup.

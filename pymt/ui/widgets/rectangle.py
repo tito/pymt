@@ -5,16 +5,14 @@ Rectangle widget: draw a rectangle of his pos/size
 from __future__ import with_statement
 __all__ = ['MTRectangularWidget']
 
-from ...graphx import set_color, drawRectangle
+from ...graphx import set_color
+from ...graphxcss import drawCSSRectangle
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
 class MTRectangularWidget(MTWidget):
-    '''A rectangular widget that only propagates and handles events if the event was within its bounds
-    
-    :Styles:
-        `bg-color` : color
-            Background color of widget
+    '''A rectangular widget that only propagates and handles
+    events if the event was within its bounds.
     '''
     def __init__(self, **kwargs):
         super(MTRectangularWidget, self).__init__(**kwargs)
@@ -36,6 +34,6 @@ class MTRectangularWidget(MTWidget):
 
     def draw(self):
         set_color(*self.style.get('bg-color'))
-        drawRectangle(self.pos, self.size)
+        drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
 
 MTWidgetFactory.register('MTRectangularWidget', MTRectangularWidget)

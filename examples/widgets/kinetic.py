@@ -2,7 +2,7 @@ from pymt import *
 
 mms = MTWindow()
 
-k = MTKineticList(pos=(200, 200), size=(400, 400), w_limit=3)
+k = MTKineticList(pos=(20, 20), size=(400, 400), w_limit=3)
 mms.add_widget(k)
 
 d = range(0, 50)

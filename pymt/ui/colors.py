@@ -39,7 +39,6 @@ auto_convert = {
     'color':                    parse_color,
     'color-down':               parse_color,
     'bg-color':                 parse_color,
-    'slider-color':             parse_color,
     'font-size':                parse_int,
     'font-name':                parse_string,
     'font-weight':              parse_string,
@@ -64,6 +63,13 @@ auto_convert = {
     'draw-slider-border':       parse_bool,
     'draw-slider-alpha-background': parse_bool,
     'vector-color':             parse_color,
+    'title-color':              parse_color,
+    'title-color':             parse_color,
+    'title-border-radius':     parse_int,
+    'title-border-radius-precision': parse_float,
+    'title-alpha-background':  parse_float4,
+    'draw-title-border':       parse_bool,
+    'draw-title-alpha-background': parse_bool,
 }
 
 # Default CSS of PyMT
@@ -143,6 +149,25 @@ kineticscrolltext {
 
 kineticcontainer {
     bg-color: rgba(90, 90, 90, 127)
+}
+
+kineticlist {
+    title-color: rgb(127, 127, 127);
+    draw-title-border: 0;
+    title-border-radius: 0;
+    title-border-radius-precision: 1;
+    draw-title-alpha-background: 0;
+    title-alpha-background: 1 1 .5 .5;
+}
+
+.kineticlist-search {
+    /* kinetic search button */
+    bg-color: rgba(0, 255, 0, 127);
+}
+
+.kineticlist-delete {
+    /* kinetic delete button */
+    bg-color: rgba(255, 0, 0, 127);
 }
 
 window {

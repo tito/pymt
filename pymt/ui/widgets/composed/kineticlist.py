@@ -7,6 +7,7 @@ __all__ = ['MTKineticList', 'MTKineticObject', 'MTKineticItem', 'MTKineticImage'
 from pyglet.gl import *
 from pyglet.text import Label
 from ....graphx import set_color, drawRectangle, GlDisplayList
+from ....graphxcss import drawCSSRectangle
 from ...factory import MTWidgetFactory
 from ....vector import Vector
 from ....mtpyglet import getFrameDt
@@ -121,7 +122,7 @@ class MTKineticList(MTStencilContainer):
             self.db = MTToggleButton(label='X',
                                pos=(self.x + self.width - 80, self.y + self.height - 40),
                                size=(80, 40),
-                               style={'bg-color': (1, 0, 0, .5), 'bold': True})
+                               cls='kineticlist-delete')
             self.db.on_press = self.toggle_delete
             self.widgets.append(self.db)
 
@@ -130,7 +131,7 @@ class MTKineticList(MTStencilContainer):
             self.sb = MTToggleButton(label='S',  #Button
                                pos=(self.x, self.y + self.width - 40),
                                size=(80, 40),
-                               style={'bg-color': (0, 1, 0, .5), 'bold': True})
+                               cls='kineticlist-search')
 
             self.sb.on_press = self.toggle_search
             self.sb.parent = self
@@ -388,12 +389,12 @@ class MTKineticList(MTStencilContainer):
     def draw(self):
         # background
         set_color(*self.style.get('bg-color'))
-        drawRectangle(self.pos, self.size)
+        drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
         super(MTKineticList, self).on_draw()
 
         # title bar
-        set_color(*self.style.get('bg-color'))
-        drawRectangle((self.x, self.height + self.y - 40), (self.width, 40))
+        set_color(*self.style.get('title-color'))
+        drawCSSRectangle(pos=(self.x, self.height + self.y - 40), size=(self.width, 40), prefix='title')
         self.title.draw()
         for w in self.widgets:
             w.on_draw()

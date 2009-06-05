@@ -15,6 +15,7 @@ from scatter import *
 from slider import *
 from stencilcontainer import *
 from svg import *
+from object import *
 from widget import *
 from xmlwidget import *
 

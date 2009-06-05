@@ -280,7 +280,8 @@ class MTWidget(pyglet.event.EventDispatcher):
             return
 
         #assert event_type in self.event_types
-        if event_type not in self.event_types: return
+        if event_type not in self.event_types:
+            return
 
         # Search handler stack for matching event handlers
         for frame in self._event_stack:

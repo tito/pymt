@@ -334,6 +334,7 @@ class MTWindow(TouchWindow):
 
     def on_object_down(self, objects, objectID, id, x, y,angle):
         for w in reversed(self.children):
+            print 'dispatch on_object_down', objectID, 'to', w
             if w.dispatch_event('on_object_down', objects, objectID, id, x, y, angle):
                 return True
 

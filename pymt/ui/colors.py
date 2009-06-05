@@ -63,6 +63,7 @@ auto_convert = {
     'slider-alpha-background':  parse_float4,
     'draw-slider-border':       parse_bool,
     'draw-slider-alpha-background': parse_bool,
+    'vector-color':             parse_color,
 }
 
 # Default CSS of PyMT
@@ -150,6 +151,10 @@ window {
 
 modalwindow {
 	bg-color: rgba(0, 0, 0, 200);
+}
+
+objectdisplay {
+    vector-color: rgb(255, 255, 255);
 }
 '''
 

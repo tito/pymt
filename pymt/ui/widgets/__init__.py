@@ -3,6 +3,7 @@ Widgets: all the pymt widgets
 '''
 
 from button import *
+from dragable import *
 from flippable import *
 from gesturewidget import *
 from kinetic import *

@@ -6,7 +6,7 @@ __all__ = ['MTStencilContainer']
 
 from pyglet.gl import *
 from widget import MTWidget
-from ...graphx import drawRectangle
+from ...graphx import drawRectangle, gx_stencil, stencilUse
 from ..factory import MTWidgetFactory
 
 stencil_stack = 0
@@ -27,36 +27,15 @@ class MTStencilContainer(MTWidget):
         super(MTStencilContainer, self).__init__(**kwargs)
 
     def on_draw(self):
-		global stencil_stack
+        with gx_stencil:
+            # draw on stencil
+            drawRectangle(pos=self.pos, size=self.size)
 
-		# push stack
-		glPushAttrib(GL_STENCIL_BUFFER_BIT | GL_STENCIL_TEST)
-		stencil_stack += 1
+            # switch drawing to color buffer.
+            stencilUse()
 
-		# enable stencil test if not yet enabled
-		if not glIsEnabled(GL_STENCIL_TEST):
-			glClearStencil(0)
-			glClear(GL_STENCIL_BUFFER_BIT)
-			glEnable(GL_STENCIL_TEST)
-
-		# increment the draw buffer
-		glStencilFunc(GL_NEVER, 0x0, 0x0)
-		glStencilOp(GL_INCR, GL_INCR, GL_INCR)
-		glColorMask(0, 0, 0, 0)
-		drawRectangle(pos=self.pos, size=self.size)
-		glColorMask(1, 1, 1, 1)
-
-		# draw inner content only when stencil match the buffer
-		glStencilFunc(GL_EQUAL, stencil_stack, stencil_stack)
-		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
-
-		# TODO optimize container to draw only children that match bbox
-		for w in self.children:
-			w.dispatch_event('on_draw')
-
-		# pop stack
-		stencil_stack -=1
-		glPopAttrib()
+            # draw childrens
+            super(MTStencilContainer, self).on_draw()
 
 # Register all base widgets
 MTWidgetFactory.register('MTStencilContainer', MTStencilContainer)

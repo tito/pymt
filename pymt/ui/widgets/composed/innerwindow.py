@@ -8,13 +8,13 @@ __all__ = ['MTInnerWindow']
 import os
 import pymt
 from pyglet.gl import *
-from ...graphx import gx_matrix, drawRectangle, set_color
-from ...graphx import drawRoundedRectangle, drawTexturedRectangle
-from ...vector import matrix_inv_mult
-from rectangle import MTRectangularWidget
-from scatter import MTScatterWidget
-from button import MTImageButton, MTButton
-from layout.boxlayout import MTBoxLayout
+from ....graphx import gx_matrix, drawRectangle, set_color
+from ....graphx import drawRoundedRectangle, drawTexturedRectangle
+from ....vector import matrix_inv_mult
+from ..rectangle import MTRectangularWidget
+from ..scatter import MTScatterWidget
+from ..button import MTImageButton, MTButton
+from ..layout.boxlayout import MTBoxLayout
 
 iconPath = os.path.join(os.path.dirname(pymt.__file__), 'data', 'icons', '')
 

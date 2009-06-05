@@ -5,7 +5,6 @@ Widgets: all the pymt widgets
 from button import *
 from flippable import *
 from gesturewidget import *
-from innerwindow import *
 from kinetic import *
 from label import *
 from layout import *

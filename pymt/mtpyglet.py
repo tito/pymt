@@ -476,11 +476,9 @@ def runTouchApp():
 
     while True:
         try:
-            print 'runLOOP'
             pymt_evloop.run()
             break
-        except BaseException as inst:
-            print 'enter exp', type(inst)
+        except BaseException, inst:
             # use exception manager first
             r = pymt_exception_manager.handle_exception(inst)
             if r == ExceptionManager.RAISE:

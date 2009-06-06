@@ -22,9 +22,11 @@ please look on the widget documentation.
 '''
 
 from __future__ import with_statement
-__all__ = ['default_css', 'css_get_style', 'get_truncated_classname', 'pymt_sheet']
+__all__ = ['default_css', 'css_get_style', 'get_truncated_classname',
+           'pymt_sheet', 'css_add_sheet', 'css_get_widget_id']
 
 from ..logger import pymt_logger
+from parser import *
 import os
 import sys
 import shutil
@@ -32,14 +34,49 @@ import logging
 import re
 import cssutils
 
+# Auto conversion from css to a special type.
+auto_convert = {
+    'color':                    parse_color,
+    'color-down':               parse_color,
+    'bg-color':                 parse_color,
+    'font-size':                parse_int,
+    'font-name':                parse_string,
+    'font-weight':              parse_string,
+    'font-color':               parse_color,
+    'border-width':             parse_float,
+    'border-radius':            parse_int,
+    'border-radius-precision':  parse_float,
+    'slider-color':             parse_color,
+    'touch-color':              parse_color,
+    'draw-text-shadow':         parse_bool,
+    'draw-border':              parse_bool,
+    'draw-alpha-background':    parse_bool,
+    'text-shadow-color':        parse_color,
+    'text-shadow-position':     parse_int2,
+    'alpha-background':         parse_float4,
+    'item-color':               parse_color,
+    'item-selected':            parse_color,
+	'padding':                  parse_int,
+    'slider-border-radius':     parse_int,
+    'slider-border-radius-precision': parse_float,
+    'slider-alpha-background':  parse_float4,
+    'draw-slider-border':       parse_bool,
+    'draw-slider-alpha-background': parse_bool,
+    'vector-color':             parse_color,
+    'title-color':              parse_color,
+    'title-color':             parse_color,
+    'title-border-radius':     parse_int,
+    'title-border-radius-precision': parse_float,
+    'title-alpha-background':  parse_float4,
+    'draw-title-border':       parse_bool,
+    'draw-title-alpha-background': parse_bool,
+}
 
+# Default CSS of PyMT
 default_css = '''
 * {
     /* text color */
     color: rgba(255, 255, 255, 255);
-
-    /* selected text color */
-    color-selected: rgba(255, 120, 255, 255);
 
     /* color when something is pushed */
     color-down: rgba(50, 50, 50, 150);
@@ -47,8 +84,31 @@ default_css = '''
     /* background color of widget */
     bg-color: rgba(60, 60, 60, 150);
 
-    /* font size */
+    /* fonts */
     font-size: 10;
+    font-name: "";
+    font-weight: normal; /* normal, bold, italic, bolditalic */
+    font-color: rgba(255, 255, 255, 255);
+
+    /* borders */
+    border-width: 1.5;
+    border-radius: 0;
+	border-radius-precision: 1;
+    draw-border: 0;
+
+    /* background alpha layer */
+    draw-alpha-background: 0;
+    alpha-background: 1 1 0.5 0.5;
+
+    /* text shadow */
+    draw-text-shadow: 0;
+    text-shadow-color: rgba(22, 22, 22, 63);
+    text-shadow-position: -1 1;
+}
+
+vectorslider {
+    slider-color: rgba(255, 71, 0, 255);
+    bg-color: rgba(51, 102, 230);
 }
 
 display {
@@ -56,10 +116,12 @@ display {
     touch-color: rgba(255, 0, 0, 255);
 }
 
+colorpicker,
 form,
 vkeyboard,
+flippablewidget,
 button {
-    bg-color: rgba(20, 20, 20, 100);
+    bg-color: rgba(60, 60, 60, 100);
 }
 
 keybutton {
@@ -69,8 +131,14 @@ keybutton {
 
 formslider,
 slider, xyslider, vectorslider, multislider, boundaryslider {
+    padding: 8;
     bg-color: rgb(51, 51, 51);
     slider-color: rgb(255, 127, 0);
+    draw-slider-border: 0;
+    slider-border-radius: 0;
+    slider-border-radius-precision: 1;
+    draw-slider-alpha-background: 0;
+    slider-alpha-background: 1 1 .5 .5;
 }
 
 kineticscrolltext {
@@ -83,8 +151,35 @@ kineticcontainer {
     bg-color: rgba(90, 90, 90, 127)
 }
 
+kineticlist {
+    title-color: rgb(127, 127, 127);
+    draw-title-border: 0;
+    title-border-radius: 0;
+    title-border-radius-precision: 1;
+    draw-title-alpha-background: 0;
+    title-alpha-background: 1 1 .5 .5;
+}
+
+.kineticlist-search {
+    /* kinetic search button */
+    bg-color: rgba(0, 255, 0, 127);
+}
+
+.kineticlist-delete {
+    /* kinetic delete button */
+    bg-color: rgba(255, 0, 0, 127);
+}
+
 window {
     bg-color: rgb(20, 20, 20);
+}
+
+modalwindow {
+	bg-color: rgba(0, 0, 0, 200);
+}
+
+objectdisplay {
+    vector-color: rgb(255, 255, 255);
 }
 '''
 
@@ -111,6 +206,15 @@ def get_widget_parents(widget):
         widgets_parents[widget.__class__] = widget_classes
     return widgets_parents[widget.__class__]
 
+def css_get_widget_id(widget):
+    if not hasattr(widget, 'cls'):
+        widget.__setattr__('cls', '')
+    if type(widget.cls) == str:
+        idwidget = str(widget.__class__) + ':' + widget.cls
+    else:
+        idwidget = str(widget.__class__) + ':' + '.'.join(widget.cls)
+    return idwidget
+
 css_cache = {}
 def css_get_style(widget, sheet=None):
     '''Return a dict() with all the style for the widget.
@@ -125,8 +229,9 @@ def css_get_style(widget, sheet=None):
     global pymt_sheet
     global css_cache
 
-    if widget.__class__ in css_cache:
-        return css_cache[widget.__class__]
+    idwidget = css_get_widget_id(widget)
+    if idwidget in css_cache:
+        return css_cache[idwidget]
 
     if not sheet:
         sheet = pymt_sheet
@@ -143,7 +248,22 @@ def css_get_style(widget, sheet=None):
         rule_score = 0
         # get the appropriate selector
         for s in w.selectorList:
-            if s.element[1] not in reversed(widget_classes):
+            rule_stop_processing = False
+            if s.element is not None:
+                if s.element[1] not in reversed(widget_classes):
+                    continue
+            if s.specificity[2] == 1:
+                cssclass = s.selectorText.split('.')[1:]
+                if type(widget.cls) == str:
+                    if widget.cls not in cssclass:
+                        rule_stop_processing = True
+                        continue
+                else:
+                    rule_stop_processing = True
+                    for c in widget.cls:
+                        if c in cssclass:
+                            rule_stop_processing = False
+            if rule_stop_processing:
                 continue
             # selector match !
             rule_selected = True
@@ -162,24 +282,17 @@ def css_get_style(widget, sheet=None):
     # compiles rules
     for score, rule in rules:
         for prop in rule.style.getProperties():
-            value = None
-
-            # color decoder with rgb / rgba
-            if prop.value.startswith('rgb'):
-                res = re.match('rgba?\((.*)\)', prop.value)
-                value = map(lambda x: int(x) / 255., re.split(',\ ?', res.groups()[0]))
-                if len(value) == 3:
-                    value.append(1)
-            elif prop.value.startswith('#'):
-                res = prop.value[1:]
-                value = [int(x, 16)/255. for x in re.split('([0-9a-f]{2})', res) if x != '']
-                if len(value) == 3:
-                    value.append(1)
-            else:
-                value = prop.value
+            value = prop.value
+            if prop.name in auto_convert:
+                try:
+                    value = auto_convert[prop.name](prop.value)
+                except:
+                    pymt_logger.exception(
+                        'Error while convert %s: %s' % (prop.name, prop.value))
+                    pass
             styles[prop.name] = value
 
-    css_cache[widget.__class__] = styles
+    css_cache[idwidget] = styles
     return styles
 
 
@@ -195,6 +308,9 @@ if os.path.exists(css_filename):
     for rule in user_sheet.cssRules:
         pymt_sheet.add(rule)
 
+def css_add_sheet(text):
+	global pymt_sheet
+	pymt_sheet.cssText += text
 
 if __name__ == '__main__':
     from pymt import *

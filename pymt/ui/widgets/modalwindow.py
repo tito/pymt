@@ -5,7 +5,8 @@ Modal window: stop all interaction with background widget
 from __future__ import with_statement
 __all__ = ['MTModalWindow']
 
-from ...graphx import set_color, drawRectangle
+from ...graphx import set_color
+from ...graphxcss import drawCSSRectangle
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
@@ -15,25 +16,26 @@ class MTModalWindow(MTWidget):
     all touchs events.
     '''
     def __init__(self, **kwargs):
-        kwargs.setdefault('color', (0,0,0,1))
         super(MTModalWindow, self).__init__(**kwargs)
 
-    def on_touch_down(self, touches, touchID, x, y):
-        super(MTModalWindow, self).on_touch_down(touches, touchID, x, y)
+    def on_touch_down(self, *largs):
+        super(MTModalWindow, self).on_touch_down(*largs)
         return True
 
-    def on_touch_move(self, touches, touchID, x, y):
-        super(MTModalWindow, self).on_touch_move(touches, touchID, x, y)
+    def on_touch_move(self, *largs):
+        super(MTModalWindow, self).on_touch_move(*largs)
         return True
 
-    def on_touch_up(self, touches, touchID, x, y):
-        super(MTModalWindow, self).on_touch_up(touches, touchID, x, y)
+    def on_touch_up(self, *largs):
+        super(MTModalWindow, self).on_touch_up(*largs)
         return True
 
     def draw(self):
         w = self.get_parent_window()
-        set_color(0, 0, 0, 1)
-        drawRectangle(pos=(0,0), size=w.size)
+        if not w:
+            return
+        set_color(*self.style['bg-color'])
+        drawCSSRectangle(pos=(0,0), size=w.size, style=self.style)
 
 
 # Register all base widgets

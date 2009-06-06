@@ -4,9 +4,9 @@ Multislider: a multi slider implementation
 
 __all__ = ['MTMultiSlider']
 
-from ...graphx import set_color, drawRectangle
-from ..factory import MTWidgetFactory
-from widget import MTWidget
+from ....graphx import set_color, drawRectangle
+from ...factory import MTWidgetFactory
+from ..widget import MTWidget
 
 class MTMultiSlider(MTWidget):
     '''Multi slider widget look like an equalizer widget.
@@ -18,10 +18,6 @@ class MTMultiSlider(MTWidget):
             Spacing between slider
         `init_value` : float, default to 0.5
             Start value of all sliders
-        `slidercolor` : tuple
-            Color of slider
-        `bgcolor` : tuple
-            Background color of slider
 
     :Styles:
         `slider-color` : color
@@ -47,17 +43,6 @@ class MTMultiSlider(MTWidget):
         self._spacing = kwargs.get('spacing')
         self._init_value = kwargs.get('init_value')
         self.slider_values = [self._init_value for x in range(self._sliders)]
-        if 'slidercolor' in kwargs:
-            self.slidercolor = kwargs.get('slidercolor')
-        if 'bgcolor' in kwargs:
-            self.bgcolor = kwargs.get('bgcolor')
-
-    def apply_css(self, styles):
-        if 'slider-color' in styles:
-            self.slidercolor = styles.get('slider-color')
-        if 'bg-color' in styles:
-            self.bgcolor = styles.get('bg-color')
-        super(MTMultiSlider, self).apply_css(styles)
 
     def _get_sliders(self):
         return self._sliders
@@ -81,10 +66,10 @@ class MTMultiSlider(MTWidget):
 
     def draw(self):
         # Draw background
-        set_color(*self.bgcolor)
+        set_color(*self.style.get('bg-color'))
         drawRectangle(pos=(self.x,self.y), size=(self.width,self.height))
         # Draw sliders
-        set_color(*self.slidercolor)
+        set_color(*self.style.get('slidercolor'))
         for slider in range(self._sliders):
             pos_x = self.x + slider * (float(self.width) / self._sliders)
             pos_y = self.y

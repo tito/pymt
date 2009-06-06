@@ -63,7 +63,11 @@ class MTWidget(pyglet.event.EventDispatcher):
         `draw_children` : bool, default is True
             Indicate if children will be draw, or not
         `no_css` : bool, default is False
-            Don't search/do css for this widget
+            Don't search/do CSS for this widget
+		`style` : dict, default to {}
+			Add inline CSS
+		`cls` : str, default is ''
+			CSS class of this widget
         `inner_animation` : custom, default is ()
             You can activate default inner animation with this keyword
             Format is: ('pos', ('size': {func=AnimationAlpha.sin}), )
@@ -115,6 +119,8 @@ class MTWidget(pyglet.event.EventDispatcher):
         kwargs.setdefault('visible', True)
         kwargs.setdefault('draw_children', True)
         kwargs.setdefault('no_css', False)
+        kwargs.setdefault('cls', '')
+        kwargs.setdefault('style', {})
         kwargs.setdefault('inner_animation', ())
 
         self._id = None
@@ -149,9 +155,15 @@ class MTWidget(pyglet.event.EventDispatcher):
             self.height = kwargs.get('height')
 
         # apply css
+        self.style = {}
+        self.cls = kwargs.get('cls')
         if not kwargs.get('no_css'):
             style = css_get_style(widget=self)
             self.apply_css(style)
+
+        # apply inline css
+        if len(kwargs.get('style')):
+            self.apply_css(kwargs.get('style'))
 
         self.a_properties = {}
         for prop in kwargs.get('inner_animation'):
@@ -245,7 +257,7 @@ class MTWidget(pyglet.event.EventDispatcher):
     def apply_css(self, styles):
         '''Called at __init__ time to applied css attribute in current class.
         '''
-        pass
+        self.style.update(styles)
 
     def dispatch_event(self, event_type, *args):
         '''Dispatch a single event to the attached handlers.
@@ -268,7 +280,8 @@ class MTWidget(pyglet.event.EventDispatcher):
             return
 
         #assert event_type in self.event_types
-        if event_type not in self.event_types: return
+        if event_type not in self.event_types:
+            return
 
         # Search handler stack for matching event handlers
         for frame in self._event_stack:

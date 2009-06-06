@@ -14,7 +14,6 @@ from pyglet import *
 import time
 import pickle
 
-
 """
 I use the EventLogger and TrialLogger classes to record all the touch input, so that I can visualize/analyze the user interacitons for some user studies I am working on.
 They have absolutly nothing to do with the Graph untabgle game, i case anyone is trying to read this to learn pymt.
@@ -112,9 +111,8 @@ class NewGameMenu(MTBoxLayout):
 
 	def draw(self):
 		if self.start_time and self.stop_time:
-			with gx_blending:
-				glColor4f(0,0,0,0.5)
-				drawRectangle(size=self.window.size)
+			set_color(0,0,0,0.5)
+			drawRectangle(size=self.window.size)
 
 			duration = str(self.stop_time - self.start_time)[:4] + " sec"
 			glColor4f(0.5,1,0.5,1)

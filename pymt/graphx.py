@@ -19,10 +19,13 @@ __all__ = [
     'DO',
     'GlDisplayList', 'GlBlending',
     'GlMatrix', 'GlEnable', 'GlBegin',
+    'GlStencil',
     # aliases
     'gx_blending', 'gx_alphablending',
     'gx_matrix', 'gx_matrix_identity',
-    'gx_enable', 'gx_begin',
+    'gx_enable', 'gx_begin', 'gx_stencil',
+    # stencil
+    'stencilPush', 'stencilPop', 'stencilUse',
     # Fbo
     'Fbo', 'HardwareFbo', 'SoftwareFbo'
 ]
@@ -33,7 +36,6 @@ from pyglet.image import Texture, TextureRegion
 from pyglet.graphics import draw
 from pyglet.text import Label
 from logger import pymt_logger
-from . import pymt_config
 import math, os
 
 RED = (1.0,0.0,0.0)
@@ -617,6 +619,67 @@ class GlBegin:
 
 gx_begin = GlBegin
 
+### Stencil usage
+stencil_stack = 0
+def stencilGetStackLevel():
+    global stencil_stack
+    return stencil_stack
+
+def stencilPush():
+    '''Create a new stack in stencil stack.
+    All the next draw will be done in stencil buffer until
+    stencilUse() will be called.'''
+    global stencil_stack
+    glPushAttrib(GL_STENCIL_BUFFER_BIT | GL_STENCIL_TEST)
+    stencil_stack += 1
+
+    # enable stencil test if not yet enabled
+    if not glIsEnabled(GL_STENCIL_TEST):
+        glClearStencil(0)
+        glClear(GL_STENCIL_BUFFER_BIT)
+        glEnable(GL_STENCIL_TEST)
+
+    # increment the draw buffer
+    glStencilFunc(GL_NEVER, 0x0, 0x0)
+    glStencilOp(GL_INCR, GL_INCR, GL_INCR)
+    glColorMask(0, 0, 0, 0)
+
+def stencilPop():
+    '''Pop out the last stack from stencil stack'''
+    global stencil_stack
+    stencil_stack -=1
+    glPopAttrib()
+
+def stencilUse():
+    '''Switch from stencil draw to color draw.
+    Now, all drawing will be done on color buffer,
+    using latest stencil stack.
+    '''
+    global stencil_stack
+    glColorMask(1, 1, 1, 1)
+
+    # draw inner content only when stencil match the buffer
+    glStencilFunc(GL_EQUAL, stencil_stack, stencil_stack)
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
+
+
+class GlStencil:
+    '''Statement of stencilPush/stencilPop, designed to be use with "with" keyword
+
+    Alias: gx_stencil.
+    '''
+    def __init__(self):
+        pass
+
+    def __enter__(self):
+        stencilPush()
+
+    def __exit__(self, type, value, traceback):
+        stencilPop()
+
+gx_stencil = GlStencil()
+
+
 ### FBO, PBO, opengl stuff
 class AbstractFbo(object):
     '''Abstraction of Framebuffer implementation.
@@ -795,6 +858,7 @@ if os.path.basename(sys.argv[0]).startswith('sphinx'):
     # and not defined in source
     Fbo = HardwareFbo
 else:
+    from . import pymt_config
     # Check if Fbo is supported by gl
     if not 'GL_EXT_framebuffer_object' in gl_info.get_extensions():
         pymt_config.set('graphics', 'fbo', 'software')

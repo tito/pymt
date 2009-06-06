@@ -35,14 +35,12 @@ class MTVectorSlider(MTWidget):
     it just like any other vector, adjusting its angle and amplitude.
 
     :Parameters:
-        `bgcolor` : tuple, default to (.2, .4, .9)
-            The background color of the widget
-        `vcolor` : tuple, default to (1, .28, 0)
-            The color for the vector
         `radius` : int, default to 200
             The radius of the whole widget
 
     :Styles:
+        `vector-color` : color
+            Color of the vector
         `slider-color` : color
             Color of the triangle
         `bg-color` : color
@@ -50,26 +48,18 @@ class MTVectorSlider(MTWidget):
     '''
 
     def __init__(self, **kwargs):
-        super(MTVectorSlider, self).__init__(**kwargs)
-
         kwargs.setdefault('radius', 200)
 
+        super(MTVectorSlider, self).__init__(**kwargs)
+
         self.radius = kwargs.get('radius')
-        if 'vcolor' in kwargs:
-            self.vcolor = kwargs.get('vcolor')
-        if 'bgcolor' in kwargs:
-            self.bgcolor = kwargs.get('bgcolor')
 
-        #The vector hand
         self.vector = Vector(0, 0)
-
-        #Vector Stuff, for the callback
         self.amplitude = 0
         self.angle = 0
 
         self.register_event_type('on_amplitude_change')
         self.register_event_type('on_angle_change')
-        #This is just a combination of the last two
         self.register_event_type('on_vector_change')
 
     def collide_point(self, x, y):
@@ -78,30 +68,22 @@ class MTVectorSlider(MTWidget):
         it.'''
         return _get_distance(self.pos, (x, y)) <= self.radius
 
-    def apply_css(self, styles):
-        if 'slider-color' in styles:
-            self.vcolor = styles.get('slider-color')
-        if 'bg-color' in styles:
-            self.bgcolor = styles.get('bg-color')
-        super(MTVectorSlider, self).apply_css(styles)
-
     def _calc_stuff(self):
         '''Recalculated the args for the callbacks'''
-	#AMPLITUDE
         self.amplitude = self.vector.distance(self.pos)
-	#ANGLE
-        #Make a new vector relative to the origin
+        # Make a new vector relative to the origin
         tvec = [self.vector[0], self.vector[1]]
         tvec[0] -= self.pos[0]
         tvec[1] -= self.pos[1]
 
-        #Incase python throws float div or div by zero exception, ignore them, we will be close enough
+        # Incase python throws float div or div by zero exception,
+        # ignore them, we will be close enough
         try:
             self.angle = degrees(atan((int(tvec[1])/int(tvec[0]))))
         except:
             pass
 
-        #Ajdust quadrants so we have 0-360 degrees
+        # Ajdust quadrants so we have 0-360 degrees
         if tvec[0] < 0 and tvec[1] > 0:
             self.angle = 90 + (90 + self.angle)
         elif tvec[0] < 0 and tvec[1] < 0:
@@ -113,7 +95,6 @@ class MTVectorSlider(MTWidget):
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x, y):
-            #The blob is in the widget, do stuff
             self.vector[0], self.vector[1] = x, y
             self._calc_stuff()
 
@@ -124,7 +105,6 @@ class MTVectorSlider(MTWidget):
             return True
     def on_touch_move(self, touches, touchID, x, y):
         if self.collide_point(x, y):
-            #The blob is in the widget, do stuff
             self.vector[0], self.vector[1] = x, y
             self._calc_stuff()
 
@@ -135,19 +115,19 @@ class MTVectorSlider(MTWidget):
             return True
 
     def draw(self):
-        #Draw Background
-        set_color(*self.bgcolor)
+        # Background
+        set_color(*self.style.get('bg-color'))
         drawCircle(self.pos, self.radius)
 
-        #A good size for the hand, proportional to the size of the widget
+        # A good size for the hand, proportional to the size of the widget
         hd = self.radius / 10
-        #Draw center of the hand
-        set_color(*self.vcolor)
+        # Draw center of the hand
+        set_color(*self.style.get('vector-color'))
         drawCircle(self.pos, hd)
-        #Rotate the triangle so its not skewed
+        # Rotate the triangle so its not skewed
         l = prot((self.pos[0] - hd, self.pos[1]), self.angle-90, self.pos)
         h = prot((self.pos[0] + hd, self.pos[1]), self.angle-90, self.pos)
-        #Draw triable of the hand
+        # Draw triable of the hand
         with gx_begin(GL_POLYGON):
             glVertex2f(*l)
             glVertex2f(*h)

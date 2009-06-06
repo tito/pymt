@@ -12,21 +12,21 @@ def drawVertex(x,y):
         glTranslated(x,y, 0)
         if not vertex_dl.is_compiled():
             with vertex_dl:
-                glColor3d(1.0,1.0,1.0)
+                set_color(1.0,1.0,1.0,0.99)
                 gluDisk(gluNewQuadric(), 0, 25, 32,1)
                 glScaled(0.75,0.75,1.0)
-                glColor3d(0.2,0.6,0.2)
+                set_color(0.2,0.6,0.2,.99)
                 gluDisk(gluNewQuadric(), 0, 25, 32,1)
         vertex_dl.draw()
 
 collision_dl = GlDisplayList()
 def drawCollision(x,y):
     global collision_dl
-    with DO(gx_matrix, gx_blending):
+    with gx_matrix:
         glTranslated(x,y-5, 0)
         if not collision_dl.is_compiled():
             with collision_dl:
-                glColor4f(1.0,0.0,0.0, 0.3)
+                set_color(1.0,0.0,0.0, 0.3)
                 drawTriangle(pos=(0,0),w=20,h=20)
         collision_dl.draw()
 
@@ -71,9 +71,9 @@ class Graph(object):
        def draw(self):
               #self.is_solved()
               for e in self.edges:
-                     glColor3d(1,1,1)
+                     set_color(1,1,1,.99)
                      drawLine((e[0][0],e[0][1], e[1][0],e[1][1]), width=12.0)
-                     glColor3d(0.3,0.6,0.3)
+                     set_color(0.3,0.6,0.3)
                      drawLine((e[0][0],e[0][1], e[1][0],e[1][1]), width=6.0)
               for v in self.verts:
                      drawVertex(v[0],v[1])

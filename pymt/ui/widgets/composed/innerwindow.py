@@ -8,13 +8,13 @@ __all__ = ['MTInnerWindow']
 import os
 import pymt
 from pyglet.gl import *
-from ...graphx import gx_matrix, drawRectangle, set_color
-from ...graphx import drawRoundedRectangle, drawTexturedRectangle
-from ...vector import matrix_inv_mult
-from rectangle import MTRectangularWidget
-from scatter import MTScatterWidget
-from button import MTImageButton, MTButton
-from layout.boxlayout import MTBoxLayout
+from ....graphx import gx_matrix, drawRectangle, set_color, gx_stencil, stencilUse
+from ....graphx import drawRoundedRectangle, drawTexturedRectangle
+from ....vector import matrix_inv_mult
+from ..rectangle import MTRectangularWidget
+from ..scatter import MTScatterWidget
+from ..button import MTImageButton, MTButton
+from ..layout.boxlayout import MTBoxLayout
 
 iconPath = os.path.join(os.path.dirname(pymt.__file__), 'data', 'icons', '')
 
@@ -68,18 +68,18 @@ class MTInnerWindow(MTScatterWidget):
         self.color=(1,1,1,0.5)
         self.border = 20
         self.__w = self.__h = 0
-        self.container = MTInnerWindowContainer(pos=(0,0), size=self.size, bgcolor=(0,0,0))
+        self.container = MTInnerWindowContainer(pos=(0,0), size=self.size, style={'bg-color':(0,0,0)})
         super(MTInnerWindow, self).add_widget(self.container)
         self.setup_controls()
 
     def setup_controls(self):
         self.controls = MTBoxLayout()
 
-        button_fullscreen = MTImageButton(filename=iconPath+'fullscreen.png',scale=0.5)
+        button_fullscreen = MTImageButton(filename=iconPath+'fullscreen.png', scale=0.5, cls='innerwindow-fullscreen')
         button_fullscreen.push_handlers(on_release=self.fullscreen)
         self.controls.add_widget(button_fullscreen)
 
-        button_close = MTImageButton(filename=iconPath+'stop.png', scale=0.5)
+        button_close = MTImageButton(filename=iconPath+'stop.png', scale=0.5, cls='innerwindow-close')
         button_close.push_handlers(on_release=self.close)
         self.controls.add_widget(button_close)
 
@@ -180,22 +180,11 @@ class MTInnerWindow(MTScatterWidget):
             glMultMatrixf(self.transform_mat)
 
             self.draw()
-
-            # enable stencil test
-            glClearStencil(0)
-            glClear(GL_STENCIL_BUFFER_BIT)
-            glEnable(GL_STENCIL_TEST)
-            glStencilFunc(GL_NEVER, 0x0, 0x0)
-            glStencilOp(GL_INCR, GL_INCR, GL_INCR)
-            drawRectangle((0, 0), size=self.size)
-
-            # draw inner content
-            glStencilFunc(GL_EQUAL, 0x1, 0x1)
-            glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
-            self.container.dispatch_event('on_draw')
-            glDisable(GL_STENCIL_TEST)
-
             self.controls.dispatch_event('on_draw')
 
-
+            # use stencil for container
+            with gx_stencil:
+                drawRectangle((0, 0), size=self.size)
+                stencilUse()
+                self.container.dispatch_event('on_draw')
 

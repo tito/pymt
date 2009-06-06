@@ -7,7 +7,8 @@ import random
 __all__ = ['MTSlider', 'MTXYSlider', 'MTBoundarySlider']
 
 from pyglet.gl import *
-from ...graphx import drawRectangle, drawCircle, drawLabel, set_color
+from ...graphx import drawRectangle, drawCircle, drawLabel, set_color, drawRoundedRectangle, drawRectangleAlpha, drawRoundedRectangleAlpha
+from ...graphxcss import drawCSSRectangle
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
@@ -23,20 +24,21 @@ class MTSlider(MTWidget):
             Type of orientation, can be 'horizontal' or 'vertical'
         `value` : int, default is `min`
             Default value of slider
-        `slidercolor` : tuple
-            Color of the slider in (r,g,b,a)
-        `bgcolor` : tuple
-            Background color
     :Styles:
         `slider-color` : color
             Color of the slider
         `bg-color` : color
             Background color of the slider
+        `padding` : int
+            Padding of content
+
+    :Events:
+        `on_value_change`
+            Fired when slider value is changed
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('min', 0)
         kwargs.setdefault('max', 100)
-        kwargs.setdefault('padding', 8)
         kwargs.setdefault('orientation', 'vertical')
         if kwargs.get('orientation') == 'vertical':
             kwargs.setdefault('size', (30, 400))
@@ -48,23 +50,11 @@ class MTSlider(MTWidget):
         self.register_event_type('on_value_change')
         self.touchstarts    = [] # only react to touch input that originated on this widget
         self.orientation    = kwargs.get('orientation')
-        self.padding        = kwargs.get('padding')
         self.min            = kwargs.get('min')
         self.max            = kwargs.get('max')
         self._value         = self.min
         if kwargs.get('value'):
             self._value = kwargs.get('value')
-        if kwargs.get('slidercolor'):
-            self.slidercolor = kwargs.get('slidercolor')
-        if kwargs.get('bgcolor'):
-            self.bgcolor = kwargs.get('bgcolor')
-
-    def apply_css(self, styles):
-        if 'slider-color' in styles:
-            self.slidercolor = styles.get('slider-color')
-        if 'bg-color' in styles:
-            self.bgcolor = styles.get('bg-color')
-        super(MTSlider, self).apply_css(styles)
 
     def on_value_change(self, value):
         pass
@@ -77,19 +67,23 @@ class MTSlider(MTWidget):
     value = property(get_value, set_value, doc='Value of the slider')
 
     def draw(self):
-        x,y,w,h = self.x, self.y, self.width, self.height
-        p2 =self.padding/2
-        # draw outer rectangle
-        set_color(*self.bgcolor)
-        drawRectangle(pos=(x,y), size=(w,h))
-        # draw inner rectangle
-        set_color(*self.slidercolor)
+        p2 = self.style['padding'] / 2
         if self.orientation == 'vertical':
-            length = int((self._value - self.min) * (self.height - self.padding) / (self.max - self.min))
-            drawRectangle(pos=(x+p2,y+p2), size=(w - self.padding, length))
+            length = int((self._value - self.min) * (self.height - self.style['padding']) / (self.max - self.min))
+            pos = self.x + p2, self.y + p2
+            size = self.width - self.style['padding'], length
         else:
-            length = int((self._value - self.min) * (self.width - self.padding) / (self.max - self.min))
-            drawRectangle(pos=(x+p2,y+p2), size=(length, h - self.padding))
+            length = int((self._value - self.min) * (self.width - self.style['padding']) / (self.max - self.min))
+            pos = self.x + p2, self.y + p2
+            size = length, self.height - self.style['padding']
+
+        # draw outer rectangle
+        set_color(*self.style.get('bg-color'))
+        drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
+
+        # draw inner rectangle
+        set_color(*self.style.get('slider-color'))
+        drawCSSRectangle(pos=pos, size=size, style=self.style, prefix='slider')
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -134,13 +128,15 @@ class MTXYSlider(MTWidget):
             Default X value of slider
         `value_y` : int, default is `min_y`
             Default Y value of slider
-        `slidercolor` : tuple
-            color of the slider in (r,g,b,a)
     :Styles:
         `slider-color` : color
             Color of the slider
         `bg-color` : color
             Background color of the slider 
+
+    :Events:
+        `on_value_change`
+            Fired when slider x/y value is changed
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('min_x', 20)
@@ -149,8 +145,8 @@ class MTXYSlider(MTWidget):
         kwargs.setdefault('max_y', 100)
         kwargs.setdefault('radius', 20)
         kwargs.setdefault('size', (200, 200))
-        kwargs.setdefault('value_x', None)
-        kwargs.setdefault('value_y', None)
+        kwargs.setdefault('value_x', kwargs.get('min_x'))
+        kwargs.setdefault('value_y', kwargs.get('min_y'))
 
         super(MTXYSlider, self).__init__(**kwargs)
         self.register_event_type('on_value_change')
@@ -162,22 +158,8 @@ class MTXYSlider(MTWidget):
         self.min_y      = kwargs.get('min_y')
         self.max_y      = kwargs.get('max_y')
         self.radius     = kwargs.get('radius')
-        self._value_x, self._value_y = self.min_x, self.min_y
-        if kwargs.get('value_x'):
-            self._value_x = kwargs.get('value_x')
-        if kwargs.get('value_y'):
-            self._value_y = kwargs.get('value_y')
-        if kwargs.get('slidercolor'):
-            self.slidercolor = kwargs.get('slidercolor')
-        if kwargs.get('bgcolor'):
-            self.slidercolor = kwargs.get('bgcolor')
-
-    def apply_css(self, styles):
-        if 'slider-color' in styles:
-            self.slidercolor = styles.get('slider-color')
-        if 'bg-color' in styles:
-            self.bgcolor = styles.get('bg-color')
-        super(MTXYSlider, self).apply_css(styles)
+        self._value_x   = kwargs.get('value_x')
+        self._value_y   = kwargs.get('value_y')
 
     def on_value_change(self, value_x, value_y):
         pass
@@ -185,33 +167,27 @@ class MTXYSlider(MTWidget):
     def set_value_x(self, value):
         self._value_x = value
         self.dispatch_event('on_value_change', self._value_x, self._value_y)
-        self.draw()
-
     def get_value_x(self):
         return self._value_x
-
     value_x = property(get_value_x, set_value_x, doc='Value of the slider (x axis)')
 
     def set_value_y(self, value):
         self._value_y = value
         self.dispatch_event('on_value_change', self._value_x, self._value_y)
-        self.draw()
-
     def get_value_y(self):
         return self._value_y
-
     value_y = property(get_value_y, set_value_y, doc='Value of the slider (y axis)')
 
     def draw(self):
-        x,y,w,h = self.x,self.y,self.width, self.height
         # draw outer rectangle
-        set_color(*self.bgcolor)
-        drawRectangle(pos=(x,y), size=(w,h))
+        set_color(*self.style.get('bg-color'))
+        drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
+
         # draw inner circle
-        set_color(*self.slidercolor)
+        set_color(*self.style.get('slider-color'))
         pos_x = int((self._value_x - self.min_x) * (self.width - self.padding*2) / (self.max_x - self.min_x))  + self.x + self.padding
         pos_y = int((self._value_y - self.min_y) * (self.height - self.padding*2) / (self.max_y - self.min_y)) + self.y + self.padding
-        drawCircle(pos=(pos_x, pos_y), radius = self.radius)
+        drawCircle(pos=(pos_x, pos_y), radius=self.radius)
 
     def on_touch_down(self, touches, touchID, x, y):
         if self.collide_point(x,y):
@@ -253,8 +229,6 @@ class MTBoundarySlider(MTWidget):
             The default maximum value
         `value_min` : int, the default is `min + (max/4)`
             The default minumum value
-        `slidercolor` : tuple
-            color of the slider in (r,g,b,a)
         `showtext` : boolean, defaults to false
             If true, the widget will show the min/max value
 
@@ -263,6 +237,10 @@ class MTBoundarySlider(MTWidget):
             Color of the slider
         `bg-color` : color
             Background color of the slider
+
+    :Events:
+        `on_value_change`
+            Fired when min or max is changed
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('min', 0)
@@ -278,71 +256,87 @@ class MTBoundarySlider(MTWidget):
         self.register_event_type('on_value_change')
         self.touchstarts    = [] # only react to touch input that originated on this widget
         self.orientation    = kwargs.get('orientation')
+        if self.orientation not in ('horizontal', 'vertical'):
+            raise Exception('Invalid orientation %s. Must be horizontal or vertical' % self.orientation)
         self.padding        = kwargs.get('padding')
         self.min            = kwargs.get('min')
         self.max            = kwargs.get('max')
         self.showtext = kwargs.get('showtext')
-        if kwargs.get('slidercolor'):
-            self.slidercolor = kwargs.get('slidercolor')
-        if kwargs.get('bgcolor'):
-            self.slidercolor = kwargs.get('bgcolor')
 
-        kwargs.setdefault('value_max', 1)
-        kwargs.setdefault('value_min', self.max/2)
-        self.value_max = kwargs.get('value_max')
+        kwargs.setdefault('value_min', self.min)
+        kwargs.setdefault('value_max', self.max)
         self.value_min = kwargs.get('value_min')
+        self.value_max = kwargs.get('value_max')
 
-    def apply_css(self, styles):
-        if 'slider-color' in styles:
-            self.slidercolor = styles.get('slider-color')
-        if 'bg-color' in styles:
-            self.bgcolor = styles.get('bg-color')
-        super(MTBoundarySlider, self).apply_css(styles)
+    def set_value(self, name, value):
+        if name in ('value_min', 'value_max'):
+            if self.orientation == 'vertical':
+                x = self.height
+            else:
+                x = self.width
+            if value < 0:
+                return self.__setattr__(name, 0)
+            if value > x:
+                return self.__setattr__(name, x)
+        if name == 'value_min' and value > self.value_max:
+            return
+        if name == 'value_max' and value < self.value_min:
+            return
+        return self.__setattr__(name, value)
 
     def get_value(self):
-        '''Scale the value to the minimum and maximum system set by the user
-        '''
+        '''Scale the value to the minimum and maximum system set by the user'''
         if self.orientation == 'vertical':
             tmin = (self.value_min / self.height) * self.max
             tmax = (self.value_max / self.height) * self.max
         elif self.orientation == 'horizontal':
             tmin = (self.value_min / self.width) * self.max
             tmax = (self.value_max / self.width) * self.max
-
         return tmin, tmax
 
     def on_value_change(self, min, max):
-        '''Event prototype'''
         pass
 
     def draw(self):
-        x, y, w, h = self.x, self.y, self.width, self.height
-        #Draw the outer rectangle(border)
-        set_color(*self.bgcolor)
-        drawRectangle(pos=(x, y), size=(w,h))
-        #Draw the slider
-        set_color(*self.slidercolor)
+        p = self.style['padding']
+        p2 = p / 2
         if self.orientation == 'vertical':
-            drawRectangle(pos=(self.x, self.y + self.value_min), size=(w, self.value_max-self.value_min))
-            if self.showtext:
-                drawLabel(str(self.value_min), pos=(self.x+self.width/2, self.y+self.value_min+10), font_size=16)
-                drawLabel(str(self.value_max), pos=(self.x+self.width/2, self.y+self.value_max-10), font_size=16)
+            pos = (self.x + p2, self.y + self.value_min + p2)
+            size = (self.width - p, self.value_max - self.value_min - p)
+            textposmin = (self.x + self.width / 2, self.y + self.value_min)# + 10)
+            textposmax = (self.x + self.width / 2, self.y + self.value_max)# - 10)
         elif self.orientation == 'horizontal':
-            drawRectangle(pos=(self.x + self.value_min, self.y), size=(self.value_max - self.value_min, h))
+            pos = (self.x + self.value_min + p2, self.y + p2)
+            size = (self.value_max - self.value_min - p, self.height - p)
+            textposmin = (self.x + self.value_min, self.y + self.height / 2)
+            textposmax = (self.x + self.value_max, self.y + self.height / 2)
+
+        # draw outer rectangle
+        set_color(*self.style.get('bg-color'))
+        drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
+
+        # draw inner rectangle
+        set_color(*self.style.get('slider-color'))
+        drawCSSRectangle(pos=pos, size=size, style=self.style, prefix='slider')
+        if self.showtext:
+            drawLabel(str(self.value_min), pos=texposmin, font_size=self.style['font-size'])
+            drawLabel(str(self.value_max), pos=texposmax, font_size=self.style['font-size'])
 
     def on_touch_down(self, touches, touchID, x, y):
-        touches[touchID].oxpos = x  #So the first on_touch_move in a two-finger-drag doesn't teleport the widget
-        touches[touchID].oypos = y  #Ditto ^
+        # So the first on_touch_move in a
+        # two-finger-drag doesn't teleport the widget
+        touches[touchID].oxpos = x
+        touches[touchID].oypos = y
         if self.collide_point(x,y):
             if touches[touchID].is_double_tap:
-                #Randomize the bound
+                # Randomize the bound
                 if self.orientation == 'vertical':
                     self.value_min = random.randrange(0, self.height)
                     self.value_max = random.randrange(self.value_min, self.height)
                 else:
                     self.value_min = random.randrange(0, self.width)
                     self.value_max = random.randrange(self.value_min, self.width)
-            #Decide wether we will move the upper or lower bound
+            # Decide wether we will move the upper or lower bound
             if self.orientation == 'vertical':
                 if y < (self.value_min + self.y*2 + self.value_max)/2:
                     touches[touchID].side = 'value_min'
@@ -360,28 +354,27 @@ class MTBoundarySlider(MTWidget):
 
     def on_touch_move(self, touches, touchID, x, y):
         if touchID in self.touchstarts:
-            #Either move a given bound, or shift both
+            # Either move a given bound, or shift both
             if self.orientation == 'vertical':
                 if len(self.touchstarts) >= 2:
-                    #Two or more fingers, shift the whole bound
+                    # Two or more fingers, shift the whole bound
                     rel = (y - touches[touchID].oypos)
                     self.value_min += rel
                     self.value_max += rel
                 else:
-                    #Only one, just change one bound
-                    setattr(self, touches[touchID].side, y - self.y)
+                    # Only one, just change one bound
+                    self.set_value(touches[touchID].side, y - self.y)
                     self.dispatch_event('on_value_change', *self.get_value())
             elif self.orientation == 'horizontal':
                 if len(self.touchstarts) >= 2:
-                    #Two or more fingers, shift the whole bound
+                    # Two or more fingers, shift the whole bound
                     rel = (x - touches[touchID].oxpos)
                     self.value_min += rel
                     self.value_max += rel
                 else:
-                    #Only one, just change one bound
-                    setattr(self, touches[touchID].side, x - self.x)
+                    # Only one, just change one bound
+                    self.set_value(touches[touchID].side, x - self.x)
                     self.dispatch_event('on_value_change', *self.get_value())
-
         touches[touchID].oypos = y
         touches[touchID].oxpos = x
 

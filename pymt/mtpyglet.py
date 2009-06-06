@@ -15,6 +15,7 @@ import pymt
 import sys, getopt, os
 from logger import pymt_logger
 from pyglet.gl import *
+from exceptions import pymt_exception_manager, ExceptionManager
 from Queue import Queue
 from utils import intersection, difference, strtotuple
 
@@ -473,11 +474,20 @@ def runTouchApp():
     port = pymt.pymt_config.getint('tuio', 'port')
     pymt_evloop = TouchEventLoop(host=host, port=port)
 
-    try:
-        pymt_evloop.run()
-    except:
-        stopTouchApp()
-        raise
+    while True:
+        try:
+            print 'runLOOP'
+            pymt_evloop.run()
+            break
+        except BaseException as inst:
+            print 'enter exp', type(inst)
+            # use exception manager first
+            r = pymt_exception_manager.handle_exception(inst)
+            if r == ExceptionManager.RAISE:
+                stopTouchApp()
+                raise
+            else:
+                pass
 
     # Show event stats
     if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):

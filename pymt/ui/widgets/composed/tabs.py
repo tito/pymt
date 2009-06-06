@@ -4,10 +4,10 @@ Tabs widget: widget that provide tabs (like tabbed notebook)
 from __future__ import with_statement
 __all__ = ['MTTabs']
 
-from ..factory import MTWidgetFactory
-from widget import MTWidget
-from button import MTButton
-from layout.boxlayout import MTBoxLayout
+from ...factory import MTWidgetFactory
+from ..widget import MTWidget
+from ..button import MTButton
+from ..layout.boxlayout import MTBoxLayout
 
 class MTTabs(MTWidget):
     '''Class that implement a tabbed notebook.

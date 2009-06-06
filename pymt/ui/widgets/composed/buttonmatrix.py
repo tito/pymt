@@ -6,9 +6,9 @@ from __future__ import with_statement
 __all__ = ['MTButtonMatrix']
 
 from pyglet.gl import *
-from ...graphx import set_color, drawRectangle,drawRoundedRectangle, gx_matrix
-from ..factory import MTWidgetFactory
-from widget import MTWidget
+from ....graphx import set_color, drawRectangle,drawRoundedRectangle, gx_matrix
+from ...factory import MTWidgetFactory
+from ..widget import MTWidget
 
 
 class MTButtonMatrix(MTWidget):

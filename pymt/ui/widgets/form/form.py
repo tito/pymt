@@ -14,16 +14,16 @@ class MTForm(MTAbstractFormWidget):
     :Parameters:
         `layout` : MTAbstractLayout class, default is None
             Initial layout to be used with form
-        `border_radius` : int, default to 0
+
+    :Styles:
+        `border-radius` : int, default to 0
             Border radius of background
     '''
 
     def __init__(self, **kwargs):
         kwargs.setdefault('layout', None)
-        kwargs.setdefault('border_radius', 0)
         super(MTForm, self).__init__(**kwargs)
         self.layout = kwargs.get('layout')
-        self.border_radius = kwargs.get('border_radius')
 
     def _set_layout(self, layout):
         if hasattr(self, '_layout') and self._layout:
@@ -39,9 +39,9 @@ class MTForm(MTAbstractFormWidget):
         self.layout.add_widget(widget)
 
     def draw(self):
-        set_color(*self.bgcolor)
-        if self.border_radius > 0:
-            drawRoundedRectangle(pos=self.pos, size=self.size, radius=self.border_radius)
+        set_color(*self.style.get('bg-color'))
+        if int(self.style.get('border-radius')) > 0:
+            drawRoundedRectangle(pos=self.pos, size=self.size, radius=int(self.style.get('border-radius')))
         else:
             drawRectangle(pos=self.pos, size=self.size)
 

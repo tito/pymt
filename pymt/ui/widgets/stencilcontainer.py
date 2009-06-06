@@ -2,6 +2,8 @@
 Stencil container: clip drawing of children to his container
 '''
 
+from __future__ import with_statement
+
 __all__ = ['MTStencilContainer']
 
 from pyglet.gl import *

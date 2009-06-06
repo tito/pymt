@@ -6,7 +6,7 @@ from __future__ import with_statement
 __all__ = ['MTModalWindow']
 
 from ...graphx import set_color
-from ...graphxcss import drawCSSRectangle
+from ...graphx import drawCSSRectangle
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 

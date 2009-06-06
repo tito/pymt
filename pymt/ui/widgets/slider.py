@@ -8,7 +8,7 @@ __all__ = ['MTSlider', 'MTXYSlider', 'MTBoundarySlider']
 
 from pyglet.gl import *
 from ...graphx import drawRectangle, drawCircle, drawLabel, set_color, drawRoundedRectangle, drawRectangleAlpha, drawRoundedRectangleAlpha
-from ...graphxcss import drawCSSRectangle
+from ...graphx import drawCSSRectangle
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 

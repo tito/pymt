@@ -7,7 +7,7 @@ __all__ = ['MTColorPicker']
 
 from pyglet.gl import *
 from ....graphx import set_color, drawRectangle, GlDisplayList
-from ....graphxcss import drawCSSRectangle
+from ....graphx import drawCSSRectangle
 from ...factory import MTWidgetFactory
 from ..layout import MTBoxLayout
 from ..scatter import MTScatterWidget

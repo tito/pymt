@@ -1,10 +1,10 @@
 '''
-GraphxCSS: Draw shapes with css attributes !
+CSS: Draw shapes with css attributes !
 '''
 
 __all__ = ['drawCSSRectangle']
 
-from graphx import *
+from draw import *
 from pyglet.gl import GL_LINE_LOOP
 
 def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):

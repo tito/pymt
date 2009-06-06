@@ -7,7 +7,7 @@ __all__ = ['MTObjectDisplay']
 
 from pyglet.gl import *
 from ...graphx import gx_matrix, gx_begin, set_color
-from ...graphxcss import drawCSSRectangle
+from ...graphx import drawCSSRectangle
 from ..factory import MTWidgetFactory
 from math import pi
 from widget import MTWidget

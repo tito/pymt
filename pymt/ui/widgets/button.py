@@ -8,7 +8,7 @@ __all__ = ['MTButton', 'MTToggleButton', 'MTImageButton']
 from pyglet.gl import *
 from pyglet.text import Label
 from ...graphx import GlDisplayList, set_color, gx_blending
-from ...graphxcss import drawCSSRectangle
+from ...graphx import drawCSSRectangle
 from ...utils import get_color_for_pyglet
 from ..factory import MTWidgetFactory
 from widget import MTWidget

@@ -1,5 +1,5 @@
 '''
-Graphx: simplification of opengl pritimives
+Statements: OpenGL statement for the "with" keyword
 '''
 
 from __future__ import with_statement

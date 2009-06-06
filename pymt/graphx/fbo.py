@@ -1,5 +1,5 @@
 '''
-Graphx: simplification of opengl pritimives
+Fbo: abstraction to use hardware/software FrameBuffer object
 '''
 
 from __future__ import with_statement

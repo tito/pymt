@@ -374,12 +374,14 @@ class MTDisplay(MTWidget):
     '''
 
     def __init__(self, **kwargs):
-        kwargs.setdefault('radius', 10)
+        kwargs.setdefault('touch_color', (1,1,0))
+        kwargs.setdefault('radius', 20)
         super(MTDisplay, self).__init__(**kwargs)
+
+        self.radius = kwargs['radius']
+        self.touch_color = kwargs['touch_color']
         self.touches    = {}
-        self.radius     = kwargs.get('radius')
-        if 'touch_color' in kwargs:
-            self.touch_color = kwargs.get('touch_color')
+
 
     def apply_css(self, styles):
         if 'touch-color' in styles:

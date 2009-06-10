@@ -4,9 +4,9 @@ Multislider: a multi slider implementation
 
 __all__ = ['MTMultiSlider']
 
-from ....graphx import set_color, drawRectangle
-from ...factory import MTWidgetFactory
-from ..widget import MTWidget
+from ...graphx import set_color, drawRectangle
+from ..factory import MTWidgetFactory
+from widget import MTWidget
 
 class MTMultiSlider(MTWidget):
     '''Multi slider widget look like an equalizer widget.
@@ -69,7 +69,7 @@ class MTMultiSlider(MTWidget):
         set_color(*self.style.get('bg-color'))
         drawRectangle(pos=(self.x,self.y), size=(self.width,self.height))
         # Draw sliders
-        set_color(*self.style.get('slidercolor'))
+        set_color(*self.style.get('slider-color'))
         for slider in range(self._sliders):
             pos_x = self.x + slider * (float(self.width) / self._sliders)
             pos_y = self.y

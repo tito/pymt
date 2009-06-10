@@ -19,7 +19,6 @@ from exceptions import pymt_exception_manager, ExceptionManager
 from Queue import Queue
 from utils import intersection, difference, strtotuple
 
-
 # All event listeners will add themselves to this
 # list upon creation
 tuio_event_q = Queue()

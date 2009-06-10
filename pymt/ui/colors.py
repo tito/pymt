@@ -178,6 +178,7 @@ modalwindow {
 	bg-color: rgba(0, 0, 0, 200);
 }
 
+vectorslider,
 objectdisplay {
     vector-color: rgb(255, 255, 255);
 }

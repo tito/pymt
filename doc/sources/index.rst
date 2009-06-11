@@ -23,6 +23,7 @@ If you don't known what to do with PyMT, you can start here !
     guide-introduction.rst
     guide-exceptions.rst
     guide-animation.rst
+    guide-styling.rst
 
 
 API Documentation of PyMT

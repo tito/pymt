@@ -33,7 +33,7 @@ def drawLabel(label, pos=(0,0), **kwargs):
             Font size of label
         `center` : bool, default to True
             Indicate if pos is center or left-right of label
-    
+
     .. Warning:
         Use only for debugging, it's a performance killer function.
         The label is recreated each time the function is called !
@@ -182,7 +182,7 @@ def drawRectangle(pos=(0,0), size=(1.0,1.0), style=GL_QUADS):
         glVertex2f(pos[0] + size[0], pos[1] + size[1])
         glVertex2f(pos[0], pos[1] + size[1])
 
-def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0)):
+def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0), tex_coords=None):
     '''Draw a rectangle with a texture
 
     :Parameters:
@@ -200,6 +200,8 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0)):
             texcoords = (t[0], t[1], t[3], t[4], t[6], t[7], t[9], t[10])
         else:
             texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
+        if tex_coords:
+            texcoords = tex_coords
         pos = ( pos[0], pos[1],
                 pos[0] + size[0], pos[1],
                 pos[0] + size[0], pos[1] + size[1],
@@ -208,7 +210,7 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0)):
 
 def drawLine(points, width=5.0):
     '''Draw a line
-    
+
     :Parameters:
         `points` : list
             List of point to draw, len must be power of 2

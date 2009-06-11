@@ -18,6 +18,7 @@ from pyglet.image import Texture, TextureRegion
 from pyglet.graphics import draw
 from pyglet.text import Label
 from ..logger import pymt_logger
+from statement import *
 import math, os
 
 _brush_filename = ''

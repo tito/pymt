@@ -31,7 +31,9 @@ class MTCameraWidget(MTWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('camera_id', 0)
         self.capture_device = cvCaptureFromCAM(kwargs['camera_id'])
+        #self.capture_device = cvCaptureFromAVI('RearDI.avi')
         self.frame          = cvQueryFrame( self.capture_device )
+        self.frame_num = 0
 
         try:
             self.frame_texture  = Texture.create(self.frame.width, self.frame.height)
@@ -56,16 +58,51 @@ class MTCameraWidget(MTWidget):
         glBindTexture(GL_TEXTURE_2D,0);
 
 
+    def image_process(self):
+
+        image_size = cvGetSize(self.frame)
+
+        # create grayscale version
+        grayscale = cvCreateImage(image_size, 8, 1)
+        cvCvtColor(self.frame, grayscale, CV_BGR2GRAY)
+
+        # create storage
+        storage = cvCreateMemStorage(0)
+        cvClearMemStorage(storage)
+
+        # equalize histogram
+        cvEqualizeHist(grayscale, grayscale)
+
+        # detect objects
+        cascade = cvLoadHaarClassifierCascade('haarcascade_frontalface_alt.xml', cvSize(1,1))
+        self.faces = cvHaarDetectObjects(grayscale, cascade, storage, 1.2, 2, CV_HAAR_DO_CANNY_PRUNING, cvSize(30, 30))
+
+
+
+
     def draw(self):
         '''draws the current camera frame. If camera initialization failed, it draws a message that no camera image is available'''
         if self.capture_device:
             glColor3f(1,1,1)
             self.frame  = cvQueryFrame( self.capture_device )
+            if self.frame_num%2 == 0:
+                self.image_process()
+
+            if self.faces:
+                for i in self.faces:
+                    cvRectangle(self.frame, cvPoint( int(i.x), int(i.y)), cvPoint(int(i.x + i.width), int(i.y + i.height)), CV_RGB(0, 255, 0), 3, 8, 0)
             self.copy_cv_to_gpu()
+            self.frame_num += 1
             drawTexturedRectangle(self.frame_texture, pos=self.pos, size=self.size)
         else:
             drawRectangle(pos=self.pos, size=self.size)
             drawLabel("No Camera :(", pos=(self.width/2, self.height/2))
+
+        drawRectangle(pos=(280,0), size=(120,50))
+
+
+    #def __del__(self):
+    #   cvReleaseCapture( self.capture_device )
 
 
 if __name__ == "__main__":

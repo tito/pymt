@@ -48,7 +48,7 @@ def gesture_add_default(gdb):
 
 
 def action_close_menu(menu, w, args):
-    menu.parent.remove_widget(menu)
+    menu.parent.parent.remove_widget(menu.parent)
     del menu
     
 def action_close_all(menu, w, args):
@@ -57,9 +57,10 @@ def action_close_all(menu, w, args):
 def action_launch_plugin(menu, w, args):
     name, plugin = args
 
-    win = MTInnerWindow(size=(320,280), pos=w.pos)
+    pos = w.parent.parent.to_parent(*w.pos)
+    win = MTInnerWindow(size=(320,280), pos=pos)
     plugins.activate(plugin, win)
-    menu.parent.add_widget(win)
+    menu.parent.parent.add_widget(win)
 
     action_close_menu(menu, w, None)
 
@@ -79,13 +80,13 @@ class MTActionButton(MTButton):
         if self.action:
             self.action(self.parent, self, self.args)
 
-class MTMenu(MTBoxLayout):
+class MTMenuBase(MTBoxLayout):
     def __init__(self, **kwargs):
         kwargs.setdefault('orientation', 'vertical')
         kwargs.setdefault('uniform_width', True)
         kwargs.setdefault('uniform_height', True)
         kwargs.setdefault('color', (0,0,0,0))
-        super(MTMenu, self).__init__(**kwargs)
+        super(MTMenuBase, self).__init__(**kwargs)
 
         self.orig_x = self.x
         self.orig_y = self.y
@@ -103,20 +104,27 @@ class MTMenu(MTBoxLayout):
             label='Close Menu', action=action_close_menu))
 
         self.add_widget(MTActionButton(
-            label='            Close PyMT             ', action=action_close_all))
+            label='Close PyMT', action=action_close_all))
 
     def on_draw(self):
         with gx_blending:
-            super(MTMenu, self).on_draw()
+            super(MTMenuBase, self).on_draw()
 
     def on_move(self, x, y):
         pass
 
-    def on_layout(self):
-        # center layout
-        self.x = self.orig_x - self.content_width / 2
-        self.y = self.orig_y - self.content_height / 2
-
+class MTMenu(MTScatterWidget):
+    def __init__(self, **kwargs):
+        kwargs.setdefault('pos', (0, 0))
+        kwargs.setdefault('rotation', 0)
+        rotation = kwargs.get('rotation')
+        pos = kwargs.get('pos')
+        del kwargs['rotation']
+        del kwargs['pos']
+        super(MTMenu, self).__init__(do_scale=False, pos=pos, rotation=rotation)
+        self.menubase = MTMenuBase(**kwargs)
+        self.add_widget(self.menubase)
+        self.size = self.menubase.size
 
 class MTGestureDetector(MTGestureWidget):
     def __init__(self, gdb, **kwargs):
@@ -134,7 +142,8 @@ class MTGestureDetector(MTGestureWidget):
             return
 
         if best.id == 'menu':
-            menu = MTMenu(pos=(x, y), color=(.2, .2, .2, .5))
+            angle = gesture.get_rigid_rotation(best)
+            menu = MTMenu(pos=(x, y), color=(.2, .2, .2, .5), rotation=angle)
             self.parent.add_widget(menu)
 
         if best.id == 'close':

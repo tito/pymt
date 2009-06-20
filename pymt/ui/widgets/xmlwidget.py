@@ -54,6 +54,12 @@ class XMLWidget(MTWidget):
             for (name, value) in node.attributes.items():
                 try:
                     nodeWidget.__setattr__(name, eval(value))
+                except NameError:
+                    #if it is a NameError its probably a regular string property like e.g. id
+                    #if xml is e.g. <... name="myval" ...> it breaks (had to be: name="'myval'")\
+                    #so lets try with just the string value itself
+                    nodeWidget.__setattr__(name, value)
+                    pymt_logger.warning('NameError when setting %s on %s.  Defaulting to string value!'  % (name, class_name))
                 except:
                     pymt_logger.exception('unable to set %s on %s' % (name, class_name))
                     raise

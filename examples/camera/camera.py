@@ -1,10 +1,12 @@
 from pymt import *
 from pyglet.gl import *
 from pyglet.image import Texture
+
 try:
     from opencv import *
 except:
-    print "No OpenCV available"
+    pymt_logger.warning('No OpenCV available')
+
 
 try:
     import gst
@@ -14,11 +16,57 @@ except:
 
 
 
-class _CameraWidget(MTWidget):
-    '''
-    Abstract Camer Widget class.  concrete camera widget classes must implement initializaation and frame capturing to buffer that can be uploaded to gpu'''
 
-    def copy_frame_to_gpu(self):
+
+class MTCameraBase(MTWidget):
+
+    '''Abstract Camer Widget class.  concrete camera widget classes must implement initializaation and frame capturing to buffer that can be uploaded to gpu'''
+
+    def __init__(self, **kwargs):
+
+        kwargs.setdefault('stopped', False )
+        kwargs.setdefault('resolution', (640,480))
+        kwargs.setdefault('capture_src', 0)
+
+        self.stopped        = kwargs['stopped']
+        self._resolution    = kwargs['resolution']
+        self._capture_src   = kwargs['capture_src']
+        self.capture_device = None
+        kwargs.setdefault('size', self._resolution )
+
+        super(MTCameraBase, self).__init__(**kwargs)
+        self.init_camera()
+
+    def _set_resolution(self, res):
+        self._resolution = res
+        self.init_camera()
+    def _get_resolution(self):
+        return self._resolution
+    resolution = property(_get_resolution, _set_resolution, doc='resolution: resolution of camera capture')
+
+
+    def _set_capture_src(self, src):
+        self._capture_src = src
+        self.init_camera()
+    def _get_capture_src(self):
+        return self._capture_src
+    capture_src = property(_get_capture_src, _set_capture_src, doc='resolution: resolution of camera capture')
+
+
+    def init_camera(self):
+        pymt_logger.exception('MTCameraBase is an abstract class.  Use a Sub class providing a specific camera interface instead!')
+
+    def start_capture(self):
+        pymt_logger.exception('MTCameraBase is an abstract class.  Use a Sub class providing a specific camera interface instead!')
+
+    def stop_capture(self):
+        pymt_logger.exception('MTCameraBase is an abstract class.  Use a Sub class providing a specific camera interface instead!')
+
+    def capture_frame(self):
+        pymt_logger.exception('MTCameraBase is an abstract class.  Use a Sub class providing a specific camera interface instead!')
+
+
+    def copy_buffer_to_gpu(self):
         '''copies the openCV image to the gpu, so we can use it as a texture'''
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, get_texture_id(self.frame_texture));
@@ -31,8 +79,9 @@ class _CameraWidget(MTWidget):
     def draw(self):
         '''draws the current camera frame. If camera initialization failed, it draws a message that no camera image is available'''
         try:
-            glColor3f(1,1,1)
-            self.captureFrame()
+            set_color(1,1,1)
+            if not self.stopped:
+                self.capture_frame()
             drawTexturedRectangle(self.frame_texture, pos=self.pos, size=self.size)
         except:
             drawRectangle(pos=self.pos, size=self.size)
@@ -44,7 +93,7 @@ class _CameraWidget(MTWidget):
 
 
 
-class MTCameraWidgetCV(_CameraWidget):
+class MTOpenCVCamera(MTCameraBase):
     '''MTCameraWidget is a widget that gets images from a webcam and draws teh image to a texture and the screen.
 
     :Dependencies:
@@ -69,40 +118,63 @@ class MTCameraWidgetCV(_CameraWidget):
     '''
 
     def __init__(self, **kwargs):
-        kwargs.setdefault('camera_id', 0)
-        self.capture_device = cvCaptureFromCAM(kwargs['camera_id'])
-        self.frame          = cvQueryFrame( self.capture_device )
+        super(MTOpenCVCamera, self).__init__(**kwargs)
+
+    def init_camera(self):
+        if self.capture_device:
+            del self.capture_device
 
         try:
-            self.frame_texture  = Texture.create(self.frame.width, self.frame.height)
-            self.frame_texture.tex_coords = (1,1,0,  0,1,0,  0,0,0, 1,0,0)
-            kwargs.setdefault('size', (self.frame.width, self.frame.height) )
-            self.resolution = (self.frame.width, self.frame.height)
+            self.capture_device = cvCaptureFromCAM(self.capture_src)
+            cvSetCaptureProperty (self.capture_device, CV_CAP_PROP_FRAME_WIDTH,  self.resolution[0])
+            cvSetCaptureProperty (self.capture_device, CV_CAP_PROP_FRAME_HEIGHT, self.resolution[1])
+        except:
+            self.capture_device = cvCaptureFromCAM(self.capture_src)
+            w = cvGetCaptureProperty (self.capture_device, CV_CAP_PROP_FRAME_WIDTH)
+            h = cvGetCaptureProperty (self.capture_device, CV_CAP_PROP_FRAME_HEIGHT)
+            pymt_logger.exception('Warning: Camera resolution %s not possible!  Defaulting to %s.' % (self.resolution, (w,h)) )
+            self._resolution = (w,h)
+
+        self.frame_texture  = Texture.create(*self.resolution)
+        self.frame_texture.tex_coords = (1,1,0,  0,1,0,  0,0,0, 1,0,0)
+
+    def start_capture(self):
+        self.stopped = False
+        self.capture_frame()
+
+    def stop_capture(self):
+        self.stopped = True
+
+    def capture_frame(self):
+        try:
+            self.frame  = cvQueryFrame( self.capture_device )
+
+            self.format = GL_RGBA
+            if self.frame.channelSeq == 'BGR':
+                self.format = GL_BGR_EXT
+
+            self.buffer = self.frame.imageData
+            self.copy_buffer_to_gpu()
+
         except Exception, e:
             print "Couldn't get Image from Camera!", e
 
-        super(MTCameraWidgetCV, self).__init__(**kwargs)
-
-
-    def captureFrame(self):
-        self.frame  = cvQueryFrame( self.capture_device )
-
-        if self.frame.channelSeq == 'BGR':
-            self.format = GL_BGR_EXT
-        else:
-            self.format = GL_RGBA
-
-        self.buffer = self.frame.imageData
-        self.copy_frame_to_gpu()
 
 
 
 
 
 
+
+"""
 
 
 class MTCameraWidgetGST(_CameraWidget):
+Comment by txprog, Yesterday (17 hours ago):
+
+- Remove Widget in name
+- Support parameter change at runtime
+
     '''MTCameraWidget is a widget that gets images from a webcam and draws the image to a texture and the screen.
 
         This camera widget uses gstreamer instead of opencv to aquire images.
@@ -145,7 +217,7 @@ class MTCameraWidgetGST(_CameraWidget):
         self.buffer = self.frame.data
         self.copy_frame_to_gpu()
 
-
+"""
 
 
 
@@ -153,7 +225,7 @@ class MTCameraWidgetGST(_CameraWidget):
 
 if __name__ == "__main__":
     w = MTWindow()
-    c = MTCameraWidgetGST()
+    c = MTOpenCVCamera(resolution=(640,480))
     s = MTScatterWidget(size=c.size)
     s.add_widget(c)
     w.add_widget(s)

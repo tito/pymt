@@ -76,6 +76,7 @@ class MTVideoMute(MTImageButton):
 class MTVideoTimeline(MTSlider):
     '''MTVideoTimeline is a part of the video widget which tracks the video playback'''
     def __init__(self, **kwargs):
+        kwargs.setdefault('padding', 0)
         kwargs.setdefault('player', None)
         kwargs.setdefault('duration', 100)
         kwargs.setdefault('color', (.78, .78, .78, 1.0))
@@ -83,6 +84,7 @@ class MTVideoTimeline(MTSlider):
         super(MTVideoTimeline, self).__init__(**kwargs)
         self.vid = kwargs.get('player')
         self.max = kwargs.get('duration')
+        self.padding = kwargs.get('padding')
         self.width = self.vid.get_texture().width-85
         self.height = 30
         self.length = 0

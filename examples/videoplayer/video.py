@@ -6,7 +6,6 @@ PLUGIN_DESCRIPTION = 'This shows how to use the video player module present in t
 
 from pymt import *
 from pyglet.media import *
-from pymt.ui.widgets.videowidget import *
 
 
 if __name__ == '__main__':

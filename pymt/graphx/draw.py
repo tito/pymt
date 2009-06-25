@@ -19,6 +19,7 @@ from pyglet.graphics import draw
 from pyglet.text import Label
 from paint import *
 from statement import *
+from colors import *
 import math
 
 def drawLabel(label, pos=(0,0), **kwargs):

@@ -2,15 +2,15 @@
 Dragable widget: a moveable widget over the window
 '''
 
-__all__ = ['MTDragableWidget']
+__all__ = ['MTDragable']
 
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
-class MTDragableWidget(MTWidget):
-    '''MTDragableWidget is a moveable widget over the window'''
+class MTDragable(MTWidget):
+    '''MTDragable is a moveable widget over the window'''
     def __init__(self, **kwargs):
-        super(MTDragableWidget, self).__init__(**kwargs)
+        super(MTDragable, self).__init__(**kwargs)
         self.state = ('normal', None)
 
     def on_touch_down(self, touches, touchID, x, y):
@@ -29,4 +29,4 @@ class MTDragableWidget(MTWidget):
             self.state = ('normal', None)
             return True
 
-MTWidgetFactory.register('MTDragableWidget', MTDragableWidget)
+MTWidgetFactory.register('MTDragable', MTDragable)

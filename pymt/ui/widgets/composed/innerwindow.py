@@ -14,7 +14,7 @@ from ....vector import matrix_inv_mult
 from ..rectangle import MTRectangularWidget
 from ..scatter import MTScatterWidget
 from ..button import MTImageButton, MTButton
-from ..layout.boxlayout import MTBoxLayout
+from ..widget import MTWidget
 
 iconPath = os.path.join(os.path.dirname(pymt.__file__), 'data', 'icons', '')
 
@@ -62,28 +62,37 @@ class MTInnerWindow(MTScatterWidget):
     you can move / rotate / fullscreen an application.
 
     Checkout the `desktop` example to check how it work !
+
+
+    :Styles:
+        `bg-color`
+            Background color of innerwindow + border
+        `bg-color-move`
+            Background color when only move (one touch)
+        `bg-color-full`
+            Background color when rotate/scale/move (multitouch)
+        `border-width`
+            Size of border
     '''
     def __init__(self, **kargs):
         super(MTInnerWindow, self).__init__(**kargs)
-        self.color=(1,1,1,0.5)
-        self.border = 20
-        self.__w = self.__h = 0
         self.container = MTInnerWindowContainer(pos=(0,0), size=self.size, style={'bg-color':(0,0,0)})
         super(MTInnerWindow, self).add_widget(self.container)
+        self.control_scale = 0.75
         self.setup_controls()
 
     def setup_controls(self):
-        self.controls = MTBoxLayout()
+        self.controls = MTWidget()
 
-        button_fullscreen = MTImageButton(filename=iconPath+'fullscreen.png', scale=0.5, cls='innerwindow-fullscreen')
-        button_fullscreen.push_handlers(on_release=self.fullscreen)
-        self.controls.add_widget(button_fullscreen)
+        self.btn_fullscreen = MTImageButton(filename=iconPath+'fullscreen.png', scale=self.control_scale, cls='innerwindow-fullscreen')
+        self.btn_fullscreen.push_handlers(on_release=self.fullscreen)
+        self.controls.add_widget(self.btn_fullscreen)
 
-        button_close = MTImageButton(filename=iconPath+'stop.png', scale=0.5, cls='innerwindow-close')
-        button_close.push_handlers(on_release=self.close)
-        self.controls.add_widget(button_close)
+        self.btn_close = MTImageButton(filename=iconPath+'stop.png', scale=self.control_scale, cls='innerwindow-close')
+        self.btn_close.push_handlers(on_release=self.close)
+        self.controls.add_widget(self.btn_close)
 
-        self.controls.pos = self.width/2, -button_fullscreen.height*1.7
+        self.update_controls()
 
     def fullscreen(self, *largs, **kwargs):
         root_win = self.parent.get_parent_window()
@@ -102,6 +111,7 @@ class MTInnerWindow(MTScatterWidget):
         btn_unfullscreen.push_handlers(on_release=self.unfullscreen)
         root_win.add_widget(btn_unfullscreen)
         self.size = root_win.size
+        self.container.size = self.size
 
     def unfullscreen(self, *largs, **kwargs):
         # restore old widget
@@ -113,6 +123,7 @@ class MTInnerWindow(MTScatterWidget):
 
         # set old size
         self.size = self.old_size
+        self.container.size = self.size
 
     def close(self, touchID=None, x=0, y=0):
         self.parent.remove_widget(self)
@@ -126,43 +137,46 @@ class MTInnerWindow(MTScatterWidget):
     def get_parent_window(self):
         return self.container
 
-    def on_resize(self, w, h):
-        # XXX remove this optim, and do it in scatter widget !
-        if self.__w == w and self.__h == h:
-            return
-        self.__w, self.__h = w, h
-        for button in self.controls.children:
-            button.scale = 0.5/self.get_scale_factor()
-        self.controls.pos = self.width/2 - self.controls.children[0].width*3/2, -self.controls.children[0].height*1.7
-        self.container.size = (w, h)
+    def get_scaled_border(self):
+        return self.style.get('border-width') * (1.0 / self.get_scale_factor())
 
-    def on_touch_down(self, touches, touchID, x,y):
-        lx,ly = super(MTInnerWindow, self).to_local(x,y)
+    def update_controls(self):
+        scaled_border = self.get_scaled_border()
+        center_x = self.width / 2
+        center_y = - scaled_border
+        for button in self.controls.children:
+            button.scale = self.control_scale / self.get_scale_factor()
+        self.btn_fullscreen.pos = center_x - self.btn_fullscreen.width - 2, \
+                                  center_y - self.btn_fullscreen.height / 2
+        self.btn_close.pos = center_x + 2, center_y - self.btn_close.height / 2
+
+    def on_touch_down(self, touches, touchID, x, y):
+        lx, ly = super(MTInnerWindow, self).to_local(x, y)
         if self.controls.dispatch_event('on_touch_down', touches, touchID, lx, ly):
             return True
-        return super(MTInnerWindow, self).on_touch_down( touches, touchID, x,y)
+        return super(MTInnerWindow, self).on_touch_down(touches, touchID, x, y)
 
-    def on_touch_move(self, touches, touchID, x,y):
-        lx,ly = super(MTInnerWindow, self).to_local(x,y)
+    def on_touch_move(self, touches, touchID, x, y):
+        lx, ly = super(MTInnerWindow, self).to_local(x, y)
         if self.controls.dispatch_event('on_touch_move', touches, touchID, lx, ly):
             return True
-        return super(MTInnerWindow, self).on_touch_move( touches, touchID, x,y)
+        return super(MTInnerWindow, self).on_touch_move(touches, touchID, x, y)
 
-    def on_touch_up(self, touches, touchID, x,y):
-        lx,ly = super(MTInnerWindow, self).to_local(x,y)
+    def on_touch_up(self, touches, touchID, x, y):
+        lx, ly = super(MTInnerWindow, self).to_local(x, y)
         if self.controls.dispatch_event('on_touch_up', touches, touchID, lx, ly):
             return True
-        return super(MTInnerWindow, self).on_touch_up( touches, touchID, x,y)
+        return super(MTInnerWindow, self).on_touch_up(touches, touchID, x, y)
 
-    def to_local(self, x, y):
-        self.new_point = matrix_inv_mult(self.transform_mat, (x,y,0,1)) * self.get_scale_factor()
+    def tao_local(self, x, y):
+        self.new_point = matrix_inv_mult(self.transform_mat, (x, y,0,1)) * self.get_scale_factor()
         return (self.new_point.x, self.new_point.y)
 
-    def collide_point(self, x,y):
-        scaled_border = self.border * (1.0/self.get_scale_factor())
-        local_coords = super(MTInnerWindow,self).to_local(x,y)
-        left, right = -scaled_border, self.width+scaled_border*2
-        bottom,top = -scaled_border,self.height+scaled_border*2
+    def collide_point(self, x, y):
+        scaled_border = self.get_scaled_border()
+        local_coords = super(MTInnerWindow,self).to_local(x, y)
+        left, right = -scaled_border, self.width + scaled_border * 2
+        bottom,top = -scaled_border, self.height + scaled_border * 2
         if local_coords[0] > left and local_coords[0] < right \
            and local_coords[1] > bottom and local_coords[1] < top:
             return True
@@ -170,10 +184,26 @@ class MTInnerWindow(MTScatterWidget):
             return False
 
     def draw(self):
-        set_color(*self.color)
-        scaled_border = self.border * (1.0/self.get_scale_factor())
-        drawRoundedRectangle((-scaled_border, -scaled_border), (self.width+scaled_border*2, self.height+scaled_border*2))
-        drawRectangle(((self.width/2)-(scaled_border*2.5), -scaled_border), (scaled_border*5, -scaled_border*1.2))
+        # select color from number of touch
+        if len(self.touches) == 0:
+            set_color(*self.style.get('bg-color'))
+        elif len(self.touches) == 1:
+            set_color(*self.style.get('bg-color-move'))
+        else:
+            set_color(*self.style.get('bg-color-full'))
+
+        # draw border
+        scaled_border = self.get_scaled_border()
+        self.update_controls()
+        drawRoundedRectangle(
+            pos=(-scaled_border, -scaled_border),
+            size=(self.width+scaled_border*2, self.height+scaled_border*2))
+
+        # draw control background
+        control_width = self.btn_fullscreen.width + self.btn_close.width
+        drawRectangle(
+            pos=((self.width/2)-(scaled_border + control_width / 2), -scaled_border),
+            size=(scaled_border*2 + control_width, -scaled_border))
 
     def on_draw(self):
         with gx_matrix:
@@ -188,3 +218,10 @@ class MTInnerWindow(MTScatterWidget):
                 stencilUse()
                 self.container.dispatch_event('on_draw')
 
+    def on_move(self, x, y):
+        # no move on children
+        pass
+
+    def on_resize(self, w, h):
+        # no resize of children
+        pass

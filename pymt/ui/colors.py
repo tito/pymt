@@ -39,6 +39,8 @@ auto_convert = {
     'color':                    parse_color,
     'color-down':               parse_color,
     'bg-color':                 parse_color,
+    'bg-color-move':            parse_color,
+    'bg-color-full':            parse_color,
     'font-size':                parse_int,
     'font-name':                parse_string,
     'font-weight':              parse_string,
@@ -176,6 +178,13 @@ window {
 
 modalwindow {
 	bg-color: rgba(0, 0, 0, 200);
+}
+
+innerwindow {
+    bg-color: rgba(255, 255, 255, 175);
+    bg-color-move: rgba(0, 175, 0, 175);
+    bg-color-full: rgba(175, 0, 0, 175);
+    border-width: 30;
 }
 
 vectorslider,

@@ -47,7 +47,6 @@ class MTScatterWidget(MTWidget):
         kwargs.setdefault('do_translation', True)
         kwargs.setdefault('scale_min', 0.01)
 
-
         super(MTScatterWidget, self).__init__(**kwargs)
 
         self.scale_min      = kwargs.get('scale_min')
@@ -69,6 +68,11 @@ class MTScatterWidget(MTWidget):
         self.__to_local = (-9999, 9999) # Invalid cache for the first run
         self.__to_local_x = 0
         self.__to_local_y = 0
+        self.__to_parent = (-9999, 9999) # Invalid cache for the first run
+        self.__to_parent_x = 0
+        self.__to_parent_y = 0
+        self.__width = 0
+        self.__height = 0
 
         # For flipping animations
         self.zangle = 0
@@ -90,7 +94,13 @@ class MTScatterWidget(MTWidget):
             self.init_transform(super(MTScatterWidget, self).pos, kwargs.get('rotation'), kwargs.get('scale'))
 
     def add_widget(self, w, side='front', front=True):
-        '''Override this, because a side needs to be specififed'''
+        '''Add a widget to a side of scatter.
+        :Parameters:
+            `side` : str, default is 'front'
+                Side to be added. Can be one of 'front', 'back' or '' (mean both.)
+            `front` : bool, default is True
+                Indicate if the widget must be pulled in the front of the screen
+        '''
         if side == 'front':
             if front:
                 self.children_front.append(w)
@@ -102,7 +112,7 @@ class MTScatterWidget(MTWidget):
             else:
                 self.children_back.insert(0, w)
         else:
-            #Add to both
+            # add to both side
             self.add_widget(w, side='front', front=front)
             self.add_widget(w, side='back', front=front)
 
@@ -130,7 +140,6 @@ class MTScatterWidget(MTWidget):
         this has to be called exactly half way through the animation
         so it looks like there are actually two sides'''
         if self.side == 'front':
-            #Flip to back
             self.side = 'back'
             self.children = self.children_back
         else:
@@ -168,14 +177,18 @@ class MTScatterWidget(MTWidget):
             super(MTScatterWidget, self).on_draw()
 
     def to_parent(self, x,y):
-        self.new_point = matrix_mult(self.transform_mat, (x,y,0,1))
+        if self.__to_parent == (x, y):
+            return (self.__to_parent_x, self.__to_parent_y)
+        self.__to_parent = (x, y)
+        self.new_point = matrix_mult(self.transform_mat, (x, y, 0, 1))
+        self.__to_parent_x, self.__to_parent_y = self.new_point.x, self.new_point.y
         return (self.new_point.x, self.new_point.y)
 
     def to_local(self,x,y):
         if self.__to_local == (x, y):
             return (self.__to_local_x, self.__to_local_y)
         self.__to_local = (x, y)
-        self.new_point = matrix_inv_mult(self.transform_mat, (x,y,0,1))
+        self.new_point = matrix_inv_mult(self.transform_mat, (x, y, 0, 1))
         self.__to_local_x, self.__to_local_y = self.new_point.x, self.new_point.y
         return (self.new_point.x, self.new_point.y)
 
@@ -204,42 +217,38 @@ class MTScatterWidget(MTWidget):
         with gx_matrix_identity:
             if self.do_translation:
                 glTranslated(trans.x * self.do_translation_x, trans.y * self.do_translation_y, 0)
-            glTranslated(point.x, point.y,0)
+            glTranslated(point.x, point.y, 0)
             if self.do_scale:
-                glScaled(scale, scale,1)
+                glScaled(scale, scale, 1)
             if self.do_rotation:
-                glRotated(angle,0,0,1)
+                glRotated(angle, 0, 0, 1)
             glTranslated(-point.x, -point.y,0)
             glMultMatrixf(self.transform_mat)
             glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
 
     def rotate_zoom_move(self, touchID, x, y):
-        # some default values, in case we dont calculate them,
-        # they still need to be defined for applying the openGL transformations
-        intersect = Vector(0,0)
-        trans = Vector(0,0)
-        rotation = 0
-        scale = 1
-
         # we definitly have one point
         p1_start = Vector(*self.touches[touchID])
-        p1_now   = Vector(x,y)
+        p1_now   = Vector(x, y)
 
         # if we have a second point, do the scale/rotate/move thing
         second_touch = self.find_second_touch(touchID)
         if second_touch:
+            # set default
+            trans = Vector(0, 0)
+
             p2_start = Vector(*self.touches[second_touch])
             p2_now   = Vector(*self.touches[second_touch])
 
             # find intersection between lines...the point around which to rotate
             intersect = Vector.line_intersection(p1_start,  p2_start,p1_now, p2_now)
             if not intersect:
-                intersect = Vector(0,0)
+                intersect = Vector(0, 0)
 
             # compute scale factor
             old_dist = p1_start.distance(p2_start)
             if old_dist < 1:
-                old_dist = 1
+                old_dist = 1.0
             new_dist = p1_now.distance(p2_now)
             scale = new_dist / old_dist
 
@@ -249,6 +258,11 @@ class MTScatterWidget(MTWidget):
             rotation = -1.0 * old_line.angle(new_line)
 
         else:
+            # set default
+            intersect = Vector(0,0)
+            rotation = 0.0
+            scale = 1.0
+
             # just comnpute a translation component if we only have one point
             trans = p1_now - p1_start
 
@@ -295,60 +309,71 @@ class MTScatterWidget(MTWidget):
         else:
             return self.scale
 
-    def on_touch_down(self, touches, touchID, x,y):
-        # if the touch isnt on teh widget we do nothing
+    def on_touch_down(self, touches, touchID, x, y):
+        # if the touch isnt on the widget we do nothing
         if not self.collide_point(x,y):
             return False
 
         # let the child widgets handle the event if they want
-        lx,ly = self.to_local(x,y)
+        lx, ly = self.to_local(x,y)
         if super(MTScatterWidget, self).on_touch_down(touches, touchID, lx, ly):
             return True
 
-        # if teh children didnt handle it, we bring to front & keep track of touches for rotate/scale/zoom action
+        # if the children didnt handle it, we bring to front & keep track
+        # of touches for rotate/scale/zoom action
         self.bring_to_front()
         self.touches[touchID] = Vector(x,y)
         return True
 
     def on_touch_move(self, touches, touchID, x, y):
-
-        # if the touch isnt on teh widget we do nothing
+        # if the touch isnt on the widget we do nothing
         if not (self.collide_point(x, y) or touchID in self.touches):
             return False
 
-        #let the child widgets handle the event if they want
+        # let the child widgets handle the event if they want
         lx, ly = self.to_local(x, y)
         if super(MTScatterWidget, self).on_touch_move(touches, touchID, lx, ly):
             return True
 
-        #rotate/scale/translate
+        # rotate/scale/translate
         if touchID in self.touches:
             self.rotate_zoom_move(touchID, x, y)
-            self.dispatch_event('on_resize', int(self.width*self.get_scale_factor()), int(self.height*self.get_scale_factor()))
+
+            # precalculate size of container
+            container_width = int(self.width * self.get_scale_factor())
+            container_height = int(self.height * self.get_scale_factor())
+
+            # dispatch event only if it change
+            if container_width != self.__width or container_height != self.__height:
+                self.dispatch_event('on_resize', container_width, container_height)
+                self.__width = container_width
+                self.__height = container_height
+
+            # dispatch move event
             self.dispatch_event('on_move', self.x, self.y)
             return True
 
-        #stop porpagation if its within our bounds
-        if self.collide_point(x,y):
+        # stop porpagation if its within our bounds
+        if self.collide_point(x, y):
             return True
 
     def on_touch_up(self, touches, touchID, x,y):
-        #if the touch isnt on the widget we do nothing
-        lx,ly = self.to_local(x,y)
+        # if the touch isnt on the widget we do nothing
+        lx, ly = self.to_local(x, y)
         super(MTScatterWidget, self).on_touch_up(touches, touchID, lx, ly)
 
-        #remove it from our saved touches
+        # remove it from our saved touches
         if touchID in self.touches:
             del self.touches[touchID]
 
-        #stop porpagating if its within our bounds
-        if self.collide_point(x,y):
+        # stop porpagating if its within our bounds
+        if self.collide_point(x, y):
             return True
 
 
 class MTScatterPlane(MTScatterWidget):
     '''A Plane that transforms for zoom/rotate/pan.
-         if none of the childwidgets handles the input (the background is touched), all of tehm are transformed together'''
+         if none of the childwidgets handles the input (the background is touched), all of them are transformed together'''
     def find_second_touch(self, touchID):
         for tID in self.touches.keys():
             if  tID!=touchID:

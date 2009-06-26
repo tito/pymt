@@ -84,7 +84,7 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
     if color:
         set_color(*color)
 
-    with DO(gx_blending, gx_begin(style)):
+    with gx_begin(style):
 
         glVertex2f(x + radius, y)
         glVertex2f(x + w-radius, y)

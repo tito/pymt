@@ -20,6 +20,7 @@ from pyglet.text import Label
 from ..logger import pymt_logger
 from statement import *
 import math, os
+from statement import *
 
 _brush_filename = ''
 _brush_texture = None

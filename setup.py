@@ -19,5 +19,5 @@ setup (name='pymt',
                 'pymt.ui.widgets.composed',
                'pymt.ui.widgets.layout', 'pymt.ui.widgets.form'],
       package_dir={'pymt': 'pymt'},
-      package_data={'pymt': ['data/icons/svg/*.svg', 'data/icons/*.png']}
+      package_data={'pymt': ['data/icons/svg/*.svg', 'data/icons/*.png', 'data/*.png']}
 )

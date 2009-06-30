@@ -33,6 +33,7 @@ class TouchInfos(MTWidget):
             del self.bubbles[touchID]
 
     def draw(self):
+        self.bring_to_front()
         for bubble in self.bubbles:
             self.bubbles[bubble].dispatch_event('on_draw')
 

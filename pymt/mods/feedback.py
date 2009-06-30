@@ -105,6 +105,10 @@ class GlobalFeedback(MTWidget):
             self.remove_widget(self.touches[touchID])
             del self.touches[touchID]
 
+    def on_draw(self):
+        self.bring_to_front()
+        super(GlobalFeedback, self).on_draw()
+
 
 def start(win, ctx):
     ctx.w = GlobalFeedback()

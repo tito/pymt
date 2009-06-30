@@ -1,5 +1,5 @@
 '''
-TouchInfo: a basic module who show all info on a touch !
+Get all informations of a touch
 '''
 
 from pymt import MTWidget, MTSpeechBubble

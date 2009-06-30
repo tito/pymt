@@ -93,8 +93,9 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
 
     # Can be overrided in command line
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwFe',
+        opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwFem:',
             ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps', 'event',
+             'module=',
              'display=', 'size=', 'dump-frame', 'dump-format=', 'dump-prefix='])
         for opt, arg in opts:
             if opt in ['-h', '--help']:
@@ -124,6 +125,11 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
                 pymt_config.set('graphics', 'height', h)
             elif opt in ['--display']:
                 pymt_config.set('graphics', 'display', str(arg))
+            elif opt in ['-m', '--module']:
+                if str(arg) == 'list':
+                    pymt_modules.usage_list()
+                    sys.exit(0)
+                pymt_config.set('modules', str(arg), '')
 
     except getopt.GetoptError, err:
         pymt_logger.error(err)

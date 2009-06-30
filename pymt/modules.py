@@ -33,6 +33,17 @@ class Modules:
         '''Return the list of available modules'''
         return self.mods
 
+    def import_module(self, id):
+        module = __import__(name=id, fromlist='mods')
+        # basic check on module
+        if not hasattr(module, 'start'):
+            pymt.pymt_logger.warning('Module <%s> missing start() function' % id)
+            return
+        if not hasattr(module, 'stop'):
+            pymt.pymt_logger.warning('Module <%s> missing stop() function' % id)
+            return
+        self.mods[id]['module'] = module
+
     def activate_module(self, id, win):
         '''Activate a module on a window'''
         if not id in self.mods:
@@ -40,15 +51,7 @@ class Modules:
             return
 
         if not 'module' in self.mods[id]:
-            module = __import__(name=id, fromlist='mods')
-            # basic check on module
-            if not hasattr(module, 'start'):
-                pymt.pymt_logger.warning('Module <%s> missing start() function' % id)
-                return
-            if not hasattr(module, 'stop'):
-                pymt.pymt_logger.warning('Module <%s> missing stop() function' % id)
-                return
-            self.mods[id]['module'] = module
+            self.import_module(id)
 
         module = self.mods[id]['module']
         if not self.mods[id]['activated']:
@@ -80,6 +83,16 @@ class Modules:
             for id in modules_to_activate:
                 self.activate_module(id, win)
 
+    def usage_list(self):
+        print
+        print 'Available modules'
+        print '================='
+        for module in self.list():
+            if not 'module' in self.mods[module]:
+                self.import_module(module)
+            text = self.mods[module]['module'].__doc__.strip("\n ")
+            print '%-12s: %s' % (module, text)
+        print
 
 pymt_modules = Modules()
 pymt_modules.add_path(pymt.pymt_modules_dir)

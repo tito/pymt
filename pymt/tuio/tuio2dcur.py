@@ -12,10 +12,13 @@ class MTTouch2dCur(MTTouchAbstract):
     def depack(self, args):
         if len(args) < 5:
             self.x, self.y = args[0:2]
+            self.profile = 'xy'
         elif len(args) == 5:
             self.x, self.y, self.X, self.Y, self.m = args[0:5]
+            self.profile = 'xyXYm'
         else:
             self.x, self.y, self.X, self.Y, self.m, width, height = args[0:7]
+            self.profile = 'xyXYmh'
             if self.shape is None:
                 self.shape = MTTouchShapeRect()
                 self.shape.width = width

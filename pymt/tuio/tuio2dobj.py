@@ -11,10 +11,13 @@ class MTTouch2dObj(MTTouchAbstract):
     def depack(self, args):
         if len(args) < 5:
             self.x, self.y = args[0:2]
+            self.profile = 'xy'
         elif len(args) == 9:
             self.id, self.x, self.y, self.a, self.X, self.Y, self.A, self.m, self.r = args[0:9]
+            self.profile = 'ixyaXYAmr'
         else:
             self.id, self.x, self.y, self.a, self.X, self.Y, self.A, self.m, self.r, width, height = args[0:11]
+            self.profile = 'ixyaXYAmrh'
             if self.shape is None:
                 self.shape = MTTouchShapeRect()
                 self.shape.width = width

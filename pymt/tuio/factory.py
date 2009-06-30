@@ -34,6 +34,7 @@ class MTTouchAbstract(object):
         self.C = 0.0
         self.m = 0.0
         self.r = 0.0
+        self.profile = 'ixyzabcXYZABCmrh'
 
         # new parameters
         self.shape = None

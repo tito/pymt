@@ -11,6 +11,7 @@ from pyglet import *
 import pymt
 from ..mtpyglet import TouchWindow, stopTouchApp
 from ..graphx import set_color, drawCircle
+from ..modules import pymt_modules
 from colors import css_get_style
 from factory import MTWidgetFactory
 from widgets import MTWidget
@@ -146,6 +147,9 @@ class MTWindow(TouchWindow):
 
         # init some gl
         self.init_gl()
+
+        # init modules
+        pymt_modules.register_window(self)
 
     def apply_css(self, styles):
         self.cssstyle.update(styles)
@@ -334,7 +338,6 @@ class MTWindow(TouchWindow):
 
     def on_object_down(self, objects, objectID, id, x, y,angle):
         for w in reversed(self.children):
-            print 'dispatch on_object_down', objectID, 'to', w
             if w.dispatch_event('on_object_down', objects, objectID, id, x, y, angle):
                 return True
 

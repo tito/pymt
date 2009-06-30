@@ -14,9 +14,10 @@ import sys, getopt, os
 from logger import pymt_logger, LOG_LEVELS
 
 # Include lib as new module.
-pymt_base = os.path.dirname(sys.modules[__name__].__file__)
-pymt_libs = os.path.join(pymt_base, 'lib')
-sys.path = [pymt_libs] + sys.path
+pymt_base_dir = os.path.dirname(sys.modules[__name__].__file__)
+pymt_libs_dir = os.path.join(pymt_base_dir, 'lib')
+pymt_modules_dir = os.path.join(pymt_base_dir, 'mods')
+sys.path = [pymt_libs_dir] + sys.path
 
 # Don't go further if we generate documentation
 if not os.path.basename(sys.argv[0]).startswith('sphinx'):
@@ -26,6 +27,9 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_config_fn = os.path.join(pymt_home_dir, 'config')
     if not os.path.exists(pymt_home_dir):
         os.mkdir(pymt_home_dir)
+    pymt_usermodules_dir = os.path.expanduser('~/.pymt/mods/')
+    if not os.path.exists(pymt_usermodules_dir):
+        os.mkdir(pymt_usermodules_dir)
 
     # Create default configuration
     pymt_config = ConfigParser.ConfigParser()
@@ -52,6 +56,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_config.set('dump', 'enabled', '0')
     pymt_config.set('dump', 'prefix', 'img_')
     pymt_config.set('dump', 'format', 'jpeg')
+    pymt_config.add_section('modules')
 
     # Read config file if exist
     if os.path.exists(pymt_config_fn):
@@ -73,8 +78,8 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     # Note: import are done after logger module initialization,
     # and configuration applied to logger.
     from exceptions import *
+    from modules import *
     from mtpyglet import *
-    from graphx import *
     from graphx import *
     from ui import *
     from obj import OBJ

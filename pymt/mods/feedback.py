@@ -2,11 +2,16 @@
 A global feedback effect (aka Surface)
 '''
 
+import pyglet
 from pymt import *
 import os
 
 particle_fn = os.path.join(pymt_data_dir, 'particle.png')
 particle2_fn = os.path.join(pymt_data_dir, 'particle2.png')
+ring_fn = os.path.join(pymt_data_dir, 'ring.png')
+ring_img = pyglet.image.load(ring_fn)
+ring_img.anchor_x = ring_img.width / 2
+ring_img.anchor_y = ring_img.height / 2
 
 class GlobalFeedbackTouch(MTWidget):
     def __init__(self, **kwargs):
@@ -58,7 +63,7 @@ class GlobalFeedbackTouch(MTWidget):
         set_brush(particle2_fn, size=5)
 
         # show all moves
-        for idx in range(0, len(self.moves)):
+        for idx in xrange(0, len(self.moves)):
 
             # decrease timeout
             self.moves[idx][2] -= getFrameDt()
@@ -90,10 +95,17 @@ class GlobalFeedback(MTWidget):
     def __init__(self, **kwargs):
         super(GlobalFeedback, self).__init__(**kwargs)
         self.touches = {}
+        self.rings = []
 
     def on_touch_down(self, touches, touchID, x, y):
         self.touches[touchID] = GlobalFeedbackTouch(pos=(x, y))
         self.add_widget(self.touches[touchID])
+
+        # prepare ring
+        newsprite = pyglet.sprite.Sprite(ring_img, x=x, y=y)
+        newsprite.opacity = 195
+        newsprite.scale = 0.10
+        self.rings.append(newsprite)
 
     def on_touch_move(self, touches, touchID, x, y):
         if not touchID in self.touches:
@@ -108,6 +120,17 @@ class GlobalFeedback(MTWidget):
     def on_draw(self):
         self.bring_to_front()
         super(GlobalFeedback, self).on_draw()
+
+    def draw(self):
+        rings_to_delete = []
+        for i in xrange(0, len(self.rings)):
+            self.rings[i].draw()
+            self.rings[i].opacity -= getFrameDt() * 400
+            self.rings[i].scale += getFrameDt() * 2
+            if self.rings[i].opacity <= 0:
+                rings_to_delete.append(i)
+        for i in rings_to_delete:
+            del self.rings[i]
 
 
 def start(win, ctx):

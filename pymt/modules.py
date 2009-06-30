@@ -59,6 +59,8 @@ class Modules:
         if not id in self.mods:
             pymt.pymt_logger.warning('Module <%s> not found' % id)
             return
+        if not hasattr(self.mods[id], 'module'):
+            return
         module = self.mods[id]['module']
         if self.mods[id]['activated']:
             module.stop(win, self.mods[id]['context'])

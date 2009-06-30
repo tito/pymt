@@ -22,6 +22,7 @@ from statement import *
 import math, os
 from statement import *
 
+_brushs_cache = {}
 _brush_filename = ''
 _brush_texture = None
 _brush_size = 10
@@ -35,14 +36,15 @@ def set_brush(sprite, size=None):
         `size` : int, default to None
             Size of brush
     '''
-    global _brush_filename, _brush_size, _brush_texture
+    global _brushs_cache, _brush_size, _brush_filename, _brush_texture
     if size:
         _brush_size = size
-    if sprite == _brush_filename:
-        return
-    point_sprite_img = pyglet.image.load(sprite)
-    _brush_texture = point_sprite_img.get_texture()
-
+    if not sprite in _brushs_cache:
+        point_sprite_img = pyglet.image.load(sprite)
+        _brush_texture = point_sprite_img.get_texture()
+        _brushs_cache[sprite] = _brush_texture
+    _brush_filename = sprite
+    _brush_texture = _brushs_cache[sprite]
 
 def set_brush_size(size):
     '''Define the size of current brush
@@ -80,7 +82,7 @@ def set_texture(texture, target=None):
         target = get_texture_target(texture)
     glBindTexture(target, get_texture_id(texture))
 
-def paintLine(points):
+def paintLine(points, numsteps=None):
     '''Paint a line with current brush
     ::
 
@@ -100,7 +102,8 @@ def paintLine(points):
         glPointSize(_brush_size)
         dx,dy = p2[0]-p1[0], p2[1]-p1[1]
         dist = math.sqrt(dx*dx +dy*dy)
-        numsteps = max(1, int(dist)/4)
+        if numsteps is None:
+            numsteps = max(1, int(dist)/4)
         pointList = [0,0] * numsteps
         for i in range(numsteps):
             pointList[i * 2]   = p1[0] + dx* (float(i)/numsteps)

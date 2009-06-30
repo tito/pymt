@@ -40,7 +40,7 @@ def point_inside_line_segment(point, p1, p2):
        if point.x > minx and point.x < maxx and point.y > miny and point.y < maxy:
               return True
 
-class Graph(object):
+class Graph:
        def __init__(self, num_verts=12, displaySize=(640,480)):
               self.verts = []
               for i in range(num_verts):

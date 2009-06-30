@@ -3,7 +3,7 @@ Pyglet: Soup on pyglet to provide multitouch interface.
 '''
 
 __all__ = [
-    'Tuio2DCursor', 'Tuio2DObject', 'TouchEventLoop', 'TouchWindow',
+    'TouchEventLoop', 'TouchWindow',
     'pymt_usage', 'runTouchApp', 'stopTouchApp',
     'startTuio', 'stopTuio', 'getFrameDt',
     'touch_event_listeners'
@@ -32,116 +32,6 @@ def getFrameDt():
     global frame_dt
     return frame_dt
 
-class Tuio2DCursor(object):
-    '''Represent a Tuio cursor + implementation of double-tap functionnality
-
-    .. note::
-        All properties are read-only.
-
-    :Properties:
-        `blobID` : string
-            Id of blob, returned by simulator or tracker
-        `xpos` : float, default to None
-            X position
-        `ypos` : float, default to None
-            Y position
-        `xmot` : float, default to None (tracker only)
-            X motion vector
-        `ymot` : float, default to None (tracker only)
-            Y motion vector
-        `mot_accel` : float, default to None (tracker only)
-            Motion vector acceleration
-        `dxpos` : float, default to None
-            X start position of double tap detection
-        `dypos` : float, default to None
-            Y start position of double tap detection
-        `oxpos` : float, default to 0.0
-            X position of last movement
-        `oypos` : float, default to 0.0
-            Y position of last movement
-        `is_double_tap` : bool, default to False
-            Indicate if the Cursor is a double-tap
-        `double_tap_time` : float, default to 0
-            Time elasped between 2 tap, in seconds
-        `is_timeout` : bool, default to False
-            Indicate if the double-tap detection is timeout
-        `have_event_down` : bool, default to False
-            Indicate if the on_touch_down is already done
-        `do_event` : string, default to None
-            Next event to be fire
-        `no_event` : boolean, default to False
-            Indicate if the blob must stop event generation
-    '''
-    def __init__(self, blobID, args, time_start=0):
-        self.blobID = blobID
-        self.dxpos = self.dypos = None
-        self.oxpos = self.oypos = 0.0
-        self.time_start = time_start
-        self.is_timeout = False
-        self.have_event_down = False
-        self.do_event = None
-        self.is_double_tap = False
-        self.double_tap_time = 0
-        self.no_event = False
-        self.depack(args)
-
-    def move(self, args):
-        self.oxpos, self.oypos = self.xpos, self.ypos
-        self.depack(args)
-
-    def depack(self, args):
-        if len(args) < 5:
-            self.xpos, self.ypos = args[0:2]
-        elif len(args) == 5:
-            self.xpos, self.ypos, self.xmot, self.ymot, self.mot_accel = args[0:5]
-        else:
-            self.xpos, self.ypos, self.xmot, self.ymot, self.mot_accel, self.Width , self.Height = args[0:7]
-        if self.dxpos is None:
-            self.dxpos, self.dypos = self.xpos, self.ypos
-
-
-class Tuio2DObject(object):
-    '''Represent a Tuio object
-
-    .. note::
-        All properties are read-only.
-
-    :Properties:
-        `blobID` : string
-            Id of blob, returned by tracker
-        `oxpos` : float, default to 0.0
-            X position of last movement
-        `oypos` : float, default to 0.0
-            Y position of last movement
-        `xpos` : float, default to None
-            X position
-        `ypos` : float, default to None
-            Y position
-        `angle` : float, default to None
-            Rotation angle of object
-        `xmot` : float, default to None
-            X motion vector
-        `ymot` : float, default to None
-            Y motion vector
-    '''
-    def __init__(self, blobID, args):
-        self.blobID = blobID
-        self.oxpos = self.oypos = 0.0
-        self.depack(args)
-
-    def move(self, args):
-        self.oxpos, self.oypos = self.xpos, self.ypos
-        self.depack(args)
-
-    def depack(self, args):
-        if len(args) < 5:
-            self.xpos, self.ypos = args[0:2]
-        elif len(args) == 9:
-            self.id, self.xpos, self.ypos, self.angle, self.Xvector, self.Yvector,self.Avector, self.xmot, self.ymot, = args[0:9]
-        else:
-            self.id, self.xpos, self.ypos, self.angle, self.Xvector, self.Yvector,self.Avector, self.xmot, self.ymot, self.Width , self.Height = args[0:11]
-
-
 class TuioGetter(object):
     '''Tuio getter listen udp, and use the appropriate
     parser for 2Dcur and 2Dobj Tuio message.
@@ -163,8 +53,8 @@ class TuioGetter(object):
         '''Start listening osc message'''
         osc.init()
         osc.listen(self.host, self.port)
-        osc.bind(self.osc_2dcur_Callback, '/tuio/2Dcur')
-        osc.bind(self.osc_2dobj_Callback, '/tuio/2Dobj')
+        for type in MTTouchFactory.binds():
+            osc.bind(self.osc_tuio_cb, type)
 
     def stopListening(self):
         '''Stop listening osc message'''
@@ -174,18 +64,11 @@ class TuioGetter(object):
         osc.dontListen()
         tuio_listeners.remove(self)
 
-    def osc_2dcur_Callback(self, *incoming):
+    def osc_tuio_cb(self, *incoming):
         global tuio_event_q
         message = incoming[0]
         type, types, args = message[0], message[1], message[2:]
         tuio_event_q.put([type, args, types])
-
-    def osc_2dobj_Callback(self, *incoming):
-        global tuio_event_q
-        message = incoming[0]
-        type, types, args = message[0], message[1], message[2:]
-        tuio_event_q.put([type, args, types])
-
 
 class TouchEventLoop(pyglet.app.EventLoop):
     '''Main event loop. This loop dispatch Tuio message and pyglet event.
@@ -202,7 +85,6 @@ class TouchEventLoop(pyglet.app.EventLoop):
         self.alive2DObj = []
         self.blobs2DCur = {}
         self.blobs2DObj = {}
-        self.clock = pyglet.clock.Clock()
         self.double_tap_distance = pymt.pymt_config.getint('pymt', 'double_tap_distance') / 1000.0
         self.double_tap_time = pymt.pymt_config.getint('pymt', 'double_tap_time') / 1000.0
         self.parser = TuioGetter(host = host, port = port)
@@ -233,7 +115,6 @@ class TouchEventLoop(pyglet.app.EventLoop):
             return cur
 
     def process_2dcur_events(self):
-        time_current = self.clock.time()
         remove_list = []
         for blobID in self.blobs2DCur:
             # not timeout state, calculate !
@@ -278,8 +159,29 @@ class TouchEventLoop(pyglet.app.EventLoop):
         if args[0] == 'alive':
             pass
         if args[0] == 'set':
-            id = args[1]
+            blobID = args[1]
+            # first time ?
+            if blobID not in self.blobs2DCur:
+                # create cursor
+                cur = MTTouchFactory.create(type, blobID, args[2:])
+                # if cursor is in the ignore box, drop it
+                if self.collide_ignore(cur):
+                    return
+                # search for double tap
+                cur_double_tap = self.find_double_tap(cur)
+                if cur_double_tap:
+                    cur.is_double_tap = True
+                    cur.double_tap_time = cur.time_start - cur_double_tap.time_start
+                    cur.time_start = cur_double_tap.time_start
+                    cur_double_tap.no_event = True
+                # add into list
+                self.blobs2DCur[blobID] = cur
+            else:
+                # cursor exist, move it :)
+                self.blobs2DCur[blobID].move(args[2:])
+                self.blobs2DCur[blobID].do_event = 'on_touch_move'
 
+    '''
     def parse2dCur(self, args, types):
         global touch_event_listeners
         if args[0] == 'alive':
@@ -356,7 +258,7 @@ class TouchEventLoop(pyglet.app.EventLoop):
                         l.height - l.height*self.blobs2DObj[blobID].ypos,
                         self.blobs2DObj[blobID].angle
                     )
-
+    '''
     def idle(self):
         global tuio_event_q
         global frame_dt
@@ -367,10 +269,6 @@ class TouchEventLoop(pyglet.app.EventLoop):
         while not tuio_event_q.empty():
             type, args, types = tuio_event_q.get()
             self.parseTuio(type, args, types)
-            if type == '/tuio/2Dcur':
-                self.parse2dCur(args, types)
-            if type == '/tuio/2Dobj':
-                self.parse2dObj(args, types)
 
         # launch event ?
         self.process_2dcur_events()

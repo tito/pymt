@@ -61,26 +61,30 @@ class MTTouchAbstract(object):
         self.depack(args)
 
     # facility
-    pos = property(lambda: (self.x, self.y))
-    dpos = property(lambda: (self.dxpos, self.dypos))
-    opos = property(lambda: (self.oxpos, self.oypos))
+    pos = property(lambda self: (self.x, self.y))
+    dpos = property(lambda self: (self.dxpos, self.dypos))
+    opos = property(lambda self: (self.oxpos, self.oypos))
 
     # compatibility bridge
-    xpos = property(lambda: self.x)
-    ypos = property(lambda: self.y)
-    blobID = property(lambda: self.id)
-    xmot = property(lambda: self.X)
-    ymot = property(lambda: self.Y)
-    zmot = property(lambda: self.Z)
-    mot_accel = property(lambda: self.m)
-    rot_accel = property(lambda: self.r)
-    angle = property(lambda: self.a)
+    xpos = property(lambda self: self.x)
+    ypos = property(lambda self: self.y)
+    blobID = property(lambda self: self.id)
+    xmot = property(lambda self: self.X)
+    ymot = property(lambda self: self.Y)
+    zmot = property(lambda self: self.Z)
+    mot_accel = property(lambda self: self.m)
+    rot_accel = property(lambda self: self.r)
+    angle = property(lambda self: self.a)
 
 
 class MTTouchFactory:
     '''TUIO Touch factory. You can create new TUIO handler, and create new touch object.'''
 
     _class = {}
+
+    @staticmethod
+    def binds():
+        return MTTouchFactory._class.keys()
 
     @staticmethod
     def register(type, touchclass):
@@ -111,7 +115,7 @@ class MTTouchFactory:
                 Touch Arguments
         '''
         if type in MTTouchFactory._class:
-            return MTTouchFactory._class(id, args)
+            return MTTouchFactory._class[type](id, args)
         pymt_logger.warning('Unhandled <%s> type in MTTouchFactory' % id)
 
 

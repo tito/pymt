@@ -4,10 +4,6 @@ class MTTouch2dObj(MTTouchAbstract):
     def __init__(self, id, args):
         super(MTTouch2dObj, self).__init__(id, args)
 
-    def move(self, args):
-        self.dxpos, self.dypos = self.x, self.y
-        super(MTTouch2dObj, self).move(args)
-
     def depack(self, args):
         if len(args) < 5:
             self.x, self.y = args[0:2]

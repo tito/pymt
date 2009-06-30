@@ -57,6 +57,7 @@ class MTTouchAbstract(object):
         pass
 
     def move(self, args):
+        self.dxpos, self.dypos = self.x, self.y
         self.depack(args)
 
     # facility

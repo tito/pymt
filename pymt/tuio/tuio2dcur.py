@@ -5,10 +5,6 @@ class MTTouch2dCur(MTTouchAbstract):
     def __init__(self, id, args):
         super(MTTouch2dCur, self).__init__(id, args)
 
-    def move(self, args):
-        self.dxpos, self.dypos = self.x, self.y
-        super(MTTouch2dCur, self).move(args)
-
     def depack(self, args):
         if len(args) < 5:
             self.x, self.y = args[0:2]

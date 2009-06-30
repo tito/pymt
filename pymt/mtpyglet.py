@@ -452,6 +452,7 @@ def pymt_usage():
     -H host, --host=host        specify Tuio host (default 127.0.0.1)
     -F, --fps                   show fps in window
     -m mod, --module=mod        activate a module (use "list" to get available module)
+    -s, --save                  save current PyMT configuration
     --size=640x480              size of window
     --dump-frame                dump each frame in file
     --dump-prefix               specify a prefix for each frame file

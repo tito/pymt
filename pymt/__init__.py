@@ -93,10 +93,11 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
 
     # Can be overrided in command line
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwFem:',
+        opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwFem:s',
             ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps', 'event',
-             'module=',
+             'module=', 'save',
              'display=', 'size=', 'dump-frame', 'dump-format=', 'dump-prefix='])
+        need_save = False
         for opt, arg in opts:
             if opt in ['-h', '--help']:
                 pymt_usage()
@@ -130,6 +131,17 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
                     pymt_modules.usage_list()
                     sys.exit(0)
                 pymt_config.set('modules', str(arg), '')
+            elif opt in ['-s', '--save']:
+                need_save = True
+
+        if need_save:
+            try:
+                with open(pymt_config_fn, 'w') as fd:
+                    pymt_config.write(fd)
+            except Exception, e:
+                pymt_logger.exception('error while saving default configuration file')
+            pymt_logger.info('PyMT configuration saved.')
+            sys.exit(0)
 
     except getopt.GetoptError, err:
         pymt_logger.error(err)

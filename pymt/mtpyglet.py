@@ -18,6 +18,7 @@ from pyglet.gl import *
 from exceptions import pymt_exception_manager, ExceptionManager
 from Queue import Queue
 from utils import intersection, difference, strtotuple
+from tuio import *
 
 # All event listeners will add themselves to this
 # list upon creation
@@ -273,6 +274,12 @@ class TouchEventLoop(pyglet.app.EventLoop):
         for blobID in remove_list:
             del self.blobs2DCur[blobID]
 
+    def parseTuio(self, type, args, types):
+        if args[0] == 'alive':
+            pass
+        if args[0] == 'set':
+            id = args[1]
+
     def parse2dCur(self, args, types):
         global touch_event_listeners
         if args[0] == 'alive':
@@ -358,7 +365,8 @@ class TouchEventLoop(pyglet.app.EventLoop):
 
         # process tuio
         while not tuio_event_q.empty():
-            type,args, types = tuio_event_q.get()
+            type, args, types = tuio_event_q.get()
+            self.parseTuio(type, args, types)
             if type == '/tuio/2Dcur':
                 self.parse2dCur(args, types)
             if type == '/tuio/2Dobj':

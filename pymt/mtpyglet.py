@@ -120,8 +120,8 @@ class TouchEventLoop(pyglet.app.EventLoop):
             # not timeout state, calculate !
             cur = self.blobs2DCur[blobID]
             if not cur.is_timeout:
-                if time_current - cur.time_start > self.double_tap_time:
-                    cur.is_timeout = True
+                #if time_current - cur.time_start > self.double_tap_time:
+                cur.is_timeout = True
                 if not cur.is_timeout:
                     # at least, check double_tap_distance
                     distance = pymt.Vector.distance(pymt.Vector(cur.dxpos, cur.dypos),
@@ -157,7 +157,12 @@ class TouchEventLoop(pyglet.app.EventLoop):
 
     def parseTuio(self, type, args, types):
         if args[0] == 'alive':
-            pass
+            self.alive_blobs = args[1:]
+            for blobID in self.blobs2DCur:
+                    if not blobID in self.alive_blobs:
+                        self.blobs2DCur[blobID].no_event = False
+                        self.blobs2DCur[blobID].do_event = 'on_touch_up'
+                        
         if args[0] == 'set':
             blobID = args[1]
             # first time ?

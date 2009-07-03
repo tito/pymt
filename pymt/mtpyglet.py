@@ -5,7 +5,7 @@ Pyglet: Soup on pyglet to provide multitouch interface.
 __all__ = [
     'TouchEventLoop', 'TouchWindow',
     'pymt_usage', 'runTouchApp', 'stopTouchApp',
-    'startTuio', 'stopTuio', 'getFrameDt',
+    'getFrameDt', 'getAvailableTouchs',
     'touch_event_listeners'
 ]
 
@@ -18,13 +18,12 @@ from pyglet.gl import *
 from exceptions import pymt_exception_manager, ExceptionManager
 from Queue import Queue
 from utils import intersection, difference, strtotuple
-from tuio import *
+from input import *
 
 # All event listeners will add themselves to this
 # list upon creation
-tuio_event_q = Queue()
-tuio_listeners = []
 touch_event_listeners = []
+touch_list = []
 frame_dt = 0.01 # init to a non-zero value, to prevent user zero division
 
 def getFrameDt():
@@ -32,43 +31,9 @@ def getFrameDt():
     global frame_dt
     return frame_dt
 
-class TuioGetter(object):
-    '''Tuio getter listen udp, and use the appropriate
-    parser for 2Dcur and 2Dobj Tuio message.
-
-    :Parameters:
-        `host` : string, default to '127.0.0.1'
-            IP to listen
-        `port` : int, default to 3333
-            Port to listen
-    '''
-    def __init__(self,  host='127.0.0.1', port=3333):
-        global tuio_listeners
-        tuio_listeners.append(self)
-        self.host = host
-        self.port = port
-        self.startListening()
-
-    def startListening(self):
-        '''Start listening osc message'''
-        osc.init()
-        osc.listen(self.host, self.port)
-        for type in MTTouchFactory.binds():
-            osc.bind(self.osc_tuio_cb, type)
-
-    def stopListening(self):
-        '''Stop listening osc message'''
-        osc.dontListen()
-
-    def close(self):
-        osc.dontListen()
-        tuio_listeners.remove(self)
-
-    def osc_tuio_cb(self, *incoming):
-        global tuio_event_q
-        message = incoming[0]
-        type, types, args = message[0], message[1], message[2:]
-        tuio_event_q.put([type, args, types])
+def getAvailableTouchs():
+    global touch_list
+    return touch_list
 
 class TouchEventLoop(pyglet.app.EventLoop):
     '''Main event loop. This loop dispatch Tuio message and pyglet event.
@@ -87,14 +52,21 @@ class TouchEventLoop(pyglet.app.EventLoop):
         self.blobs2DObj = {}
         self.double_tap_distance = pymt.pymt_config.getint('pymt', 'double_tap_distance') / 1000.0
         self.double_tap_time = pymt.pymt_config.getint('pymt', 'double_tap_time') / 1000.0
-        self.parser = TuioGetter(host = host, port = port)
         self.ignore_list = strtotuple(pymt.pymt_config.get('tuio', 'ignore'))
 
+        # TODO change this, make it configurable
+        self.providers = []
+        self.providers.append(TouchFactory.get('tuio')(ip=host, port=port))
+
+    def start(self):
+        for provider in self.providers:
+            provider.start()
+
     def close(self):
-        if not self.parser:
-            return
-        self.parser.close()
-        self.parser = None
+        while len(self.providers):
+            provider = self.providers[0]
+            del self.providers[0]
+            provider.stop()
 
     def collide_ignore(self, cur):
         x, y = cur.xpos, cur.ypos
@@ -103,180 +75,27 @@ class TouchEventLoop(pyglet.app.EventLoop):
             if x > xmin and x < xmax and y > ymin and y < ymax:
                 return True
 
-    def find_double_tap(self, ref):
-        for blobID in self.blobs2DCur:
-            cur = self.blobs2DCur[blobID]
-            if cur.is_timeout or cur.have_event_down or cur.do_event != 'on_touch_up':
-                continue
-            distance = pymt.Vector.distance(pymt.Vector(ref.xpos, ref.ypos),
-                                            pymt.Vector(cur.xpos, cur.ypos))
-            if distance > self.double_tap_distance:
-                continue
-            return cur
+    def dispatch_input(self, input):
+        # update available list
+        global touch_list
+        if input.type == Touch.DOWN:
+            touch_list.append(input)
+        elif input.type == Touch.UP:
+            touch_list.remove(input)
 
-    def process_2dcur_events(self):
-        remove_list = []
-        for blobID in self.blobs2DCur:
-            # not timeout state, calculate !
-            cur = self.blobs2DCur[blobID]
-            if not cur.is_timeout:
-                #if time_current - cur.time_start > self.double_tap_time:
-                cur.is_timeout = True
-                if not cur.is_timeout:
-                    # at least, check double_tap_distance
-                    distance = pymt.Vector.distance(pymt.Vector(cur.dxpos, cur.dypos),
-                                                    pymt.Vector(cur.xpos, cur.ypos))
-                    if distance < self.double_tap_distance:
-                        break
-                    cur.is_timeout = True
-
-            # ok, now check event !
-            event_str = None
-            if not cur.have_event_down:
-                event_str = 'on_touch_down'
-                cur.have_event_down = True
-            elif cur.do_event:
-                event_str = cur.do_event
-                cur.do_event = False
-
-            # event to do ?
-            if event_str:
-                if not cur.no_event:
-                    if event_str == 'on_touch_down':
-                        xpos, ypos = cur.dxpos, cur.dypos
-                    else:
-                        xpos, ypos = cur.xpos, cur.ypos
-                    for l in touch_event_listeners:
-                        l.dispatch_event(event_str, self.blobs2DCur, cur.blobID,
-                            cur.xpos * l.width, l.height - l.height * cur.ypos)
-                if event_str == 'on_touch_up':
-                    remove_list.append(cur.blobID)
-
-        for blobID in remove_list:
-            del self.blobs2DCur[blobID]
-
-    def parseTuio(self, type, args, types):
-        if args[0] == 'alive':
-            self.alive_blobs = args[1:]
-            for blobID in self.blobs2DCur:
-                    if not blobID in self.alive_blobs:
-                        self.blobs2DCur[blobID].no_event = False
-                        self.blobs2DCur[blobID].do_event = 'on_touch_up'
-                        
-        if args[0] == 'set':
-            blobID = args[1]
-            # first time ?
-            if blobID not in self.blobs2DCur:
-                # create cursor
-                cur = MTTouchFactory.create(type, blobID, args[2:])
-                # if cursor is in the ignore box, drop it
-                if self.collide_ignore(cur):
-                    return
-                # search for double tap
-                cur_double_tap = self.find_double_tap(cur)
-                if cur_double_tap:
-                    cur.is_double_tap = True
-                    cur.double_tap_time = cur.time_start - cur_double_tap.time_start
-                    cur.time_start = cur_double_tap.time_start
-                    cur_double_tap.no_event = True
-                # add into list
-                self.blobs2DCur[blobID] = cur
-            else:
-                # cursor exist, move it :)
-                self.blobs2DCur[blobID].move(args[2:])
-                self.blobs2DCur[blobID].do_event = 'on_touch_move'
-
-    '''
-    def parse2dCur(self, args, types):
+        # dispatch to listeners
         global touch_event_listeners
-        if args[0] == 'alive':
-            touch_release   = difference(self.alive2DCur,args[1:])
-            touch_down      = difference(self.alive2DCur,args[1:])
-            touch_move      = intersection(self.alive2DCur,args[1:])
-            self.alive2DCur = args[1:]
-            for blobID in touch_release:
-                if blobID in self.blobs2DCur:
-                    self.blobs2DCur[blobID].do_event = 'on_touch_up'
+        for listener in touch_event_listeners:
+            listener.dispatch_event('on_input', input)
 
-        elif args[0] == 'set':
-            blobID = args[1]
-            # first time ?
-            if blobID not in self.blobs2DCur:
-                # create cursor
-                cur = Tuio2DCursor(blobID, args[2:], self.clock.time())
-                # if cursor is in the ignore box, drop it
-                if self.collide_ignore(cur):
-                    return
-                # search for double tap
-                cur_double_tap = self.find_double_tap(cur)
-                if cur_double_tap:
-                    cur.is_double_tap = True
-                    cur.double_tap_time = cur.time_start - cur_double_tap.time_start
-                    cur.time_start = cur_double_tap.time_start
-                    cur_double_tap.no_event = True
-                # add into list
-                self.blobs2DCur[blobID] = cur
-            else:
-                # cursor exist, move it :)
-                self.blobs2DCur[blobID].move(args[2:])
-                self.blobs2DCur[blobID].do_event = 'on_touch_move'
-
-    def parse2dObj(self, args, types):
-        global touch_event_listeners
-
-        if not args[0] in ['alive', 'set']:
-            return
-
-        if args[0] == 'alive':
-            touch_release = difference(self.alive2DObj, args[1:])
-            touch_down = difference(self.alive2DObj, args[1:])
-            touch_move = intersection(self.alive2DObj, args[1:])
-            self.alive2DObj = args[1:]
-
-            for blobID in touch_release:
-                for l in touch_event_listeners:
-                    l.dispatch_event('on_object_up', self.blobs2DObj, blobID,
-                        self.blobs2DObj[blobID].id,
-                        self.blobs2DObj[blobID].xpos * l.width,
-                        l.height - l.height*self.blobs2DObj[blobID].ypos,
-                        self.blobs2DObj[blobID].angle
-                    )
-                    del self.blobs2DObj[blobID]
-
-        elif args[0] == 'set':
-            blobID = args[1]
-            if blobID not in self.blobs2DObj:
-                self.blobs2DObj[blobID] = Tuio2DObject(blobID,args[2:])
-                for l in touch_event_listeners:
-                    l.dispatch_event('on_object_down', self.blobs2DObj, blobID,
-                        self.blobs2DObj[blobID].id,
-                        self.blobs2DObj[blobID].xpos * l.width,
-                        l.height - l.height*self.blobs2DObj[blobID].ypos,
-                        self.blobs2DObj[blobID].angle
-                    )
-            else:
-                self.blobs2DObj[blobID].move(args[2:])
-                for l in touch_event_listeners:
-                    l.dispatch_event('on_object_move', self.blobs2DObj, blobID,
-                        self.blobs2DObj[blobID].id,
-                        self.blobs2DObj[blobID].xpos * l.width,
-                        l.height - l.height*self.blobs2DObj[blobID].ypos,
-                        self.blobs2DObj[blobID].angle
-                    )
-    '''
     def idle(self):
-        global tuio_event_q
+        # update dt
         global frame_dt
-
         frame_dt = pyglet.clock.tick()
 
-        # process tuio
-        while not tuio_event_q.empty():
-            type, args, types = tuio_event_q.get()
-            self.parseTuio(type, args, types)
-
-        # launch event ?
-        self.process_2dcur_events()
+        # read and dispatch input from providers
+        for provider in self.providers:
+            provider.update(dispatch_fn=self.dispatch_input)
 
         # dispatch pyglet events
         for window in pyglet.app.windows:
@@ -286,72 +105,21 @@ class TouchEventLoop(pyglet.app.EventLoop):
 
         return 0
 
-def stopTuio():
-    '''Stop Tuio listening
-    
-    .. note::
-        This function is designed to be used in non-graphic app.
-    '''
-    global tuio_listeners
-    for listener in tuio_listeners:
-        listener.stopListening()
-
-def startTuio():
-    '''Start Tuio listening.
-    
-    .. note::
-        This function is designed to be used in non-graphic app.
-    '''
-    global tuio_listeners
-    for listener in tuio_listeners:
-        listener.startListening()
-
 #any window that inherhits this or an instance will have event handlers triggered on Tuio touch events
 class TouchWindow(pyglet.window.Window):
     '''Base implementation of Tuio event in top of pyglet window.
 
     :Events:
-        `on_touch_down`
-            Fired when a blob is detected
-        `on_touch_move`
-            Fired when the blob is moving
-        `on_touch_up`
-            Fired when the blob is gone
-        `on_object_down`
-            Fired when the object is detected
-        `on_object_move`
-            Fired when the object is moving
-        `on_object_up`
-            Fired when the object is gone
+        `on_input`
+            Fired when a input event occured
     '''
     def __init__(self, **kwargs):
         super(TouchWindow, self).__init__(**kwargs)
-        self.register_event_type('on_touch_up')
-        self.register_event_type('on_touch_move')
-        self.register_event_type('on_touch_down')
-        self.register_event_type('on_object_up')
-        self.register_event_type('on_object_move')
-        self.register_event_type('on_object_down')
+        self.register_event_type('on_input')
         touch_event_listeners.append(self)
 
-    def on_touch_down(self, touches, touchID, x, y):
+    def on_input(self, touch):
         pass
-
-    def on_touch_move(self, touches, touchID, x, y):
-        pass
-
-    def on_touch_up(self, touches, touchID, x, y):
-        pass
-
-    def on_object_down(self, objects, objectID, id, x, y, angle):
-        pass
-
-    def on_object_move(self, objects, objectID, id, x, y, angle):
-        pass
-
-    def on_object_up(self, objects, objectID, id, x, y, angle):
-        pass
-
 
 def pymt_usage():
     '''PyMT Usage: %s [OPTION...]
@@ -385,6 +153,7 @@ def runTouchApp():
     host = pymt.pymt_config.get('tuio', 'host')
     port = pymt.pymt_config.getint('tuio', 'port')
     pymt_evloop = TouchEventLoop(host=host, port=port)
+    pymt_evloop.start()
 
     while True:
         try:
@@ -441,5 +210,3 @@ if __name__ == '__main__':
                 crosshair.draw()
 
     runTouchApp()
-
-tuio_event_q.join()

@@ -1,22 +1,20 @@
-'''
-Tuio factory: register and dispatch creation of touch object from TUIO data
-'''
-
-__all__ = ['MTTouchFactory', 'MTTouchAbstract']
+__all__ = ['Touch']
 
 import pyglet
 from ..logger import pymt_logger
 
 touch_clock = pyglet.clock.Clock()
 
-class MTTouchShapeRect(object):
-    pass
+class Touch(object):
+    DOWN = 0
+    MOVE = 1
+    UP   = 2
 
-class MTTouchAbstract(object):
     def __init__(self, id, args):
+        if self.__class__ == Touch:
+            raise NotImplementedError, 'class Touch is abstract'
 
-        if self.__class__ == MTTouchAbstract:
-            raise NotImplementedError, 'class MTTouchAbstract is abstract'
+        self.type = Touch.DOWN
 
         # TUIO definition
         self.id = id
@@ -60,6 +58,9 @@ class MTTouchAbstract(object):
         self.dxpos, self.dypos = self.x, self.y
         self.depack(args)
 
+    def __str__(self):
+        return str(self.__class__)
+
     # facility
     pos = property(lambda self: (self.x, self.y))
     dpos = property(lambda self: (self.dxpos, self.dypos))
@@ -75,47 +76,4 @@ class MTTouchAbstract(object):
     mot_accel = property(lambda self: self.m)
     rot_accel = property(lambda self: self.r)
     angle = property(lambda self: self.a)
-
-
-class MTTouchFactory:
-    '''TUIO Touch factory. You can create new TUIO handler, and create new touch object.'''
-
-    _class = {}
-
-    @staticmethod
-    def binds():
-        return MTTouchFactory._class.keys()
-
-    @staticmethod
-    def register(type, touchclass):
-        '''Register a new type / touchclass ::
-
-            MTTouchFactory.register('/tuio/2DCur', MTTouch2dCur)
-
-        :Parameters:
-            `type` : str
-                This is the type of TUIO message (eg: /tuio/2DCur)
-            `touchclass` : class
-                Touch class to instanciate
-        '''
-        MTTouchFactory._class[type] = touchclass
-
-    @staticmethod
-    def create(type, id, args):
-        '''Create a new touch from a type ::
-
-            touchobject = MTTouchFactory.create('/tuio/2DCur', '25', args)
-        
-        :Parameters:
-            `type` : str
-                Type of TUIO message
-            `id` : str
-                Id of the touch
-            `args` : list
-                Touch Arguments
-        '''
-        if type in MTTouchFactory._class:
-            return MTTouchFactory._class[type](id, args)
-        pymt_logger.warning('Unhandled <%s> type in MTTouchFactory' % id)
-
 

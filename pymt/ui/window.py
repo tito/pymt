@@ -306,19 +306,9 @@ class MTWindow(TouchWindow):
         if handler and handler(text):
             return True
 
-    def on_touch_down(self, touches, touchID, x, y):
+    def on_input(self, touch):
         for w in reversed(self.children):
-            if w.dispatch_event('on_touch_down', touches, touchID, x, y):
-                return True
-
-    def on_touch_move(self, touches, touchID, x, y):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_touch_move', touches, touchID, x, y):
-                return True
-
-    def on_touch_up(self, touches, touchID, x, y):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_touch_up', touches, touchID, x, y):
+            if w.dispatch_event('on_input', touch):
                 return True
 
     def on_mouse_press(self, x, y, button, modifiers):
@@ -335,22 +325,6 @@ class MTWindow(TouchWindow):
         for w in reversed(self.children):
             if w.dispatch_event('on_mouse_release', x, y, button, modifiers):
                 return True
-
-    def on_object_down(self, objects, objectID, id, x, y,angle):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_object_down', objects, objectID, id, x, y, angle):
-                return True
-
-    def on_object_move(self, objects, objectID, id, x, y,angle):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_object_move', objects, objectID, id, x, y, angle):
-                return True
-
-    def on_object_up(self, objects, objectID, id, x, y,angle):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_object_up', objects, objectID, id, x, y,angle):
-                return True
-
     def on_resize(self, width, height):
         glViewport(0, 0, width, height)
         glMatrixMode(gl.GL_PROJECTION)

@@ -121,6 +121,9 @@ class MTButton(MTWidget):
     def on_release(self, touchID, x, y):
         pass
 
+    def on_move(self, x, y):
+        self.button_dl.clear()
+
     def on_resize(self, w, h):
         self.button_dl.clear()
 

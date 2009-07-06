@@ -306,50 +306,20 @@ class MTWindow(TouchWindow):
         if handler and handler(text):
             return True
 
-    def on_touch_down(self, touches, touchID, x, y):
+    def on_input(self, touch):
+        touch.scale_for_screen(*self.size)
         for w in reversed(self.children):
-            if w.dispatch_event('on_touch_down', touches, touchID, x, y):
-                return True
-
-    def on_touch_move(self, touches, touchID, x, y):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_touch_move', touches, touchID, x, y):
-                return True
-
-    def on_touch_up(self, touches, touchID, x, y):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_touch_up', touches, touchID, x, y):
+            if w.dispatch_event('on_input', touch):
                 return True
 
     def on_mouse_press(self, x, y, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_press',x, y, button, modifiers):
-                return True
+        return self.sim.dispatch_event('on_mouse_press', x, y, button, modifiers)
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_drag',x, y, dx, dy, button, modifiers):
-                return True
+        return self.sim.dispatch_event('on_mouse_drag', x, y, dx, dy, button, modifiers)
 
     def on_mouse_release(self, x, y, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_release', x, y, button, modifiers):
-                return True
-
-    def on_object_down(self, objects, objectID, id, x, y,angle):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_object_down', objects, objectID, id, x, y, angle):
-                return True
-
-    def on_object_move(self, objects, objectID, id, x, y,angle):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_object_move', objects, objectID, id, x, y, angle):
-                return True
-
-    def on_object_up(self, objects, objectID, id, x, y,angle):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_object_up', objects, objectID, id, x, y,angle):
-                return True
+        return self.sim.dispatch_event('on_mouse_release', x, y, button, modifiers)
 
     def on_resize(self, width, height):
         glViewport(0, 0, width, height)

@@ -11,6 +11,8 @@ import sys
 import os
 import pyglet
 from ...logger import pymt_logger
+from ...mtpyglet import getAvailableTouchs
+from ...input import Touch
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
 from ..colors import css_get_style
@@ -87,24 +89,18 @@ class MTWidget(pyglet.event.EventDispatcher):
             Fired when a blob is moving
         `on_touch_up` (list:Tuio2dCursor touches, int touchID, int x, int y)
             Fired when a blob disappear
-        `on_object_down` (list:Tuio2dObject objects, int objectID, int x, int y, float angle)
-            Fired when an object appear
-        `on_object_move` (list:Tuio2dObject objects, int objectID, int x, int y, float angle)
-            Fired when an object is moving
-        `on_object_up` (list:Tuio2dObject objects, int objectID, int x, int y, float angle)
-            Fired when an object disappear
+        `on_input`
+            Fired when a input is done
     '''
     visible_events = [
         'on_draw',
         'on_mouse_press',
         'on_mouse_drag',
         'on_mouse_release',
+        'on_input',
         'on_touch_up',
         'on_touch_move',
         'on_touch_down',
-        'on_object_up',
-        'on_object_move',
-        'on_object_down',
         'on_animation_complete',
         'on_animation_reset',
         'on_animation_start'
@@ -141,6 +137,12 @@ class MTWidget(pyglet.event.EventDispatcher):
         self.animations				= []
         self.visible				= kwargs.get('visible')
         self.draw_children          = kwargs.get('draw_children')
+
+        # cache for get_parent_window()
+        self._parent_window         = None
+        self._parent_window_source  = None
+        self._parent_layout         = None
+        self._parent_layout_source  = None
 
         self.register_event_type('on_resize')
         self.register_event_type('on_move')
@@ -342,15 +344,31 @@ class MTWidget(pyglet.event.EventDispatcher):
 
     def get_parent_window(self):
         '''Return the parent window of widget'''
-        if self.parent:
-            return self.parent.get_parent_window()
-        return None
+        if not self.parent:
+            return None
+
+        # cache value
+        if self._parent_window_source != self.parent or self._parent_window is None:
+            self._parent_window = self.parent.get_parent_window()
+            if not self._parent_window:
+                return None
+            self._parent_window_source = self.parent
+
+        return self._parent_window
 
     def get_parent_layout(self):
         '''Return the parent layout of widget'''
-        if self.parent:
-            return self.parent.get_parent_layout()
-        return None
+        if not self.parent:
+            return None
+
+        # cache value
+        if self._parent_layout_source != self.parent or self._parent_layout is None:
+            self._parent_layout = self.parent.get_parent_layout()
+            if not self._parent_layout:
+                return None
+            self._parent_layout_source = self.parent
+
+        return self._parent_layout
 
     def bring_to_front(self):
         '''Remove it from wherever it is and add it back at the top'''
@@ -478,6 +496,17 @@ class MTWidget(pyglet.event.EventDispatcher):
         for c in self.children:
             c.dispatch_event('on_move', x, y)
 
+    def on_input(self, touch):
+        touches = getAvailableTouchs()
+        if touch.type == Touch.DOWN:
+            self.dispatch_event('on_touch_down', touches, touch.id, touch.x, touch.y)
+        elif touch.type == Touch.MOVE:
+            self.dispatch_event('on_touch_move', touches, touch.id, touch.x, touch.y)
+        elif touch.type == Touch.UP:
+            self.dispatch_event('on_touch_up', touches, touch.id, touch.x, touch.y)
+        else:
+            raise Exception('Invalid type received (%s) ?' % touch)
+
     def on_touch_down(self, touches, touchID, x, y):
         for w in reversed(self.children):
             if w.dispatch_event('on_touch_down', touches, touchID, x, y):
@@ -507,22 +536,6 @@ class MTWidget(pyglet.event.EventDispatcher):
         for w in reversed(self.children):
             if w.dispatch_event('on_mouse_release', x, y, button, modifiers):
                 return True
-
-    def on_object_down(self, touches, touchID,id, x, y,angle):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_object_down', touches, touchID,id, x, y, angle):
-                return True
-
-    def on_object_move(self, touches, touchID,id, x, y,angle):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_object_move', touches, touchID,id, x, y, angle):
-                return True
-
-    def on_object_up(self, touches, touchID,id, x, y,angle):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_object_up', touches, touchID,id, x, y,angle):
-                return True
-
 
 # Register all base widgets
 MTWidgetFactory.register('MTWidget', MTWidget)

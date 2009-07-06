@@ -58,7 +58,8 @@ class Event(MTWidget):
 w = MTWindow(style = {'bg-color': (0,0,0,1)})
 e = Event(size = (400,100))
 e2 = Event(pos=(400,400), size = (300,100))
-t = Timeline()
+t = Timeline(do_rotation = False)
+
 t.add_widget(e)
 t.add_widget(e2)
 w.add_widget(t)

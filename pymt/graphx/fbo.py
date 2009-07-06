@@ -12,6 +12,8 @@ from pyglet import *
 from pyglet.gl import *
 from pyglet.image import Texture, TextureRegion
 from paint import *
+from colors import *
+from draw import *
 from ..logger import pymt_logger
 
 class AbstractFbo(object):

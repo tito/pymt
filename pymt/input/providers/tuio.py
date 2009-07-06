@@ -30,7 +30,13 @@ class TuioTouchProvider(TouchProvider):
     @staticmethod
     def unregister(oscpath, classname):
         if oscpath in TuioTouchProvider.__handlers__:
-            del TuioTouchProvider[oscpath]
+            del TuioTouchProvider.__handlers__[oscpath]
+
+    @staticmethod
+    def create(oscpath, **kwargs):
+        if oscpath not in TuioTouchProvider.__handlers__:
+            raise Exception('Unknown %s touch path' % oscpath)
+        return TuioTouchProvider.__handlers__[oscpath](**kwargs)
 
     def start(self):
         osc.init()
@@ -50,7 +56,6 @@ class TuioTouchProvider(TouchProvider):
         self.tuio_event_q.put([oscpath, args, types])
 
     def update(self, dispatch_fn):
-
         # read the Queue with event
         while not self.tuio_event_q.empty():
             oscpath, args, types = self.tuio_event_q.get()
@@ -96,13 +101,13 @@ class Tuio2dCurTouch(Touch):
 
     def depack(self, args):
         if len(args) < 5:
-            self.x, self.y = map(float, args[0:2])
+            self.sx, self.sy = map(float, args[0:2])
             self.profile = 'xy'
         elif len(args) == 5:
-            self.x, self.y, self.X, self.Y, self.m = map(float, args[0:5])
+            self.sx, self.sy, self.X, self.Y, self.m = map(float, args[0:5])
             self.profile = 'xyXYm'
         else:
-            self.x, self.y, self.X, self.Y, self.m, width, height = map(float, args[0:7])
+            self.sx, self.sy, self.X, self.Y, self.m, width, height = map(float, args[0:7])
             self.profile = 'xyXYmh'
             if self.shape is None:
                 self.shape = TouchShapeRect()
@@ -119,13 +124,13 @@ class Tuio2dObjTouch(Touch):
 
     def depack(self, args):
         if len(args) < 5:
-            self.x, self.y = args[0:2]
+            self.sx, self.sy = args[0:2]
             self.profile = 'xy'
         elif len(args) == 9:
-            self.id, self.x, self.y, self.a, self.X, self.Y, self.A, self.m, self.r = args[0:9]
+            self.id, self.sx, self.sy, self.a, self.X, self.Y, self.A, self.m, self.r = args[0:9]
             self.profile = 'ixyaXYAmr'
         else:
-            self.id, self.x, self.y, self.a, self.X, self.Y, self.A, self.m, self.r, width, height = args[0:11]
+            self.id, self.sx, self.sy, self.a, self.X, self.Y, self.A, self.m, self.r, width, height = args[0:11]
             self.profile = 'ixyaXYAmrh'
             if self.shape is None:
                 self.shape = TouchShapeRect()

@@ -8,7 +8,7 @@ from pyglet import *
 from pyglet.gl import *
 from pyglet.window import key
 from ..graphx import drawCircle, set_color
-from ..tuio import MTTouchFactory
+from ..input import TouchFactory, Touch
 from factory import MTWidgetFactory
 from widgets.widget import MTWidget
 
@@ -40,24 +40,35 @@ class MTSimulator(MTWidget):
         else:
             self.counter += 1
             id = 'mouse' + str(self.counter)
-            self.current_drag = cursor = MTTouchFactory.create('/tuio/2Dcur', id, [x, y])
+            rx = x / float(self.get_parent_window().width)
+            ry = y / float(self.get_parent_window().height)
+            self.current_drag = cur = TouchFactory.get('tuio').create('/tuio/2Dcur', id=id, args=[rx, ry])
             if modifiers & key.MOD_SHIFT:
-                cursor.is_double_tap = True
-            self.touches[id] = cursor
-            self.output.dispatch_event('on_touch_down', self.touches, id, x, y)
+                cur.is_float_tap = True
+            self.touches[id] = cur
+            cur.type = Touch.DOWN
+            self.output.dispatch_event('on_input', cur)
         return True
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
-        cur = self.current_drag
-        cur.move([x,y])
-        self.output.dispatch_event('on_touch_move', self.touches, cur.blobID, x, y)
+        if self.current_drag:
+            cur = self.current_drag
+            rx = x / float(self.get_parent_window().width)
+            ry = y / float(self.get_parent_window().height)
+            cur.move([rx, ry])
+            cur.type = Touch.MOVE
+            self.output.dispatch_event('on_input', cur)
         return True
 
     def on_mouse_release(self, x, y, button, modifiers):
-        t = self.find_touch(x,y)
-        if  button == 1 and t and not(modifiers & key.MOD_CTRL):
-            self.output.dispatch_event('on_touch_up', self.touches, self.current_drag.blobID, x, y)
-            del self.touches[self.current_drag.blobID]
+        cur = self.find_touch(x, y)
+        if  button == 1 and cur and not (modifiers & key.MOD_CTRL):
+            rx = x / float(self.get_parent_window().width)
+            ry = y / float(self.get_parent_window().height)
+            cur.move([rx, ry])
+            cur.type = Touch.UP
+            self.output.dispatch_event('on_input', cur)
+            del self.touches[cur.id]
         return True
 
 # Register all base widgets

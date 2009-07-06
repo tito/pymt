@@ -18,9 +18,9 @@ class Touch(object):
 
         # TUIO definition
         self.id = id
-        self.x = 0.0
-        self.y = 0.0
-        self.z = 0.0
+        self.sx = 0.0
+        self.sy = 0.0
+        self.sz = 0.0
         self.a = 0.0
         self.b = 0.0
         self.c = 0.0
@@ -35,6 +35,9 @@ class Touch(object):
         self.profile = 'ixyzabcXYZABCmrh'
 
         # new parameters
+        self.x = 0.0
+        self.y = 0.0
+        self.z = 0.0
         self.shape = None
         self.dxpos = None
         self.dypos = None
@@ -57,6 +60,12 @@ class Touch(object):
     def move(self, args):
         self.dxpos, self.dypos = self.x, self.y
         self.depack(args)
+
+    def scale_for_screen(self, w, h, z=None):
+        self.x = self.sx * float(w)
+        self.y = self.sy * float(h)
+        if z:
+            self.z = self.sz * float(z)
 
     def __str__(self):
         return str(self.__class__)

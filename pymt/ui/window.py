@@ -307,24 +307,20 @@ class MTWindow(TouchWindow):
             return True
 
     def on_input(self, touch):
+        touch.scale_for_screen(*self.size)
         for w in reversed(self.children):
             if w.dispatch_event('on_input', touch):
                 return True
 
     def on_mouse_press(self, x, y, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_press',x, y, button, modifiers):
-                return True
+        return self.sim.dispatch_event('on_mouse_press', x, y, button, modifiers)
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_drag',x, y, dx, dy, button, modifiers):
-                return True
+        return self.sim.dispatch_event('on_mouse_drag', x, y, dx, dy, button, modifiers)
 
     def on_mouse_release(self, x, y, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_release', x, y, button, modifiers):
-                return True
+        return self.sim.dispatch_event('on_mouse_release', x, y, button, modifiers)
+
     def on_resize(self, width, height):
         glViewport(0, 0, width, height)
         glMatrixMode(gl.GL_PROJECTION)

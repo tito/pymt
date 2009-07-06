@@ -49,10 +49,11 @@ class MTSimulator(MTWidget):
         return True
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
-        cur = self.current_drag
-        cur.xpos, cur.ypos = x,y
-        self.output.dispatch_event('on_touch_move', self.touches, cur.blobID, x, y)
-        return True
+        if self.current_drag:
+            cur = self.current_drag
+            cur.xpos, cur.ypos = x,y
+            self.output.dispatch_event('on_touch_move', self.touches, cur.blobID, x, y)
+            return True
 
     def on_mouse_release(self, x, y, button, modifiers):
         t = self.find_touch(x,y)

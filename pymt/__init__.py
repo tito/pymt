@@ -18,6 +18,7 @@ pymt_base_dir = os.path.dirname(sys.modules[__name__].__file__)
 pymt_libs_dir = os.path.join(pymt_base_dir, 'lib')
 pymt_modules_dir = os.path.join(pymt_base_dir, 'mods')
 pymt_data_dir = os.path.join(pymt_base_dir, 'data')
+pymt_providers_dir = os.path.join(pymt_base_dir, 'input', 'providers')
 sys.path = [pymt_libs_dir] + sys.path
 
 # Don't go further if we generate documentation
@@ -80,6 +81,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     # and configuration applied to logger.
     from exceptions import *
     from modules import *
+    from input import *
     from mtpyglet import *
     from graphx import *
     from ui import *

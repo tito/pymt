@@ -138,6 +138,12 @@ class MTWidget(pyglet.event.EventDispatcher):
         self.visible				= kwargs.get('visible')
         self.draw_children          = kwargs.get('draw_children')
 
+        # cache for get_parent_window()
+        self._parent_window         = None
+        self._parent_window_source  = None
+        self._parent_layout         = None
+        self._parent_layout_source  = None
+
         self.register_event_type('on_resize')
         self.register_event_type('on_move')
 
@@ -338,15 +344,31 @@ class MTWidget(pyglet.event.EventDispatcher):
 
     def get_parent_window(self):
         '''Return the parent window of widget'''
-        if self.parent:
-            return self.parent.get_parent_window()
-        return None
+        if not self.parent:
+            return None
+
+        # cache value
+        if self._parent_window_source != self.parent or self._parent_window is None:
+            self._parent_window = self.parent.get_parent_window()
+            if not self._parent_window:
+                return None
+            self._parent_window_source = self.parent
+
+        return self._parent_window
 
     def get_parent_layout(self):
         '''Return the parent layout of widget'''
-        if self.parent:
-            return self.parent.get_parent_layout()
-        return None
+        if not self.parent:
+            return None
+
+        # cache value
+        if self._parent_layout_source != self.parent or self._parent_layout is None:
+            self._parent_layout = self.parent.get_parent_layout()
+            if not self._parent_layout:
+                return None
+            self._parent_layout_source = self.parent
+
+        return self._parent_layout
 
     def bring_to_front(self):
         '''Remove it from wherever it is and add it back at the top'''
@@ -476,16 +498,12 @@ class MTWidget(pyglet.event.EventDispatcher):
 
     def on_input(self, touch):
         touches = getAvailableTouchs()
-        w = self.get_parent_window()
         if touch.type == Touch.DOWN:
-            self.dispatch_event('on_touch_down', touches, touch.id,
-                                touch.x * w.width, w.height - touch.y * w.height)
+            self.dispatch_event('on_touch_down', touches, touch.id, touch.x, touch.y)
         elif touch.type == Touch.MOVE:
-            self.dispatch_event('on_touch_move', touches, touch.id,
-                                touch.x * w.width, w.height - touch.y * w.height)
+            self.dispatch_event('on_touch_move', touches, touch.id, touch.x, touch.y)
         elif touch.type == Touch.UP:
-            self.dispatch_event('on_touch_up', touches, touch.id,
-                                touch.x * w.width, w.height - touch.y * w.height)
+            self.dispatch_event('on_touch_up', touches, touch.id, touch.x, touch.y)
         else:
             raise Exception('Invalid type received (%s) ?' % touch)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# This is a work in progress please do not modify - Nathanaël Lécaudé
+# This is a work in progress please do not modify, thanks - Nathanaël Lécaudé
 
 from pymt import *
 

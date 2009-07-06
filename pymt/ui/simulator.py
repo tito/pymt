@@ -41,7 +41,7 @@ class MTSimulator(MTWidget):
             self.counter += 1
             id = 'mouse' + str(self.counter)
             rx = x / float(self.get_parent_window().width)
-            ry = y / float(self.get_parent_window().height)
+            ry = 1. - (y / float(self.get_parent_window().height))
             self.current_drag = cur = TouchFactory.get('tuio').create('/tuio/2Dcur', id=id, args=[rx, ry])
             if modifiers & key.MOD_SHIFT:
                 cur.is_float_tap = True
@@ -54,7 +54,7 @@ class MTSimulator(MTWidget):
         if self.current_drag:
             cur = self.current_drag
             rx = x / float(self.get_parent_window().width)
-            ry = y / float(self.get_parent_window().height)
+            ry = 1. - (y / float(self.get_parent_window().height))
             cur.move([rx, ry])
             cur.type = Touch.MOVE
             self.output.dispatch_event('on_input', cur)
@@ -64,7 +64,7 @@ class MTSimulator(MTWidget):
         cur = self.find_touch(x, y)
         if  button == 1 and cur and not (modifiers & key.MOD_CTRL):
             rx = x / float(self.get_parent_window().width)
-            ry = y / float(self.get_parent_window().height)
+            ry = 1. - (y / float(self.get_parent_window().height))
             cur.move([rx, ry])
             cur.type = Touch.UP
             self.output.dispatch_event('on_input', cur)

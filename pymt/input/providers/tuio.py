@@ -88,12 +88,13 @@ class TuioTouchProvider(TouchProvider):
                     if not id in alives:
                         # touch up
                         touch = self.touches[oscpath][id]
-                        touch.type = Touch.UP
-                        to_delete.append(touch)
+                        if not touch in to_delete:
+                            touch.type = Touch.UP
+                            to_delete.append(touch)
 
                 for touch in to_delete:
                     dispatch_fn(touch)
-                    del self.touches[oscpath][id]
+                    del self.touches[oscpath][touch.id]
 
 class Tuio2dCurTouch(Touch):
     def __init__(self, id, args):
@@ -113,6 +114,7 @@ class Tuio2dCurTouch(Touch):
                 self.shape = TouchShapeRect()
                 self.shape.width = width
                 self.shape.height = height
+        self.sy = 1 - self.sy
         if self.oxpos is None:
             self.oxpos, self.oypos = self.x, self.y
             self.dxpos, self.dypos = self.x, self.y
@@ -136,6 +138,7 @@ class Tuio2dObjTouch(Touch):
                 self.shape = TouchShapeRect()
                 self.shape.width = width
                 self.shape.height = height
+        self.sy = 1 - self.sy
 
 # registers
 TuioTouchProvider.register('/tuio/2Dcur', Tuio2dCurTouch)

@@ -61,11 +61,11 @@ class Touch(object):
         self.dxpos, self.dypos = self.x, self.y
         self.depack(args)
 
-    def scale_for_screen(self, w, h, z=None):
+    def scale_for_screen(self, w, h, p=None):
         self.x = self.sx * float(w)
         self.y = self.sy * float(h)
-        if z:
-            self.z = self.sz * float(z)
+        if p:
+            self.z = self.sz * float(p)
 
     def __str__(self):
         return str(self.__class__)

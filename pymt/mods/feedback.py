@@ -118,7 +118,8 @@ class GlobalFeedback(MTWidget):
             del self.touches[touchID]
 
     def on_draw(self):
-        self.bring_to_front()
+        # Uncomment the line below to always see feedback.
+	#self.bring_to_front()
         super(GlobalFeedback, self).on_draw()
 
     def draw(self):

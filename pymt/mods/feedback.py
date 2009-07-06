@@ -119,19 +119,20 @@ class GlobalFeedback(MTWidget):
 
     def on_draw(self):
         # Uncomment the line below to always see feedback.
-	#self.bring_to_front()
+        #self.bring_to_front()
         super(GlobalFeedback, self).on_draw()
 
     def draw(self):
         rings_to_delete = []
         for i in xrange(0, len(self.rings)):
-            self.rings[i].draw()
-            self.rings[i].opacity -= getFrameDt() * 400
-            self.rings[i].scale += getFrameDt() * 2
-            if self.rings[i].opacity <= 0:
-                rings_to_delete.append(i)
-        for i in rings_to_delete:
-            del self.rings[i]
+            ring = self.rings[i]
+            ring.draw()
+            ring.opacity -= getFrameDt() * 400
+            ring.scale += getFrameDt() * 2
+            if ring.opacity <= 0:
+                rings_to_delete.append(ring)
+        for ring in rings_to_delete:
+            self.rings.remove(ring)
 
 
 def start(win, ctx):

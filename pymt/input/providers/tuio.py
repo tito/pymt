@@ -40,14 +40,12 @@ class TuioTouchProvider(TouchProvider):
 
     def start(self):
         osc.init()
-        pymt_logger.info('Listening to %s:%s' % (self.ip, self.port))
         self.oscid = osc.listen(self.ip, self.port)
         for oscpath in TuioTouchProvider.__handlers__:
             self.touches[oscpath] = {}
             osc.bind(self.osc_tuio_cb, oscpath)
 
     def stop(self):
-        pymt_logger.info('Stop listening to %s:%s' % (self.ip, self.port))
         osc.dontListen(self.oscid)
 
     def osc_tuio_cb(self, *incoming):

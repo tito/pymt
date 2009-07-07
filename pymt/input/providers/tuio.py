@@ -72,13 +72,12 @@ class TuioTouchProvider(TouchProvider):
                     # new touch
                     touch = TuioTouchProvider.__handlers__[oscpath](id, args[2:])
                     self.touches[oscpath][id] = touch
-                    dispatch_fn(touch)
+                    dispatch_fn('down', touch)
                 else:
                     # update a current touch
                     touch = self.touches[oscpath][id]
-                    touch.type = Touch.MOVE
                     touch.move(args[2:])
-                    dispatch_fn(touch)
+                    dispatch_fn('move', touch)
 
             # alive event, check for deleted touch
             if command == 'alive':
@@ -89,11 +88,10 @@ class TuioTouchProvider(TouchProvider):
                         # touch up
                         touch = self.touches[oscpath][id]
                         if not touch in to_delete:
-                            touch.type = Touch.UP
                             to_delete.append(touch)
 
                 for touch in to_delete:
-                    dispatch_fn(touch)
+                    dispatch_fn('up', touch)
                     del self.touches[oscpath][touch.id]
 
 class Tuio2dCurTouch(Touch):

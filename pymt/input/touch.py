@@ -6,15 +6,10 @@ from ..logger import pymt_logger
 touch_clock = pyglet.clock.Clock()
 
 class Touch(object):
-    DOWN = 0
-    MOVE = 1
-    UP   = 2
 
     def __init__(self, id, args):
         if self.__class__ == Touch:
             raise NotImplementedError, 'class Touch is abstract'
-
-        self.type = Touch.DOWN
 
         # TUIO definition
         self.id = id

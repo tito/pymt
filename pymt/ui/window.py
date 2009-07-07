@@ -306,10 +306,22 @@ class MTWindow(TouchWindow):
         if handler and handler(text):
             return True
 
-    def on_input(self, touch):
+    def on_touch_down(self, touch):
         touch.scale_for_screen(*self.size)
         for w in reversed(self.children):
-            if w.dispatch_event('on_input', touch):
+            if w.dispatch_event('on_touch_down', touch):
+                return True
+
+    def on_touch_move(self, touch):
+        touch.scale_for_screen(*self.size)
+        for w in reversed(self.children):
+            if w.dispatch_event('on_touch_move', touch):
+                return True
+
+    def on_touch_up(self, touch):
+        touch.scale_for_screen(*self.size)
+        for w in reversed(self.children):
+            if w.dispatch_event('on_touch_up', touch):
                 return True
 
     def on_mouse_press(self, x, y, button, modifiers):
@@ -363,19 +375,8 @@ class MTDisplay(MTWidget):
     def draw(self):
         '''Draw a circle under every touches'''
         set_color(*self.touch_color)
-        for id in self.touches:
-            drawCircle(pos=self.touches[id], radius=self.radius)
-
-    def on_touch_down(self, touches, touchID, x, y):
-        self.touches[touchID] = (x,y)
-
-    def on_touch_move(self, touches, touchID, x, y):
-        self.touches[touchID] = (x,y)
-
-    def on_touch_up(self, touches, touchID, x, y):
-        if touchID in self.touches:
-            del self.touches[touchID]
-
+        for touch in getAvailableTouchs():
+            drawCircle(pos=(touch.x, touch.y), radius=self.radius)
 
 # Register all base widgets
 MTWidgetFactory.register('MTWindow', MTWindow)

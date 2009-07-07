@@ -75,18 +75,23 @@ class TouchEventLoop(pyglet.app.EventLoop):
             if x > xmin and x < xmax and y > ymin and y < ymax:
                 return True
 
-    def dispatch_input(self, input):
+    def dispatch_input(self, type, input):
         # update available list
         global touch_list
-        if input.type == Touch.DOWN:
+        if type == 'down':
             touch_list.append(input)
-        elif input.type == Touch.UP:
+        elif type == 'up':
             touch_list.remove(input)
 
         # dispatch to listeners
         global touch_event_listeners
         for listener in touch_event_listeners:
-            listener.dispatch_event('on_input', input)
+            if type == 'down':
+                listener.dispatch_event('on_touch_down', input)
+            elif type == 'move':
+                listener.dispatch_event('on_touch_move', input)
+            elif type == 'up':
+                listener.dispatch_event('on_touch_up', input)
 
     def idle(self):
         # update dt

@@ -89,15 +89,12 @@ class MTWidget(pyglet.event.EventDispatcher):
             Fired when a blob is moving
         `on_touch_up` (list:Tuio2dCursor touches, int touchID, int x, int y)
             Fired when a blob disappear
-        `on_input`
-            Fired when a input is done
     '''
     visible_events = [
         'on_draw',
         'on_mouse_press',
         'on_mouse_drag',
         'on_mouse_release',
-        'on_input',
         'on_touch_up',
         'on_touch_move',
         'on_touch_down',
@@ -315,7 +312,6 @@ class MTWidget(pyglet.event.EventDispatcher):
                 self._raise_dispatch_exception(
                     event_type, args, getattr(self, event_type))
 
-
     def update_event_registration(self):
         if self.visible:
             for ev in evs:
@@ -496,30 +492,19 @@ class MTWidget(pyglet.event.EventDispatcher):
         for c in self.children:
             c.dispatch_event('on_move', x, y)
 
-    def on_input(self, touch):
-        touches = getAvailableTouchs()
-        if touch.type == Touch.DOWN:
-            self.dispatch_event('on_touch_down', touches, touch.id, touch.x, touch.y)
-        elif touch.type == Touch.MOVE:
-            self.dispatch_event('on_touch_move', touches, touch.id, touch.x, touch.y)
-        elif touch.type == Touch.UP:
-            self.dispatch_event('on_touch_up', touches, touch.id, touch.x, touch.y)
-        else:
-            raise Exception('Invalid type received (%s) ?' % touch)
-
-    def on_touch_down(self, touches, touchID, x, y):
+    def on_touch_down(self, touch):
         for w in reversed(self.children):
-            if w.dispatch_event('on_touch_down', touches, touchID, x, y):
+            if w.dispatch_event('on_touch_down', touch):
                 return True
 
-    def on_touch_move(self, touches, touchID, x, y):
+    def on_touch_move(self, touch):
         for w in reversed(self.children):
-            if w.dispatch_event('on_touch_move', touches, touchID, x, y):
+            if w.dispatch_event('on_touch_move', touch):
                 return True
 
-    def on_touch_up(self, touches, touchID, x, y):
+    def on_touch_up(self, touch):
         for w in reversed(self.children):
-            if w.dispatch_event('on_touch_up', touches, touchID, x, y):
+            if w.dispatch_event('on_touch_up', touch):
                 return True
 
     def on_mouse_press(self, x, y, button, modifiers):

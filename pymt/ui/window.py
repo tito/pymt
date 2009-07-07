@@ -277,6 +277,9 @@ class MTWindow(TouchWindow):
             #print pyglet.image.get_buffer_manager().get_color_buffer().get_texture()
             pyglet.image.get_buffer_manager().get_color_buffer().save(filename=filename)
 
+    def to_window(self, x, y, initial=True):
+        return (x, y)
+
     def get_parent_window(self):
         return self
 

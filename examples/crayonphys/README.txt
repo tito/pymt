@@ -23,14 +23,18 @@ PROGRAMMING TO-DO LIST:
 
 - Add in textures for drawing lines and the polygons. Something that looks like you're drawing with a crayon!
 
-- Add in background, something that looks like paper would be great.
-
 - More realistic movement of objects (tweaking of velocities, step time). It would be nice to have a noticeable difference in speed depending on how far the object is moved.
 
 - Add in some comforting music.
 
 - Add in ability to drag 'n drop pre-made objects onto the "stage" -- for example, more complex shapes.
 
-- Refine joint mode. Should show possible joints, and there is currently a bug where after you create a joint the second object doesn't start reacting to the physics again until after you move it.
-
 - Add save screen/session ability. This would allow folks to a) return to an already existing game and b) allow us to easily create new levels/stages -- just draw it then save it!
+
+======
+
+CREDITS & LICENSING
+
+======
+
+Papyrus Texture used as background from http://www.flickr.com/photos/8078381@N03/2838774517/ ("Papyrus" by pareeerica), used with permission under a Creative Commons license. Redistributed under the same license.

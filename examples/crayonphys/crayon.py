@@ -22,6 +22,9 @@ except:
 #Set debugbox below to true to see actual boxes...
 debugbox = False
 
+#Set how large the borders around the screen should be.
+bordersize = 20
+
 class Shape(MTDragable):
     def __init__(self, coords):
         self.points = []
@@ -145,20 +148,21 @@ class Shape(MTDragable):
     def on_touch_move(self, touches, touchID, x, y):
         if self.collide_point(x, y) and not self.parent.jointmode:
             super(Shape, self).on_touch_move(touches, touchID, x, y)
+            self.body.position = (self.pos[0] + self.width/2, self.pos[1] + self.height/2)
            
 
     def on_touch_up(self, touches, touchID, x, y):
         if self.collide_point(x, y):
             if self.parent.jointmode:
-                self.parent.secondjoint = (x, y)
+                self.parent.secondjoint = self.body.GetWorldCenter()
                 self.parent.secondjointobj = self
                 self.parent.createjoint()
             #Check to see if this is a double-tap...
             elif touches[touchID].is_double_tap:
                 #Turn on "create joint mode" -- the first joint point is where we just tapped.
                 self.parent.jointmode = True
-                self.parent.firstjoint = (x, y)
                 self.parent.firstjointobj = self
+                self.parent.firstjoint = self.body.GetWorldCenter()
             else:
                 super(Shape, self).on_touch_up(touches, touchID, x, y)
                 if self.moving:
@@ -170,7 +174,53 @@ class Shape(MTDragable):
                     self.body.SetLinearVelocity(velocity)
                     self.body.ApplyImpulse(b2Vec2(1, 0), (0, 0)) #This gets the body "re-moving" again if it has been stopped.
                     self.moving = False
-            
+
+class StaticShape(MTWidget):
+    def __init__(self, pos, size, color):
+        self.color = color
+
+        super(StaticShape, self).__init__(pos=pos, size=size)
+
+    def draw(self):
+            glColor4f(self.color[0], self.color[1], self.color[2], self.color[3])
+            pointlist = []
+            pointlist.append(self.x)
+            pointlist.append(self.y)
+            pointlist.append(self.x)
+            pointlist.append(self.y + self.height)
+            pointlist.append(self.x + self.width)
+            pointlist.append(self.y + self.height)
+            pointlist.append(self.x + self.width)
+            pointlist.append(self.y)
+            pyglet.graphics.draw(4, GL_POLYGON, ('v2f', pointlist))
+
+    def on_draw(self):
+        self.pos = self.body.position.x - self.width/2, self.body.position.y - self.height/2 #Update our position based on the position of our physics body. Offset it accordingly, as well.
+        self.draw()
+        
+    def setup_physics(self, world):
+        groundBodyDef = b2BodyDef()
+        groundBodyDef.position = self.x + self.width/2, self.y + self.height/2
+        self.body = world.CreateBody(groundBodyDef)
+        groundShapeDef = b2PolygonDef()
+        groundShapeDef.density = 1
+        groundShapeDef.friction = 0
+        groundShapeDef.restitution = 1
+        groundShapeDef.SetAsBox(self.width/2, self.height/2)
+        groundBodyShape = self.body.CreateShape(groundShapeDef)
+
+    def on_touch_up(self, touches, touchID, x, y):
+        if self.collide_point(x, y):
+            if self.parent.jointmode:
+                self.parent.secondjoint = (x, y)
+                self.parent.secondjointobj = self
+                self.parent.createjoint()
+            #Check to see if this is a double-tap...
+            elif touches[touchID].is_double_tap:
+                #Turn on "create joint mode" -- the first joint point is where we just tapped.
+                self.parent.jointmode = True
+                self.parent.firstjointobj = self
+                self.parent.firstjoint = (x, y)
             
 class PhysicsWorld(MTWidget):
     def __init__(self, **kwargs):
@@ -205,32 +255,22 @@ class PhysicsWorld(MTWidget):
         self.bodies = []
 
         # create each border of windows
-        cx = self.root.width / 2.0
-        cy = self.root.height / 2.0
         for i in range(4):
             if i == 0:
-                x, y = cx, 0
-                w, h = cx, 1
+                x, y = 0, 0
+                w, h = self.root.width, bordersize
             elif i == 1:
-                x, y = 0, cy
-                w, h = 1, cy
+                x, y = 0, self.root.height - bordersize
+                w, h = self.root.width, bordersize
             elif i == 2:
-                x, y = cx, self.root.height
-                w, h = cx, 1
+                x, y = 0, 0
+                w, h = bordersize, self.root.height
             elif i == 3:
-                x, y = self.root.width, cy
-                w, h = 1, cy
-
-            # create body for corner
-            groundBodyDef = b2BodyDef()
-            groundBodyDef.position = x, y
-            groundBody = self.world.CreateBody(groundBodyDef)
-            groundShapeDef = b2PolygonDef()
-            groundShapeDef.density = 1
-            groundShapeDef.friction = 0
-            groundShapeDef.restitution = 1
-            groundShapeDef.SetAsBox(w, h)
-            groundBodyShape = groundBody.CreateShape(groundShapeDef)
+                x, y = self.root.width - bordersize, 0
+                w, h = bordersize, self.root.height
+            print x, y, w, h
+            groundBody = StaticShape((x, y), (w, h), (0.10, 0.00, 0.00, 1.0))
+            self.add_widget(groundBody)
             self.bodies.append(groundBody)
 
     def draw(self):
@@ -240,7 +280,11 @@ class PhysicsWorld(MTWidget):
             positionIterations = 8
             self.world.Step(1.0 / 20.0, velocityIterations, positionIterations)
 
-        self.root.clear()
+
+        #Draw our ground/borders.
+        for shape in self.bodies:
+            shape.on_draw()
+        #self.root.clear()
         for shape in self.shapes:
            self.shapes[shape].on_draw()
 
@@ -287,7 +331,7 @@ def pymt_plugin_deactivate(root, ctx):
     root.remove_widget(ctx.world)
 
 if __name__ == '__main__':
-    w = MTWindow()
+    w = MTWallpaperWindow(wallpaper="papyrus.jpg", position=MTWallpaperWindow.REPEAT)
     ctx = MTContext()
     pymt_plugin_activate(w, ctx)
     runTouchApp()

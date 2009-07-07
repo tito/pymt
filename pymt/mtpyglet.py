@@ -115,15 +115,27 @@ class TouchWindow(pyglet.window.Window):
     '''Base implementation of Tuio event in top of pyglet window.
 
     :Events:
-        `on_input`
-            Fired when a input event occured
+        `on_touch_down`
+            Fired when a down event occured
+        `on_touch_move`
+            Fired when a move event occured
+        `on_touch_up`
+            Fired when a up event occured
     '''
     def __init__(self, **kwargs):
         super(TouchWindow, self).__init__(**kwargs)
-        self.register_event_type('on_input')
+        self.register_event_type('on_touch_down')
+        self.register_event_type('on_touch_move')
+        self.register_event_type('on_touch_up')
         touch_event_listeners.append(self)
 
-    def on_input(self, touch):
+    def on_touch_down(self, *largs):
+        pass
+
+    def on_touch_move(self, *largs):
+        pass
+
+    def on_touch_up(self, *largs):
         pass
 
 def pymt_usage():

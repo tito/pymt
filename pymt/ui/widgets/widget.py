@@ -325,6 +325,16 @@ class MTWidget(pyglet.event.EventDispatcher):
                 if ev in self.event_types:
                     self.event_types.remove(ev)
 
+    def to_window(self, x, y, initial=True):
+        if not initial:
+            x, y = self.to_parent(x, y)
+        if self.parent:
+            return self.parent.to_window(x, y, initial=False)
+        return (x, y)
+
+    def to_parent(self, x, y):
+        return (x, y)
+
     def to_local(self, x, y):
         '''Return the (x,y) coordinate in the local plan of widget'''
         lx = (x - self.x)

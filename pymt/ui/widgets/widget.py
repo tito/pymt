@@ -98,9 +98,6 @@ class MTWidget(pyglet.event.EventDispatcher):
         'on_mouse_drag',
         'on_mouse_release',
         'on_input',
-        'on_touch_up',
-        'on_touch_move',
-        'on_touch_down',
         'on_animation_complete',
         'on_animation_reset',
         'on_animation_start'
@@ -489,14 +486,18 @@ class MTWidget(pyglet.event.EventDispatcher):
             super(MTWidget, self).__setattr__(name, value)
 
     def on_resize(self, w, h):
-        for c in self.children:
+        for c in reversed(self.children):
             c.dispatch_event('on_resize', w, h)
 
     def on_move(self, x, y):
-        for c in self.children:
-            c.dispatch_event('on_move', x, y)
+        for w in reversed(self.children):
+            w.dispatch_event('on_move', x, y)
 
     def on_input(self, touch):
+        for w in reversed(self.children):
+            if w.dispatch_event('on_input', touch):
+                return True
+        '''
         touches = getAvailableTouchs()
         if touch.type == Touch.DOWN:
             self.dispatch_event('on_touch_down', touches, touch.id, touch.x, touch.y)
@@ -506,36 +507,7 @@ class MTWidget(pyglet.event.EventDispatcher):
             self.dispatch_event('on_touch_up', touches, touch.id, touch.x, touch.y)
         else:
             raise Exception('Invalid type received (%s) ?' % touch)
-
-    def on_touch_down(self, touches, touchID, x, y):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_touch_down', touches, touchID, x, y):
-                return True
-
-    def on_touch_move(self, touches, touchID, x, y):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_touch_move', touches, touchID, x, y):
-                return True
-
-    def on_touch_up(self, touches, touchID, x, y):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_touch_up', touches, touchID, x, y):
-                return True
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_press',x, y, button, modifiers):
-                return True
-
-    def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_drag',x, y, dx, dy, button, modifiers):
-                return True
-
-    def on_mouse_release(self, x, y, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_release', x, y, button, modifiers):
-                return True
+        '''
 
 # Register all base widgets
 MTWidgetFactory.register('MTWidget', MTWidget)

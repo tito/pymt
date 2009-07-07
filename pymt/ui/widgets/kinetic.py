@@ -52,29 +52,30 @@ class MTKinetic(MTWidget):
         self.touch      = {} # internals
         self.touches    = [] # from tuio, needed to simulate on_touch_down
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if super(MTKinetic, self).on_touch_down(touches, touchID, x, y):
-            self.touch[touchID] = {
-                'vx': 0, 'vy': 0, 'ox': x, 'oy': y,
-                'xmot': 0, 'ymot': 0, 'mode': 'touching',
-            }
+    def on_touch_down(self, touch):
+        if touch.type == Touch.DOWN:
+            if super(MTKinetic, self).on_touch_down(touches, touchID, x, y):
+                self.touch[touchID] = {
+                    'vx': 0, 'vy': 0, 'ox': x, 'oy': y,
+                    'xmot': 0, 'ymot': 0, 'mode': 'touching',
+                }
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if touchID in self.touch:
-            o = self.touch[touchID]
-            o['xmot'] = x - o['ox']
-            o['ymot'] = y - o['oy']
-            o['ox'] = x
-            o['oy'] = y
-        return super(MTKinetic, self).on_touch_move(touches, touchID, x, y)
+        elif touch.type == Touch.MOVE:
+            if touchID in self.touch:
+                o = self.touch[touchID]
+                o['xmot'] = x - o['ox']
+                o['ymot'] = y - o['oy']
+                o['ox'] = x
+                o['oy'] = y
+            return super(MTKinetic, self).on_touch_move(touches, touchID, x, y)
 
-    def on_touch_up(self, touches, touchID, x, y):
-        self.touches = touches
-        if touchID in self.touch:
-            o = self.touch[touchID]
-            o['vx'] = o['xmot']
-            o['vy'] = o['ymot']
-            o['mode'] = 'spinning'
+        elif touch.type == Touch.UP:
+            self.touches = touches
+            if touchID in self.touch:
+                o = self.touch[touchID]
+                o['vx'] = o['xmot']
+                o['vy'] = o['ymot']
+                o['mode'] = 'spinning'
 
     def process_kinetic(self):
         '''Processing of kinetic, called in draw time.'''

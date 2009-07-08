@@ -11,6 +11,9 @@ class Touch(object):
         if self.__class__ == Touch:
             raise NotImplementedError, 'class Touch is abstract'
 
+        # For push/pop
+        self.attr = []
+
         # TUIO definition
         self.id = id
         self.sx = 0.0
@@ -61,6 +64,15 @@ class Touch(object):
         self.y = self.sy * float(h)
         if p:
             self.z = self.sz * float(p)
+
+    def push(self, attrs='xyz'):
+        values = map(lambda x: getattr(self, x), attrs)
+        self.attr.append((attrs, values))
+
+    def pop(self):
+        attrs, values = self.attr.pop()
+        for i in xrange(len(attrs)):
+            setattr(self, attrs[i], values[i])
 
     def __str__(self):
         return str(self.__class__)

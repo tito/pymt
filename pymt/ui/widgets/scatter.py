@@ -309,35 +309,39 @@ class MTScatterWidget(MTWidget):
         else:
             return self.scale
 
-    def on_touch_down(self, touches, touchID, x, y):
+    def on_touch_down(self, touch):
+        x, y = touch.x, touch.y
+
         # if the touch isnt on the widget we do nothing
         if not self.collide_point(x,y):
             return False
 
         # let the child widgets handle the event if they want
         lx, ly = self.to_local(x,y)
-        if super(MTScatterWidget, self).on_touch_down(touches, touchID, lx, ly):
+        if super(MTScatterWidget, self).on_touch_down(touch):
             return True
 
         # if the children didnt handle it, we bring to front & keep track
         # of touches for rotate/scale/zoom action
         self.bring_to_front()
-        self.touches[touchID] = Vector(x,y)
+        self.touches[touch.id] = Vector(x, y)
         return True
 
-    def on_touch_move(self, touches, touchID, x, y):
+    def on_touch_move(self, touch):
+        x, y = touch.x, touch.y
+
         # if the touch isnt on the widget we do nothing
-        if not (self.collide_point(x, y) or touchID in self.touches):
+        if not (self.collide_point(x, y) or touch.id in self.touches):
             return False
 
         # let the child widgets handle the event if they want
         lx, ly = self.to_local(x, y)
-        if super(MTScatterWidget, self).on_touch_move(touches, touchID, lx, ly):
+        if super(MTScatterWidget, self).on_touch_move(touch):
             return True
 
         # rotate/scale/translate
-        if touchID in self.touches:
-            self.rotate_zoom_move(touchID, x, y)
+        if touch.id in self.touches:
+            self.rotate_zoom_move(touch.id, x, y)
 
             # precalculate size of container
             container_width = int(self.width * self.get_scale_factor())
@@ -357,14 +361,18 @@ class MTScatterWidget(MTWidget):
         if self.collide_point(x, y):
             return True
 
-    def on_touch_up(self, touches, touchID, x,y):
+    def on_touch_up(self, touch):
+        x, y = touch.x, touch.y
+
         # if the touch isnt on the widget we do nothing
-        lx, ly = self.to_local(x, y)
-        super(MTScatterWidget, self).on_touch_up(touches, touchID, lx, ly)
+        #WTF here ? Why if we must do taht, it's not in on_touch_down/on_touch_move ?
+        #lx, ly = self.to_local(x, y)
+        #super(MTScatterWidget, self).on_touch_up(touches, touchID, lx, ly)
+        super(MTScatterWidget, self).on_touch_up(touch)
 
         # remove it from our saved touches
-        if touchID in self.touches:
-            del self.touches[touchID]
+        if touch.id in self.touches:
+            del self.touches[touch.id]
 
         # stop porpagating if its within our bounds
         if self.collide_point(x, y):

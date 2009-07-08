@@ -17,6 +17,8 @@ from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
 from ..colors import css_get_style
 
+import inspect
+
 
 _id_2_widget = {}
 
@@ -306,9 +308,26 @@ class MTWidget(pyglet.event.EventDispatcher):
                         _event_stats[event_type] = _event_stats[event_type] + 1
 
                 # Call event
-                if getattr(self, event_type)(*args):
+                func = getattr(self, event_type)
+                if event_type in ('on_touch_down', 'on_touch_up', 'on_touch_move'):
+                    r = inspect.getargspec(func)
+                    #print 'dispatch', self, event_type, r.args, args
+                    if len(r.args) - 1 != len(args):
+                        if len(r.args) == 2:
+                            pymt_logger.warn('Deprecated %s format, convert from 5 to 2' % event_type)
+                            touch = getAvailableTouchs()[args[1]]
+                            args = (self, touch,)
+                        elif len(r.args) == 5:
+                            pymt_logger.warn('Deprecated %s format, convert from 2 to 5' % event_type)
+                            touch = args[0]
+                            args = (getAvailableTouchs(), touch.id, touch.x, touch.y)
+                            #print 'after conversion', args
+
+                if func(*args):
                     return True
-            except TypeError:
+
+            except TypeError, e:
+                #print 'error in', self, e
                 self._raise_dispatch_exception(
                     event_type, args, getattr(self, event_type))
 

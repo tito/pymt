@@ -53,29 +53,27 @@ class MTKinetic(MTWidget):
         self.touches    = [] # from tuio, needed to simulate on_touch_down
 
     def on_touch_down(self, touch):
-        if touch.type == Touch.DOWN:
-            if super(MTKinetic, self).on_touch_down(touches, touchID, x, y):
-                self.touch[touchID] = {
-                    'vx': 0, 'vy': 0, 'ox': x, 'oy': y,
-                    'xmot': 0, 'ymot': 0, 'mode': 'touching',
-                }
+        if super(MTKinetic, self).on_touch_down(touch):
+            self.touch[touch.id] = {
+                'vx': 0, 'vy': 0, 'ox': touch.x, 'oy': touch.y,
+                'xmot': 0, 'ymot': 0, 'mode': 'touching',
+            }
 
-        elif touch.type == Touch.MOVE:
-            if touchID in self.touch:
-                o = self.touch[touchID]
-                o['xmot'] = x - o['ox']
-                o['ymot'] = y - o['oy']
-                o['ox'] = x
-                o['oy'] = y
-            return super(MTKinetic, self).on_touch_move(touches, touchID, x, y)
+    def on_touch_move(self, touch):
+        if touch.id in self.touch:
+            o = self.touch[touch.id]
+            o['xmot'] = touch.x - o['ox']
+            o['ymot'] = touch.y - o['oy']
+            o['ox'] = touch.x
+            o['oy'] = touch.y
+        return super(MTKinetic, self).on_touch_move(touch)
 
-        elif touch.type == Touch.UP:
-            self.touches = touches
-            if touchID in self.touch:
-                o = self.touch[touchID]
-                o['vx'] = o['xmot']
-                o['vy'] = o['ymot']
-                o['mode'] = 'spinning'
+    def on_touch_up(self, touch):
+        if touch.id in self.touch:
+            o = self.touch[touch.id]
+            o['vx'] = o['xmot']
+            o['vy'] = o['ymot']
+            o['mode'] = 'spinning'
 
     def process_kinetic(self):
         '''Processing of kinetic, called in draw time.'''

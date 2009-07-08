@@ -93,9 +93,9 @@ class MTVectorSlider(MTWidget):
         elif tvec[0] > 0 and tvec[1] > 0:
             pass
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x, y):
-            self.vector[0], self.vector[1] = x, y
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            self.vector[0], self.vector[1] = touch.x, touch.y
             self._calc_stuff()
 
             self.dispatch_event('on_aplitude_change', self.amplitude)
@@ -103,9 +103,9 @@ class MTVectorSlider(MTWidget):
             self.dispatch_event('on_vector_change', self.amplitude, self.angle)
 
             return True
-    def on_touch_move(self, touches, touchID, x, y):
-        if self.collide_point(x, y):
-            self.vector[0], self.vector[1] = x, y
+    def on_touch_move(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            self.vector[0], self.vector[1] = touch.x, touch.y
             self._calc_stuff()
 
             self.dispatch_event('on_aplitude_change', self.amplitude)

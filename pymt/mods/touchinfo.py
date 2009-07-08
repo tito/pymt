@@ -18,19 +18,19 @@ class TouchInfos(MTWidget):
         infos.append('Double Tap: %s' % (touch.is_double_tap))
         return "\n".join(infos)
 
-    def on_touch_down(self, touches, touchID, x, y):
-        self.bubbles[touchID] = MTSpeechBubble(pos=(x, y), size=(120, 100))
-        self.bubbles[touchID].label = self.text_info(touches[touchID])
+    def on_touch_down(self, touch):
+        self.bubbles[touch.id] = MTSpeechBubble(pos=(touch.x, touch.y), size=(120, 100))
+        self.bubbles[touch.id].label = self.text_info(touches[touch.id])
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if not touchID in self.bubbles:
+    def on_touch_move(self, touch):
+        if not touch.id in self.bubbles:
             return
-        self.bubbles[touchID].pos = (x, y)
-        self.bubbles[touchID].label = self.text_info(touches[touchID])
+        self.bubbles[touch.id].pos = (touch.x, touch.y)
+        self.bubbles[touch.id].label = self.text_info(touches[touch.id])
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if touchID in self.bubbles:
-            del self.bubbles[touchID]
+    def on_touch_up(self, touch):
+        if touch.id in self.bubbles:
+            del self.bubbles[touch.id]
 
     def draw(self):
         self.bring_to_front()

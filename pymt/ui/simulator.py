@@ -8,12 +8,12 @@ from pyglet import *
 from pyglet.gl import *
 from pyglet.window import key
 from ..graphx import drawCircle, set_color
-from ..mtpyglet import Tuio2DCursor
+from ..input import TouchFactory
 from factory import MTWidgetFactory
 from widgets.widget import MTWidget
 
 class MTSimulator(MTWidget):
-    """MTSimulator is a widget who generate touch event from mouse event"""
+    '''MTSimulator is a widget who generate touch event from mouse event'''
     def __init__(self, output):
         super(MTSimulator, self).__init__()
         self.touches		= {}
@@ -24,13 +24,12 @@ class MTSimulator(MTWidget):
 
     def draw(self):
         for t in self.touches.values():
-            p = (t.xpos, t.ypos)
             set_color(0.8,0.2,0.2,0.7)
-            drawCircle(pos=p, radius=10)
+            drawCircle(pos=(t.x, t.y), radius=10)
 
     def find_touch(self,x,y):
         for t in self.touches.values():
-            if (abs(x-t.xpos) < 10 and abs(y-t.ypos) < 10):
+            if (abs(x-t.x) < 10 and abs(y-t.y) < 10):
                 return t
         return False
 
@@ -38,28 +37,35 @@ class MTSimulator(MTWidget):
         newTouch = self.find_touch(x,y)
         if newTouch:
             self.current_drag = newTouch
-        else: #new touch is added 
+        else:
             self.counter += 1
-            id = 'mouse'+str(self.counter)
-            self.current_drag = cursor = Tuio2DCursor(id, [x,y])
+            id = 'mouse' + str(self.counter)
+            rx = x / float(self.get_parent_window().width)
+            ry = 1. - (y / float(self.get_parent_window().height))
+            self.current_drag = cur = TouchFactory.get('tuio').create('/tuio/2Dcur', id=id, args=[rx, ry])
             if modifiers & key.MOD_SHIFT:
-                cursor.is_double_tap = True
-            self.touches[id] = cursor
-            self.output.dispatch_event('on_touch_down', self.touches, id, x, y)
+                cur.is_float_tap = True
+            self.touches[id] = cur
+            self.output.dispatch_event('on_touch_down', cur)
         return True
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
         if self.current_drag:
             cur = self.current_drag
-            cur.xpos, cur.ypos = x,y
-            self.output.dispatch_event('on_touch_move', self.touches, cur.blobID, x, y)
-            return True
+            rx = x / float(self.get_parent_window().width)
+            ry = 1. - (y / float(self.get_parent_window().height))
+            cur.move([rx, ry])
+            self.output.dispatch_event('on_touch_move', cur)
+        return True
 
     def on_mouse_release(self, x, y, button, modifiers):
-        t = self.find_touch(x,y)
-        if  button == 1 and t and not(modifiers & key.MOD_CTRL):
-            self.output.dispatch_event('on_touch_up', self.touches, self.current_drag.blobID, x, y)
-            del self.touches[self.current_drag.blobID]
+        cur = self.find_touch(x, y)
+        if  button == 1 and cur and not (modifiers & key.MOD_CTRL):
+            rx = x / float(self.get_parent_window().width)
+            ry = 1. - (y / float(self.get_parent_window().height))
+            cur.move([rx, ry])
+            self.output.dispatch_event('on_touch_up', cur)
+            del self.touches[cur.id]
         return True
 
 # Register all base widgets

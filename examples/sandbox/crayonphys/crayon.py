@@ -19,11 +19,21 @@ except:
     pymt_logger.critical('You need PyBox2D to make Crayon Physics work. You can grab it here : http://code.google.com/p/pybox2d/')
     sys.exit(1)
 
-#Set debugbox below to true to see actual boxes...
-debugbox = False
+def pymt_plugin_activate(root, ctx):
+    #Set debugbox below to true to see actual boxes...
+    debugbox = False
 
-#Set how large the borders around the screen should be.
-bordersize = 20
+    #Set how large the borders around the screen should be.
+    bordersize = 20
+
+    #Set gravity. (0,0) would be no gravity (and is the default). (0, -800) seems to be fairly accurate for normal downward gravity.
+    gravity = (0, -800)
+    
+    ctx.world = PhysicsWorld(root=root, gravity=gravity, bordersize=bordersize, debugbox=debugbox)
+    root.add_widget(ctx.world)
+
+def pymt_plugin_deactivate(root, ctx):
+    root.remove_widget(ctx.world)
 
 class Shape(MTDragable):
     def __init__(self, coords):
@@ -45,7 +55,7 @@ class Shape(MTDragable):
     def draw(self):
 
         #Draw a box around the back of the object for debugging purposes.
-        if debugbox:
+        if self.parent.debugbox:
             glColor4f(1.0, 0.0, 1.0, 1.0)
             pointlist = []
             pointlist.append(self.x)
@@ -225,9 +235,15 @@ class StaticShape(MTWidget):
 class PhysicsWorld(MTWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('root', None)
+        kwargs.setdefault('debugbox', False)
+        kwargs.setdefault('bordersize', 20)
+        kwargs.setdefault('gravity', (0, 0))
         super(PhysicsWorld, self).__init__(**kwargs)
         self.shapes = {}
         self.root = kwargs.get('root')
+        self.debugbox = kwargs.get('debugbox')
+        self.bordersize = kwargs.get('bordersize')
+        self.gravity = kwargs.get('gravity')
         self.setup_physics()
 
         self.jointmode = False
@@ -246,8 +262,6 @@ class PhysicsWorld(MTWidget):
         self.worldAABB = b2AABB()
         self.worldAABB.lowerBound.Set(-100, -100)
         self.worldAABB.upperBound.Set(self.root.width + 100, self.root.height + 100)
-        # no gravity allowed
-        self.gravity = (0, 0)
         # permit to sleep
         self.dosleep = True
         # create world
@@ -258,16 +272,16 @@ class PhysicsWorld(MTWidget):
         for i in range(4):
             if i == 0:
                 x, y = 0, 0
-                w, h = self.root.width, bordersize
+                w, h = self.root.width, self.bordersize
             elif i == 1:
-                x, y = 0, self.root.height - bordersize
-                w, h = self.root.width, bordersize
+                x, y = 0, self.root.height - self.bordersize
+                w, h = self.root.width, self.bordersize
             elif i == 2:
                 x, y = 0, 0
-                w, h = bordersize, self.root.height
+                w, h = self.bordersize, self.root.height
             elif i == 3:
-                x, y = self.root.width - bordersize, 0
-                w, h = bordersize, self.root.height
+                x, y = self.root.width - self.bordersize, 0
+                w, h = self.bordersize, self.root.height
             print x, y, w, h
             groundBody = StaticShape((x, y), (w, h), (0.10, 0.00, 0.00, 1.0))
             self.add_widget(groundBody)
@@ -329,13 +343,6 @@ class MyContactListener(b2ContactListener):
         body_pairs = [(p.shape1.GetBody(), p.shape2.GetBody()) for p in self.points]
         for body1, body2 in body_pairs:
             print body1, body2
-    
-def pymt_plugin_activate(root, ctx):
-    ctx.world = PhysicsWorld(root=root)
-    root.add_widget(ctx.world)
-
-def pymt_plugin_deactivate(root, ctx):
-    root.remove_widget(ctx.world)
 
 if __name__ == '__main__':
     w = MTWallpaperWindow(wallpaper="papyrus.jpg", position=MTWallpaperWindow.REPEAT)

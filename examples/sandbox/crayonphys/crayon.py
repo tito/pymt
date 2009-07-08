@@ -323,6 +323,13 @@ class PhysicsWorld(MTWidget):
         del self.shapes[touchID]
         super(PhysicsWorld, self).on_touch_up(touches, touchID, x, y)
 
+class MyContactListener(b2ContactListener):
+    def __init__(self): super(myContactListener, self).__init__() 
+    def Add(self, points):
+        body_pairs = [(p.shape1.GetBody(), p.shape2.GetBody()) for p in self.points]
+        for body1, body2 in body_pairs:
+            print body1, body2
+    
 def pymt_plugin_activate(root, ctx):
     ctx.world = PhysicsWorld(root=root)
     root.add_widget(ctx.world)

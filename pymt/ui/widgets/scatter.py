@@ -176,7 +176,7 @@ class MTScatterWidget(MTWidget):
             glTranslatef(-self.width / 2, 0, 0)
             super(MTScatterWidget, self).on_draw()
 
-    def to_parent(self, x,y):
+    def to_parent(self, x, y):
         if self.__to_parent == (x, y):
             return (self.__to_parent_x, self.__to_parent_y)
         self.__to_parent = (x, y)
@@ -184,7 +184,7 @@ class MTScatterWidget(MTWidget):
         self.__to_parent_x, self.__to_parent_y = self.new_point.x, self.new_point.y
         return (self.new_point.x, self.new_point.y)
 
-    def to_local(self,x,y):
+    def to_local(self,x, y):
         if self.__to_local == (x, y):
             return (self.__to_local_x, self.__to_local_y)
         self.__to_local = (x, y)
@@ -192,8 +192,8 @@ class MTScatterWidget(MTWidget):
         self.__to_local_x, self.__to_local_y = self.new_point.x, self.new_point.y
         return (self.new_point.x, self.new_point.y)
 
-    def collide_point(self, x,y):
-        local_coords = self.to_local(x,y)
+    def collide_point(self, x, y):
+        local_coords = self.to_local(x, y)
         if local_coords[0] > 0 and local_coords[0] < self.width \
            and local_coords[1] > 0 and local_coords[1] < self.height:
             return True
@@ -202,8 +202,8 @@ class MTScatterWidget(MTWidget):
 
     def find_second_touch(self, touchID):
         for tID in self.touches.keys():
-            x,y = self.touches[tID].x, self.touches[tID].y
-            if self.collide_point(x,y) and tID!=touchID:
+            x, y = self.touches[tID].x, self.touches[tID].y
+            if self.collide_point(x, y) and tID!=touchID:
                 return tID
         return None
 
@@ -270,7 +270,7 @@ class MTScatterWidget(MTWidget):
         self.apply_angle_scale_trans(rotation, scale, trans, intersect)
 
         # save new position of the current touch
-        self.touches[touchID] = Vector(x,y)
+        self.touches[touchID] = Vector(x, y)
 
     def _get_center(self):
         return self.to_parent(self.width / 2, self.height / 2)
@@ -313,11 +313,11 @@ class MTScatterWidget(MTWidget):
         x, y = touch.x, touch.y
 
         # if the touch isnt on the widget we do nothing
-        if not self.collide_point(x,y):
+        if not self.collide_point(x, y):
             return False
 
         # let the child widgets handle the event if they want
-        lx, ly = self.to_local(x,y)
+        lx, ly = self.to_local(x, y)
         if super(MTScatterWidget, self).on_touch_down(touch):
             return True
 
@@ -391,32 +391,47 @@ class MTScatterPlane(MTScatterWidget):
     def draw(self):
         pass
 
-    def on_touch_down(self, touches, touchID, x,y):
-        lx,ly = self.to_local(x,y)
-        if super(MTScatterWidget, self).on_touch_down(touches, touchID, lx, ly):
+    def on_touch_down(self, touch):
+
+        # save pos
+        touch.push()
+        touch.x, touch.y = self.to_local(touch.x, touch.y)
+        if super(MTScatterWidget, self).on_touch_down(touch):
+            touch.pop()
             return True
+        touch.pop()
 
         self.bring_to_front()
-        self.touches[touchID] = Vector(x,y)
+        self.touches[touch.id] = Vector(touch.x, touch.y)
         return True
 
-    def on_touch_move(self, touches, touchID, x,y):
-        if touchID in self.touches:
-            self.rotate_zoom_move(touchID, x, y)
-            self.dispatch_event('on_resize', int(self.width*self.get_scale_factor()), int(self.height*self.get_scale_factor()))
+    def on_touch_move(self, touch):
+        if touch.id in self.touches:
+            self.rotate_zoom_move(touch.id, touch.x, touch.y)
+            self.dispatch_event('on_resize',
+                int(self.width*self.get_scale_factor()),
+                int(self.height*self.get_scale_factor()))
             self.dispatch_event('on_move', self.x, self.y)
             return True
-        lx,ly = self.to_local(x,y)
-        if MTWidget.on_touch_move(self, touches, touchID, lx, ly):
+
+        # save pos
+        touch.push()
+        touch.x, touch.y = self.to_local(touch.x, touch.y)
+        if MTWidget.on_touch_move(self, touch):
+            touch.pop()
             return True
+        touch.pop()
 
 
-    def on_touch_up(self, touches, touchID, x,y):
-        lx,ly = self.to_local(x,y)
-        MTWidget.on_touch_up(self, touches, touchID, lx, ly)
-        if touchID in self.touches:
-            del self.touches[touchID]
+    def on_touch_up(self, touch):
+        touch.push()
+        touch.x, touch.y = self.to_local(touch.x, touch.y)
+        MTWidget.on_touch_up(self, touch)
+        if touch.id in self.touches:
+            del self.touches[touch.id]
+            touch.pop()
             return True
+        touch.pop()
 
 
 class MTScatterImage(MTScatterWidget):

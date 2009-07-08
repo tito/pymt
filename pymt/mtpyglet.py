@@ -129,13 +129,13 @@ class TouchWindow(pyglet.window.Window):
         self.register_event_type('on_touch_up')
         touch_event_listeners.append(self)
 
-    def on_touch_down(self, *largs):
+    def on_touch_down(self, touch):
         pass
 
-    def on_touch_move(self, *largs):
+    def on_touch_move(self, touch):
         pass
 
-    def on_touch_up(self, *largs):
+    def on_touch_up(self, touch):
         pass
 
 def pymt_usage():
@@ -195,35 +195,3 @@ def stopTouchApp():
     pymt_evloop.close()
     pymt_evloop.exit()
 
-
-#a very simple test
-if __name__ == '__main__':
-
-    from graphx import *
-    touchPositions = {}
-    crosshair = pyglet.sprite.Sprite(pyglet.image.load('crosshair.png'))
-    crosshair.scale = 0.6
-
-    w = TouchWindow()
-    #    w.set_fullscreen()
-    @w.event
-    def on_touch_down(touches, touchID, x,y):
-        touchPositions[touchID] = [(touchID,x,y)]
-    @w.event
-    def on_touch_up(touches, touchID,x,y):
-        del touchPositions[touchID]
-    @w.event
-    def on_touch_move(touches, touchID, x, y):
-        touchPositions[touchID].append((x,y))
-    @w.event
-    def on_draw():
-        w.clear()
-        for p in touchPositions:
-            touchID,x,y = touchPositions[p][0]
-            for pos in touchPositions[p][1:]:
-                x, y = pos
-                crosshair.x = x
-                crosshair.y = y
-                crosshair.draw()
-
-    runTouchApp()

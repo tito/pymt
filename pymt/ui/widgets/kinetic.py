@@ -6,10 +6,15 @@ __all__ = ['MTKinetic']
 
 from pyglet.gl import *
 from ..factory import MTWidgetFactory
+from ...input import Touch
 from ...vector import Vector
 from ...mtpyglet import getFrameDt
 from stencilcontainer import MTStencilContainer
 from widget import MTWidget
+
+class KineticTouch(Touch):
+    def depack(self, args):
+        self.x, self.y = args
 
 class MTKinetic(MTWidget):
     '''Kinetic container.
@@ -87,11 +92,14 @@ class MTKinetic(MTWidget):
             o['oy'] += o['vy']
             o['vx'] /= 1 + (self.friction * dt)
             o['vy'] /= 1 + (self.friction * dt)
+
+            # FIXME Temporary, must take care of grab !
+            touch = KineticTouch(touchID, [o['ox'], o['oy']])
             if Vector(o['vx'], o['vy']).length() < self.velstop:
-                super(MTKinetic, self).on_touch_up(self.touches, touchID, o['ox'], o['oy'])
+                super(MTKinetic, self).on_touch_up(touch)
                 todelete.append(touchID)
             else:
-                super(MTKinetic, self).on_touch_move(self.touches, touchID, o['ox'], o['oy'])
+                super(MTKinetic, self).on_touch_move(touch)
         for touchID in todelete:
             del self.touch[touchID]
 

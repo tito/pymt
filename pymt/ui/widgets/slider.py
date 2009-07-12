@@ -85,19 +85,19 @@ class MTSlider(MTWidget):
         set_color(*self.style.get('slider-color'))
         drawCSSRectangle(pos=pos, size=size, style=self.style, prefix='slider')
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x,y):
-            self.touchstarts.append(touchID)
-            self.on_touch_move(touches, touchID, x, y)
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            self.touchstarts.append(touch.id)
+            self.on_touch_move(touch)
             return True
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if touchID in self.touchstarts:
+    def on_touch_move(self, touch):
+        if touch.id in self.touchstarts:
             last_value = self._value
             if self.orientation == 'vertical':
-                self._value = (y - self.y) * (self.max - self.min) / float(self.height) + self.min
+                self._value = (touch.y - self.y) * (self.max - self.min) / float(self.height) + self.min
             else:
-                self._value = (x - self.x) * (self.max - self.min) / float(self.width) + self.min
+                self._value = (touch.x - self.x) * (self.max - self.min) / float(self.width) + self.min
             if self._value >= self.max:
                 self._value = self.max
             if self._value <= self.min:
@@ -106,9 +106,9 @@ class MTSlider(MTWidget):
                 self.dispatch_event('on_value_change', self._value)
             return True
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if touchID in self.touchstarts:
-            self.touchstarts.remove(touchID)
+    def on_touch_up(self, touch):
+        if touch.id in self.touchstarts:
+            self.touchstarts.remove(touch.id)
 
 class MTXYSlider(MTWidget):
     '''MTXYSlider is an implementation of a 2D slider using MTWidget.
@@ -189,16 +189,16 @@ class MTXYSlider(MTWidget):
         pos_y = int((self._value_y - self.min_y) * (self.height - self.padding*2) / (self.max_y - self.min_y)) + self.y + self.padding
         drawCircle(pos=(pos_x, pos_y), radius=self.radius)
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x,y):
-            self.touchstarts.append(touchID)
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            self.touchstarts.append(touch.id)
             return True
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if touchID in self.touchstarts:
+    def on_touch_move(self, touch):
+        if touch.id in self.touchstarts:
             last_value_x, last_value_y = self._value_x, self._value_y
-            self._value_x = (x - self.x) * (self.max_x - self.min_x) / float(self.width) + self.min_x
-            self._value_y = (y - self.y) * (self.max_y - self.min_y) / float(self.height) + self.min_y
+            self._value_x = (touch.x - self.x) * (self.max_x - self.min_x) / float(self.width) + self.min_x
+            self._value_y = (touch.y - self.y) * (self.max_y - self.min_y) / float(self.height) + self.min_y
             if self._value_x >= self.max_x:
                 self._value_x = self.max_x
             if self._value_x <= self.min_x:
@@ -211,9 +211,9 @@ class MTXYSlider(MTWidget):
                 self.dispatch_event('on_value_change', self._value_x, self._value_y)
             return True
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if touchID in self.touchstarts:
-            self.touchstarts.remove(touchID)
+    def on_touch_up(self, touch):
+        if touch.id in self.touchstarts:
+            self.touchstarts.remove(touch.id)
 
 class MTBoundarySlider(MTWidget):
     '''MTBoundarySlider is a widget that allows you to select minimum and maximum values.
@@ -322,13 +322,13 @@ class MTBoundarySlider(MTWidget):
             drawLabel(str(self.value_min), pos=texposmin, font_size=self.style['font-size'])
             drawLabel(str(self.value_max), pos=texposmax, font_size=self.style['font-size'])
 
-    def on_touch_down(self, touches, touchID, x, y):
+    def on_touch_down(self, touch):
         # So the first on_touch_move in a
         # two-finger-drag doesn't teleport the widget
-        touches[touchID].oxpos = x
-        touches[touchID].oypos = y
-        if self.collide_point(x,y):
-            if touches[touchID].is_double_tap:
+        touches[touch.id].oxpos = touch.x
+        touches[touch.id].oypos = touch.y
+        if self.collide_point(touch.x, touch.y):
+            if touches[touch.id].is_double_tap:
                 # Randomize the bound
                 if self.orientation == 'vertical':
                     self.value_min = random.randrange(0, self.height)
@@ -338,49 +338,49 @@ class MTBoundarySlider(MTWidget):
                     self.value_max = random.randrange(self.value_min, self.width)
             # Decide wether we will move the upper or lower bound
             if self.orientation == 'vertical':
-                if y < (self.value_min + self.y*2 + self.value_max)/2:
-                    touches[touchID].side = 'value_min'
+                if touch.y < (self.value_min + self.y*2 + self.value_max)/2:
+                    touches[touch.id].side = 'value_min'
                 else:
-                    touches[touchID].side = 'value_max'
+                    touches[touch.id].side = 'value_max'
             elif self.orientation == 'horizontal':
-                if x < (self.value_min + self.x*2 + self.value_max)/2:
-                    touches[touchID].side = 'value_min'
+                if touch.x < (self.value_min + self.x*2 + self.value_max)/2:
+                    touches[touch.id].side = 'value_min'
                 else:
-                    touches[touchID].side = 'value_max'
+                    touches[touch.id].side = 'value_max'
 
-            self.touchstarts.append(touchID)
-            self.on_touch_move(touches, touchID, x, y)
+            self.touchstarts.append(touch.id)
+            self.on_touch_move(touch)
             return True
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if touchID in self.touchstarts:
+    def on_touch_move(self, touch):
+        if touch.id in self.touchstarts:
             # Either move a given bound, or shift both
             if self.orientation == 'vertical':
                 if len(self.touchstarts) >= 2:
                     # Two or more fingers, shift the whole bound
-                    rel = (y - touches[touchID].oypos)
+                    rel = (touch.y - touches[touch.id].oypos)
                     self.value_min += rel
                     self.value_max += rel
                 else:
                     # Only one, just change one bound
-                    self.set_value(touches[touchID].side, y - self.y)
+                    self.set_value(touches[touch.id].side, touch.y - self.y)
                     self.dispatch_event('on_value_change', *self.get_value())
             elif self.orientation == 'horizontal':
                 if len(self.touchstarts) >= 2:
                     # Two or more fingers, shift the whole bound
-                    rel = (x - touches[touchID].oxpos)
+                    rel = (touch.x - touches[touch.id].oxpos)
                     self.value_min += rel
                     self.value_max += rel
                 else:
                     # Only one, just change one bound
-                    self.set_value(touches[touchID].side, x - self.x)
+                    self.set_value(touches[touch.id].side, touch.x - self.x)
                     self.dispatch_event('on_value_change', *self.get_value())
-        touches[touchID].oypos = y
-        touches[touchID].oxpos = x
+        touches[touch.id].oypos = touch.y
+        touches[touch.id].oxpos = touch.x
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if touchID in self.touchstarts:
-            self.touchstarts.remove(touchID)
+    def on_touch_up(self, touch):
+        if touch.id in self.touchstarts:
+            self.touchstarts.remove(touch.id)
 
 MTWidgetFactory.register('MTXYSlider', MTXYSlider)
 MTWidgetFactory.register('MTSlider', MTSlider)

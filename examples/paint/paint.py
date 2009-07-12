@@ -60,34 +60,34 @@ class MTPaintColorPicker(MTWidget):
         self.brush_size = (self.sliders[4].value/4) + 1
         set_brush_size(self.brush_size)
 
-    def on_touch_down(self, touches, touchID, x, y):
+    def on_touch_down(self, touch):
         for s in self.sliders:
-            if s.on_touch_down(touches, touchID, x, y):
+            if s.on_touch_down(touch):
                 self.update_color()
                 return True
 
-        if self.collide_point(x,y):
-            self.touch_positions[touchID] = (x, y, touchID)
+        if self.collide_point(touch.x, touch.y):
+            self.touch_positions[touch.id] = (touch.x, touch.y, touch.id)
             return True
 
-    def on_touch_move(self, touches, touchID, x, y):
+    def on_touch_move(self, touch):
         for s in self.sliders:
-            if s.on_touch_move(touches, touchID, x, y):
+            if s.on_touch_move(touch):
                 self.update_color()
                 return True
-        if touchID in self.touch_positions:
-            self.x += x - self.touch_positions[touchID][0]
-            self.y += y - self.touch_positions[touchID][1]
-            self.touch_positions[touchID] = (x,y,touchID)
+        if touch.id in self.touch_positions:
+            self.x += touch.x - self.touch_positions[touch.id][0]
+            self.y += touch.y - self.touch_positions[touch.id][1]
+            self.touch_positions[touch.id] = (touch.x, touch.y, touch.id)
             return True
 
-    def on_touch_up(self, touches, touchID, x, y):
+    def on_touch_up(self, touch):
         for s in self.sliders:
-            if s.on_touch_up(touches, touchID, x, y):
+            if s.on_touch_up(touch):
                 self.update_color()
                 return True
-        if touchID in self.touch_positions:
-            del self.touch_positions[touchID]
+        if touch.id in self.touch_positions:
+            del self.touch_positions[touch.id]
 
 
 
@@ -118,26 +118,26 @@ class Canvas(MTWidget):
         del self.fbo
         self.fbo = Fbo(size=(w, h), push_viewport=False)
 
-    def on_touch_down(self, touches, touchID, x, y):
-        self.touch_positions[touchID] = (x,y)
+    def on_touch_down(self, touch):
+        self.touch_positions[touch.id] = (touch.x, touch.y)
         self.fbo.bind()
         glColor4f(*self.color)
-        paintLine((x,y,x,y))
+        paintLine((touch.x,touch.y,touch.x,touch.y))
         glColor4f(1,1,1,1)
         self.fbo.release()
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if self.touch_positions.has_key(touchID):
-            ox,oy = self.touch_positions[touchID]
+    def on_touch_move(self, touch):
+        if self.touch_positions.has_key(touch.id):
+            ox,oy = self.touch_positions[touch.id]
             self.fbo.bind()
             glColor4f(*self.color)
-            paintLine((ox,oy,x,y))
+            paintLine((ox,oy,touch.x,touch.y))
             self.fbo.release()
-            self.touch_positions[touchID] = (x,y)
+            self.touch_positions[touch.id] = (touch.x, touch.y)
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if self.touch_positions.has_key(touchID):
-            del self.touch_positions[touchID]
+    def on_touch_up(self, touch):
+        if self.touch_positions.has_key(touch.id):
+            del self.touch_positions[touch.id]
 
 def update_brush(brush, touchID, x, y):
     set_brush(brush)

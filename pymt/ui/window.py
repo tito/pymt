@@ -9,7 +9,7 @@ import pyglet
 from pyglet.gl import *
 from pyglet import *
 import pymt
-from ..mtpyglet import TouchWindow, stopTouchApp
+from ..mtpyglet import TouchWindow, stopTouchApp, getAvailableTouchs
 from ..graphx import set_color, drawCircle
 from ..modules import pymt_modules
 from colors import css_get_style

@@ -6,7 +6,7 @@ __all__ = [
     'TouchEventLoop', 'TouchWindow',
     'pymt_usage', 'runTouchApp', 'stopTouchApp',
     'getFrameDt', 'getAvailableTouchs',
-    'touch_event_listeners'
+    'touch_event_listeners', 'pymt_providers'
 ]
 
 import osc
@@ -24,6 +24,7 @@ from input import *
 # list upon creation
 touch_event_listeners = []
 touch_list = []
+pymt_providers = []
 frame_dt = 0.01 # init to a non-zero value, to prevent user zero division
 
 def getFrameDt():
@@ -55,7 +56,8 @@ class TouchEventLoop(pyglet.app.EventLoop):
         self.ignore_list = strtotuple(pymt.pymt_config.get('tuio', 'ignore'))
 
         # TODO change this, make it configurable
-        self.providers = []
+        global pymt_providers
+        self.providers = pymt_providers
         self.providers.append(TouchFactory.get('tuio')(ip=host, port=port))
 
     def start(self):

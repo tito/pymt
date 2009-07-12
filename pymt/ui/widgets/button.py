@@ -115,10 +115,10 @@ class MTButton(MTWidget):
         self._state = (state, 0)
     state = property(get_state, set_state, doc='Sets the state of the button, "normal" or "down"')
 
-    def on_press(self, touchID, x, y):
+    def on_press(self, touch):
         pass
 
-    def on_release(self, touchID, x, y):
+    def on_release(self, touch):
         pass
 
     def on_move(self, x, y):
@@ -157,7 +157,7 @@ class MTButton(MTWidget):
     def on_touch_down(self, touch):
         if self.collide_point(touch.x, touch.y):
             self._state = ('down', touch.id)
-            self.dispatch_event('on_press', touch.id, touch.x, touch.y)
+            self.dispatch_event('on_press', touch)
             return True
 
     def on_touch_move(self, touch):
@@ -169,7 +169,7 @@ class MTButton(MTWidget):
     def on_touch_up(self, touch):
         if self._state[1] == touch.id and self.collide_point(touch.x, touch.y):
             self._state = ('normal', 0)
-            self.dispatch_event('on_release', touch.id, touch.x, touch.y)
+            self.dispatch_event('on_release', touch)
             return True
         return self.collide_point(touch.x, touch.y)
 
@@ -186,7 +186,7 @@ class MTToggleButton(MTButton):
                 self._state = ('normal', touch.id)
             else:
                 self._state = ('down', touch.id)
-            self.dispatch_event('on_press', touch.id, touch.x, touch.y)
+            self.dispatch_event('on_press', touch)
             return True
 
     def on_touch_move(self, touch):
@@ -195,7 +195,7 @@ class MTToggleButton(MTButton):
 
     def on_touch_up(self, touch):
         if self._state[1] == touchID and self.collide_point(touch.x, touch.y):
-            self.dispatch_event('on_release', touch.id, touch.x, touch.y)
+            self.dispatch_event('on_release', touch)
             return True
 
 

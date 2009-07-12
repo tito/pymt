@@ -116,13 +116,13 @@ class MTKeyButton(MTButton):
         self._opacity = 255
         self.add_animation('hide', 'opacity', 1, 2, 10, func=AnimationAlpha.ramp)
 
-    def on_press(self, touchID, x, y):
+    def on_press(self, touch):
         self.stop_animations('hide')
         self.opacity = 255
         self.keyboard.on_key_down(self.label)
         self.keyboard.active_keys[self] = self
 
-    def on_release(self, touchID, x, y):
+    def on_release(self, touch):
         self.start_animations('hide')
         self.keyboard.on_key_up(self.label)
 

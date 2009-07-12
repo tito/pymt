@@ -12,7 +12,7 @@ class MTGestureWidget(MTWidget):
     '''Detect a stroke, it in a Gesture and dispatch it in an event.
 
     :Events:
-        `on_gesture` (Gesture g, int x, int y)
+        `on_gesture` (Gesture g, Touch touch)
             Fired when a stroke is finished
     '''
     def __init__(self):
@@ -21,34 +21,34 @@ class MTGestureWidget(MTWidget):
         self.points = {}
         self.db = []
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if not touchID in self.points:
-            self.points[touchID] = []
-        self.points[touchID].append((x, y))
+    def on_touch_down(self, touch):
+        if not touch.id in self.points:
+            self.points[touch.id] = []
+        self.points[touch.id].append((x, y))
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if not touchID in self.points:
+    def on_touch_move(self, touch):
+        if not touch.id in self.points:
             return
-        self.points[touchID].append((x, y))
+        self.points[touch.id].append((touch.x, touch.y))
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if not touchID in self.points:
+    def on_touch_up(self, touch):
+        if not touch.id in self.points:
             return
-        self.points[touchID].append((x, y))
+        self.points[touch.id].append((touch.x, touch.y))
 
         # create Gesture from stroke
         g = Gesture()
-        g.add_stroke(self.points[touchID])
+        g.add_stroke(self.points[touch.id])
         g.normalize()
-        g.touchID = touchID
+        g.touchID = touch.id
 
         # dispatch gesture
-        self.dispatch_event('on_gesture', g, x, y)
+        self.dispatch_event('on_gesture', g, touch)
 
         # suppress points
-        del self.points[touchID]
+        del self.points[touch.id]
 
-    def on_gesture(self, gesture, x, y):
+    def on_gesture(self, gesture, touch):
         pass
 
 # Register all base widgets

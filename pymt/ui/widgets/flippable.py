@@ -22,7 +22,7 @@ class MTFlippableWidget(MTWidget):
         w = MTWindow()
         w.add_widget(s)
         @s.event
-        def on_touch_down(touches, touchID, x, y):
+        def on_touch_down(touch):
             s.flip()
         runTouchApp()
 

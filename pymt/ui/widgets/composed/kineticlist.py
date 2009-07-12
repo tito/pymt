@@ -191,7 +191,7 @@ class MTKineticList(MTStencilContainer):
         except:
             pass
 
-    def toggle_delete(self, touchID, x, y):
+    def toggle_delete(self, touch):
         '''Toggles the delete buttons on items
         Attached to the on_press handler of the delete button(self.db)
         '''
@@ -201,7 +201,7 @@ class MTKineticList(MTStencilContainer):
             else:
                 child.hide_delete()
 
-    def toggle_search(self, touchID, x, y):
+    def toggle_search(self, touch):
         '''Toggles the search area
         Attached to the on_press handler of self.sb(the green search button)
         '''
@@ -323,13 +323,13 @@ class MTKineticList(MTStencilContainer):
                     i = 0
                     t += self.h_limit
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x, y):
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y):
             for w in self.widgets:
-                if w.on_touch_down(touches, touchID, x, y):
+                if w.on_touch_down(touch):
                     return True
             self.vx = self.vy = 0 #Stop kinetic movement
-            self.touch[touchID] = {
+            self.touch[touch.id] = {
                 'ox': x,
                 'oy': y,
                 'xmot': 0,
@@ -339,42 +339,41 @@ class MTKineticList(MTStencilContainer):
             }
             return True
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if touchID in self.touch:
+    def on_touch_move(self, touch):
+        if touch.id in self.touch:
             for w in self.widgets:
-                if w.on_touch_move(touches, touchID, x, y):
+                if w.on_touch_move(touch):
                     return True
-            t = self.touch[touchID]
-            t['xmot'] = x - t['ox']
-            t['ymot'] = y - t['oy']
-            t['ox'] = x
-            t['oy'] = y
+            t = self.touch[touch.id]
+            t['xmot'] = touch.x - t['ox']
+            t['ymot'] = touch.y - t['oy']
+            t['ox'] = touch.x
+            t['oy'] = touch.y
             t['travelx'] += abs(t['xmot'])
             t['travely'] += abs(t['ymot'])
             self.xoffset += t['xmot'] * self.do_x
             self.yoffset += t['ymot'] * self.do_y
             return True
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if touchID in self.touch:
+    def on_touch_up(self, touch):
+        if touch.id in self.touch:
             for w in self.widgets:
-                if w.on_touch_up(touches, touchID, x, y):
+                if w.on_touch_up(touch):
                     return True
-            t = self.touch[touchID]
+            t = self.touch[touch.id]
             self.vx = t['xmot']
             self.vy = t['ymot']
             #If any of them have been tapped, tell them
             for child in self.children:
-                if child.collide_point(x, y):
+                if child.collide_point(touch.x, touch.y):
                     if t['travelx'] <= 40 and self.do_x:
-                        if not child.on_press(touches, touchID, x, y):
-                            print 'dispatch'
+                        if not child.on_press(touch):
                             self.dispatch_event('on_press', child, self.childmap[child])
-                            child.dispatch_event('on_press', touches, touchID, x, y)
+                            child.dispatch_event('on_press', touch)
                     elif t['travely'] <= 40 and self.do_y:
-                        if not child.on_press(touches, touchID, x, y):
+                        if not child.on_press(touch):
                             self.dispatch_event('on_press', child, self.childmap[child])
-                            child.dispatch_event('on_press',touches, touchID, x, y)
+                            child.dispatch_event('on_press',touch)
             return True
 
     def process_kinetic(self):
@@ -463,7 +462,7 @@ class MTKineticObject(MTWidget):
         self.db.style['bg-color'] = (1, 0, 0, self.db_alpha)
         super(MTKineticObject, self).on_draw()
 
-    def delete(self, touchID, x, y):
+    def delete(self, touch):
         self.db.hide()  #So it doesn't poke out at the end(we aren't scaling it)
         self.a_delete_x.reset()
         self.a_delete_y.reset()
@@ -474,18 +473,18 @@ class MTKineticObject(MTWidget):
         self.a_delete_w.start()
         self.a_delete_h.start()
 
-    def on_press(self,touches, touchID, x, y):
-        if self.db.visible and self.db.on_touch_down(touches, touchID, x, y):
+    def on_press(self, touch):
+        if self.db.visible and self.db.on_touch_down(touch):
             return True
 
 class MTKineticItem(MTButton, MTKineticObject):
-    def on_press(self, touches, touchID, x, y):
-        if self.db.visible and self.db.on_touch_down(touches, touchID, x, y):
+    def on_press(self, touch):
+        if self.db.visible and self.db.on_touch_down(touch):
             return True
 
 class MTKineticImage(MTImageButton, MTKineticObject):
-    def on_press(self, touches, touchID, x, y):
-        if self.db.visible and self.db.on_touch_down(touches, touchID, x, y):
+    def on_press(self, touch):
+        if self.db.visible and self.db.on_touch_down(touch):
             return True
 
 MTWidgetFactory.register('MTKineticObject', MTKineticObject)

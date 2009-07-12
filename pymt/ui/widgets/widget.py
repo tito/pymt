@@ -85,11 +85,11 @@ class MTWidget(pyglet.event.EventDispatcher):
             Fired when mouse is release
         `on_mouse_drag` (int x, int y, int dx, int dy, int button, int modifiers)
             Fired when mouse is draw
-        `on_touch_down` (list:Tuio2dCursor touches, int touchID, int x, int y)
+        `on_touch_down` (Touch touch)
             Fired when a blob appear
-        `on_touch_move` (list:Tuio2dCursor touches, int touchID, int x, int y)
+        `on_touch_move` (Touch touch)
             Fired when a blob is moving
-        `on_touch_up` (list:Tuio2dCursor touches, int touchID, int x, int y)
+        `on_touch_up` (Touch touch)
             Fired when a blob disappear
     '''
     visible_events = [

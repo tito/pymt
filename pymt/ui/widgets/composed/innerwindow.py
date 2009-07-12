@@ -150,23 +150,32 @@ class MTInnerWindow(MTScatterWidget):
                                   center_y - self.btn_fullscreen.height / 2
         self.btn_close.pos = center_x + 2, center_y - self.btn_close.height / 2
 
-    def on_touch_down(self, touches, touchID, x, y):
-        lx, ly = super(MTInnerWindow, self).to_local(x, y)
-        if self.controls.dispatch_event('on_touch_down', touches, touchID, lx, ly):
+    def on_touch_down(self, touch):
+        touch.push()
+        touch.x, touch.y = super(MTInnerWindow, self).to_local(touch.x, touch.y)
+        if self.controls.dispatch_event('on_touch_down', touch):
+            touch.pop()
             return True
-        return super(MTInnerWindow, self).on_touch_down(touches, touchID, x, y)
+        touch.pop()
+        return super(MTInnerWindow, self).on_touch_down(touch)
 
-    def on_touch_move(self, touches, touchID, x, y):
-        lx, ly = super(MTInnerWindow, self).to_local(x, y)
-        if self.controls.dispatch_event('on_touch_move', touches, touchID, lx, ly):
+    def on_touch_move(self, touch):
+        touch.push()
+        touch.x, touch.y = super(MTInnerWindow, self).to_local(touch.x, touch.y)
+        if self.controls.dispatch_event('on_touch_move', touch):
+            touch.pop()
             return True
-        return super(MTInnerWindow, self).on_touch_move(touches, touchID, x, y)
+        touch.pop()
+        return super(MTInnerWindow, self).on_touch_move(touch)
 
-    def on_touch_up(self, touches, touchID, x, y):
-        lx, ly = super(MTInnerWindow, self).to_local(x, y)
-        if self.controls.dispatch_event('on_touch_up', touches, touchID, lx, ly):
+    def on_touch_up(self, touch):
+        touch.push()
+        touch.x, touch.y = super(MTInnerWindow, self).to_local(touch.x, touch.y)
+        if self.controls.dispatch_event('on_touch_up', touch):
+            touch.pop()
             return True
-        return super(MTInnerWindow, self).on_touch_up(touches, touchID, x, y)
+        touch.pop()
+        return super(MTInnerWindow, self).on_touch_up(touch)
 
     def tao_local(self, x, y):
         self.new_point = matrix_inv_mult(self.transform_mat, (x, y,0,1)) * self.get_scale_factor()

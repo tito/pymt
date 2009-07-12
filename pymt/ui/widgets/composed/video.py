@@ -39,9 +39,9 @@ class MTVideoPlayPause(MTImageButton):
 
         self.scale    = 0.75
 
-    def on_touch_down(self, touches, touchID, x,y):
-        if self.collide_point(x,y):
-            self.state = ('down', touchID)
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            self.state = ('down', touch.id)
             if self.playState == 'Pause':
                 self.vid.play()
                 self.playState = 'Play'
@@ -63,9 +63,9 @@ class MTVideoMute(MTImageButton):
         self.playState = 'NotMute'
         self.scale    = 0.75
 
-    def on_touch_down(self, touches, touchID, x,y):
-        if self.collide_point(x,y):
-            self.state = ('down', touchID)
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            self.state = ('down', touch.id)
             if self.playState == 'NotMute':
                 self.vid.volume = 0.0
                 self.playState = 'Mute'
@@ -120,17 +120,17 @@ class MTVideoTimeline(MTSlider):
         self.draw()
 
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x,y):
-            self.touchstarts.append(touchID)
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            self.touchstarts.append(touch.id)
             return True
 
-    def on_touch_move(self, touches, touchID, x, y):
+    def on_touch_move(self, touch):
         pass
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if touchID in self.touchstarts:
-            self.touchstarts.remove(touchID)
+    def on_touch_up(self, touch):
+        if touch.id in self.touchstarts:
+            self.touchstarts.remove(touch.id)
 
 
 class MTVideo(MTScatterWidget):
@@ -182,14 +182,14 @@ class MTVideo(MTScatterWidget):
             set_color(1,1,1)
             self.player.get_texture().blit(0,0)
 
-    def on_touch_down(self, touches, touchID, x, y):
+    def on_touch_down(self, touch):
         #if the touch isnt on teh widget we do nothing
-        if self.collide_point(x,y):
+        if self.collide_point(touch.x, touch.y):
             self.button.show()
             self.mutebutton.show()
             self.timeline.show()
             pyglet.clock.schedule_once(self.hide_controls, 5)
-        return super(MTVideo, self).on_touch_down(touches, touchID, x, y)
+        return super(MTVideo, self).on_touch_down(touch)
 
     def hide_controls(self, dt):
         self.button.hide()

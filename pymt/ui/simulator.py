@@ -9,16 +9,16 @@ from pyglet.gl import *
 from pyglet.window import key
 from ..graphx import drawCircle, set_color
 from ..input import TouchFactory
+from ..mtpyglet import getEventLoop
 from factory import MTWidgetFactory
 from widgets.widget import MTWidget
 
 class MTSimulator(MTWidget):
     '''MTSimulator is a widget who generate touch event from mouse event'''
-    def __init__(self, output):
-        super(MTSimulator, self).__init__()
+    def __init__(self, **kwargs):
+        super(MTSimulator, self).__init__(**kwargs)
         self.touches		= {}
         self.pos			= (100,100)
-        self.output			= output
         self.counter		= 0
         self.current_drag	= None
 
@@ -46,7 +46,7 @@ class MTSimulator(MTWidget):
             if modifiers & key.MOD_SHIFT:
                 cur.is_float_tap = True
             self.touches[id] = cur
-            self.output.dispatch_event('on_touch_down', cur)
+            getEventLoop().dispatch_input('down', cur)
         return True
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
@@ -55,7 +55,7 @@ class MTSimulator(MTWidget):
             rx = x / float(self.get_parent_window().width)
             ry = 1. - (y / float(self.get_parent_window().height))
             cur.move([rx, ry])
-            self.output.dispatch_event('on_touch_move', cur)
+            getEventLoop().dispatch_input('move', cur)
         return True
 
     def on_mouse_release(self, x, y, button, modifiers):
@@ -64,8 +64,8 @@ class MTSimulator(MTWidget):
             rx = x / float(self.get_parent_window().width)
             ry = 1. - (y / float(self.get_parent_window().height))
             cur.move([rx, ry])
-            self.output.dispatch_event('on_touch_up', cur)
             del self.touches[cur.id]
+            getEventLoop().dispatch_input('up', cur)
         return True
 
 # Register all base widgets

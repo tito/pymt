@@ -6,6 +6,7 @@ __all__ = [
     'TouchEventLoop', 'TouchWindow',
     'pymt_usage', 'runTouchApp', 'stopTouchApp',
     'getFrameDt', 'getAvailableTouchs',
+    'getEventLoop',
     'touch_event_listeners', 'pymt_providers'
 ]
 
@@ -35,6 +36,10 @@ def getFrameDt():
 def getAvailableTouchs():
     global touch_list
     return touch_list
+
+def getEventLoop():
+    global pymt_evloop
+    return pymt_evloop
 
 class TouchEventLoop(pyglet.app.EventLoop):
     '''Main event loop. This loop dispatch Tuio message and pyglet event.

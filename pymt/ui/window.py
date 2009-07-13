@@ -74,7 +74,7 @@ class MTWindow(TouchWindow):
         if 'view' in kwargs:
             self.add_widget(kwargs.get('view'))
 
-        self.sim = MTSimulator(self)
+        self.sim = MTSimulator()
         self.add_widget(self.sim)
 
         # get window params, user options before config option

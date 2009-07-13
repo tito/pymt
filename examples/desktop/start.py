@@ -135,7 +135,7 @@ class MTGestureDetector(MTGestureWidget):
         #drawLabel('Draw a nui-wave to show menu',
             #pos=(10, 10), center=False, font_size=20)
 
-    def on_gesture(self, gesture, x, y):
+    def on_gesture(self, gesture, touch):
         try:
             score, best = self.gdb.find(gesture)
         except Exception, e:
@@ -143,11 +143,11 @@ class MTGestureDetector(MTGestureWidget):
 
         if best.id == 'menu':
             angle = gesture.get_rigid_rotation(best)
-            menu = MTMenu(pos=(x, y), color=(.2, .2, .2, .5), rotation=angle)
+            menu = MTMenu(pos=(touch.x, touch.y), color=(.2, .2, .2, .5), rotation=angle)
             self.parent.add_widget(menu)
 
         if best.id == 'close':
-            menu = MTMenu(pos=(x, y), color=(.2, .2, .2, .5))
+            menu = MTMenu(pos=(touch.x, touch.y), color=(.2, .2, .2, .5))
             self.parent.add_widget(menu)
 
 

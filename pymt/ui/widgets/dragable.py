@@ -25,7 +25,7 @@ class MTDragable(MTWidget):
             return True
 
     def on_touch_up(self, touch):
-        if self.state[1] == touchID:
+        if self.state[1] == touch.id:
             self.state = ('normal', None)
             return True
 

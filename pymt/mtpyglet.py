@@ -82,23 +82,44 @@ class TouchEventLoop(pyglet.app.EventLoop):
             if x > xmin and x < xmax and y > ymin and y < ymax:
                 return True
 
-    def dispatch_input(self, type, input):
+    def dispatch_input(self, type, touch):
         # update available list
         global touch_list
         if type == 'down':
-            touch_list.append(input)
+            touch_list.append(touch)
         elif type == 'up':
-            touch_list.remove(input)
+            touch_list.remove(touch)
 
         # dispatch to listeners
-        global touch_event_listeners
-        for listener in touch_event_listeners:
+        if not touch.grab_exclusive_class:
+            global touch_event_listeners
+            for listener in touch_event_listeners:
+                if type == 'down':
+                    listener.dispatch_event('on_touch_down', touch)
+                elif type == 'move':
+                    listener.dispatch_event('on_touch_move', touch)
+                elif type == 'up':
+                    listener.dispatch_event('on_touch_up', touch)
+
+        # dispatch grabbed touch
+        for wid in touch.grab_list:
+            parent_window = wid.get_parent_window()
+            if wid != parent_window:
+                touch.push()
+                touch.scale_for_screen(*parent_window.size)
+
             if type == 'down':
-                listener.dispatch_event('on_touch_down', input)
+                # don't dispatch again touch in on_touch_down
+                # a down event are nearly uniq here.
+                # wid.dispatch_event('on_touch_down', touch)
+                pass
             elif type == 'move':
-                listener.dispatch_event('on_touch_move', input)
+                wid.dispatch_event('on_touch_move', touch)
             elif type == 'up':
-                listener.dispatch_event('on_touch_up', input)
+                wid.dispatch_event('on_touch_up', touch)
+
+            if wid != parent_window:
+                touch.pop()
 
     def idle(self):
         # update dt

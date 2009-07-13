@@ -24,7 +24,7 @@ class MTGestureWidget(MTWidget):
     def on_touch_down(self, touch):
         if not touch.id in self.points:
             self.points[touch.id] = []
-        self.points[touch.id].append((x, y))
+        self.points[touch.id].append((touch.x, touch.y))
 
     def on_touch_move(self, touch):
         if not touch.id in self.points:

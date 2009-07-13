@@ -6,13 +6,24 @@ from ..logger import pymt_logger
 touch_clock = pyglet.clock.Clock()
 
 class Touch(object):
+    '''Abstract class to represent a touch, and support TUIO 1.0 definition.
 
+    :Parameters:
+        `id` : str
+            uniq ID of the touch
+        `args` : list
+            list of parameters, passed to depack() function
+    '''
     def __init__(self, id, args):
         if self.__class__ == Touch:
             raise NotImplementedError, 'class Touch is abstract'
 
         # For push/pop
         self.attr = []
+
+        # For grab
+        self.grab_list = []
+        self.grab_exclusive_class = None
 
         # TUIO definition
         self.id = id
@@ -53,23 +64,41 @@ class Touch(object):
         self.depack(args)
 
     def depack(self, args):
+        '''Depack `args` into attributes in class'''
         pass
 
+    def grab(self, class_instance, exclusive=False):
+        if self.grab_exclusive_class is not None:
+            raise Exception('Cannot grab the touch, touch are exclusive')
+        if exclusive:
+            self.grab_exclusive_class = class_instance
+        self.grab_list.append(class_instance)
+
+    def ungrab(self, class_instance):
+        if self.grab_exclusive_class == class_instance:
+            self.grab_exclusive_class = None
+        if class_instance in self.grab_list:
+            self.grab_list.remove(class_instance)
+
     def move(self, args):
-        self.dxpos, self.dypos = self.x, self.y
+        '''Move the touch to another position.'''
+        self.dxpos, self.dypos, self.dzpos = self.x, self.y, self.z
         self.depack(args)
 
     def scale_for_screen(self, w, h, p=None):
+        '''Scale position for the screen'''
         self.x = self.sx * float(w)
         self.y = self.sy * float(h)
         if p:
             self.z = self.sz * float(p)
 
     def push(self, attrs='xyz'):
+        '''Push attributes values in `attrs` in the stack'''
         values = map(lambda x: getattr(self, x), attrs)
         self.attr.append((attrs, values))
 
     def pop(self):
+        '''Pop attributes values from the stack'''
         attrs, values = self.attr.pop()
         for i in xrange(len(attrs)):
             setattr(self, attrs[i], values[i])

@@ -171,12 +171,12 @@ class ModelPainter(MTWidget):
             #paintLine([x,y,x,y])
 
 
-    def on_touch_down(self, touches, touchID, x, y):
-        self.touch_position[touchID] = (x,y)
+    def on_touch_down(self, touch):
+        self.touch_position[touch.id] = (touch.x, touch.y)
         if len(self.touch_position) == 1:
-            self.touch1 = touchID
+            self.touch1 = touch.id
         elif len(self.touch_position) == 2:
-            self.touch2 = touchID
+            self.touch2 = touch.id
             v1 = Vector(*self.touch_position[self.touch1])
             v2 = Vector(*self.touch_position[self.touch2])
             self.scale_dist = v1.distance(v2)
@@ -184,10 +184,10 @@ class ModelPainter(MTWidget):
 
 
 
-    def on_touch_move(self, touches, touchID, x, y):
-        pick = self.pick(x,y)
+    def on_touch_move(self, touch):
+        pick = self.pick(touch.x, touch.y)
         if pick[0] != 0 or pick[1] != 1024:
-            self.paint(x,y)
+            self.paint(touch.x, touch.y)
             return
 
         dx, dy, angle = 0,0,0
@@ -204,21 +204,21 @@ class ModelPainter(MTWidget):
 
             # compute rotation angle
             old_line = v1 - v2
-            new_line = Vector(x,y) - v2
-            if self.touch1 != touchID: new_line = v1 - Vector(x,y)
+            new_line = Vector(touch.x, touch.y) - v2
+            if self.touch1 != touch.id: new_line = v1 - Vector(touch.x, touch.y)
             angle = -1.0 * old_line.angle(new_line)
 
         else: #only one touch:  rotate using trackball method
-            dx = 200.0*(x-self.touch_position[touchID][0])/float(self.width)
-            dy = 200.0*(y-self.touch_position[touchID][1])/float(self.height)
+            dx = 200.0*(touch.x-self.touch_position[touch.id][0])/float(self.width)
+            dy = 200.0*(touch.y-self.touch_position[touch.id][1])/float(self.height)
 
         #apply the transformations we just computed
         self.rotate_scene(dx,-dy, angle)
-        self.touch_position[touchID] = (x,y)
+        self.touch_position[touch.id] = (touch.x, touch.y)
 
 
-    def on_touch_up(self, touches, touchID, x, y):
-        del self.touch_position[touchID]
+    def on_touch_up(self, touch):
+        del self.touch_position[touch.id]
 
 
 

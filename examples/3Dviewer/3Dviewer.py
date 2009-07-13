@@ -99,25 +99,25 @@ class ModelViewer(GLPerspectiveWidget):
                 del self.touch_position[self.touch2]
             self.touch2 = None
 
-    def on_touch_down(self, touches, touchID, x, y):
-        self.check_touches(touches)
-        self.touch_position[touchID] = (x,y)
+    def on_touch_down(self, touch):
+        self.check_touches(getAvailableTouchs())
+        self.touch_position[touch.id] = (touch.x, touch.y)
         if len(self.touch_position) == 1:
-            self.touch1 = touchID
+            self.touch1 = touch
         elif len(self.touch_position) == 2:
-            self.touch2 = touchID
-            v1 = Vector(*self.touch_position[self.touch1])
-            v2 = Vector(*self.touch_position[self.touch2])
+            self.touch2 = touch
+            v1 = Vector(*self.touch_position[self.touch1.id])
+            v2 = Vector(*self.touch_position[self.touch2.id])
             self.scale_dist = v1.distance(v2)
 
-    def on_touch_move(self, touches, touchID, x, y):
-        self.check_touches(touches)
+    def on_touch_move(self, touch):
+        self.check_touches(getAvailableTouchs())
         dx, dy = 0,0
         scale = 1.0
         angle = 0.0
-        if  self.touch_position.has_key(self.touch1) and self.touch_position.has_key(self.touch2):
-            v1 = Vector(*self.touch_position[self.touch1])
-            v2 = Vector(*self.touch_position[self.touch2])
+        if self.touch1 and self.touch2 and self.touch_position.has_key(self.touch1.id) and self.touch_position.has_key(self.touch2.id):
+            v1 = Vector(*self.touch_position[self.touch1.id])
+            v2 = Vector(*self.touch_position[self.touch2.id])
             new_dist = v1.distance(v2)
             zoomfactor = new_dist/self.scale_dist
             if zoomfactor > 1.0:
@@ -131,15 +131,15 @@ class ModelViewer(GLPerspectiveWidget):
             # compute rotation angle
             old_line = v1 - v2
             new_line = None
-            if self.touch1 == touchID:
-                new_line = Vector(x,y) - v2
+            if self.touch1.id == touch.id:
+                new_line = Vector(touch.x, touch.y) - v2
             else:
-                new_line = v1 - Vector(x,y)
+                new_line = v1 - Vector(touch.x, touch.y)
 
             angle = -1.0 * old_line.angle(new_line)
-        elif touchID in self.touch_position:
-            dx = 200.0*(x-self.touch_position[touchID][0])/float(self.width)
-            dy = 200.0*(y-self.touch_position[touchID][1])/float(self.height)
+        elif touch.id in self.touch_position:
+            dx = 200.0*(touch.x-self.touch_position[touch.id][0])/float(self.width)
+            dy = 200.0*(touch.y-self.touch_position[touch.id][1])/float(self.height)
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLoadIdentity()
@@ -149,13 +149,13 @@ class ModelViewer(GLPerspectiveWidget):
         glMultMatrixf(self.rotation_matrix)
         glGetFloatv(GL_MODELVIEW_MATRIX, self.rotation_matrix)
         glPopMatrix()
-        self.touch_position[touchID] = (x,y)
+        self.touch_position[touch.id] = (touch.x, touch.y)
         self.needs_redisplay = True
 
-    def on_touch_up(self, touches, touchID, x, y):
-        self.check_touches(touches)
-        if touchID in self.touch_position:
-            del self.touch_position[touchID]
+    def on_touch_up(self, touch):
+        self.check_touches(getAvailableTouchs())
+        if touch.id in self.touch_position:
+            del self.touch_position[touch.id]
             self.needs_redisplay = True
 
 def pymt_plugin_activate(root, ctx):

@@ -74,8 +74,8 @@ class MTActionButton(MTButton):
         self.action = kwargs.get('action')
         self.args = kwargs.get('args')
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if not self.collide_point(x, y):
+    def on_touch_up(self, touch):
+        if not self.collide_point(touch.x, touch.y):
             return
         if self.action:
             self.action(self.parent, self, self.args)

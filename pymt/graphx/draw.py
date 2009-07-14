@@ -226,7 +226,7 @@ def drawLine(points, width=5.0):
         return
     if l > 4:
         style = GL_LINE_STRIP
-    with gx_begin(GL_LINE_STRIP):
+    with gx_begin(style):
         while len(points):
             glVertex2f(points.pop(0), points.pop(0))
 

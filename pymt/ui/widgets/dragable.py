@@ -13,19 +13,19 @@ class MTDragable(MTWidget):
         super(MTDragable, self).__init__(**kwargs)
         self.state = ('normal', None)
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x,y):
-            self.state = ('dragging', touchID, x, y)
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            self.state = ('dragging', touch.id, touch.x, touch.y)
             return True
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if self.state[0] == 'dragging' and self.state[1] == touchID:
-            self.x, self.y = (self.x + (x - self.state[2]) , self.y + y - self.state[3])
-            self.state = ('dragging', touchID, x, y)
+    def on_touch_move(self, touch):
+        if self.state[0] == 'dragging' and self.state[1] == touch.id:
+            self.x, self.y = (self.x + (touch.x - self.state[2]) , self.y + touch.y - self.state[3])
+            self.state = ('dragging', touch.id, touch.x, touch.y)
             return True
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if self.state[1] == touchID:
+    def on_touch_up(self, touch):
+        if self.state[1] == touch.id:
             self.state = ('normal', None)
             return True
 

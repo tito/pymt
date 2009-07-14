@@ -6,10 +6,15 @@ __all__ = ['MTKinetic']
 
 from pyglet.gl import *
 from ..factory import MTWidgetFactory
+from ...input import Touch
 from ...vector import Vector
 from ...mtpyglet import getFrameDt
 from stencilcontainer import MTStencilContainer
 from widget import MTWidget
+
+class KineticTouch(Touch):
+    def depack(self, args):
+        self.x, self.y = args
 
 class MTKinetic(MTWidget):
     '''Kinetic container.
@@ -52,26 +57,25 @@ class MTKinetic(MTWidget):
         self.touch      = {} # internals
         self.touches    = [] # from tuio, needed to simulate on_touch_down
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if super(MTKinetic, self).on_touch_down(touches, touchID, x, y):
-            self.touch[touchID] = {
-                'vx': 0, 'vy': 0, 'ox': x, 'oy': y,
+    def on_touch_down(self, touch):
+        if super(MTKinetic, self).on_touch_down(touch):
+            self.touch[touch.id] = {
+                'vx': 0, 'vy': 0, 'ox': touch.x, 'oy': touch.y,
                 'xmot': 0, 'ymot': 0, 'mode': 'touching',
             }
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if touchID in self.touch:
-            o = self.touch[touchID]
-            o['xmot'] = x - o['ox']
-            o['ymot'] = y - o['oy']
-            o['ox'] = x
-            o['oy'] = y
-        return super(MTKinetic, self).on_touch_move(touches, touchID, x, y)
+    def on_touch_move(self, touch):
+        if touch.id in self.touch:
+            o = self.touch[touch.id]
+            o['xmot'] = touch.x - o['ox']
+            o['ymot'] = touch.y - o['oy']
+            o['ox'] = touch.x
+            o['oy'] = touch.y
+        return super(MTKinetic, self).on_touch_move(touch)
 
-    def on_touch_up(self, touches, touchID, x, y):
-        self.touches = touches
-        if touchID in self.touch:
-            o = self.touch[touchID]
+    def on_touch_up(self, touch):
+        if touch.id in self.touch:
+            o = self.touch[touch.id]
             o['vx'] = o['xmot']
             o['vy'] = o['ymot']
             o['mode'] = 'spinning'
@@ -88,11 +92,14 @@ class MTKinetic(MTWidget):
             o['oy'] += o['vy']
             o['vx'] /= 1 + (self.friction * dt)
             o['vy'] /= 1 + (self.friction * dt)
+
+            # FIXME Temporary, must take care of grab !
+            touch = KineticTouch(touchID, [o['ox'], o['oy']])
             if Vector(o['vx'], o['vy']).length() < self.velstop:
-                super(MTKinetic, self).on_touch_up(self.touches, touchID, o['ox'], o['oy'])
+                super(MTKinetic, self).on_touch_up(touch)
                 todelete.append(touchID)
             else:
-                super(MTKinetic, self).on_touch_move(self.touches, touchID, o['ox'], o['oy'])
+                super(MTKinetic, self).on_touch_move(touch)
         for touchID in todelete:
             del self.touch[touchID]
 

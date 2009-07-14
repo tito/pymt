@@ -62,17 +62,17 @@ class MTFormCheckbox(MTAbstractFormWidget):
         set_color(.7, .7, .7, 1)
         drawRectangle(pos=pos, size=(20,20), style=GL_LINE_LOOP)
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x, y):
-            self.touchID = touchID
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            self.touch.id = touch.id
             return True
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if self.collide_point(x, y):
+    def on_touch_move(self, touch):
+        if self.collide_point(touch.x, touch.y):
             return True
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if self.touchID == touchID and self.collide_point(x, y):
+    def on_touch_up(self, touch):
+        if self.touch.id == touch.id and self.collide_point(touch.x, touch.y):
             self.checked = not self.checked
             self.dispatch_event('on_check', self.checked)
             return True

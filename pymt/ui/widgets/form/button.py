@@ -42,24 +42,24 @@ class MTFormButton(MTFormLabel):
         self._state = (state, 0)
     state = property(get_state, set_state, doc='Sets the state of the button, "normal" or "down"')
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x, y):
-            self._state = ('down', touchID)
-            self.dispatch_event('on_press', touchID, x, y)
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            self._state = ('down', touch.id)
+            self.dispatch_event('on_press', touch)
             return True
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if self._state[1] == touchID and not self.collide_point(x,y):
+    def on_touch_move(self, touch):
+        if self._state[1] == touch.id and not self.collide_point(touch.x, touch.y):
             self._state = ('normal', 0)
             return True
-        return self.collide_point(x, y)
+        return self.collide_point(touch.x, touch.y)
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if self._state[1] == touchID and self.collide_point(x,y):
+    def on_touch_up(self, touch):
+        if self._state[1] == touch.id and self.collide_point(touch.x, touch.y):
             self._state = ('normal', 0)
-            self.dispatch_event('on_release', touchID, x, y)
+            self.dispatch_event('on_release', touch)
             return True
-        return self.collide_point(x, y)
+        return self.collide_point(touch.x, touch.y)
 
 
 # Register all base widgets

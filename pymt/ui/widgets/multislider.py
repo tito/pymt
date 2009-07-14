@@ -80,18 +80,18 @@ class MTMultiSlider(MTWidget):
     def on_value_change(self, value):
         pass
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x,y):
-            self.touchstarts.append(touchID)
-            self.on_touch_move(touches, touchID, x, y)
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            self.touchstarts.append(touch.id)
+            self.on_touch_move(touch)
             return True
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if touchID in self.touchstarts:
-            if x > self.x and x < self.x + self.width:
-                current_slider = self.return_slider(x)
+    def on_touch_move(self, touch):
+        if touch.id in self.touchstarts:
+            if touch.x > self.x and touch.x < self.x + self.width:
+                current_slider = self.return_slider(touch.x)
                 last_value = self.slider_values[current_slider]
-                self.slider_values[current_slider] = (y - self.y) / float(self.height)
+                self.slider_values[current_slider] = (touch.y - self.y) / float(self.height)
                 if self.slider_values[current_slider] >= 1:
                     self.slider_values[current_slider] = 1
                 if self.slider_values[current_slider] <= 0:
@@ -101,9 +101,9 @@ class MTMultiSlider(MTWidget):
                     self.dispatch_event('on_value_change', self.slider_values)
             return True
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if touchID in self.touchstarts:
-            self.touchstarts.remove(touchID)
+    def on_touch_up(self, touch):
+        if touch.id in self.touchstarts:
+            self.touchstarts.remove(touch.id)
 
     def return_slider(self, x):
         return int((x - self.x) / float(self.width)  * self._sliders)

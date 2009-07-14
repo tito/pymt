@@ -97,41 +97,42 @@ class GlobalFeedback(MTWidget):
         self.touches = {}
         self.rings = []
 
-    def on_touch_down(self, touches, touchID, x, y):
-        self.touches[touchID] = GlobalFeedbackTouch(pos=(x, y))
-        self.add_widget(self.touches[touchID])
+    def on_touch_down(self, touch):
+        self.touches[touch.id] = GlobalFeedbackTouch(pos=(touch.x, touch.y))
+        self.add_widget(self.touches[touch.id])
 
         # prepare ring
-        newsprite = pyglet.sprite.Sprite(ring_img, x=x, y=y)
+        newsprite = pyglet.sprite.Sprite(ring_img, x=touch.x, y=touch.y)
         newsprite.opacity = 195
         newsprite.scale = 0.10
         self.rings.append(newsprite)
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if not touchID in self.touches:
+    def on_touch_move(self, touch):
+        if not touch.id in self.touches:
             return
-        self.touches[touchID].pos = (x, y)
+        self.touches[touch.id].pos = (touch.x, touch.y)
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if touchID in self.touches:
-            self.remove_widget(self.touches[touchID])
-            del self.touches[touchID]
+    def on_touch_up(self, touch):
+        if touch.id in self.touches:
+            self.remove_widget(self.touches[touch.id])
+            del self.touches[touch.id]
 
     def on_draw(self):
         # Uncomment the line below to always see feedback.
-	#self.bring_to_front()
+        #self.bring_to_front()
         super(GlobalFeedback, self).on_draw()
 
     def draw(self):
         rings_to_delete = []
         for i in xrange(0, len(self.rings)):
-            self.rings[i].draw()
-            self.rings[i].opacity -= getFrameDt() * 400
-            self.rings[i].scale += getFrameDt() * 2
-            if self.rings[i].opacity <= 0:
-                rings_to_delete.append(i)
-        for i in rings_to_delete:
-            del self.rings[i]
+            ring = self.rings[i]
+            ring.draw()
+            ring.opacity -= getFrameDt() * 400
+            ring.scale += getFrameDt() * 2
+            if ring.opacity <= 0:
+                rings_to_delete.append(ring)
+        for ring in rings_to_delete:
+            self.rings.remove(ring)
 
 
 def start(win, ctx):

@@ -17,19 +17,19 @@ class MTRectangularWidget(MTWidget):
     def __init__(self, **kwargs):
         super(MTRectangularWidget, self).__init__(**kwargs)
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x,y):
-            super(MTRectangularWidget, self).on_touch_down(touches, touchID, x, y)
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            super(MTRectangularWidget, self).on_touch_down(touch)
             return True
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if self.collide_point(x,y):
-            super(MTRectangularWidget, self).on_touch_move(touches, touchID, x, y)
+    def on_touch_move(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            super(MTRectangularWidget, self).on_touch_move(touch)
             return True
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if self.collide_point(x,y):
-            super(MTRectangularWidget, self).on_touch_up(touches, touchID, x, y)
+    def on_touch_up(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            super(MTRectangularWidget, self).on_touch_up(touch)
             return True
 
     def draw(self):

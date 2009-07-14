@@ -84,8 +84,8 @@ class bloop(MTButton):
         anim = self.add_animation('fadeout','radius', self.width+10, 1.0/60, 1.0)
         anim = self.add_animation('fadeout','alpha', 0.00, 1.0/60, 0.5)
         
-    def on_touch_down(self, touches, touchID, x,y):
-        if self.collide_point(x,y):
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y):
             if self.touched == False:
                 self.parent.bloop_points = self.parent.bloop_points+1
                 self.music.play()

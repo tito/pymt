@@ -86,9 +86,9 @@ class MTButtonMatrix(MTWidget):
         else:
             return (int(i),int(j))
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x,y):
-            i,j = self.collide_point(x,y)
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y):
+            i,j = self.collide_point(touch.x, touch.y)
             if self.matrix[i][j]:
                 self.matrix[i][j] = 0
             else:
@@ -96,8 +96,8 @@ class MTButtonMatrix(MTWidget):
             self.dispatch_event('on_value_change', self.matrix)
             self.last_tile = (i,j)
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if self.collide_point(x,y) != self.last_tile:
-           self.on_touch_down(touches, touchID, x, y)
+    def on_touch_move(self, touch):
+        if self.collide_point(touch.x, touch.y) != self.last_tile:
+           self.on_touch_down(touch)
 
 MTWidgetFactory.register('MTButtonMatrix', MTButtonMatrix)

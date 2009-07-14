@@ -209,7 +209,7 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0), tex_coords=None):
                 pos[0], pos[1] + size[1])
         draw(4, GL_QUADS, ('v2f', pos), ('t2f', texcoords))
 
-def drawLine(points, width=5.0):
+def drawLine(points, width=None):
     '''Draw a line
 
     :Parameters:
@@ -219,7 +219,10 @@ def drawLine(points, width=5.0):
             Default width of line
     '''
     style = GL_LINES
-    glLineWidth(width)
+    if width is not None:
+        glPushAttrib(GL_LINE_BIT)
+        glLineWidth(width)
+
     points = list(points)
     l = len(points)
     if l < 4:
@@ -229,6 +232,9 @@ def drawLine(points, width=5.0):
     with gx_begin(GL_LINE_STRIP):
         while len(points):
             glVertex2f(points.pop(0), points.pop(0))
+
+    if width is not None:
+        glPopAttrib()
 
 def drawRoundedRectangleAlpha(pos=(0,0), size=(100,50), radius=5, alpha=(1,1,1,1),
                          linewidth=1.5, precision=0.5, style=GL_TRIANGLE_FAN):

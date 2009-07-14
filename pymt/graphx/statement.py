@@ -13,6 +13,7 @@ __all__ = [
     'gx_blending', 'gx_alphablending',
     'gx_matrix', 'gx_matrix_identity',
     'gx_enable', 'gx_begin',
+    'gx_attrib',
 ]
 
 from pyglet import *
@@ -161,3 +162,18 @@ class GlBegin:
 
 gx_begin = GlBegin
 
+class GlAttrib:
+    '''Statement of glPushAttrib/glPopAttrib, designed to be use with "with" keyword
+
+    Alias: gx_attrib.
+    '''
+    def __init__(self, flag):
+        self.flag = flag
+
+    def __enter__(self):
+        glPushAttrib(self.flag)
+
+    def __exit__(self, type, value, traceback):
+        glEnd()
+
+gx_attrib = GlAttrib

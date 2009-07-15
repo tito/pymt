@@ -176,7 +176,7 @@ class ModelPainter(MTWidget):
         if len(self.touch_position) == 1:
             self.touch1 = touch.id
         elif len(self.touch_position) == 2:
-            self.touch2 = touch.id
+            self.touch1, self.touch2 = self.touch_position.keys()
             v1 = Vector(*self.touch_position[self.touch1])
             v2 = Vector(*self.touch_position[self.touch2])
             self.scale_dist = v1.distance(v2)

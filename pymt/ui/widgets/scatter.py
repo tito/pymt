@@ -317,9 +317,12 @@ class MTScatterWidget(MTWidget):
             return False
 
         # let the child widgets handle the event if they want
-        lx, ly = self.to_local(x, y)
+        touch.push()
+        touch.x, touch.y = self.to_local(x, y)
         if super(MTScatterWidget, self).on_touch_down(touch):
+            touch.pop()
             return True
+        touch.pop()
 
         # if the children didnt handle it, we bring to front & keep track
         # of touches for rotate/scale/zoom action
@@ -335,9 +338,12 @@ class MTScatterWidget(MTWidget):
             return False
 
         # let the child widgets handle the event if they want
-        lx, ly = self.to_local(x, y)
+        touch.push()
+        touch.x, touch.y = self.to_local(x, y)
         if super(MTScatterWidget, self).on_touch_move(touch):
+            touch.pop()
             return True
+        touch.pop()
 
         # rotate/scale/translate
         if touch.id in self.touches:
@@ -365,10 +371,12 @@ class MTScatterWidget(MTWidget):
         x, y = touch.x, touch.y
 
         # if the touch isnt on the widget we do nothing
-        #WTF here ? Why if we must do taht, it's not in on_touch_down/on_touch_move ?
-        #lx, ly = self.to_local(x, y)
-        #super(MTScatterWidget, self).on_touch_up(touches, touchID, lx, ly)
-        super(MTScatterWidget, self).on_touch_up(touch)
+        touch.push()
+        touch.x, touch.y = self.to_local(x, y)
+        if super(MTScatterWidget, self).on_touch_up(touch):
+            touch.pop()
+            return True
+        touch.pop()
 
         # remove it from our saved touches
         if touch.id in self.touches:

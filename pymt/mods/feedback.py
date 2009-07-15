@@ -98,6 +98,7 @@ class GlobalFeedback(MTWidget):
         self.rings = []
 
     def on_touch_down(self, touch):
+        touch.grab(self)
         self.touches[touch.id] = GlobalFeedbackTouch(pos=(touch.x, touch.y))
         self.add_widget(self.touches[touch.id])
 
@@ -114,6 +115,7 @@ class GlobalFeedback(MTWidget):
 
     def on_touch_up(self, touch):
         if touch.id in self.touches:
+            touch.ungrab(self)
             self.remove_widget(self.touches[touch.id])
             del self.touches[touch.id]
 

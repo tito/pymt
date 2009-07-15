@@ -20,13 +20,13 @@ class TouchInfos(MTWidget):
 
     def on_touch_down(self, touch):
         self.bubbles[touch.id] = MTSpeechBubble(pos=(touch.x, touch.y), size=(120, 100))
-        self.bubbles[touch.id].label = self.text_info(touches[touch.id])
+        self.bubbles[touch.id].label = self.text_info(touch)
 
     def on_touch_move(self, touch):
         if not touch.id in self.bubbles:
             return
         self.bubbles[touch.id].pos = (touch.x, touch.y)
-        self.bubbles[touch.id].label = self.text_info(touches[touch.id])
+        self.bubbles[touch.id].label = self.text_info(touch)
 
     def on_touch_up(self, touch):
         if touch.id in self.bubbles:

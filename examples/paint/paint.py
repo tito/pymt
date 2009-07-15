@@ -139,10 +139,10 @@ class Canvas(MTWidget):
         if self.touch_positions.has_key(touch.id):
             del self.touch_positions[touch.id]
 
-def update_brush(brush, touchID, x, y):
+def update_brush(brush, *largs):
     set_brush(brush)
 
-def clear_canvas(canvas, touchID, x, y):
+def clear_canvas(canvas, *largs):
     canvas.clear()
 
 def pymt_plugin_activate(root, ctx):

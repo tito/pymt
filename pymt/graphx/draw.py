@@ -122,7 +122,7 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
             glVertex2f (sx, sy)
             t += precision
 
-def drawCircle(pos=(0,0), radius=1.0):
+def drawCircle(pos=(0,0), radius=1.0, linewidth=None):
     '''Draw a simple circle
 
     :Parameters:
@@ -135,7 +135,10 @@ def drawCircle(pos=(0,0), radius=1.0):
     with gx_matrix:
         glTranslated(x, y, 0)
         glScaled(radius, radius, 1.0)
-        gluDisk(gluNewQuadric(), 0, 1, 32,1)
+        if linewidth:
+            gluDisk(gluNewQuadric(), 1-linewidth/float(radius), 1, 32,1)
+        else:
+            gluDisk(gluNewQuadric(), 0, 1, 32,1)
 
 def drawPolygon(points, style=GL_TRIANGLES):
     '''Draw polygon from points list

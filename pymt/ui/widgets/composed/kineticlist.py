@@ -330,8 +330,8 @@ class MTKineticList(MTStencilContainer):
                     return True
             self.vx = self.vy = 0 #Stop kinetic movement
             self.touch[touch.id] = {
-                'ox': x,
-                'oy': y,
+                'ox': touch.x,
+                'oy': touch.y,
                 'xmot': 0,
                 'ymot': 0,
                 'travelx' : 0, #How far the blob has traveled total in the x axis

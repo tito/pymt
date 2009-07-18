@@ -13,7 +13,7 @@ exitButton = MTButton(label="X", pos=(sz[0]-30, sz[1]-30), size=(30, 30))
 w.add_widget(exitButton)
 
 @exitButton.event
-def on_press(touchID, x, y):
+def on_press(*largs):
 	sys.exit()
 
 #Create Twitter API interface and login
@@ -57,7 +57,7 @@ def on_press(item, callback):
 	
 
 	@TimelineExitButton.event
-	def on_press(touchID, x, y):
+	def on_press(*largs):
 		p.remove_widget(FriendTimelineScatter)
 		
 #Status Update Window

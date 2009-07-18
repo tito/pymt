@@ -33,7 +33,7 @@ class MTicon(MTButton):
 
     def draw(self):
         self.image.x        = self.x
-        self.image.y        = self.y       
+        self.image.y        = self.y
         self.size           = (self.image.width, self.image.height)
         #
         with DO(gx_enable(GL_TEXTURE_2D)):
@@ -46,17 +46,17 @@ class MTicon(MTButton):
 
         self.parent.do_layout()
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x,y):
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x,touch.y):
             print "Touched"
             print "file: ",self.fname , self.parent.parent.to_parent(self.x,self.y)[0]
             return
 
-    def on_touch_move(self, touches, touchID, x, y):
+    def on_touch_move(self, touch):
         return
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if self.collide_point(x,y):
+    def on_touch_up(self, touch):
+        if self.collide_point(touch.x, touch.y):
             return
 
     def on_draw(self):

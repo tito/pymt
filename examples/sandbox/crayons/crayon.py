@@ -38,15 +38,8 @@ class Crayon(MTWidget):
             glDisable(GL_DEPTH_TEST)
             self.draw()
 
-
-
-
-    def on_touch_move(self, touches, touchID, x, y):
-        print 'setting pos'
-        self.pos = (x,y)
-
-
-
+    def on_touch_move(self, touch):
+        self.pos = touch.x, touch.y
 
 if __name__ == '__main__':
 

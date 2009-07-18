@@ -36,20 +36,20 @@ class EventLogger(MTWidget):
 	def clear(self):
 		self.touches = {}
 
-	def on_touch_down(self, touches, touchID, x,y):
+	def on_touch_down(self, touch):
 		if self.enabled:
-			event = {'type':'down', 'id':touchID, 'x':x, 'y':y, 't':time.clock() }
-			self.touches[touchID] = [event,]
+			event = {'type':'down', 'id':touch.id, 'x':touch.x, 'y':touch.y, 't':time.clock() }
+			self.touches[touch.id] = [event,]
 
-	def on_touch_up(self, touches, touchID,x,y):
+	def on_touch_up(self, touch):
 		if self.enabled:
-			event = {'type':'up', 'id':touchID, 'x':x, 'y':y, 't':time.clock() }
-			self.touches[touchID].append(event)
+			event = {'type':'up', 'id':touch.id, 'x':touch.x, 'y':touch.y, 't':time.clock() }
+			self.touches[touch.id].append(event)
 
-	def on_touch_move(self, touches, touchID, x, y):
+	def on_touch_move(self, touch):
 		if self.enabled:
-			event = {'type':'move', 'id':touchID, 'x':x, 'y':y, 't':time.clock() }
-			self.touches[touchID].append(event)
+			event = {'type':'move', 'id':touch.id, 'x':touch.x, 'y':touch.y, 't':time.clock() }
+			self.touches[touch.id].append(event)
 
 
 class TrialLogger(EventLogger):
@@ -90,19 +90,19 @@ class NewGameMenu(MTBoxLayout):
 		self.trial_num = 0
 
 		b1 = MTButton(label="10 Vertices", size=(200,100))
-		b1.push_handlers(on_release=self.startNewGame10)
+		b1.push_handlers(on_release=curry(self.startNewGame, 10))
 		self.add_widget(b1)
 
 		b1 = MTButton(label="15 Vertices", size=(200,100))
-		b1.push_handlers(on_release=self.startNewGame15)
+		b1.push_handlers(on_release=curry(self.startNewGame, 15))
 		self.add_widget(b1)
 
 		b1 = MTButton(label="20 Vertices", size=(200,100))
-		b1.push_handlers(on_release=self.startNewGame20)
+		b1.push_handlers(on_release=curry(self.startNewGame, 20))
 		self.add_widget(b1)
 
 		b1 = MTButton(label="25 Vertices", size=(200,100))
-		b1.push_handlers(on_release=self.startNewGame25)
+		b1.push_handlers(on_release=curry(self.startNewGame, 25))
 		self.add_widget(b1)
 
 		self.graph = None
@@ -120,7 +120,7 @@ class NewGameMenu(MTBoxLayout):
 			glColor4f(0.7,0.7,0.7,1)
 			drawLabel("time: "+duration+"  moves: "+str(self.num_moves), pos=(self.x+425, self.y+150), font_size=50)
 
-	def startNewGame(self, numVerts):
+	def startNewGame(self, numVerts, *largs):
 		if self.graph:
 			self.window.remove_widget(self.graph)
 		self.graph = GraphUI(size=numVerts, w=self.window, menu=self)
@@ -133,19 +133,6 @@ class NewGameMenu(MTBoxLayout):
 
 		self.window.remove_widget(self)
 		self.start_time = time.clock()
-
-
-	def startNewGame10(self, touchID, x, y):
-		self.startNewGame(10)
-
-	def startNewGame15(self, touchID, x, y):
-		self.startNewGame(15)
-
-	def startNewGame20(self, touchID, x, y):
-		self.startNewGame(20)
-
-	def startNewGame25(self, touchID, x, y):
-		self.startNewGame(25)
 
 
 class GraphUI(MTWidget):
@@ -163,18 +150,18 @@ class GraphUI(MTWidget):
 	def draw(self):
 		self.g.draw()
 
-	def on_touch_down(self, touches, touchID, x,y):
+	def on_touch_down(self, touch):
 		if self.done:
 			return
-		touchedVertex = self.g.collideVerts(x,y)
-		if touchedVertex: self.touch2vertex[touchID] = touchedVertex
+		touchedVertex = self.g.collideVerts(touch.x,touch.y)
+		if touchedVertex: self.touch2vertex[touch.id] = touchedVertex
 
-	def on_touch_up(self, touches, touchID,x,y):
+	def on_touch_up(self, touch):
 		if self.done:
 			return
 		self.num_moves +=1
-	        if self.touch2vertex.has_key(touchID):
-	                del self.touch2vertex[touchID]
+		if self.touch2vertex.has_key(touch.id):
+			del self.touch2vertex[touch.id]
 		if self.g.is_solved():
 			#self.g = Graph(15,displaySize=w.size)
 			self.done = True
@@ -184,12 +171,12 @@ class GraphUI(MTWidget):
 			self.menu.num_moves = self.num_moves
 			self.parent.add_widget(self.menu)
 
-	def on_touch_move(self, touches, touchID, x, y):
+	def on_touch_move(self, touch):
 		if self.done:
 			return
-		if self.touch2vertex.has_key(touchID):
-	                self.touch2vertex[touchID][0] = x
-	                self.touch2vertex[touchID][1] = y
+		if self.touch2vertex.has_key(touch.id):
+	                self.touch2vertex[touch.id][0] = touch.x
+	                self.touch2vertex[touch.id][1] = touch.y
 		self.num_moves_since_check += 1
 		if self.num_moves_since_check%4 == 0:
 			#self.g.is_solved()

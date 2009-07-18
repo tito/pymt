@@ -22,17 +22,17 @@ pit1 = 0
 def init_ounk():
     global tt1, proc, pit1
     ounk.setGlobalDuration(-1)
-    
+
     env = ounk.genAdsr(release=0.8)
-    
+
     tt1 = ounk.genDataTable([1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0])
-    
+
     pit1 = ounk.genDataTable([1,1,1,1,.5,1,1,1,.25,1,1,1,.125,1,1,1])
-    
+
     ounk.oscReceive(bus='tempo', adress='/tempo', port = 9005, portamento = 0.05)
     ounk.metro(bus='metro', tempo=200, tempoVar = 'tempo')
 
-    
+
     # solo sequence
     ounk.beginSequencer(input='metro', table=tt1)
     ounk.sequencerPitchTable(pit1)
@@ -42,13 +42,13 @@ def init_ounk():
     ounk.readTable(bus='index2', table=env, duration=durs[0])
     ounk.freqMod(pitch=pitchs, modulator=0.502, amplitude=.07, starttime=0, duration=durs, envelope=env, pan=[0,.25,.5,.75,1], index=10,indexVar='index2')
     ounk.endSequencer()
-    
+
     proc = ounk.startCsound()
     time.sleep(1)
     ounk.sendOscControl(0.8, adress='/tempo', port=9005)
 
 def pymt_plugin_activate(w, ctx):
-    init_ounk()    
+    init_ounk()
     ctx.c = MTWidget()
     temposlider = MTSlider(min = 0, max = 1, height = 125, slidercolor = (0,1,0.5,1))
     temposlider.pos = (w.width/5-temposlider.width-5, 20)
@@ -60,20 +60,20 @@ def pymt_plugin_activate(w, ctx):
     ctx.c.add_widget(temposlider)
     w.add_widget(ctx.c)
 
-    
+
     @matrix.event
     def on_value_change(matrix):
         table = [m[0] for m in matrix]
         ounk.reGenDataTable(tt1, table, proc)
-        
+
     @multislider.event
     def on_value_change(values):
         ounk.reGenDataTable(pit1, values, proc)
-        
+
     @temposlider.event
     def on_value_change(value):
         ounk.sendOscControl(value, adress='/tempo', port=9005)
-    
+
 def pymt_plugin_deactivate(w, ctx):
     w.remove_widget(ctx.c)
     ounk.stopCsound()

@@ -69,10 +69,10 @@ class TTTGame(MTButtonMatrix):
     def on_resize(self, w, h):
         self._width, self._height = w,h
 
-    def on_touch_down(self, touches, touchID, x, y):
+    def on_touch_down(self, touch):
         if self.done:
             return True
-        i,j = self.collide_point(int(x),int(y))
+        i,j = self.collide_point(int(touch.x),int(touch.y))
         if self.matrix[i][j] == 0:
             self.select_area(i,j)
         else:
@@ -125,6 +125,8 @@ class TTTGame(MTButtonMatrix):
         if self.check_row_win((2,0),(2,1), (2,2)):
             return (2, 0)
         if self.check_row_win((0,0),(1,1), (2,2)):
+            return (0, 0)
+        if self.check_row_win((2,0),(1,1), (0,2)):
             return (0, 0)
         return None
 

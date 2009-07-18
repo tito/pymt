@@ -6,6 +6,7 @@ PLUGIN_DESCRIPTION = 'Secure Bubble Bomb before explosion !'
 
 from pymt import *
 from pyglet.gl import *
+from pyglet import media
 from random import random, randint
 
 
@@ -120,6 +121,17 @@ class World(MTWidget):
     def __init__(self, **kwargs):
         super(World, self).__init__(**kwargs)
         self.reset()
+        self.s_gameover = media.load('../bubblebomb/gameover.wav', streaming=False)
+        self.s_touch = media.load('../bubblebomb/touch.wav', streaming=False)
+        self.s_nextlevel = media.load('../bubblebomb/level.wav', streaming=False)
+
+    def sound(self, name):
+        if name == 'gameover':
+            self.s_gameover.play()
+        elif name == 'touch':
+            self.s_touch.play()
+        elif name == 'nextlevel':
+            self.s_nextlevel.play()
 
     def reset(self):
         self.bomb = []
@@ -194,6 +206,7 @@ class World(MTWidget):
             self.gameover()
         if self.score < self.levelscore:
             return
+        self.sound('nextlevel')
         self.level += 1
         self.levelscore = self.levelscore * 2
         self.spawnspeed += .5
@@ -222,6 +235,7 @@ class World(MTWidget):
     def gameover(self):
         self.stop()
         if not self.isgameover:
+            self.sound('gameover')
             self.isgameover = True
             self.get_parent_window().add_widget(GameOver(world=self))
 
@@ -235,6 +249,7 @@ class World(MTWidget):
                 continue
             if Vector(b.pos).distance(Vector(touch.x, touch.y)) > b.r:
                 continue
+            self.sound('touch')
             self.touches[touch.id] = b
             b.pos = touch.x, touch.y
             b.moved = True
@@ -259,7 +274,8 @@ class World(MTWidget):
             if b.color != base.color:
                 self.gameover()
                 return
-            else:
+            elif not b.saved:
+                self.sound('touch')
                 self.score += 1
                 b.saved = True
                 b.savedbase = base

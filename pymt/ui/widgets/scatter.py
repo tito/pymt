@@ -326,6 +326,7 @@ class MTScatterWidget(MTWidget):
 
         # if the children didnt handle it, we bring to front & keep track
         # of touches for rotate/scale/zoom action
+        touch.grab(self)
         self.bring_to_front()
         self.touches[touch.id] = Vector(x, y)
         return True
@@ -333,20 +334,17 @@ class MTScatterWidget(MTWidget):
     def on_touch_move(self, touch):
         x, y = touch.x, touch.y
 
-        # if the touch isnt on the widget we do nothing
-        if not (self.collide_point(x, y) or touch.id in self.touches):
-            return False
-
         # let the child widgets handle the event if they want
-        touch.push()
-        touch.x, touch.y = self.to_local(x, y)
-        if super(MTScatterWidget, self).on_touch_move(touch):
+        if self.collide_point(x, y) and not touch.grab_state:
+            touch.push()
+            touch.x, touch.y = self.to_local(x, y)
+            if super(MTScatterWidget, self).on_touch_move(touch):
+                touch.pop()
+                return True
             touch.pop()
-            return True
-        touch.pop()
 
         # rotate/scale/translate
-        if touch.id in self.touches:
+        if touch.id in self.touches and touch.grab_state:
             self.rotate_zoom_move(touch.id, x, y)
 
             # precalculate size of container
@@ -371,15 +369,16 @@ class MTScatterWidget(MTWidget):
         x, y = touch.x, touch.y
 
         # if the touch isnt on the widget we do nothing
-        touch.push()
-        touch.x, touch.y = self.to_local(x, y)
-        if super(MTScatterWidget, self).on_touch_up(touch):
+        if not touch.grab_state:
+            touch.push()
+            touch.x, touch.y = self.to_local(x, y)
+            if super(MTScatterWidget, self).on_touch_up(touch):
+                touch.pop()
+                return True
             touch.pop()
-            return True
-        touch.pop()
 
         # remove it from our saved touches
-        if touch.id in self.touches:
+        if touch.id in self.touches and touch.grab_state:
             del self.touches[touch.id]
 
         # stop porpagating if its within our bounds

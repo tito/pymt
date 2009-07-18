@@ -142,6 +142,8 @@ class MTWidget(pyglet.event.EventDispatcher):
         self._parent_window_source  = None
         self._parent_layout         = None
         self._parent_layout_source  = None
+        self._root_window           = None
+        self._root_window_source    = None
 
         self.register_event_type('on_resize')
         self.register_event_type('on_move')
@@ -352,6 +354,20 @@ class MTWidget(pyglet.event.EventDispatcher):
 
     def init(self):
         pass
+
+    def get_root_window(self):
+        '''Return the root window of widget'''
+        if not self.parent:
+            return None
+
+        # cache value
+        if self._root_window_source != self.parent or self._root_window is None:
+            self._root_window = self.parent.get_root_window()
+            if not self._root_window:
+                return None
+            self._root_window_source = self.parent
+
+        return self._root_window
 
     def get_parent_window(self):
         '''Return the parent window of widget'''

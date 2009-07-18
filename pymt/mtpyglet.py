@@ -102,11 +102,12 @@ class TouchEventLoop(pyglet.app.EventLoop):
                     listener.dispatch_event('on_touch_up', touch)
 
         # dispatch grabbed touch
+        touch.grab_state = True
         for wid in touch.grab_list:
-            parent_window = wid.get_parent_window()
-            if wid != parent_window:
+            root_window = wid.get_root_window()
+            if wid != root_window:
                 touch.push()
-                touch.scale_for_screen(*parent_window.size)
+                touch.scale_for_screen(*root_window.size)
 
             if type == 'down':
                 # don't dispatch again touch in on_touch_down
@@ -114,12 +115,14 @@ class TouchEventLoop(pyglet.app.EventLoop):
                 # wid.dispatch_event('on_touch_down', touch)
                 pass
             elif type == 'move':
+                print 'move'
                 wid.dispatch_event('on_touch_move', touch)
             elif type == 'up':
                 wid.dispatch_event('on_touch_up', touch)
 
-            if wid != parent_window:
+            if wid != root_window:
                 touch.pop()
+        touch.grab_state = False
 
     def idle(self):
         # update dt

@@ -280,6 +280,9 @@ class MTWindow(TouchWindow):
     def to_window(self, x, y, initial=True):
         return (x, y)
 
+    def get_root_window(self):
+        return self
+
     def get_parent_window(self):
         return self
 

@@ -172,7 +172,6 @@ class MTInnerWindow(MTScatterWidget):
         return super(MTInnerWindow, self).on_touch_move(touch)
 
     def on_touch_up(self, touch):
-        touch.ungrab(self)
         touch.push()
         touch.x, touch.y = super(MTInnerWindow, self).to_local(touch.x, touch.y)
         if self.controls.dispatch_event('on_touch_up', touch):

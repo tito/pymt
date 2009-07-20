@@ -82,8 +82,8 @@ class flickrSearchButton(MTButton):
         self.parent.add_widget(self.flickme)
         self.flickme.generatePhotos()
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x,y):
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y):
             self.do_search()
             return True
 

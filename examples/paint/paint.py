@@ -22,11 +22,11 @@ class MTPaintColorPicker(MTWidget):
         kwargs.setdefault('target', [])
         super(MTPaintColorPicker, self).__init__(**kwargs)
         self.targets = kwargs.get('targets')
-        self.sliders = [ MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), slidercolor=(1,0,0,1)),
-                        MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), slidercolor=(0,1,0,1)),
-                        MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), slidercolor=(0,0,1,1)),
-                        MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), slidercolor=(1,1,1,.7)),
-                        MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), slidercolor=(1,1,1,.7)) ]
+        self.sliders = [ MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), style = {'slider-color': (1,0,0,1)}),
+                        MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), style = {'slider-color': (0,1,0,1)}),
+                        MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), style = {'slider-color': (0,0,1,1)}),
+                        MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), style = {'slider-color': (1,1,1,.7)}),
+                        MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), style = {'slider-color': (1,1,1,.7)}) ]
         for slider in self.sliders:
             slider.value = 200
         self.update_color()

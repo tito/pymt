@@ -46,7 +46,7 @@ class MTTextInput(MTButton):
         return self._keyboard
     keyboard = property(_get_keyboard)
 
-    def on_press(self,touchID, x, y):
+    def on_press(self, touch):
         if self.is_active_input:
             self.hide_keyboard()
         else:

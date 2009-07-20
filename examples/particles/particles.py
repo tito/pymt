@@ -114,15 +114,15 @@ class ParticleShow(MTWidget):
         MTWidget.__init__(self, pos=(0,0), size=(1440,900), color=(0,0,0,0), **kargs)
         self.pe = pe
 
-    def on_touch_down(self, touches, touchID, x,y):
-        self.pe.generate((x, y), 30)
+    def on_touch_down(self, touch):
+        self.pe.generate((touch.x, touch.y), 30)
         return True
 
-    def on_touch_move(self, touches, touchID, x,y):
-        self.pe.generate((x, y), 30)
+    def on_touch_move(self, touch):
+        self.pe.generate((touch.x, touch.y), 30)
         return True
 
-    def on_touch_up(self, touches, touchID, x, y):
+    def on_touch_up(self, touch):
         return True
 
 class SetButton(MTButton):
@@ -132,9 +132,9 @@ class SetButton(MTButton):
         self.label = label
         self.pe = pe
 
-    def on_touch_down(self, touches, touchID, x,y):
-        if self.collide_point(x,y):
-            self.state = ('down', touchID)
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x,touch.y):
+            self.state = ('down', touch.id)
             if self.label == 'Squares':
                 self.pe.set_type('Squares')
             else:

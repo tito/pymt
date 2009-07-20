@@ -129,6 +129,11 @@ class TouchEventLoop(pyglet.app.EventLoop):
             window.dispatch_event('on_draw')
             window.flip()
 
+        # don't loop if we don't have listeners !
+        global touch_event_listeners
+        if len(touch_event_listeners) == 0:
+            self.exit()
+
         return 0
 
 #any window that inherhits this or an instance will have event handlers triggered on Tuio touch events
@@ -149,6 +154,10 @@ class TouchWindow(pyglet.window.Window):
         self.register_event_type('on_touch_move')
         self.register_event_type('on_touch_up')
         touch_event_listeners.append(self)
+
+    def on_close(self, *largs):
+        touch_event_listeners.remove(self)
+        super(TouchWindow, self).on_close(*largs)
 
     def on_touch_down(self, touch):
         pass
@@ -212,6 +221,7 @@ def runTouchApp():
     while True:
         try:
             pymt_evloop.run()
+            stopTouchApp()
             break
         except BaseException, inst:
             # use exception manager first
@@ -228,7 +238,10 @@ def runTouchApp():
 
 def stopTouchApp():
     global pymt_evloop
+    if pymt_evloop is None:
+        return
     pymt_logger.info('Leaving application in progress...')
     pymt_evloop.close()
     pymt_evloop.exit()
+    pymt_evloop = None
 

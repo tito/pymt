@@ -154,6 +154,10 @@ class MTWindow(TouchWindow):
     def apply_css(self, styles):
         self.cssstyle.update(styles)
 
+    def on_close(self, *largs):
+        pymt_modules.unregister_window(self)
+        super(MTWindow, self).on_close(*largs)
+
     def _set_size(self, size):
         self.set_size(*size)
     def _get_size(self):

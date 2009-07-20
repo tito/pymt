@@ -19,24 +19,24 @@ class Event(MTWidget):
         set_color(1,1,1,1)
         drawRectangle(size = self.size, pos = self.pos)
         
-    def on_touch_down(self, touches, touchID, x,y):
-        if self.collide_point(x,y):
-            self.touchstarts.append(touchID)
-            self.first_x = x
-            self.first_y = y
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x,touch.y):
+            self.touchstarts.append(touch.id)
+            self.first_x = touch.x
+            self.first_y = touch.y
             self.first_pos_x = self.x
             self.first_pos_y = self.y
             self.first_width = self.width
-            if x > self.x + self.width - 30:
+            if touch.x > self.x + self.width - 30:
                 self.mode = 'trim_end'
-            if x < self.x + 30:
+            if touch.x < self.x + 30:
                 self.mode = 'trim_start'
             return True
         
-    def on_touch_move(self, touches, touchID, x,y):
-        if touchID in self.touchstarts:
-            delta_x = x - self.first_x
-            delta_y = y - self.first_y
+    def on_touch_move(self, touch):
+        if touch.id in self.touchstarts:
+            delta_x = touch.x - self.first_x
+            delta_y = touch.y - self.first_y
             if self.mode == 'move':
                 self.x = self.first_pos_x + delta_x
                 self.y = self.first_pos_y + delta_y
@@ -47,9 +47,9 @@ class Event(MTWidget):
                 self.width = self.first_width - delta_x
             return True
             
-    def on_touch_up(self, touches, touchID, x,y):
-        if touchID in self.touchstarts:
-            self.touchstarts.remove(touchID)
+    def on_touch_up(self, touch):
+        if touch.id in self.touchstarts:
+            self.touchstarts.remove(touch.id)
             self.mode = 'move'
             return True
         

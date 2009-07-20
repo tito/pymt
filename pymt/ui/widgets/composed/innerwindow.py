@@ -125,7 +125,7 @@ class MTInnerWindow(MTScatterWidget):
         self.size = self.old_size
         self.container.size = self.size
 
-    def close(self, touchID=None, x=0, y=0):
+    def close(self, touch):
         self.parent.remove_widget(self)
 
     def add_widget(self, w):

@@ -221,7 +221,6 @@ class Gesture:
         Gesture([tolerance=float])
         Creates a new gesture with an optional matching tolerance value
         '''
-        self.touchID = 0
         self.strokes = list()
         if tolerance is None:
             self.tolerance = Gesture.DEFAULT_TOLERANCE

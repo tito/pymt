@@ -62,7 +62,7 @@ class MTTabs(MTWidget):
         button = MTButton(label=tab, size=(120, 40))
         button.tab_container = self
         @button.event
-        def on_release(touchID, x, y):
+        def on_release(touch):
             self.select(tab)
         self.topbar.add_widget(button)
         self.tabs[tab] = (button, widget)

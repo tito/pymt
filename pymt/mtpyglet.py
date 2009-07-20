@@ -165,7 +165,7 @@ def pymt_usage():
     -h, --help                  prints this mesage
     -f, --fullscreen            force run in fullscreen
     -w, --windowed              force run in window
-    -p, --provider id[,options] add a provider (eg: tuio,127.0.0.1:3333)
+    -p, --provider id:provider[,options] add a provider (eg: ccvtable1:tuio,192.168.0.1:3333)
     -F, --fps                   show fps in window
     -m mod, --module=mod        activate a module (use "list" to get available module)
     -s, --save                  save current PyMT configuration

@@ -95,8 +95,8 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
 
     # Can be overrided in command line
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hp:H:fwFem:s',
-            ['help', 'port=', 'host=', 'fullscreen', 'windowed', 'fps', 'event',
+        opts, args = getopt.getopt(sys.argv[1:], 'hp:fwFem:s',
+            ['help', 'fullscreen', 'windowed', 'fps', 'event',
              'module=', 'save',
              'display=', 'size=', 'dump-frame', 'dump-format=', 'dump-prefix='])
         need_save = False
@@ -104,10 +104,9 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
             if opt in ['-h', '--help']:
                 pymt_usage()
                 sys.exit(0)
-            elif opt in ['-p', '--port']:
-                pymt_config.set('tuio', 'port', str(arg))
-            elif opt in ['-H', '--host']:
-                pymt_config.set('tuio', 'host', str(arg))
+            elif opt in ['-p', '--provider']:
+                id, args = arg.split(':', 1)
+                pymt_config.set('input', id, args)
             elif opt in ['-f', '--fullscreen']:
                 pymt_config.set('graphics', 'fullscreen', '1')
             elif opt in ['-w', '--windowed']:

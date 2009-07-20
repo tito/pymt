@@ -1,6 +1,6 @@
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
-PLUGIN_TITLE = 'Pyzzle a multitouch video puzzle'
+PLUGIN_TITLE = 'Pyzzle MT'
 PLUGIN_AUTHOR = 'Sharath Patali'
 PLUGIN_EMAIL = 'sharath.patali@gmail.com'
 
@@ -72,8 +72,6 @@ class PyzzleEngine(MTWidget):
         self.griddy = MTSnappableGrid(rows=4,cols=3,spacing=0,block_size=(puzzle_seq[0].width,puzzle_seq[1].height))
         self.add_widget(self.griddy)
 
-        self.griddy.pos = (int(w.width/2-self.griddy._get_content_width()/2),int(w.height/2-self.griddy._get_content_height()/2))
-
         for i in range(self.griddy.rows*self.griddy.cols):
             self.pieces[i] = PyzzleObject(image=puzzle_seq[i],grid=self.griddy)
             self.add_widget(self.pieces[i])
@@ -81,6 +79,11 @@ class PyzzleEngine(MTWidget):
     def randomize(self):
         for id in self.pieces:
             self.pieces[id].randomize()
+
+    def draw(self):
+        w = self.get_parent_window()
+        self.griddy.pos = (int(w.width/2-self.griddy._get_content_width()/2),int(w.height/2-self.griddy._get_content_height()/2))
+
 
 class PyzzleObject(MTSnappableWidget):
     def __init__(self, **kwargs):
@@ -100,11 +103,18 @@ class PyzzleObject(MTSnappableWidget):
         self.image.blit(self.x,self.y,0)
         glPopMatrix()
 
+def pymt_plugin_activate(root, ctx):
+    ctx.x = PyzzleEngine(max=12)
+    root.add_widget(ctx.x)
+    ctx.x.randomize()
+
+def pymt_plugin_deactivate(root, ctx):
+    root.remove_widget(ctx.x)
 
 if __name__ == '__main__':
     w = MTWindow()
-    pyzzle = PyzzleEngine(max=12)
-    w.add_widget(pyzzle)
-    pyzzle.randomize()
+    ctx = MTContext()
+    pymt_plugin_activate(w, ctx)
     runTouchApp()
+    pymt_plugin_deactivate(w, ctx)
 

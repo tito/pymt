@@ -12,12 +12,22 @@ class TuioTouchProvider(TouchProvider):
 
     __handlers__ = {}
 
-    def __init__(self, **kwargs):
-        super(TuioTouchProvider, self).__init__()
-        kwargs.setdefault('ip', '127.0.0.1')
-        kwargs.setdefault('port', '9001')
-        self.ip = kwargs.get('ip')
-        self.port = kwargs.get('port')
+    def __init__(self, args):
+        super(TuioTouchProvider, self).__init__(args)
+        args = args.split(',')
+        if len(args) <= 0:
+            pymt_logger.error('Invalid configuration for TUIO provider')
+            pymt_logger.error('Format must be ip:port (eg. 127.0.0.1:3333)')
+            pymt_logger.error('Actual TUIO configuration is <%s>' % (str(','.join(args))))
+            return None
+        ipport = args[0].split(':')
+        if len(ipport) != 2:
+            pymt_logger.error('Invalid configuration for TUIO provider')
+            pymt_logger.error('Format must be ip:port (eg. 127.0.0.1:3333)')
+            pymt_logger.error('Actual TUIO configuration is <%s>' % (str(','.join(args))))
+            return None
+        self.ip, self.port = args[0].split(':')
+        self.port = int(self.port)
         self.handlers = {}
         self.oscid = None
         self.tuio_event_q = Queue()

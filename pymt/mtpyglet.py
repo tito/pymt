@@ -23,10 +23,11 @@ from input import *
 
 # All event listeners will add themselves to this
 # list upon creation
-touch_event_listeners = []
-touch_list = []
-pymt_providers = []
-frame_dt = 0.01 # init to a non-zero value, to prevent user zero division
+touch_event_listeners   = []
+touch_list              = []
+pymt_providers          = []
+pymt_evloop             = None
+frame_dt                = 0.01 # init to a non-zero value, to prevent user zero division
 
 def getFrameDt():
     '''Return the last delta between old and new frame.'''
@@ -42,13 +43,7 @@ def getEventLoop():
     return pymt_evloop
 
 class TouchEventLoop(pyglet.app.EventLoop):
-    '''Main event loop. This loop dispatch Tuio message and pyglet event.
-
-    :Parameters:
-        `host` : string, default to '127.0.0.1'
-            IP to listen
-        `port` : int, default to 3333
-            Port to listen
+    '''Main event loop. This loop handle update of input + dispatch event
     '''
     def __init__(self, host='127.0.0.1', port=3333):
         pyglet.app.EventLoop.__init__(self)
@@ -58,21 +53,16 @@ class TouchEventLoop(pyglet.app.EventLoop):
         self.blobs2DObj = {}
         self.double_tap_distance = pymt.pymt_config.getint('pymt', 'double_tap_distance') / 1000.0
         self.double_tap_time = pymt.pymt_config.getint('pymt', 'double_tap_time') / 1000.0
-        self.ignore_list = strtotuple(pymt.pymt_config.get('tuio', 'ignore'))
-
-        # TODO change this, make it configurable
-        global pymt_providers
-        self.providers = pymt_providers
-        self.providers.append(TouchFactory.get('tuio')(ip=host, port=port))
+        self.ignore_list = strtotuple(pymt.pymt_config.get('pymt', 'ignore'))
 
     def start(self):
-        for provider in self.providers:
+        global pymt_providers
+        for provider in pymt_providers:
             provider.start()
 
     def close(self):
-        while len(self.providers):
-            provider = self.providers[0]
-            del self.providers[0]
+        global pymt_providers
+        for provider in pymt_providers:
             provider.stop()
 
     def collide_ignore(self, cur):
@@ -129,7 +119,8 @@ class TouchEventLoop(pyglet.app.EventLoop):
         frame_dt = pyglet.clock.tick()
 
         # read and dispatch input from providers
-        for provider in self.providers:
+        global pymt_providers
+        for provider in pymt_providers:
             provider.update(dispatch_fn=self.dispatch_input)
 
         # dispatch pyglet events
@@ -174,8 +165,7 @@ def pymt_usage():
     -h, --help                  prints this mesage
     -f, --fullscreen            force run in fullscreen
     -w, --windowed              force run in window
-    -p port, --port=post        specify Tuio port (default 3333)
-    -H host, --host=host        specify Tuio host (default 127.0.0.1)
+    -p, --provider id[,options] add a provider (eg: tuio,127.0.0.1:3333)
     -F, --fps                   show fps in window
     -m mod, --module=mod        activate a module (use "list" to get available module)
     -s, --save                  save current PyMT configuration
@@ -187,19 +177,36 @@ def pymt_usage():
     print pymt_usage.__doc__ % (os.path.basename(sys.argv[0]))
 
 
-pymt_evloop = None
 def runTouchApp():
     '''Static main function that starts the application loop'''
 
     global pymt_evloop
+    global pymt_providers
 
     # Check if we show event stats
     if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
         pymt.widget.event_stats_activate()
 
-    host = pymt.pymt_config.get('tuio', 'host')
-    port = pymt.pymt_config.getint('tuio', 'port')
-    pymt_evloop = TouchEventLoop(host=host, port=port)
+    # Instance all configured input
+    for key, value in pymt.pymt_config.items('input'):
+        pymt_logger.debug('Create provider from %s' % (str(value)))
+
+        # split value
+        args = str(value).split(',', 1)
+        if len(args) == 1:
+            args.append('')
+        provider_id, args = args
+        provider = TouchFactory.get(provider_id)
+        if provider is None:
+            pymt_logger.warning('Unknown <%s> provider' % str(provider_id))
+            continue
+
+        # create provider
+        p = provider(args)
+        if p:
+            pymt_providers.append(p)
+
+    pymt_evloop = TouchEventLoop()
     pymt_evloop.start()
 
     while True:

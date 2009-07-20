@@ -6,7 +6,7 @@ __all__ = ['TouchProvider']
 
 class TouchProvider(object):
 
-    def __init__(self, **kwargs):
+    def __init__(self, args):
         if self.__class__ == TouchProvider:
             raise NotImplementedError, 'class TouchProvider is abstract'
 

@@ -73,6 +73,11 @@ class Modules:
         self.wins.append(win)
         self.update()
 
+    def unregister_window(self, win):
+        '''Remove window from window list'''
+        self.wins.remove(win)
+        self.update()
+
     def update(self):
         '''Update status of module for each windows'''
         modules_to_activate = map(lambda x: x[0], pymt.pymt_config.items('modules'))

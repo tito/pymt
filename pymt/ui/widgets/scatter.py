@@ -335,7 +335,7 @@ class MTScatterWidget(MTWidget):
         x, y = touch.x, touch.y
 
         # let the child widgets handle the event if they want
-        if self.collide_point(x, y) and not touch.grab_state:
+        if self.collide_point(x, y) and not touch.grab_current == self:
             touch.push()
             touch.x, touch.y = self.to_local(x, y)
             if super(MTScatterWidget, self).on_touch_move(touch):
@@ -344,7 +344,19 @@ class MTScatterWidget(MTWidget):
             touch.pop()
 
         # rotate/scale/translate
-        if touch.id in self.touches and touch.grab_state:
+        if touch.id in self.touches and touch.grab_current == self:
+            touch.push()
+
+            # where we are in grab state,
+            # coordinate are from window
+            # we must translate it as if they are transformed from parent
+            # if we have parent, use it (best perf)
+            if self.parent:
+                x, y = self.parent.to_widget(touch.x, touch.y)
+            # or use local method
+            else:
+                x, y = self.to_parent(*self.to_widget(touch.x, touch.y))
+
             self.rotate_zoom_move(touch.id, x, y)
 
             # precalculate size of container

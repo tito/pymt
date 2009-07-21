@@ -25,6 +25,7 @@ class Touch(object):
         self.grab_list = []
         self.grab_exclusive_class = None
         self.grab_state = False
+        self.grab_current = None
 
         # TUIO definition
         self.id = id

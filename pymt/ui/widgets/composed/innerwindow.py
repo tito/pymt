@@ -158,31 +158,29 @@ class MTInnerWindow(MTScatterWidget):
             touch.grab(self)
             return True
         touch.pop()
+
         if super(MTInnerWindow, self).on_touch_down(touch):
-            touch.grab(self)
             return True
 
     def on_touch_move(self, touch):
-        touch.push()
-        touch.x, touch.y = super(MTInnerWindow, self).to_local(touch.x, touch.y)
-        if self.controls.dispatch_event('on_touch_move', touch):
+        if touch.grab_current == self:
+            touch.push()
+            touch.x, touch.y = super(MTInnerWindow, self).to_widget(touch.x, touch.y)
+            if self.controls.dispatch_event('on_touch_move', touch):
+                touch.pop()
+                return True
             touch.pop()
-            return True
-        touch.pop()
         return super(MTInnerWindow, self).on_touch_move(touch)
 
     def on_touch_up(self, touch):
-        touch.push()
-        touch.x, touch.y = super(MTInnerWindow, self).to_local(touch.x, touch.y)
-        if self.controls.dispatch_event('on_touch_up', touch):
+        if touch.grab_current == self:
+            touch.push()
+            touch.x, touch.y = super(MTInnerWindow, self).to_widget(touch.x, touch.y)
+            if self.controls.dispatch_event('on_touch_up', touch):
+                touch.pop()
+                return True
             touch.pop()
-            return True
-        touch.pop()
         return super(MTInnerWindow, self).on_touch_up(touch)
-
-    def tao_local(self, x, y):
-        self.new_point = matrix_inv_mult(self.transform_mat, (x, y,0,1)) * self.get_scale_factor()
-        return (self.new_point.x, self.new_point.y)
 
     def collide_point(self, x, y):
         scaled_border = self.get_scaled_border()

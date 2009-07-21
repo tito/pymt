@@ -330,6 +330,10 @@ class MTWidget(pyglet.event.EventDispatcher):
                 if ev in self.event_types:
                     self.event_types.remove(ev)
 
+    def to_widget(self, x, y):
+        x, y = self.parent.to_widget(x, y)
+        return self.to_local(x, y)
+
     def to_window(self, x, y, initial=True):
         if not initial:
             x, y = self.to_parent(x, y)

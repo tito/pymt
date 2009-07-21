@@ -99,6 +99,8 @@ class TouchEventLoop(pyglet.app.EventLoop):
                 touch.push()
                 touch.scale_for_screen(*root_window.size)
 
+            touch.grab_current = wid
+
             if type == 'down':
                 # don't dispatch again touch in on_touch_down
                 # a down event are nearly uniq here.
@@ -108,6 +110,8 @@ class TouchEventLoop(pyglet.app.EventLoop):
                 wid.dispatch_event('on_touch_move', touch)
             elif type == 'up':
                 wid.dispatch_event('on_touch_up', touch)
+
+            touch.grab_current = None
 
             if wid != root_window and root_window is not None:
                 touch.pop()

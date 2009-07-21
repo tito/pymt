@@ -27,7 +27,7 @@ def pymt_plugin_activate(root, ctx):
     bordersize = 20
 
     #Set gravity. (0,0) would be no gravity (and is the default). (0, -800) seems to be fairly accurate for normal downward gravity.
-    gravity = (0, -800)
+    gravity = (0, 0)
     
     ctx.world = PhysicsWorld(root=root, gravity=gravity, bordersize=bordersize, debugbox=debugbox)
     root.add_widget(ctx.world)
@@ -55,18 +55,19 @@ class Shape(MTDragable):
     def draw(self):
 
         #Draw a box around the back of the object for debugging purposes.
-        if self.parent.debugbox:
-            glColor4f(1.0, 0.0, 1.0, 1.0)
-            pointlist = []
-            pointlist.append(self.x)
-            pointlist.append(self.y)
-            pointlist.append(self.x)
-            pointlist.append(self.y + self.height)
-            pointlist.append(self.x + self.width)
-            pointlist.append(self.y + self.height)
-            pointlist.append(self.x + self.width)
-            pointlist.append(self.y)
-            pyglet.graphics.draw(4, GL_POLYGON, ('v2f', pointlist))
+        if self.complete:
+            if self.parent.debugbox:
+                glColor4f(1.0, 0.0, 1.0, 1.0)
+                pointlist = []
+                pointlist.append(self.x)
+                pointlist.append(self.y)
+                pointlist.append(self.x)
+                pointlist.append(self.y + self.height)
+                pointlist.append(self.x + self.width)
+                pointlist.append(self.y + self.height)
+                pointlist.append(self.x + self.width)
+                pointlist.append(self.y)
+                pyglet.graphics.draw(4, GL_POLYGON, ('v2f', pointlist))
 
         
         glColor4f(self.color[0], self.color[1], self.color[2], self.color[3])
@@ -148,33 +149,33 @@ class Shape(MTDragable):
         self.body.CreateShape(self.shapeDef)
         self.body.SetMassFromShapes()
         
-    def on_touch_down(self, touches, touchID, x, y):
-        if self.collide_point(x, y) and not self.parent.jointmode:
+    def on_touch_down(self, touch):
+        if self.collide_point(touch.x, touch.y) and not self.parent.jointmode:
             self.moving = True
             self.oldx = self.x
             self.oldy = self.y
-            super(Shape, self).on_touch_down(touches, touchID, x, y)
+            super(Shape, self).on_touch_down(touch)
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if self.collide_point(x, y) and not self.parent.jointmode:
-            super(Shape, self).on_touch_move(touches, touchID, x, y)
+    def on_touch_move(self, touch):
+        if self.collide_point(touch.x, touch.y) and not self.parent.jointmode:
+            super(Shape, self).on_touch_move(touch)
             self.body.position = (self.pos[0] + self.width/2, self.pos[1] + self.height/2)
            
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if self.collide_point(x, y):
+    def on_touch_up(self, touch):
+        if self.collide_point(touch.x, touch.y):
             if self.parent.jointmode:
                 self.parent.secondjoint = self.body.GetWorldCenter()
                 self.parent.secondjointobj = self
                 self.parent.createjoint()
             #Check to see if this is a double-tap...
-            elif touches[touchID].is_double_tap:
+            elif touch.is_double_tap:
                 #Turn on "create joint mode" -- the first joint point is where we just tapped.
                 self.parent.jointmode = True
                 self.parent.firstjointobj = self
                 self.parent.firstjoint = self.body.GetWorldCenter()
             else:
-                super(Shape, self).on_touch_up(touches, touchID, x, y)
+                super(Shape, self).on_touch_up(touch)
                 if self.moving:
                     self.body.position = (self.pos[0] + self.width/2, self.pos[1] + self.height/2)
                     #Figure out which way we moved, and how quickly. Set the velocity of the object accordingly.
@@ -219,18 +220,18 @@ class StaticShape(MTWidget):
         groundShapeDef.SetAsBox(self.width/2, self.height/2)
         groundBodyShape = self.body.CreateShape(groundShapeDef)
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if self.collide_point(x, y):
+    def on_touch_up(self, touch):
+        if self.collide_point(touch.x, touch.y):
             if self.parent.jointmode:
-                self.parent.secondjoint = (x, y)
+                self.parent.secondjoint = (touch.x, touch.y)
                 self.parent.secondjointobj = self
                 self.parent.createjoint()
             #Check to see if this is a double-tap...
-            elif touches[touchID].is_double_tap:
+            elif touch.is_double_tap:
                 #Turn on "create joint mode" -- the first joint point is where we just tapped.
                 self.parent.jointmode = True
                 self.parent.firstjointobj = self
-                self.parent.firstjoint = (x, y)
+                self.parent.firstjoint = (touch.x, touch.y)
             
 class PhysicsWorld(MTWidget):
     def __init__(self, **kwargs):
@@ -322,24 +323,26 @@ class PhysicsWorld(MTWidget):
         self.secondjointobj.moving = False
 
 
-    def on_touch_down(self, touches, touchID, x, y):
-        newshape = Shape((x, y))
-        self.shapes[touchID] = newshape
-        super(PhysicsWorld, self).on_touch_down(touches, touchID, x, y)
+    def on_touch_down(self, touch):
+        newshape = Shape((touch.x, touch.y))
+        self.shapes[touch.id] = newshape
+        super(PhysicsWorld, self).on_touch_down(touch)
 
-    def on_touch_move(self, touches, touchID, x, y):
-        self.shapes[touchID].addpoint((x, y))
-        super(PhysicsWorld, self).on_touch_move(touches, touchID, x, y)
+    def on_touch_move(self, touch):
+        self.shapes[touch.id].addpoint((touch.x, touch.y))
+        super(PhysicsWorld, self).on_touch_move(touch)
 
-    def on_touch_up(self, touches, touchID, x, y):
-        if self.shapes[touchID].finish((x, y)) == True:
-            self.add_widget(self.shapes[touchID])
-        del self.shapes[touchID]
-        super(PhysicsWorld, self).on_touch_up(touches, touchID, x, y)
+    def on_touch_up(self, touch):
+        if self.shapes[touch.id].finish((touch.x, touch.y)) == True:
+            self.add_widget(self.shapes[touch.id])
+        del self.shapes[touch.id]
+        super(PhysicsWorld, self).on_touch_up(touch)
 
 class MyContactListener(b2ContactListener):
-    def __init__(self): super(myContactListener, self).__init__() 
+    def __init__(self):
+        super(MyContactListener, self).__init__() 
     def Add(self, points):
+        print points
         body_pairs = [(p.shape1.GetBody(), p.shape2.GetBody()) for p in self.points]
         for body1, body2 in body_pairs:
             print body1, body2

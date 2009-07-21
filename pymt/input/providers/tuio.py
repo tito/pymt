@@ -1,7 +1,7 @@
 __all__ = ['TuioTouchProvider']
 
 import osc
-from Queue import Queue
+from collections import deque
 from ..provider import TouchProvider
 from ..factory import TouchFactory
 from ..touch import Touch
@@ -30,7 +30,7 @@ class TuioTouchProvider(TouchProvider):
         self.port = int(self.port)
         self.handlers = {}
         self.oscid = None
-        self.tuio_event_q = Queue()
+        self.tuio_event_q = deque()
         self.touches = {}
 
     @staticmethod
@@ -61,46 +61,53 @@ class TuioTouchProvider(TouchProvider):
     def osc_tuio_cb(self, *incoming):
         message = incoming[0]
         oscpath, types, args = message[0], message[1], message[2:]
-        self.tuio_event_q.put([oscpath, args, types])
+        self.tuio_event_q.appendleft([oscpath, args, types])
 
     def update(self, dispatch_fn):
         # read the Queue with event
-        while not self.tuio_event_q.empty():
-            oscpath, args, types = self.tuio_event_q.get()
-            command = args[0]
+        try:
+            while True:
+                value = self.tuio_event_q.pop()
+                self._update(dispatch_fn, value)
+        except IndexError:
+            return
 
-            # verify commands
-            if command not in ['alive', 'set']:
-                return
+    def _update(self, dispatch_fn, value):
+        oscpath, args, types = value
+        command = args[0]
 
-            # move or create a new touch
-            if command == 'set':
-                id = args[1]
-                if id not in self.touches[oscpath]:
-                    # new touch
-                    touch = TuioTouchProvider.__handlers__[oscpath](id, args[2:])
-                    self.touches[oscpath][id] = touch
-                    dispatch_fn('down', touch)
-                else:
-                    # update a current touch
+        # verify commands
+        if command not in ['alive', 'set']:
+            return
+
+        # move or create a new touch
+        if command == 'set':
+            id = args[1]
+            if id not in self.touches[oscpath]:
+                # new touch
+                touch = TuioTouchProvider.__handlers__[oscpath](id, args[2:])
+                self.touches[oscpath][id] = touch
+                dispatch_fn('down', touch)
+            else:
+                # update a current touch
+                touch = self.touches[oscpath][id]
+                touch.move(args[2:])
+                dispatch_fn('move', touch)
+
+        # alive event, check for deleted touch
+        if command == 'alive':
+            alives = args[1:]
+            to_delete = []
+            for id in self.touches[oscpath]:
+                if not id in alives:
+                    # touch up
                     touch = self.touches[oscpath][id]
-                    touch.move(args[2:])
-                    dispatch_fn('move', touch)
+                    if not touch in to_delete:
+                        to_delete.append(touch)
 
-            # alive event, check for deleted touch
-            if command == 'alive':
-                alives = args[1:]
-                to_delete = []
-                for id in self.touches[oscpath]:
-                    if not id in alives:
-                        # touch up
-                        touch = self.touches[oscpath][id]
-                        if not touch in to_delete:
-                            to_delete.append(touch)
-
-                for touch in to_delete:
-                    dispatch_fn('up', touch)
-                    del self.touches[oscpath][touch.id]
+            for touch in to_delete:
+                dispatch_fn('up', touch)
+                del self.touches[oscpath][touch.id]
 
 class Tuio2dCurTouch(Touch):
     def __init__(self, id, args):

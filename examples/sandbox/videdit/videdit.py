@@ -16,7 +16,7 @@ class Event(MTWidget):
         self.mode = 'move'
         
     def draw(self):
-        set_color(1,1,1,1)
+        set_color(1,0,1,1)
         drawRectangle(size = self.size, pos = self.pos)
         
     def on_touch_down(self, touch):

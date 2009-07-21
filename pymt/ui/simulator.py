@@ -44,7 +44,7 @@ class MTSimulator(MTWidget):
             ry = 1. - (y / float(self.get_parent_window().height))
             self.current_drag = cur = TouchFactory.get('tuio').create('/tuio/2Dcur', id=id, args=[rx, ry])
             if modifiers & key.MOD_SHIFT:
-                cur.is_float_tap = True
+                cur.is_double_tap = True
             self.touches[id] = cur
             getEventLoop().dispatch_input('down', cur)
         return True

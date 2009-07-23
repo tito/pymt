@@ -51,8 +51,8 @@ class LabIcon(MTSvg):
 
 
 ws = Workspace(do_rotation = False)
-s = LabIcon(filename = '/Users/Nat/Source/pymt/examples/sandbox/synthlab/sl-addSynth+.svg')
-s2 = LabIcon(filename = '/Users/Nat/Source/pymt/examples/sandbox/synthlab/sl-speaker.svg')
+s = LabIcon(filename = 'sl-addSynth+.svg')
+s2 = LabIcon(filename = 'sl-speaker.svg')
 w = MTWindow(style = {'bg-color': (0,0,0,1)})
 ws.add_widget(s)
 ws.add_widget(s2)

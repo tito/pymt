@@ -4,7 +4,7 @@ Example usage:
     import squirtle
     my_svg = squirtle.SVG('filename.svg')
     my_svg.draw(100, 200, angle=15)
-    
+
 '''
 
 __all__ = ['SVG', 'setup_gl']
@@ -15,7 +15,14 @@ import re
 import math
 from ctypes import CFUNCTYPE, POINTER, byref, cast
 import sys, os
+try:
+    # get the faster one
+    from cStringIO import StringIO
+except ImportError:
+    # fallback to the default one
+    from StringIO import StringIO
 from pymt.logger import pymt_logger
+
 
 if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     tess = gluNewTess()
@@ -27,7 +34,7 @@ if sys.platform == 'win32':
     c_functype = WINFUNCTYPE
 else:
     c_functype = CFUNCTYPE
-    
+
 callback_types = {GLU_TESS_VERTEX: c_functype(None, POINTER(GLvoid)),
                   GLU_TESS_BEGIN: c_functype(None, GLenum),
                   GLU_TESS_END: c_functype(None),
@@ -40,13 +47,13 @@ def set_tess_callback(which):
         gluTessCallback(tess, which, cast(cb, CFUNCTYPE(None)))
         return cb
     return set_call
-    
+
 BEZIER_POINTS = 10
 CIRCLE_POINTS = 24
 TOLERANCE = 0.001
 def setup_gl():
     """Set various pieces of OpenGL state for better rendering of SVG.
-    
+
     """
     glEnable(GL_LINE_SMOOTH)
     glEnable(GL_BLEND)
@@ -216,7 +223,7 @@ colormap = {
     'yellowgreen': '#9acd32',
 }
 
-    
+
 def parse_color(c, default=None):
     if not c:
         return default
@@ -245,7 +252,7 @@ def parse_color(c, default=None):
     except Exception, ex:
         pymt_logger.exception('exception parsing color %s' % str(c))
         return None
-        
+
 class Matrix(object):
     def __init__(self, string=None):
         self.values = [1, 0, 0, 1, 0, 0] #Identity matrix seems a sensible default
@@ -257,14 +264,14 @@ class Matrix(object):
                 self.values = [1, 0, 0, 1, x, y]
             elif string.startswith('scale('):
                 sx, sy = [float(x) for x in parse_list(string[6:-1])]
-                self.values = [sx, 0, 0, sy, 0, 0]           
+                self.values = [sx, 0, 0, sy, 0, 0]
         elif string is not None:
             self.values = list(string)
-    
+
     def __call__(self, other):
         return (self.values[0]*other[0] + self.values[2]*other[1] + self.values[4],
                 self.values[1]*other[0] + self.values[3]*other[1] + self.values[5])
-    
+
     def inverse(self):
         d = float(self.values[0]*self.values[3] - self.values[1]*self.values[2])
         return Matrix([self.values[3]/d, -self.values[1]/d, -self.values[2]/d, self.values[0]/d,
@@ -275,10 +282,10 @@ class Matrix(object):
         a, b, c, d, e, f = self.values
         u, v, w, x, y, z = other.values
         return Matrix([a*u + c*v, b*u + d*v, a*w + c*x, b*w + d*x, a*y + c*z + e, b*y + d*z + f])
-                               
+
 class TriangulationError(Exception):
     """Exception raised when triangulation of a filled area fails. For internal use only.
-    
+
     """
     pass
 
@@ -308,8 +315,8 @@ class GradientContainer(dict):
         callbacks = self.callback_dict.get(key, [])
         for callback in callbacks:
             callback(val)
-        
-    
+
+
 class Gradient(object):
     def __init__(self, element, svg):
         self.element = element
@@ -340,7 +347,7 @@ class Gradient(object):
                 return
         if not delay_params:
             self.get_params(parent)
-        
+
     def interp(self, pt):
         if not self.stops: return [255, 0, 255, 255]
         t = self.grad_value(self.inv_transform(pt))
@@ -368,7 +375,7 @@ class Gradient(object):
 
     def tardy_gradient_parsed(self, gradient):
         self.get_params(gradient)
-        
+
 class LinearGradient(Gradient):
     params = ['x1', 'x2', 'y1', 'y2', 'stops']
     def grad_value(self, pt):
@@ -379,36 +386,39 @@ class RadialGradient(Gradient):
 
     def grad_value(self, pt):
         return math.sqrt((pt[0] - self.cx) ** 2 + (pt[1] - self.cy) ** 2)/self.r
-        
+
 class SVG(object):
     """Opaque SVG image object.
-    
-    Users should instantiate this object once for each SVG file they wish to 
+
+    Users should instantiate this object once for each SVG file they wish to
     render.
-    
+
     """
-    
+
     _disp_list_cache = {}
-    def __init__(self, filename, anchor_x=0, anchor_y=0, bezier_points=BEZIER_POINTS, circle_points=CIRCLE_POINTS):
+    def __init__(self, filename, anchor_x=0, anchor_y=0, bezier_points=BEZIER_POINTS, circle_points=CIRCLE_POINTS, rawdata=None):
         """Creates an SVG object from a .svg or .svgz file.
-        
+
             `filename`: str
                 The name of the file to be loaded.
             `anchor_x`: float
-                The horizontal anchor position for scaling and rotations. Defaults to 0. The symbolic 
+                The horizontal anchor position for scaling and rotations. Defaults to 0. The symbolic
                 values 'left', 'center' and 'right' are also accepted.
             `anchor_y`: float
-                The vertical anchor position for scaling and rotations. Defaults to 0. The symbolic 
+                The vertical anchor position for scaling and rotations. Defaults to 0. The symbolic
                 values 'bottom', 'center' and 'top' are also accepted.
             `bezier_points`: int
                 The number of line segments into which to subdivide Bezier splines. Defaults to 10.
             `circle_points`: int
-                The number of line segments into which to subdivide circular and elliptic arcs. 
+                The number of line segments into which to subdivide circular and elliptic arcs.
                 Defaults to 10.
-                
+            `rawdata`: string
+                Raw data string (you need to set a fake filename for cache anyway)
+                Defaults to None.
         """
-        
+
         self.filename = filename
+        self.rawdata = rawdata
         self.bezier_points = bezier_points
         self.circle_points = circle_points
         self.bezier_coefficients = []
@@ -427,12 +437,12 @@ class SVG(object):
             self._a_x = self.width
         else:
             self._a_x = self._anchor_x
-    
+
     def _get_anchor_x(self):
         return self._anchor_x
-    
+
     anchor_x = property(_get_anchor_x, _set_anchor_x)
-    
+
     def _set_anchor_y(self, anchor_y):
         self._anchor_y = anchor_y
         if self._anchor_y == 'bottom':
@@ -446,18 +456,21 @@ class SVG(object):
 
     def _get_anchor_y(self):
         return self._anchor_y
-        
+
     anchor_y = property(_get_anchor_y, _set_anchor_y)
-    
+
     def generate_disp_list(self):
         if (self.filename, self.bezier_points) in self._disp_list_cache:
             self.disp_list, self.width, self.height = self._disp_list_cache[self.filename, self.bezier_points]
         else:
-            if open(self.filename, 'rb').read(3) == '\x1f\x8b\x08': #gzip magic numbers
-                import gzip
-                f = gzip.open(self.filename, 'rb')
+            if self.rawdata != None:
+                f = StringIO(self.rawdata)
             else:
-                f = open(self.filename, 'rb')
+                if open(self.filename, 'rb').read(3) == '\x1f\x8b\x08': #gzip magic numbers
+                    import gzip
+                    f = gzip.open(self.filename, 'rb')
+                else:
+                    f = open(self.filename, 'rb')
             self.tree = parse(f)
             self.parse_doc()
             self.disp_list = glGenLists(1)
@@ -468,21 +481,21 @@ class SVG(object):
 
     def draw(self, x, y, z=0, angle=0, scale=1):
         """Draws the SVG to screen.
-        
+
         :Parameters
             `x` : float
                 The x-coordinate at which to draw.
             `y` : float
                 The y-coordinate at which to draw.
             `z` : float
-                The z-coordinate at which to draw. Defaults to 0. Note that z-ordering may not 
+                The z-coordinate at which to draw. Defaults to 0. Note that z-ordering may not
                 give expected results when transparency is used.
             `angle` : float
                 The angle by which the image should be rotated (in degrees). Defaults to 0.
             `scale` : float
-                The amount by which the image should be scaled, either as a float, or a tuple 
+                The amount by which the image should be scaled, either as a float, or a tuple
                 of two floats (xscale, yscale).
-        
+
         """
         glPushMatrix()
         glTranslatef(x, y, z)
@@ -493,7 +506,7 @@ class SVG(object):
                 glScalef(scale[0], scale[1], 1)
             except TypeError:
                 glScalef(scale, scale, 1)
-        if self._a_x or self._a_y:  
+        if self._a_x or self._a_y:
             glTranslatef(-self._a_x, -self._a_y, 0)
         glCallList(self.disp_list)
         glPopMatrix()
@@ -509,8 +522,8 @@ class SVG(object):
                     fills = [g.interp(x) for x in tris]
                 else:
                     fills = [fill for x in tris]
-                #pyglet.graphics.draw(len(tris), GL_TRIANGLES, 
-                #                     ('v3f', sum((x + [0] for x in tris), [])), 
+                #pyglet.graphics.draw(len(tris), GL_TRIANGLES,
+                #                     ('v3f', sum((x + [0] for x in tris), [])),
                 #                     ('c3B', sum(fills, [])))
                 glBegin(GL_TRIANGLES)
                 for vtx, clr in zip(tris, fills):
@@ -529,21 +542,21 @@ class SVG(object):
                         strokes = [g.interp(x) for x in loop_plus]
                     else:
                         strokes = [stroke for x in loop_plus]
-                    #pyglet.graphics.draw(len(loop_plus), GL_LINES, 
-                    #                     ('v3f', sum((x + [0] for x in loop_plus), [])), 
+                    #pyglet.graphics.draw(len(loop_plus), GL_LINES,
+                    #                     ('v3f', sum((x + [0] for x in loop_plus), [])),
                     #                     ('c3B', sum((stroke for x in loop_plus), [])))
                     glBegin(GL_LINES)
                     for vtx, clr in zip(loop_plus, strokes):
                         vtx = transform(vtx)
                         glColor4ub(*clr)
                         glVertex3f(vtx[0], vtx[1], 0)
-                    glEnd()                     
+                    glEnd()
     def parse_float(self, txt):
         if txt.endswith('px'):
             return float(txt[:-2])
         else:
             return float(txt)
-    
+
 
     def parse_doc(self):
         self.paths = []
@@ -563,7 +576,7 @@ class SVG(object):
             except Exception, ex:
                 pymt_logger.exception('exception while parsing element %s' % e)
                 raise
-            
+
     def parse_element(self, e):
         default = object()
         self.fill = parse_color(e.get('fill'), default)
@@ -572,10 +585,10 @@ class SVG(object):
         self.opacity *= float(e.get('opacity', 1))
         fill_opacity = float(e.get('fill-opacity', 1))
         stroke_opacity = float(e.get('stroke-opacity', 1))
-        
+
         oldtransform = self.transform
         self.transform = self.transform * Matrix(e.get('transform'))
-        
+
         style = e.get('style')
         if style:
             sdict = parse_style(style)
@@ -590,15 +603,15 @@ class SVG(object):
         if self.fill == default:
             self.fill = [0, 0, 0, 255]
         if self.stroke == default:
-            self.stroke = [0, 0, 0, 0]  
+            self.stroke = [0, 0, 0, 0]
         if isinstance(self.stroke, list):
             self.stroke[3] = int(self.opacity * stroke_opacity * self.stroke[3])
         if isinstance(self.fill, list):
-            self.fill[3] = int(self.opacity * fill_opacity * self.fill[3])                 
+            self.fill[3] = int(self.opacity * fill_opacity * self.fill[3])
         if isinstance(self.stroke, list) and self.stroke[3] == 0: self.stroke = self.fill #Stroked edges antialias better
-        
+
         if e.tag.endswith('path'):
-            pathdata = e.get('d', '')               
+            pathdata = e.get('d', '')
             pathdata = re.findall("([A-Za-z]|-?[0-9]+\.?[0-9]*(?:e-?[0-9]*)?)", pathdata)
 
             def pnext():
@@ -617,7 +630,7 @@ class SVG(object):
                     x1, y1 = pnext()
                     x2, y2 = pnext()
                     x, y = pnext()
-                    
+
                     self.curve_to(mx + x1, my + y1, mx + x2, my + y2, mx + x, my + y)
                 elif opcode == 'S':
                     self.curve_to(2 * self.x - self.last_cx, 2 * self.y - self.last_cy, *(pnext() + pnext()))
@@ -627,7 +640,7 @@ class SVG(object):
                     x1, y1 = 2 * self.x - self.last_cx, 2 * self.y - self.last_cy
                     x2, y2 = pnext()
                     x, y = pnext()
-                    
+
                     self.curve_to(x1, y1, mx + x2, my + y2, mx + x, my + y)
                 elif opcode == 'A':
                     rx, ry = pnext()
@@ -738,7 +751,7 @@ class SVG(object):
         self.x = x
         self.y = y
         self.loop.append([x,y])
-    
+
     def arc_to(self, rx, ry, phi, large_arc, sweep, x, y):
         # This function is made out of magical fairy dust
         # http://www.w3.org/TR/2003/REC-SVG11-20030114/implnote.html#ArcImplementationNotes
@@ -766,14 +779,14 @@ class SVG(object):
             a = math.acos((u[0]*v[0] + u[1]*v[1]) / math.sqrt((u[0]**2 + u[1]**2) * (v[0]**2 + v[1]**2)))
             sgn = 1 if u[0]*v[1] > u[1]*v[0] else -1
             return sgn * a
-        
+
         psi = angle((1,0), ((x_ - cx_)/rx, (y_ - cy_)/ry))
-        delta = angle(((x_ - cx_)/rx, (y_ - cy_)/ry), 
+        delta = angle(((x_ - cx_)/rx, (y_ - cy_)/ry),
                       ((-x_ - cx_)/rx, (-y_ - cy_)/ry))
         if sweep and delta < 0: delta += math.pi * 2
         if not sweep and delta > 0: delta -= math.pi * 2
         n_points = max(int(abs(self.circle_points * delta / (2 * math.pi))), 1)
-        
+
         for i in xrange(n_points + 1):
             theta = psi + i * delta / n_points
             ct = math.cos(theta)
@@ -861,7 +874,7 @@ class SVG(object):
             ptr = gluErrorString(code)
             err = ''
             idx = 0
-            while ptr[idx]: 
+            while ptr[idx]:
                 err += chr(ptr[idx])
                 idx += 1
             self.warn("GLU Tesselation Error: " + err)
@@ -872,7 +885,7 @@ class SVG(object):
             data = (GLdouble * 3)(x, y, z)
             dataOut[0] = cast(pointer(data), POINTER(GLvoid))
             spareverts.append(data)
-        
+
         data_lists = []
         for vlist in looplist:
             d_list = []
@@ -881,13 +894,13 @@ class SVG(object):
                 d_list.append(v_data)
             data_lists.append(d_list)
         gluTessBeginPolygon(tess, None)
-        for d_list in data_lists:    
+        for d_list in data_lists:
             gluTessBeginContour(tess)
             for v_data in d_list:
                 gluTessVertex(tess, v_data, v_data)
             gluTessEndContour(tess)
         gluTessEndPolygon(tess)
-        return tlist       
+        return tlist
 
     def warn(self, message):
         pymt_logger.warning('svg parser on %s: %s' % (self.filename, message))

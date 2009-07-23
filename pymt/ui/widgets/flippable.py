@@ -7,7 +7,7 @@ __all__ = ['MTFlippableWidget']
 
 from pyglet.gl import *
 from ..factory import MTWidgetFactory
-from ...graphx import gx_matrix, drawRectangle, set_color
+from ...graphx import gx_matrix, drawCSSRectangle, set_color
 from widget import MTWidget
 from ..animation import Animation, AnimationAlpha
 

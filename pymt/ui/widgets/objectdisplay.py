@@ -1,5 +1,5 @@
 '''
-Object: widget that handle fiducial object, and draw them
+ObjectDisplay: widget that handle fiducial object, and draw them
 '''
 
 from __future__ import with_statement
@@ -18,16 +18,18 @@ class MTObjectDisplay(MTWidget):
         super(MTObjectDisplay, self).__init__(**kwargs)
         self.objects = {}
 
-    def on_object_down(self, objects, objectID, id, x, y, angle):
-        self.objects[objectID] = (x, y, -angle * 180. / pi)
+    def on_touch_down(self, touch):
+        if not 'a' in touch:
+            return
+        self.objects[touch.id] = (touch.x, touch.y, -touch.a * 180. / pi)
 
-    def on_object_move(self, objects, objectID, id, x, y, angle):
-        if objectID in self.objects:
-            self.objects[objectID] = (x, y, -angle * 180. / pi)
+    def on_touch_move(self, touch):
+        if touch.id in self.objects:
+            self.objects[touch.id] = (touch.x, touch.y, -touch.a * 180. / pi)
 
-    def on_object_up(self, objects, objectID, id, x, y, angle):
-        if objectID in self.objects:
-           del self.objects[objectID]
+    def on_touch_up(self, touch):
+        if touch.id in self.objects:
+           del self.objects[object.id]
 
     def draw(self):
         if not self.visible:

@@ -491,13 +491,16 @@ class MTScatterSvg(MTScatterWidget):
     :Parameters:
         `filename` : str
             Filename of image
+        `rawdata` : str
+            Raw data of the image. If given, the filename property is used only for cache purposes.
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('filename', None)
         if kwargs.get('filename') is None:
             raise Exception('No filename given to MTSvg')
+        kwargs.setdefault('rawdata', None)
         super(MTScatterSvg, self).__init__(**kwargs)
-        self.squirt = MTSvg(filename=kwargs.get('filename'))
+        self.squirt = MTSvg(filename=kwargs.get('filename'), rawdata=kwargs.get('rawdata'))
         self.size = (self.squirt.svg.width, self.squirt.svg.height)
 
     def draw(self):

@@ -17,12 +17,16 @@ class MTSvg(MTWidget):
     :Parameters:
         `filename` : str
             Filename of image
+	`rawdata`  : str
+	    The raw data of an SVG file. If given, the filename property will only be used for cache purposes.
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('filename', None)
+	kwargs.setdefault('rawdata', None)
         if kwargs.get('filename') is None:
             raise Exception('No filename given to MTSvg')
         super(MTSvg, self).__init__(**kwargs)
+	self.rawdata = kwargs.get('rawdata')
         self.filename = kwargs.get('filename')
         self.size = (self.svg.width, self.svg.height)
 
@@ -34,8 +38,12 @@ class MTSvg(MTWidget):
     def _set_filename(self, filename):
 		# TODO remove this ugly code, improve loader for this
         try:
-            pymt_logger.debug('loading %s' % filename)
-            self.svg = squirtle.SVG(filename)
+            if self.rawdata is None:
+		pymt_logger.debug('loading %s' % filename)
+		self.svg = squirtle.SVG(filename)
+	    else:
+		pymt_logger.debug('loading %s from rawdata' % filename)
+		self.svg = squirtle.SVG(filename=filename, rawdata=self.rawdata)
         except Exception, e:
             try:
                 svgpath = os.path.join(os.path.dirname(pymt.__file__), 'data/icons/svg')

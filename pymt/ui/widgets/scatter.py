@@ -345,17 +345,6 @@ class MTScatterWidget(MTWidget):
 
         # rotate/scale/translate
         if touch.id in self.touches and touch.grab_current == self:
-            touch.push()
-
-            # where we are in grab state,
-            # coordinate are from window
-            # we must translate it as if they are transformed from parent
-            # if we have parent, use it (best perf)
-            if self.parent:
-                x, y = self.parent.to_widget(touch.x, touch.y)
-            # or use local method
-            else:
-                x, y = self.to_parent(*self.to_widget(touch.x, touch.y))
 
             self.rotate_zoom_move(touch.id, x, y)
 

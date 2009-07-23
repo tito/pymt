@@ -98,6 +98,11 @@ class TouchEventLoop(pyglet.app.EventLoop):
             if wid != root_window and root_window is not None:
                 touch.push()
                 touch.scale_for_screen(*root_window.size)
+                # and do to_local until the widget
+                if wid.parent:
+                    touch.x, touch.y = wid.parent.to_widget(touch.x, touch.y)
+                else:
+                    touch.x, touch.y = wid.to_parent(wid.to_widget(touch.x, touch.y))
 
             touch.grab_current = wid
 

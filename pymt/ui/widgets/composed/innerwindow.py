@@ -165,7 +165,7 @@ class MTInnerWindow(MTScatterWidget):
     def on_touch_move(self, touch):
         if touch.grab_current == self:
             touch.push()
-            touch.x, touch.y = super(MTInnerWindow, self).to_widget(touch.x, touch.y)
+            touch.x, touch.y = super(MTInnerWindow, self).to_local(touch.x, touch.y)
             if self.controls.dispatch_event('on_touch_move', touch):
                 touch.pop()
                 return True
@@ -175,7 +175,7 @@ class MTInnerWindow(MTScatterWidget):
     def on_touch_up(self, touch):
         if touch.grab_current == self:
             touch.push()
-            touch.x, touch.y = super(MTInnerWindow, self).to_widget(touch.x, touch.y)
+            touch.x, touch.y = super(MTInnerWindow, self).to_local(touch.x, touch.y)
             if self.controls.dispatch_event('on_touch_up', touch):
                 touch.pop()
                 return True

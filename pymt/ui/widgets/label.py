@@ -88,7 +88,7 @@ class MTLabel(MTWidget):
     def set_color(self, color):
         if len(color) == 3:
             color[4] = 1
-        color = map(lambda x: float(x) * 255., color)
+        color = map(lambda x: int(float(x) * 255.), color)
         self.label_obj.color = color
     def get_color(self):
         return map(lambda x: float(x) / 255., self.label_obj.color)

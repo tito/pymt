@@ -274,12 +274,13 @@ class MTScatterWidget(MTWidget):
 
     def _get_center(self):
         return self.to_parent(self.width / 2, self.height / 2)
-    def _set_center(self, center):
+    def _set_center(self, center, do_event=True):
         center = self.to_local(*center)
         if self._x == center[0] and self._y == center[1]:
             return
         self._x, self._y = center
-        self.dispatch_event('on_move', self._x, self._y)
+        if do_event:
+            self.dispatch_event('on_move', self._x, self._y)
     center = property(_get_center, _set_center)
     pos = property(_get_center, _set_center)
 
@@ -359,6 +360,7 @@ class MTScatterWidget(MTWidget):
                 self.__height = container_height
 
             # dispatch move event
+            self._set_center(self.to_parent(0, 0), do_event=False)
             self.dispatch_event('on_move', self.x, self.y)
             return True
 

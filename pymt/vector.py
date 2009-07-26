@@ -60,17 +60,44 @@ class Vector(list):
     def __add__(self, val):
         return Vector(map(lambda x, y: x + y, self, val))
 
+    def __iadd__(self, val):
+        if type(val) in (int, float):
+            self.x += val
+            self.y += val
+        else:
+            self.x += val.x
+            self.y += val.y
+        return self
+
     def __neg__(self):
         return Vector(map(lambda x: -x, self))
 
     def __sub__(self, val):
         return Vector(map(lambda x, y: x - y, self, val))
 
+    def __isub__(self, val):
+        if type(val) in (int, float):
+            self.x -= val
+            self.y -= val
+        else:
+            self.x -= val.x
+            self.y -= val.y
+        return self
+
     def __mul__(self, val):
         try:
             return Vector(map(lambda x, y: x * y, self, val))
         except:
             return Vector(map(lambda x: x * val, self))
+
+    def __imul__(self, val):
+        if type(val) in (int, float):
+            self.x *= val
+            self.y *= val
+        else:
+            self.x *= val.x
+            self.y *= val.y
+        return self
 
     def __rmul__(self, val):
         return (self * val)
@@ -93,9 +120,23 @@ class Vector(list):
         except:
             return Vector(map(lambda x: other / x, val))
 
+    def __idiv__(self, val):
+        if type(val) in (int, float):
+            self.x /= val
+            self.y /= val
+        else:
+            self.x /= val.x
+            self.y /= val.y
+        return self
+
+
     def length(self):
         '''Returns the length of a vector'''
         return math.sqrt(self[0] ** 2 + self[1] ** 2)
+
+    def length2(self):
+        '''Returns the length of a vector squared.'''
+        return self[0] ** 2 + self[1] ** 2
 
     def distance(self, to):
         '''Returns the distance between two points.'''

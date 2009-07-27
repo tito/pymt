@@ -5,28 +5,50 @@ import os
 class Workspace(MTScatterPlane):
     def __init__(self, **kwargs):
         super(Workspace,self).__init__( **kwargs)
-        self.modules = [Module(filename = 'sl-addSynth+.svg'),
-                        Module(filename = 'sl-speaker.svg'),
-                        Module(filename = 'sl-distort+.svg')]
+        self.modules = [Module(filename = 'sl-addSynth+.svg', category = 'source'),
+                        Module(filename = 'sl-speaker.svg', category = 'output'),
+                        Module(filename = 'sl-distort+.svg', category = 'effect'),
+                        Module(filename = 'sl-lfo+.svg', category = 'controller')]
         for m in self.modules:
             self.add_widget(m)
         
 class Module(MTSvg):
     def __init__(self, **kwargs):
         super(Module,self).__init__(**kwargs)
+        self.category = kwargs.get('category')
+        self.type = kwargs.get('type')
         self.touchstarts = [] # only react to touch input that originated on this widget
         self.mode = 'move'
         self.drag_x = 0
         self.drag_y = 0
-        self.connected_modules = []
+        self.control_connections = []
+        self.signal_connections = []
         
     def draw(self):
         if self.mode == 'draw_connection':
             set_color(1,1,1,1)
-            drawLine([self.x + self.width / 2, self.y,self.drag_x,self.drag_y], width = 1)
+            x1 = self.x + self.width / 2
+            y1 = self.y + 2
+            x2 = self.drag_x
+            y2 = self.drag_y
+            drawLine([x1, y1, x2, y2], width = 1)
         set_color(1,1,1,1)
-        for module in self.connected_modules:
-            drawLine([self.x + self.width / 2, self.y, module.x + self.width / 2 , module.y + module.height], width = 1)
+        for module in self.control_connections:
+            x1 = self.x + self.width / 2
+            y1 = self.y + 2
+            if module[0].category == 'source':
+                x2 = module[0].x + 16 + (module[1] - 1) * 16
+                y2 = module[0].y + module[0].height - 1
+            if module[0].category == 'effect':
+                x2 = module[0].x + module[0].width - 4
+                y2 = module[0].y + module[0].height - 20 - (module[1] - 1) * 13
+            drawLine([x1, y1, x2, y2], width = 1)
+        for module in self.signal_connections:
+            x1 = self.x - 2 + self.width / 2
+            y1 = self.y + 2
+            x2 = module[0].x + self.width / 2. 
+            y2 = module[0].y + module[0].height - 2
+            drawLine([x1, y1, x2, y2], width = 1)
         super(Module, self).draw()
 
     def on_touch_down(self, touch):
@@ -36,12 +58,13 @@ class Module(MTSvg):
             self.first_y = touch.y
             self.first_pos_x = self.x
             self.first_pos_y = self.y
-            if touch.y < self.y + 20:
-                self.mode = 'draw_connection'
-                self.drag_x = touch.x
-                self.drag_y = touch.y
-            else:
-                self.mode = 'move'
+            if self.category is not 'output':
+                if touch.y < self.y + 20:
+                    self.mode = 'draw_connection'
+                    self.drag_x = touch.x
+                    self.drag_y = touch.y
+                else:
+                    self.mode = 'move'
             return True
         
     def on_touch_move(self, touch):
@@ -58,10 +81,31 @@ class Module(MTSvg):
             
     def on_touch_up(self, touch):
         if self.mode == 'draw_connection':
-            for m in self.parent.modules:
-                if m.collide_point(touch.x,touch.y) and m != self:
-                    self.connected_modules.append(m)
-                    print m.filename
+            for m in self.parent.modules:                    
+                if m.collide_point(touch.x,touch.y) and m != self and m.category != 'controller':
+                    # Control connections
+                    if self.category == 'controller' and m.category != 'output':
+                        if m.category == 'source':
+                            inlet_calc = int(round(m.to_local(touch.x,touch.y)[0] / ((m.width - 10) / 4.)))
+                            if inlet_calc >= 1 and inlet_calc <= 4:
+                                inlet = inlet_calc
+                            else: inlet = None
+                        if m.category == 'effect':
+                            inlet_calc = int(round((m.height - m.to_local(touch.x,touch.y)[1]) / (m.height / 5.)))
+                            if inlet_calc >= 1 and inlet_calc <= 4:
+                                inlet = inlet_calc
+                            else: inlet = None
+                        if inlet:
+                            if [m, inlet] not in self.control_connections:
+                                self.control_connections.append([m, inlet])
+                            print self.control_connections
+                    # Signal connections
+                    if self.category == 'source' or self.category == 'effect' and m.category != 'source':
+                        print 'went here'
+                        inlet = 0
+                        if [m, inlet] not in self.signal_connections:
+                            self.signal_connections.append([m, inlet])
+                        
            
         if touch.id in self.touchstarts:
             self.touchstarts.remove(touch.id)

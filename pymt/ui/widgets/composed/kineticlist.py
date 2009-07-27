@@ -109,13 +109,14 @@ class MTKineticList(MTStencilContainer):
         self.widgets = []
 
         #Title Text
-        self.title = Label(font_size=18,
-                           bold=True,
-                           anchor_x='center',
-                           anchor_y='center',
-                           text=self.titletext)
-        self.title.x = self.width/2 + self.x
-        self.title.y = self.height - 20 + self.y
+        if self.titletext is not None:
+            self.title = Label(font_size=18,
+                               bold=True,
+                               anchor_x='center',
+                               anchor_y='center',
+                               text=self.titletext)
+            self.title.x = self.width/2 + self.x
+            self.title.y = self.height - 20 + self.y
 
         #Delete Button
         if self.deletable:
@@ -392,9 +393,10 @@ class MTKineticList(MTStencilContainer):
         super(MTKineticList, self).on_draw()
 
         # title bar
-        set_color(*self.style.get('title-color'))
-        drawCSSRectangle(pos=(self.x, self.height + self.y - 40), size=(self.width, 40), prefix='title')
-        self.title.draw()
+        if self.titletext is not None:
+            set_color(*self.style.get('title-color'))
+            drawCSSRectangle(pos=(self.x, self.height + self.y - 40), size=(self.width, 40), prefix='title')
+            self.title.draw()
         for w in self.widgets:
             w.on_draw()
 

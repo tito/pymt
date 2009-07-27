@@ -128,9 +128,7 @@ class Tuio2dCurTouch(Touch):
                 self.shape.width = width
                 self.shape.height = height
         self.sy = 1 - self.sy
-        if self.oxpos is None:
-            self.oxpos, self.oypos = self.x, self.y
-            self.dxpos, self.dypos = self.x, self.y
+        super(Tuio2dCurTouch, self).depack(args)
 
 
 class Tuio2dObjTouch(Touch):
@@ -152,6 +150,7 @@ class Tuio2dObjTouch(Touch):
                 self.shape.width = width
                 self.shape.height = height
         self.sy = 1 - self.sy
+        super(Tuio2dObjTouch, self).depack(args)
 
 # registers
 TuioTouchProvider.register('/tuio/2Dcur', Tuio2dCurTouch)

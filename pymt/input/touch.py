@@ -67,7 +67,9 @@ class Touch(object):
 
     def depack(self, args):
         '''Depack `args` into attributes in class'''
-        pass
+        if self.oxpos is None:
+            self.oxpos, self.oypos = self.sx, self.sy
+            self.dxpos, self.dypos = self.sx, self.sy
 
     def grab(self, class_instance, exclusive=False):
         if self.grab_exclusive_class is not None:

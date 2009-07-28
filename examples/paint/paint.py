@@ -1,3 +1,4 @@
+import collections
 from pymt import *
 from pyglet.gl import *
 from glob import glob
@@ -99,6 +100,8 @@ class Canvas(MTWidget):
         self.bgcolor = (0,0,0,1)
         self.color = (0,1,0,1.0)
         set_brush('../paint/brushes/brush_particle.png')
+        self.paint_queue = collections.deque()
+        self.do_paint_queue = False
         self.clear()
 
     def clear(self):
@@ -109,6 +112,19 @@ class Canvas(MTWidget):
         self.fbo.release()
 
     def draw(self):
+        # draw the whole queue
+        if self.do_paint_queue:
+            self.fbo.bind()
+            while True:
+                try:
+                    item = self.paint_queue.pop()
+                except IndexError:
+                    break
+                color, positions = item
+                set_color(*color)
+                paintLine(positions)
+            self.fbo.release()
+            self.do_paint_queue = False
         set_color(1,1,1,1)
         drawTexturedRectangle(self.fbo.texture, size=(self.width, self.height))
 
@@ -119,20 +135,15 @@ class Canvas(MTWidget):
         self.fbo = Fbo(size=(w, h), push_viewport=False)
 
     def on_touch_down(self, touch):
+        self.paint_queue.appendleft((self.color, (touch.x,touch.y,touch.x,touch.y)))
+        self.do_paint_queue = True
         self.touch_positions[touch.id] = (touch.x, touch.y)
-        self.fbo.bind()
-        glColor4f(*self.color)
-        paintLine((touch.x,touch.y,touch.x,touch.y))
-        glColor4f(1,1,1,1)
-        self.fbo.release()
 
     def on_touch_move(self, touch):
         if self.touch_positions.has_key(touch.id):
             ox,oy = self.touch_positions[touch.id]
-            self.fbo.bind()
-            glColor4f(*self.color)
-            paintLine((ox,oy,touch.x,touch.y))
-            self.fbo.release()
+            self.paint_queue.appendleft((self.color, (ox,oy,touch.x,touch.y)))
+            self.do_paint_queue = True
             self.touch_positions[touch.id] = (touch.x, touch.y)
 
     def on_touch_up(self, touch):

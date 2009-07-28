@@ -47,13 +47,10 @@ class TouchEventLoop(pyglet.app.EventLoop):
     '''
     def __init__(self, host='127.0.0.1', port=3333):
         pyglet.app.EventLoop.__init__(self)
-        self.alive2DCur = []
-        self.alive2DObj = []
-        self.blobs2DCur = {}
-        self.blobs2DObj = {}
+        self.input_events = []
+        self.postproc_modules = []
         self.double_tap_distance = pymt.pymt_config.getint('pymt', 'double_tap_distance') / 1000.0
         self.double_tap_time = pymt.pymt_config.getint('pymt', 'double_tap_time') / 1000.0
-        self.ignore_list = strtotuple(pymt.pymt_config.get('pymt', 'ignore'))
 
     def start(self):
         global pymt_providers
@@ -65,14 +62,14 @@ class TouchEventLoop(pyglet.app.EventLoop):
         for provider in pymt_providers:
             provider.stop()
 
-    def collide_ignore(self, cur):
-        x, y = cur.xpos, cur.ypos
-        for l in self.ignore_list:
-            xmin, ymin, xmax, ymax = l
-            if x > xmin and x < xmax and y > ymin and y < ymax:
-                return True
+    def add_postproc_module(self, mod):
+        self.postproc_modules.append(mod)
 
-    def dispatch_input(self, type, touch):
+    def remove_postproc_module(self, mod):
+        if mod in self.postproc_modules:
+            self.postproc_modules.remove(mod)
+
+    def post_dispatch_input(self, type, touch):
         # update available list
         global touch_list
         if type == 'down':
@@ -122,15 +119,33 @@ class TouchEventLoop(pyglet.app.EventLoop):
                 touch.pop()
         touch.grab_state = False
 
+    def _dispatch_input(self, type, touch):
+        self.input_events.append((type, touch))
+
+    def dispatch_input(self):
+        global pymt_providers
+
+        # first, aquire input events
+        self.input_events = []
+        for provider in pymt_providers:
+            provider.update(dispatch_fn=self._dispatch_input)
+
+        # execute post-processing modules
+        for mod in self.postproc_modules:
+            self.input_events = mod.process(events=self.input_events)
+
+        # real dispatch input
+        for type, touch in self.input_events:
+            self.post_dispatch_input(type=type, touch=touch)
+
+
     def idle(self):
         # update dt
         global frame_dt
         frame_dt = pyglet.clock.tick()
 
         # read and dispatch input from providers
-        global pymt_providers
-        for provider in pymt_providers:
-            provider.update(dispatch_fn=self.dispatch_input)
+        self.dispatch_input()
 
         # dispatch pyglet events
         for window in pyglet.app.windows:
@@ -225,6 +240,12 @@ def runTouchApp():
             pymt_providers.append(p)
 
     pymt_evloop = TouchEventLoop()
+
+    # add postproc modules
+    for mod in pymt_postproc_modules:
+        pymt_evloop.add_postproc_module(mod)
+
+    # start event loop
     pymt_evloop.start()
 
     while True:

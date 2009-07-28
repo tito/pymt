@@ -236,6 +236,12 @@ class Loader(object):
             name, objs = self.loadlist.popitem()
             try:
                 fd = urllib.urlopen(name)
+                if fd.getcode() < 200 or fd.getcode() >= 300:
+                    pymt_logger.error('unable to load image %s : %s (errorcode=%d)' % \
+                        (name, e, fd.getcode()))
+                    fd.close()
+                    continue
+
 
                 # Special case for gdk loader
                 # We experienced random crash while using pyglet.image.load

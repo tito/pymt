@@ -672,8 +672,12 @@ class SVG(object):
                     self.warn("Unrecognised opcode: " + opcode)
             self.end_path()
         elif e.tag.endswith('rect'):
-            x = float(e.get('x'))
-            y = float(e.get('y'))
+            x = 0
+            y = 0
+            if e.find('x'):
+                x = float(e.get('x'))
+            if e.find('y'):
+                y = float(e.get('y'))
             h = float(e.get('height'))
             w = float(e.get('width'))
             self.new_path()

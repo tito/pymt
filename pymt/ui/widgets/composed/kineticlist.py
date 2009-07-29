@@ -158,12 +158,14 @@ class MTKineticList(MTStencilContainer):
         self.touch = {} #For extra blob stats
 
     def on_press(self, child, callback):
-        pass
+        if callback is not None:
+            callback('press', child)
 
     def on_delete(self, child, callback):
-        pass
+        if callback is not None:
+            callback('delete', child)
 
-    def add(self, item, callback=None):
+    def add_widget(self, item, callback=None):
         '''Add an item to the kinetic scrolling area.
         item is the item you would like to add to the list
         callback is an optional arg that is returned when you
@@ -177,7 +179,7 @@ class MTKineticList(MTStencilContainer):
         else:
             self.childmap[item] = None
 
-    def delete_item(self, item):
+    def remove_widget(self, item):
         '''Given item, that item is removed from the kinetic list
         and the on_delete event is dispatched
         '''
@@ -191,6 +193,10 @@ class MTKineticList(MTStencilContainer):
             del self.childmap[item]
         except:
             pass
+
+    # Odd alias...
+    add = add_widget
+    delete_item = remove_widget
 
     def toggle_delete(self, touch):
         '''Toggles the delete buttons on items
@@ -455,7 +461,7 @@ class MTKineticObject(MTWidget):
             twice and throws an exception because its already
             been deleted, and a try...except... isn't really worth it
             '''
-            self.parent.delete_item(self)
+            self.parent.remove_widget(self)
 
     def on_draw(self):
         if not self.free:

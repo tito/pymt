@@ -109,9 +109,79 @@ class KeyboardLayoutQWERTY(KeyboardLayout):
         ('', ' ', None, 13.5), (u'\u2b12', None, 'layout', 1.5),
     ]
 
+class KeyboardLayoutAZERTY(KeyboardLayout):
+    ID = 'azerty'
+    TITLE = 'Azerty'
+    DESCRIPTION = 'A French keyboard without international keys'
+    NORMAL_1 = [
+        (u'\xb2', '\xb2', None, 1),    ('&', '&', None, 1),    ('\xc3\xa9', '\xc3\xa9', None, 1),
+        ('"', '"', None, 1),    ('\'', '\'', None, 1),  ('(', '(', None, 1),
+        ('-', '-', None, 1),    ('\xc3\xa8', '\xc3\xa8', None, 1),    ('_', '_', None, 1),
+        ('\xc3\xa7', '\xc3\xa7', None, 1),    ('\xc3\xa0', '\xc3\xa0', None, 1),    (')', ')', None, 1),
+        ('=', '=', None, 1),    (u'\u21e6', None, 'backspace', 2),
+    ]
+    NORMAL_2 = [
+        (u'\u21B9', chr(0x09), None, 1.5),  ('a', 'a', None, 1),    ('z', 'z', None, 1),
+        ('e', 'e', None, 1),    ('r', 'r', None, 1),    ('t', 't', None, 1),
+        ('y', 'y', None, 1),    ('u', 'u', None, 1),    ('i', 'i', None, 1),
+        ('o', 'o', None, 1),    ('p', 'p', None, 1),    ('^', '^', None, 1),
+        ('$', '$', None, 1),    (u'\u23ce', None, 'enter', 1.5),
+    ]
+    NORMAL_3 = [
+        (u'\u21ea', None, 'capslock', 1.8),  ('q', 'q', None, 1),    ('s', 's', None, 1),
+        ('d', 'd', None, 1),    ('f', 'f', None, 1),    ('g', 'g', None, 1),
+        ('h', 'h', None, 1),    ('j', 'j', None, 1),    ('k', 'k', None, 1),
+        ('l', 'l', None, 1),    ('m', 'm', None, 1),    ('\xc3\xb9', '\xc3\xb9', None, 1),
+        ('*', '*', None, 1),    (u'\u23ce', None, 'enter', 1.2),
+    ]
+    NORMAL_4 = [
+        (u'\u21e7', None, 'shift_L', 1.5),  ('<', '<', None, 1),    ('w', 'w', None, 1),
+        ('x', 'x', None, 1),
+        ('c', 'c', None, 1),    ('v', 'v', None, 1),    ('b', 'b', None, 1),
+        ('n', 'n', None, 1),    (',', ',', None, 1),    (';', ';', None, 1),
+        (':', ':', None, 1),    ('!', '!', None, 1),    (u'\u21e7', None, 'shift_R', 2.5),
+    ]
+    NORMAL_5 = [
+        ('', ' ', None, 13.5), (u'\u2b12', None, 'layout', 1.5),
+    ]
+    SHIFT_1 = [
+        ('|', '|', None, 1),    ('1', '1', None, 1),    ('2', '2', None, 1),
+        ('3', '3', None, 1),    ('4', '4', None, 1),    ('5', '5', None, 1),
+        ('6', '6', None, 1),    ('7', '7', None, 1),    ('8', '8', None, 1),
+        ('9', '9', None, 1),    ('0', '0', None, 1),    ('\xc2\xb0', '\xc2\xb0', None, 1),
+        ('+', '+', None, 1),    (u'\u21e6', None, 'backspace', 2),
+    ]
+    SHIFT_2 = [
+        (u'\u21B9', chr(0x09), None, 1.5),  ('A', 'A', None, 1),    ('Z', 'Z', None, 1),
+        ('E', 'E', None, 1),    ('R', 'R', None, 1),    ('T', 'T', None, 1),
+        ('Y', 'Y', None, 1),    ('U', 'U', None, 1),    ('I', 'I', None, 1),
+        ('O', 'O', None, 1),    ('P', 'P', None, 1),    ('\xc2\xa8', '\xc2\xa8', None, 1),
+        ('\xc2\xa3', '\xc2\xa3', None, 1),    (u'\u23ce', None, 'enter', 1.5),
+    ]
+    SHIFT_3 = [
+        (u'\u21ea', None, 'capslock', 1.8),  ('Q', 'Q', None, 1),    ('S', 'S', None, 1),
+        ('D', 'D', None, 1),    ('F', 'F', None, 1),    ('G', 'G', None, 1),
+        ('H', 'H', None, 1),    ('J', 'J', None, 1),    ('K', 'K', None, 1),
+        ('L', 'L', None, 1),    ('M', 'M', None, 1),    ('%', '%', None, 1),
+        ('\xc2\xb5', '\xc2\xb5', None, 1),    (u'\u23ce', None, 'enter', 1.2),
+    ]
+    SHIFT_4 = [
+        (u'\u21e7', None, 'shift_L', 1.5),  ('>', '>', None, 1),    ('W', 'W', None, 1),
+        ('X', 'X', None, 1),    ('C', 'C', None, 1),    ('V', 'V', None, 1),
+        ('B', 'B', None, 1),    ('N', 'N', None, 1),    ('?', '?', None, 1),
+        ('.', '.', None, 1),    ('/', '/', None, 1),    ('\xc2\xa7', '\xc2\xa7', None, 1),
+        (u'\u21e7', None, 'shift_R', 2.5),
+    ]
+    SHIFT_5 = [
+        ('', ' ', None, 13.5), (u'\u2b12', None, 'layout', 1.5),
+    ]
+
 class MTVKeyboard(MTScatterWidget):
 
-    available_layout = [KeyboardLayoutQWERTY]
+    available_layout = [
+        KeyboardLayoutQWERTY,
+        KeyboardLayoutAZERTY
+    ]
 
     def __init__(self, **kwargs):
         '''
@@ -309,7 +379,7 @@ class MTVKeyboard(MTScatterWidget):
     def on_layout_change(self, layout, *largs):
         self._layout_widget.visible = False
         self.layout = layout()
-        self._update()
+        self._need_update = 'now'
 
     def collide_point(self, x, y):
         local_coords = self.to_local(x, y)

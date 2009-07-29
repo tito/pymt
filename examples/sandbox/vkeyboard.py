@@ -29,7 +29,8 @@ vkeyboard {
 css_add_sheet(vkeyboard_css)
 
 class KeyboardLayout(object):
-    NAME = 'nolayout'
+    ID = 'nolayout'
+    DESCRIPTION = 'nodescription'
     NORMAL_1 = []
     NORMAL_2 = []
     NORMAL_3 = []
@@ -42,7 +43,9 @@ class KeyboardLayout(object):
     SHIFT_5 = []
 
 class KeyboardLayoutQWERTY(KeyboardLayout):
-    NAME = 'qwerty'
+    ID = 'qwerty'
+    TITLE = 'Qwerty'
+    DESCRIPTION = 'A classical US Keyboard'
     NORMAL_1 = [
         ('~', '~', None, 1),    ('!', '!', None, 1),    ('@', '@', None, 1),
         ('#', '#', None, 1),    ('$', '$', None, 1),    ('%', '%', None, 1),
@@ -58,11 +61,11 @@ class KeyboardLayoutQWERTY(KeyboardLayout):
         ('}', '}', None, 1),    ('|', '|', None, 1.5)
     ]
     NORMAL_3 = [
-        (u'\u21ea', None, 'capslook', 1.8),  ('a', 'a', None, 1),    ('s', 's', None, 1),
+        (u'\u21ea', None, 'capslock', 1.8),  ('a', 'a', None, 1),    ('s', 's', None, 1),
         ('d', 'd', None, 1),    ('f', 'f', None, 1),    ('g', 'g', None, 1),
         ('h', 'h', None, 1),    ('j', 'j', None, 1),    ('k', 'k', None, 1),
         ('l', 'l', None, 1),    (':', ':', None, 1),    ('"', '"', None, 1),
-        ('Enter', None, 'enter', 2.2),
+        (u'\u23ce', None, 'enter', 2.2),
     ]
     NORMAL_4 = [
         (u'\u21e7', None, 'shift_L', 2.5),  ('z', 'z', None, 1),    ('x', 'x', None, 1),
@@ -71,9 +74,7 @@ class KeyboardLayoutQWERTY(KeyboardLayout):
         ('>', '>', None, 1),    ('?', '?', None, 1),    (u'\u21e7', None, 'shift_R', 2.5),
     ]
     NORMAL_5 = [
-        ('Ctrl', None, 'ctrl_L', 1.5),  ('Meta', None, 'meta_L', 1.5), ('Alt', None, 'alt_L', 1.5),
-        ('', ' ', None, 4.5),  ('Alt', None, 'alt_R', 1.5),    ('Meta', None, 'meta_R', 1.5),
-        ('Menu', None, 'menu', 1.5),  ('Ctrl', None, 'ctrl_R', 1.5),
+        ('', ' ', None, 13.5), (u'\u2b12', None, 'layout', 1.5),
     ]
     SHIFT_1 = [
         ('`', '`', None, 1),    ('1', '1', None, 1),    ('2', '2', None, 1),
@@ -90,11 +91,11 @@ class KeyboardLayoutQWERTY(KeyboardLayout):
         (']', ']', None, 1),    ('?', '?', None, 1.5)
     ]
     SHIFT_3 = [
-        (u'\u21ea', None, 'capslook', 1.8),  ('A', 'A', None, 1),    ('S', 'S', None, 1),
+        (u'\u21ea', None, 'capslock', 1.8),  ('A', 'A', None, 1),    ('S', 'S', None, 1),
         ('D', 'D', None, 1),    ('F', 'F', None, 1),    ('G', 'G', None, 1),
         ('H', 'H', None, 1),    ('J', 'J', None, 1),    ('K', 'K', None, 1),
         ('L', 'L', None, 1),    (':', ':', None, 1),    ('"', '"', None, 1),
-        ('Enter', None, 'enter', 2.2),
+        (u'\u23ce', None, 'enter', 2.2),
     ]
     SHIFT_4 = [
         (u'\u21e7', None, 'shift_L', 2.5),  ('Z', 'Z', None, 1),    ('X', 'X', None, 1),
@@ -103,53 +104,104 @@ class KeyboardLayoutQWERTY(KeyboardLayout):
         ('.', '.', None, 1),    ('/', '/', None, 1),    (u'\u21e7', None, 'shift_R', 2.5),
     ]
     SHIFT_5 = [
-        ('Ctrl', None, 'ctrl_L', 1.5),  ('Meta', None, 'meta_L', 1.5), ('Alt', None, 'alt_L', 1.5),
-        ('', ' ', None, 4.5),  ('Alt', None, 'alt_R', 1.5),    ('Meta', None, 'meta_R', 1.5),
-        ('Menu', None, 'menu', 1.5),  ('Ctrl', None, 'ctrl_R', 1.5),
+        ('', ' ', None, 13.5), (u'\u2b12', None, 'layout', 1.5),
     ]
 
 class MTVKeyboard(MTScatterWidget):
+
+    available_layout = [KeyboardLayoutQWERTY]
+
     def __init__(self, **kwargs):
-        kwargs.setdefault('do_scale', False)
         kwargs.setdefault('size', (700, 200))
         kwargs.setdefault('layout', KeyboardLayoutQWERTY())
+
+        # we forbid scaling from scatter
+        # cause we'll handle it in a special manner (lazy update)
+        kwargs['do_scale'] = False
         super(MTVKeyboard, self).__init__(**kwargs)
-        self.layout = kwargs.get('layout')
-        self.mode = 'NORMAL'
-        self.cache = {}
-        self.container_width, self.container_height = self.size
-        self.last_update = 0
-        self.last_update_scale = 1.
-        self.need_update = 'now'
+
+        self.register_event_type('on_key_down')
+        self.register_event_type('on_key_up')
+        self.register_event_type('on_text_change')
+
+        self.layout             = kwargs.get('layout')
+        self.container_width, self.container_height   = self.size
+
+        self._mode              = 'NORMAL'
+        self._cache             = {}
+        self._current_cache     = None
+        self._last_update       = 0
+        self._last_update_scale = 1.
+        self._need_update       = 'now'
+        self._internal_text     = ''
+        self._show_layout       = False
+
+
+    #
+    # Static methods
+    #
+
+    @staticmethod
+    def add_custom_layout(layout_class):
+        if not layout_class in MTVKeyboard.available_layout:
+            MTVKeyboard.available_layout.append(layout_class)
+
+    #
+    # Rewrite handle to update ourself scaling
+    #
 
     def on_resize(self, w, h):
         self.container_width, self.container_height = w, h
         self.lazy_update()
 
-    def to_local(self, x, y):
-        x, y = super(MTVKeyboard, self).to_local(x, y)
-        return map(lambda x: x * self.get_scale_factor(), (x, y))
+    def collide_point(self, x, y):
+        local_coords = self.to_local(x, y)
+        if local_coords[0] > 0 and local_coords[0] < self.container_width \
+           and local_coords[1] > 0 and local_coords[1] < self.container_height:
+            return True
+        else:
+            return False
+
+    def _get_text(self):
+        return self._internal_text
+    def _set_text(self, value):
+        if value != self._internal_text:
+            self._internal_text = value
+            self.dispatch_event('on_text_change', value)
+    text = property(_get_text, _set_text, doc='''Get/set text string on vkeyboard''')
+
+    def _get_mode(self):
+        return self._mode
+    def _set_mode(self, value):
+        if value != self._mode:
+            self._need_update = 'now'
+            self._mode = value
+    mode = property(_get_mode, _set_mode, doc='''Get/set mode of vkeyboard (NORMAL, SHIFT...)''')
+
+    def clear(self):
+        '''Clear the text'''
+        self._internal_text = ''
 
     def lazy_update(self):
-        self.need_update = 'lazy'
-        self.last_update = clock.get_default().time()
+        self._need_update = 'lazy'
+        self._last_update = clock.get_default().time()
 
     def update(self):
-        dt = clock.get_default().time() - self.last_update
-        if self.need_update is not None and \
-            (self.need_update == 'now' or (self.need_update == 'lazy' and  dt > 0.9)):
+        dt = clock.get_default().time() - self._last_update
+        if self._need_update is not None and \
+            (self._need_update == 'now' or (self._need_update == 'lazy' and  dt > 0.9)):
             # create layout mode if not in cache
-            layoutmode = '%s:%s' % (self.layout.NAME, self.mode)
-            if not layoutmode in self.cache:
-                self.cache[layoutmode] = {'background': GlDisplayList(), 'keys': GlDisplayList()}
-            self.current_cache = self.cache[layoutmode]
+            layoutmode = '%s:%s' % (self.layout.ID, self.mode)
+            if not layoutmode in self._cache:
+                self._cache[layoutmode] = {'background': GlDisplayList(), 'keys': GlDisplayList()}
+            self._current_cache = self._cache[layoutmode]
             # do real update
             self.do_update(mode='background')
             self.do_update(mode='keys')
             # don't update too fast next time (if it's lazy)
-            self.last_update = clock.get_default().time()
-            self.last_update_scale = self.get_scale_factor()
-            self.need_update = None
+            self._last_update = clock.get_default().time()
+            self._last_update_scale = self.get_scale_factor()
+            self._need_update = None
 
     def do_update(self, mode=None):
         # we absolutly want mode to update displaylist.
@@ -157,7 +209,7 @@ class MTVKeyboard(MTScatterWidget):
             return
 
         # don't update background if it's already compiled
-        if mode == 'background' and self.current_cache['background'].is_compiled():
+        if mode == 'background' and self._current_cache['background'].is_compiled():
             return
 
         # calculate margin
@@ -172,7 +224,7 @@ class MTVKeyboard(MTScatterWidget):
         x, y = 0, self.texsize.y - self.keysize.y
 
         # update display list
-        with self.current_cache[mode]:
+        with self._current_cache[mode]:
             # draw lines
             for index in xrange(1, 6):
                 line = self.layout.__getattribute__('%s_%d' % (self.mode, index))
@@ -205,10 +257,9 @@ class MTVKeyboard(MTScatterWidget):
                 x = 0
 
         # update completed
-        self.need_update = None
+        self._need_update = None
 
     def draw(self):
-
         self.update()
 
         # background
@@ -221,47 +272,84 @@ class MTVKeyboard(MTScatterWidget):
             glTranslatef(self.style['margin'][3] * s, self.style['margin'][2] * s, 0)
             with gx_matrix:
                 glScalef(s, s, s)
-                self.current_cache['background'].draw()
-            scale_factor = self.get_scale_factor() / self.last_update_scale
+                self._current_cache['background'].draw()
+            scale_factor = self.get_scale_factor() / self._last_update_scale
             glScalef(scale_factor, scale_factor, scale_factor)
-            self.current_cache['keys'].draw()
+            self._current_cache['keys'].draw()
+
+        # debug
+        drawLabel(label=self._internal_text, pos=(self.width / 2., self.height))
 
     def get_key_at_pos(self, x, y):
-        top, right, bottom, left = self.style['margin']
-        if x < left or x > self.width - right or \
-           y < bottom or y > self.height - top:
+        '''Return the key on the current layout, at the coordinate (x, y)'''
+        mtop, mright, mbottom, mleft = self.style['margin']
+        w, h = self.width - mleft - mright, self.height - mtop - mbottom
+        keysize = Vector(w / 15, h / 5)
+        if x < mleft or x > self.width - mright or \
+           y < mbottom or y > self.height - mtop:
                return None
-        index = 5-int((y - bottom) /
-                (self.height - top - bottom)
+        index = 5-int((y - mbottom) /
+                (self.height - mtop - mbottom)
                 * 5.)
         line = self.layout.__getattribute__('%s_%d' % (self.mode, index))
-        x -= left
+        x -= mleft
         kx = 0
         for key in line:
-            kw = self.keysize.x * key[3]
+            kw = keysize.x * key[3]
             if x >= kx and x < kx + kw:
                 return key
             kx += kw
         return None
 
-    def do_key(self, key):
+    def on_key_down(self, key):
         displayed_str, internal_str, internal_action, scale = key
         if internal_action is None:
-            pass
-        elif internal_action in ('capslook'):
+            if internal_str is not None:
+                self._internal_text += internal_str
+        elif internal_action in ('capslock'):
             if self.mode == 'NORMAL':
                 self.mode = 'SHIFT'
             else:
                 self.mode = 'NORMAL'
-            self.need_update = 'now'
+            self._need_update = 'now'
+            return
+        elif internal_action in ('shift', 'shift_L', 'shift_R'):
+            if self.mode == 'NORMAL':
+                self.mode = 'SHIFT'
+            else:
+                self.mode = 'NORMAL'
+            self._need_update = 'now'
+            return
+        elif internal_action in ('backspace'):
+            self._internal_text = self._internal_text[:-1]
+
+    def on_key_up(self, key):
+        displayed_str, internal_str, internal_action, scale = key
+        if internal_action is None:
+            pass
+        elif internal_action in ('shift', 'shift_L', 'shift_R'):
+            if self.mode == 'NORMAL':
+                self.mode = 'SHIFT'
+            else:
+                self.mode = 'NORMAL'
+            self._need_update = 'now'
             return
 
     def on_touch_down(self, touch):
-        key = self.get_key_at_pos(*self.to_local(touch.x, touch.y))
+        x, y = [x / self.get_scale_factor() for x in self.to_local(touch.x, touch.y)]
+        key = self.get_key_at_pos(x, y)
         if key is not None:
-            self.do_key(key)
+            touch.userdata['vkeyboard_key'] = key
+            self.dispatch_event('on_key_down', key)
             return True
         return super(MTVKeyboard, self).on_touch_down(touch)
+
+    def on_touch_up(self, touch):
+        if 'vkeyboard_key' in touch.userdata:
+            key = touch.userdata['vkeyboard_key']
+            self.dispatch_event('on_key_up', key)
+            return True
+        return super(MTVKeyboard, self).on_touch_up(touch)
 
 
 if __name__ == '__main__':

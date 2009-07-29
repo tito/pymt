@@ -64,14 +64,20 @@ auto_convert = {
     'slider-alpha-background':  parse_float4,
     'draw-slider-border':       parse_bool,
     'draw-slider-alpha-background': parse_bool,
+    'key-border-radius':        parse_int,
+    'key-border-radius-precision': parse_float,
+    'key-alpha-background':     parse_float4,
+    'draw-key-border':          parse_bool,
+    'draw-key-alpha-background': parse_bool,
     'vector-color':             parse_color,
     'title-color':              parse_color,
-    'title-color':             parse_color,
-    'title-border-radius':     parse_int,
+    'title-color':              parse_color,
+    'title-border-radius':      parse_int,
     'title-border-radius-precision': parse_float,
-    'title-alpha-background':  parse_float4,
-    'draw-title-border':       parse_bool,
+    'title-alpha-background':   parse_float4,
+    'draw-title-border':        parse_bool,
     'draw-title-alpha-background': parse_bool,
+    'margin':                   parse_float4
 }
 
 # Default CSS of PyMT

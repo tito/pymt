@@ -23,6 +23,8 @@ vkeyboard {
     key-alpha-background: 1 1 .7 .7;
     draw-key-alpha-background: 1;
     draw-border: 1;
+    key-color: rgba(20, 20, 20, 255);
+    syskey-color: rgba(20, 20, 40, 255);
 }
 '''
 
@@ -112,6 +114,21 @@ class MTVKeyboard(MTScatterWidget):
     available_layout = [KeyboardLayoutQWERTY]
 
     def __init__(self, **kwargs):
+        '''
+        MTVKeyboard is a OnBoard keyboard, who support Multitouch.
+        Layout are entirely customizable, and you can switch from layout with
+        little button in bottom-right of keyboard.
+
+        :Events:
+            `on_key_down` : key
+                Fired when a key is down
+                The key contain: displayed_str, internal_str, internal_action, width
+            `on_key_up` : key
+                Fired when a key is up
+                The key contain: displayed_str, internal_str, internal_action, width
+            `on_text_change` : text
+                Fired when the internal text is changed
+        '''
         kwargs.setdefault('size', (700, 200))
         kwargs.setdefault('layout', KeyboardLayoutQWERTY())
 
@@ -135,6 +152,20 @@ class MTVKeyboard(MTScatterWidget):
         self._need_update       = 'now'
         self._internal_text     = ''
         self._show_layout       = False
+        self._active_keys       = []
+
+        # prepare layout widget
+        mtop, mright, mbottom, mleft = self.style['margin']
+        self._layout_widget     = MTKineticList(
+            title=None, searchable=False, deletable=False,
+            size=(self.width - mleft - mright, self.height),
+            pos=(mleft, 0), style={'bg-color': (.0, .0, .0, .7)},
+            visible=False)
+        for layout in MTVKeyboard.available_layout:
+            item = MTKineticItem(label=layout.TITLE + ' - ' + layout.DESCRIPTION,
+                    style={'font-size':12}, size=(self.width - mleft - mright, 40))
+            self._layout_widget.add_widget(item, curry(self.on_layout_change, layout))
+        self.add_widget(self._layout_widget)
 
 
     #
@@ -147,20 +178,8 @@ class MTVKeyboard(MTScatterWidget):
             MTVKeyboard.available_layout.append(layout_class)
 
     #
-    # Rewrite handle to update ourself scaling
+    # Keyboard properties
     #
-
-    def on_resize(self, w, h):
-        self.container_width, self.container_height = w, h
-        self.lazy_update()
-
-    def collide_point(self, x, y):
-        local_coords = self.to_local(x, y)
-        if local_coords[0] > 0 and local_coords[0] < self.container_width \
-           and local_coords[1] > 0 and local_coords[1] < self.container_height:
-            return True
-        else:
-            return False
 
     def _get_text(self):
         return self._internal_text
@@ -168,7 +187,8 @@ class MTVKeyboard(MTScatterWidget):
         if value != self._internal_text:
             self._internal_text = value
             self.dispatch_event('on_text_change', value)
-    text = property(_get_text, _set_text, doc='''Get/set text string on vkeyboard''')
+    text = property(_get_text, _set_text,
+            doc='''Get/set text string on vkeyboard''')
 
     def _get_mode(self):
         return self._mode
@@ -176,34 +196,48 @@ class MTVKeyboard(MTScatterWidget):
         if value != self._mode:
             self._need_update = 'now'
             self._mode = value
-    mode = property(_get_mode, _set_mode, doc='''Get/set mode of vkeyboard (NORMAL, SHIFT...)''')
+    mode = property(_get_mode, _set_mode,
+            doc='''Get/set mode of vkeyboard (NORMAL, SHIFT...)''')
+
+    #
+    # Public methods
+    #
 
     def clear(self):
         '''Clear the text'''
         self._internal_text = ''
 
-    def lazy_update(self):
+
+    #
+    # Private methods
+    #
+
+    def _lazy_update(self):
         self._need_update = 'lazy'
         self._last_update = clock.get_default().time()
 
-    def update(self):
+    def _update(self):
         dt = clock.get_default().time() - self._last_update
-        if self._need_update is not None and \
-            (self._need_update == 'now' or (self._need_update == 'lazy' and  dt > 0.9)):
+        if self._need_update is None:
+            return
+
+        if self._need_update == 'now' or (self._need_update == 'lazy' and  dt > 0.9):
             # create layout mode if not in cache
             layoutmode = '%s:%s' % (self.layout.ID, self.mode)
             if not layoutmode in self._cache:
                 self._cache[layoutmode] = {'background': GlDisplayList(), 'keys': GlDisplayList()}
             self._current_cache = self._cache[layoutmode]
+
             # do real update
-            self.do_update(mode='background')
-            self.do_update(mode='keys')
+            self._do_update(mode='background')
+            self._do_update(mode='keys')
+
             # don't update too fast next time (if it's lazy)
             self._last_update = clock.get_default().time()
             self._last_update_scale = self.get_scale_factor()
             self._need_update = None
 
-    def do_update(self, mode=None):
+    def _do_update(self, mode=None):
         # we absolutly want mode to update displaylist.
         if mode not in ('background', 'keys'):
             return
@@ -214,30 +248,35 @@ class MTVKeyboard(MTScatterWidget):
 
         # calculate margin
         s = self.get_scale_factor()
+        w, h = self.container_width, self.container_height
         if mode == 'background':
             s = 1.
+            w, h = self.size
         mtop, mright, mbottom, mleft = map(lambda x: x * s, self.style['margin'])
-        self.texsize = Vector(self.container_width - mleft - mright,
-                              self.container_height - mtop - mbottom)
+        self.texsize = Vector(w - mleft - mright,
+                              h - mtop - mbottom)
         self.keysize = Vector(self.texsize.x / 15, self.texsize.y / 5)
         m = 3 * s
         x, y = 0, self.texsize.y - self.keysize.y
 
         # update display list
         with self._current_cache[mode]:
+
             # draw lines
             for index in xrange(1, 6):
                 line = self.layout.__getattribute__('%s_%d' % (self.mode, index))
+
                 # draw keys
                 for key in line:
                     displayed_str, internal_str, internal_action, scale = key
                     kw = self.keysize.x * scale
+
                     # don't display empty keys
                     if displayed_str is not None:
-                        set_color(.1, .1, .1)
+                        set_color(*self.style['key-color'])
                         if mode == 'background':
                             if internal_action is not None:
-                                set_color(.1, .1, .15)
+                                set_color(*self.style['syskey-color'])
                             drawCSSRectangle(
                                 pos=(x+m, y+m),
                                 size=(kw-m*2, self.keysize.y-m*2),
@@ -259,8 +298,30 @@ class MTVKeyboard(MTScatterWidget):
         # update completed
         self._need_update = None
 
+    #
+    # Rewrite some handle to update the widget (drawing and scalling)
+    #
+
+    def on_resize(self, w, h):
+        self.container_width, self.container_height = w, h
+        self._lazy_update()
+
+    def on_layout_change(self, layout, *largs):
+        self._layout_widget.visible = False
+        self.layout = layout()
+        self._update()
+
+    def collide_point(self, x, y):
+        local_coords = self.to_local(x, y)
+        if local_coords[0] > 0 and local_coords[0] < self.container_width \
+           and local_coords[1] > 0 and local_coords[1] < self.container_height:
+            return True
+        else:
+            return False
+
+
     def draw(self):
-        self.update()
+        self._update()
 
         # background
         set_color(*self.style['bg-color'])
@@ -276,9 +337,6 @@ class MTVKeyboard(MTScatterWidget):
             scale_factor = self.get_scale_factor() / self._last_update_scale
             glScalef(scale_factor, scale_factor, scale_factor)
             self._current_cache['keys'].draw()
-
-        # debug
-        drawLabel(label=self._internal_text, pos=(self.width / 2., self.height))
 
     def get_key_at_pos(self, x, y):
         '''Return the key on the current layout, at the coordinate (x, y)'''
@@ -320,6 +378,8 @@ class MTVKeyboard(MTScatterWidget):
                 self.mode = 'NORMAL'
             self._need_update = 'now'
             return
+        elif internal_action in ('layout'):
+            self._layout_widget.visible = True
         elif internal_action in ('backspace'):
             self._internal_text = self._internal_text[:-1]
 
@@ -336,17 +396,22 @@ class MTVKeyboard(MTScatterWidget):
             return
 
     def on_touch_down(self, touch):
-        x, y = [x / self.get_scale_factor() for x in self.to_local(touch.x, touch.y)]
-        key = self.get_key_at_pos(x, y)
-        if key is not None:
-            touch.userdata['vkeyboard_key'] = key
-            self.dispatch_event('on_key_down', key)
-            return True
+        if not self._layout_widget.visible:
+            x, y = [x / self.get_scale_factor() for x in self.to_local(touch.x, touch.y)]
+            key = self.get_key_at_pos(x, y)
+            if key is not None:
+                if key not in self._active_keys:
+                    touch.userdata['vkeyboard_key'] = key
+                    self._active_keys.append(key)
+                    self.dispatch_event('on_key_down', key)
+                return True
         return super(MTVKeyboard, self).on_touch_down(touch)
 
     def on_touch_up(self, touch):
         if 'vkeyboard_key' in touch.userdata:
             key = touch.userdata['vkeyboard_key']
+            if key in self._active_keys:
+                self._active_keys.remove(key)
             self.dispatch_event('on_key_up', key)
             return True
         return super(MTVKeyboard, self).on_touch_up(touch)

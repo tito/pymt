@@ -77,7 +77,9 @@ auto_convert = {
     'title-alpha-background':   parse_float4,
     'draw-title-border':        parse_bool,
     'draw-title-alpha-background': parse_bool,
-    'margin':                   parse_float4
+    'margin':                   parse_float4,
+    'key-color':                parse_color,
+    'syskey-color':                parse_color,
 }
 
 # Default CSS of PyMT

@@ -370,11 +370,11 @@ class MTKineticList(MTStencilContainer):
                     if t['travelx'] <= 40 and self.do_x:
                         if not child.on_press(touch):
                             self.dispatch_event('on_press', child, self.childmap[child])
-                            child.dispatch_event('on_press', touch)
+                            #child.dispatch_event('on_press', touch)
                     elif t['travely'] <= 40 and self.do_y:
                         if not child.on_press(touch):
                             self.dispatch_event('on_press', child, self.childmap[child])
-                            child.dispatch_event('on_press',touch)
+                            #child.dispatch_event('on_press',touch)
             return True
 
     def process_kinetic(self):

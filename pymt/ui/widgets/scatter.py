@@ -30,6 +30,8 @@ class MTScatterWidget(MTWidget):
             Set to False for disabling translation, and ['x'], ['y'] for limit translation only on x or y
         `do_scale` : boolean, default to True
             Set to False for disabling scale
+        `auto_bring_to_front` : boolean, default to False
+            Set to False for disabling widget bring to front
         `scale_min` : float, default to 0.01
             Minimum scale allowed. Don't set to 0, or you can have error with singular matrix.
             The 0.01 mean you can de-zoom up to 10000% (1/0.01*100).
@@ -45,14 +47,15 @@ class MTScatterWidget(MTWidget):
         kwargs.setdefault('do_scale', True)
         kwargs.setdefault('do_rotation', True)
         kwargs.setdefault('do_translation', True)
+        kwargs.setdefault('auto_bring_to_front', True)
         kwargs.setdefault('scale_min', 0.01)
 
         super(MTScatterWidget, self).__init__(**kwargs)
 
+        self.auto_bring_to_front = kwargs.get('auto_bring_to_front')
         self.scale_min      = kwargs.get('scale_min')
         self.do_scale       = kwargs.get('do_scale')
         self.do_rotation    = kwargs.get('do_rotation')
-
         self.do_translation = kwargs.get('do_translation')
         self.do_translation_x = self.do_translation_y = 1.0
         if type(self.do_translation) == list:
@@ -325,10 +328,13 @@ class MTScatterWidget(MTWidget):
             return True
         touch.pop()
 
-        # if the children didnt handle it, we bring to front & keep track
-        # of touches for rotate/scale/zoom action
+        # grab touch to not loose it
         touch.grab(self)
-        self.bring_to_front()
+
+        # bring to front the widget is asked
+        if self.auto_bring_to_front:
+            self.bring_to_front()
+
         self.touches[touch.id] = Vector(x, y)
         return True
 
@@ -391,57 +397,15 @@ class MTScatterWidget(MTWidget):
 
 class MTScatterPlane(MTScatterWidget):
     '''A Plane that transforms for zoom/rotate/pan.
-         if none of the childwidgets handles the input (the background is touched), all of them are transformed together'''
-    def find_second_touch(self, touchID):
-        for tID in self.touches.keys():
-            if  tID!=touchID:
-                return tID
-        return None
-
+    if none of the childwidgets handles the input
+    (the background is touched), all of them are transformed
+    together
+    '''
     def draw(self):
         pass
 
-    def on_touch_down(self, touch):
-
-        # save pos
-        touch.push()
-        touch.x, touch.y = self.to_local(touch.x, touch.y)
-        if super(MTScatterWidget, self).on_touch_down(touch):
-            touch.pop()
-            return True
-        touch.pop()
-
-        self.bring_to_front()
-        self.touches[touch.id] = Vector(touch.x, touch.y)
+    def collide_point(self, x, y):
         return True
-
-    def on_touch_move(self, touch):
-        if touch.id in self.touches:
-            self.rotate_zoom_move(touch.id, touch.x, touch.y)
-            self.dispatch_event('on_resize',
-                int(self.width*self.get_scale_factor()),
-                int(self.height*self.get_scale_factor()))
-            self.dispatch_event('on_move', self.x, self.y)
-            return True
-
-        # save pos
-        touch.push()
-        touch.x, touch.y = self.to_local(touch.x, touch.y)
-        if MTWidget.on_touch_move(self, touch):
-            touch.pop()
-            return True
-        touch.pop()
-
-
-    def on_touch_up(self, touch):
-        touch.push()
-        touch.x, touch.y = self.to_local(touch.x, touch.y)
-        MTWidget.on_touch_up(self, touch)
-        if touch.id in self.touches:
-            del self.touches[touch.id]
-            touch.pop()
-            return True
-        touch.pop()
 
 
 class MTScatterImage(MTScatterWidget):

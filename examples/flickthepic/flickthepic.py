@@ -91,7 +91,7 @@ class flickrControl(MTWidget):
     '''This widget handles the controls text input and the search button'''
     def __init__(self, **kwargs):
         super(flickrControl, self).__init__(**kwargs)
-        self.text_input = MTTextInput(pos=(105,0),size=(100,100),font_size=24)
+        self.text_input = MTTextInput(pos=(105,0),size=(100,100), style={'font-size': 50})
         self.add_widget(self.text_input)
         self.flickSearch = flickrSearchButton(text_widget=self.text_input)
         self.add_widget(self.flickSearch)

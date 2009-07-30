@@ -195,6 +195,18 @@ class MTVKeyboard(MTScatterWidget):
                 The key contain: displayed_str, internal_str, internal_action, width
             `on_text_change` : text
                 Fired when the internal text is changed
+
+        List of internal action availables :
+
+        * backspace
+        * capslock
+        * enter
+        * escape
+        * layout (to display layout list)
+        * shift
+        * shift_L
+        * shift_R
+
         '''
         kwargs.setdefault('size', (700, 200))
         kwargs.setdefault('layout', None)

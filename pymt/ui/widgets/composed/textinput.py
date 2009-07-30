@@ -120,7 +120,10 @@ class MTTextInput(MTButton):
             self.keyboard.on_key_up(key)
 
     def on_text(self, text):
-        self.keyboard.text = self.keyboard.text + text
+        if text in ("\r", "\n"):
+            self.on_key_press(window.key.ENTER, None)
+        else:
+            self.keyboard.text = self.keyboard.text + text
 
 # Register all base widgets
 MTWidgetFactory.register('MTTextInput', MTVKeyboard)

@@ -120,8 +120,7 @@ class MTTextInput(MTButton):
             self.keyboard.on_key_up(key)
 
     def on_text(self, text):
-        self.keyboard.internal_str = self.keyboard.internal_str + text
-        self.reposition()
+        self.keyboard.text = self.keyboard.text + text
 
 # Register all base widgets
 MTWidgetFactory.register('MTTextInput', MTVKeyboard)

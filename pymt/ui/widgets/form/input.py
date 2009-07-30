@@ -7,7 +7,7 @@ __all__ = ['MTFormInput']
 from abstract import MTAbstractFormWidget
 from ....graphx import set_color, drawRectangle
 from ...factory import MTWidgetFactory
-from ..composed.vkeyboard import MTTextInput
+from ..composed.textinput import MTTextInput
 
 class MTFormInput(MTTextInput):
     '''Form input : a one-line text input, with virtual-keyboard support

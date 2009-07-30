@@ -1,311 +1,500 @@
 '''
-VKeyboard: Virtual keyboard + Text input
+VKeyboard: Virtual keyboard with custom layout support
 '''
 
 from __future__ import with_statement
-__all__ = ['MTTextInput', 'MTVKeyboard', 'MTKeyButton']
-
-from pyglet.text import Label
-from pyglet.window import key
-from ....graphx import set_color, drawRectangle, drawRoundedRectangle, GlDisplayList, drawLine
+import os
+import pymt
+from ....graphx import set_color, drawCSSRectangle, drawLabel, GlDisplayList, gx_matrix
+from ....utils import curry
+from ....vector import Vector
 from ...factory import MTWidgetFactory
-from ...animation import Animation, AnimationAlpha
-from ..button import MTButton
 from ..scatter import MTScatterWidget
-from ..layout.boxlayout import MTBoxLayout
+from kineticlist import MTKineticList, MTKineticItem
+from pyglet import clock
+from pyglet import font
+from pyglet.gl import glScalef, glTranslatef
 
+__all__ = ['MTVKeyboard']
 
-class MTTextInput(MTButton):
-    '''
-    A text input widget is a simple label widget that will pop up
-    a virtual keyboard when touched any input of the virtual keyboard
-    will then have effect on the TextInput widget.
+kbdlayout_default_font = os.path.join(pymt.pymt_data_dir, 'DejaVuSans.ttf')
 
-    :Events:
-        `on_text_change` ()
-            Fired when the content of text input is changed
-        `on_text_validate` ()
-            Fired when the text is validate (when ENTER is hit on keyboard)
-    '''
-    def __init__(self, **kwargs):
-        kwargs.setdefault('anchor_x', 'left')
-        kwargs.setdefault('anchor_y', 'bottom')
-        super(MTTextInput, self).__init__(**kwargs)
-        self._keyboard = None
-        self.original_width = self.width
-        self.is_active_input = False
-        self.added_keyboard = False
-        self.padding = 20
+class KeyboardLayout(object):
+    '''Base for all Keyboard Layout'''
+    ID              = 'nolayout'
+    TITLE           = 'nolayout'
+    DESCRIPTION     = 'nodescription'
+    FONT_FILENAME   = kbdlayout_default_font
+    FONT_NAME       = 'DejaVu Sans'
+    NORMAL_1 = []
+    NORMAL_2 = []
+    NORMAL_3 = []
+    NORMAL_4 = []
+    NORMAL_5 = []
+    SHIFT_1 = []
+    SHIFT_2 = []
+    SHIFT_3 = []
+    SHIFT_4 = []
+    SHIFT_5 = []
 
-        self.register_event_type('on_text_change')
-        self.register_event_type('on_text_validate')
+class KeyboardLayoutQWERTY(KeyboardLayout):
+    '''Implementation of QWERTY Layout'''
+    ID              = 'qwerty'
+    TITLE           = 'Qwerty'
+    DESCRIPTION     = 'A classical US Keyboard'
+    FONT_FILENAME   = kbdlayout_default_font
+    FONT_NAME       = 'DejaVu Sans'
+    NORMAL_1 = [
+        ('~', '~', None, 1),    ('!', '!', None, 1),    ('@', '@', None, 1),
+        ('#', '#', None, 1),    ('$', '$', None, 1),    ('%', '%', None, 1),
+        ('^', '^', None, 1),    ('&', '&', None, 1),    ('*', '*', None, 1),
+        ('(', '(', None, 1),    (')', ')', None, 1),    ('_', '_', None, 1),
+        ('+', '+', None, 1),    (u'\u232b', None, 'backspace', 2),
+    ]
+    NORMAL_2 = [
+        (u'\u21B9', chr(0x09), None, 1.5),  ('q', 'q', None, 1),    ('w', 'w', None, 1),
+        ('e', 'e', None, 1),    ('r', 'r', None, 1),    ('t', 't', None, 1),
+        ('y', 'y', None, 1),    ('u', 'u', None, 1),    ('i', 'i', None, 1),
+        ('o', 'o', None, 1),    ('p', 'p', None, 1),    ('{', '{', None, 1),
+        ('}', '}', None, 1),    ('|', '|', None, 1.5)
+    ]
+    NORMAL_3 = [
+        (u'\u21ea', None, 'capslock', 1.8),  ('a', 'a', None, 1),    ('s', 's', None, 1),
+        ('d', 'd', None, 1),    ('f', 'f', None, 1),    ('g', 'g', None, 1),
+        ('h', 'h', None, 1),    ('j', 'j', None, 1),    ('k', 'k', None, 1),
+        ('l', 'l', None, 1),    (':', ':', None, 1),    ('"', '"', None, 1),
+        (u'\u23ce', None, 'enter', 2.2),
+    ]
+    NORMAL_4 = [
+        (u'\u21e7', None, 'shift_L', 2.5),  ('z', 'z', None, 1),    ('x', 'x', None, 1),
+        ('c', 'c', None, 1),    ('v', 'v', None, 1),    ('b', 'b', None, 1),
+        ('n', 'n', None, 1),    ('m', 'm', None, 1),    ('<', '<', None, 1),
+        ('>', '>', None, 1),    ('?', '?', None, 1),    (u'\u21e7', None, 'shift_R', 2.5),
+    ]
+    NORMAL_5 = [
+        ('', ' ', None, 12), (u'\u2b12', None, 'layout', 1.5), (u'\u2a2f', None, 'escape', 1.5),
 
-    def _get_keyboard(self):
-        if not self._keyboard:
-            self._keyboard = MTVKeyboard(self)
-        return self._keyboard
-    keyboard = property(_get_keyboard)
+    ]
+    SHIFT_1 = [
+        ('`', '`', None, 1),    ('1', '1', None, 1),    ('2', '2', None, 1),
+        ('3', '3', None, 1),    ('4', '4', None, 1),    ('5', '5', None, 1),
+        ('6', '6', None, 1),    ('7', '7', None, 1),    ('8', '8', None, 1),
+        ('9', '9', None, 1),    ('0', '0', None, 1),    ('+', '+', None, 1),
+        ('=', '=', None, 1),    (u'\u232b', None, 'backspace', 2),
+    ]
+    SHIFT_2 = [
+        (u'\u21B9', chr(0x09), None, 1.5),  ('Q', 'Q', None, 1),    ('W', 'W', None, 1),
+        ('E', 'E', None, 1),    ('R', 'R', None, 1),    ('T', 'T', None, 1),
+        ('Y', 'Y', None, 1),    ('U', 'U', None, 1),    ('I', 'I', None, 1),
+        ('O', 'O', None, 1),    ('P', 'P', None, 1),    ('[', '[', None, 1),
+        (']', ']', None, 1),    ('?', '?', None, 1.5)
+    ]
+    SHIFT_3 = [
+        (u'\u21ea', None, 'capslock', 1.8),  ('A', 'A', None, 1),    ('S', 'S', None, 1),
+        ('D', 'D', None, 1),    ('F', 'F', None, 1),    ('G', 'G', None, 1),
+        ('H', 'H', None, 1),    ('J', 'J', None, 1),    ('K', 'K', None, 1),
+        ('L', 'L', None, 1),    (':', ':', None, 1),    ('"', '"', None, 1),
+        (u'\u23ce', None, 'enter', 2.2),
+    ]
+    SHIFT_4 = [
+        (u'\u21e7', None, 'shift_L', 2.5),  ('Z', 'Z', None, 1),    ('X', 'X', None, 1),
+        ('C', 'C', None, 1),    ('V', 'V', None, 1),    ('B', 'B', None, 1),
+        ('N', 'N', None, 1),    ('M', 'M', None, 1),    (',', ',', None, 1),
+        ('.', '.', None, 1),    ('/', '/', None, 1),    (u'\u21e7', None, 'shift_R', 2.5),
+    ]
+    SHIFT_5 = [
+        ('', ' ', None, 12), (u'\u2b12', None, 'layout', 1.5), (u'\u2a2f', None, 'escape', 1.5),
+    ]
 
-    def on_press(self, touch):
-        if self.is_active_input:
-            self.hide_keyboard()
-        else:
-            self.show_keyboard()
-
-    def reposition(self):
-        self.label_obj.text = self.label
-        self.label_obj.x = self.x + self.padding
-        self.label_obj.y = self.y
-        self.width =  self.label_obj.content_width + self.padding * 2
-        if self.width < self.original_width:
-            self.width = self.original_width
-
-    def on_move(self, w, h):
-        self.reposition()
-
-    def on_text_change(self):
-        self.reposition()
-
-    def on_text_validate(self):
-        pass
-
-    def show_keyboard(self):
-        self.get_parent_window().add_widget(self.keyboard)
-        self.get_parent_window().add_on_key_press(self.on_key_press)
-        self.get_parent_window().add_on_text(self.on_text)
-        self.is_active_input = True
-
-    def hide_keyboard(self):
-        self.get_parent_window().remove_widget(self.keyboard)
-        self.get_parent_window().remove_on_key_press(self.on_key_press)
-        self.get_parent_window().remove_on_text(self.on_text)
-        self.is_active_input = False
-
-    def draw(self):
-        if self.is_active_input:
-            set_color(*self.style.get('bg-color'))
-            drawLine([self.center[0], self.center[1],
-                      self.keyboard.center[0], self.keyboard.center[1]])
-        if self.state[0] == 'down':
-            set_color(0.5,0.5,0.5,0.5)
-            drawRectangle((self.x,self.y) , (self.width, self.height))
-        else:
-            set_color(*self.style.get('bg-color'))
-            drawRectangle((self.x,self.y) , (self.width, self.height))
-        self.label_obj.draw()
-
-    def on_key_press(self, symbol, modifiers):
-        if symbol == key.ESCAPE:
-            self.hide_keyboard()
-            return True
-        elif symbol == key.BACKSPACE:
-            self.keyboard.on_key_up(MTVKeyboard.KEY_BACKSPACE)
-        elif symbol in [key.ENTER, key.NUM_ENTER]:
-            self.keyboard.on_key_up(MTVKeyboard.KEY_ENTER)
-
-    def on_text(self, text):
-        self.keyboard.text_widget.label = self.keyboard.text_widget.label + text
-        self.reposition()
-
-
-class MTKeyButton(MTButton):
-    '''Internal Class used in MTVKeyboard'''
-    def __init__(self, keyboard, **kwargs):
-        super(MTKeyButton, self).__init__(**kwargs)
-        self.keyboard = keyboard
-        self._opacity = 255
-        self.add_animation('hide', 'opacity', 1, 2, 10, func=AnimationAlpha.ramp)
-
-    def on_press(self, touch):
-        self.stop_animations('hide')
-        self.opacity = 255
-        self.keyboard.on_key_down(self.label)
-        self.keyboard.active_keys[self] = self
-
-    def on_release(self, touch):
-        self.start_animations('hide')
-        self.keyboard.on_key_up(self.label)
-
-    def on_animation_complete(self, animation):
-        if animation.label == 'hide':
-            if self in self.keyboard.active_keys:
-                del self.keyboard.active_keys[self]
-
-    def _get_opacity(self):
-        return self._opacity
-    def _set_opacity(self, opacity):
-        # this hack only work the keybutton
-        self._opacity = opacity
-        self.style['color-down'][3] = float(opacity) / 255.
-        self.style['bg-color'] = self.style['color-down']
-    opacity = property(_get_opacity, _set_opacity)
-
-
+class KeyboardLayoutAZERTY(KeyboardLayout):
+    '''Implementation of AZERTY Layout'''
+    ID              = 'azerty'
+    TITLE           = 'Azerty'
+    DESCRIPTION     = 'A French keyboard without international keys'
+    FONT_FILENAME   = kbdlayout_default_font
+    FONT_NAME       = 'DejaVu Sans'
+    NORMAL_1 = [
+        ('@', '@', None, 1),    ('&', '&', None, 1),    ('\xc3\xa9', '\xc3\xa9', None, 1),
+        ('"', '"', None, 1),    ('\'', '\'', None, 1),  ('(', '(', None, 1),
+        ('-', '-', None, 1),    ('\xc3\xa8', '\xc3\xa8', None, 1),    ('_', '_', None, 1),
+        ('\xc3\xa7', '\xc3\xa7', None, 1),    ('\xc3\xa0', '\xc3\xa0', None, 1),    (')', ')', None, 1),
+        ('=', '=', None, 1),    (u'\u232b', None, 'backspace', 2),
+    ]
+    NORMAL_2 = [
+        (u'\u21B9', chr(0x09), None, 1.5),  ('a', 'a', None, 1),    ('z', 'z', None, 1),
+        ('e', 'e', None, 1),    ('r', 'r', None, 1),    ('t', 't', None, 1),
+        ('y', 'y', None, 1),    ('u', 'u', None, 1),    ('i', 'i', None, 1),
+        ('o', 'o', None, 1),    ('p', 'p', None, 1),    ('^', '^', None, 1),
+        ('$', '$', None, 1),    (u'\u23ce', None, 'enter', 1.5),
+    ]
+    NORMAL_3 = [
+        (u'\u21ea', None, 'capslock', 1.8),  ('q', 'q', None, 1),    ('s', 's', None, 1),
+        ('d', 'd', None, 1),    ('f', 'f', None, 1),    ('g', 'g', None, 1),
+        ('h', 'h', None, 1),    ('j', 'j', None, 1),    ('k', 'k', None, 1),
+        ('l', 'l', None, 1),    ('m', 'm', None, 1),    ('\xc3\xb9', '\xc3\xb9', None, 1),
+        ('*', '*', None, 1),    (u'\u23ce', None, 'enter', 1.2),
+    ]
+    NORMAL_4 = [
+        (u'\u21e7', None, 'shift_L', 1.5),  ('<', '<', None, 1),    ('w', 'w', None, 1),
+        ('x', 'x', None, 1),
+        ('c', 'c', None, 1),    ('v', 'v', None, 1),    ('b', 'b', None, 1),
+        ('n', 'n', None, 1),    (',', ',', None, 1),    (';', ';', None, 1),
+        (':', ':', None, 1),    ('!', '!', None, 1),    (u'\u21e7', None, 'shift_R', 2.5),
+    ]
+    NORMAL_5 = [
+        ('', ' ', None, 12), (u'\u2b12', None, 'layout', 1.5), (u'\u2a2f', None, 'escape', 1.5),
+    ]
+    SHIFT_1 = [
+        ('|', '|', None, 1),    ('1', '1', None, 1),    ('2', '2', None, 1),
+        ('3', '3', None, 1),    ('4', '4', None, 1),    ('5', '5', None, 1),
+        ('6', '6', None, 1),    ('7', '7', None, 1),    ('8', '8', None, 1),
+        ('9', '9', None, 1),    ('0', '0', None, 1),    ('#', '#', None, 1),
+        ('+', '+', None, 1),    (u'\u232b', None, 'backspace', 2),
+    ]
+    SHIFT_2 = [
+        (u'\u21B9', chr(0x09), None, 1.5),  ('A', 'A', None, 1),    ('Z', 'Z', None, 1),
+        ('E', 'E', None, 1),    ('R', 'R', None, 1),    ('T', 'T', None, 1),
+        ('Y', 'Y', None, 1),    ('U', 'U', None, 1),    ('I', 'I', None, 1),
+        ('O', 'O', None, 1),    ('P', 'P', None, 1),    ('[', '[', None, 1),
+        (']', ']', None, 1),    (u'\u23ce', None, 'enter', 1.5),
+    ]
+    SHIFT_3 = [
+        (u'\u21ea', None, 'capslock', 1.8),  ('Q', 'Q', None, 1),    ('S', 'S', None, 1),
+        ('D', 'D', None, 1),    ('F', 'F', None, 1),    ('G', 'G', None, 1),
+        ('H', 'H', None, 1),    ('J', 'J', None, 1),    ('K', 'K', None, 1),
+        ('L', 'L', None, 1),    ('M', 'M', None, 1),    ('%', '%', None, 1),
+        ('\xc2\xb5', '\xc2\xb5', None, 1),    (u'\u23ce', None, 'enter', 1.2),
+    ]
+    SHIFT_4 = [
+        (u'\u21e7', None, 'shift_L', 1.5),  ('>', '>', None, 1),    ('W', 'W', None, 1),
+        ('X', 'X', None, 1),    ('C', 'C', None, 1),    ('V', 'V', None, 1),
+        ('B', 'B', None, 1),    ('N', 'N', None, 1),    ('?', '?', None, 1),
+        ('.', '.', None, 1),    ('/', '/', None, 1),    ('\xc2\xa7', '\xc2\xa7', None, 1),
+        (u'\u21e7', None, 'shift_R', 2.5),
+    ]
+    SHIFT_5 = [
+        ('', ' ', None, 12), (u'\u2b12', None, 'layout', 1.5), (u'\u2a2f', None, 'escape', 1.5),
+    ]
 
 class MTVKeyboard(MTScatterWidget):
-    '''A virtual keyboard that can be scaled/rotate/moved'''
 
-    KEY_SPACE       = 'Space'
-    KEY_ESCAPE      = 'Esc'
-    KEY_BACKSPACE   = '<-'
-    KEY_SHIFT       = 'Shift'
-    KEY_CAPSLOCK    = 'CL'
-    KEY_ENTER       = 'Enter'
+    available_layout = []
 
-    _row_keys       = ['1234567890-=', 'qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./']
-    _row_keyscaps   = ['!@#$%^&*()_+', 'QWERTYUIOP', 'ASDFGHJKL:', 'ZXCVBNM<>?']
+    def __init__(self, **kwargs):
+        '''
+        MTVKeyboard is a OnBoard keyboard, who support Multitouch.
+        Layout are entirely customizable, and you can switch from layout with
+        little button in bottom-right of keyboard.
 
-    def __init__(self, text_widget, pos=(0,0)):
-        MTScatterWidget.__init__(self, pos=(0,0), size=(400,200))
+        :Events:
+            `on_key_down` : key
+                Fired when a key is down
+                The key contain: displayed_str, internal_str, internal_action, width
+            `on_key_up` : key
+                Fired when a key is up
+                The key contain: displayed_str, internal_str, internal_action, width
+            `on_text_change` : text
+                Fired when the internal text is changed
+        '''
+        kwargs.setdefault('size', (700, 200))
+        kwargs.setdefault('layout', None)
+        super(MTVKeyboard, self).__init__(**kwargs)
 
-        # setup caps keys
-        self.add_widget(self._setup_keys(MTVKeyboard._row_keyscaps), side='back')
-        # setup normal keys
-        self.add_widget(self._setup_keys(MTVKeyboard._row_keys), side='front')
+        self.register_event_type('on_key_down')
+        self.register_event_type('on_key_up')
+        self.register_event_type('on_text_change')
 
-        self.dlfront        = GlDisplayList()
-        self.dlback         = GlDisplayList()
-        self.active_keys    = {}
-        self.text_widget    = text_widget
-        self.draw_children  = False
-        self.is_shift       = False
-        self.is_capslock    = False
+        self.layout             = kwargs.get('layout')
+        self.container_width, self.container_height   = self.size
 
-    def do_flip_caps(self):
-        caps = self.is_capslock
-        if self.is_shift:
-            caps = not caps
-        if caps:
-            if self.side == 'front':
-                self.flip()
-        elif self.side == 'back':
-            self.flip()
+        # read default layout in configuration
+        if self.layout is None:
+            idlayout = pymt.pymt_config.get('keyboard', 'layout')
+            # search layout
+            for layout in MTVKeyboard.available_layout:
+                if layout.ID == idlayout:
+                    self.layout = layout()
+                    break
+            # no layout found ?
+            if self.layout is None:
+                pymt.pymt_logger.warning('Keyboard layout <%s> not found, fallback on QWERTY' % idlayout)
+                self.layout = KeyboardLayoutQWERTY()
 
-    def on_key_down(self, k_str):
-        if k_str == MTVKeyboard.KEY_SHIFT:
-            self.is_shift = True
-            self.do_flip_caps()
-            return True
+        self._mode              = 'NORMAL'
+        self._cache             = {}
+        self._current_cache     = None
+        self._last_update       = 0
+        self._last_update_scale = 1.
+        self._need_update       = 'now'
+        self._internal_text     = ''
+        self._show_layout       = False
+        self._active_keys       = []
 
-    def on_key_up(self, k_str):
-        if k_str == MTVKeyboard.KEY_ENTER:
-            self.text_widget.dispatch_event('on_text_validate')
-            self.text_widget.hide_keyboard()
-            return True
+        # prepare layout widget
+        mtop, mright, mbottom, mleft = self.style['margin']
+        self._layout_widget     = MTKineticList(
+            title=None, searchable=False, deletable=False,
+            size=(self.width - mleft - mright, self.height),
+            pos=(mleft, 0), style={'bg-color': (.0, .0, .0, .7)},
+            visible=False)
+        for layout in MTVKeyboard.available_layout:
+            item = MTKineticItem(label=layout.TITLE + ' - ' + layout.DESCRIPTION,
+                    style={'font-size':14}, size=(self.width - mleft - mright, 40))
+            self._layout_widget.add_widget(item, curry(self.on_layout_change, layout))
+        self.add_widget(self._layout_widget)
 
-        elif k_str == MTVKeyboard.KEY_ESCAPE:
-            self.text_widget.hide_keyboard()
-            return True
 
-        elif k_str == MTVKeyboard.KEY_BACKSPACE:
-            self.text_widget.label = self.text_widget.label[:-1]
+    #
+    # Static methods
+    #
 
-        elif k_str == MTVKeyboard.KEY_SPACE:
-            self.text_widget.label += ' '
+    @staticmethod
+    def add_custom_layout(layout_class):
+        '''Add a custom layout class on MTVKeyboard'''
+        if not layout_class in MTVKeyboard.available_layout:
+            # Append layout in class
+            MTVKeyboard.available_layout.append(layout_class)
+            # Load custom font
+            try:
+                font.add_file(layout_class.FONT_FILENAME)
+            except:
+                pymt.pymt_logger.exception('Unable to load custom font')
 
-        elif k_str == MTVKeyboard.KEY_SHIFT:
-            self.is_shift = False
-            self.do_flip_caps()
-            return True
+    #
+    # Keyboard properties
+    #
 
-        elif k_str == MTVKeyboard.KEY_CAPSLOCK:
-            self.is_capslock = not self.is_capslock
-            self.do_flip_caps()
-            return True
+    def _get_text(self):
+        return self._internal_text
+    def _set_text(self, value):
+        if value != self._internal_text:
+            self._internal_text = value
+            self.dispatch_event('on_text_change', value)
+    text = property(_get_text, _set_text,
+            doc='''Get/set text string on vkeyboard''')
 
-        else:
-            self.text_widget.label = self.text_widget.label + k_str
+    def _get_mode(self):
+        return self._mode
+    def _set_mode(self, value):
+        if value != self._mode:
+            self._need_update = 'now'
+            self._mode = value
+    mode = property(_get_mode, _set_mode,
+            doc='''Get/set mode of vkeyboard (NORMAL, SHIFT...)''')
 
-        self.text_widget.dispatch_event('on_text_change')
-        return True
+    #
+    # Public methods
+    #
 
-    def update_dl(self):
-        with self.dlfront:
-            set_color(*self.style.get('bg-color'))
-            drawRoundedRectangle((0,0), self.size)
-            for w in self.children_front:
-                w.dispatch_event('on_draw')
-        with self.dlback:
-            set_color(*self.style.get('bg-color'))
-            drawRoundedRectangle((0,0), self.size)
-            for w in self.children_back:
-                w.dispatch_event('on_draw')
+    def clear(self):
+        '''Clear the text'''
+        self.text = ''
 
-    def _setup_keys(self, keys):
-        k_width = 25
-        spacing = 3
-        paddingx = 60
-        paddingy = 30
-        border_radius = 2
 
-        vlayout = MTBoxLayout(orientation='vertical', pos=(paddingx,paddingy),
-                              spacing=spacing, invert_y=True)
-        key_options = {'border_radius': border_radius}
+    #
+    # Private methods
+    #
 
-        for j in range(4):
-            layout = MTBoxLayout(spacing=spacing)
+    def _lazy_update(self):
+        self._need_update = 'lazy'
+        self._last_update = clock.get_default().time()
 
-            # special keys on left
-            if j == 0:
-                k_str   = MTVKeyboard.KEY_ESCAPE
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width, k_width), **key_options)
-                layout.add_widget(k_btn)
-            elif j == 1:
-                k_str   = ''
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*0.5, k_width), **key_options)
-                layout.add_widget(k_btn)
-            elif j == 2:
-                k_str   = MTVKeyboard.KEY_CAPSLOCK
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width, k_width), **key_options)
-                layout.add_widget(k_btn)
-            elif j == 3:
-                k_str   = MTVKeyboard.KEY_SHIFT
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*1.5, k_width), **key_options)
-                layout.add_widget(k_btn)
+    def _update(self):
+        dt = clock.get_default().time() - self._last_update
+        if self._need_update is None:
+            return
 
-            # regular keys
-            num_keys = len(keys[j])
-            for i in range(num_keys):
-                k_str   = keys[j][i]
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width, k_width), **key_options)
-                layout.add_widget(k_btn)
+        if self._need_update == 'now' or (self._need_update == 'lazy' and  dt > 0.9):
+            # create layout mode if not in cache
+            layoutmode = '%s:%s' % (self.layout.ID, self.mode)
+            if not layoutmode in self._cache:
+                self._cache[layoutmode] = {'background': GlDisplayList(), 'keys': GlDisplayList()}
+            self._current_cache = self._cache[layoutmode]
 
-            # special keys on right
-            if j == 1:
-                k_str   = MTVKeyboard.KEY_BACKSPACE
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*2.5 +3, k_width), **key_options)
-                layout.add_widget(k_btn)
-            elif j == 2:
-                k_str   = MTVKeyboard.KEY_ENTER
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*2+3, k_width), **key_options)
-                layout.add_widget(k_btn)
-            elif j == 3:
-                k_str   = MTVKeyboard.KEY_SHIFT
-                k_btn   = MTKeyButton(self, label=k_str, size=(k_width*1.5+3, k_width), **key_options)
-                layout.add_widget(k_btn)
+            # do real update
+            self._do_update(mode='background')
+            self._do_update(mode='keys')
 
-            vlayout.add_widget(layout)
+            # don't update too fast next time (if it's lazy)
+            self._last_update = clock.get_default().time()
+            self._last_update_scale = self.get_scale_factor()
+            self._need_update = None
 
-        layout = MTBoxLayout(spacing=3)
-        space_key = MTKeyButton(self, label=MTVKeyboard.KEY_SPACE, size=(361, k_width), **key_options)
-        layout.add_widget(space_key)
-        vlayout.add_widget(layout)
-        self.size = (vlayout.content_width + paddingx * 2,
-                     vlayout.content_height + paddingy * 2)
-        return vlayout
+    def _do_update(self, mode=None):
+        # we absolutly want mode to update displaylist.
+        if mode not in ('background', 'keys'):
+            return
 
-    def draw_active_children(self):
-        for key in self.active_keys:
-            self.active_keys[key].draw()
+        # don't update background if it's already compiled
+        if mode == 'background' and self._current_cache['background'].is_compiled():
+            return
+
+        # calculate margin
+        s = self.get_scale_factor()
+        w, h = self.container_width, self.container_height
+        if mode == 'background':
+            s = 1.
+            w, h = self.size
+        mtop, mright, mbottom, mleft = map(lambda x: x * s, self.style['margin'])
+        self.texsize = Vector(w - mleft - mright,
+                              h - mtop - mbottom)
+        self.keysize = Vector(self.texsize.x / 15, self.texsize.y / 5)
+        m = 3 * s
+        x, y = 0, self.texsize.y - self.keysize.y
+
+        # update display list
+        with self._current_cache[mode]:
+
+            # draw lines
+            for index in xrange(1, 6):
+                line = self.layout.__getattribute__('%s_%d' % (self.mode, index))
+
+                # draw keys
+                for key in line:
+                    displayed_str, internal_str, internal_action, scale = key
+                    kw = self.keysize.x * scale
+
+                    # don't display empty keys
+                    if displayed_str is not None:
+                        set_color(*self.style['key-color'])
+                        if mode == 'background':
+                            if internal_action is not None:
+                                set_color(*self.style['syskey-color'])
+                            drawCSSRectangle(
+                                pos=(x+m, y+m),
+                                size=(kw-m*2, self.keysize.y-m*2),
+                                style=self.style, prefix='key')
+                        elif mode == 'keys':
+                            font_size = 14 * s
+                            if font_size < 8:
+                                font_size = 8
+                            drawLabel(label=displayed_str,
+                                    pos=(x + kw / 2., y + self.keysize.y / 2.),
+                                    font_size=font_size, bold=False,
+                                    font_name='DejaVu Sans')
+                    # advance X
+                    x += kw
+                # advance Y
+                y -= self.keysize.y
+                x = 0
+
+        # update completed
+        self._need_update = None
+
+    #
+    # Rewrite some handle to update the widget (drawing and scalling)
+    #
+
+    def on_resize(self, w, h):
+        self.container_width, self.container_height = w, h
+        self._lazy_update()
+
+    def on_layout_change(self, layout, *largs):
+        self._layout_widget.visible = False
+        self.layout = layout()
+        self._need_update = 'now'
 
     def draw(self):
-        if not self.dlfront.is_compiled() or not self.dlback.is_compiled():
-            self.update_dl()
-        if self.side == 'front':
-            self.dlfront.draw()
-        else:
-            self.dlback.draw()
-        self.draw_active_children()
+        self._update()
+
+        # background
+        set_color(*self.style['bg-color'])
+        drawCSSRectangle(size=self.size, style=self.style)
+
+        # content dynamic update
+        with gx_matrix:
+            glTranslatef(self.style['margin'][3], self.style['margin'][2], 0)
+            self._current_cache['background'].draw()
+            if self._last_update_scale == self.get_scale_factor():
+                s = 1. / self.get_scale_factor()# / self._last_update_scale
+                glScalef(s, s, s)
+            else:
+                s = 1. / self._last_update_scale
+                glScalef(s, s, s)
+            self._current_cache['keys'].draw()
+
+    def get_key_at_pos(self, x, y):
+        '''Return the key on the current layout, at the coordinate (x, y)'''
+        mtop, mright, mbottom, mleft = self.style['margin']
+        w, h = self.width - mleft - mright, self.height - mtop - mbottom
+        keysize = Vector(w / 15, h / 5)
+        if x < mleft or x > self.width - mright or \
+           y < mbottom or y > self.height - mtop:
+               return None
+        index = 5-int((y - mbottom) /
+                (self.height - mtop - mbottom)
+                * 5.)
+        line = self.layout.__getattribute__('%s_%d' % (self.mode, index))
+        x -= mleft
+        kx = 0
+        for key in line:
+            kw = keysize.x * key[3]
+            if x >= kx and x < kx + kw:
+                return key
+            kx += kw
+        return None
+
+    def on_key_down(self, key):
+        displayed_str, internal_str, internal_action, scale = key
+        if internal_action is None:
+            if internal_str is not None:
+                self.text += internal_str
+        elif internal_action in ('capslock'):
+            if self.mode == 'NORMAL':
+                self.mode = 'SHIFT'
+            else:
+                self.mode = 'NORMAL'
+            self._need_update = 'now'
+            return
+        elif internal_action in ('shift', 'shift_L', 'shift_R'):
+            if self.mode == 'NORMAL':
+                self.mode = 'SHIFT'
+            else:
+                self.mode = 'NORMAL'
+            self._need_update = 'now'
+            return
+        elif internal_action in ('layout'):
+            self._layout_widget.visible = True
+        elif internal_action in ('backspace'):
+            self.text = self.text[:-1]
+
+    def on_key_up(self, key):
+        displayed_str, internal_str, internal_action, scale = key
+        if internal_action is None:
+            pass
+        elif internal_action in ('shift', 'shift_L', 'shift_R'):
+            if self.mode == 'NORMAL':
+                self.mode = 'SHIFT'
+            else:
+                self.mode = 'NORMAL'
+            self._need_update = 'now'
+            return
+
+    def on_touch_down(self, touch):
+        if not self._layout_widget.visible:
+            x, y = self.to_local(touch.x, touch.y)
+            key = self.get_key_at_pos(x, y)
+            if key is not None:
+                if key not in self._active_keys:
+                    touch.userdata['vkeyboard_key'] = key
+                    self._active_keys.append(key)
+                    self.dispatch_event('on_key_down', key)
+                return True
+        return super(MTVKeyboard, self).on_touch_down(touch)
+
+    def on_touch_up(self, touch):
+        if 'vkeyboard_key' in touch.userdata:
+            key = touch.userdata['vkeyboard_key']
+            if key in self._active_keys:
+                self._active_keys.remove(key)
+            self.dispatch_event('on_key_up', key)
+            return True
+        return super(MTVKeyboard, self).on_touch_up(touch)
+
+
+# Register layouts
+MTVKeyboard.add_custom_layout(KeyboardLayoutQWERTY)
+MTVKeyboard.add_custom_layout(KeyboardLayoutAZERTY)
 
 # Register all base widgets
-MTWidgetFactory.register('MTTextInput', MTTextInput)
+MTWidgetFactory.register('MTVKeyboard', MTVKeyboard)

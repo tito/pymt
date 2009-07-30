@@ -199,6 +199,20 @@ vectorslider,
 objectdisplay {
     vector-color: rgb(255, 255, 255);
 }
+
+vkeyboard {
+    margin: 10 50 10 50;
+    border-radius: 15;
+    border-radius-precision: 0.35;
+    key-border-radius: 5;
+    key-border-radius-precision: 1;
+    draw-key-border: 1;
+    key-alpha-background: 1 1 .7 .7;
+    draw-key-alpha-background: 1;
+    draw-border: 1;
+    key-color: rgba(20, 20, 20, 255);
+    syskey-color: rgba(20, 20, 40, 255);
+}
 '''
 
 def get_truncated_classname(name):

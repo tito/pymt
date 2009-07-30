@@ -4,6 +4,7 @@ Kinetic List: Custom list with kinetic interaction
 
 __all__ = ['MTKineticList', 'MTKineticObject', 'MTKineticItem', 'MTKineticImage']
 
+import pymt
 from pyglet.gl import *
 from pyglet.text import Label
 from ....graphx import set_color, drawRectangle, GlDisplayList
@@ -15,7 +16,6 @@ from ..stencilcontainer import MTStencilContainer
 from ..widget import MTWidget
 from ..button import MTButton, MTToggleButton, MTImageButton
 from ...animation import Animation, AnimationAlpha
-from vkeyboard import MTTextInput
 
 class MTKineticList(MTStencilContainer):
     '''This is a kinetic container widget, that allows you to make
@@ -138,7 +138,7 @@ class MTKineticList(MTStencilContainer):
             self.sb.parent = self
             self.widgets.append(self.sb)
 
-            self.sinput = MTTextInput(pos=(self.x, self.y + self.height - 40), size=(80, 40))  #Text Input area
+            self.sinput = pymt.MTTextInput(pos=(self.x, self.y + self.height - 40), size=(80, 40))  #Text Input area
             self.sinput.parent = self
             self.sinput.on_text_change = self.apply_filter
             self.widgets.append(self.sinput)

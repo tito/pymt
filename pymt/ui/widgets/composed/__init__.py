@@ -10,3 +10,4 @@ from popup import *
 from tabs import *
 from video import *
 from vkeyboard import *
+from textinput import *

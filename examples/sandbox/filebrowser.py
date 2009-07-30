@@ -109,13 +109,20 @@ class MTFileBrowser(MTPopup):
     def __init__(self, **kwargs):
         kwargs.setdefault('submit_label', 'Open')
         kwargs.setdefault('title', 'Open a file')
+        kwargs.setdefault('size', (350, 300))
         super(MTFileBrowser, self).__init__(**kwargs)
 
-        self.kbsize = self.width, self.height
-        self.kb = KineticBrowseLayout(w_limit=4, deletable=False, searchable=False,size=self.kbsize)
-        self.add_widget(self.kb)
         self.dl = GlDisplayList()
-        self.path = '.'
+        self._path = '.'
+        self.kbsize = self.width, self.height
+
+        # Title
+        self.w_path = MTLabel(label=self.path, autoheight=True, size=(self.width, 30), color=(.7, .7, .7, .5))
+        self.add_widget(self.w_path)
+
+        # File listing
+        self.kb = KineticBrowseLayout(w_limit=4, deletable=False, searchable=False,size=self.kbsize)
+        self.add_widget(self.kb, True)
 
         self.register_event_type('on_select')
         self.selected_files = []
@@ -136,6 +143,17 @@ class MTFileBrowser(MTPopup):
         self.input.height = 30
         self.add_widget(self.input)
         '''
+
+    def _get_path(self):
+        return self._path
+    def _set_path(self, value):
+        if value == self._path:
+            return
+        if not os.path.exists(value):
+            return
+        self.w_path.label = value
+        self._path = value
+    path = property(_get_path, _set_path)
 
     def update_listing(self):
         self.path = os.path.abspath(self.path)

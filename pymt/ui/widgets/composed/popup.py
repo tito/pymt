@@ -74,11 +74,19 @@ class MTPopup(MTScatterWidget):
             self.layout.add_widget(self.l_title)
         super(MTPopup, self).add_widget(self.layout)
 
+    def _ensure_layout(self, force=False):
+        while force or (self.size != self.layout.size):
+            self.size = self.layout.size
+            self.layout.do_layout()
+            force = False
+
     def add_widget(self, widget):
         self.l_content.add_widget(widget)
-        self.layout.do_layout()
-        self.size = self.layout.size
-        self.layout.do_layout()
+        self._ensure_layout()
+
+    def remove_widget(self, widget):
+        self.l_content.remove_widget(widget)
+        self._ensure_layout()
 
     def close(self):
         self.parent.remove_widget(self)
@@ -93,8 +101,6 @@ class MTPopup(MTScatterWidget):
         self.dispatch_event(event)
 
     def draw(self):
-        self.size = self.layout.size
-
         # draw background
         set_color(*self.style['bg-color'])
         drawCSSRectangle(size=self.size, style=self.style)

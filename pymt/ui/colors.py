@@ -126,17 +126,13 @@ display {
     touch-color: rgba(255, 0, 0, 255);
 }
 
+popup,
 colorpicker,
 form,
 vkeyboard,
 flippablewidget,
 button {
     bg-color: rgba(60, 60, 60, 100);
-}
-
-keybutton {
-    bg-color: rgba(20, 20, 20, 200);
-    color-down: rgba(200, 200, 200, 150);
 }
 
 formslider,
@@ -201,6 +197,7 @@ objectdisplay {
 }
 
 vkeyboard {
+    /* onboard keyboard */
     margin: 10 50 10 50;
     border-radius: 15;
     border-radius-precision: 0.35;
@@ -213,6 +210,27 @@ vkeyboard {
     key-color: rgba(20, 20, 20, 255);
     syskey-color: rgba(20, 20, 40, 255);
 }
+
+popup {
+    /* popup widget */
+    border-radius: 5;
+    alpha-background: 1 1 .7 .7;
+    draw-alpha-background: 1;
+    draw-border: 1;
+}
+
+.popup-button {
+    bg-color: rgba(40, 40, 40, 255);
+    alpha-background: 1 1 .7 .7;
+    draw-alpha-background: 1;
+    draw-border: 1;
+    border-radius: 5;
+}
+
+.popup-button-submit {
+    bg-color: rgba(40, 40, 70, 255);
+}
+
 '''
 
 def get_truncated_classname(name):

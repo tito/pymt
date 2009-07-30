@@ -67,11 +67,11 @@ w.add_widget(statusInput)
 @statusInput.event
 def on_text_validate():
 	if len(statusInput.label) > 140:
-		statusPostError = MTPopup(title="ERROR!", content="Warning, your status update is larger than 140 characters, please shorten your post.", size=(300, 150))
+		statusPostError = MTModalPopup(title="ERROR!", content="Warning, your status update is larger than 140 characters, please shorten your post.", size=(300, 150))
 		w.add_widget(statusPostError)
 	else:
 		api.PostUpdate(statusInput.label)
-		statusPostSucess = MTPopup(title="SUCESS!", content="Your post has been successfully sent to twitter.")
+		statusPostSucess = MTModalPopup(title="SUCESS!", content="Your post has been successfully sent to twitter.")
 		w.add_widget(statusPostSucess)
 		statusInput.label = ""
 

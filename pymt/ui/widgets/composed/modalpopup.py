@@ -1,8 +1,8 @@
 '''
-Popup: a simple popup that use modal window
+ModalPopup: a simple popup that use modal window
 '''
 
-__all__ = ['MTPopup']
+__all__ = ['MTModalPopup']
 
 from ..modalwindow import MTModalWindow
 from ..form.form import MTForm
@@ -11,7 +11,7 @@ from ..form.label import MTFormLabel
 from ..layout.boxlayout import MTBoxLayout
 from ...factory import MTWidgetFactory
 
-class MTPopup(MTModalWindow):
+class MTModalPopup(MTModalWindow):
     '''A simple implementation of a popup.
 
     :Parameters:
@@ -23,10 +23,9 @@ class MTPopup(MTModalWindow):
     def __init__(self, **kwargs):
         kwargs.setdefault('title', 'Information')
         kwargs.setdefault('content', '')
-        super(MTPopup, self).__init__(**kwargs)
+        super(MTModalPopup, self).__init__(**kwargs)
         self.title      = kwargs.get('title')
         self.content    = kwargs.get('content')
-        self.window     = None
 
         self.form = MTForm(layout=MTBoxLayout(
             padding=10, spacing=10, orientation='vertical',
@@ -37,13 +36,13 @@ class MTPopup(MTModalWindow):
         self.form.add_widget(MTFormLabel(label=self.title, cls='popup-title'))
         self.form.add_widget(MTFormLabel(label=self.content, cls='popup-content'))
         self.form.add_widget(self.submit)
-        super(MTPopup, self).add_widget(self.form)
+        super(MTModalPopup, self).add_widget(self.form)
 
     def action_close_popup(self, *largs):
         self.parent.remove_widget(self)
 
     def add_widget(self, widget):
-        raise Exception('MTPopup cannot have children')
+        raise Exception('MTModalPopup cannot have children')
 
     def draw(self):
         w = self.get_parent_window()
@@ -51,8 +50,8 @@ class MTPopup(MTModalWindow):
             x = (w.width - self.form.width) / 2
             y = (w.height - self.form.height) / 2
             self.form.pos = (x, y)
-        super(MTPopup, self).draw()
+        super(MTModalPopup, self).draw()
 
 
 # Register all base widgets
-MTWidgetFactory.register('MTPopup', MTPopup)
+MTWidgetFactory.register('MTModalPopup', MTModalPopup)

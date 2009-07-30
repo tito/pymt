@@ -407,8 +407,8 @@ class MTKineticList(MTStencilContainer):
             w.on_draw()
 
     def on_draw(self):
-        self.draw()
         self.do_layout()
+        self.draw()
         self.process_kinetic()
 
 class MTKineticObject(MTWidget):

@@ -113,9 +113,10 @@ class Module(MTSvg):
             return True
 
 
-workspace = Workspace(do_rotation = False)
+workspace = Workspace(do_rotation = False, auto_bring_to_front = False)
 
 w = MTWindow(style = {'bg-color': (0,0,0,1)})
 w.add_widget(workspace)
+w.add_widget(MTSlider())
 
 runTouchApp()

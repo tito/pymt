@@ -7,6 +7,23 @@ from pyglet.text import Label
 
 icons_filetype_dir = os.path.join(pymt_data_dir, 'icons', 'filetype')
 
+class FileTypeFactory:
+    __filetypes__ = {}
+    @staticmethod
+    def register(type, icon):
+        FileTypeFactory.__filetypes__[type] = icon
+    
+    @staticmethod
+    def list():
+        return FileTypeFactory.__filetypes__
+        
+    @staticmethod
+    def get(type):
+        if type in FileTypeFactory.__filetypes__:
+            return FileTypeFactory.__filetypes__[type]
+        else:
+            return FileTypeFactory.__filetypes__['unknown']
+
 class KineticBrowseLayout(MTKineticList):
     def __init__(self, **kwargs):
         super(KineticBrowseLayout, self).__init__(**kwargs)
@@ -26,24 +43,12 @@ class MTFileEntry(MTButton, MTKineticObject):
         self.browser    = kwargs.get('browser')
         self.label_txt = kwargs.get('label')
         self.type_image = None
+        self.file_types = kwargs.get('filetypes')
         if os.path.isdir(self.filename):
-            self.type_image = os.path.join(icons_filetype_dir, 'folder.png')
+            self.type_image = self.file_types.get("folder")
         else:
             ext = self.label_txt.split('.')[-1]
-            if ext in ['jpg', 'jpeg']:
-                self.type_image = os.path.join(icons_filetype_dir, 'image-jpeg.png')
-            elif ext in ['svg']:
-                self.type_image = os.path.join(icons_filetype_dir, 'image-svg.png')
-            elif ext in ['png']:
-                self.type_image = os.path.join(icons_filetype_dir, 'image-png.png')
-            elif ext in ['bmp']:
-                self.type_image = os.path.join(icons_filetype_dir, 'image-bmp.png')
-            elif ext in ['gif']:
-                self.type_image = os.path.join(icons_filetype_dir, 'image-gif.png')
-            elif ext in ['mpg', 'mpeg', 'avi', 'mkv', 'flv']:
-                self.type_image = os.path.join(icons_filetype_dir, 'video.png')
-            else:
-                self.type_image = os.path.join(icons_filetype_dir, 'unknown.png')
+            self.type_image = self.file_types.get(ext)
         self.size           = (80, 80)
         img            = pyglet.image.load(self.type_image)
         self.image     = pyglet.sprite.Sprite(img)
@@ -72,18 +77,18 @@ class MTFileEntry(MTButton, MTKineticObject):
         if not self.selected:
             if not os.path.isdir(self.filename):
                 self.selected = True
-                self.parent.parent.add_to_list(self.filename)
+                self.browser.add_to_list(self.filename)
         else:
             if not os.path.isdir(self.filename):
                 self.selected = False
-                self.parent.parent.remove_from_list(self.filename)
+                self.browser.remove_from_list(self.filename)
         if touch:
             if os.path.isdir(self.filename):
                 self.browser.set_path(self.filename)
-            else:
-                self.parent.parent.dispatch_event('on_select',self.filename)
+            if touch.is_double_tap:
+                self.browser.dispatch_event('on_select',self.filename)
 
-#Class Definations for the buttons inside layerlist
+#CCS Class Definations for the buttons inside layerlist
 button_css = '''
 .simple {
 	draw-alpha-background: 1;
@@ -126,23 +131,22 @@ class MTFileBrowser(MTPopup):
 
         self.register_event_type('on_select')
         self.selected_files = []
-
-        '''
-        self.action_button = MTButton(label=self.type,pos=(10,5),cls=('simple'),size=(50,30))
-        self.add_widget(self.action_button)
-
-        @self.action_button.event
-        def on_press(*largs):
-            self.dispatch_event('on_select',self.selected_files)
-            self.hide()
-            self.selected_files = []
-            for child in self.kb.pchildren:
-                child.selected = False
-
-        self.input = MTFormInput(font_size=16,pos=(self.action_button.width+20,5))
-        self.input.height = 30
-        self.add_widget(self.input)
-        '''
+        
+        # Register Default File types with their icons
+        self.file_types = FileTypeFactory()
+        self.file_types.register('jpg',os.path.join(icons_filetype_dir, 'image-jpeg.png'))
+        self.file_types.register('jpeg',os.path.join(icons_filetype_dir, 'image-jpeg.png'))
+        self.file_types.register('svg',os.path.join(icons_filetype_dir, 'image-svg.png'))
+        self.file_types.register('png',os.path.join(icons_filetype_dir, 'image-png.png'))
+        self.file_types.register('bmp',os.path.join(icons_filetype_dir, 'image-bmp.png'))
+        self.file_types.register('bmp',os.path.join(icons_filetype_dir, 'image-bmp.png'))
+        self.file_types.register('mpg',os.path.join(icons_filetype_dir, 'video.png'))
+        self.file_types.register('mpeg',os.path.join(icons_filetype_dir, 'video.png'))
+        self.file_types.register('avi',os.path.join(icons_filetype_dir, 'video.png'))
+        self.file_types.register('mkv',os.path.join(icons_filetype_dir, 'video.png'))
+        self.file_types.register('flv',os.path.join(icons_filetype_dir, 'video.png'))
+        self.file_types.register('folder',os.path.join(icons_filetype_dir, 'folder.png'))
+        self.file_types.register('unknown',os.path.join(icons_filetype_dir, 'unknown.png'))
 
     def _get_path(self):
         return self._path
@@ -151,7 +155,10 @@ class MTFileBrowser(MTPopup):
             return
         if not os.path.exists(value):
             return
-        self.w_path.label = value
+        if len(value) > 39:
+            self.w_path.label = ".."+value[len(value)-40:]
+        else:
+            self.w_path.label = value
         self._path = value
     path = property(_get_path, _set_path)
 
@@ -159,8 +166,8 @@ class MTFileBrowser(MTPopup):
         self.path = os.path.abspath(self.path)
         for name in os.listdir(self.path):
             filename = os.path.join(self.path, name)
-            self.kb.add(MTFileEntry(label=name,filename=filename, browser=self))
-        self.kb.add(MTFileEntry(label='..',filename=os.path.join(self.path, '../'), browser=self))
+            self.kb.add(MTFileEntry(label=name,filename=filename, browser=self, filetypes=self.file_types))
+        self.kb.add(MTFileEntry(label='..',filename=os.path.join(self.path, '../'), browser=self, filetypes=self.file_types))
 
     def set_path(self, path):
         self.path = path
@@ -183,10 +190,21 @@ class MTFileBrowser(MTPopup):
     def remove_from_list(self,filename):
         self.selected_files.remove(filename)
 
+    def on_submit(self):
+        self.dispatch_event('on_select',self.selected_files)
+        self.close()
+    
     def on_select(self,filelist):
         pass
+        
+    def register_filetype(self,type,iconpath):
+        self.file_types.register(type,iconpath)
 
 if __name__ == '__main__':
     m = MTWindow()
-    m.add_widget(MTFileBrowser())
+    fb = MTFileBrowser()
+    m.add_widget(fb)
+    @fb.event
+    def on_select(list):
+        print list
     runTouchApp()

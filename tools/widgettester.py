@@ -65,7 +65,7 @@ def on_text_validate():
         exec keyb.label
     except Exception, e:
         print 'Error', e
-        p = MTPopup(title='Exception occured', content=str(e))
+        p = MTModalPopup(title='Exception occured', content=str(e))
         w.add_widget(p)
     history.append(keyb.label)
     keyb.label = ''

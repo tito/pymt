@@ -60,14 +60,8 @@ class MTKineticList(MTStencilContainer):
              Background color of the widget
 
     :Events:
-        `on_press` (child, callback)
-            Fired when a specific item has been tapped and moved
-            less then forty pixels(so we know they tapped it, didn't
-            try and scroll).  It sends the item tapped, and the return
-            item(if none was defined it sends None)
-        `on_delete` (child, callback)
-            Fired when an item gets deleted.  Passes that item and the
-            return item(None if not provided).
+        `on_delete` (child)
+            Fired when an item gets deleted.
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('friction', 10)
@@ -83,7 +77,6 @@ class MTKineticList(MTStencilContainer):
         kwargs.setdefault('trigger_distance', 8)
 
         super(MTKineticList, self).__init__(**kwargs)
-        self.register_event_type('on_press')
         self.register_event_type('on_delete')
 
         self.do_x       = kwargs.get('do_x')
@@ -167,13 +160,8 @@ class MTKineticList(MTStencilContainer):
             self.a_sinput_out = Animation(self.sinput, 'Move Out',
                 'y', self.y + self.height - self.sinput.size[1], 1, 10)
 
-    def on_press(self, child, callback):
-        if callback is not None:
-            callback('press', child)
-
-    def on_delete(self, child, callback):
-        if callback is not None:
-            callback('delete', child)
+    def on_delete(self, child):
+        pass
 
     def clear(self):
         self.children = []
@@ -188,6 +176,7 @@ class MTKineticList(MTStencilContainer):
         super(MTKineticList, self).remove_widget(widget)
         if widget in self.pchildren:
             self.pchildren.remove(widget)
+        self.dispatch_event('on_delete', widget)
 
     def toggle_delete(self, touch):
         '''Toggles the delete buttons on items
@@ -345,11 +334,10 @@ class MTKineticList(MTStencilContainer):
                 return True
 
         # initiate kinetic movement.
-        lx, ly = self.to_local(*touch.pos)
         self.vx = self.vy = 0
         self.touch[touch.id] = {
-            'ox': lx,
-            'oy': ly,
+            'ox': touch.x,
+            'oy': touch.y,
             'xmot': 0,
             'ymot': 0,
             'travelx' : 0, #How far the blob has traveled total in the x axis
@@ -406,12 +394,9 @@ class MTKineticList(MTStencilContainer):
 
         # ok, the trigger distance is enough, we can dispatch event.
         # will not work if children grab the touch in down state :/
-        touch.push()
-        touch.x, touch.y = self.to_parent(*touch.pos)
         for child in self.children:
             child.dispatch_event('on_touch_down', touch)
             child.dispatch_event('on_touch_up', touch)
-        touch.pop()
         return True
 
     def process_kinetic(self):
@@ -447,50 +432,74 @@ class MTKineticList(MTStencilContainer):
             drawCSSRectangle(pos=(self.x, self.height + self.y - 40), size=(self.width, 40), prefix='title')
             self.title.draw()
 
+        # draw widgets
+        for w in self.widgets:
+            w.dispatch_event('on_draw')
+
     def on_draw(self):
         self.do_layout()
         self.process_kinetic()
         self.draw()
 
+
 class MTKineticObject(MTWidget):
     def __init__(self, **kwargs):
+        '''Kinetic object, the base object for every child in kineticlist.
+
+        :Parameters:
+            `deletable`: bool, default to True
+                Indicate if object can be deleted or not
+        '''
         kwargs.setdefault('deletable', True)
-
         super(MTKineticObject, self).__init__(**kwargs)
-
-        #List of attributes that can be searched
-        self.attr_search = ['label']
-
         self.deletable = kwargs.get('deletable')
 
-        #Delete Button
-        self.db = MTButton(label='',
-                                      size=(40, 40),
-                                      pos=(self.x + self.width-40, self.y + self.height-40),
-                                      style={'bg-color':(1, 0, 0, 0)})
-        self.db.hide()
-        self.db.on_press = self.delete
-        self.add_widget(self.db)
+        # List of attributes that can be searched
+        self.attr_search = ['label']
 
-        self.xoffset = self.yoffset = 0  #In case the widget has to move itself while still having kinetic movement applied
-        self.kx = self.ky = 0  #The position values that the kinetic container edits.  We do this so we can break free and move ourself it necessary
+        # In case the widget has to move itself
+        # while still having kinetic movement applied
+        self.xoffset = self.yoffset = 0
+
+        # The position values that the kinetic container edits.
+        # We do this so we can break free and move ourself it necessary
+        self.kx = self.ky = 0
 
         self.db_alpha = 0
+
+        # Delete Button
+        if self.deletable:
+            self.db = MTButton(label='',
+                size=(40, 40),
+                pos=(self.x + self.width-40, self.y + self.height-40),
+                style={'bg-color':(1, 0, 0, 0)}, visible=False)
+            self.db.push_handlers(on_press=self._delete_callback)
+            self.add_widget(self.db)
+
+            self.a_delete_w = Animation(self, 'Deleting Self W', 'width', 0, 1, 10)
+            self.a_delete_h = Animation(self, 'Deleting Self H', 'height', 0, 1, 10)
+            self.a_delete_x = Animation(self, 'Deleting Self X', 'xoffset',
+                self.kx + self.width/2, 1, 10)
+            self.a_delete_y = Animation(self, 'Deleting Self Y', 'yoffset',
+                self.ky + self.height/2, 1, 10)
+
         self.a_show = Animation(self, 'Show Button Alpha', 'db_alpha', .5, 1, 5)
         self.a_hide = Animation(self, 'Hide Button Alpha', 'db_alpha', 0, 1, 5)
-        self.a_delete_w = Animation(self, 'Deleting Self W', 'width', 0, 1, 10)
-        self.a_delete_h = Animation(self, 'Deleting Self H', 'height', 0, 1, 10)
-        self.a_delete_x = Animation(self, 'Deleting Self X', 'xoffset', self.kx + self.width/2, 1, 10)
-        self.a_delete_y = Animation(self, 'Deleting Self Y', 'yoffset', self.ky + self.height/2, 1, 10)
 
-        self.free = False #Set to true if you want to break free from the grasp of a kinetic widget
+        # Set to true if you want to break free from
+        # the grasp of a kinetic widget
+        self.free = False
 
     def show_delete(self):
+        if not self.deletable:
+            return
         self.db.show()
         self.a_show.reset()
         self.a_show.start()
 
     def hide_delete(self):
+        if not self.deletable:
+            return
         self.a_hide.reset()
         self.a_hide.start()
 
@@ -513,8 +522,13 @@ class MTKineticObject(MTWidget):
     def on_draw(self):
         super(MTKineticObject, self).on_draw()
 
-    def delete(self, touch):
-        self.db.hide()  #So it doesn't poke out at the end(we aren't scaling it)
+    def on_press(self, touch):
+        if self.db.visible and self.db.on_touch_down(touch):
+            return True
+
+    def _delete_callback(self, touch):
+        # So it doesn't poke out at the end(we aren't scaling it)
+        self.db.hide()
         self.a_delete_x.reset()
         self.a_delete_y.reset()
         self.a_delete_w.reset()
@@ -523,10 +537,6 @@ class MTKineticObject(MTWidget):
         self.a_delete_y.start()
         self.a_delete_w.start()
         self.a_delete_h.start()
-
-    def on_press(self, touch):
-        if self.db.visible and self.db.on_touch_down(touch):
-            return True
 
 class MTKineticItem(MTButton, MTKineticObject):
     def on_press(self, touch):

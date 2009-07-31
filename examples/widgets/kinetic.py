@@ -1,7 +1,7 @@
 from pymt import *
 
 def print_me(*largs):
-	print 'print me called,', largs
+	print 'CLICKED ON', largs[0].label
 
 mms = MTWindow()
 

@@ -7,7 +7,7 @@ __all__ = ['MTKineticList', 'MTKineticObject', 'MTKineticItem', 'MTKineticImage'
 import pymt
 from pyglet.gl import *
 from pyglet.text import Label
-from ....graphx import set_color, drawRectangle, GlDisplayList
+from ....graphx import set_color, drawRectangle
 from ....graphx import drawCSSRectangle
 from ...factory import MTWidgetFactory
 from ....vector import Vector
@@ -115,6 +115,7 @@ class MTKineticList(MTStencilContainer):
         self.touch = {}
         # Holds widgets not a part of the scrolling(search button, etc)
         self.widgets = []
+        self.content_size = Vector(0, 0)
 
         # create the UI part.
         self._create_ui()
@@ -173,6 +174,11 @@ class MTKineticList(MTStencilContainer):
     def on_delete(self, child, callback):
         if callback is not None:
             callback('delete', child)
+
+    def clear(self):
+        self.children = []
+        self.pchildren = []
+        self.xoffset = self.yoffset = 0
 
     def add_widget(self, widget):
         super(MTKineticList, self).add_widget(widget)
@@ -254,64 +260,77 @@ class MTKineticList(MTStencilContainer):
 
     def do_layout(self):
         '''Apply layout to all the items'''
-       #Limit is on width
-        if not self.h_limit:
-            t = 0
-            try:
-                x = self.x + (self.width/2) - (self._get_total_width(
-                        (self.children[z] for z in range(t, t+self.w_limit)), 'width')/2) + self.xoffset
-            except:
-                x = self.x + (self.width/2) - (self._get_total_width(
-                        (self.children[z] for z in range(t, len(self.children)-1)), 'width')/2) + self.xoffset
-            y = self.yoffset + self.y
-            i = 0
-            for c in self.children:
-                i += 1
-                c.kx = x + self.padding_x
-                c.ky = y
-                x += c.width + self.padding_x
-                if i == self.w_limit:
-                    #Take the largest height in the current row
-                    y += self.padding_y + max(map(lambda x: x.height,
-                                                  (self.children[x] for x in range(t, t+self.w_limit))))
-                    try:
-                        x = self.x + (self.width/2) - (self._get_total_width(
-                                (self.children[z] for z in range(t, t+self.w_limit)), 'width')/2) + self.xoffset
-                    except:
-                        x = self.x + (self.width/2) - (self._get_total_width(
-                                (self.children[z] for z in range(t, len(self.children)-1)), 'width')/2) + self.xoffset
 
-                    i = 0
-                    t += self.w_limit
-        #Limit on height
+        t = index = 0
+        self.content_size = Vector(0, 0)
+
+        # adapt value for direction
+        w2          = self.width / 2.
+        h2          = self.height / 2.
+        inverse     = 0
+        limit       = self.w_limit
+        width_attr  = 'width'
+        height_attr = 'height'
+        xoffset     = self.xoffset
+        yoffset     = self.yoffset
+        sx, sy      = self.x, self.y
+        y           = self.y + self.yoffset
+        padding_x   = self.padding_x
+        padding_y   = self.padding_y
+
+        # inverse
         if not self.w_limit:
-            t = 0
-            try:
-                y = self.y - (self._get_total_width(
-                        (self.children[z] for z in range(t, t+self.w_limit)), 'height')) + self.yoffset
-            except:
-                y = self.y - (self._get_total_width(
-                        (self.children[z] for z in range(t, len(self.children)-1)), 'height')) + self.yoffset
-            x = self.xoffset + self.x
-            i = 0
-            for c in self.children:
-                i += 1
-                c.kx = x
-                c.ky = y + self.padding_y
-                y += c.height + self.padding_y
-                if i == self.h_limit:
-                    #Take the largest width in the current row
-                    x += self.padding_x + max(map(lambda x: x.width,
-                                                  (self.children[x] for x in range(t, t+self.h_limit))))
-                    try:
-                        y = self.y - (self._get_total_width(
-                                (self.children[z] for z in range(t, t+self.w_limit)), 'height')) + self.yoffset
-                    except:
-                        y = self.y - (self._get_total_width(
-                                (self.children[z] for z in range(t, len(self.children)-1)), 'height')) + self.yoffset
+            inverse     = 1
+            limit       = self.h_limit
+            width_attr  = 'height'
+            height_attr = 'width'
+            xoffset      = self.yoffset
+            yoffset      = self.xoffset
+            y           = self.x + self.xoffset
+            padding_x   = self.padding_y
+            padding_y   = self.padding_x
+            w2, h2      = h2, w2
+            sx, sy      = self.y, self.x
 
-                    i = 0
-                    t += self.h_limit
+        # add little padding for good looking.
+        y += padding_y
+
+        # recalculate position for each children
+        for child in self.children:
+
+            # each row, calculate the height, advance y and reset x
+            if index % limit == 0:
+
+                # get children in the row
+                maxrange = min(t + limit, len(self.children))
+                childrens = [self.children[z] for z in range(t, maxrange)]
+
+                # take the largest height in the current row
+                if len(childrens):
+                    h = max((c.__getattribute__(height_attr) for c in childrens))
+                else:
+                    h = 0
+
+                # in the very first loop, don't add padding.
+                if index > 0:
+                    y += padding_y + h
+
+                # reset x for this row.
+                x = sx + w2 + xoffset - \
+                    (self._get_total_width(childrens, width_attr) / 2.)
+                t += limit
+
+            # reposition x
+            if not inverse:
+                child.kx = x + padding_x
+                child.ky = y
+            else:
+                child.ky = x + padding_x
+                child.kx = y
+            x += child.__getattribute__(width_attr) + padding_x
+
+            # Increment index
+            index += 1
 
     def on_touch_down(self, touch):
         if not self.collide_point(touch.x, touch.y):
@@ -326,10 +345,11 @@ class MTKineticList(MTStencilContainer):
                 return True
 
         # initiate kinetic movement.
+        lx, ly = self.to_local(*touch.pos)
         self.vx = self.vy = 0
         self.touch[touch.id] = {
-            'ox': touch.x,
-            'oy': touch.y,
+            'ox': lx,
+            'oy': ly,
             'xmot': 0,
             'ymot': 0,
             'travelx' : 0, #How far the blob has traveled total in the x axis
@@ -386,9 +406,12 @@ class MTKineticList(MTStencilContainer):
 
         # ok, the trigger distance is enough, we can dispatch event.
         # will not work if children grab the touch in down state :/
+        touch.push()
+        touch.x, touch.y = self.to_parent(*touch.pos)
         for child in self.children:
             child.dispatch_event('on_touch_down', touch)
             child.dispatch_event('on_touch_up', touch)
+        touch.pop()
         return True
 
     def process_kinetic(self):
@@ -404,7 +427,19 @@ class MTKineticList(MTStencilContainer):
         # background
         set_color(*self.style.get('bg-color'))
         drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
-        super(MTKineticList, self).on_draw()
+
+        # draw children
+        self.stencil_push()
+        for w in self.children:
+            # internal update of children
+            w.update()
+            # optimization to draw only viewed children
+            if self.do_y and (w.y + w.height < self.y or w.y > self.y + self.height):
+                continue
+            if self.do_x and (w.x + w.width < self.x or w.x > self.x + self.width):
+                continue
+            w.on_draw()
+        self.stencil_pop()
 
         # title bar
         if self.titletext is not None:
@@ -412,13 +447,10 @@ class MTKineticList(MTStencilContainer):
             drawCSSRectangle(pos=(self.x, self.height + self.y - 40), size=(self.width, 40), prefix='title')
             self.title.draw()
 
-        for w in self.widgets:
-            w.on_draw()
-
     def on_draw(self):
         self.do_layout()
-        self.draw()
         self.process_kinetic()
+        self.draw()
 
 class MTKineticObject(MTWidget):
     def __init__(self, **kwargs):
@@ -472,11 +504,13 @@ class MTKineticObject(MTWidget):
             '''
             self.parent.remove_widget(self)
 
-    def on_draw(self):
+    def update(self):
         if not self.free:
             self.x, self.y = self.kx + self.xoffset, self.ky + self.yoffset
         self.db.pos = (self.x + self.width-40, self.y + self.height-40)
         self.db.style['bg-color'] = (1, 0, 0, self.db_alpha)
+
+    def on_draw(self):
         super(MTKineticObject, self).on_draw()
 
     def delete(self, touch):

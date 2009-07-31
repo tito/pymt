@@ -77,28 +77,6 @@ class MTFileEntry(MTButton, MTKineticObject):
             if touch.is_double_tap:
                 self.browser.dispatch_event('on_select',self.filename)
 
-#CCS Class Definations for the buttons inside layerlist
-button_css = '''
-.simple {
-	draw-alpha-background: 1;
-	draw-border: 1;
-	draw-slider-alpha-background: 1;
-	draw-slider-border: 1;
-	draw-text-shadow: 1;
-}
-
-.colored {
-	bg-color: #ff5c00;
-	border-radius: 8;
-	border-radius-precision: .1;
-	font-size: 10;
-	slider-border-radius-precision: .1;
-	slider-border-radius: 20;
-}
-
-'''
-css_add_sheet(button_css)
-
 class MTFileBrowser(MTPopup):
     def __init__(self, **kwargs):
         kwargs.setdefault('submit_label', 'Open')
@@ -106,8 +84,7 @@ class MTFileBrowser(MTPopup):
         kwargs.setdefault('size', (350, 300))
         super(MTFileBrowser, self).__init__(**kwargs)
 
-        self.dl = GlDisplayList()
-        self._path = '.'
+        self._path = '(invalid path)'
         self.kbsize = self.width, self.height
 
         # Title
@@ -138,7 +115,7 @@ class MTFileBrowser(MTPopup):
         self.file_types.register('unknown',os.path.join(icons_filetype_dir, 'unknown.png'))
 
         # Update listing the first call
-        self.update_listing()
+        self.path = '.'
 
     def _get_path(self):
         return self._path

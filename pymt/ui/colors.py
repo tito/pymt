@@ -169,11 +169,15 @@ kineticlist {
 .kineticlist-search {
     /* kinetic search button */
     bg-color: rgba(0, 255, 0, 127);
+    alpha-background: 1 1 .7 .7;
+    draw-alpha-background: 1;
 }
 
 .kineticlist-delete {
     /* kinetic delete button */
     bg-color: rgba(255, 0, 0, 127);
+    alpha-background: 1 1 .7 .7;
+    draw-alpha-background: 1;
 }
 
 window {

@@ -5,7 +5,7 @@ VKeyboard: Virtual keyboard with custom layout support
 from __future__ import with_statement
 import os
 import pymt
-from ....graphx import set_color, drawCSSRectangle, drawLabel, GlDisplayList, gx_matrix
+from ....graphx import set_color, drawCSSRectangle, drawLabel, GlDisplayList, gx_matrix, drawRoundedRectangle
 from ....utils import curry
 from ....vector import Vector
 from ...factory import MTWidgetFactory
@@ -416,7 +416,20 @@ class MTVKeyboard(MTScatterWidget):
         # content dynamic update
         with gx_matrix:
             glTranslatef(self.style['margin'][3], self.style['margin'][2], 0)
+
+            # draw precalculated background
             self._current_cache['background'].draw()
+
+            # draw active keys layer
+            # +2 and -4 result of hard margin coded in _do_update (m = 3 * s)
+            # we substract 1 cause of border (draw-border is activated.)
+            set_color(*self.style['color-down'])
+            for key, size in self._active_keys:
+                x, y, w, h = size
+                drawRoundedRectangle(pos=(x+2, y+2), size=(w-4, h-4),
+                    radius=self.style['key-border-radius'])
+
+            # search the good scale for current precalculated keys layer
             if self._last_update_scale == self.get_scale_factor():
                 s = 1. / self.get_scale_factor()# / self._last_update_scale
                 glScalef(s, s, s)
@@ -426,7 +439,7 @@ class MTVKeyboard(MTScatterWidget):
             self._current_cache['keys'].draw()
 
     def get_key_at_pos(self, x, y):
-        '''Return the key on the current layout, at the coordinate (x, y)'''
+        '''Return the key + size info on the current layout, at the coordinate (x, y)'''
         mtop, mright, mbottom, mleft = self.style['margin']
         w, h = self.width - mleft - mright, self.height - mtop - mbottom
         keysize = Vector(w / 15, h / 5)
@@ -442,7 +455,8 @@ class MTVKeyboard(MTScatterWidget):
         for key in line:
             kw = keysize.x * key[3]
             if x >= kx and x < kx + kw:
-                return key
+                h = (self.height - mtop - mbottom) / 5.
+                return (key, (kx, h * (5-index), kw, h))
             kx += kw
         return None
 
@@ -485,20 +499,22 @@ class MTVKeyboard(MTScatterWidget):
     def on_touch_down(self, touch):
         if not self._layout_widget.visible:
             x, y = self.to_local(touch.x, touch.y)
-            key = self.get_key_at_pos(x, y)
-            if key is not None:
+            keyinfo = self.get_key_at_pos(x, y)
+            if keyinfo is not None:
+                key, size = keyinfo
                 if key not in self._active_keys:
-                    touch.userdata['vkeyboard_key'] = key
-                    self._active_keys.append(key)
+                    touch.userdata['vkeyboard_key'] = keyinfo
+                    self._active_keys.append(keyinfo)
                     self.dispatch_event('on_key_down', key)
                 return True
         return super(MTVKeyboard, self).on_touch_down(touch)
 
     def on_touch_up(self, touch):
         if 'vkeyboard_key' in touch.userdata:
-            key = touch.userdata['vkeyboard_key']
-            if key in self._active_keys:
-                self._active_keys.remove(key)
+            keyinfo = touch.userdata['vkeyboard_key']
+            key, size = keyinfo
+            if keyinfo in self._active_keys:
+                self._active_keys.remove(keyinfo)
             self.dispatch_event('on_key_up', key)
             return True
         return super(MTVKeyboard, self).on_touch_up(touch)

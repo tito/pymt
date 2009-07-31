@@ -212,6 +212,7 @@ vkeyboard {
     draw-border: 1;
     key-color: rgba(20, 20, 20, 255);
     syskey-color: rgba(20, 20, 40, 255);
+    color-down: rgba(200, 200, 200, 127);
 }
 '''
 

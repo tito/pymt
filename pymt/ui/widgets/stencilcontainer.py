@@ -39,11 +39,11 @@ class MTStencilContainer(MTWidget):
         stencilPop()
 
     def on_draw(self):
-        self.start_stencil()
+        self.stencil_push()
         # draw childrens
         for w in self.children:
             w.dispatch_event('on_draw')
-        self.stop_stencil()
+        self.stencil_pop()
 
 # Register all base widgets
 MTWidgetFactory.register('MTStencilContainer', MTStencilContainer)

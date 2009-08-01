@@ -187,7 +187,7 @@ class MTScatterWidget(MTWidget):
         self.__to_parent_x, self.__to_parent_y = self.new_point.x, self.new_point.y
         return (self.new_point.x, self.new_point.y)
 
-    def to_local(self,x, y):
+    def to_local(self, x, y):
         if self.__to_local == (x, y):
             return (self.__to_local_x, self.__to_local_y)
         self.__to_local = (x, y)

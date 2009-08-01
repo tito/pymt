@@ -8,7 +8,7 @@ __all__ = ['MTStencilContainer']
 
 from pyglet.gl import *
 from widget import MTWidget
-from ...graphx import drawRectangle, gx_stencil, stencilUse
+from ...graphx import drawRectangle, stencilPush, stencilPop, stencilUse
 from ..factory import MTWidgetFactory
 
 stencil_stack = 0
@@ -28,17 +28,22 @@ class MTStencilContainer(MTWidget):
     def __init__(self, **kwargs):
         super(MTStencilContainer, self).__init__(**kwargs)
 
+    def stencil_push(self):
+        stencilPush()
+        # draw on stencil
+        drawRectangle(pos=self.pos, size=self.size)
+        # switch drawing to color buffer.
+        stencilUse()
+
+    def stencil_pop(self):
+        stencilPop()
+
     def on_draw(self):
-        with gx_stencil:
-            # draw on stencil
-            drawRectangle(pos=self.pos, size=self.size)
-
-            # switch drawing to color buffer.
-            stencilUse()
-
-            # draw childrens
-            for w in self.children:
-                w.dispatch_event('on_draw')
+        self.stencil_push()
+        # draw childrens
+        for w in self.children:
+            w.dispatch_event('on_draw')
+        self.stencil_pop()
 
 # Register all base widgets
 MTWidgetFactory.register('MTStencilContainer', MTStencilContainer)

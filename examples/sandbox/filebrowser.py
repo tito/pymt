@@ -10,8 +10,9 @@ icons_filetype_dir = os.path.join(pymt_data_dir, 'icons', 'filetype')
 class FileTypeFactory:
     __filetypes__ = {}
     @staticmethod
-    def register(type, icon):
-        FileTypeFactory.__filetypes__[type] = icon
+    def register(items):
+        for item in items:
+            FileTypeFactory.__filetypes__[item[0]] = item[1]
 
     @staticmethod
     def list():
@@ -32,12 +33,11 @@ class MTFileEntry(MTButton, MTKineticObject):
         self.browser    = kwargs.get('browser')
         self.label_txt = kwargs.get('label')
         self.type_image = None
-        self.file_types = kwargs.get('filetypes')
         if os.path.isdir(self.filename):
-            self.type_image = self.file_types.get("folder")
+            self.type_image = FileTypeFactory.get("folder")
         else:
             ext = self.label_txt.split('.')[-1]
-            self.type_image = self.file_types.get(ext)
+            self.type_image = FileTypeFactory.get(ext)
         self.size           = (80, 80)
         img            = pyglet.image.load(self.type_image)
         self.image     = pyglet.sprite.Sprite(img)
@@ -98,22 +98,6 @@ class MTFileBrowser(MTPopup):
         self.register_event_type('on_select')
         self.selected_files = []
 
-        # Register Default File types with their icons
-        self.file_types = FileTypeFactory()
-        self.file_types.register('jpg',os.path.join(icons_filetype_dir, 'image-jpeg.png'))
-        self.file_types.register('jpeg',os.path.join(icons_filetype_dir, 'image-jpeg.png'))
-        self.file_types.register('svg',os.path.join(icons_filetype_dir, 'image-svg.png'))
-        self.file_types.register('png',os.path.join(icons_filetype_dir, 'image-png.png'))
-        self.file_types.register('bmp',os.path.join(icons_filetype_dir, 'image-bmp.png'))
-        self.file_types.register('bmp',os.path.join(icons_filetype_dir, 'image-bmp.png'))
-        self.file_types.register('mpg',os.path.join(icons_filetype_dir, 'video.png'))
-        self.file_types.register('mpeg',os.path.join(icons_filetype_dir, 'video.png'))
-        self.file_types.register('avi',os.path.join(icons_filetype_dir, 'video.png'))
-        self.file_types.register('mkv',os.path.join(icons_filetype_dir, 'video.png'))
-        self.file_types.register('flv',os.path.join(icons_filetype_dir, 'video.png'))
-        self.file_types.register('folder',os.path.join(icons_filetype_dir, 'folder.png'))
-        self.file_types.register('unknown',os.path.join(icons_filetype_dir, 'unknown.png'))
-
         # Update listing the first call
         self.path = '.'
 
@@ -141,13 +125,13 @@ class MTFileBrowser(MTPopup):
             filename = os.path.join(self.path, name)
             self.kb.add_widget(MTFileEntry(
                 label=name, filename=filename,
-                browser=self, filetypes=self.file_types
+                browser=self
             ))
 
         # add always "to parent"
         self.kb.add_widget(MTFileEntry(
             label='..', filename=os.path.join(self.path, '../'),
-            browser=self, filetypes=self.file_types
+            browser=self
         ))
 
     def add_to_list(self,filename):
@@ -163,7 +147,22 @@ class MTFileBrowser(MTPopup):
     def on_select(self,filelist):
         pass
 
-
+# Register Default File types with their icons
+FileTypeFactory.register([['jpg',os.path.join(icons_filetype_dir, 'image-jpeg.png')],
+                          ['jpeg',os.path.join(icons_filetype_dir, 'image-jpeg.png')],
+                          ['svg',os.path.join(icons_filetype_dir, 'image-svg.png')],
+                          ['png',os.path.join(icons_filetype_dir, 'image-png.png')],
+                          ['bmp',os.path.join(icons_filetype_dir, 'image-bmp.png')],
+                          ['mpg',os.path.join(icons_filetype_dir, 'video.png')],
+                          ['mpeg',os.path.join(icons_filetype_dir, 'video.png')],
+                          ['avi',os.path.join(icons_filetype_dir, 'video.png')],
+                          ['mkv',os.path.join(icons_filetype_dir, 'video.png')],
+                          ['flv',os.path.join(icons_filetype_dir, 'video.png')],
+                          ['folder',os.path.join(icons_filetype_dir, 'folder.png')],
+                          ['unknown',os.path.join(icons_filetype_dir, 'unknown.png')]
+                         ])
+        
+        
 if __name__ == '__main__':
     m = MTWindow()
     fb = MTFileBrowser()

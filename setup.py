@@ -19,8 +19,13 @@ setup (name='pymt',
                 'pymt.input.postproc',
                 'pymt.ui', 'pymt.ui.widgets',
                 'pymt.ui.widgets.composed',
-               'pymt.ui.widgets.layout', 'pymt.ui.widgets.form'],
+                'pymt.ui.widgets.layout', 'pymt.ui.widgets.form'],
       package_dir={'pymt': 'pymt'},
-      package_data={'pymt': ['data/icons/svg/*.svg', 'data/icons/*.png',
-                             'data/*.png', 'data/*.ttf']}
+      package_data={'pymt': [
+        'data/icons/filetype/*.png',
+        'data/icons/svg/*.svg',
+        'data/icons/*.png',
+        'data/*.png',
+        'data/*.ttf']
+      }
 )

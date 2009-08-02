@@ -21,18 +21,18 @@ class PaintWidget(MTWidget):
                         set_color(random()-0.1,0,random()+0.4)
                         drawLine((pos[0]+err*(random()-random()),pos[1]+err*(random()-random()),pos2[0]+err*(random()-random()),pos2[1]+err*(random()-random())), 15*random())
 
-    def on_touch_down(self, touches, touchID, x, y):
-        self.touch_positions[touchID] = [(x,y)]
+    def on_touch_down(self, touch):
+        self.touch_positions[touch.id] = [(touch.x,touch.y)]
 
-    def on_touch_move(self, touches, touchID, x, y):
+    def on_touch_move(self, touch):
         global ox
         global oy
-        if (x != ox) or (y != oy):
-            ox,oy = x,y
-            self.touch_positions[touchID].append((x,y))
+        if (touch.x != ox) or (touch.y != oy):
+            ox,oy = touch.x,touch.y
+            self.touch_positions[touch.id].append((touch.x,touch.y))
 
-    def on_touch_up(self, touches, touchID, x, y):
-        del self.touch_positions[touchID]
+    def on_touch_up(self, touch):
+        del self.touch_positions[touch.id]
 
 ox=oy=0
 w = MTWindow()

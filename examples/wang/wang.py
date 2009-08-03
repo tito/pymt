@@ -293,6 +293,8 @@ class Wang(MTWidget):
 
     def update(self):
         dt = getFrameDt() * 2
+        w = self.get_parent_window()
+        w2 = w.width / 2.
 
         if self.need_reset:
             self.reset()
@@ -306,6 +308,13 @@ class Wang(MTWidget):
                 if a == b:
                     continue
                 if Vector(a.pos).distance(b.pos) > 400:
+                    continue
+                aside, bside = 0, 0
+                if a.x > w2:
+                    aside = 1
+                if b.x > w2:
+                    bside = 1
+                if aside != bside:
                     continue
                 if (a.pos, b.pos) in self.batsid:
                     continue

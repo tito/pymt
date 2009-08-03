@@ -345,10 +345,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         return (x, y)
 
     def to_local(self, x, y):
-        '''Return the (x,y) coordinate in the local plan of widget'''
-        lx = (x - self.x)
-        ly = (y - self.y)
-        return (lx, ly)
+        return (x, y)
 
     def collide_point(self, x, y):
         '''Test if the (x,y) is in widget bounding box'''

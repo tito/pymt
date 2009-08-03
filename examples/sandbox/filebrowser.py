@@ -7,12 +7,27 @@ from pyglet.text import Label
 
 icons_filetype_dir = os.path.join(pymt_data_dir, 'icons', 'filetype')
 
+'''
+FileType Factory: Maintains a Dictionary of all filetypes and its icons
+
+register(type_list,path_to_icon):
+If a user wants to register a new file type or replace a existing icon
+He/She can use register method as follows
+
+FileTypeFactory.register(['type1','type2'],"path_to_icon")
+
+list() : method to retrive all the filetypes list 
+
+get('type1') :  to obtain the Icon path of a particular type
+
+'''
+
 class FileTypeFactory:
     __filetypes__ = {}
     @staticmethod
-    def register(items):
-        for item in items:
-            FileTypeFactory.__filetypes__[item[0]] = item[1]
+    def register(types,iconpath):
+        for type in types:
+            FileTypeFactory.__filetypes__[type] = iconpath
 
     @staticmethod
     def list():
@@ -78,12 +93,27 @@ class MTFileEntry(MTButton, MTKineticObject):
                 self.browser.dispatch_event('on_select',self.filename)
 
 class MTFileBrowser(MTPopup):
+    '''
+        This Widget provides a filebrowser interface to access the files in your system.
+        you can select multiple files at a time and process them togather.
+        
+        :Parameters:
+            `title`        : The title for what reason the filebrowser will be used
+            `submit_label` : Label for the Submit button, Default set to Open
+            `size`         : Window size of the browser and its container
+        
+        :Events:
+            `on_select`
+                This event is generated whenever the user press submit button. 
+                A list of files selected are also passed as a parameter to this function
+    '''
     def __init__(self, **kwargs):
         kwargs.setdefault('submit_label', 'Open')
         kwargs.setdefault('title', 'Open a file')
         kwargs.setdefault('size', (350, 300))
         super(MTFileBrowser, self).__init__(**kwargs)
-
+        self.sep = os.path.join("%","%")
+        
         self._path = '(invalid path)'
         self.kbsize = self.width, self.height
 
@@ -100,7 +130,8 @@ class MTFileBrowser(MTPopup):
 
         # Update listing the first call
         self.path = '.'
-
+                
+        
     def _get_path(self):
         return self._path
     def _set_path(self, value):
@@ -109,8 +140,15 @@ class MTFileBrowser(MTPopup):
         value = os.path.abspath(value)
         if not os.path.exists(value):
             return
-        if len(value) > 39:
-            self.w_path.label = ".."+value[len(value)-40:]
+        if len(value) > int(self.size[0]/8) :
+            folders = value.split(os.path.sep)
+            temp_label = ""
+            i = -1
+            max_len = int(self.size[0]/8)-8
+            while(len(temp_label)< max_len):
+                temp_label = folders[i]+os.path.sep+temp_label
+                i -= 1
+            self.w_path.label = ".."+os.path.sep+temp_label
         else:
             self.w_path.label = value
         self._path = value
@@ -148,20 +186,14 @@ class MTFileBrowser(MTPopup):
         pass
 
 # Register Default File types with their icons
-FileTypeFactory.register([['jpg',os.path.join(icons_filetype_dir, 'image-jpeg.png')],
-                          ['jpeg',os.path.join(icons_filetype_dir, 'image-jpeg.png')],
-                          ['svg',os.path.join(icons_filetype_dir, 'image-svg.png')],
-                          ['png',os.path.join(icons_filetype_dir, 'image-png.png')],
-                          ['bmp',os.path.join(icons_filetype_dir, 'image-bmp.png')],
-                          ['mpg',os.path.join(icons_filetype_dir, 'video.png')],
-                          ['mpeg',os.path.join(icons_filetype_dir, 'video.png')],
-                          ['avi',os.path.join(icons_filetype_dir, 'video.png')],
-                          ['mkv',os.path.join(icons_filetype_dir, 'video.png')],
-                          ['flv',os.path.join(icons_filetype_dir, 'video.png')],
-                          ['folder',os.path.join(icons_filetype_dir, 'folder.png')],
-                          ['unknown',os.path.join(icons_filetype_dir, 'unknown.png')]
-                         ])
-        
+FileTypeFactory.register(['jpg','jpeg'],os.path.join(icons_filetype_dir, 'image-jpeg.png'))
+FileTypeFactory.register(['svg'],os.path.join(icons_filetype_dir, 'image-svg.png'))
+FileTypeFactory.register(['png'],os.path.join(icons_filetype_dir, 'image-png.png'))
+FileTypeFactory.register(['bmp'],os.path.join(icons_filetype_dir, 'image-bmp.png'))
+FileTypeFactory.register(['mpg','mpeg','avi','mkv','flv'],os.path.join(icons_filetype_dir, 'video.png'))
+FileTypeFactory.register(['folder'],os.path.join(icons_filetype_dir, 'folder.png'))
+FileTypeFactory.register(['unknown'],os.path.join(icons_filetype_dir, 'unknown.png'))
+       
         
 if __name__ == '__main__':
     m = MTWindow()

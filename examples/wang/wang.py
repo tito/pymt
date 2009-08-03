@@ -233,12 +233,6 @@ class Ball(MTWidget):
         self.sprite.x = self.x - self.sprite.width / 2.
         self.sprite.y = self.y - self.sprite.height / 2.
         self.sprite.draw()
-        '''
-        set_color(.3, .3, .3, .7)
-        drawCircle(pos=self.pos, radius=self.radius)
-        set_color(1, 1, 1)
-        drawCircle(pos=self.pos, radius=self.radius, linewidth=5)
-        '''
 
         for color, line in self.debugline:
             set_color(*color)
@@ -249,6 +243,107 @@ class Ball(MTWidget):
             return
         self.speed = 100 + min(80 / f, 400)
 
+class MenuItem(MTButton):
+    def __init__(self, **kwargs):
+        super(MenuItem, self).__init__(**kwargs)
+        self.radius = kwargs.get('radius')
+        self.color = kwargs.get('color')
+
+    def collide_point(self, x, y):
+        w = self.get_parent_window()
+        w2 = w.width / 2.
+        return Vector(*self.pos).distance(Vector(x, y)) < self.radius
+
+    def draw(self):
+        set_color(*self.color)
+        drawCircle(pos=self.pos, radius=self.radius)
+        drawCircle(pos=self.pos, radius=self.radius, linewidth=5)
+        self.label_obj.x, self.label_obj.y = self.pos
+        self.label_obj.draw()
+
+
+class Menu(MTWidget):
+    def __init__(self, **kwargs):
+        super(Menu, self).__init__(**kwargs)
+        self.radius = kwargs.get('radius')
+        self.game = kwargs.get('game')
+        self.menuitems = []
+        self.do_show = False
+
+    def collide_point(self, x, y):
+        w = self.get_parent_window()
+        w2 = w.width / 2.
+        return Vector(w2, 0).distance(Vector(x, y)) < self.radius
+
+    def _press_reset(self, *largs):
+        self.game.reset(score=True)
+
+    def _press_speed_add(self, *largs):
+        self.game.speed += 1
+        if self.game.speed > 10:
+            self.game.speed = 10
+
+    def _press_speed_del(self, *largs):
+        self.game.speed -= 1
+        if self.game.speed < 1:
+            self.game.speed = 1
+
+    def _press_ball_add(self, *largs):
+        self.game.generate_ball()
+
+    def _press_ball_del(self, *largs):
+        self.game.remove_ball()
+
+    def _press_menu(self, *largs):
+        self.do_show = not self.do_show
+        for c in self.menuitems:
+            c.visible = self.do_show
+        self.game.pause = self.do_show
+
+    def create_ui(self):
+        w = self.get_parent_window()
+        w2 = w.width / 2.
+
+        self.menu = MenuItem(color=(.2, .2, .2, .7), radius=40,
+                            pos=(w2, 0))
+        self.menu.push_handlers(on_press=self._press_menu)
+        self.add_widget(self.menu)
+
+        btn = MenuItem(label='Restart', color=(.7, 0, 0, .7),
+                       radius=40, pos=(w2, 100), visible=False)
+        btn.push_handlers(on_press=self._press_reset)
+        self.menuitems.append(btn)
+        btn = MenuItem(label='Ball +1', color=(0, .7, 0, .7),
+                       radius=40, pos=(w2, 200), visible=False)
+        btn.push_handlers(on_press=self._press_ball_add)
+        self.menuitems.append(btn)
+        btn = MenuItem(label='Ball -1', color=(0, 0, .7, .7),
+                       radius=40, pos=(w2, 300), visible=False)
+        btn.push_handlers(on_press=self._press_ball_del)
+        self.menuitems.append(btn)
+        btn = MenuItem(label='Speed +1', color=(0, .7, 0, .7),
+                       radius=40, pos=(w2, 400), visible=False)
+        btn.push_handlers(on_press=self._press_speed_add)
+        self.menuitems.append(btn)
+        btn = MenuItem(label='Speed -1', color=(0, 0, .7, .7),
+                       radius=40, pos=(w2, 500), visible=False)
+        btn.push_handlers(on_press=self._press_speed_del)
+        self.menuitems.append(btn)
+
+        for btn in self.menuitems:
+            self.add_widget(btn)
+
+    def draw(self):
+        if len(self.menuitems) == 0:
+            self.create_ui()
+        if not self.do_show:
+            return
+        w = self.get_parent_window()
+        w3 = w.width / 3.
+        h2 = w.height / 2.
+        drawLabel('Speed x%d' % self.game.speed, font_size=42, pos=(w3 - 100, h2 - 50))
+        drawLabel('Balls %d' % len(self.game.balls), font_size=42, pos=(w3 - 100, h2))
+
 
 class Wang(MTWidget):
 
@@ -256,14 +351,21 @@ class Wang(MTWidget):
 
     def __init__(self, **kwargs):
         super(Wang, self).__init__(**kwargs)
-        self.ball = Ball(pos=(100, 100), game=self)
-        self.add_widget(self.ball)
+        self.balls = []
+        self.balls.append(Ball(pos=(100, 100), game=self))
+        for ball in self.balls:
+            self.add_widget(ball)
+
         self.labelA = MTLabel(label='0', font_size=48, autoheight=True)
         self.labelB = MTLabel(label='0', font_size=48, autoheight=True)
         self._scoreA = 0
         self._scoreB = 0
         self.side = 0
+        self.pause = False
         self.need_reset = True
+        self.speed = 1
+        self.menu = Menu(radius=40, game=self)
+        self.add_widget(self.menu)
 
     def _get_scoreA(self):
         return self._scoreA
@@ -278,21 +380,42 @@ class Wang(MTWidget):
     scoreA = property(_get_scoreA, _set_scoreA)
     scoreB = property(_get_scoreB, _set_scoreB)
 
-    def reset(self):
+    def generate_ball(self):
+        if len(self.balls) >= 20:
+            return
+        ball = Ball(pos=(100, 100), game=self)
+        self.balls.append(ball)
+        self.add_widget(ball)
+        self.reset()
+
+    def remove_ball(self):
+        if len(self.balls) < 2:
+            return
+        ball = self.balls.pop()
+        self.remove_widget(ball)
+        self.reset()
+
+    def reset(self, score=False):
         self.need_reset = False
         self.bats = []
         self.batsid = []
+        if score:
+            self.scoreA = 0
+            self.scoreB = 0
         self.side = (self.side + 1) % 2
-        self.ball.reset()
         w = self.get_parent_window()
-        self.ball.y = w.height / 2.
-        if self.side == 0:
-            self.ball.x = w.width / 3.
-        else:
-            self.ball.x = (w.width / 3.) * 2.
+        for ball in self.balls:
+            ball.reset()
+            ball.y = w.height / 2.
+            if self.side == 0:
+                ball.x = w.width / 3.
+            else:
+                ball.x = (w.width / 3.) * 2.
 
     def update(self):
-        dt = getFrameDt() * 2
+        dt = getFrameDt() * self.speed
+        if self.pause:
+            dt = 0
         w = self.get_parent_window()
         w2 = w.width / 2.
 
@@ -323,7 +446,8 @@ class Wang(MTWidget):
                 self.bats.append(Bat(a=a.pos, b=b.pos))
                 self.batsid.append((a.pos, b.pos))
 
-        self.ball.update(dt)
+        for ball in self.balls:
+            ball.update(dt)
 
     def drawUI(self):
         w = self.get_parent_window()
@@ -360,9 +484,10 @@ class Wang(MTWidget):
         self.drawUI()
 
         # draw
-        self.ball.draw()
-        for b in self.bats:
-            b.draw()
+        for ball in self.balls:
+            ball.draw()
+        for bat in self.bats:
+            bat.draw()
 
 def pymt_plugin_activate(w, ctx):
     ctx.wang = Wang()

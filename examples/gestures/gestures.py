@@ -8,22 +8,22 @@ class CaptureGesture(MTGestureWidget):
         self.lastgesture = None
         self.lastbest = None
 
-    def on_touch_down(self, touches, touchID, x, y):
-        if not self.collide_point(x, y):
+    def on_touch_down(self, touch):
+        if not self.collide_point(touch.x, touch.y):
             return
-        super(CaptureGesture, self).on_touch_down(touches, touchID, x, y)
+        super(CaptureGesture, self).on_touch_down(touch)
 
-    def on_touch_move(self, touches, touchID, x, y):
-        if not self.collide_point(x, y):
+    def on_touch_move(self, touch):
+        if not self.collide_point(touch.x, touch.y):
             return
-        super(CaptureGesture, self).on_touch_move(touches, touchID, x, y)
+        super(CaptureGesture, self).on_touch_move(touch)
 
-    def on_touch_up(self, touches, touchID, x, y):
-        super(CaptureGesture, self).on_touch_up(touches, touchID, x, y)
-        if not self.collide_point(x, y):
+    def on_touch_up(self, touch):
+        super(CaptureGesture, self).on_touch_up(touch)
+        if not self.collide_point(touch.x, touch.y):
             return
 
-    def on_gesture(self, gesture, x, y):
+    def on_gesture(self, gesture, touch):
         # try to find gesture from database
         best = self.gdb.find(gesture, minscore=0.5)
         if not best:

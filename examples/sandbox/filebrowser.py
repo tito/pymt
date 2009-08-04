@@ -1,5 +1,6 @@
 from __future__ import with_statement
 import os
+import pymt
 from pymt import *
 from pyglet.gl import *
 import os, sys, random
@@ -7,34 +8,30 @@ from pyglet.text import Label
 
 icons_filetype_dir = os.path.join(pymt_data_dir, 'icons', 'filetype')
 
-'''
-FileType Factory: Maintains a Dictionary of all filetypes and its icons
-
-register(type_list,path_to_icon):
-If a user wants to register a new file type or replace a existing icon
-He/She can use register method as follows
-
-FileTypeFactory.register(['type1','type2'],"path_to_icon")
-
-list() : method to retrive all the filetypes list 
-
-get('type1') :  to obtain the Icon path of a particular type
-
-'''
-
 class FileTypeFactory:
+    '''
+    FileType Factory: Maintains a Dictionary of all filetypes and its icons.
+    '''
     __filetypes__ = {}
     @staticmethod
     def register(types,iconpath):
+        '''If a user wants to register a new file type or replace a existing icon,
+        he can use register method as follows ::
+
+            FileTypeFactory.register(['type1','type2'],"path_to_icon")
+        '''
         for type in types:
             FileTypeFactory.__filetypes__[type] = iconpath
 
     @staticmethod
     def list():
+        '''Return all the filetypes availables'''
         return FileTypeFactory.__filetypes__
 
     @staticmethod
     def get(type):
+        '''Return an image for the current type. If type is not found, this
+        will return the image for 'unknown' type.'''
         if type in FileTypeFactory.__filetypes__:
             return FileTypeFactory.__filetypes__[type]
         else:
@@ -92,20 +89,37 @@ class MTFileEntry(MTButton, MTKineticObject):
             if touch.is_double_tap:
                 self.browser.dispatch_event('on_select',self.filename)
 
+class MTFileBrowserToggle(MTToggleButton):
+    def __init__(self, **kwargs):
+        kwargs.setdefault('label', '')
+        kwargs.setdefault('cls', 'popup-button')
+        super(MTFileBrowserToggle, self).__init__(**kwargs)
+        img = pyglet.image.load(os.path.join(pymt.pymt_data_dir, 'icons', kwargs.get('icon')))
+        self.sprite = pyglet.sprite.Sprite(img)
+
+    def draw(self):
+        super(MTFileBrowserToggle, self).draw()
+        self.sprite.x = self.x + (self.width - self.sprite.width) / 2.
+        self.sprite.y = self.y + (self.height - self.sprite.height) / 2.
+        self.sprite.draw()
+
+
 class MTFileBrowser(MTPopup):
-    '''
-        This Widget provides a filebrowser interface to access the files in your system.
-        you can select multiple files at a time and process them togather.
-        
-        :Parameters:
-            `title`        : The title for what reason the filebrowser will be used
-            `submit_label` : Label for the Submit button, Default set to Open
-            `size`         : Window size of the browser and its container
-        
-        :Events:
-            `on_select`
-                This event is generated whenever the user press submit button. 
-                A list of files selected are also passed as a parameter to this function
+    '''This Widget provides a filebrowser interface to access the files in your system.
+    you can select multiple files at a time and process them together.
+
+    :Parameters:
+        `title` : str, default to 'Open a file'
+            The title for what reason the filebrowser will be used
+        `submit_label` : str, default to 'Open'
+            Label for the Submit button, Default set to Open
+        `size` : list, default to (350, 300)
+            Window size of the browser and its container
+
+    :Events:
+        `on_select`
+            This event is generated whenever the user press submit button.
+            A list of files selected are also passed as a parameter to this function
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('submit_label', 'Open')
@@ -113,7 +127,7 @@ class MTFileBrowser(MTPopup):
         kwargs.setdefault('size', (350, 300))
         super(MTFileBrowser, self).__init__(**kwargs)
         self.sep = os.path.join("%","%")
-        
+
         self._path = '(invalid path)'
         self.kbsize = self.width, self.height
 
@@ -125,13 +139,26 @@ class MTFileBrowser(MTPopup):
         self.kb = MTKineticList(w_limit=4, deletable=False, searchable=False,size=self.kbsize, title=None)
         self.add_widget(self.kb, True)
 
+        # Show hidden files
+        self.w_hiddenfile = MTFileBrowserToggle(icon='filebrowser-hidden.png', size=(40, 40))
+        self.w_hiddenfile.push_handlers(on_press=curry(self._toggle_hidden, self.w_hiddenfile))
+        self.l_buttons.add_widget(self.w_hiddenfile, True)
+        self.show_hidden = False
+
         self.register_event_type('on_select')
         self.selected_files = []
 
         # Update listing the first call
         self.path = '.'
-                
-        
+
+    def _toggle_hidden(self, btn, *largs):
+        if btn.get_state() == 'down':
+            self.show_hidden = True
+            self.update_listing()
+        else:
+            self.show_hidden = False
+            self.update_listing()
+
     def _get_path(self):
         return self._path
     def _set_path(self, value):
@@ -161,6 +188,9 @@ class MTFileBrowser(MTPopup):
         # add each file from directory
         for name in os.listdir(self.path):
             filename = os.path.join(self.path, name)
+            if not self.show_hidden:
+                if name != '..' and name[0] == '.':
+                    continue
             self.kb.add_widget(MTFileEntry(
                 label=name, filename=filename,
                 browser=self
@@ -193,8 +223,8 @@ FileTypeFactory.register(['bmp'],os.path.join(icons_filetype_dir, 'image-bmp.png
 FileTypeFactory.register(['mpg','mpeg','avi','mkv','flv'],os.path.join(icons_filetype_dir, 'video.png'))
 FileTypeFactory.register(['folder'],os.path.join(icons_filetype_dir, 'folder.png'))
 FileTypeFactory.register(['unknown'],os.path.join(icons_filetype_dir, 'unknown.png'))
-       
-        
+
+
 if __name__ == '__main__':
     m = MTWindow()
     fb = MTFileBrowser()

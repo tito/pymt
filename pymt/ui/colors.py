@@ -80,6 +80,9 @@ auto_convert = {
     'margin':                   parse_float4,
     'key-color':                parse_color,
     'syskey-color':                parse_color,
+    'scrollbar-size':               parse_float,
+    'scrollbar-margin':             parse_float4,
+    'scrollbar-color':              parse_color,
 }
 
 # Default CSS of PyMT
@@ -164,6 +167,9 @@ kineticlist {
     title-border-radius-precision: 1;
     draw-title-alpha-background: 0;
     title-alpha-background: 1 1 .5 .5;
+    scrollbar-size: 3;
+    scrollbar-color: rgba(127, 127, 127, 127);
+    scrollbar-margin: 3 3 3 0;
 }
 
 .kineticlist-search {

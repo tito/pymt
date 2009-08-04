@@ -12,6 +12,7 @@ from ....graphx import drawCSSRectangle
 from ...factory import MTWidgetFactory
 from ....vector import Vector
 from ....mtpyglet import getFrameDt
+from ....utils import boundary
 from ..stencilcontainer import MTStencilContainer
 from ..widget import MTWidget
 from ..button import MTButton, MTToggleButton, MTImageButton
@@ -58,6 +59,12 @@ class MTKineticList(MTStencilContainer):
     :Styles:
         `bg-color` : color
              Background color of the widget
+        `scrollbar-size` : int
+            Size of scrollbar in pixel (use 0 to disable it.)
+        `scrollbar-color` : color
+            Color of scrollbar
+        `scrollbar-margin` : int int int int
+            Margin top/right/bottom/left of scrollbar (left are not used.)
 
     :Events:
         `on_delete` (child)
@@ -108,7 +115,9 @@ class MTKineticList(MTStencilContainer):
         self.touch = {}
         # Holds widgets not a part of the scrolling(search button, etc)
         self.widgets = []
-        self.content_size = Vector(0, 0)
+        self._last_content_size = 0
+        self._scrollbar_index = 0
+        self._scrollbar_size = 0
 
         # create the UI part.
         self._create_ui()
@@ -237,7 +246,7 @@ class MTKineticList(MTStencilContainer):
                 total += (item.width + self.padding_x)
         elif axis == 'height':
             for item in items:
-                total+= (item.height + self.padding_y)
+                total += (item.height + self.padding_y)
 
         return total
 
@@ -251,7 +260,6 @@ class MTKineticList(MTStencilContainer):
         '''Apply layout to all the items'''
 
         t = index = 0
-        self.content_size = Vector(0, 0)
 
         # adapt value for direction
         w2          = self.width / 2.
@@ -280,6 +288,16 @@ class MTKineticList(MTStencilContainer):
             padding_y   = self.padding_x
             w2, h2      = h2, w2
             sx, sy      = self.y, self.x
+
+        # calculate size of actual content
+        size = 0
+        for i in xrange(len(self.children)):
+            if i % limit == 0:
+                maxrange = min(i + limit, len(self.children))
+                childrens = [self.children[z] for z in range(i, maxrange)]
+                h = max((c.__getattribute__(height_attr) for c in childrens))
+                size += h + padding_y
+        self._last_content_size = size
 
         # add little padding for good looking.
         y += padding_y
@@ -368,6 +386,7 @@ class MTKineticList(MTStencilContainer):
         t['travely'] += abs(t['ymot'])
         self.xoffset += t['xmot'] * self.do_x
         self.yoffset += t['ymot'] * self.do_y
+        self.ensure_bounding()
 
     def on_touch_up(self, touch):
         # accept only grabbed touch by us
@@ -399,14 +418,39 @@ class MTKineticList(MTStencilContainer):
             child.dispatch_event('on_touch_up', touch)
         return True
 
+    def ensure_bounding(self):
+        size = float(self._last_content_size)
+        if size <= 0:
+            return
+
+        self._scrollbar_size = 1
+        self._scrollbar_index = 0
+
+        if self.do_y:
+            if size < self.height:
+                self.yoffset = 0
+            else:
+                self.yoffset = boundary(self.yoffset, 0, -size + self.height)
+                self._scrollbar_size = self.height / size
+                self._scrollbar_index = -self.yoffset / size
+        elif self.do_x:
+            if size < self.width:
+                self.xoffset = 0
+            else:
+                self.xoffset = boundary(self.xoffset, 0, -size + self.width)
+                self._scrollbar_size = self.width / size
+                self._scrollbar_index = -self.yoffset / size
+
     def process_kinetic(self):
         '''Apply kinetic movement to all the items'''
-        self.xoffset += self.vx * self.do_x
-        self.yoffset += self.vy * self.do_y
-
         dt = getFrameDt()
         self.vx /= 1 + (self.friction * dt)
         self.vy /= 1 + (self.friction * dt)
+
+        self.xoffset += self.vx * self.do_x
+        self.yoffset += self.vy * self.do_y
+
+        self.ensure_bounding()
 
     def draw(self):
         # background
@@ -436,10 +480,27 @@ class MTKineticList(MTStencilContainer):
         for w in self.widgets:
             w.dispatch_event('on_draw')
 
+        # scrollbar
+        sb_size = self.style.get('scrollbar-size');
+        if sb_size > 0:
+            mtop, mright, mbottom, mleft = self.style.get('scrollbar-margin')
+            if self.do_y:
+                pos = [self.x + self.width - mright - sb_size, self.y + mbottom]
+                size = [sb_size, self.height - mbottom - mtop]
+                pos[1] += size[1] * self._scrollbar_index
+                size[1] = size[1] * self._scrollbar_size
+            elif self.do_x:
+                pos = [self.x + mleft, self.y + self.height - mtop - sb_size]
+                size = [self.width - mleft - mright]
+                pos[0] += size[0] * self._scrollbar_index
+                size[0] = size[0] * self._scrollbar_size
+            set_color(*self.style.get('scrollbar-color'))
+            drawRectangle(pos=pos, size=size)
+
     def on_draw(self):
+        self.draw()
         self.do_layout()
         self.process_kinetic()
-        self.draw()
 
 
 class MTKineticObject(MTWidget):

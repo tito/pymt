@@ -498,9 +498,9 @@ class MTKineticList(MTStencilContainer):
             drawRectangle(pos=pos, size=size)
 
     def on_draw(self):
-        self.draw()
         self.do_layout()
         self.process_kinetic()
+        self.draw()
 
 
 class MTKineticObject(MTWidget):

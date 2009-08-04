@@ -39,16 +39,70 @@ class FileTypeFactory:
         else:
             return FileTypeFactory.__filetypes__['unknown']
 
-class MTFileEntry(MTButton, MTKineticObject):
+
+class MTFileListEntryView(MTKineticItem):
     def __init__(self, **kwargs):
-        kwargs.setdefault('scale', 1.0)
-        super(MTFileEntry, self).__init__(**kwargs)
+        super(MTFileListEntryView, self).__init__(**kwargs)
         self.filename   = kwargs.get('filename')
         self.browser    = kwargs.get('browser')
         self.label_txt  = kwargs.get('label')
         self.type_image = None
         if os.path.isdir(self.filename):
-            self.type_image = FileTypeFactory.get("folder")
+            self.type_image = FileTypeFactory.get('folder')
+        else:
+            ext = self.label_txt.split('.')[-1]
+            self.type_image = FileTypeFactory.get(ext)
+        self.height         = 25
+        img                 = pyglet.image.load(self.type_image)
+        self.image          = pyglet.sprite.Sprite(img)
+        self.scale          = kwargs.get('scale')
+        self.labelWX        = MTLabel(label=str(self.label_txt)[:50],
+                anchor_x='left', anchor_y='center', halign='center')
+        self.add_widget(self.labelWX)
+        self.selected       = False
+        self.browser.w_limit    = 1
+
+    def draw(self):
+        if self.selected:
+            set_color(1.0,0.39,0.0)
+            drawCSSRectangle(size=self.size,style={'border-radius': 8,'border-radius-precision': .1}, pos=self.pos)
+        else:
+            set_color(0,0,0,0)
+            drawCSSRectangle(size=self.size,style={'border-radius': 8,'border-radius-precision': .1}, pos=self.pos)
+        self.image.x        = self.x
+        self.image.y        = self.y
+        self.image.scale    = .5
+        self.image.draw()
+        self.labelWX.pos    = self.x + self.image.width + 3, self.y + int(self.height / 2.)
+
+    def on_press(self, touch):
+        if not self.selected:
+            if not os.path.isdir(self.filename):
+                self.selected = True
+                if self.filename not in self.browser.selection:
+                    self.browser.selection.append(self.filename)
+        else:
+            if not os.path.isdir(self.filename):
+                self.selected = False
+                if self.filename in self.browser.selection:
+                    self.browser.selection.remove(self.filename)
+        if touch:
+            if os.path.isdir(self.filename):
+                self.browser.path = self.filename
+            if touch.is_double_tap:
+                self.browser.dispatch_event('on_select', self.filename)
+
+
+class MTFileEntryView(MTKineticItem):
+    def __init__(self, **kwargs):
+        kwargs.setdefault('scale', 1.0)
+        super(MTFileEntryView, self).__init__(**kwargs)
+        self.filename   = kwargs.get('filename')
+        self.browser    = kwargs.get('browser')
+        self.label_txt  = kwargs.get('label')
+        self.type_image = None
+        if os.path.isdir(self.filename):
+            self.type_image = FileTypeFactory.get('folder')
         else:
             ext = self.label_txt.split('.')[-1]
             self.type_image = FileTypeFactory.get(ext)
@@ -59,9 +113,11 @@ class MTFileEntry(MTButton, MTKineticObject):
         self.image.y        = self.y
         self.scale          = kwargs.get('scale')
         self.image.scale    = self.scale
-        self.labelWX        = MTLabel(label=str(self.label_txt)[:10],anchor_x="center",anchor_y="center",halign="center")
+        self.labelWX        = MTLabel(label=str(self.label_txt)[:10],
+                anchor_x='center', anchor_y='center', halign='center')
         self.add_widget(self.labelWX)
         self.selected       = False
+        self.browser.w_limit= 4
 
     def draw(self):
         if self.selected:
@@ -102,6 +158,8 @@ class MTFileBrowserView(MTKineticList):
             Default path to load
         `show_hidden` : bool, default to False
             Show hidden files
+        `entry_view` : class, default to MTFileEntryView)
+            Class to use for creating a entry view
 
     :Events:
         `on_path_change` : (str)
@@ -114,6 +172,7 @@ class MTFileBrowserView(MTKineticList):
         kwargs.setdefault('title', None)
         kwargs.setdefault('path', None)
         kwargs.setdefault('show_hidden', False)
+        kwargs.setdefault('entry_view', MTFileEntryView)
 
         super(MTFileBrowserView, self).__init__(**kwargs)
 
@@ -123,6 +182,7 @@ class MTFileBrowserView(MTKineticList):
         self._path          = '(invalid path)'
         self.show_hidden    = kwargs.get('show_hidden')
         self.path           = kwargs.get('path')
+        self.entry_view     = kwargs.get('entry_view')
 
     def update(self):
         '''Update the content of view. You must call this function after
@@ -130,8 +190,11 @@ class MTFileBrowserView(MTKineticList):
         # remove all actual entries
         self.clear()
 
+        listfiles = os.listdir(self.path)
+        listfiles.sort()
+
         # add each file from directory
-        for name in os.listdir(self.path):
+        for name in reversed(listfiles):
             filename = os.path.join(self.path, name)
 
             # filter on hidden file if requested
@@ -139,17 +202,38 @@ class MTFileBrowserView(MTKineticList):
                 if name != '..' and name[0] == '.':
                     continue
 
+            if os.path.isdir(filename):
+                continue
+
             # add this file as new file.
-            self.add_widget(MTFileEntry(
+            self.add_widget(self.entry_view(
                 label=name, filename=filename,
-                browser=self
-            ))
+                browser=self, size=self.size
+            ), front=False)
+
+        # second time, do directories
+        for name in reversed(listfiles):
+            filename = os.path.join(self.path, name)
+
+            # filter on hidden file if requested
+            if not self.show_hidden:
+                if name != '..' and name[0] == '.':
+                    continue
+
+            if not os.path.isdir(filename):
+                continue
+
+            # add this file as new file.
+            self.add_widget(self.entry_view(
+                label=name, filename=filename,
+                browser=self, size=self.size
+            ), front=False)
 
         # add always "to parent"
-        self.add_widget(MTFileEntry(
+        self.add_widget(self.entry_view(
             label='..', filename=os.path.join(self.path, '../'),
-            browser=self
-        ))
+            browser=self, size=self.size
+        ), front=False)
 
     def _get_path(self):
         return self._path

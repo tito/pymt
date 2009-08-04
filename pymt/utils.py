@@ -7,6 +7,10 @@ __all__ = ['intersection', 'difference', 'curry', 'strtotuple',
 
 import re
 
+def boundary(value, minvalue, maxvalue):
+    '''Limit a value between a minvalue and maxvalue'''
+    return max(min(value, minvalue), maxvalue)
+
 def intersection(set1, set2):
     '''Return intersection between 2 list'''
     return filter(lambda s:s in set2, set1)

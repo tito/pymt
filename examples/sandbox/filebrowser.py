@@ -12,7 +12,9 @@ class FileTypeFactory:
     '''
     FileType Factory: Maintains a Dictionary of all filetypes and its icons.
     '''
+
     __filetypes__ = {}
+
     @staticmethod
     def register(types,iconpath):
         '''If a user wants to register a new file type or replace a existing icon,
@@ -43,7 +45,7 @@ class MTFileEntry(MTButton, MTKineticObject):
         super(MTFileEntry, self).__init__(**kwargs)
         self.filename   = kwargs.get('filename')
         self.browser    = kwargs.get('browser')
-        self.label_txt = kwargs.get('label')
+        self.label_txt  = kwargs.get('label')
         self.type_image = None
         if os.path.isdir(self.filename):
             self.type_image = FileTypeFactory.get("folder")
@@ -51,15 +53,15 @@ class MTFileEntry(MTButton, MTKineticObject):
             ext = self.label_txt.split('.')[-1]
             self.type_image = FileTypeFactory.get(ext)
         self.size           = (80, 80)
-        img            = pyglet.image.load(self.type_image)
-        self.image     = pyglet.sprite.Sprite(img)
+        img                 = pyglet.image.load(self.type_image)
+        self.image          = pyglet.sprite.Sprite(img)
         self.image.x        = self.x
         self.image.y        = self.y
         self.scale          = kwargs.get('scale')
         self.image.scale    = self.scale
-        self.labelWX = MTLabel(label=str(self.label_txt)[:10],anchor_x="center",anchor_y="center",halign="center")
+        self.labelWX        = MTLabel(label=str(self.label_txt)[:10],anchor_x="center",anchor_y="center",halign="center")
         self.add_widget(self.labelWX)
-        self.selected = False
+        self.selected       = False
 
     def draw(self):
         if self.selected:
@@ -78,18 +80,101 @@ class MTFileEntry(MTButton, MTKineticObject):
         if not self.selected:
             if not os.path.isdir(self.filename):
                 self.selected = True
-                self.browser.add_to_list(self.filename)
+                if self.filename not in self.browser.selection:
+                    self.browser.selection.append(self.filename)
         else:
             if not os.path.isdir(self.filename):
                 self.selected = False
-                self.browser.remove_from_list(self.filename)
+                if self.filename in self.browser.selection:
+                    self.browser.selection.remove(self.filename)
         if touch:
             if os.path.isdir(self.filename):
                 self.browser.path = self.filename
             if touch.is_double_tap:
-                self.browser.dispatch_event('on_select',self.filename)
+                self.browser.dispatch_event('on_select', self.filename)
+
+
+class MTFileBrowserView(MTKineticList):
+    '''A base view of filebrowser. Can be plugged in any widget.
+
+    :Parameters:
+        `path` : str, default to None
+            Default path to load
+        `show_hidden` : bool, default to False
+            Show hidden files
+
+    :Events:
+        `on_path_change` : (str)
+            Fired when path changed
+    '''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('w_limit', 4)
+        kwargs.setdefault('deletable', False)
+        kwargs.setdefault('searchable', False)
+        kwargs.setdefault('title', None)
+        kwargs.setdefault('path', None)
+        kwargs.setdefault('show_hidden', False)
+
+        super(MTFileBrowserView, self).__init__(**kwargs)
+
+        self.register_event_type('on_path_change')
+
+        self.selection = []
+        self._path          = '(invalid path)'
+        self.show_hidden    = kwargs.get('show_hidden')
+        self.path           = kwargs.get('path')
+
+    def update(self):
+        '''Update the content of view. You must call this function after
+        any change of a property. (except path.)'''
+        # remove all actual entries
+        self.clear()
+
+        # add each file from directory
+        for name in os.listdir(self.path):
+            filename = os.path.join(self.path, name)
+
+            # filter on hidden file if requested
+            if not self.show_hidden:
+                if name != '..' and name[0] == '.':
+                    continue
+
+            # add this file as new file.
+            self.add_widget(MTFileEntry(
+                label=name, filename=filename,
+                browser=self
+            ))
+
+        # add always "to parent"
+        self.add_widget(MTFileEntry(
+            label='..', filename=os.path.join(self.path, '../'),
+            browser=self
+        ))
+
+    def _get_path(self):
+        return self._path
+    def _set_path(self, value):
+        if value is None:
+            return
+        if value == self._path:
+            return
+        # get absolute path
+        value = os.path.abspath(value)
+        if not os.path.exists(value):
+            return
+        self._path = value
+        # update the view
+        self.update()
+        # and dispatch the new path
+        self.dispatch_event('on_path_change', self._path)
+    path = property(_get_path, _set_path, doc='Change current path')
+
+    def on_path_change(self, path):
+        pass
+
 
 class MTFileBrowserToggle(MTToggleButton):
+    '''Internal Button for FileBrowser'''
     def __init__(self, **kwargs):
         kwargs.setdefault('label', '')
         kwargs.setdefault('cls', 'popup-button')
@@ -121,99 +206,64 @@ class MTFileBrowser(MTPopup):
             This event is generated whenever the user press submit button.
             A list of files selected are also passed as a parameter to this function
     '''
+
     def __init__(self, **kwargs):
         kwargs.setdefault('submit_label', 'Open')
         kwargs.setdefault('title', 'Open a file')
         kwargs.setdefault('size', (350, 300))
-        super(MTFileBrowser, self).__init__(**kwargs)
-        self.sep = os.path.join("%","%")
 
-        self._path = '(invalid path)'
+        super(MTFileBrowser, self).__init__(**kwargs)
+
+        self.register_event_type('on_select')
+
+        # save size before resizing of Popup Layout
         self.kbsize = self.width, self.height
 
         # Title
-        self.w_path = MTLabel(label=self.path, autoheight=True, size=(self.width, 30), color=(.7, .7, .7, .5))
+        self.w_path = MTLabel(label='.', autoheight=True, size=(self.width, 30), color=(.7, .7, .7, .5))
         self.add_widget(self.w_path)
 
-        # File listing
-        self.kb = MTKineticList(w_limit=4, deletable=False, searchable=False,size=self.kbsize, title=None)
-        self.add_widget(self.kb, True)
+        # File View
+        self.view = MTFileBrowserView(size=self.kbsize)
+        self.view.push_handlers(on_path_change=self._on_path_change)
+        self.add_widget(self.view, True)
+
+        # Update listing
+        self.view.path = '.'
 
         # Show hidden files
         self.w_hiddenfile = MTFileBrowserToggle(icon='filebrowser-hidden.png', size=(40, 40))
         self.w_hiddenfile.push_handlers(on_press=curry(self._toggle_hidden, self.w_hiddenfile))
         self.l_buttons.add_widget(self.w_hiddenfile, True)
-        self.show_hidden = False
-
-        self.register_event_type('on_select')
-        self.selected_files = []
-
-        # Update listing the first call
-        self.path = '.'
 
     def _toggle_hidden(self, btn, *largs):
         if btn.get_state() == 'down':
-            self.show_hidden = True
-            self.update_listing()
+            self.view.show_hidden = True
+            self.view.update()
         else:
-            self.show_hidden = False
-            self.update_listing()
+            self.view.show_hidden = False
+            self.view.update()
 
-    def _get_path(self):
-        return self._path
-    def _set_path(self, value):
-        if value == self._path:
-            return
-        value = os.path.abspath(value)
-        if not os.path.exists(value):
-            return
-        if len(value) > int(self.size[0]/8) :
-            folders = value.split(os.path.sep)
-            temp_label = ""
+    def _on_path_change(self, path):
+        if len(path) > int(self.size[0]/8) :
+            folders = path.split(os.path.sep)
+            temp_label = ''
             i = -1
             max_len = int(self.size[0]/8)-8
-            while(len(temp_label)< max_len):
-                temp_label = folders[i]+os.path.sep+temp_label
+            while len(temp_label) < max_len:
+                temp_label = folders[i] + os.path.sep + temp_label
                 i -= 1
-            self.w_path.label = ".."+os.path.sep+temp_label
+            self.w_path.label = '..' + os.path.sep + temp_label
         else:
-            self.w_path.label = value
-        self._path = value
-        self.update_listing()
-    path = property(_get_path, _set_path)
-
-    def update_listing(self):
-        self.kb.clear()
-
-        # add each file from directory
-        for name in os.listdir(self.path):
-            filename = os.path.join(self.path, name)
-            if not self.show_hidden:
-                if name != '..' and name[0] == '.':
-                    continue
-            self.kb.add_widget(MTFileEntry(
-                label=name, filename=filename,
-                browser=self
-            ))
-
-        # add always "to parent"
-        self.kb.add_widget(MTFileEntry(
-            label='..', filename=os.path.join(self.path, '../'),
-            browser=self
-        ))
-
-    def add_to_list(self,filename):
-        self.selected_files.append(filename)
-
-    def remove_from_list(self,filename):
-        self.selected_files.remove(filename)
+            self.w_path.label = path
 
     def on_submit(self):
-        self.dispatch_event('on_select',self.selected_files)
+        self.dispatch_event('on_select', self.view.selection)
         self.close()
 
-    def on_select(self,filelist):
+    def on_select(self, filelist):
         pass
+
 
 # Register Default File types with their icons
 FileTypeFactory.register(['jpg','jpeg'],os.path.join(icons_filetype_dir, 'image-jpeg.png'))

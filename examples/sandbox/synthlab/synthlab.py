@@ -32,6 +32,7 @@ class Module(MTSvg):
             x2 = self.drag_x
             y2 = self.drag_y
             drawLine([x1, y1, x2, y2], width = 1)
+        
         set_color(1,1,1,1)
         for module in self.control_connections:
             x1 = self.x + self.width / 2
@@ -43,6 +44,7 @@ class Module(MTSvg):
                 x2 = module[0].x + module[0].width - 4
                 y2 = module[0].y + module[0].height - 20 - (module[1] - 1) * 13
             drawLine([x1, y1, x2, y2], width = 1)
+        
         for module in self.signal_connections:
             x1 = self.x - 2 + self.width / 2
             y1 = self.y + 2
@@ -86,22 +88,20 @@ class Module(MTSvg):
                     # Control connections
                     if self.category == 'controller' and m.category != 'output':
                         if m.category == 'source':
-                            inlet_calc = int(round(m.to_local(touch.x,touch.y)[0] / ((m.width - 10) / 4.)))
+                            inlet_calc = int(round((touch.x - m.x) / ((m.width - 10) / 4.)))
                             if inlet_calc >= 1 and inlet_calc <= 4:
                                 inlet = inlet_calc
                             else: inlet = None
                         if m.category == 'effect':
-                            inlet_calc = int(round((m.height - m.to_local(touch.x,touch.y)[1]) / (m.height / 5.)))
+                            inlet_calc = int(round((m.height - touch.y + m.y) / (m.height / 5.)))
                             if inlet_calc >= 1 and inlet_calc <= 4:
                                 inlet = inlet_calc
                             else: inlet = None
                         if inlet:
                             if [m, inlet] not in self.control_connections:
                                 self.control_connections.append([m, inlet])
-                            print self.control_connections
                     # Signal connections
                     if self.category == 'source' or self.category == 'effect' and m.category != 'source':
-                        print 'went here'
                         inlet = 0
                         if [m, inlet] not in self.signal_connections:
                             self.signal_connections.append([m, inlet])

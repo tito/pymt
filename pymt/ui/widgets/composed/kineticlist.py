@@ -52,7 +52,7 @@ class MTKineticList(MTStencilContainer):
         `searchable` : bool, defaults to True
             When enabled it allows you to enter search mode
             and filter items
-        `trigger_distance` : int, default to 8
+        `trigger_distance` : int, default to 3
             Maximum trigger distance to dispatch event on children
             (this mean if you move too much, trigger will not happen.)
 
@@ -81,7 +81,7 @@ class MTKineticList(MTStencilContainer):
         kwargs.setdefault('title', 'No title')
         kwargs.setdefault('deletable', True)
         kwargs.setdefault('searchable', True)
-        kwargs.setdefault('trigger_distance', 8)
+        kwargs.setdefault('trigger_distance', 3)
 
         super(MTKineticList, self).__init__(**kwargs)
         self.register_event_type('on_delete')

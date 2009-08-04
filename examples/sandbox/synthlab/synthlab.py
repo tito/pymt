@@ -93,7 +93,7 @@ class Module(MTSvg):
                                 inlet = inlet_calc
                             else: inlet = None
                         if m.category == 'effect':
-                            inlet_calc = int(round((m.height - touch.y + m.y) / (m.height / 5.)))
+                            inlet_calc = int(round((m.height - (touch.y - m.y)) / (m.height / 5.)))
                             if inlet_calc >= 1 and inlet_calc <= 4:
                                 inlet = inlet_calc
                             else: inlet = None

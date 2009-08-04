@@ -128,7 +128,7 @@ class MTButton(MTWidget):
         self.button_dl.clear()
 
     def draw(self):
-        if self._state[0] == 'down':
+        if self.get_state() == 'down':
             set_color(*self.style['color-down'])
         else:
             set_color(*self.style['bg-color'])

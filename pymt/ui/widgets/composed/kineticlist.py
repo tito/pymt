@@ -177,8 +177,8 @@ class MTKineticList(MTStencilContainer):
         self.pchildren = []
         self.xoffset = self.yoffset = 0
 
-    def add_widget(self, widget):
-        super(MTKineticList, self).add_widget(widget)
+    def add_widget(self, widget, **kwargs):
+        super(MTKineticList, self).add_widget(widget, **kwargs)
         self.pchildren.append(widget)
 
     def remove_widget(self, widget):

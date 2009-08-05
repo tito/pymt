@@ -4,6 +4,7 @@ import pymt
 from pymt import *
 from pyglet.gl import *
 import os, sys, random
+import re
 from pyglet.text import Label
 
 icons_filetype_dir = os.path.join(pymt_data_dir, 'icons', 'filetype')
@@ -158,8 +159,11 @@ class MTFileBrowserView(MTKineticList):
             Default path to load
         `show_hidden` : bool, default to False
             Show hidden files
-        `entry_view` : class, default to MTFileIconEntryView)
+        `view` : class, default to MTFileIconEntryView)
             Class to use for creating a entry view
+        `filters` : list, default to []
+            List of regex to use for file filtering.
+            Directories are not affected by filters.
 
     :Events:
         `on_path_change` : (str)
@@ -172,7 +176,8 @@ class MTFileBrowserView(MTKineticList):
         kwargs.setdefault('title', None)
         kwargs.setdefault('path', None)
         kwargs.setdefault('show_hidden', False)
-        kwargs.setdefault('entry_view', MTFileIconEntryView)
+        kwargs.setdefault('view', MTFileIconEntryView)
+        kwargs.setdefault('filters', [])
 
         super(MTFileBrowserView, self).__init__(**kwargs)
 
@@ -182,7 +187,8 @@ class MTFileBrowserView(MTKineticList):
         self._path          = '(invalid path)'
         self.show_hidden    = kwargs.get('show_hidden')
         self.path           = kwargs.get('path')
-        self.entry_view     = kwargs.get('entry_view')
+        self.view           = kwargs.get('view')
+        self.filters        = kwargs.get('filters')
 
     def update(self):
         '''Update the content of view. You must call this function after
@@ -194,6 +200,7 @@ class MTFileBrowserView(MTKineticList):
         listfiles.sort()
 
         # add each file from directory
+        # only files are filtred with filters
         for name in reversed(listfiles):
             filename = os.path.join(self.path, name)
 
@@ -205,8 +212,17 @@ class MTFileBrowserView(MTKineticList):
             if os.path.isdir(filename):
                 continue
 
+            # filtering
+            if len(self.filters):
+                match = False
+                for filter in self.filters:
+                    if re.match(filter, name):
+                        match = True
+                if not match:
+                    continue
+
             # add this file as new file.
-            self.add_widget(self.entry_view(
+            self.add_widget(self.view(
                 label=name, filename=filename,
                 browser=self, size=self.size
             ), front=False)
@@ -224,13 +240,13 @@ class MTFileBrowserView(MTKineticList):
                 continue
 
             # add this file as new file.
-            self.add_widget(self.entry_view(
+            self.add_widget(self.view(
                 label=name, filename=filename,
                 browser=self, size=self.size
             ), front=False)
 
         # add always "to parent"
-        self.add_widget(self.entry_view(
+        self.add_widget(self.view(
             label='..', filename=os.path.join(self.path, '../'),
             browser=self, size=self.size
         ), front=False)
@@ -288,6 +304,9 @@ class MTFileBrowser(MTPopup):
             Label for the Submit button, Default set to Open
         `size` : list, default to (350, 300)
             Window size of the browser and its container
+        `filters` : list, default to []
+            List of regex to use for file filtering.
+            Directories are not affected by filters.
 
     :Events:
         `on_select`
@@ -299,6 +318,7 @@ class MTFileBrowser(MTPopup):
         kwargs.setdefault('submit_label', 'Open')
         kwargs.setdefault('title', 'Open a file')
         kwargs.setdefault('size', (350, 300))
+        kwargs.setdefault('filters', [])
 
         super(MTFileBrowser, self).__init__(**kwargs)
 
@@ -312,7 +332,7 @@ class MTFileBrowser(MTPopup):
         self.add_widget(self.w_path)
 
         # File View
-        self.view = MTFileBrowserView(size=self.kbsize)
+        self.view = MTFileBrowserView(size=self.kbsize, filters=kwargs.get('filters'))
         self.view.push_handlers(on_path_change=self._on_path_change)
         self.add_widget(self.view, True)
 
@@ -339,10 +359,10 @@ class MTFileBrowser(MTPopup):
     def _toggle_view(self, btn, *largs):
         if btn.get_state() == 'down':
             btn.icon = 'filebrowser-listview.png'
-            self.view.entry_view = MTFileListEntryView
+            self.view.view = MTFileListEntryView
         else:
             btn.icon = 'filebrowser-iconview.png'
-            self.view.entry_view = MTFileIconEntryView
+            self.view.view = MTFileIconEntryView
         self.view.update()
 
     def _on_path_change(self, path):
@@ -378,6 +398,7 @@ FileTypeFactory.register(['unknown'],os.path.join(icons_filetype_dir, 'unknown.p
 
 if __name__ == '__main__':
     m = MTWindow()
+    #fb = MTFileBrowser(filters=['.*\.[Pp][Nn][Gg]$'])
     fb = MTFileBrowser()
     m.add_widget(fb)
     @fb.event

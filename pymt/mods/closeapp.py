@@ -36,7 +36,7 @@ class CloseApp(MTWidget):
                 to_delete.append(id)
                 continue
             touch = self.closetouches[id]
-            value = ((t - touch.time_start) - 3) / 2.
+            value = ((t - touch.time_start) - 1) / 2.
             if value > 1:
                 self.do_close()
                 return
@@ -58,8 +58,8 @@ class CloseApp(MTWidget):
                 if touch.id in self.closetouches:
                     del self.closetouches[touch.id]
                 return
-            # 3s minimum
-            if t - touch.time_start < 3:
+            # 1s minimum
+            if t - touch.time_start < 1:
                 if touch.id in self.closetouches:
                     del self.closetouches[touch.id]
                 return

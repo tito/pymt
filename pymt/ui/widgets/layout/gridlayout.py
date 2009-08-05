@@ -104,7 +104,12 @@ class MTGridLayout(MTAbstractLayout):
                 c = self.children[i]
                 # special y, we inverse order of children at reposition
                 c.pos = (x, self.y + current_height - rows[row] - (y - self.y))
-                c.size = (cols[col], rows[row])
+                if self.uniform_width and self.uniform_height:
+                    c.size = (cols[col], rows[row])
+                elif self.uniform_width:
+                    c.width = cols[col]
+                elif self.uniform_height:
+                    c.height = rows[row]
                 i = i + 1
                 x = x + cols[col] + spacing
             y = y + rows[row] + spacing

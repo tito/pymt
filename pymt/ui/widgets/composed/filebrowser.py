@@ -1,13 +1,24 @@
+'''
+File browser: a filebrowser view + a popup file browser
+'''
 from __future__ import with_statement
 import os
-import pymt
-from pymt import *
-from pyglet.gl import *
-import os, sys, random
 import re
-from pyglet.text import Label
+import pyglet
+import pymt
+from ....utils import is_color_transparent, curry
+from ....graphx import drawCSSRectangle, set_color
+from ...factory import MTWidgetFactory
+from ..label import MTLabel
+from ..button import MTToggleButton
+from kineticlist import MTKineticList, MTKineticItem
+from popup import MTPopup
 
-icons_filetype_dir = os.path.join(pymt_data_dir, 'icons', 'filetype')
+__all__ = ['MTFileBrowser', 'MTFileBrowserView', 'MTFileEntryView',
+        'MTFileListEntryView', 'MTFileIconEntryView']
+
+# Search icons in data/icons/filetype
+icons_filetype_dir = os.path.join(pymt.pymt_data_dir, 'icons', 'filetype')
 
 class FileTypeFactory:
     '''
@@ -41,6 +52,7 @@ class FileTypeFactory:
             return FileTypeFactory.__filetypes__['unknown']
 
 class MTFileEntryView(MTKineticItem):
+    '''Base view class for every file entry'''
     def __init__(self, **kwargs):
         super(MTFileEntryView, self).__init__(**kwargs)
         self.type_image = None
@@ -51,6 +63,7 @@ class MTFileEntryView(MTKineticItem):
         self.get_image_for_filename()
 
     def get_image_for_filename(self):
+        '''Return image for current filename'''
         if os.path.isdir(self.filename):
             self.type_image = FileTypeFactory.get('folder')
         else:
@@ -58,6 +71,7 @@ class MTFileEntryView(MTKineticItem):
             self.type_image = FileTypeFactory.get(ext)
 
     def striptext(self, text, number=10):
+        '''Strip a text to `number` characters, without space/tab'''
         return str(text)[:number].strip("\t ")
 
     def draw(self):
@@ -71,6 +85,7 @@ class MTFileEntryView(MTKineticItem):
 
 
 class MTFileListEntryView(MTFileEntryView):
+    '''A list-view for file entries'''
     def __init__(self, **kwargs):
         super(MTFileListEntryView, self).__init__(**kwargs)
         self.height         = 25
@@ -92,6 +107,7 @@ class MTFileListEntryView(MTFileEntryView):
 
 
 class MTFileIconEntryView(MTFileEntryView):
+    '''An icon-view for file entries'''
     def __init__(self, **kwargs):
         super(MTFileIconEntryView, self).__init__(**kwargs)
         self.size           = (80, 80)
@@ -382,23 +398,22 @@ class MTFileBrowser(MTPopup):
     def on_select(self, filelist):
         pass
 
-
 # Register Default File types with their icons
-FileTypeFactory.register(['jpg','jpeg'],os.path.join(icons_filetype_dir, 'image-jpeg.png'))
-FileTypeFactory.register(['svg'],os.path.join(icons_filetype_dir, 'image-svg.png'))
-FileTypeFactory.register(['png'],os.path.join(icons_filetype_dir, 'image-png.png'))
-FileTypeFactory.register(['bmp'],os.path.join(icons_filetype_dir, 'image-bmp.png'))
-FileTypeFactory.register(['mpg','mpeg','avi','mkv','flv'],os.path.join(icons_filetype_dir, 'video.png'))
-FileTypeFactory.register(['folder'],os.path.join(icons_filetype_dir, 'folder.png'))
-FileTypeFactory.register(['unknown'],os.path.join(icons_filetype_dir, 'unknown.png'))
+FileTypeFactory.register(['jpg','jpeg'],
+    os.path.join(icons_filetype_dir, 'image-jpeg.png'))
+FileTypeFactory.register(['svg'],
+    os.path.join(icons_filetype_dir, 'image-svg.png'))
+FileTypeFactory.register(['png'],
+    os.path.join(icons_filetype_dir, 'image-png.png'))
+FileTypeFactory.register(['bmp'],
+    os.path.join(icons_filetype_dir, 'image-bmp.png'))
+FileTypeFactory.register(['mpg','mpeg','avi','mkv','flv'],
+    os.path.join(icons_filetype_dir, 'video.png'))
+FileTypeFactory.register(['folder'],
+    os.path.join(icons_filetype_dir, 'folder.png'))
+FileTypeFactory.register(['unknown'],
+    os.path.join(icons_filetype_dir, 'unknown.png'))
 
-
-if __name__ == '__main__':
-    m = MTWindow()
-    #fb = MTFileBrowser(filters=['.*\.[Pp][Nn][Gg]$'])
-    fb = MTFileBrowser()
-    m.add_widget(fb)
-    @fb.event
-    def on_select(list):
-        print list
-    runTouchApp()
+# Register all bases widgets
+MTWidgetFactory.register('MTFileBrowser', MTFileBrowser)
+MTWidgetFactory.register('MTFileBrowserView', MTFileBrowserView)

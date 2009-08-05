@@ -12,3 +12,4 @@ from video import *
 from vkeyboard import *
 from textinput import *
 from popup import *
+from filebrowser import *

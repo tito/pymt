@@ -93,10 +93,10 @@ class MTFileListEntryView(MTKineticItem):
                 self.browser.dispatch_event('on_select', self.filename)
 
 
-class MTFileEntryView(MTKineticItem):
+class MTFileIconEntryView(MTKineticItem):
     def __init__(self, **kwargs):
         kwargs.setdefault('scale', 1.0)
-        super(MTFileEntryView, self).__init__(**kwargs)
+        super(MTFileIconEntryView, self).__init__(**kwargs)
         self.filename   = kwargs.get('filename')
         self.browser    = kwargs.get('browser')
         self.label_txt  = kwargs.get('label')
@@ -158,7 +158,7 @@ class MTFileBrowserView(MTKineticList):
             Default path to load
         `show_hidden` : bool, default to False
             Show hidden files
-        `entry_view` : class, default to MTFileEntryView)
+        `entry_view` : class, default to MTFileIconEntryView)
             Class to use for creating a entry view
 
     :Events:
@@ -172,7 +172,7 @@ class MTFileBrowserView(MTKineticList):
         kwargs.setdefault('title', None)
         kwargs.setdefault('path', None)
         kwargs.setdefault('show_hidden', False)
-        kwargs.setdefault('entry_view', MTFileEntryView)
+        kwargs.setdefault('entry_view', MTFileIconEntryView)
 
         super(MTFileBrowserView, self).__init__(**kwargs)
 
@@ -263,8 +263,12 @@ class MTFileBrowserToggle(MTToggleButton):
         kwargs.setdefault('label', '')
         kwargs.setdefault('cls', 'popup-button')
         super(MTFileBrowserToggle, self).__init__(**kwargs)
-        img = pyglet.image.load(os.path.join(pymt.pymt_data_dir, 'icons', kwargs.get('icon')))
+        self.icon = kwargs.get('icon')
+
+    def _set_icon(self, value):
+        img = pyglet.image.load(os.path.join(pymt.pymt_data_dir, 'icons', value))
         self.sprite = pyglet.sprite.Sprite(img)
+    icon = property(fset=_set_icon)
 
     def draw(self):
         super(MTFileBrowserToggle, self).draw()
@@ -318,15 +322,28 @@ class MTFileBrowser(MTPopup):
         # Show hidden files
         self.w_hiddenfile = MTFileBrowserToggle(icon='filebrowser-hidden.png', size=(40, 40))
         self.w_hiddenfile.push_handlers(on_press=curry(self._toggle_hidden, self.w_hiddenfile))
-        self.l_buttons.add_widget(self.w_hiddenfile, True)
+        self.l_buttons.add_widget(self.w_hiddenfile)
+
+        # Select view
+        self.w_view = MTFileBrowserToggle(icon='filebrowser-iconview.png', size=(40, 40))
+        self.w_view.push_handlers(on_press=curry(self._toggle_view, self.w_view))
+        self.l_buttons.add_widget(self.w_view, True)
 
     def _toggle_hidden(self, btn, *largs):
         if btn.get_state() == 'down':
             self.view.show_hidden = True
-            self.view.update()
         else:
             self.view.show_hidden = False
-            self.view.update()
+        self.view.update()
+
+    def _toggle_view(self, btn, *largs):
+        if btn.get_state() == 'down':
+            btn.icon = 'filebrowser-listview.png'
+            self.view.entry_view = MTFileListEntryView
+        else:
+            btn.icon = 'filebrowser-iconview.png'
+            self.view.entry_view = MTFileIconEntryView
+        self.view.update()
 
     def _on_path_change(self, path):
         if len(path) > int(self.size[0]/8) :

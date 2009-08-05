@@ -674,9 +674,9 @@ class SVG(object):
         elif e.tag.endswith('rect'):
             x = 0
             y = 0
-            if e.find('x'):
+            if 'x' in e.keys():
                 x = float(e.get('x'))
-            if e.find('y'):
+            if 'y' in e.keys():
                 y = float(e.get('y'))
             h = float(e.get('height'))
             w = float(e.get('width'))

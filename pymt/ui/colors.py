@@ -150,10 +150,11 @@ slider, xyslider, vectorslider, multislider, boundaryslider {
     slider-alpha-background: 1 1 .5 .5;
 }
 
-kineticscrolltext {
-    color: rgba(255, 255, 255, 127);
-    item-color: rgb(100, 100, 100);
-    item-selected: rgb(150, 150, 150);
+fileentryview {
+    bg-color: rgba(0, 0, 0, 0);
+    item-selected: rgb(255, 100, 0, 200);
+    border-radius: 8;
+    border-radius-precision: .5;
 }
 
 kineticcontainer {

@@ -3,7 +3,8 @@ Utils: generic toolbox
 '''
 
 __all__ = ['intersection', 'difference', 'curry', 'strtotuple',
-           'get_color_from_hex', 'get_color_for_pyglet']
+           'get_color_from_hex', 'get_color_for_pyglet',
+           'is_color_transparent']
 
 import re
 
@@ -20,6 +21,7 @@ def difference(set1, set2):
     return filter(lambda s:s not in set2, set1)
 
 def curry(fn, *cargs, **ckwargs):
+    '''Change the function signature to pass new variable.'''
     def call_fn(*fargs, **fkwargs):
         d = ckwargs.copy()
         d.update(fkwargs)
@@ -50,6 +52,7 @@ def strtotuple(s):
     return r
 
 def get_color_from_hex(s):
+    '''Transform from hex string color to pymt color'''
     if s.startswith('#'):
         return get_color_from_hex(s[1:])
 
@@ -59,5 +62,13 @@ def get_color_from_hex(s):
     return value
 
 def get_color_for_pyglet(c):
+    '''Transform from pymt color to pyglet color'''
     return map(lambda x: int(255 * x), c)
 
+def is_color_transparent(c):
+    '''Return true if alpha channel is 0'''
+    if len(c) < 4:
+        return False
+    if float(c[3]) == 0.:
+        return True
+    return False

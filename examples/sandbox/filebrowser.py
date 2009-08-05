@@ -40,115 +40,77 @@ class FileTypeFactory:
         else:
             return FileTypeFactory.__filetypes__['unknown']
 
-
-class MTFileListEntryView(MTKineticItem):
+class MTFileEntryView(MTKineticItem):
     def __init__(self, **kwargs):
-        super(MTFileListEntryView, self).__init__(**kwargs)
+        super(MTFileEntryView, self).__init__(**kwargs)
+        self.type_image = None
         self.filename   = kwargs.get('filename')
         self.browser    = kwargs.get('browser')
         self.label_txt  = kwargs.get('label')
-        self.type_image = None
+
+        self.get_image_for_filename()
+
+    def get_image_for_filename(self):
         if os.path.isdir(self.filename):
             self.type_image = FileTypeFactory.get('folder')
         else:
             ext = self.label_txt.split('.')[-1]
             self.type_image = FileTypeFactory.get(ext)
+
+    def striptext(self, text, number=10):
+        return str(text)[:number].strip("\t ")
+
+    def draw(self):
+        if self.selected:
+            color = self.style['item-selected']
+        else:
+            color = self.style['bg-color']
+        if not is_color_transparent(color):
+            set_color(*color)
+            drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
+
+
+class MTFileListEntryView(MTFileEntryView):
+    def __init__(self, **kwargs):
+        super(MTFileListEntryView, self).__init__(**kwargs)
         self.height         = 25
         img                 = pyglet.image.load(self.type_image)
         self.image          = pyglet.sprite.Sprite(img)
-        self.scale          = kwargs.get('scale')
-        self.labelWX        = MTLabel(label=str(self.label_txt)[:50],
+        self.labelWX        = MTLabel(label=self.striptext(self.label_txt, 50),
                 anchor_x='left', anchor_y='center', halign='center')
         self.add_widget(self.labelWX)
         self.selected       = False
         self.browser.w_limit    = 1
 
     def draw(self):
-        if self.selected:
-            set_color(1.0,0.39,0.0)
-            drawCSSRectangle(size=self.size,style={'border-radius': 8,'border-radius-precision': .1}, pos=self.pos)
-        else:
-            set_color(0,0,0,0)
-            drawCSSRectangle(size=self.size,style={'border-radius': 8,'border-radius-precision': .1}, pos=self.pos)
-        self.image.x        = self.x
-        self.image.y        = self.y
-        self.image.scale    = .5
-        self.image.draw()
         self.labelWX.pos    = self.x + self.image.width + 3, self.y + int(self.height / 2.)
+        self.image.x, self.image.y = self.x, self.y
+        self.image.scale    = .5
 
-    def on_press(self, touch):
-        if not self.selected:
-            if not os.path.isdir(self.filename):
-                self.selected = True
-                if self.filename not in self.browser.selection:
-                    self.browser.selection.append(self.filename)
-        else:
-            if not os.path.isdir(self.filename):
-                self.selected = False
-                if self.filename in self.browser.selection:
-                    self.browser.selection.remove(self.filename)
-        if touch:
-            if os.path.isdir(self.filename):
-                self.browser.path = self.filename
-            if touch.is_double_tap:
-                self.browser.dispatch_event('on_select', self.filename)
+        super(MTFileListEntryView, self).draw()
+        self.image.draw()
 
 
-class MTFileIconEntryView(MTKineticItem):
+class MTFileIconEntryView(MTFileEntryView):
     def __init__(self, **kwargs):
-        kwargs.setdefault('scale', 1.0)
         super(MTFileIconEntryView, self).__init__(**kwargs)
-        self.filename   = kwargs.get('filename')
-        self.browser    = kwargs.get('browser')
-        self.label_txt  = kwargs.get('label')
-        self.type_image = None
-        if os.path.isdir(self.filename):
-            self.type_image = FileTypeFactory.get('folder')
-        else:
-            ext = self.label_txt.split('.')[-1]
-            self.type_image = FileTypeFactory.get(ext)
         self.size           = (80, 80)
         img                 = pyglet.image.load(self.type_image)
         self.image          = pyglet.sprite.Sprite(img)
-        self.image.x        = self.x
-        self.image.y        = self.y
-        self.scale          = kwargs.get('scale')
-        self.image.scale    = self.scale
-        self.labelWX        = MTLabel(label=str(self.label_txt)[:10],
+        self.image.pos      = self.pos
+        self.labelWX        = MTLabel(label=self.striptext(self.label_txt, 10),
                 anchor_x='center', anchor_y='center', halign='center')
         self.add_widget(self.labelWX)
         self.selected       = False
         self.browser.w_limit= 4
 
     def draw(self):
-        if self.selected:
-            set_color(1.0,0.39,0.0)
-            drawCSSRectangle(size=self.size,style={'border-radius': 8,'border-radius-precision': .1},pos=self.pos)
-        else:
-            set_color(0,0,0,0)
-            drawCSSRectangle(size=self.size,style={'border-radius': 8,'border-radius-precision': .1},pos=self.pos)
+        self.labelWX.pos    = int(self.x + self.width / 2.), int(self.y + 10)
         self.image.x        = self.x+int(self.image.width/2)-5
         self.image.y        = self.y+int(self.image.height/2)-5
-        self.image.scale    = self.scale
-        self.image.draw()
-        self.labelWX.pos = (int(self.x+35),int(self.y+10))
 
-    def on_press(self, touch):
-        if not self.selected:
-            if not os.path.isdir(self.filename):
-                self.selected = True
-                if self.filename not in self.browser.selection:
-                    self.browser.selection.append(self.filename)
-        else:
-            if not os.path.isdir(self.filename):
-                self.selected = False
-                if self.filename in self.browser.selection:
-                    self.browser.selection.remove(self.filename)
-        if touch:
-            if os.path.isdir(self.filename):
-                self.browser.path = self.filename
-            if touch.is_double_tap:
-                self.browser.dispatch_event('on_select', self.filename)
+        super(MTFileIconEntryView, self).draw()
+        self.image.draw()
 
 
 class MTFileBrowserView(MTKineticList):
@@ -164,6 +126,8 @@ class MTFileBrowserView(MTKineticList):
         `filters` : list, default to []
             List of regex to use for file filtering.
             Directories are not affected by filters.
+        `multipleselection` : bool, default to False
+            Allow multiple selection of files
 
     :Events:
         `on_path_change` : (str)
@@ -178,6 +142,7 @@ class MTFileBrowserView(MTKineticList):
         kwargs.setdefault('show_hidden', False)
         kwargs.setdefault('view', MTFileIconEntryView)
         kwargs.setdefault('filters', [])
+        kwargs.setdefault('multipleselection', False)
 
         super(MTFileBrowserView, self).__init__(**kwargs)
 
@@ -189,6 +154,7 @@ class MTFileBrowserView(MTKineticList):
         self.path           = kwargs.get('path')
         self.view           = kwargs.get('view')
         self.filters        = kwargs.get('filters')
+        self.multipleselection = kwargs.get('multipleselection')
 
     def update(self):
         '''Update the content of view. You must call this function after
@@ -196,6 +162,7 @@ class MTFileBrowserView(MTKineticList):
         # remove all actual entries
         self.clear()
 
+        children = []
         listfiles = os.listdir(self.path)
         listfiles.sort()
 
@@ -222,10 +189,10 @@ class MTFileBrowserView(MTKineticList):
                     continue
 
             # add this file as new file.
-            self.add_widget(self.view(
+            children.append(self.view(
                 label=name, filename=filename,
                 browser=self, size=self.size
-            ), front=False)
+            ))
 
         # second time, do directories
         for name in reversed(listfiles):
@@ -240,16 +207,22 @@ class MTFileBrowserView(MTKineticList):
                 continue
 
             # add this file as new file.
-            self.add_widget(self.view(
+            children.append(self.view(
                 label=name, filename=filename,
                 browser=self, size=self.size
-            ), front=False)
+            ))
 
         # add always "to parent"
-        self.add_widget(self.view(
+        children.append(self.view(
             label='..', filename=os.path.join(self.path, '../'),
             browser=self, size=self.size
-        ), front=False)
+        ))
+
+
+        # attach handlers
+        for child in children:
+            child.push_handlers(on_press=curry(self._on_file_selected, child))
+            self.add_widget(child, front=False)
 
     def _get_path(self):
         return self._path
@@ -268,6 +241,26 @@ class MTFileBrowserView(MTKineticList):
         # and dispatch the new path
         self.dispatch_event('on_path_change', self._path)
     path = property(_get_path, _set_path, doc='Change current path')
+
+    def _on_file_selected(self, fileview, touch):
+        # auto change for directory
+        filename = fileview.filename
+        if os.path.isdir(filename):
+            self.path = filename
+            return
+
+        # select file ?
+        if not fileview.selected:
+            if not self.multipleselection:
+                for child in self.children:
+                    child.selected = False
+            fileview.selected = True
+            if filename not in self.selection:
+                self.selection.append(filename)
+        elif self.multipleselection:
+            fileview.selected = False
+            if filename in self.selection:
+                self.selection.remove(filename)
 
     def on_path_change(self, path):
         pass
@@ -307,6 +300,8 @@ class MTFileBrowser(MTPopup):
         `filters` : list, default to []
             List of regex to use for file filtering.
             Directories are not affected by filters.
+        `multipleselection` : bool, default to False
+            Allow multiple selection of files
 
     :Events:
         `on_select`
@@ -319,6 +314,7 @@ class MTFileBrowser(MTPopup):
         kwargs.setdefault('title', 'Open a file')
         kwargs.setdefault('size', (350, 300))
         kwargs.setdefault('filters', [])
+        kwargs.setdefault('multipleselection', False)
 
         super(MTFileBrowser, self).__init__(**kwargs)
 
@@ -332,7 +328,8 @@ class MTFileBrowser(MTPopup):
         self.add_widget(self.w_path)
 
         # File View
-        self.view = MTFileBrowserView(size=self.kbsize, filters=kwargs.get('filters'))
+        self.view = MTFileBrowserView(size=self.kbsize, filters=kwargs.get('filters'),
+                multipleselection=kwargs.get('multipleselection'))
         self.view.push_handlers(on_path_change=self._on_path_change)
         self.add_widget(self.view, True)
 

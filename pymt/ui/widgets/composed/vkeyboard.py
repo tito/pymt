@@ -252,7 +252,7 @@ class MTVKeyboard(MTScatterWidget):
         for layout in MTVKeyboard.available_layout:
             item = MTKineticItem(label=layout.TITLE + ' - ' + layout.DESCRIPTION,
                     style={'font-size':14}, size=(self.width - mleft - mright, 40))
-            self._layout_widget.push_handlers(on_press=curry(self.on_layout_change, layout))
+            item.push_handlers(on_press=curry(self.on_layout_change, layout))
             self._layout_widget.add_widget(item)
         self.add_widget(self._layout_widget)
 

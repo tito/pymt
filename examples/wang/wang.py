@@ -255,6 +255,9 @@ class MenuItem(MTButton):
         return Vector(*self.pos).distance(Vector(x, y)) < self.radius
 
     def draw(self):
+        w = self.get_parent_window()
+        w2 = w.width / 2.
+        self.x = w2
         set_color(*self.color)
         drawCircle(pos=self.pos, radius=self.radius)
         drawCircle(pos=self.pos, radius=self.radius, linewidth=5)
@@ -339,8 +342,10 @@ class Menu(MTWidget):
         if not self.do_show:
             return
         w = self.get_parent_window()
+        w2 = w.width / 3.
         w3 = w.width / 3.
         h2 = w.height / 2.
+        self.menu.pos = (w2, 0)
         drawLabel('Speed x%d' % self.game.speed, font_size=42, pos=(w3 - 100, h2 - 50))
         drawLabel('Balls %d' % len(self.game.balls), font_size=42, pos=(w3 - 100, h2))
 
@@ -430,21 +435,23 @@ class Wang(MTWidget):
             for b in touches[1:]:
                 if a == b:
                     continue
-                if Vector(a.pos).distance(b.pos) > 400:
+                apos = Vector(self.to_widget(*a.pos))
+                bpos = Vector(self.to_widget(*b.pos))
+                if Vector(apos).distance(bpos) > 400:
                     continue
                 aside, bside = 0, 0
-                if a.x > w2:
+                if apos.x > w2:
                     aside = 1
-                if b.x > w2:
+                if bpos.x > w2:
                     bside = 1
                 if aside != bside:
                     continue
-                if (a.pos, b.pos) in self.batsid:
+                if (apos, bpos) in self.batsid:
                     continue
-                if (b.pos, a.pos) in self.batsid:
+                if (bpos, apos) in self.batsid:
                     continue
-                self.bats.append(Bat(a=a.pos, b=b.pos))
-                self.batsid.append((a.pos, b.pos))
+                self.bats.append(Bat(a=apos, b=bpos))
+                self.batsid.append((apos, bpos))
 
         for ball in self.balls:
             ball.update(dt)

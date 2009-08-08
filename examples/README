@@ -13,22 +13,35 @@ If you want to play fast, just run (it will launch desktop app.) :
 List of examples
 ----------------
 
+  * 3Ddrawing   - draw on a cow !
   * 3Dviewer	- rotate the head of a 3d monkey
   * bloop		- game with sound, simple and great !
+  * bubblebattle - game to fight against bubble
+  * bubblebomb  - another game with bubble
+  * camera      - show camera inside a scatter
   * desktop		- launch some example in inner window, rotate and move them !
-  * fitts		- demonstration of scatter widget
-  * flickthepic	- search photo in flickr, and show them onto wall
   * flowchart	- construct flow chart in multitouch !
+  * frigdeletter - letter on fridge
   * gestures	- a base to detect gesture
+  * inneranimation - example how to use inner animation
+  * kaswy       - example from kaswy
+  * mandelbrot  - show a mandelbrot fratal with glsl
   * paint		- paint on the wall
   * particles	- magical particles are showed under each touch
   * pictures	- pictures on wall, move, rotate...
+  * pyzzle		- a video pyzzle (avbin needed)
+  * sandbox     - lot of example not working yet
+  * scoller		- example to scroll icon + shadow
   * sinemixer	- using ounk+csound, modify sound with slider !
+  * stylus		- stylus exampel with dell xt2
   * svg			- svg pictures showed in scatter widget
+  * tictactoe	- tictactoe game
   * touchtracer - trace each touch path
   * untangle	- game with circle / line, try to untangle them :)
   * videoplayer - play video under pymt
   * vkeyboard	- demonstration of vkeyboard widget
+  * wang		- a mt pong !
+  * widgets		- lot examples of widgets
   * xmlgui		- demonstration of xml widget
 
 If you want to test example, you can :

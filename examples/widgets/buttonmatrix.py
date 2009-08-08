@@ -6,18 +6,18 @@ class HVMatrixButton(MTButton):
     def __init__(self, **kwargs):
         super(HVMatrixButton, self).__init__(**kwargs)
 
-    def on_press(self, touchID, x, y):
+    def on_press(self, *largs):
         self.parent.children_active.append(self)
 
-    def on_release(self, touchID, x, y):
+    def on_release(self, *largs):
         if self in self.parent.children_active:
             self.parent.children_active.remove(self)
 
     def draw(self):
         if self._state[0] == 'down':
-            set_color(*self.color_down)
+            set_color(*self.style.get('color-down'))
         else:
-            set_color(*self.bgcolor)
+            set_color(*self.style.get('bg-color'))
         drawRoundedRectangle(self.pos, self.size)
 
 class HVMatrix(MTWidget):

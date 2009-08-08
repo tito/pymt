@@ -64,7 +64,7 @@ class MTFormCheckbox(MTAbstractFormWidget):
 
     def on_touch_down(self, touch):
         if self.collide_point(touch.x, touch.y):
-            self.touch.id = touch.id
+            self.touchID = touch.id
             return True
 
     def on_touch_move(self, touch):
@@ -72,7 +72,7 @@ class MTFormCheckbox(MTAbstractFormWidget):
             return True
 
     def on_touch_up(self, touch):
-        if self.touch.id == touch.id and self.collide_point(touch.x, touch.y):
+        if self.touchID == touch.id and self.collide_point(touch.x, touch.y):
             self.checked = not self.checked
             self.dispatch_event('on_check', self.checked)
             return True

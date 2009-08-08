@@ -2,9 +2,10 @@ PyMT - A Multitouch UI Toolkit for Pyglet
 =========================================
 
 Website: http://pymt.txzone.net/
+Planet: http://pymt.txzone.net/planet/
 
 
-About 0.2
+About 0.3
 ---------
 
 This is beta, so keep in mind that it might not work as intended at all times.
@@ -98,16 +99,23 @@ Configuration
   # display number (use -1 for current display)
   display = <integer>
 
-  [tuio]
+  # opengl line smooth
+  line_smooth = (0|1)
 
-  # listening ip
-  host = <ip>
-
-  # listening port
-  port = <integer>
+  # opengl polygon smooth (1 can lead to artifac)
+  polygon_smooth = (0|1)
 
   # ignore list
   ignore = [(xmin, ymin, xmax, ymax), ...]
+
+  [input]
+
+  # example of input provider instance
+  yourid = providerid,parameters
+
+  # example for tuio provider
+  default = tuio,127.0.0.1:3333
+  mytable = tuio,192.168.0.1:3334
 
   [dump]
 
@@ -120,17 +128,19 @@ Configuration
   # format of dump image
   format = <jpeg|png>
 
+  [modules]
+
+  # modulename= to activate a module
+  # you can have a list of module with :
+  # python example.py -m list
+  # example:
+  closeapp=
+  feedback=
+
 
 
 Other python/MT resources
 -------------------------
-
-touchpy.googlecode.com
-^^^^^^^^^^^^^^^^^^^^^^
-
-Some of the code for pymt (Tuio2DCursor class and some parsing) is taken
-from touchpy. Touchpy provides a slightly different event model
-(I think it is agnostic as to what windowing libraries you want to use).
 
 pyglet.org
 ^^^^^^^^^^

@@ -377,8 +377,8 @@ def css_add_sheet(text):
         css_add_sheet(mycss)
 
     '''
-	global pymt_sheet
-	pymt_sheet.cssText += text
+    global pymt_sheet
+    pymt_sheet.cssText += text
 
 if __name__ == '__main__':
     from pymt import *

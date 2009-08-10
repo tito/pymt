@@ -24,7 +24,7 @@ except ImportError:
 from pymt.logger import pymt_logger
 
 
-if not os.path.basename(sys.argv[0]).startswith('sphinx'):
+if not os.path.basename(sys.argv[0]) in ('sphinx-build', 'autobuild.py'):
     tess = gluNewTess()
     gluTessNormal(tess, 0, 0, 1)
     gluTessProperty(tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO)

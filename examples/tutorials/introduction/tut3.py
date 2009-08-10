@@ -1,3 +1,9 @@
+'''
+============================
+Introduction to PyMT, part 3
+============================
+'''
+
 import glob
 from pymt import *
 

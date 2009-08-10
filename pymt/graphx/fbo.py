@@ -187,7 +187,7 @@ class SoftwareFbo(AbstractFbo):
         glPopAttrib()
 
 
-if os.path.basename(sys.argv[0]).startswith('sphinx'):
+if os.path.basename(sys.argv[0]) in ('sphinx-build', 'autostart.py'):
     # Bad hack for sphinx
     # He don't like when Fbo is announced in __all__,
     # and not defined in source

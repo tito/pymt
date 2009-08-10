@@ -1,3 +1,7 @@
+'''
+Touch: base for all touch objects
+'''
+
 __all__ = ['Touch']
 
 import pyglet
@@ -74,6 +78,26 @@ class Touch(object):
             self.dxpos, self.dypos = self.sx, self.sy
 
     def grab(self, class_instance, exclusive=False):
+        '''Grab a touch. You can grab a touch if you absolutly want to receive
+        on_touch_move() and on_touch_up(), even if the touch is not dispatched
+        by your parent ::
+
+        def on_touch_down(self, touch):
+            touch.grab(self)
+
+        def on_touch_move(self, touch):
+            if touch.grab_current == self:
+                # i receive my grabbed touch
+            else:
+                # it's a normal touch
+        
+        def on_touch_up(self, touch):
+            if touch.grab_current == self:
+                # i receive my grabbed touch, i must ungrab it !
+                touch.ungrab(self)
+            else:
+                # it's a normal touch
+        '''
         if self.grab_exclusive_class is not None:
             raise Exception('Cannot grab the touch, touch are exclusive')
         if exclusive:
@@ -81,6 +105,7 @@ class Touch(object):
         self.grab_list.append(class_instance)
 
     def ungrab(self, class_instance):
+        '''Ungrab a previous grabbed touch'''
         if self.grab_exclusive_class == class_instance:
             self.grab_exclusive_class = None
         if class_instance in self.grab_list:
@@ -113,9 +138,14 @@ class Touch(object):
         return str(self.__class__)
 
     # facility
-    pos = property(lambda self: (self.x, self.y))
-    dpos = property(lambda self: (self.dxpos, self.dypos))
-    opos = property(lambda self: (self.oxpos, self.oypos))
+    pos = property(lambda self: (self.x, self.y),
+            doc='''Return (self.x, self.y)''')
+    dpos = property(lambda self: (self.dxpos, self.dypos),
+            doc='''Return (self.dxpos, self.dypos)''')
+    opos = property(lambda self: (self.oxpos, self.oypos),
+            doc='''Return (self.oxpos, self.oypos)''')
+    spos = property(lambda self: (self.sx, self.sy),
+            doc='''Return (self.sx, self.sy)''')
 
     # compatibility bridge
     xpos = property(lambda self: self.x)

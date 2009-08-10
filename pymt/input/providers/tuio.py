@@ -1,3 +1,7 @@
+'''
+Tuio: TUIO input provider implementation
+'''
+
 __all__ = ['TuioTouchProvider']
 
 import osc
@@ -9,6 +13,36 @@ from ..shape import TouchShapeRect
 from ...logger import pymt_logger
 
 class TuioTouchProvider(TouchProvider):
+    '''Tuio provider listen to a socket, and handle part of OSC message
+
+        * /tuio/2Dcur
+        * /tuio/2Dobj
+
+    Tuio provider can be configured with the `[`input`]` configuration ::
+
+        [input]
+        # name = tuio,<ip>:<port>
+        multitouchtable = tuio,192.168.0.1:3333
+
+    You can easily handle new tuio path by extending the providers like this ::
+
+        # Create a class to handle the new touch type
+        class TuioNEWPATHTouch(Touch):
+            def __init__(self, id, args):
+                super(TuioNEWPATHTouch, self).__init__(id, args)
+
+            def depack(self, args):
+                # Write here the depack function of args.
+                # for a simple x, y, value, you can do this :
+                if len(args) == 2:
+                    self.sx, self.sy = args
+                    self.profile = 'xy'
+                self.sy = 1 - self.sy
+                super(TuioNEWPATHTouch, self).depack(args)
+
+        # Register it to tuio touch provider
+        TuioTouchProvider.register('/tuio/NEWPATH', TuioNEWPATHTouch)
+    '''
 
     __handlers__ = {}
 
@@ -35,35 +69,36 @@ class TuioTouchProvider(TouchProvider):
 
     @staticmethod
     def register(oscpath, classname):
+        '''Register a new path to handle in tuio provider'''
         TuioTouchProvider.__handlers__[oscpath] = classname
 
     @staticmethod
     def unregister(oscpath, classname):
+        '''Unregister a new path to handle in tuio provider'''
         if oscpath in TuioTouchProvider.__handlers__:
             del TuioTouchProvider.__handlers__[oscpath]
 
     @staticmethod
     def create(oscpath, **kwargs):
+        '''Create a touch from a tuio path'''
         if oscpath not in TuioTouchProvider.__handlers__:
             raise Exception('Unknown %s touch path' % oscpath)
         return TuioTouchProvider.__handlers__[oscpath](**kwargs)
 
     def start(self):
+        '''Start the tuio provider'''
         osc.init()
         self.oscid = osc.listen(self.ip, self.port)
         for oscpath in TuioTouchProvider.__handlers__:
             self.touches[oscpath] = {}
-            osc.bind(self.osc_tuio_cb, oscpath)
+            osc.bind(self._osc_tuio_cb, oscpath)
 
     def stop(self):
+        '''Stop the tuio provider'''
         osc.dontListen(self.oscid)
 
-    def osc_tuio_cb(self, *incoming):
-        message = incoming[0]
-        oscpath, types, args = message[0], message[1], message[2:]
-        self.tuio_event_q.appendleft([oscpath, args, types])
-
     def update(self, dispatch_fn):
+        '''Update the tuio provider (pop event from the queue)'''
         # read the Queue with event
         try:
             while True:
@@ -71,6 +106,11 @@ class TuioTouchProvider(TouchProvider):
                 self._update(dispatch_fn, value)
         except IndexError:
             return
+
+    def _osc_tuio_cb(self, *incoming):
+        message = incoming[0]
+        oscpath, types, args = message[0], message[1], message[2:]
+        self.tuio_event_q.appendleft([oscpath, args, types])
 
     def _update(self, dispatch_fn, value):
         oscpath, args, types = value
@@ -110,6 +150,12 @@ class TuioTouchProvider(TouchProvider):
                 del self.touches[oscpath][touch.id]
 
 class Tuio2dCurTouch(Touch):
+    '''A 2dCur tuio touch.  Multiple profiles are available:
+
+        * xy
+        * xyXYm
+        * xyXYmh
+    '''
     def __init__(self, id, args):
         super(Tuio2dCurTouch, self).__init__(id, args)
 
@@ -132,6 +178,12 @@ class Tuio2dCurTouch(Touch):
 
 
 class Tuio2dObjTouch(Touch):
+    '''A 2dObj tuio touch.  Multiple profiles are available:
+
+        * xy
+        * ixyaXYAmr
+        * ixyaXYAmrh
+    '''
     def __init__(self, id, args):
         super(Tuio2dObjTouch, self).__init__(id, args)
 

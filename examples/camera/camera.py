@@ -13,6 +13,12 @@ try:
 except:
     print "No gstreamer available!"
 
+try:
+    from VideoCapture import Device
+    import Image
+except:
+    pymt_logger.warning("No VideoCapture or PIL library found!")
+
 
 
 
@@ -226,6 +232,29 @@ class MTGstCamera(MTCameraBase):
 
         self.buffer = self.frame.data
         self.copy_buffer_to_gpu()
+
+class MTVideoCaptureCamera(MTCameraBase):
+    def init_camera(self):
+        if not self.capture_device:
+            self.capture_device = Device()
+            #self.capture_device.setResolution(self.resolution[0], self.resolution[1])
+
+        self.frame_texture  = Texture.create(*self.resolution)
+        self.frame_texture.tex_coords = (1,1,0,  0,1,0,  0,0,0, 1,0,0)
+
+    def capture_frame(self):
+        try:
+            self.frame  = self.capture_device.getImage()
+
+            #pymt_logger.info("Format:" + )
+            self.format = GL_RGB
+
+            self.buffer = self.frame.tostring();
+            self.copy_buffer_to_gpu()
+
+        except Exception, e:
+            pymt_logger.exception("Couldn't get Image from Camera!"+ str(e))     
+
 
 
 

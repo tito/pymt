@@ -1,5 +1,5 @@
 '''
-Speech Bubble : a little speech bubble !
+Speech Bubble: a little speech bubble !
 '''
 
 from __future__ import with_statement

@@ -1,4 +1,6 @@
-import os, sys
+import os
+import sys
+import re
 import pymt
 
 
@@ -82,6 +84,7 @@ for package in packages:
 
 	writefile('api-%s.rst' % package, t)
 
+
 # Create index for all module
 m = modules.keys()
 m.sort()
@@ -97,6 +100,47 @@ for module in m:
 		summary = 'NO DOCUMENTATION (module %s)' % module
 	t = template.replace('$SUMMARY', summary).replace('$PACKAGE', module)
 	writefile('api-%s.rst' % module, t)
+
+
+# Extract doc from available tutorials
+tuts_base_dir = os.path.join(os.path.dirname(__file__), '..', 'examples', 'tutorials')
+tuts_files = []
+for tutid in os.listdir(tuts_base_dir):
+	tutdir = os.path.join(tuts_base_dir, tutid)
+	if not os.path.isdir(tutdir):
+		continue
+
+	# Got a tutorial
+	for filename in os.listdir(tutdir):
+		if filename[-3:] != '.py':
+			continue
+		tutfilename = filename[:-3]
+		tuts_files.append((tutid, tutfilename))
+
+		# Extract header
+		data = file(os.path.join(tutdir, filename), 'r').read()
+		result = re.search("^('''|\"\"\")(.*)('''|\"\"\")", data, re.S)
+		doc = ''
+		if result is None:
+			doc = 'No documentation available for %s : %s' % (tutid, filename)
+		else:
+			doc = result.groups()[1].strip("\n")
+
+		writefile('tutorial-%s-%s.rst' % (tutid, tutfilename), doc)
+
+# Write it :)
+tut_index = \
+'''===================================================================
+API documentation for PyMT
+===================================================================
+
+.. toctree::
+
+'''
+for tutid, tutfilename in tuts_files:
+	tut_index += "    tutorial-%s-%s.rst\n" % (tutid, tutfilename)
+
+writefile('tutorial-index.rst', tut_index)
 
 
 # Generation finished

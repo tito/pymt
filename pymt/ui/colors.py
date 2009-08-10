@@ -371,6 +371,12 @@ if os.path.exists(css_filename):
         pymt_sheet.add(rule)
 
 def css_add_sheet(text):
+    '''Add a css text to use ::
+
+        mycss = '#buttonA { bg-color: rgba(255, 127, 0, 127); }'
+        css_add_sheet(mycss)
+
+    '''
 	global pymt_sheet
 	pymt_sheet.cssText += text
 

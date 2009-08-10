@@ -11,6 +11,12 @@ __all__ = ['parse_color', 'parse_int', 'parse_float',
 import re
 
 def parse_color(text):
+    '''Parse a text color to a pymt color. Format supported are :
+        * rgb(r, g, b)
+        * rgba(r, g, b, a)
+        * #aaa
+        * #rrggbb
+    '''
     value = (1, 1, 1, 1)
     if text.startswith('rgb'):
         res = re.match('rgba?\((.*)\)', text)
@@ -27,6 +33,7 @@ def parse_color(text):
     return value
 
 def parse_bool(text):
+    '''Parse a string to a boolean'''
     if text.lower() in ('true', '1'):
         return True
     elif text.lower() in ('false', '0'):
@@ -34,11 +41,18 @@ def parse_bool(text):
     raise Exception('Invalid boolean: %s' % text)
 
 def parse_string(text):
+    '''Parse a string to a string (remove quotes and double-quotes)'''
     if len(text) >= 2 and text[0] in ('"', "'") and text[-1] in ('"', "'"):
         text = text[1:-1]
     return text.strip()
 
 def parse_int2(text):
+    '''Parse a string to a integer with exactly 2 number ::
+
+        >>> print parse_int2("12 54")
+        12, 54
+
+    '''
     texts = [x for x in text.split(' ') if x.strip() != '']
     value = map(lambda x: parse_int(x), texts)
     if len(value) < 1:
@@ -50,6 +64,12 @@ def parse_int2(text):
     return value
 
 def parse_float4(text):
+    '''Parse a string to a float with exactly 4 floats ::
+
+        >>> parse_float4('54 87. 35 0')
+        54, 87., 35, 0
+
+    '''
     texts = [x for x in text.split(' ') if x.strip() != '']
     value = map(lambda x: parse_float(x), texts)
     if len(value) < 1:

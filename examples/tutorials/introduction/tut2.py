@@ -11,7 +11,7 @@ Random Number Generator !
 Later in the tutorial it will get a little more advanced, and allow you
 to set a bound! Start by firing up your text editor and opening up tut1.py
 in the tutorials folder in the examples folder of the subversion
-tree(trunk/examples/tutorials/tut2.py). If you don't have pymt checked out yet,
+tree (trunk/examples/tutorials/tut2.py). If you don't have pymt checked out yet,
 or its not installed, see Tutorial Part 1 by Sharath.
 
 It should look like this ::
@@ -105,9 +105,9 @@ of Python, and will not be covered here in very much detai.
 
 The second line is a function definition for a function called on_press. If you
 remember back to the MTButton line I mentioned that MTButton emits the
-"on_press" event when it is pressed. What these two lines essentially mean is:
-    "When b puts out an event, see if it is this function, and if it is, call
-    this function".
+"on_press" event when it is pressed. What these two lines essentially mean is :
+"When b puts out an event, see if it is this function, and if it is, call
+this function".
 
 When MTButton emits the "on_press" signal it passes the touch ID and coordinates
 of the location. The coordinates are very simple, just integer pixel locations.

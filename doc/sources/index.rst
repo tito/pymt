@@ -51,7 +51,7 @@ API Documentation of PyMT
 
 .. toctree::
 
-   api-index.rst
+    api-index.rst
 
 Indices and tables
 ==================

@@ -11,8 +11,8 @@ from ..factory import MTWidgetFactory
 from widget import MTWidget
 
 class MTLabel(MTWidget):
-    '''A simple label.
-    ::
+    '''A simple label ::
+
         label = MTLabel(label='Plop world')
 
     :Parameters:

@@ -1,5 +1,5 @@
 '''
-Flippable Widget: This is wrapper widget using which you can make a widget have two sides and you can flip between the sides
+Flippable Widget: A widget with 2 sides who can flip between the sides.
 '''
 
 from __future__ import with_statement

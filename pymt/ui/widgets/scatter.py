@@ -15,7 +15,8 @@ from svg import MTSvg
 from widget import MTWidget
 
 class MTScatterWidget(MTWidget):
-    '''MTScatterWidget is a scatter widget based on MTWidget
+    '''MTScatterWidget is a scatter widget based on MTWidget.
+    You can scale, rotate and move with one and two finger.
 
     :Parameters:
         `rotation` : float, default to 0.0
@@ -98,6 +99,7 @@ class MTScatterWidget(MTWidget):
 
     def add_widget(self, w, side='front', front=True):
         '''Add a widget to a side of scatter.
+
         :Parameters:
             `side` : str, default is 'front'
                 Side to be added. Can be one of 'front', 'back' or '' (mean both.)
@@ -139,8 +141,8 @@ class MTScatterWidget(MTWidget):
         drawRectangle((0,0), (self.width, self.height))
 
     def flip_children(self):
-        '''Flips the children
-        this has to be called exactly half way through the animation
+        '''Flips the children.
+        This has to be called exactly half way through the animation
         so it looks like there are actually two sides'''
         if self.side == 'front':
             self.side = 'back'
@@ -301,9 +303,11 @@ class MTScatterWidget(MTWidget):
         calculate scale factor with opengl operation. Precision is not the
         same between them.
 
-        Exemple for a scale factor :
+        Exemple for a scale factor ::
+
             OpenGL version:     0.50279381376
             Calculated version: 0.502793060813
+
         '''
         if use_gl:
             p1_trans = matrix_mult(self.transform_mat, (1,1,0,1))

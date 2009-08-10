@@ -193,19 +193,20 @@ class TouchWindow(pyglet.window.Window):
         pass
 
 def pymt_usage():
-    '''PyMT Usage: %s [OPTION...]
+    '''PyMT Usage: %s [OPTION...] ::
 
-    -h, --help                  prints this mesage
-    -f, --fullscreen            force run in fullscreen
-    -w, --windowed              force run in window
-    -p, --provider id:provider[,options] add a provider (eg: ccvtable1:tuio,192.168.0.1:3333)
-    -F, --fps                   show fps in window
-    -m mod, --module=mod        activate a module (use "list" to get available module)
-    -s, --save                  save current PyMT configuration
-    --size=640x480              size of window
-    --dump-frame                dump each frame in file
-    --dump-prefix               specify a prefix for each frame file
-    --dump-format               specify a format for dump
+        -h, --help                  prints this mesage
+        -f, --fullscreen            force run in fullscreen
+        -w, --windowed              force run in window
+        -p, --provider id:provider[,options] add a provider (eg: ccvtable1:tuio,192.168.0.1:3333)
+        -F, --fps                   show fps in window
+        -m mod, --module=mod        activate a module (use "list" to get available module)
+        -s, --save                  save current PyMT configuration
+        --size=640x480              size of window
+        --dump-frame                dump each frame in file
+        --dump-prefix               specify a prefix for each frame file
+        --dump-format               specify a format for dump
+
     '''
     print pymt_usage.__doc__ % (os.path.basename(sys.argv[0]))
 

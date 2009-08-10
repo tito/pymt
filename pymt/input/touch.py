@@ -82,21 +82,22 @@ class Touch(object):
         on_touch_move() and on_touch_up(), even if the touch is not dispatched
         by your parent ::
 
-        def on_touch_down(self, touch):
-            touch.grab(self)
+            def on_touch_down(self, touch):
+                touch.grab(self)
 
-        def on_touch_move(self, touch):
-            if touch.grab_current == self:
-                # i receive my grabbed touch
-            else:
-                # it's a normal touch
-        
-        def on_touch_up(self, touch):
-            if touch.grab_current == self:
-                # i receive my grabbed touch, i must ungrab it !
-                touch.ungrab(self)
-            else:
-                # it's a normal touch
+            def on_touch_move(self, touch):
+                if touch.grab_current == self:
+                    # i receive my grabbed touch
+                else:
+                    # it's a normal touch
+            
+            def on_touch_up(self, touch):
+                if touch.grab_current == self:
+                    # i receive my grabbed touch, i must ungrab it !
+                    touch.ungrab(self)
+                else:
+                    # it's a normal touch
+
         '''
         if self.grab_exclusive_class is not None:
             raise Exception('Cannot grab the touch, touch are exclusive')

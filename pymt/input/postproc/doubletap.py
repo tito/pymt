@@ -20,9 +20,9 @@ class InputPostprocDoubleTap(object):
     InputPostProcDoubleTap is a post-processor to check if a touch is a double tap or not.
     Double tap can be configurd in the PyMT config file ::
 
-    [pymt]
-        double_tap_time = 250
-        double_tap_distance = 20
+        [pymt]
+            double_tap_time = 250
+            double_tap_distance = 20
 
     Distance parameter is in 0-1000, and time is in millisecond.
     '''

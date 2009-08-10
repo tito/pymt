@@ -43,7 +43,9 @@ class MTKinetic(MTWidget):
         `friction` : float, defaults to 10
             The Pseudo-friction of the pseudo-kinetic scrolling.
             Formula for friction is ::
+
                 acceleration = 1 + friction * frame_delta_time
+
         `velstop` : float, default to 1.0
             The distance of velocity vector to stop animation
     '''

@@ -1,3 +1,11 @@
+'''
+=============================
+Introduction tutorial, part 2
+=============================
+
+Copy/paste the tutorial here.
+
+'''
 import random
 from pymt import *
 

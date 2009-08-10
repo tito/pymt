@@ -1,12 +1,15 @@
 '''
-============================
-Introduction to PyMT, part 2
-============================
+===============================================
+Introduction part 2 : a simple number generator
+===============================================
 
 Well, its tutorial time again ! In this tutorial I will guide you through
 creating a _very_ simple app that will display a button and some text.
 Every time you click the button the text will change. Its a Multi-Touch
 Random Number Generator !
+
+Start from a complete example
+-----------------------------
 
 Later in the tutorial it will get a little more advanced, and allow you
 to set a bound! Start by firing up your text editor and opening up tut1.py
@@ -37,6 +40,9 @@ If you run this app, you will notice that there is a button to the left that
 says "Hello, World!', and a label to the right that has a # symbol in it. If you
 tap (or click if your on a computer), the # changes to a random number between 0
 and 100.
+
+Detail line by line of the content
+----------------------------------
 
 Lets go through this line by line ::
 

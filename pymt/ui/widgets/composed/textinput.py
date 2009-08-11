@@ -96,8 +96,9 @@ class MTTextInput(MTButton):
     def draw(self):
         if self.is_active_input:
             set_color(*self.style.get('bg-color'))
-            drawLine([self.center[0], self.center[1],
-                      self.keyboard.center[0], self.keyboard.center[1]])
+            kx, ky = self.keyboard.to_window(*self.keyboard.center)
+            kx, ky = self.to_widget(kx, ky)
+            drawLine([self.center[0], self.center[1], kx, ky])
         if self.state[0] == 'down':
             set_color(0.5,0.5,0.5,0.5)
             drawCSSRectangle((self.x,self.y) , (self.width, self.height), style=self.style)

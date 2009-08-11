@@ -76,7 +76,7 @@ class MTInnerWindow(MTScatterWidget):
     '''
     def __init__(self, **kargs):
         super(MTInnerWindow, self).__init__(**kargs)
-        self.container = MTInnerWindowContainer(pos=(0,0), size=self.size, style={'bg-color':(0,0,0)})
+        self.container = MTInnerWindowContainer(pos=(0,0), size=self.size)
         super(MTInnerWindow, self).add_widget(self.container)
         self.control_scale = 0.75
         self.setup_controls()

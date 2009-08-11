@@ -202,6 +202,10 @@ innerwindow {
     border-width: 30;
 }
 
+innerwindowcontainer {
+    bg-color: rgba(0, 0, 0);
+}
+
 vectorslider,
 objectdisplay {
     vector-color: rgb(255, 255, 255);

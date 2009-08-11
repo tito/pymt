@@ -12,14 +12,17 @@ class TouchInfos(MTWidget):
     def text_info(self, touch):
         infos = []
         infos.append('ID: %s' % (str(touch.blobID)))
-        infos.append('Pos: (%d, %d)' % (touch.xpos, touch.ypos))
+        infos.append('Raw pos: (%f, %f)' % (touch.sx, touch.sy))
+        infos.append('Scr Pos: (%d, %d)' % (touch.xpos, touch.ypos))
         if hasattr(touch, 'xmot'):
             infos.append('Mot: (%.2f, %.2f)' % (touch.xmot, touch.ymot))
         infos.append('Double Tap: %s' % (touch.is_double_tap))
         return "\n".join(infos)
 
     def on_touch_down(self, touch):
-        self.bubbles[touch.id] = MTSpeechBubble(pos=(touch.x, touch.y), size=(120, 100))
+        self.bubbles[touch.id] = MTSpeechBubble(pos=(touch.x, touch.y),
+                                                size=(200, 100),
+                                                color=(0, 0, 0, 1))
         self.bubbles[touch.id].label = self.text_info(touch)
 
     def on_touch_move(self, touch):

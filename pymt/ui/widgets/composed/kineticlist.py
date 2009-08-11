@@ -439,7 +439,7 @@ class MTKineticList(MTStencilContainer):
             else:
                 self.xoffset = boundary(self.xoffset, 0, -size + self.width)
                 self._scrollbar_size = self.width / size
-                self._scrollbar_index = -self.yoffset / size
+                self._scrollbar_index = -self.xoffset / size
 
     def process_kinetic(self):
         '''Apply kinetic movement to all the items'''

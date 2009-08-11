@@ -365,7 +365,10 @@ class MTScatterWidget(MTWidget):
 
             # dispatch event only if it change
             if container_width != self.__width or container_height != self.__height:
-                self.dispatch_event('on_resize', container_width, container_height)
+                # Not entirely sure about this. We must generate one resize
+                # event for us, but not for children, since content is not
+                # resized...
+                #self.dispatch_event('on_resize', container_width, container_height)
                 self.__width = container_width
                 self.__height = container_height
 

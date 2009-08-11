@@ -301,12 +301,16 @@ class MTKineticList(MTStencilContainer):
 
         # add little padding for good looking.
         y += padding_y
+        ny = y
 
         # recalculate position for each children
         for child in self.children:
 
             # each row, calculate the height, advance y and reset x
             if index % limit == 0:
+
+                # set y axis to the previous calculated position
+                y = ny
 
                 # get children in the row
                 maxrange = min(t + limit, len(self.children))
@@ -318,9 +322,8 @@ class MTKineticList(MTStencilContainer):
                 else:
                     h = 0
 
-                # in the very first loop, don't add padding.
-                if index > 0:
-                    y += padding_y + h
+                # prepare the y axis for next loop
+                ny = y + h + padding_y
 
                 # reset x for this row.
                 x = sx + w2 + xoffset - \

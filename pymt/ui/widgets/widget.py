@@ -93,6 +93,7 @@ class MTWidget(pyglet.event.EventDispatcher):
             Fired when a blob disappear
     '''
     visible_events = [
+        'on_update',
         'on_draw',
         'on_mouse_press',
         'on_mouse_drag',
@@ -411,6 +412,10 @@ class MTWidget(pyglet.event.EventDispatcher):
     def show(self):
         '''Show the widget'''
         self.visible = True
+
+    def on_update(self):
+        for w in self.children:
+            w.dispatch_event('on_update')
 
     def on_draw(self):
         if not self.visible:

@@ -23,8 +23,10 @@ class CloseApp(MTWidget):
     def do_close(self):
         stopTouchApp()
 
-    def draw(self):
+    def on_update(self):
         self.bring_to_front()
+
+    def draw(self):
         t = clock.get_default().time()
         touches = getAvailableTouchs()
 

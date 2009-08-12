@@ -16,7 +16,7 @@ for i in range (20):
         anim = b.add_animation('shrink','y', y, 1.0/60, .2)
         anim = b.add_animation('shrink','scale', 0.24, 1.0/60, .2)
 
-        def click(w, touchID, x, y):
+        def click(w, touch):
             if w.status == 'zoomed':
                 w.start_animations('shrink')
                 w.status = 'not_zoomed'

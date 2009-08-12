@@ -1,16 +1,20 @@
-from pymt import *
+# Just a test with stacking stencil.
+# InnerWindow use stencil for clipping content draw
+# And Kinetic too.
 
-def print_me(*largs):
-	print 'CLICKED ON', largs[0].label
+# Scatter plane is here to test that stacking with different matrix
+# transformation will work too.
+
+from pymt import *
 
 mms = MTWindow()
 w = MTInnerWindow(size=(600, 600))
 mms.add_widget(w)
 
-# uncomment if you want a horizontal kinetic list
-#k = MTKineticList(pos=(20, 20), size=(400, 400), h_limit=2, w_limit=0, do_x=True, do_y=False)
+p = MTScatterPlane()
 k = MTKineticList(pos=(20, 20), size=(400, 400), w_limit=3)
 p.add_widget(k)
+w.add_widget(p)
 
 d = range(0, 10)
 for x in d:

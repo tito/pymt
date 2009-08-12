@@ -35,6 +35,13 @@ class GlDisplayList:
         self.do_compile = True
 
     def __enter__(self):
+        self.start()
+
+    def __exit__(self, type, value, traceback):
+        self.stop()
+
+    def start(self):
+        '''Start recording GL operation'''
         global gl_displaylist_generate
         if gl_displaylist_generate:
             self.do_compile = False
@@ -43,7 +50,8 @@ class GlDisplayList:
             self.do_compile = True
             glNewList(self.dl, GL_COMPILE)
 
-    def __exit__(self, type, value, traceback):
+    def stop(self):
+        '''Stop recording GL operation'''
         global gl_displaylist_generate
         if self.do_compile:
             glEndList()
@@ -51,12 +59,15 @@ class GlDisplayList:
             gl_displaylist_generate = False
 
     def clear(self):
+        '''Clear compiled flag'''
         self.compiled = False
 
     def is_compiled(self):
+        '''Return compiled flag'''
         return self.compiled
 
     def draw(self):
+        '''Call the list only if it's compiled'''
         if not self.compiled:
             return
         glCallList(self.dl)

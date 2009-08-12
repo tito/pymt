@@ -227,7 +227,6 @@ class MTInnerWindow(MTScatterWidget):
                 drawRectangle((0, 0), size=self.size)
                 stencilUse()
                 self.container.dispatch_event('on_draw')
-        super(MTInnerWindow, self).on_draw()
 
     def on_move(self, x, y):
         # no move on children

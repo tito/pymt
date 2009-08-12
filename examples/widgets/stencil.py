@@ -19,7 +19,6 @@ w.add_widget(p)
 d = range(0, 10)
 for x in d:
     item = MTKineticItem(label=str(x))
-    item.push_handlers(on_press=curry(print_me, item))
     k.add_widget(item)
 
 runTouchApp()

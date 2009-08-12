@@ -35,8 +35,10 @@ class TouchInfos(MTWidget):
         if touch.id in self.bubbles:
             del self.bubbles[touch.id]
 
-    def draw(self):
+    def on_update(self):
         self.bring_to_front()
+
+    def draw(self):
         for bubble in self.bubbles:
             self.bubbles[bubble].dispatch_event('on_draw')
 

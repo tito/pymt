@@ -10,7 +10,7 @@ mms.add_widget(w)
 # uncomment if you want a horizontal kinetic list
 #k = MTKineticList(pos=(20, 20), size=(400, 400), h_limit=2, w_limit=0, do_x=True, do_y=False)
 k = MTKineticList(pos=(20, 20), size=(400, 400), w_limit=3)
-p.add_widget(k)
+w.add_widget(k)
 
 d = range(0, 10)
 for x in d:

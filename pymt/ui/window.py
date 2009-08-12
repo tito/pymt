@@ -265,6 +265,11 @@ class MTWindow(TouchWindow):
 
     def on_draw(self):
         '''Clear window, and dispatch event in root widget + simulator'''
+        # Update children first
+        for w in self.children:
+            w.dispatch_event('on_update')
+
+        # Draw
         self.draw()
         for w in self.children:
             w.dispatch_event('on_draw')

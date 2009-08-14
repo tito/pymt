@@ -130,6 +130,7 @@ class MTWindow(TouchWindow):
                 config.depth_size = 16
                 config.double_buffer = True
                 config.stencil_size = 1
+                config.alpha_size = 8
             super(MTWindow, self).__init__(config=config, **params)
         except:
             super(MTWindow, self).__init__(**params)

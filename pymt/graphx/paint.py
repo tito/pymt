@@ -82,7 +82,7 @@ def set_texture(texture, target=None):
         target = get_texture_target(texture)
     glBindTexture(target, get_texture_id(texture))
 
-def paintLine(points, numsteps=None):
+def paintLine(points, numsteps=None, **kwargs):
     '''Paint a line with current brush
     ::
 
@@ -94,9 +94,12 @@ def paintLine(points, numsteps=None):
     if not _brush_texture:
         pymt_logger.warning('No brush set to paint line, abort')
         return
+    kwargs.setdefault('sfactor', GL_SRC_ALPHA)
+    kwargs.setdefault('dfactor', GL_ONE_MINUS_SRC_ALPHA)
     p1 = (points[0], points[1])
     p2 = (points[2], points[3])
-    with DO(gx_blending, gx_enable(GL_POINT_SPRITE_ARB), gx_enable(_brush_texture.target)):
+    blending = GlBlending(sfactor=kwargs.get('sfactor'), dfactor=kwargs.get('dfactor'))
+    with DO(blending, gx_enable(GL_POINT_SPRITE_ARB), gx_enable(_brush_texture.target)):
         set_texture(_brush_texture.id, target=_brush_texture.target)
         glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE)
         glPointSize(_brush_size)
@@ -109,4 +112,3 @@ def paintLine(points, numsteps=None):
             pointList[i * 2]   = p1[0] + dx* (float(i)/numsteps)
             pointList[i * 2 + 1] = p1[1] + dy* (float(i)/numsteps)
         draw(numsteps, GL_POINTS, ('v2f', pointList))
-

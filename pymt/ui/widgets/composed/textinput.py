@@ -2,6 +2,8 @@
 TextInput: a text input who instance vkeyboard if needed
 '''
 
+__all__ = ['MTTextInput']
+
 from ....graphx import set_color, drawCSSRectangle, drawLine, GlDisplayList
 from ..button import MTButton
 from ...factory import MTWidgetFactory
@@ -127,4 +129,4 @@ class MTTextInput(MTButton):
             self.keyboard.text = self.keyboard.text + text
 
 # Register all base widgets
-MTWidgetFactory.register('MTTextInput', MTVKeyboard)
+MTWidgetFactory.register('MTTextInput', MTTextInput)

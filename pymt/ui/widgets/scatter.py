@@ -36,6 +36,8 @@ class MTScatterWidget(MTWidget):
         `scale_min` : float, default to 0.01
             Minimum scale allowed. Don't set to 0, or you can have error with singular matrix.
             The 0.01 mean you can de-zoom up to 10000% (1/0.01*100).
+        `scale_max` : float, default to None
+            Maximum scale allowed.
 
     :Styles:
         `bg-color` : color
@@ -50,11 +52,13 @@ class MTScatterWidget(MTWidget):
         kwargs.setdefault('do_translation', True)
         kwargs.setdefault('auto_bring_to_front', True)
         kwargs.setdefault('scale_min', 0.01)
+        kwargs.setdefault('scale_max', None)
 
         super(MTScatterWidget, self).__init__(**kwargs)
 
         self.auto_bring_to_front = kwargs.get('auto_bring_to_front')
         self.scale_min      = kwargs.get('scale_min')
+        self.scale_max      = kwargs.get('scale_max')
         self.do_scale       = kwargs.get('do_scale')
         self.do_rotation    = kwargs.get('do_rotation')
         self.do_translation = kwargs.get('do_translation')
@@ -129,6 +133,8 @@ class MTScatterWidget(MTWidget):
     def init_transform(self, pos, angle, scale):
         if scale < self.scale_min:
             scale = self.scale_min
+        if self.scale_max is not None and scale > self.scale_max:
+            scale = self.scale_max
         self.scale = scale
         with gx_matrix_identity:
             glTranslated(pos[0], pos[1], 0)
@@ -216,7 +222,9 @@ class MTScatterWidget(MTWidget):
     def apply_angle_scale_trans(self, angle, scale, trans, point):
         old_scale = self.scale
         self.scale *= scale
-        if self.scale < self.scale_min:
+        if self.scale < self.scale_min or \
+           self.scale_max is not None and self.scale > self.scale_max:
+            scale = self.scale_max
             self.scale = old_scale
             scale = 1
         with gx_matrix_identity:

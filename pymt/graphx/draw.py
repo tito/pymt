@@ -54,7 +54,7 @@ def drawLabel(label, pos=(0,0), **kwargs):
     return temp_label.content_width
 
 def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
-                         linewidth=1.5, precision=0.5, style=GL_POLYGON):
+                         linewidth=None, precision=0.5, style=GL_POLYGON):
     '''Draw a rounded rectangle
 
     :Parameters:
@@ -83,6 +83,10 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
 
     if color:
         set_color(*color)
+
+    if linewidth is not None:
+        glPushAttrib(GL_LINE_BIT)
+        glLineWidth(linewidth)
 
     with gx_begin(style):
 
@@ -121,6 +125,10 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
             sy = y + radius + math.sin(t) * radius
             glVertex2f (sx, sy)
             t += precision
+
+    if linewidth is not None:
+        glPopAttrib()
+
 
 def drawCircle(pos=(0,0), radius=1.0, linewidth=None):
     '''Draw a simple circle

@@ -256,6 +256,8 @@ class MTWindow(TouchWindow):
 
     def remove_widget(self, w):
         '''Remove a widget from window'''
+        if not w in self.children:
+            return
         self.children.remove(w)
         w.parent = None
 

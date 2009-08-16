@@ -272,6 +272,8 @@ class MTFileBrowserView(MTKineticList):
                     child.selected = False
             fileview.selected = True
             if filename not in self.selection:
+                if not self.multipleselection:
+                    self.selection = []
                 self.selection.append(filename)
         elif self.multipleselection:
             fileview.selected = False
@@ -398,6 +400,7 @@ class MTFileBrowser(MTPopup):
 
     def on_submit(self):
         self.dispatch_event('on_select', self.view.selection)
+        self.reset_selection()
         if self.exit_on_submit:
             self.close()
         else:
@@ -405,7 +408,11 @@ class MTFileBrowser(MTPopup):
 
     def on_select(self, filelist):
         pass
-
+    
+    def reset_selection(self):
+        self.view.selection = []
+        self.view.update()
+        
 # Register Default File types with their icons
 FileTypeFactory.register(['jpg','jpeg'],
     os.path.join(icons_filetype_dir, 'image-jpeg.png'))

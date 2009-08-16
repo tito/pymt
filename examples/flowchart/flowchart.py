@@ -1,124 +1,151 @@
-#!/usr/bin/env python
-
-# PYMT Plugin integration
-IS_PYMT_PLUGIN = True
-PLUGIN_TITLE = 'Flowchart'
-PLUGIN_AUTHOR = 'Thomas Hansen'
-PLUGIN_EMAIL = 'thomas.hansen@gmail.com'
-
-
 from pymt import *
-from pyglet.gl import *
+from pyglet.gl import GL_LINE_LOOP
 
-class SVGButton(MTButton):
+
+class FlowText(MTTextInput):
     def __init__(self, **kwargs):
-        kwargs.setdefault('filename', None)
-        super(SVGButton,self).__init__(**kwargs)
-        filename = kwargs.get('filename')
-        self.svg = MTSvg(filename=filename)
+        super(FlowText, self).__init__(**kwargs)
+        self.orig = (0, 0)
+
+    def on_press(self, touch):
+        self.orig = Vector(self.to_window(*touch.pos))
+
+    def on_release(self, touch):
+        final = Vector(self.to_window(*touch.pos))
+        if self.orig.distance(final) <= 4:
+            if not self.is_active_input:
+                self.parent.disable_all()
+            super(FlowText, self).on_press(touch)
+
+    def on_touch_down(self, touch):
+        super(FlowText, self).on_touch_down(touch)
+        return False
+
+
+class FlowElement(MTScatterWidget):
+    def __init__(self, **kwargs):
+        super(FlowElement, self).__init__(**kwargs)
+        self.editmode = True
+        self.label = FlowText(style={'font-size': self.height / 2.},
+                              keyboard=kwargs.get('keyboard'))
+        self.label.push_handlers(on_text_change=self._on_text_change)
+        self.add_widget(self.label)
+
+    def _on_text_change(self, text):
+        self.width = max(100, self.label.width)
+
+    def disable_all(self):
+        self.parent.disable_all()
+
+    def disable(self):
+        self.label.hide_keyboard()
+
+    def enable(self):
+        self.label.show_keyboard()
 
     def draw(self):
-        glPushMatrix()
-        glTranslatef(self.x, self.y, 0)
-        glScalef(self.width/self.svg.width, self.height/self.svg.height, 1)
-        self.svg.draw()
-        glPopMatrix()
+        '''
+        set_color(.509, .407, .403, .95)
+        drawRoundedRectangle(size=self.size)
+        set_color(.298, .184, .192, .95)
+        drawRoundedRectangle(size=self.size, linewidth=2, style=GL_LINE_LOOP)
+        '''
+
+        set_color(.435, .749, .996, .95)
+        drawRoundedRectangle(size=self.size)
+        set_color(.094, .572, .858, .95)
+        drawRoundedRectangle(size=self.size, linewidth=2, style=GL_LINE_LOOP)
+        # 24 146 219 (black)
+        # 111 191 254 (white)
 
 
-
-class FlowchartObject(MTScatterWidget):
+class FlowLink(MTWidget):
     def __init__(self, **kwargs):
-        super(FlowchartObject, self).__init__(**kwargs)
+        super(FlowLink, self).__init__(**kwargs)
+        self.node1 = kwargs.get('node1')
+        self.node2 = kwargs.get('node2')
 
-        self.svg = MTSvg(filename='../flowchart/box.svg')
-        self.size = (self.svg.width, self.svg.height)
-        self._hide_children = False
-        self.hidden_children = []
+    def draw(self):
+        ax, ay = self.to_widget(*self.to_window(*self.node1.pos))
+        bx, by = self.to_widget(*self.to_window(*self.node2.pos))
+        set_color(1, 1, 1)
+        drawLine((ax, ay, bx, by), width=8. * self.parent.get_scale_factor())
 
-        self.add_bttn = SVGButton( filename='transport-shuffle.svg', pos=(self.center[0]-15, -15), size=(30,30))
-        self.add_bttn.push_handlers(on_press=self.add_new_child)
-        self.add_widget(self.add_bttn)
 
-        self.hide_bttn = SVGButton(filename='minus.svg', pos=(0, self.height-20), size=(20,20))
-        self.hide_bttn.push_handlers(on_press=self.toggle_children)
-        self.add_widget(self.hide_bttn)
-        self.hide_bttn2 = SVGButton(filename='plus.svg', pos=(0, self.height-20), size=(20,20))
-        self.hide_bttn2.push_handlers(on_press=self.toggle_children)
+class FlowChart(MTScatterPlane):
+    def __init__(self, **kwargs):
+        kwargs.setdefault('do_rotation', False)
+        kwargs.setdefault('scale_min', 0.2)
+        kwargs.setdefault('scale_max', 1.0)
+        super(FlowChart, self).__init__(**kwargs)
+        self.keyboard = MTVKeyboard()
 
-        self.del_bttn = SVGButton(filename='power.svg', pos=(self.width-20, self.height-20), size=(20,20))
-        self.del_bttn.push_handlers(on_press=self.remove)
-        self.add_widget(self.del_bttn)
+    def create_node(self, x, y):
+        node = FlowElement(pos=(x, y), keyboard=self.keyboard)
+        self.add_widget(node, front=True)
+        return node
 
-    def hide_children(self):
-        self.hide_bttn.label = "+"
+    def create_link(self, node1, node2):
+        link = FlowLink(node1=node1, node2=node2)
+        self.add_widget(link, front=False)
+        return link
+
+    def find_node(self, x, y):
         for c in self.children:
-            if isinstance(c, FlowchartObject):
-                self.hidden_children.append(c)
-        for c in self.hidden_children:
-            self.remove_widget(c)
-        self._hide_children = True
+            if c.collide_point(x, y):
+                return c
 
-    def show_children(self):
-        self.hide_bttn.label = "-"
-        for c in self.hidden_children:
-                self.add_widget(c)
-        self.hidden_children = []
-        self._hide_children = False
+    def on_touch_down(self, touch):
+        x, y = self.to_local(*touch.pos)
+        if touch.is_double_tap:
+            node = self.find_node(x, y)
+            if node:
+                touch.grab(self)
+                link = self.create_link(node, touch)
+                touch.userdata['flow.link'] = link
+            else:
+                node = self.create_node(x - 50, y - 50)
+                self.disable_all()
+                node.enable()
+            return True
+        return super(FlowChart, self).on_touch_down(touch)
 
-    def toggle_children(self, touchID, x, y):
-        if self._hide_children:
-            self.show_children()
-            self.remove_widget(self.hide_bttn2)
-            self.add_widget(self.hide_bttn)
-        else:
-            self.hide_children()
-            self.remove_widget(self.hide_bttn)
-            self.add_widget(self.hide_bttn2)
-
-    def add_new_child(self, touchID, x,y):
-        child = FlowchartObject(translation=(x-20,y-20), scale = 0.5)
-        child.on_touch_down([], touchID, x,y)
-        self.add_widget(child)
-
-
-    def remove(self, touchID, x,y):
-        self.parent.remove_widget(self)
+    def on_touch_up(self, touch):
+        x, y = self.to_local(*touch.pos)
+        if touch.grab_current == self and 'flow.link' in touch.userdata:
+            link = touch.userdata['flow.link']
+            node = self.find_node(x, y)
+            if node is None:
+                self.remove_widget(link)
+            else:
+                link.node2 = node
+        return super(FlowChart, self).on_touch_up(touch)
 
 
-    def draw_connection(self, child):
-            x1,y1 = self.center  #from here
-            x2,y2 = child.to_parent(*child.center) #to here
-            angle = Vector.angle(Vector(0,1), Vector(x1-x2,y1-y2))
-            offset = Vector.rotate(Vector(20,0),-angle)
-            drawPolygon((x1-offset.x,y1-offset.y,x1+offset.x,y1+offset.y,x2,y2))
+    def disable_all(self):
+        for w in self.children:
+            if type(w) != FlowElement:
+                continue
+            w.disable()
 
-    def draw_connections(self):
-        offset = Vector(0,0)
-        for child in self.children:
-            if  isinstance(child, FlowchartObject):
-                glColor4f(1,1,1,0.5)
-                self.draw_connection(child)
-        for child in self.hidden_children:
-            if  isinstance(child, FlowchartObject):
-                glColor4f(1,0.5,0.5,0.1)
-                self.draw_connection(child)
+    def draw_ui(self):
+        w = self.get_parent_window()
+        drawLabel(label='-', pos=(w.width - 25, 25), font_size=40,
+            color=(255, 255, 255, 50))
+        drawLabel(label='+', pos=(w.width - 25, 250), font_size=40,
+            color=(255, 255, 255, 50))
+        set_color(1, 1, 1, .1)
+        drawRoundedRectangle(pos=(w.width - 40, 40), size=(30, 175))
+        set_color(1, 1, 1, .1)
+        drawRoundedRectangle(pos=(w.width - 40, 40),
+             size=(30, 175 * self.get_scale_factor()))
 
-    def draw(self):
-        self.draw_connections()
-        self.svg.draw()
+    def on_draw(self):
+        super(FlowChart, self).on_draw()
+        self.draw_ui()
 
-
-def pymt_plugin_activate(root, ctx):
-    ctx.plane = MTScatterPlane()
-    ctx.plane.add_widget(FlowchartObject())
-    root.add_widget(ctx.plane)
-
-def pymt_plugin_deactivate(root, ctx):
-    root.remove_widget(ctx.plane)
 
 if __name__ == '__main__':
-    w = MTWindow()
-    ctx = MTContext()
-    pymt_plugin_activate(w, ctx)
+    m = MTWindow()
+    m.add_widget(FlowChart())
     runTouchApp()
-    pymt_plugin_deactivate(w, ctx)

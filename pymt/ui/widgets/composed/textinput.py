@@ -25,11 +25,12 @@ class MTTextInput(MTButton):
     def __init__(self, **kwargs):
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
+        kwargs.setdefault('keyboard', None)
         super(MTTextInput, self).__init__(**kwargs)
         self._keyboard = None
+        self.keyboard = kwargs.get('keyboard')
         self.original_width = self.width
         self.is_active_input = False
-        self.added_keyboard = False
         self.padding = 20
 
         self.register_event_type('on_text_change')
@@ -37,13 +38,16 @@ class MTTextInput(MTButton):
 
     def _get_keyboard(self):
         if not self._keyboard:
-            self._keyboard = MTVKeyboard()
-            self._keyboard.push_handlers(
+            self.keyboard = MTVKeyboard()
+        return self._keyboard
+    def _set_keyboard(self, value):
+        if self._keyboard is not None:
+            self._keyboard.remove_handlers(
                 on_text_change=self._kbd_on_text_change,
                 on_key_up=self._kbd_on_key_up
             )
-        return self._keyboard
-    keyboard = property(_get_keyboard)
+        self._keyboard = value
+    keyboard = property(_get_keyboard, _set_keyboard)
 
     def on_press(self, touch):
         if self.is_active_input:
@@ -84,16 +88,35 @@ class MTTextInput(MTButton):
         pass
 
     def show_keyboard(self):
-        self.get_parent_window().add_widget(self.keyboard)
-        self.get_parent_window().add_on_key_press(self.on_key_press)
-        self.get_parent_window().add_on_text(self.on_text)
+        '''Show the associed keyboard of this widget.'''
+        if self.is_active_input:
+            return
+        w = self.get_parent_window()
+        w.add_widget(self.keyboard)
+        w.add_on_key_press(self.on_key_press)
+        w.add_on_text(self.on_text)
         self.is_active_input = True
+        if self._keyboard is not None:
+            self._keyboard.push_handlers(
+                on_text_change=self._kbd_on_text_change,
+                on_key_up=self._kbd_on_key_up
+            )
+            self._keyboard.text = self.label
 
     def hide_keyboard(self):
-        self.get_parent_window().remove_widget(self.keyboard)
-        self.get_parent_window().remove_on_key_press(self.on_key_press)
-        self.get_parent_window().remove_on_text(self.on_text)
+        '''Hide the associed keyboard of this widget.'''
+        if not self.is_active_input:
+            return
+        w = self.get_parent_window()
+        w.remove_widget(self.keyboard)
+        w.remove_on_key_press(self.on_key_press)
+        w.remove_on_text(self.on_text)
         self.is_active_input = False
+        if self._keyboard is not None:
+            self._keyboard.remove_handlers(
+                on_text_change=self._kbd_on_text_change,
+                on_key_up=self._kbd_on_key_up
+            )
 
     def draw(self):
         if self.is_active_input:

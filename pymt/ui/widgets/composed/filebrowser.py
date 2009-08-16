@@ -318,6 +318,8 @@ class MTFileBrowser(MTPopup):
             Directories are not affected by filters.
         `multipleselection` : bool, default to False
             Allow multiple selection of files
+        `exit_on_submit` : bool, default to True
+            Allows to decide whether to close the window or just hide it, on pressing submit button
 
     :Events:
         `on_select`
@@ -331,10 +333,13 @@ class MTFileBrowser(MTPopup):
         kwargs.setdefault('size', (350, 300))
         kwargs.setdefault('filters', [])
         kwargs.setdefault('multipleselection', False)
+        kwargs.setdefault('exit_on_submit', True)
 
         super(MTFileBrowser, self).__init__(**kwargs)
 
         self.register_event_type('on_select')
+        
+        self.exit_on_submit = kwargs.get('exit_on_submit')
 
         # save size before resizing of Popup Layout
         self.kbsize = self.width, self.height
@@ -393,7 +398,10 @@ class MTFileBrowser(MTPopup):
 
     def on_submit(self):
         self.dispatch_event('on_select', self.view.selection)
-        self.close()
+        if self.exit_on_submit:
+            self.close()
+        else:
+            self.hide()
 
     def on_select(self, filelist):
         pass

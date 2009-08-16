@@ -1,14 +1,17 @@
 from __future__ import with_statement
 from pymt import *
 import os
+import osc
 
 class Workspace(MTScatterPlane):
     def __init__(self, **kwargs):
         super(Workspace,self).__init__( **kwargs)
-        self.modules = [Module(filename = 'sl-addSynth+.svg', category = 'source'),
-                        Module(filename = 'sl-speaker.svg', category = 'output'),
-                        Module(filename = 'sl-distort+.svg', category = 'effect'),
-                        Module(filename = 'sl-lfo+.svg', category = 'controller')]
+        osc.init()
+        self.modules = [Module(filename = 'sl-addSynth+.svg', category = 'source', instance = 1),
+                        Module(filename = 'sl-addSynth+.svg', category = 'source', instance = 2),
+                        Module(filename = 'sl-speaker.svg', category = 'output', instance = 1),
+                        Module(filename = 'sl-distort+.svg', category = 'effect', instance = 1),
+                        Module(filename = 'sl-lfo+.svg', category = 'controller', instance = 1)]
         for m in self.modules:
             self.add_widget(m)
         
@@ -17,6 +20,7 @@ class Module(MTSvg):
         super(Module,self).__init__(**kwargs)
         self.category = kwargs.get('category')
         self.type = kwargs.get('type')
+        self.instance = kwargs.get('instance')
         self.touchstarts = [] # only react to touch input that originated on this widget
         self.mode = 'move'
         self.drag_x = 0
@@ -28,7 +32,7 @@ class Module(MTSvg):
         if self.mode == 'draw_connection':
             set_color(1,1,1,1)
             x1 = self.x + self.width / 2
-            y1 = self.y + 2
+            y1 = self.y + 1
             x2 = self.drag_x
             y2 = self.drag_y
             drawLine([x1, y1, x2, y2], width = 1)
@@ -36,7 +40,7 @@ class Module(MTSvg):
         set_color(1,1,1,1)
         for module in self.control_connections:
             x1 = self.x + self.width / 2
-            y1 = self.y + 2
+            y1 = self.y + 1
             if module[0].category == 'source':
                 x2 = module[0].x + 16 + (module[1] - 1) * 16
                 y2 = module[0].y + module[0].height - 1
@@ -46,10 +50,10 @@ class Module(MTSvg):
             drawLine([x1, y1, x2, y2], width = 1)
         
         for module in self.signal_connections:
-            x1 = self.x - 2 + self.width / 2
+            x1 = self.x + self.width / 2
             y1 = self.y + 2
             x2 = module[0].x + self.width / 2. 
-            y2 = module[0].y + module[0].height - 2
+            y2 = (module[0].y + module[0].height) - 1
             drawLine([x1, y1, x2, y2], width = 1)
         super(Module, self).draw()
 
@@ -61,10 +65,12 @@ class Module(MTSvg):
             self.first_pos_x = self.x
             self.first_pos_y = self.y
             if self.category is not 'output':
+                # Lower section
                 if touch.y < self.y + 20:
                     self.mode = 'draw_connection'
                     self.drag_x = touch.x
                     self.drag_y = touch.y
+                # Middle section        
                 else:
                     self.mode = 'move'
             return True
@@ -100,11 +106,13 @@ class Module(MTSvg):
                         if inlet:
                             if [m, inlet] not in self.control_connections:
                                 self.control_connections.append([m, inlet])
+                                osc.sendMsg("/connect", [self.category, self.instance, m.category, m.instance, inlet], '127.0.0.1',4444)
                     # Signal connections
                     if self.category == 'source' or self.category == 'effect' and m.category != 'source':
                         inlet = 0
                         if [m, inlet] not in self.signal_connections:
                             self.signal_connections.append([m, inlet])
+                            osc.sendMsg("/connect", [self.category, self.instance, m.category, m.instance], '127.0.0.1',4444)
                         
            
         if touch.id in self.touchstarts:

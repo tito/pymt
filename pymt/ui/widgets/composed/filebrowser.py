@@ -405,6 +405,13 @@ class MTFileBrowser(MTPopup):
             self.close()
         else:
             self.hide()
+    
+    def on_cancel(self):
+        self.reset_selection()
+        if self.exit_on_submit:
+            self.close()
+        else:
+            self.hide()
 
     def on_select(self, filelist):
         pass

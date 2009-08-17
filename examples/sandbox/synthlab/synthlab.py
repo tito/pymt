@@ -13,7 +13,7 @@ class Workspace(MTScatterPlane):
                         Module(filename = 'sl-distort+.svg', category = 'effect', instance = 1),
                         Module(filename = 'sl-lfo+.svg', category = 'controller', instance = 1)]
         for m in self.modules:
-            self.add_widget(m)
+            self.add_widget(m)        
         
 class Module(MTSvg):
     def __init__(self, **kwargs):
@@ -39,25 +39,62 @@ class Module(MTSvg):
         
         set_color(1,1,1,1)
         for module in self.control_connections:
-            x1 = self.x + self.width / 2
-            y1 = self.y + 1
-            if module[0].category == 'source':
-                x2 = module[0].x + 16 + (module[1] - 1) * 16
-                y2 = module[0].y + module[0].height - 1
-            if module[0].category == 'effect':
-                x2 = module[0].x + module[0].width - 4
-                y2 = module[0].y + module[0].height - 20 - (module[1] - 1) * 13
-            drawLine([x1, y1, x2, y2], width = 1)
+            drawLine(self.return_connection_coordinates(module), width = 1)
         
         for module in self.signal_connections:
-            x1 = self.x + self.width / 2
-            y1 = self.y + 2
-            x2 = module[0].x + self.width / 2. 
-            y2 = (module[0].y + module[0].height) - 1
-            drawLine([x1, y1, x2, y2], width = 1)
+            drawLine(self.return_connection_coordinates(module, 'signal'), width = 1)
+        
         super(Module, self).draw()
+    
+    def return_connection_coordinates(self, m2, type='control'):
+        x1 = self.x +self.width / 2
+        y1 = self.y + 1
+        if m2[0].category == 'source':
+            x2 = m2[0].x + 16 + (m2[1] - 1) * 16
+            y2 = m2[0].y + m2[0].height - 1
+        if m2[0].category == 'effect':
+            x2 = m2[0].x + m2[0].width - 4
+            y2 = m2[0].y + m2[0].height - 20 - (m2[1] - 1) * 13
+        if type == 'signal':
+            x2 = m2[0].x + self.width / 2. 
+            y2 = (m2[0].y + m2[0].height) - 1
+        
+        return (x1, y1, x2, y2)
+        
+    def line_collision_with_point(self, x1, y1, x2, y2, x, y):
+        # If line is vertical
+        if x1 == x2:
+            print 'hey'
+            print y, y1, y2
+            _max = max(y1,y2)
+            _min = min(y1,y2)
+            if y > _min and y < _max:
+                return True
+            else:
+                return False
+        m = float((y2 - y1)) / float((x2 - x1))
+        b = y1 - m*x1
+        result = abs(int(y) - int(m * x + b))
 
+        if result < 10:
+            return True
+        else:
+            return False
+        
     def on_touch_down(self, touch):
+        # Delete connections
+        if touch.is_double_tap:
+            for connection in self.signal_connections:
+                x1,y1,x2,y2 = self.return_connection_coordinates(connection, type='signal')
+                if self.line_collision_with_point(x1, y1, x2, y2, touch.x, touch.y):
+                    self.signal_connections.remove([connection[0], connection[1]])
+                    osc.sendMsg("/disconnect", [self.category, self.instance, connection[0].category, connection[0].instance], '127.0.0.1',4444)
+            for connection in self.control_connections:
+                x1,y1,x2,y2 = self.return_connection_coordinates(connection, type='control')
+                if self.line_collision_with_point(x1, y1, x2, y2, touch.x, touch.y):
+                    self.control_connections.remove([connection[0], connection[1]])
+                    osc.sendMsg("/disconnect", [self.category, self.instance, connection[0].category, connection[0].instance, connection[1]], '127.0.0.1',4444)
+        
         if self.collide_point(touch.x,touch.y):
             self.touchstarts.append(touch.id)
             self.first_x = touch.x
@@ -108,11 +145,12 @@ class Module(MTSvg):
                                 self.control_connections.append([m, inlet])
                                 osc.sendMsg("/connect", [self.category, self.instance, m.category, m.instance, inlet], '127.0.0.1',4444)
                     # Signal connections
-                    if self.category == 'source' or self.category == 'effect' and m.category != 'source':
-                        inlet = 0
-                        if [m, inlet] not in self.signal_connections:
-                            self.signal_connections.append([m, inlet])
-                            osc.sendMsg("/connect", [self.category, self.instance, m.category, m.instance], '127.0.0.1',4444)
+                    if self.category == 'source' or self.category == 'effect':
+                        if m.category != 'source':
+                            inlet = 0
+                            if [m, inlet] not in self.signal_connections:
+                                self.signal_connections.append([m, inlet])
+                                osc.sendMsg("/connect", [self.category, self.instance, m.category, m.instance], '127.0.0.1',4444)
                         
            
         if touch.id in self.touchstarts:

@@ -237,8 +237,8 @@ class Loader(object):
             try:
                 fd = urllib.urlopen(name)
                 if fd.getcode() < 200 or fd.getcode() >= 300:
-                    pymt_logger.error('unable to load image %s : %s (errorcode=%d)' % \
-                        (name, e, fd.getcode()))
+                    pymt_logger.error('unable to load image %s (errorcode=%d)' % \
+                        (name, fd.getcode()))
                     fd.close()
                     continue
 

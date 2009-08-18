@@ -8,13 +8,25 @@ from pyglet.gl import *
 from ..factory import MTWidgetFactory
 from ...input import Touch
 from ...vector import Vector
-from ...mtpyglet import getFrameDt
+from ...mtpyglet import getFrameDt, getAvailableTouchs
 from stencilcontainer import MTStencilContainer
 from widget import MTWidget
 
 class KineticTouch(Touch):
+    counter = 0
+    def __init__(self, args):
+        self.counter += 1
+        id = 'kinetic%d' % self.counter
+        super(KineticTouch, self).__init__(id, args)
+        self.mode = 'controlled'
+
     def depack(self, args):
         self.x, self.y = args
+        if self.dxpos is not None:
+            self.X = self.x - self.dxpos
+            self.Y = self.y - self.dypos
+        self.profile = 'xy'
+        super(KineticTouch, self).depack(args)
 
 class MTKinetic(MTWidget):
     '''Kinetic container.
@@ -29,8 +41,8 @@ class MTKinetic(MTWidget):
         from pymt import *
         k = MTKinetic()
         # theses widget will have kinetic movement
-        MTKinetic.add_widget(MTScatterSvg(filename = 'sun.svg'))
-        MTKinetic.add_widget(MTScatterSvg(filename = 'cloud.svg'))
+        k.add_widget(MTScatterSvg(filename='sun.svg'))
+        k.add_widget(MTScatterSvg(filename='cloud.svg'))
         w = MTWindow()
         w.add_widget(k)
         runTouchApp()
@@ -57,53 +69,101 @@ class MTKinetic(MTWidget):
         self.friction   = kwargs.get('friction')
         self.velstop    = kwargs.get('velstop')
         self.touch      = {} # internals
-        self.touches    = [] # from tuio, needed to simulate on_touch_down
 
     def on_touch_down(self, touch):
-        if super(MTKinetic, self).on_touch_down(touch):
-            self.touch[touch.id] = {
-                'vx': 0, 'vy': 0, 'ox': touch.x, 'oy': touch.y,
-                'xmot': 0, 'ymot': 0, 'mode': 'touching',
-            }
+        # do a copy of the touch for kinetic
+        args            = (touch.x, touch.y)
+        ktouch          = KineticTouch(args)
+        ktouch.userdata = touch.userdata
+        self.touch[touch.id] = ktouch
+        # grab the touch for not lost it !
+        touch.grab(self)
+        getAvailableTouchs().append(ktouch)
+        # and dispatch !
+        return super(MTKinetic, self).on_touch_down(ktouch)
 
     def on_touch_move(self, touch):
-        if touch.id in self.touch:
-            o = self.touch[touch.id]
-            o['xmot'] = touch.x - o['ox']
-            o['ymot'] = touch.y - o['oy']
-            o['ox'] = touch.x
-            o['oy'] = touch.y
-        return super(MTKinetic, self).on_touch_move(touch)
+        if touch.grab_current != self:
+            return
+        if touch.id not in self.touch:
+            return
+        ktouch = self.touch[touch.id]
+        ktouch.move([touch.x, touch.y])
+        ktouch.userdata = touch.userdata
+        ret = super(MTKinetic, self).on_touch_move(ktouch)
+
+        # dispatch ktouch also in grab mode
+        for wid in ktouch.grab_list:
+            ktouch.push()
+            ktouch.x, ktouch.y = self.to_window(*ktouch.pos)
+            if wid.parent:
+                ktouch.x, ktouch.y = wid.parent.to_widget(ktouch.x, ktouch.y)
+            else:
+                ktouch.x, ktouch.y = wid.to_parent(*wid.to_widget(ktouch.x, ktouch.y))
+            ktouch.grab_current = wid
+            wid.dispatch_event('on_touch_move', ktouch)
+            ktouch.grab_current = None
+            ktouch.pop()
+        return ret
+
 
     def on_touch_up(self, touch):
-        if touch.id in self.touch:
-            o = self.touch[touch.id]
-            o['vx'] = o['xmot']
-            o['vy'] = o['ymot']
-            o['mode'] = 'spinning'
+        if touch.grab_current != self:
+            return
+        touch.ungrab(self)
+        if touch.id not in self.touch:
+            return
+        ktouch = self.touch[touch.id]
+        ktouch.userdata = touch.userdata
+        ktouch.mode = 'spinning'
 
     def process_kinetic(self):
         '''Processing of kinetic, called in draw time.'''
         dt = getFrameDt()
         todelete = []
         for touchID in self.touch:
-            o = self.touch[touchID]
-            if o['mode'] != 'spinning':
+            ktouch = self.touch[touchID]
+            if ktouch.mode != 'spinning':
                 continue
-            o['ox'] += o['vx']
-            o['oy'] += o['vy']
-            o['vx'] /= 1 + (self.friction * dt)
-            o['vy'] /= 1 + (self.friction * dt)
 
-            # FIXME Temporary, must take care of grab !
-            touch = KineticTouch(touchID, [o['ox'], o['oy']])
-            if Vector(o['vx'], o['vy']).length() < self.velstop:
-                super(MTKinetic, self).on_touch_up(touch)
+            # process kinetic
+            type        = ''
+            ktouch.x    += ktouch.X
+            ktouch.y    += ktouch.Y
+            ktouch.X    /= 1 + (self.friction * dt)
+            ktouch.Y    /= 1 + (self.friction * dt)
+
+            if Vector(ktouch.X, ktouch.Y).length() < self.velstop:
+                # simulation finished
+                type = 'up'
+                getAvailableTouchs().remove(ktouch)
+                super(MTKinetic, self).on_touch_up(ktouch)
                 todelete.append(touchID)
             else:
-                super(MTKinetic, self).on_touch_move(touch)
+                # simulation in progress
+                type = 'move'
+                super(MTKinetic, self).on_touch_move(ktouch)
+
+            # dispatch ktouch also in grab mode
+            for wid in ktouch.grab_list:
+                ktouch.push()
+                ktouch.x, ktouch.y = self.to_window(*ktouch.pos)
+                if wid.parent:
+                    ktouch.x, ktouch.y = wid.parent.to_widget(ktouch.x, ktouch.y)
+                else:
+                    ktouch.x, ktouch.y = wid.to_parent(*wid.to_widget(ktouch.x, ktouch.y))
+                ktouch.grab_current = wid
+                if type == 'move':
+                    wid.dispatch_event('on_touch_move', ktouch)
+                else:
+                    wid.dispatch_event('on_touch_up', ktouch)
+                ktouch.grab_current = None
+                ktouch.pop()
+
+        # remove finished event
         for touchID in todelete:
             del self.touch[touchID]
+
 
     def draw(self):
         self.process_kinetic()

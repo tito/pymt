@@ -3,6 +3,9 @@ from pymt import *
 import os
 import osc
 
+host = '127.0.0.1'
+port = 4444
+
 class Workspace(MTScatterPlane):
     def __init__(self, **kwargs):
         super(Workspace,self).__init__( **kwargs)
@@ -88,12 +91,12 @@ class Module(MTSvg):
                 x1,y1,x2,y2 = self.return_connection_coordinates(connection, type='signal')
                 if self.line_collision_with_point(x1, y1, x2, y2, touch.x, touch.y):
                     self.signal_connections.remove([connection[0], connection[1]])
-                    osc.sendMsg("/disconnect", [self.category, self.instance, connection[0].category, connection[0].instance], '127.0.0.1',4444)
+                    osc.sendMsg("/disconnect", [self.category, self.instance, connection[0].category, connection[0].instance], host, port)
             for connection in self.control_connections:
                 x1,y1,x2,y2 = self.return_connection_coordinates(connection, type='control')
                 if self.line_collision_with_point(x1, y1, x2, y2, touch.x, touch.y):
                     self.control_connections.remove([connection[0], connection[1]])
-                    osc.sendMsg("/disconnect", [self.category, self.instance, connection[0].category, connection[0].instance, connection[1]], '127.0.0.1',4444)
+                    osc.sendMsg("/disconnect", [self.category, self.instance, connection[0].category, connection[0].instance, connection[1]], host, port)
         
         if self.collide_point(touch.x,touch.y):
             self.touchstarts.append(touch.id)
@@ -143,14 +146,14 @@ class Module(MTSvg):
                         if inlet:
                             if [m, inlet] not in self.control_connections:
                                 self.control_connections.append([m, inlet])
-                                osc.sendMsg("/connect", [self.category, self.instance, m.category, m.instance, inlet], '127.0.0.1',4444)
+                                osc.sendMsg("/connect", [self.category, self.instance, m.category, m.instance, inlet], host, port)
                     # Signal connections
                     if self.category == 'source' or self.category == 'effect':
                         if m.category != 'source':
                             inlet = 0
                             if [m, inlet] not in self.signal_connections:
                                 self.signal_connections.append([m, inlet])
-                                osc.sendMsg("/connect", [self.category, self.instance, m.category, m.instance], '127.0.0.1',4444)
+                                osc.sendMsg("/connect", [self.category, self.instance, m.category, m.instance], host, port)
                         
            
         if touch.id in self.touchstarts:

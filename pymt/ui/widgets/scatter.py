@@ -401,6 +401,19 @@ class MTScatterWidget(MTWidget):
         if self.collide_point(x, y):
             return True
 
+    def _set_pos(self, pos):
+        if self.center[0] == pos[0] and self.center[1] == pos[1]:
+            return
+        p1_start = Vector(self._get_x(),self._get_y())
+        p1_now   = Vector(*pos)
+        trans = p1_now - p1_start
+        self.apply_angle_scale_trans(0, 1.0, trans, Vector(*pos))
+        self._set_center(self.to_parent(0, 0), do_event=False)
+        self.dispatch_event('on_move', self.x, self.y)
+    def _get_pos(self):
+        return ((int(self.x),int(self.y)))
+    pos = property(_get_pos, _set_pos, doc='tuple(x, y): position of scatterwidget')
+    
 
 class MTScatterPlane(MTScatterWidget):
     '''A Plane that transforms for zoom/rotate/pan.

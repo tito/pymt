@@ -13,6 +13,7 @@ class Workspace(MTScatterPlane):
         self.modules = [Module(filename = 'sl-addSynth+.svg', category = 'source', instance = 1),
                         Module(filename = 'sl-addSynth+.svg', category = 'source', instance = 2),
                         Module(filename = 'sl-speaker.svg', category = 'output', instance = 1),
+                        Module(filename = 'sl-speaker.svg', category = 'output', instance = 2),
                         Module(filename = 'sl-distort+.svg', category = 'effect', instance = 1),
                         Module(filename = 'sl-lfo+.svg', category = 'controller', instance = 1)]
         for m in self.modules:

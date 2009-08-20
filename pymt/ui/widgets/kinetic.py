@@ -15,8 +15,8 @@ from widget import MTWidget
 class KineticTouch(Touch):
     counter = 0
     def __init__(self, args):
-        self.counter += 1
-        id = 'kinetic%d' % self.counter
+        KineticTouch.counter += 1
+        id = 'kinetic%d' % KineticTouch.counter
         super(KineticTouch, self).__init__(id, args)
         self.mode = 'controlled'
 
@@ -102,7 +102,9 @@ class MTKinetic(MTWidget):
             else:
                 ktouch.x, ktouch.y = wid.to_parent(*wid.to_widget(ktouch.x, ktouch.y))
             ktouch.grab_current = wid
+            ktouch.grab_state   = True
             wid.dispatch_event('on_touch_move', ktouch)
+            ktouch.grab_state   = False
             ktouch.grab_current = None
             ktouch.pop()
         return ret
@@ -154,10 +156,12 @@ class MTKinetic(MTWidget):
                 else:
                     ktouch.x, ktouch.y = wid.to_parent(*wid.to_widget(ktouch.x, ktouch.y))
                 ktouch.grab_current = wid
+                ktouch.grab_state   = True
                 if type == 'move':
                     wid.dispatch_event('on_touch_move', ktouch)
                 else:
                     wid.dispatch_event('on_touch_up', ktouch)
+                ktouch.grab_state   = False
                 ktouch.grab_current = None
                 ktouch.pop()
 

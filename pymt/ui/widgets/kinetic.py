@@ -75,6 +75,7 @@ class MTKinetic(MTWidget):
         args            = (touch.x, touch.y)
         ktouch          = KineticTouch(args)
         ktouch.userdata = touch.userdata
+        ktouch.is_double_tap = touch.is_double_tap
         self.touch[touch.id] = ktouch
         # grab the touch for not lost it !
         touch.grab(self)

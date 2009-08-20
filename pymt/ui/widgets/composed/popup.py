@@ -25,6 +25,8 @@ class MTPopup(MTScatterWidget):
                 Change the label of submit button
             `title`: str, default to 'PyMT popup'
                 Title of the popup (if None, no title will be added.)
+            `exit_on_submit`: bool, default to 'True'
+                Title of the popup (if None, no title will be added.)
 
         :Events:
             `on_submit`
@@ -40,10 +42,13 @@ class MTPopup(MTScatterWidget):
         kwargs.setdefault('label_cancel', 'Cancel')
         kwargs.setdefault('label_submit', 'Ok')
         kwargs.setdefault('title', 'PyMT popup')
+        kwargs.setdefault('exit_on_submit', True)
         super(MTPopup, self).__init__(**kwargs)
 
         self.register_event_type('on_submit')
         self.register_event_type('on_cancel')
+        
+        self.exit_on_submit = kwargs.get('exit_on_submit')
 
         # Create layouts
         self.layout = MTBoxLayout(orientation='vertical', padding=5, spacing=5)
@@ -89,7 +94,10 @@ class MTPopup(MTScatterWidget):
         self._ensure_layout(force)
 
     def close(self):
-        self.parent.remove_widget(self)
+        if self.exit_on_submit:
+            self.parent.remove_widget(self)
+        else:
+            self.hide()
 
     def on_submit(self):
         self.close()

@@ -354,7 +354,6 @@ class MTScatterWidget(MTWidget):
         if self.auto_bring_to_front:
             self.bring_to_front()
 
-        print 'down', touch.id, self.touches, x, y
         self.touches[touch.id] = Vector(x, y)
         return True
 
@@ -403,7 +402,6 @@ class MTScatterWidget(MTWidget):
 
     def on_touch_up(self, touch):
         x, y = touch.x, touch.y
-        print 'up', touch.id, self.touches, x, y, touch.grab_state
 
         # if the touch isnt on the widget we do nothing
         if not touch.grab_state:

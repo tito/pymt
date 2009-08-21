@@ -35,8 +35,28 @@ class MTTouchTip(MTWidget):
         self.tap_seq = [tap_1, tap_1, tap_2, tap_2, tap_2, tap_2]
         
     
-    def attach(self, obj, type, delay=0.0, rotation=0.0):
-        '''Attach a TouchTip to the supplied object. Note that the object must be derived from MTWidget at some level.'''
+    def attach(self, obj, type, delay=0.0, rotation=0.0, offset=(0,0)):
+        '''Ataches a TouchTip to an existing object (must be, at some level, derived from MTWidget)
+       
+           :Parameters:
+               `obj` : MTWidget-derived object
+                   The object that the touchtip will be attached to. If the object is moved on the screen, the touchtip will move as well.
+               `type` : string
+                   Type of hint to give. Options are currently 'tap' or 'pinch'
+               `delay` : float, default to 0.0
+                   The length of time before the TouchTip will be displayed by the object. If the requirements (see below) are all met before this time is reached, then the TouchTip will never be displayed.
+                   This time is in seconds.
+               `rotation` : float, default to 0.0
+                   Set the rotation (in degrees) of the TouchTip.
+               `offset` : tuple of two integers, default to (0, 0)
+                   Set the offset of the touchtip from the normal position (close to the center) of the attached object. Useful for precise positioning on an individual basis.
+            
+            A note on requirements:
+                The following requirements are present for each of the following hint types before the hint is considered "complete" and will disappear:
+                
+                "tap": touch_down
+                "pinch": touch_down, resize (this is meant to be used with MTScatterWidget objects)
+            '''
         
         tip = MTWidget()
         
@@ -52,7 +72,8 @@ class MTTouchTip(MTWidget):
             tip.anim = MTAnimatedGif(sequence = self.tap_seq, delay=0.2)
             tip.target.push_handlers(on_touch_down=curry(self.handle_touch_event, tip, "touch_down"))
             tip.requirements = ['touch_down']
-            
+        
+        tip.offset = offset
         tip.size = tip.anim.size
         tip.rotation = rotation
         tip.origsize = tip.size
@@ -98,11 +119,14 @@ class MTTouchTip(MTWidget):
             offset_x = 75 * tip.scale
             offset_y = (tip.origsize[0] - 40) * tip.scale
             
+            global_offset_x = tip.offset[0]
+            global_offset_y = tip.offset[1]
+            
             #Does this object have a center_pos? If so, use that. If not, do it ourselves.
             if tip.target.center != None:
-                tip.pos = tip.target.center[0] + (tip.origsize[0] * tip.scale * 0.25), tip.target.center[1] - (tip.origsize[1] * tip.scale * 0.10)
+                tip.pos = tip.target.center[0] + (tip.origsize[0] * tip.scale * 0.25) + global_offset_x, tip.target.center[1] - (tip.origsize[1] * tip.scale * 0.10) + global_offset_y
             else:
-                tip.pos = tip.target.pos[0] + tip.target.size[0]/2 - offset_x, tip.target.pos[1] + tip.target.size[1]/2 - offset_y
+                tip.pos = tip.target.pos[0] + tip.target.size[0]/2 - offset_x + global_offset_x, tip.target.pos[1] + tip.target.size[1]/2 - offset_y + global_offset_y
             
             tip.anim.pos = tip.pos
             tip.anim.scale = tip.scale

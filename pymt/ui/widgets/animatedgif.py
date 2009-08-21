@@ -30,9 +30,22 @@ class MTAnimatedGif(MTWidget):
             self.animation = pyglet.image.Animation.from_image_sequence(sequence=kwargs.get('sequence'), period=kwargs.get('delay'), loop=True)
         self.bin = pyglet.image.atlas.TextureBin()
         self.animation.add_to_texture_bin(self.bin)
+        anchor_x = self.animation.get_max_width() / 2
+        anchor_y = self.animation.get_max_height() / 2
+        
+        for f in self.animation.frames:
+            f.image.anchor_x = anchor_x
+            f.image.anchor_y = anchor_y
+        
         self.image = pyglet.sprite.Sprite(self.animation)
         
         self.size = self.animation.get_max_width(), self.animation.get_max_height()
+    
+    def _get_center(self):
+        return self.pos
+    
+    center = property(_get_center)
+    
     
     def draw(self):
         self.image.x        = self.x

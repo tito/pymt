@@ -31,7 +31,7 @@ class MTTouchTip(MTWidget):
         self.tap_seq = [tap_1, tap_1, tap_2, tap_2, tap_2, tap_2]
         
     
-    def attach(self, obj, type, delay=0.0):
+    def attach(self, obj, type, delay=0.0, rotation=0.0):
         '''Attach a TouchTip to the supplied object. Note that the object must be derived from MTWidget at some level.'''
         
         tip = MTWidget()
@@ -50,6 +50,7 @@ class MTTouchTip(MTWidget):
             tip.requirements = ['touch_down']
             
         tip.size = tip.anim.size
+        tip.rotation = rotation
         tip.origsize = tip.size
         tip.shown = False
         tip.opacity = 0
@@ -58,7 +59,9 @@ class MTTouchTip(MTWidget):
         self.tips.append(tip)
         self.add_widget(tip)
     
-    def handle_event(self, tip, requirement):
+    def handle_event(*largs):
+        requirement = largs[2]
+        tip = largs[1]
         if requirement in tip.requirements:
             tip.requirements.remove(requirement)
     
@@ -90,11 +93,17 @@ class MTTouchTip(MTWidget):
             #we want our top-left corner to be in the middle of the thing we're attaching to...
             offset_x = 75 * tip.scale
             offset_y = (tip.origsize[0] - 40) * tip.scale
-            tip.pos = tip.target.pos[0] + tip.target.size[0]/2 - offset_x, tip.target.pos[1] + tip.target.size[1]/2 - offset_y
+            
+            #Does this object have a center_pos? If so, use that. If not, do it ourselves.
+            if tip.target.center != None:
+                tip.pos = tip.target.center[0] + (tip.origsize[0] * tip.scale * 0.25), tip.target.center[1] - (tip.origsize[1] * tip.scale * 0.10)
+            else:
+                tip.pos = tip.target.pos[0] + tip.target.size[0]/2 - offset_x, tip.target.pos[1] + tip.target.size[1]/2 - offset_y
             
             tip.anim.pos = tip.pos
             tip.anim.scale = tip.scale
             tip.anim.opacity = tip.opacity
+            tip.anim.rotation = tip.rotation
             
             tip.anim.on_draw()
             

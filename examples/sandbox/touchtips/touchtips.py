@@ -36,13 +36,13 @@ class MTTouchTip(MTWidget):
         
         if(type == "pinch"):
             tip.anim = MTAnimatedGif(sequence = self.pinch_seq, delay=0.2, rotation=rot)
-            tip.target.push_handlers(on_touch_down=curry(self.target_touch_down, tip))
-            tip.target.push_handlers(on_scale=curry(self.target_scale, tip))
-            tip.requirements = ['touch_down', 'scale']
+            tip.target.push_handlers(on_touch_down=curry(self.handle_event, tip, "touch_down"))
+            tip.target.push_handlers(on_resize=curry(self.handle_event, tip, "resize"))
+            tip.requirements = ['touch_down', 'resize']
         
         if(type == "tap"):
             tip.anim = MTAnimatedGif(sequence = self.tap_seq, delay=0.2, rotation=rot)
-            tip.target.push_handlers(on_touch_down=curry(self.target_touch_down, tip))
+            tip.target.push_handlers(on_touch_down=curry(self.handle_event, tip, "touch_down"))
             tip.requirements = ['touch_down']
             
         tip.size = tip.anim.size
@@ -54,11 +54,10 @@ class MTTouchTip(MTWidget):
         self.tips.append(tip)
         self.add_widget(tip)
     
-    def target_touch_down(self, tip, touch):
-        tip.requirements.remove("touch_down")
-    
-    def target_scale(self, tip):
-        tip.requirements.remove("scale")
+    def handle_event(*largs):
+        if largs[2] in largs[1].requirements:
+            print "Removing", largs[2]
+            largs[1].requirements.remove(largs[2])
     
     def on_draw(self):
         dt = self.clock.tick()
@@ -96,7 +95,7 @@ class MTTouchTip(MTWidget):
                     tip.start_animations('show')
             
             #Check on our requirements
-            if len(tip.requirements) == 0:
+            if len(tip.requirements) < 1:
                 deletetips.append(tip)
         
         for tip in deletetips:
@@ -108,6 +107,7 @@ class MTTouchTip(MTWidget):
     
     def draw(self):
         for tip in self.tips:
+            tip.bring_to_front()
             tip.anim.draw()
         super(MTTouchTip, self).draw()
 
@@ -120,10 +120,17 @@ def pymt_plugin_activate(w, ctx):
     test = MTAnimatedGif(filename="test.gif")
     test.scale = 3.0
     test.pos = (300, 300)
+    
+    test2 = MTScatterImage(filename='../../pictures/images/pic1.jpg')
+    test2.pos = (600, 600)
+    test2.rot = 60
+    
     ctx.c.add_widget(test)
+    ctx.c.add_widget(test2)
     ctx.c.add_widget(Tips)
     w.add_widget(ctx.c)
     Tips.attach(test, "tap", delay=5.0)
+    Tips.attach(test2, "pinch", delay=5.0)
 
 def pymt_plugin_deactivate(w, ctx):
     w.remove_widget(ctx.c)

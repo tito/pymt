@@ -47,6 +47,7 @@ class MTWindow(TouchWindow):
     def __init__(self, **kwargs):
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
+        kwargs.setdefault('enablemouse', True)
         kwargs.setdefault('style', {})
 
         # apply styles for window
@@ -73,9 +74,21 @@ class MTWindow(TouchWindow):
         # add view + simulator
         if 'view' in kwargs:
             self.add_widget(kwargs.get('view'))
+            
+         # Accept or don't accept mouse input.
+        enablemouse = kwargs.get('enablemouse')
+        
+        try:
+            if pymt.pymt_config.getboolean('pymt', 'enablemouse') == False:
+                enablemouse = False
+        except:
+            pass #They probably just don't have it added to their config file.
 
-        self.sim = MTSimulator()
-        self.add_widget(self.sim)
+        if enablemouse:
+            self.sim = MTSimulator()
+            self.add_widget(self.sim)
+        else:
+            self.sim = False
 
         # get window params, user options before config option
         params = {}
@@ -252,7 +265,8 @@ class MTWindow(TouchWindow):
         '''Add a widget on window'''
         self.children.append(w)
         w.parent = self
-        self.sim.bring_to_front()
+        if self.sim:
+            self.sim.bring_to_front()
 
     def remove_widget(self, w):
         '''Remove a widget from window'''
@@ -276,8 +290,9 @@ class MTWindow(TouchWindow):
         self.draw()
         for w in self.children:
             w.dispatch_event('on_draw')
-
-        self.sim.dispatch_event('on_draw')
+        
+        if self.sim:
+            self.sim.dispatch_event('on_draw')
 
         if self.show_fps:
             self.fps_display.draw()
@@ -346,13 +361,16 @@ class MTWindow(TouchWindow):
                 return True
 
     def on_mouse_press(self, x, y, button, modifiers):
-        return self.sim.dispatch_event('on_mouse_press', x, y, button, modifiers)
+        if self.sim:
+            return self.sim.dispatch_event('on_mouse_press', x, y, button, modifiers)
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
-        return self.sim.dispatch_event('on_mouse_drag', x, y, dx, dy, button, modifiers)
+        if self.sim:
+            return self.sim.dispatch_event('on_mouse_drag', x, y, dx, dy, button, modifiers)
 
     def on_mouse_release(self, x, y, button, modifiers):
-        return self.sim.dispatch_event('on_mouse_release', x, y, button, modifiers)
+        if self.sim:
+            return self.sim.dispatch_event('on_mouse_release', x, y, button, modifiers)
 
     def on_resize(self, width, height):
         glViewport(0, 0, width, height)

@@ -15,11 +15,13 @@ class MTAnimatedGif(MTWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('scale', 1.0)
         kwargs.setdefault('opacity', 150)
+        kwargs.setdefault('rotation', 0)
         
         super(MTAnimatedGif, self).__init__(**kwargs)
         
         self.scale = kwargs.get('scale')
         self.opacity = kwargs.get('opacity')
+        self.rotation = kwargs.get('rotation')
         
         #Check to see if we're loading a file or an image sequence.
         if(kwargs.get('filename') != None):
@@ -37,7 +39,8 @@ class MTAnimatedGif(MTWidget):
         self.image.y        = self.y
         self.image.scale    = self.scale
         self.size           = self.image.width, self.image.height
-        self.image.opacity = self.opacity
+        self.image.opacity  = self.opacity
+        self.image.rotation = self.rotation
         self.image.draw()
         
 MTWidgetFactory.register('MTAnimatedGif', MTAnimatedGif)

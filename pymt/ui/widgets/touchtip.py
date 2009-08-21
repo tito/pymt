@@ -31,7 +31,7 @@ class MTTouchTip(MTWidget):
         self.tap_seq = [tap_1, tap_1, tap_2, tap_2, tap_2, tap_2]
         
     
-    def attach(self, obj, type, rot=0.0, delay=0.0):
+    def attach(self, obj, type, delay=0.0):
         '''Attach a TouchTip to the supplied object. Note that the object must be derived from MTWidget at some level.'''
         
         tip = MTWidget()
@@ -39,14 +39,14 @@ class MTTouchTip(MTWidget):
         tip.target = obj
         
         if(type == "pinch"):
-            tip.anim = MTAnimatedGif(sequence = self.pinch_seq, delay=0.2, rotation=rot)
-            tip.target.push_handlers(on_touch_down=curry(self.handle_event, tip, "touch_down"))
+            tip.anim = MTAnimatedGif(sequence = self.pinch_seq, delay=0.2)
+            tip.target.push_handlers(on_touch_down=curry(self.handle_touch_event, tip, "touch_down"))
             tip.target.push_handlers(on_resize=curry(self.handle_event, tip, "resize"))
             tip.requirements = ['touch_down', 'resize']
         
         if(type == "tap"):
-            tip.anim = MTAnimatedGif(sequence = self.tap_seq, delay=0.2, rotation=rot)
-            tip.target.push_handlers(on_touch_down=curry(self.handle_event, tip, "touch_down"))
+            tip.anim = MTAnimatedGif(sequence = self.tap_seq, delay=0.2)
+            tip.target.push_handlers(on_touch_down=curry(self.handle_touch_event, tip, "touch_down"))
             tip.requirements = ['touch_down']
             
         tip.size = tip.anim.size
@@ -58,9 +58,14 @@ class MTTouchTip(MTWidget):
         self.tips.append(tip)
         self.add_widget(tip)
     
-    def handle_event(*largs):
-        if largs[2] in largs[1].requirements:
-            largs[1].requirements.remove(largs[2])
+    def handle_event(self, tip, requirement):
+        if requirement in tip.requirements:
+            tip.requirements.remove(requirement)
+    
+    def handle_touch_event(self, tip, requirement, touch):
+        if tip.target.collide_point(touch.x, touch.y):
+            if requirement in tip.requirements:
+                tip.requirements.remove(requirement)
     
     def on_draw(self):
         

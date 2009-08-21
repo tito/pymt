@@ -11,6 +11,10 @@ from ..factory import MTWidgetFactory
 from widget import MTWidget
 from animatedgif import MTAnimatedGif
 from ...utils import curry
+import os
+import pymt
+
+iconPath = os.path.join(pymt.pymt_data_dir, 'icons', 'touchtips', '')
 
 class MTTouchTip(MTWidget):
     
@@ -21,13 +25,13 @@ class MTTouchTip(MTWidget):
         self.clock = pyglet.clock.Clock()
         
         #Load all of our necessary images.
-        pinch_1 = pyglet.image.load("pinch_1.png")
-        pinch_2 = pyglet.image.load("pinch_2.png")
-        pinch_3 = pyglet.image.load("pinch_3.png")
+        pinch_1 = pyglet.image.load(iconPath+"pinch_1.png")
+        pinch_2 = pyglet.image.load(iconPath+"pinch_2.png")
+        pinch_3 = pyglet.image.load(iconPath+"pinch_3.png")
         self.pinch_seq = [pinch_1, pinch_2, pinch_3, pinch_3, pinch_3, pinch_2, pinch_1, pinch_1, pinch_1]
         
-        tap_1 = pyglet.image.load("tap_1.png")
-        tap_2 = pyglet.image.load("tap_2.png")
+        tap_1 = pyglet.image.load(iconPath+"tap_1.png")
+        tap_2 = pyglet.image.load(iconPath+"tap_2.png")
         self.tap_seq = [tap_1, tap_1, tap_2, tap_2, tap_2, tap_2]
         
     

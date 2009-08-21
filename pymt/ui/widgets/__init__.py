@@ -22,6 +22,7 @@ from widget import *
 from xmlwidget import *
 from speechbubble import *
 from animatedgif import *
+from touchtip import *
 
 from form import *
 from composed import *

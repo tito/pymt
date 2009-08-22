@@ -2,7 +2,7 @@
 Tuio: TUIO input provider implementation
 '''
 
-__all__ = ['TuioTouchProvider']
+__all__ = ['TuioTouchProvider', 'Tuio2dCurTouch', 'Tuio2dObjTouch']
 
 import osc
 from collections import deque

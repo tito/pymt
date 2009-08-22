@@ -7,13 +7,6 @@ from pymt import stopTouchApp, gx_matrix
 from pyglet import clock
 from pyglet.gl import gluNewQuadric, gluPartialDisk, glTranslated
 
-
-# taken from nuipaint
-def drawSemiCircle(pos=(0,0), inner_radius=100, outer_radius=100, slices=32, loops=1 ,start_angle=0, sweep_angle=0):
-    with gx_matrix:
-        glTranslated(pos[0], pos[1], 0)
-        gluPartialDisk(gluNewQuadric(), inner_radius, outer_radius, slices, loops, start_angle,sweep_angle )
-
 class CloseApp(MTWidget):
     def __init__(self, **kwargs):
         super(CloseApp, self).__init__(**kwargs)

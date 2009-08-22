@@ -355,3 +355,25 @@ def drawRectangleAlpha(pos=(0,0), size=(1.0,1.0), alpha=(1,1,1,1), style=GL_QUAD
         glColor4f(1, 1, 1, alpha[3])
         glVertex2f(pos[0], pos[1] + size[1])
 
+def drawSemiCircle(pos=(0,0), inner_radius=100, outer_radius=120, slices=32, loops=1, start_angle=0, sweep_angle=360):
+    '''Draw a semi-circle. You can choose the start angle,
+    and the ending angle (from 0 to 360), and the inner/outer radius !
+
+    :Parameters:
+        `pos` : tuple, default to (0, 0)
+            Center position of the circle
+        `inner_radius` : int, default to 100
+            Radius of the inner circle
+        `outer_radius` : int, default to 120
+            Radius of the outer circle
+        `slices` : int, default to 32
+            Precision of circle drawing
+        `start_angle` : int, default to 0
+            Angle to start drawing
+        `sweep_angle` : int, default to 360
+            Angle to finish drawing
+    '''
+    with gx_matrix:
+        glTranslated(pos[0], pos[1], 0)
+        gluPartialDisk(gluNewQuadric(), inner_radius, outer_radius, slices, loops, start_angle, sweep_angle)
+

@@ -192,10 +192,10 @@ class Tuio2dObjTouch(Touch):
             self.sx, self.sy = args[0:2]
             self.profile = 'xy'
         elif len(args) == 9:
-            self.id, self.sx, self.sy, self.a, self.X, self.Y, self.A, self.m, self.r = args[0:9]
+            self.fid, self.sx, self.sy, self.a, self.X, self.Y, self.A, self.m, self.r = args[0:9]
             self.profile = 'ixyaXYAmr'
         else:
-            self.id, self.sx, self.sy, self.a, self.X, self.Y, self.A, self.m, self.r, width, height = args[0:11]
+            self.fid, self.sx, self.sy, self.a, self.X, self.Y, self.A, self.m, self.r, width, height = args[0:11]
             self.profile = 'ixyaXYAmrh'
             if self.shape is None:
                 self.shape = TouchShapeRect()

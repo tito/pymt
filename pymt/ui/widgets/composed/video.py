@@ -30,7 +30,7 @@ class MTVideoPlayPause(MTImageButton):
         kwargs.setdefault('filename_pause', iconPath + 'videoWidgetPause.png')
         kwargs.setdefault('player', None)
         super(MTVideoPlayPause, self).__init__(**kwargs)
-        self.vid        = kwargs.get('player')
+        self.player        = kwargs.get('player')
         self.playState  = 'Pause'
 
         self.images = {} #crate a python dictionary..like a hash map
@@ -43,10 +43,10 @@ class MTVideoPlayPause(MTImageButton):
         if self.collide_point(touch.x, touch.y):
             self.state = ('down', touch.id)
             if self.playState == 'Pause':
-                self.vid.play()
+                self.player.play()
                 self.playState = 'Play'
             elif self.playState == 'Play':
-                self.vid.pause()
+                self.player.pause()
                 self.playState = 'Pause'
 
             #set the correct image
@@ -163,7 +163,7 @@ class MTVideo(MTScatterWidget):
         #init as subwidgest.  adding them using add_widgtes
         #makes it so that they get the events before MTVideo instance
         #the pos, size is relative to this parent widget...if it scales etc so will these
-        self.button = MTVideoPlayPause(pos=(0,0), player=self.player)
+        self.button = MTVideoPlayPause(pos=(0,0), player=self)
         self.add_widget(self.button)
         self.button.hide()
 
@@ -174,6 +174,9 @@ class MTVideo(MTScatterWidget):
         self.timeline = MTVideoTimeline(pos=(72,3),player=self.player,duration=self.sourceDuration)
         self.add_widget(self.timeline)
         self.timeline.hide()
+
+    def __del__(self):
+        self.player.stop()
 
     def draw(self):
         with gx_matrix:
@@ -195,6 +198,16 @@ class MTVideo(MTScatterWidget):
         self.button.hide()
         self.mutebutton.hide()
         self.timeline.hide()
+
+    def play(self):
+        self.player.play()
+
+    def stop(self):
+        self.player.pause()
+        self.player.next()
+
+    def pause(self):
+        self.player.pause()
 
 # Register all base widgets
 MTWidgetFactory.register('MTVideo', MTVideo)

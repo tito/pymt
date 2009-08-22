@@ -269,6 +269,8 @@ class MTScatterWidget(MTWidget):
             old_line = p1_start - p2_start
             new_line = p1_now - p2_now
             rotation = -1.0 * old_line.angle(new_line)
+            
+            self.dispatch_event('on_resize', self.width, self.height)
 
         else:
             # set default

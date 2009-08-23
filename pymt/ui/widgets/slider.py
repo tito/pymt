@@ -262,7 +262,6 @@ class MTBoundarySlider(MTWidget):
         self.min            = kwargs.get('min')
         self.max            = kwargs.get('max')
         self.showtext       = kwargs.get('showtext')
-        self.touches        = {}
 
         kwargs.setdefault('value_min', self.min)
         kwargs.setdefault('value_max', self.max)
@@ -326,10 +325,10 @@ class MTBoundarySlider(MTWidget):
     def on_touch_down(self, touch):
         # So the first on_touch_move in a
         # two-finger-drag doesn't teleport the widget
-        self.touches[touch.id].oxpos = touch.x
-        self.touches[touch.id].oypos = touch.y
         if self.collide_point(touch.x, touch.y):
-            if self.touches[touch.id].is_double_tap:
+            touch.oxpos = touch.x
+            touch.oypos = touch.y
+            if touch.is_double_tap:
                 # Randomize the bound
                 if self.orientation == 'vertical':
                     self.value_min = random.randrange(0, self.height)
@@ -340,18 +339,19 @@ class MTBoundarySlider(MTWidget):
             # Decide wether we will move the upper or lower bound
             if self.orientation == 'vertical':
                 if touch.y < (self.value_min + self.y*2 + self.value_max)/2:
-                    self.touches[touch.id].userdata['boundary.side'] = 'value_min'
+                    touch.userdata['boundary.side'] = 'value_min'
                 else:
-                    self.touches[touch.id].userdata['boundary.side'] = 'value_max'
+                    touch.userdata['boundary.side'] = 'value_max'
             elif self.orientation == 'horizontal':
                 if touch.x < (self.value_min + self.x*2 + self.value_max)/2:
-                    self.touches[touch.id].userdata['boundary.side'] = 'value_min'
+                    touch.userdata['boundary.side'] = 'value_min'
                 else:
-                    self.touches[touch.id].userdata['boundary.side'] = 'value_max'
+                    touch.userdata['boundary.side'] = 'value_max'
 
             self.touchstarts.append(touch.id)
             self.on_touch_move(touch)
             return True
+        return super(MTBoundarySlider, self).on_touch_down(touch)
 
     def on_touch_move(self, touch):
         if touch.id in self.touchstarts:
@@ -359,29 +359,32 @@ class MTBoundarySlider(MTWidget):
             if self.orientation == 'vertical':
                 if len(self.touchstarts) >= 2:
                     # Two or more fingers, shift the whole bound
-                    rel = (touch.y - self.touches[touch.id].oypos)
+                    rel = (touch.y - touch.oypos)
                     self.value_min += rel
                     self.value_max += rel
                 else:
                     # Only one, just change one bound
-                    self.set_value(self.touches[touch.id].userdata['side'], touch.y - self.y)
+                    self.set_value(touch.userdata['boundary.side'], touch.y - self.y)
                     self.dispatch_event('on_value_change', *self.get_value())
             elif self.orientation == 'horizontal':
                 if len(self.touchstarts) >= 2:
                     # Two or more fingers, shift the whole bound
-                    rel = (touch.x - self.touches[touch.id].oxpos)
+                    rel = (touch.x - touch.oxpos)
                     self.value_min += rel
                     self.value_max += rel
                 else:
                     # Only one, just change one bound
-                    self.set_value(self.touches[touch.id].userdata['boundary.side'], touch.x - self.x)
+                    self.set_value(touch.userdata['boundary.side'], touch.x - self.x)
                     self.dispatch_event('on_value_change', *self.get_value())
-        self.touches[touch.id].oypos = touch.y
-        self.touches[touch.id].oxpos = touch.x
+            touch.oypos = touch.y
+            touch.oxpos = touch.x
+            return True
+        return super(MTBoundarySlider, self).on_touch_move(touch)
 
     def on_touch_up(self, touch):
         if touch.id in self.touchstarts:
             self.touchstarts.remove(touch.id)
+        return super(MTBoundarySlider, self).on_touch_up(touch)
 
 MTWidgetFactory.register('MTXYSlider', MTXYSlider)
 MTWidgetFactory.register('MTSlider', MTSlider)

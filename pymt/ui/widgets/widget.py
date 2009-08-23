@@ -320,22 +320,13 @@ class MTWidget(pyglet.event.EventDispatcher):
                 self._raise_dispatch_exception(
                     event_type, args, getattr(self, event_type))
 
-    def update_event_registration(self):
-        if self.visible:
-            for ev in evs:
-                self.register_event_type(ev)
-        else:
-            for ev in evs:
-                if not hasattr(self, 'event_types'):
-                    continue
-                if ev in self.event_types:
-                    self.event_types.remove(ev)
-
     def to_widget(self, x, y):
+        '''Return the coordinate from window to local widget'''
         x, y = self.parent.to_widget(x, y)
         return self.to_local(x, y)
 
     def to_window(self, x, y, initial=True):
+        '''Transform local coordinate to window coordinate'''
         if not initial:
             x, y = self.to_parent(x, y)
         if self.parent:
@@ -343,9 +334,11 @@ class MTWidget(pyglet.event.EventDispatcher):
         return (x, y)
 
     def to_parent(self, x, y):
+        '''Transform local coordinate to parent coordinate'''
         return (x, y)
 
     def to_local(self, x, y):
+        '''Transform parent coordinate to local coordinate'''
         return (x, y)
 
     def collide_point(self, x, y):

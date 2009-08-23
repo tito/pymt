@@ -137,21 +137,24 @@ class MTVideo(MTScatterWidget):
     '''MTVideo is a video player, implemented in top of MTScatterWidget.
     You can use it like this ::
 
-          video = MTVideo(video='source_file')
+          video = MTVideo(filename='source_file')
 
     :Parameters:
-        `video` : str
+        `filename` : str
             Filename of video
 
     '''
     def __init__(self, **kwargs):
-        kwargs.setdefault('video', None)
-        if kwargs.get('video') is None:
+        kwargs.setdefault('filename', None)
+        # backware compatible
+        if 'video' in kwargs:
+            kwargs['filename'] = kwargs.get('video')
+        if kwargs.get('filename') is None:
             raise Exception('No video given to MTVideo')
 
         super(MTVideo, self).__init__(**kwargs)
         self.player = Player()
-        self.source = pyglet.media.load(kwargs.get('video'))
+        self.source = pyglet.media.load(kwargs.get('filename'))
         self.sourceDuration = self.source.duration
         self.player.queue(self.source)
         self.player.eos_action = 'pause'
@@ -200,13 +203,16 @@ class MTVideo(MTScatterWidget):
         self.timeline.hide()
 
     def play(self):
+        '''Start the video'''
         self.player.play()
 
     def stop(self):
+        '''Stop the video'''
         self.player.pause()
         self.player.next()
 
     def pause(self):
+        '''Pause the video'''
         self.player.pause()
 
 # Register all base widgets

@@ -25,7 +25,6 @@ setup (name='pymt',
         'data/icons/filetype/*.png',
         'data/icons/svg/*.svg',
         'data/icons/*.png',
-        'data/icons/touchtips/*.png',
         'data/*.png',
         'data/*.ttf']
       }

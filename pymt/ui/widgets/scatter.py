@@ -149,10 +149,10 @@ class MTScatterWidget(MTWidget):
         self.scale = scale
         with gx_matrix_identity:
             glTranslated(trans[0], trans[1], 0)
-            glTranslated(point.x, point.y, 0)
+            glTranslated(point[0], point[1], 0)
             glScalef(scale, scale, 1)
             glRotated(angle,0,0,1)
-            glTranslated(-point.x, -point.y, 0)
+            glTranslated(-point[0], -point[1], 0)
             glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
 
     def draw(self):

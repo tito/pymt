@@ -1,9 +1,13 @@
 '''
 PyMT: a multi touch UI toolkit for pyglet.
 
-PyMT is a python module for developing multi-touch enabled media rich applications.
+PyMT is a python module for developing multi-touch enabled media rich
+applications.
 
-Currently the aim is to allow for quick and easy interaction design and rapid prototype development. There is also a focus on logging tasks or sessions of user interaction to quantitative data and the analysis/visualization of such data.
+Currently the aim is to allow for quick and easy interaction design and rapid
+prototype development. There is also a focus on logging tasks or sessions of
+user interaction to quantitative data and the analysis/visualization of such
+data.
 
 You can visit http://code.google.com/p/pymt/ for more informations !
 '''
@@ -11,7 +15,7 @@ You can visit http://code.google.com/p/pymt/ for more informations !
 from __future__ import with_statement
 import ConfigParser
 import sys, getopt, os
-from logger import pymt_logger, LOG_LEVELS
+from pymt.logger import pymt_logger, LOG_LEVELS
 
 # Include lib as new module.
 pymt_base_dir = os.path.dirname(sys.modules[__name__].__file__)
@@ -66,13 +70,15 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
         try:
             pymt_config.read(pymt_config_fn)
         except Exception, e:
-            pymt_logger.exception('error while reading local configuration')
+            pymt_logger.exception(
+                'error while reading local configuration')
     else:
         try:
             with open(pymt_config_fn, 'w') as fd:
                 pymt_config.write(fd)
         except Exception, e:
-            pymt_logger.exception('error while saving default configuration file')
+            pymt_logger.exception(
+                'error while saving default configuration file')
 
     # Set level of logger
     level = LOG_LEVELS.get(pymt_config.get('pymt', 'log_level'))
@@ -100,15 +106,16 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
         opts, args = getopt.getopt(sys.argv[1:], 'hp:fwFem:s',
             ['help', 'fullscreen', 'windowed', 'fps', 'event',
              'module=', 'save',
-             'display=', 'size=', 'dump-frame', 'dump-format=', 'dump-prefix='])
+             'display=', 'size=', 'dump-frame',
+             'dump-format=', 'dump-prefix='])
         need_save = False
         for opt, arg in opts:
             if opt in ['-h', '--help']:
                 pymt_usage()
                 sys.exit(0)
             elif opt in ['-p', '--provider']:
-                id, args = arg.split(':', 1)
-                pymt_config.set('input', id, args)
+                inputid, args = arg.split(':', 1)
+                pymt_config.set('input', inputid, args)
             elif opt in ['-f', '--fullscreen']:
                 pymt_config.set('graphics', 'fullscreen', '1')
             elif opt in ['-w', '--windowed']:
@@ -142,7 +149,8 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
                 with open(pymt_config_fn, 'w') as fd:
                     pymt_config.write(fd)
             except Exception, e:
-                pymt_logger.exception('error while saving default configuration file')
+                pymt_logger.exception(
+                    'error while saving default configuration file')
             pymt_logger.info('PyMT configuration saved.')
             sys.exit(0)
 

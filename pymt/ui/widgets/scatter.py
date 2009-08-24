@@ -38,16 +38,16 @@ class MTScatterWidget(MTWidget):
             The 0.01 mean you can de-zoom up to 10000% (1/0.01*100).
         `scale_max` : float, default to None
             Maximum scale allowed.
-    
+
     :Events:
         `on_transform` (rotation, scale, trans, intersect)
-            Fired whenever the Scatter Widget is transformed (rotate, scale, or zoom).
+            Fired whenever the Scatter Widget is transformed (rotate, scale, moved, or zoomed).
 
     :Styles:
         `bg-color` : color
             Background color of window
     '''
-    
+
     def __init__(self, **kwargs):
         kwargs.setdefault('rotation', 0.0)
         kwargs.setdefault('translation', (0,0))
@@ -58,7 +58,7 @@ class MTScatterWidget(MTWidget):
         kwargs.setdefault('auto_bring_to_front', True)
         kwargs.setdefault('scale_min', 0.01)
         kwargs.setdefault('scale_max', None)
-        
+
         self.register_event_type('on_transform')
 
         super(MTScatterWidget, self).__init__(**kwargs)
@@ -274,7 +274,7 @@ class MTScatterWidget(MTWidget):
             glTranslated(-point.x, -point.y,0)
             glMultMatrixf(self.transform_mat)
             glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
-        
+
         self.dispatch_event('on_transform', angle, scale, trans, point)
 
     def rotate_zoom_move(self, touchID, x, y):
@@ -528,4 +528,3 @@ MTWidgetFactory.register('MTScatterImage', MTScatterImage)
 MTWidgetFactory.register('MTScatterPlane', MTScatterPlane)
 MTWidgetFactory.register('MTScatterSvg', MTScatterSvg)
 MTWidgetFactory.register('MTScatterWidget', MTScatterWidget)
-

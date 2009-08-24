@@ -32,13 +32,6 @@ RESET_SEQ = "\033[0m"
 COLOR_SEQ = "\033[1;%dm"
 BOLD_SEQ = "\033[1m"
 
-def __formatter_message(message, use_color=True):
-    if use_color:
-        message = message.replace("$RESET", RESET_SEQ).replace("$BOLD", BOLD_SEQ)
-    else:
-        message = message.replace("$RESET", "").replace("$BOLD", "")
-    return message
-
 COLORS = {
     'WARNING': YELLOW,
     'INFO': GREEN,
@@ -72,8 +65,14 @@ class ColoredFormatter(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 class ColoredLogger(logging.Logger):
-    FORMAT = "[%(levelname)-18s] %(message)s" # ($BOLD%(filename)s$RESET:%(lineno)d)"
-    #FORMAT = "[%(levelname)-18s]%(message)s ($BOLD%(filename)s$RESET:%(lineno)d)"
+    def __formatter_message(message, use_color=True):
+        if use_color:
+            message = message.replace("$RESET", RESET_SEQ).replace("$BOLD", BOLD_SEQ)
+        else:
+            message = message.replace("$RESET", "").replace("$BOLD", "")
+        return message
+
+    FORMAT = '[%(levelname)-18s] %(message)s' # ($BOLD%(filename)s$RESET:%(lineno)d)"
     COLOR_FORMAT = __formatter_message(FORMAT, pymt_use_color)
 
     def __init__(self, name):

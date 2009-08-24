@@ -236,7 +236,7 @@ def runTouchApp():
 
     # Check if we show event stats
     if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
-        pymt.widget.event_stats_activate()
+        pymt.ui.widgets.widget.event_stats_activate()
 
     # Instance all configured input
     for key, value in pymt.pymt_config.items('input'):
@@ -282,7 +282,7 @@ def runTouchApp():
 
     # Show event stats
     if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
-        pymt.widget.event_stats_print()
+        pymt.ui.widgets.widget.event_stats_print()
 
 def stopTouchApp():
     '''Stop the application loop'''

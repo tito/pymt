@@ -28,12 +28,14 @@
 Matrix: matrix implementation, used for scatter
 '''
 
+__all__ = ['Matrix', 'MatrixException', 'Vector', 'ColVector', 'RowVector']
+
 import random,math,operator
 
 stringPrecision = 3
 epsilon = 1e-8
 
-def any(lst):
+def haveany(lst):
     for item in lst:
         if item: return True
     return False
@@ -146,10 +148,12 @@ class Vector(object):
 
     @cacheValue
     def __str__(self):
-        if any([ isinstance(v,complex) for v in self.values ]):
-            return ", ".join( [ str(v) for v in self.values ] )
+        if haveany([ isinstance(v,complex) for v in self.values ]):
+            return ', '.join(
+                [str(v) for v in self.values])
         else:
-            return ", ".join( [ str(round(v,stringPrecision)) for v in self.values ] )
+            return ', '.join(
+                [str(round(v, stringPrecision)) for v in self.values])
 
     def __add__(self,other):
         if self.__class__ == other.__class__:
@@ -157,7 +161,7 @@ class Vector(object):
         elif isinstance(other,(int,float)):
             return self.__class__( [a+other for a in self] )
         else:
-            raise Exception("???")
+            raise Exception('???')
 
     def __sub__(self,other):
         if self.__class__ == other.__class__:

@@ -5,6 +5,7 @@ Button package: implement different type of button
 from __future__ import with_statement
 __all__ = ['MTButton', 'MTToggleButton', 'MTImageButton']
 
+import pyglet
 from pyglet.gl import *
 from pyglet.text import Label
 from ...graphx import GlDisplayList, set_color, gx_blending

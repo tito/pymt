@@ -12,6 +12,7 @@ __all__ = [
     'paintLine',
 ]
 
+import pyglet
 from pyglet import *
 from pyglet.gl import *
 from pyglet.image import Texture, TextureRegion

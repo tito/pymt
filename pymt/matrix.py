@@ -30,76 +30,77 @@ Matrix: matrix implementation, used for scatter
 
 __all__ = ['Matrix', 'MatrixException', 'Vector', 'ColVector', 'RowVector']
 
-import random,math,operator
+import random
+import math
 
 stringPrecision = 3
 epsilon = 1e-8
 
-def haveany(lst):
+def __any(lst):
     for item in lst:
         if item: return True
     return False
 
 # Caching decorators
-def cacheValue(f):
+def __cacheValue(f):
     fname = f.func_name
-    def cachedRetValFunc(*args):
+    def __cachedRetValFunc(*args):
         self = args[0]
         if not fname in self._CACHE_:
             self._CACHE_[fname] = f(*args)
         return self._CACHE_[fname]
-    cachedRetValFunc.func_name = fname
-    return cachedRetValFunc
+    __cachedRetValFunc.func_name = fname
+    return __cachedRetValFunc
 
-def cacheValueWithArgs(f):
+def __cacheValueWithArgs(f):
     fname = f.func_name
-    def cachedRetValFunc(*args):
+    def __cachedRetValFunc(*args):
         self = args[0]
         funcArgsTuple = (fname,)+tuple(args[1:])
         if not funcArgsTuple in self._CACHE_:
             self._CACHE_[funcArgsTuple] = f(*args)
         return self._CACHE_[funcArgsTuple]
-    cachedRetValFunc.func_name = fname
-    return cachedRetValFunc
+    __cachedRetValFunc.func_name = fname
+    return __cachedRetValFunc
 
-def resetCache(f):
+def __resetCache(f):
     fname = f.func_name
-    def resetCacheFunc(*args):
+    def __resetCacheFunc(*args):
         self = args[0]
         retval = f(*args)
         self._CACHE_.clear()
         return retval
-    resetCacheFunc.func_name = fname
-    return resetCacheFunc
+    __resetCacheFunc.func_name = fname
+    return __resetCacheFunc
 
-def initCache(f):
+def __initCache(f):
     def __init__(*args):
         self = args[0]
         self._CACHE_ = {}
         return f(*args)
     return __init__
 
-def verboseCache(f):
+def __verboseCache(f):
     fname = f.func_name
     def func(*args):
         self = args[0]
         if fname in self._CACHE_:
-            print "getting",fname,"from cache"
+            print 'getting', fname, 'from cache'
         else:
-            print "computing",fname
+            print 'computing', fname
         return f(*args)
     func.func_name = fname
     return func
 
-def verboseCacheWithArgs(f):
+def __verboseCacheWithArgs(f):
     fname = f.func_name
     def func(*args):
         self = args[0]
         funcArgsTuple = (fname,)+tuple(args[1:])
         if funcArgsTuple in self._CACHE_:
-            print "getting",fname,"(with args) from cache"
+            print 'getting', fname, '(with args) from cache'
         else:
-            print "computing",fname
+            print 'computing', fname
         return f(*args)
     func.func_name = fname
     return func
@@ -109,261 +110,264 @@ class MatrixException(Exception):
     pass
 
 class Vector(object):
-    @initCache
-    def __init__(self,vallist):
-        if isinstance(vallist,str):
+    @__initCache
+    def __init__(self, vallist):
+        if isinstance(vallist, str):
             try:
-                vallist = map(float,vallist.split())
-            except ValueError,ve:
-                vallist = map(complex,vallist.split())
+                vallist = map(float, vallist.split())
+            except ValueError, ve:
+                vallist = map(complex, vallist.split())
 
-        elif vallist and isinstance(vallist[0],int):
-            vallist = map(float,vallist)
+        elif vallist and isinstance(vallist[0], int):
+            vallist = map(float, vallist)
         else:
-            vallist = map(float,vallist)
+            vallist = map(float, vallist)
         self.values = vallist[:]
         self.parent = None
 
-    def __getitem__(self,idx):
-        if isinstance(idx,slice):
+    def __getitem__(self, idx):
+        if isinstance(idx, slice):
             return self.values[idx]
         return self.values[idx-1]
 
-    @resetCache
-    def __setitem__(self,idx,val):
+    @__resetCache
+    def __setitem__(self, idx, val):
         self.values[idx-1] = val
         if self.parent is not None:
             self.parent.notifyContentsChange()
 
-    @cacheValue
+    @__cacheValue
     def __len__(self):
         return len(self.values)
 
     def __iter__(self):
         return iter(self.values)
 
-    @cacheValue
+    @__cacheValue
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__,self.values)
+        return '%s(%s)' % (self.__class__.__name__, self.values)
 
-    @cacheValue
+    @__cacheValue
     def __str__(self):
-        if haveany([ isinstance(v,complex) for v in self.values ]):
+        if __any([ isinstance(v, complex) for v in self.values ]):
             return ', '.join(
                 [str(v) for v in self.values])
         else:
             return ', '.join(
                 [str(round(v, stringPrecision)) for v in self.values])
 
-    def __add__(self,other):
+    def __add__(self, other):
         if self.__class__ == other.__class__:
-            return self.__class__( [ a+b for a,b in zip(self,other) ] )
-        elif isinstance(other,(int,float)):
+            return self.__class__( [ a+b for a, b in zip(self, other) ] )
+        elif isinstance(other,(int, float)):
             return self.__class__( [a+other for a in self] )
         else:
             raise Exception('???')
 
-    def __sub__(self,other):
+    def __sub__(self, other):
         if self.__class__ == other.__class__:
-            return self.__class__( [ a-b for a,b in zip(self,other) ] )
-        elif isinstance(other,(int,float)):
+            return self.__class__( [ a-b for a, b in zip(self, other) ] )
+        elif isinstance(other,(int, float)):
             return self.__class__( [a-other for a in self] )
         else:
-            print self,self.__class__.__name__
-            print other,other.__class__.__name__
-            raise Exception("???")
+            print self, self.__class__.__name__
+            print other, other.__class__.__name__
+            raise Exception('???')
 
-    def __eq__(self,other):
+    def __eq__(self, other):
         return self.__class__.__name__ == other.__class__.__name__ and \
             self.values == other.values
 
-    def __ne__(self,other):
-        return not self==other
+    def __ne__(self, other):
+        return not self == other
 
-    @cacheValue
+    @__cacheValue
     def __nonzero__(self):
         for v in self.values:
-            if v: return True
+            if v:
+                return True
         return False
 
-    @cacheValue
+    @__cacheValue
     def __abs__(self):
-        return self.__class__( map(abs,self.values) )
+        return self.__class__( map(abs, self.values) )
 
-    def __lt__(self,other):
+    def __lt__(self, other):
         if self.__class__ == other.__class__:
             if len(self) == len(other):
-                for a,b in zip(self,other):
-                    if not a<b: return False
+                for a, b in zip(self, other):
+                    if not a < b:
+                        return False
                 return True
             else:
-                raise MatrixException("can only compare vectors of same length")
+                raise MatrixException('can only compare vectors of same length')
         else:
-            raise MatrixException("can only compare vectors of same type")
+            raise MatrixException('can only compare vectors of same type')
 
-    def setParent(self,p):
+    def setParent(self, p):
         self.parent = p
 
-    @cacheValue
+    @__cacheValue
     def minval(self):
         return min(self.values)
 
-    @cacheValue
+    @__cacheValue
     def maxval(self):
         return max(self.values)
 
-    @cacheValue
+    @__cacheValue
     def normalized(self):
         mag = math.sqrt(sum(a*a for a in self))
         return self * (1.0/mag)
 
-    @cacheValue
+    @__cacheValue
     def complex(self):
         return self.__class__( [ complex(v) for v in self.values ] )
 
-    @cacheValue
+    @__cacheValue
     def conjugate(self):
         return self.__class__( [ v.conjugate() for v in self.complex().values ] )
 
 
 class ColVector(Vector):
-    @cacheValue
+    @__cacheValue
     def transpose(self):
         return RowVector(self.values)
 
-    def __mul__(self,other):
-        if isinstance(other,(int,float)):
+    def __mul__(self, other):
+        if isinstance(other,(int, float)):
             return ColVector([a*other for a in self])
-        elif isinstance(other,RowVector):
+        elif isinstance(other, RowVector):
             return Matrix([RowVector(other*a) for a in self])
         else:
-            raise MatrixException("Can only multiply RowVectors with ColVectors")
+            raise MatrixException('Can only multiply RowVectors with ColVectors')
 
-    @cacheValue
+    @__cacheValue
     def numRows(self):
         return len(self)
 
-    @cacheValue
+    @__cacheValue
     def numCols(self):
         return 1
 
 
 class RowVector(Vector):
-    @cacheValue
+    @__cacheValue
     def transpose(self):
         return ColVector(self.values)
 
-    def __mul__(self,other):
-        if isinstance(other,ColVector):
-            if len(other)==len(self):
-                return sum([a*b for a,b in zip(self, other)])
+    def __mul__(self, other):
+        if isinstance(other, ColVector):
+            if len(other) == len(self):
+                return sum([a*b for a, b in zip(self, other)])
             else:
-                raise MatrixException("Vectors must be same length")
-        elif isinstance(other,Matrix):
+                raise MatrixException('Vectors must be same length')
+        elif isinstance(other, Matrix):
             if len(self) == other.numRows():
                 return RowVector([self*other.col(i) for i in other.colrange()])
             else:
-                raise MatrixException("Matrix has wrong number of rows")
-        elif isinstance(other,(int,float)):
+                raise MatrixException('Matrix has wrong number of rows')
+        elif isinstance(other,(int, float)):
             return RowVector([a*other for a in self])
         else:
-            raise MatrixException("Can only multiply RowVectors with ColVectors")
+            raise MatrixException('Can only multiply RowVectors with ColVectors')
 
-    @cacheValue
+    @__cacheValue
     def numRows(self):
         return 1
 
-    @cacheValue
+    @__cacheValue
     def numCols(self):
         return len(self)
 
 class Matrix(object):
-    @initCache
-    def __init__(self,data):
-        if isinstance(data,str):
+    @__initCache
+    def __init__(self, data):
+        if isinstance(data, str):
             self._rows = [RowVector(s) for s in data.split("\n")]
-        elif isinstance(data,(list,tuple)):
-            if isinstance(data[0],str):
-                self._rows = map(RowVector,data)
-            elif isinstance(data[0],RowVector):
+        elif isinstance(data,(list, tuple)):
+            if isinstance(data[0], str):
+                self._rows = map(RowVector, data)
+            elif isinstance(data[0], RowVector):
                 self._rows = data[:]
-            elif isinstance(data[0],ColVector):
+            elif isinstance(data[0], ColVector):
                 self._rows = zip(data)
         for r in self._rows:
             r.setParent(self)
         self.parent = None
         self.submatrixcache = {}
 
-    @resetCache
+    @__resetCache
     def notifyContentsChange(self):
         pass
 
-    def __mul__(self,other):
-        if isinstance(other,(int,float)):
+    def __mul__(self, other):
+        if isinstance(other,(int, float)):
             return Matrix( [ r*other for r in self._rows ] )
-        if isinstance(other,ColVector):
+        if isinstance(other, ColVector):
             if self.numCols() == other.numRows():
                 return RowVector( [r*other for r in self._rows ] )
             else:
-                raise MatrixException("mismatch sizes for multiplication")
-        if isinstance(other,Matrix):
+                raise MatrixException('mismatch sizes for multiplication')
+        if isinstance(other, Matrix):
             if self.numCols() == other.numRows():
                 othercols = [ other.col(i) for i in other.colrange() ]
                 newrows = [ RowVector( [r*col for col in othercols] ) for r in self._rows ]
                 return Matrix(newrows)
             else:
-                raise MatrixException("mismatch sizes for multiplication")
-        raise MatrixException("mismatch types for matrix multiplication")
+                raise MatrixException('mismatch sizes for multiplication')
+        raise MatrixException('mismatch types for matrix multiplication')
 
-    def __rmul__(self,other):
-        if isinstance(other,(int,float)):
+    def __rmul__(self, other):
+        if isinstance(other,(int, float)):
             return Matrix( [ r*other for r in self._rows ] )
-        raise MatrixException("mismatch types for matrix multiplication")
+        raise MatrixException('mismatch types for matrix multiplication')
 
-    @resetCache
-    def __imul__(self,other):
+    @__resetCache
+    def __imul__(self, other):
         tmp = self*other
         self._rows = tmp._rows
         for r in self._rows:
             r.setParent(self)
         return self
 
-    @cacheValue
+    @__cacheValue
     def __str__(self):
-        return "\n".join(map(str,self._rows))
+        return "\n".join(map(str, self._rows))
 
-    def __eq__(self,other):
+    def __eq__(self, other):
         return self.__class__.__name__ == other.__class__.__name__ and \
             self._rows == other._rows
 
-    def __ne__(self,other):
-        return not self==other
+    def __ne__(self, other):
+        return not self == other
 
-    @cacheValue
+    @__cacheValue
     def __nonzero__(self):
         for r in self._rows:
-            if r: return True
+            if r:
+                return True
         return False
 
-    @cacheValue
+    @__cacheValue
     def transpose(self):
-        """Function to return the transpose of a matrix."""
+        '''Function to return the transpose of a matrix.'''
         tmp = zip( *[ r.values for r in self._rows ] )
-        return Matrix( map(RowVector,tmp) )
+        return Matrix( map(RowVector, tmp) )
 
-    @cacheValue
+    @__cacheValue
     def numRows(self):
         return len(self._rows)
 
-    @cacheValue
+    @__cacheValue
     def numCols(self):
         return len(self[1])
 
-    @cacheValue
+    @__cacheValue
     def isSquare(self):
         return self.numCols() == self.numRows()
 
-    @cacheValue
+    @__cacheValue
     def isSymmetric(self):
         if self.isSquare():
             for i in self.rowrange():
@@ -373,70 +377,70 @@ class Matrix(object):
             return True
         return False
 
-    @cacheValueWithArgs
-    def col(self,idx):
+    @__cacheValueWithArgs
+    def col(self, idx):
         return ColVector( [ a[idx] for a in self._rows ] )
 
-    @cacheValueWithArgs
-    def row(self,idx):
+    @__cacheValueWithArgs
+    def row(self, idx):
         return self._rows[idx-1]
 
-    def __getitem__(self,idx):
-        if isinstance(idx,slice):
+    def __getitem__(self, idx):
+        if isinstance(idx, slice):
             return Matrix([ RowVector(r.values) for r in self._rows[idx]])
         return self.row(idx)
 
-    def __delitem__(self,idx):
+    def __delitem__(self, idx):
         del self._rows[idx-1]
 
-    def __add__(self,other):
-        if isinstance(other,(int,float)):
+    def __add__(self, other):
+        if isinstance(other,(int, float)):
             return Matrix( [ row+other for row in self._rows ] )
-        elif isinstance(other,Matrix):
+        elif isinstance(other, Matrix):
             if self.numRows() == other.numRows() and self.numCols() == other.numCols():
-                return Matrix( [ a+b for a,b in zip(self._rows,other._rows) ] )
+                return Matrix( [ a+b for a, b in zip(self._rows, other._rows) ] )
             else:
-                raise MatrixException("cannot add matrices of unlike dimensions")
+                raise MatrixException('cannot add matrices of unlike dimensions')
         else:
-            raise MatrixException("unlike types for matrix addition")
+            raise MatrixException('unlike types for matrix addition')
 
-    def __radd__(self,other):
-        if isinstance(other,(int,float)):
+    def __radd__(self, other):
+        if isinstance(other,(int, float)):
             return Matrix( [ row+other for row in self._rows ] )
         else:
-            raise MatrixException("unlike types for matrix addition")
+            raise MatrixException('unlike types for matrix addition')
 
-    def __sub__(self,other):
-        if isinstance(other,(int,float)):
+    def __sub__(self, other):
+        if isinstance(other,(int, float)):
             return self + -other
-        elif isinstance(other,Matrix):
+        elif isinstance(other, Matrix):
             if self.numRows() == other.numRows() and self.numCols() == other.numCols():
-                return Matrix( [ a-b for a,b in zip(self._rows,other._rows) ] )
+                return Matrix( [ a-b for a, b in zip(self._rows, other._rows) ] )
             else:
-                raise MatrixException("cannot subtract matrices of unlike dimensions")
+                raise MatrixException('cannot subtract matrices of unlike dimensions')
         else:
-            raise MatrixException("unlike types for matrix subtraction")
+            raise MatrixException('unlike types for matrix subtraction')
 
-    def __rsub__(self,other):
-        raise MatrixException("unlike types for matrix subtraction")
+    def __rsub__(self, other):
+        raise MatrixException('unlike types for matrix subtraction')
 
-    @cacheValue
+    @__cacheValue
     def trace(self):
-        """Function to return the trace of a matrix."""
+        '''Function to return the trace of a matrix.'''
         if self.isSquare():
-            return sum( r[i] for r,i in zip(self._rows,self.colrange()) )
+            return sum( r[i] for r, i in zip(self._rows, self.colrange()) )
         else:
-            raise MatrixException("can only compute trace for square matrices")
+            raise MatrixException('can only compute trace for square matrices')
 
-    @cacheValue
+    @__cacheValue
     def colrange(self):
-        return range(1,self.numCols()+1)
+        return range(1, self.numCols()+1)
 
-    @cacheValue
+    @__cacheValue
     def rowrange(self):
-        return range(1,self.numRows()+1)
+        return range(1, self.numRows()+1)
 
-    def getCachedMatrix( self,rowVectList ):
+    def getCachedMatrix( self, rowVectList ):
         if self.parent is not None:
             return self.parent.getCachedMatrix(rowVectList)
         vals = tuple( tuple(v.values) for v in rowVectList )
@@ -446,9 +450,9 @@ class Matrix(object):
         return self.submatrixcache[vals]
 
     #@verboseCache - add this decorator to view cache effectivity
-    @cacheValue
+    @__cacheValue
     def det(self):
-        "Function to return the determinant of the matrix."
+        'Function to return the determinant of the matrix.'
         if self.isSquare():
             if self.numRows() > 2:
                 multiplier = 1
@@ -472,10 +476,10 @@ class Matrix(object):
             if self.numRows() == 0:
                 return 0
         else:
-            raise MatrixException("can only compute det for square matrices")
+            raise MatrixException('can only compute det for square matrices')
 
-    # @cacheValueWithArgs (don't bother cacheing cofactor, its caller is cached)
-    def cofactor(self,i,j):
+    # @__cacheValueWithArgs (don't bother cacheing cofactor, its caller is cached)
+    def cofactor(self, i, j):
         i-=1
         j-=1
         #~ tmp = Matrix([ RowVector(r[:i]+r[i+1:]) for r in (self._rows[:j]+self._rows[j+1:]) ])
@@ -486,30 +490,30 @@ class Matrix(object):
             return tmp.det()
         #~ return (-1) ** (i+j) * tmp.det()
 
-    @cacheValue
+    @__cacheValue
     def inverse(self):
         if self.isSquare():
             if self.det() != 0:
-                ret = Matrix( [ RowVector( [ self.cofactor(i,j) for j in self.colrange() ] )
+                ret = Matrix( [ RowVector( [ self.cofactor(i, j) for j in self.colrange() ] )
                                  for i in self.rowrange() ] )
                 ret *= (1.0/self.det())
                 return ret
             else:
-                raise MatrixException("cannot compute inverse for singular matrices")
+                raise MatrixException('cannot compute inverse for singular matrices')
         else:
-            raise MatrixException("can only compute inverse for square matrices")
+            raise MatrixException('can only compute inverse for square matrices')
 
-    @cacheValue
+    @__cacheValue
     def conjugate(self):
         return Matrix( [ vec.conjugate() for vec in self._rows ] )
 
-    @cacheValue
-    def round(self,digits):
+    @__cacheValue
+    def round(self, digits):
         def roundTo(n):
-            return lambda x : round(x,n)
+            return lambda x : round(x, n)
         return Matrix([ RowVector( map(roundTo(digits), r.values ) ) for r in self._rows ])
 
-    @cacheValue
+    @__cacheValue
     def eigen(self):
         epsvec = RowVector( [epsilon*epsilon]*self.numRows() )
         escape = 0
@@ -520,22 +524,22 @@ class Matrix(object):
             v = (v*self).normalized()
             escape += 1
         if escape == 500:
-            raise MatrixException("eigenvector did not converge")
+            raise MatrixException('eigenvector did not converge')
 
         v2 = v*self
-        for a,b in zip(v2,v):
+        for a, b in zip(v2, v):
             if b:
-                return v,a/b
-        raise MatrixException("generated zero vector")
+                return v, a/b
+        raise MatrixException('generated zero vector')
 
-    @cacheValue
+    @__cacheValue
     def eigenAll(self):
         if self.isSymmetric():
             m2 = self[:]
             ret = []
             for i in self.rowrange():
-                vec,val = m2.eigen()
-                ret.append( (vec,val) )
+                vec, val = m2.eigen()
+                ret.append( (vec, val) )
                 m2 = m2 - (vec.transpose()*vec*val)
             return ret
         else:
@@ -543,90 +547,90 @@ class Matrix(object):
 
     @staticmethod
     def Identity(n):
-        """A factory method to construct an nxn identity matrix."""
+        '''A factory method to construct an nxn identity matrix.'''
         return Matrix([ RowVector([0]*i+[1]+[0]*(n-i-1)) for i in range(n) ] )
 
     @staticmethod
     def Zero(n):
-        """A factory method to construct an nxn zero matrix."""
+        '''A factory method to construct an nxn zero matrix.'''
         row = [0]*n
         return Matrix([ RowVector(row[:]) for i in range(n) ] )
 
 
 def testMatrix(m):
-    print "----------------"
-    print "A"
+    print '----------------'
+    print 'A'
     print m
     print
-    print " T"
-    print "A"
+    print ' T'
+    print 'A'
     print m.transpose()
     print
-    print "tr(A) =",m.trace()
+    print 'tr(A) =', m.trace()
     print
     if m.isSymmetric():
-        print "Eigenvectors of A"
+        print 'Eigenvectors of A'
         m2 = m[:]
         vecs = []
         vals = []
         for i in m.rowrange():
             try:
-                vec,val = m2.eigen()
+                vec, val = m2.eigen()
                 vecs.append(vec)
                 vals.append(val)
-                print vec, ":", val
+                print vec, ':', val
                 m2 = m2 - (vec.transpose()*vec*val)
-            except Exception,e:
+            except Exception, e:
                 print e
                 break
 
         print
-        print "verify eigenvectors (expect zero matrix)"
+        print 'verify eigenvectors (expect zero matrix)'
         m3 = Matrix.Zero(m.numRows())
-        for vec,val in zip(vecs,vals):
+        for vec, val in zip(vecs, vals):
             m3 = m3 + (vec.transpose()*vec)*val
         print m3-m
     else:
-        print "Principal Eigenvector of A"
+        print 'Principal Eigenvector of A'
         try:
-            print m.eigen()[0], ":", m.eigen()[1]
-        except Exception,e:
+            print m.eigen()[0], ':', m.eigen()[1]
+        except Exception, e:
             print e
     print
     try:
-        print "|A| =",m.det()
-    except Exception,e:
+        print '|A| =', m.det()
+    except Exception, e:
         print e
     print
-    print "inv(A)"
+    print 'inv(A)'
     try:
         print m.inverse()
-    except Exception,e:
+    except Exception, e:
         print e
     print
-    print "A*inv(A) (expect identity matrix)"
+    print 'A*inv(A) (expect identity matrix)'
     try:
         print m*m.inverse()
-    except Exception,e:
+    except Exception, e:
         print e
     print
 
 
-if __name__ == "__main__":
-    testMatrix(Matrix( [ RowVector([1,0]),
-                        RowVector([0,1])]) )
+if __name__ == '__main__':
+    testMatrix(Matrix( [ RowVector([1, 0]),
+                        RowVector([0, 1])]) )
 
 def test():
     # create matrix the hard way
-    avec = RowVector("1 2 3")
-    bvec = ColVector("4 5 6")
-    testMatrix( Matrix([avec,bvec.transpose(),RowVector([10,9,10])]) )
+    avec = RowVector('1 2 3')
+    bvec = ColVector('4 5 6')
+    testMatrix( Matrix([avec, bvec.transpose(), RowVector([10, 9, 10])]) )
 
     # create matrix the easy way
-    testMatrix( Matrix(  """1 2 3 4
+    testMatrix( Matrix(  '''1 2 3 4
                              5 11 20 3
                              2 7 11 1
-                             0 5 3 1""") )
+                             0 5 3 1''') )
 
     # some helpers for common matrix construction
     testMatrix( Matrix.Zero(3) )
@@ -649,15 +653,15 @@ def test():
     m[6][6] = 7
     testMatrix(m)
 
-    testMatrix( Matrix(  """2 3
-                             2 1""") )
+    testMatrix( Matrix(  '''2 3
+                             2 1''') )
 
     # try a large symmetric matrix for eigenvalue calcs and inversion performance
     n = 10
     m = Matrix.Zero(n)
-    for i in range(1,n+1):
+    for i in range(1, n+1):
         m[i][i] = random.random()*100
-        for j in range(i+1,n+1):
+        for j in range(i+1, n+1):
             m[i][j] = random.random()*10-5
             m[j][i] = m[i][j]
     testMatrix(m)

@@ -75,7 +75,7 @@ class MTPlugins(object):
     def deactivate(self, plugin, container):
         '''Deactivate a plugin'''
         # XXX TODO: remember each context for each plugin instance !
-        ctx = MTContext()
+        #ctx = MTContext()
         try:
             plugin.pymt_plugin_deactivate(container)
         except:

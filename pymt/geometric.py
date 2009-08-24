@@ -3,8 +3,6 @@ Geometric: module provide some class to handle 3D Mesh.
 '''
 __all__ = ['Material', 'MaterialGroup', 'Mesh']
 
-import os
-import warnings
 import pyglet
 from pyglet.gl import glEnable, glBindTexture, glDisable, glMaterialfv,     \
     glMaterialf, glCallList, glGenLists, glNewList, glEndList,              \
@@ -12,7 +10,8 @@ from pyglet.gl import glEnable, glBindTexture, glDisable, glMaterialfv,     \
     glDrawArrays, glPopAttrib, glPopClientAttrib, GL_TEXTURE_2D,            \
     GL_TRIANGLES, GL_CLIENT_VERTEX_ARRAY_BIT, GL_CURRENT_BIT, GL_ENABLE_BIT,\
     GL_LIGHTING_BIT, GL_BACK, GLfloat, GL_T2F_N3F_V3F, GL_DIFFUSE,          \
-    GL_AMBIENT, GL_SPECULAR, GL_EMISSION, GL_SHININESS
+    GL_AMBIENT, GL_SPECULAR, GL_EMISSION, GL_SHININESS, GL_CULL_FACE,       \
+    GL_COMPILE
 
 class Material(object):
     '''

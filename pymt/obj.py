@@ -4,10 +4,9 @@ Obj: handle 3D mesh
 __all__ = ['OBJ']
 
 import os
-import warnings
 
+from . import pymt_logger
 from pyglet import image
-from graphx import *
 from geometric import Material, MaterialGroup, Mesh
 
 class OBJ:
@@ -16,18 +15,18 @@ class OBJ:
     :Parameters:
         `filename` : string
             Filename of object
-        `file` : File object, default to None
-            Use file instead of filename if possible
+        `fd` : Fd object, default to None
+            Use fd instead of filename if possible
         `path` : string, default to None
             Use custom path for material
     '''
-    def __init__(self, filename, file=None, path=None):
-        self.materials = {}
-        self.meshes = {}        # Name mapping
-        self.mesh_list = []     # Also includes anonymous meshes
+    def __init__(self, filename, fd=None, path=None):
+        self.materials  = {}
+        self.meshes     = {}     # Name mapping
+        self.mesh_list  = []     # Also includes anonymous meshes
 
-        if file is None:
-            file = open(filename, 'r')
+        if fd is None:
+            fd = open(filename, 'r')
 
         if path is None:
             path = os.path.dirname(filename)
@@ -41,7 +40,7 @@ class OBJ:
         normals = [[0., 0., 0.]]
         tex_coords = [[0., 0.]]
 
-        for line in open(filename, 'r'):
+        for line in fd:
             if line.startswith('#'):
                 continue
             values = line.split()
@@ -59,7 +58,7 @@ class OBJ:
             elif values[0] in ('usemtl', 'usemat'):
                 material = self.materials.get(values[1], None)
                 if material is None:
-                    warnings.warn('Unknown material: %s' % values[1])
+                    pymt_logger.warning('Unknown material: %s' % values[1])
                 if mesh is not None:
                     group = MaterialGroup(material)
                     mesh.groups.append(group)
@@ -79,12 +78,11 @@ class OBJ:
                     mesh.groups.append(group)
 
                 # For fan triangulation, remember first and latest vertices
-                v1 = None
-                vlast = None
-                points = []
+                v1      = None
+                vlast   = None
                 for i, v in enumerate(values[1:]):
                     v_index, t_index, n_index = \
-                            (map(int, [j or 0 for j in v.split('/')]) + [0, 0])[:3]
+                        (map(int, [j or 0 for j in v.split('/')]) + [0, 0])[:3]
                     if v_index < 0:
                         v_index += len(vertices) - 1
                     if t_index < 0:
@@ -110,9 +108,9 @@ class OBJ:
 
     def load_material_library(self, filename):
         material = None
-        file = self.open_material_file(filename)
+        fd = self.open_material_file(filename)
 
-        for line in file:
+        for line in fd:
             if line.startswith('#'):
                 continue
             values = line.split()
@@ -123,7 +121,7 @@ class OBJ:
                 material = Material(values[1])
                 self.materials[material.name] = material
             elif material is None:
-                warnings.warn('Expected "newmtl" in %s' % filename)
+                pymt_logger.warning('Expected "newmtl" in %s' % filename)
                 continue
 
             try:
@@ -142,10 +140,11 @@ class OBJ:
                 elif values[0] == 'map_Kd':
                     try:
                         material.texture = image.load(values[1]).texture
-                    except image.ImageDecodeException:
-                        warnings.warn('Could not load texture %s' % values[1])
-            except:
-                warnings.warn('Parse error in %s.' % filename)
+                    except Exception:
+                        pymt_logger.exception('Could not load texture')
+            except Exception:
+                pymt_logger.exception('Parse error in %s.' % filename)
+        fd.close()
 
     def draw(self):
         '''Draw the object on screen'''

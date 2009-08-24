@@ -171,6 +171,11 @@ class MTScatterWidget(MTWidget):
             self.children = self.children_front
 
     def flip_to(self, to):
+        '''Flip to a specified side
+        :Parameters:
+            `to` : string
+                Side to switch on, can be 'back' or 'front'.
+        '''
         if to == 'back' and self.side == 'front':
             self.flip_children()
         elif to == 'front' and self.side == 'back':

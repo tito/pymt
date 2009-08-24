@@ -97,9 +97,9 @@ class MTScatterWidget(MTWidget):
         self.scale          = 1
         self.transform_mat  = (GLfloat * 16)()
         if kwargs.get('translation')[0] != 0 or kwargs.get('translation')[1] != 0:
-            self.init_transform(kwargs.get('translation'), kwargs.get('rotation'), kwargs.get('scale'))
+            self.init_transform(kwargs.get('rotation'), kwargs.get('scale'), kwargs.get('translation'))
         else:
-            self.init_transform(super(MTScatterWidget, self).pos, kwargs.get('rotation'), kwargs.get('scale'))
+            self.init_transform(kwargs.get('rotation'), kwargs.get('scale'), super(MTScatterWidget, self).pos)
 
     def add_widget(self, w, side='front', front=True):
         '''Add a widget to a side of scatter.
@@ -130,16 +130,29 @@ class MTScatterWidget(MTWidget):
         except:
             pass
 
-    def init_transform(self, pos, angle, scale):
+    def init_transform(self, angle, scale, trans, point=(0, 0)):
+        '''Initialize transformation matrix with new parameters.
+        :Parameters:
+            `angle` : float
+                Initial rotation angle
+            `scale` : float
+                Initial scaling
+            `trans` : Vector
+                Initial translation vector
+            `point` : Vector, default to (0, 0)
+                Initial point to apply transformation
+        '''
         if scale < self.scale_min:
             scale = self.scale_min
         if self.scale_max is not None and scale > self.scale_max:
             scale = self.scale_max
         self.scale = scale
         with gx_matrix_identity:
-            glTranslated(pos[0], pos[1], 0)
+            glTranslated(trans[0], trans[1], 0)
+            glTranslated(point.x, point.y, 0)
             glScalef(scale, scale, 1)
             glRotated(angle,0,0,1)
+            glTranslated(-point.x, -point.y, 0)
             glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
 
     def draw(self):
@@ -219,7 +232,18 @@ class MTScatterWidget(MTWidget):
         return None
 
 
-    def apply_angle_scale_trans(self, angle, scale, trans, point):
+    def apply_angle_scale_trans(self, angle, scale, trans, point=(0, 0)):
+        '''Update matrix transformation by adding new angle, scale and translate.
+        :Parameters:
+            `angle` : float
+                Rotation angle to add
+            `scale` : float
+                Scaling value to add
+            `trans` : Vector
+                Vector translation to add
+            `point` : Vector, default to (0, 0)
+                Point to apply transformation
+        '''
         old_scale = self.scale
         self.scale *= scale
         if self.scale < self.scale_min or \

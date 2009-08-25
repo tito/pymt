@@ -133,7 +133,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
                 if str(arg) == 'list':
                     pymt_modules.usage_list()
                     sys.exit(0)
-                module_name, module_args = str(arg).split('=', 1)
+                module_name, module_args = str(arg).split('=', 1) + ['']
                 pymt_config.set('modules', module_name, module_args)
             elif opt in ['-s', '--save']:
                 need_save = True

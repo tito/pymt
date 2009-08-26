@@ -54,11 +54,15 @@ class TouchTracer(MTWidget):
         set_color(.2, .2, .2)
         drawRectangle(size=w.size)
         for p in self.touchPositions:
+            lines = []
             touchID,color,x,y = self.touchPositions[p][0]
+            glColor3d(*color)
+            lines += [x, y]
             for pos in self.touchPositions[p][1:]:
-                glColor3d(*color)
-                paintLine( (x, y, pos[0], pos[1]) )
-                x, y = pos
+                lines += pos
+            if len(lines) > 2:
+                paintLine(lines)
+            x, y = lines[-2:]
             drawLabel(x,y, touchID)
 
 def pymt_plugin_activate(w, ctx):

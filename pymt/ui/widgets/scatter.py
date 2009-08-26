@@ -7,7 +7,8 @@ __all__ = ['MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane', 'MTScatterImage'
 
 import pyglet
 from pyglet.gl import *
-from ...graphx import drawRectangle, gx_matrix, gx_matrix_identity, set_color
+from ...graphx import drawRectangle, gx_matrix, gx_matrix_identity, set_color, \
+    drawTexturedRectangle
 from ...vector import Vector, matrix_mult, matrix_inv_mult
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory

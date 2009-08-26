@@ -8,7 +8,7 @@ __all__ = ['MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane', 'MTScatterImage'
 import pyglet
 from pyglet.gl import *
 from ...graphx import drawRectangle, gx_matrix, gx_matrix_identity, set_color, \
-    drawTexturedRectangle
+    drawTexturedRectangle, gx_blending
 from ...vector import Vector, matrix_mult, matrix_inv_mult
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
@@ -504,9 +504,9 @@ class MTScatterImage(MTScatterWidget):
             self.image  = pyglet.image.load(kwargs.get('filename'))
 
     def draw(self):
-        glDisable(GL_BLEND)
         set_color(1, 1, 1)
-        drawTexturedRectangle(texture=self.image.get_texture(), size=self.size)
+        with gx_blending:
+            drawTexturedRectangle(texture=self.image.get_texture(), size=self.size)
 
 class MTScatterSvg(MTScatterWidget):
     '''Render an svg image into a scatter widget

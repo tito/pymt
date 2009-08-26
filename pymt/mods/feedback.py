@@ -97,29 +97,31 @@ class GlobalFeedback(MTWidget):
         self.touches = {}
         self.rings = []
 
-    def on_touch_down(self, touch):
-        touch.grab(self)
-        self.touches[touch.id] = GlobalFeedbackTouch(pos=(touch.x, touch.y))
-        self.add_widget(self.touches[touch.id])
-
-        # prepare ring
-        newsprite = pyglet.sprite.Sprite(ring_img, x=touch.x, y=touch.y)
-        newsprite.opacity = 195
-        newsprite.scale = 0.10
-        self.rings.append(newsprite)
-
-    def on_touch_move(self, touch):
-        if not touch.id in self.touches:
-            return
-        self.touches[touch.id].pos = (touch.x, touch.y)
-
-    def on_touch_up(self, touch):
-        if touch.id in self.touches:
-            touch.ungrab(self)
-            self.remove_widget(self.touches[touch.id])
-            del self.touches[touch.id]
-
     def on_draw(self):
+        alivetouches = []
+        for touch in getAvailableTouchs():
+            alivetouches.append(touch.id)
+            if touch.id not in self.touches:
+                self.touches[touch.id] = GlobalFeedbackTouch(pos=(touch.x, touch.y))
+                self.add_widget(self.touches[touch.id])
+
+                newsprite = pyglet.sprite.Sprite(ring_img, x=touch.x, y=touch.y)
+                newsprite.opacity = 195
+                newsprite.scale = 0.10
+                self.rings.append(newsprite)
+            else:
+                self.touches[touch.id].pos = (touch.x, touch.y)
+
+        touchestodel = []
+
+        for touchid in self.touches:
+            if touchid not in alivetouches:
+                touchestodel.append(touchid)
+
+        for id in touchestodel:
+            self.remove_widget(self.touches[id])
+            del self.touches[id]
+
         # Uncomment the line below to always see feedback.
         #self.bring_to_front()
         super(GlobalFeedback, self).on_draw()

@@ -32,13 +32,6 @@ RESET_SEQ = "\033[0m"
 COLOR_SEQ = "\033[1;%dm"
 BOLD_SEQ = "\033[1m"
 
-def formatter_message(message, use_color = True):
-    if use_color:
-        message = message.replace("$RESET", RESET_SEQ).replace("$BOLD", BOLD_SEQ)
-    else:
-        message = message.replace("$RESET", "").replace("$BOLD", "")
-    return message
-
 COLORS = {
     'WARNING': YELLOW,
     'INFO': GREEN,
@@ -55,12 +48,12 @@ LOG_LEVELS = {
     'critical': logging.CRITICAL
 }
 
-use_color = True
+pymt_use_color = True
 if os.name == 'nt':
-    use_color = False
+    pymt_use_color = False
 
 class ColoredFormatter(logging.Formatter):
-    def __init__(self, msg, use_color = True):
+    def __init__(self, msg, use_color=True):
         logging.Formatter.__init__(self, msg)
         self.use_color = use_color
 
@@ -72,14 +65,20 @@ class ColoredFormatter(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 class ColoredLogger(logging.Logger):
-    FORMAT = "[%(levelname)-18s] %(message)s" # ($BOLD%(filename)s$RESET:%(lineno)d)"
-    #FORMAT = "[%(levelname)-18s]%(message)s ($BOLD%(filename)s$RESET:%(lineno)d)"
-    COLOR_FORMAT = formatter_message(FORMAT, use_color)
+    def __formatter_message(message, use_color=True):
+        if use_color:
+            message = message.replace("$RESET", RESET_SEQ).replace("$BOLD", BOLD_SEQ)
+        else:
+            message = message.replace("$RESET", "").replace("$BOLD", "")
+        return message
+
+    FORMAT = '[%(levelname)-18s] %(message)s' # ($BOLD%(filename)s$RESET:%(lineno)d)"
+    COLOR_FORMAT = __formatter_message(FORMAT, pymt_use_color)
 
     def __init__(self, name):
-        global use_color
+        global pymt_use_color
         logging.Logger.__init__(self, name, logging.DEBUG)
-        color_formatter = ColoredFormatter(self.COLOR_FORMAT, use_color=use_color)
+        color_formatter = ColoredFormatter(self.COLOR_FORMAT, use_color=pymt_use_color)
         console = logging.StreamHandler()
         console.setFormatter(color_formatter)
         self.addHandler(console)

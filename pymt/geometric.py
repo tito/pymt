@@ -3,10 +3,15 @@ Geometric: module provide some class to handle 3D Mesh.
 '''
 __all__ = ['Material', 'MaterialGroup', 'Mesh']
 
-import os
-import warnings
 import pyglet
-from pyglet.gl import *
+from pyglet.gl import glEnable, glBindTexture, glDisable, glMaterialfv,     \
+    glMaterialf, glCallList, glGenLists, glNewList, glEndList,              \
+    glPushClientAttrib, glPushAttrib, glCullFace, glInterleavedArrays,      \
+    glDrawArrays, glPopAttrib, glPopClientAttrib, GL_TEXTURE_2D,            \
+    GL_TRIANGLES, GL_CLIENT_VERTEX_ARRAY_BIT, GL_CURRENT_BIT, GL_ENABLE_BIT,\
+    GL_LIGHTING_BIT, GL_BACK, GLfloat, GL_T2F_N3F_V3F, GL_DIFFUSE,          \
+    GL_AMBIENT, GL_SPECULAR, GL_EMISSION, GL_SHININESS, GL_CULL_FACE,       \
+    GL_COMPILE
 
 class Material(object):
     '''
@@ -22,7 +27,8 @@ class Material(object):
     texture = None
 
     def __init__(self, name):
-        self.name = name
+        self.emissive   = []
+        self.name       = name
 
     def apply(self, face=pyglet.gl.GL_FRONT_AND_BACK):
         '''Apply the material on current context'''
@@ -43,9 +49,7 @@ class Material(object):
         glMaterialf(face, GL_SHININESS, self.shininess)
 
 class MaterialGroup(object):
-    '''
-    Groups of material
-    '''
+    '''Groups of material'''
     def __init__(self, material):
         self.material = material
 
@@ -53,10 +57,9 @@ class MaterialGroup(object):
         self.vertices = []
         self.array = None
 
+
 class Mesh(object):
-    '''
-    Class to store a mesh in T2F_N3F_V3F format.
-    '''
+    '''Class to store a mesh in T2F_N3F_V3F format.'''
     def __init__(self, name):
         self.name = name
         self.groups = []
@@ -88,9 +91,9 @@ class Mesh(object):
         '''Compile the mesh in display list'''
         if self.list:
             return
-        list = glGenLists(1)
-        glNewList(list, GL_COMPILE)
+        lt = glGenLists(1)
+        glNewList(lt, GL_COMPILE)
         self.draw()
         glEndList()
-        self.list = list
+        self.list = lt
 

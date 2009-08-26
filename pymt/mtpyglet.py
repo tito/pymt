@@ -10,16 +10,13 @@ __all__ = [
     'touch_event_listeners', 'pymt_providers'
 ]
 
-import osc
+import lib.osc
 import pyglet
 import pymt
-import sys, getopt, os
+import sys, os
 from logger import pymt_logger
-from pyglet.gl import *
 from exceptions import pymt_exception_manager, ExceptionManager
-from Queue import Queue
-from utils import intersection, difference, strtotuple
-from input import *
+from input import TouchFactory, pymt_postproc_modules
 
 # All event listeners will add themselves to this
 # list upon creation
@@ -27,7 +24,7 @@ touch_event_listeners   = []
 touch_list              = []
 pymt_providers          = []
 pymt_evloop             = None
-frame_dt                = 0.01 # init to a non-zero value, to prevent user zero division
+frame_dt                = 0.01 # init >0 value to prevent user zero division
 
 def getFrameDt():
     '''Return the last delta between old and new frame.'''
@@ -35,57 +32,66 @@ def getFrameDt():
     return frame_dt
 
 def getAvailableTouchs():
+    '''Return all the availables touches'''
     global touch_list
     return touch_list
 
 def getEventLoop():
+    '''Return the default event loop'''
     global pymt_evloop
     return pymt_evloop
 
 class TouchEventLoop(pyglet.app.EventLoop):
     '''Main event loop. This loop handle update of input + dispatch event
     '''
-    def __init__(self, host='127.0.0.1', port=3333):
+    def __init__(self):
         pyglet.app.EventLoop.__init__(self)
-        self.input_events = []
-        self.postproc_modules = []
-        self.double_tap_distance = pymt.pymt_config.getint('pymt', 'double_tap_distance') / 1000.0
-        self.double_tap_time = pymt.pymt_config.getint('pymt', 'double_tap_time') / 1000.0
+        self.input_events           = []
+        self.postproc_modules       = []
+        self.double_tap_distance    = \
+            pymt.pymt_config.getint('pymt', 'double_tap_distance') / 1000.0
+        self.double_tap_time        = \
+            pymt.pymt_config.getint('pymt', 'double_tap_time') / 1000.0
 
     def start(self):
+        '''Start all input providers'''
         global pymt_providers
         for provider in pymt_providers:
             provider.start()
 
     def close(self):
+        '''Close all input providers'''
         global pymt_providers
         for provider in pymt_providers:
             provider.stop()
 
     def add_postproc_module(self, mod):
+        '''Add a post processing module to execute after each update
+        of a input providers'''
         self.postproc_modules.append(mod)
 
     def remove_postproc_module(self, mod):
+        '''Remove a previously added post-processing module'''
         if mod in self.postproc_modules:
             self.postproc_modules.remove(mod)
 
-    def post_dispatch_input(self, type, touch):
+    def post_dispatch_input(self, ptype, touch):
         # update available list
         global touch_list
-        if type == 'down':
+        if ptype == 'down':
             touch_list.append(touch)
-        elif type == 'up':
+        elif ptype == 'up':
             touch_list.remove(touch)
 
         # dispatch to listeners
         if not touch.grab_exclusive_class:
             global touch_event_listeners
             for listener in touch_event_listeners:
-                if type == 'down':
+                if ptype == 'down':
                     listener.dispatch_event('on_touch_down', touch)
-                elif type == 'move':
+                elif ptype == 'move':
                     listener.dispatch_event('on_touch_move', touch)
-                elif type == 'up':
+                elif ptype == 'up':
                     listener.dispatch_event('on_touch_up', touch)
 
         # dispatch grabbed touch
@@ -99,18 +105,19 @@ class TouchEventLoop(pyglet.app.EventLoop):
                 if wid.parent:
                     touch.x, touch.y = wid.parent.to_widget(touch.x, touch.y)
                 else:
-                    touch.x, touch.y = wid.to_parent(wid.to_widget(touch.x, touch.y))
+                    touch.x, touch.y = \
+                        wid.to_parent(wid.to_widget(touch.x, touch.y))
 
             touch.grab_current = wid
 
-            if type == 'down':
+            if ptype == 'down':
                 # don't dispatch again touch in on_touch_down
                 # a down event are nearly uniq here.
                 # wid.dispatch_event('on_touch_down', touch)
                 pass
-            elif type == 'move':
+            elif ptype == 'move':
                 wid.dispatch_event('on_touch_move', touch)
-            elif type == 'up':
+            elif ptype == 'up':
                 wid.dispatch_event('on_touch_up', touch)
 
             touch.grab_current = None
@@ -119,27 +126,35 @@ class TouchEventLoop(pyglet.app.EventLoop):
                 touch.pop()
         touch.grab_state = False
 
-    def _dispatch_input(self, type, touch):
-        self.input_events.append((type, touch))
+    def __dispatch_input(self, ptype, touch):
+        self.input_events.append((ptype, touch))
 
     def dispatch_input(self):
+        '''Update input providers, execute post-processing modules,
+        and dispatch all inputs to listeners'''
         global pymt_providers
 
         # first, aquire input events
         self.input_events = []
         for provider in pymt_providers:
-            provider.update(dispatch_fn=self._dispatch_input)
+            provider.update(dispatch_fn=self.__dispatch_input)
 
         # execute post-processing modules
         for mod in self.postproc_modules:
             self.input_events = mod.process(events=self.input_events)
 
         # real dispatch input
-        for type, touch in self.input_events:
-            self.post_dispatch_input(type=type, touch=touch)
+        for ptype, touch in self.input_events:
+            self.post_dispatch_input(ptype=ptype, touch=touch)
 
 
     def idle(self):
+        '''Function called each frame. We :
+
+        * process inputs
+        * process events
+        * flip the window
+        '''
         # update dt
         global frame_dt
         frame_dt = pyglet.clock.tick()
@@ -160,7 +175,7 @@ class TouchEventLoop(pyglet.app.EventLoop):
 
         return 0
 
-#any window that inherhits this or an instance will have event handlers triggered on Tuio touch events
+
 class TouchWindow(pyglet.window.Window):
     '''Base implementation of Tuio event in top of pyglet window.
 
@@ -198,9 +213,11 @@ def pymt_usage():
         -h, --help                  prints this mesage
         -f, --fullscreen            force run in fullscreen
         -w, --windowed              force run in window
-        -p, --provider id:provider[,options] add a provider (eg: ccvtable1:tuio,192.168.0.1:3333)
+        -p, --provider id:provider[,options] add a provider
+                                        (eg: ccvtable1:tuio,192.168.0.1:3333)
         -F, --fps                   show fps in window
-        -m mod, --module=mod        activate a module (use "list" to get available module)
+        -m mod, --module=mod        activate a module
+                                        (use "list" to get available module)
         -s, --save                  save current PyMT configuration
         --size=640x480              size of window
         --dump-frame                dump each frame in file
@@ -219,7 +236,7 @@ def runTouchApp():
 
     # Check if we show event stats
     if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
-        pymt.widget.event_stats_activate()
+        pymt.ui.widgets.widget.event_stats_activate()
 
     # Instance all configured input
     for key, value in pymt.pymt_config.items('input'):
@@ -265,9 +282,10 @@ def runTouchApp():
 
     # Show event stats
     if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
-        pymt.widget.event_stats_print()
+        pymt.ui.widgets.widget.event_stats_print()
 
 def stopTouchApp():
+    '''Stop the application loop'''
     global pymt_evloop
     if pymt_evloop is None:
         return

@@ -9,6 +9,7 @@ import os
 import sys
 
 class ModuleContext:
+    '''Generic class to add any attributes in.'''
     pass
 
 class Modules:
@@ -33,40 +34,41 @@ class Modules:
         '''Return the list of available modules'''
         return self.mods
 
-    def import_module(self, id):
-        module = __import__(name=id, fromlist='mods')
+    def import_module(self, key):
+        module = __import__(name=key, fromlist='mods')
         # basic check on module
         if not hasattr(module, 'start'):
-            pymt.pymt_logger.warning('Module <%s> missing start() function' % id)
+            pymt.pymt_logger.warning('Module <%s> missing start() function' %
+                                     key)
             return
         if not hasattr(module, 'stop'):
-            pymt.pymt_logger.warning('Module <%s> missing stop() function' % id)
+            pymt.pymt_logger.warning('Module <%s> missing stop() function' % key)
             return
-        self.mods[id]['module'] = module
+        self.mods[key]['module'] = module
 
-    def activate_module(self, id, win):
+    def activate_module(self, key, win):
         '''Activate a module on a window'''
-        if not id in self.mods:
-            pymt.pymt_logger.warning('Module <%s> not found' % id)
+        if not key in self.mods:
+            pymt.pymt_logger.warning('Module <%s> not found' % key)
             return
 
-        if not 'module' in self.mods[id]:
-            self.import_module(id)
+        if not 'module' in self.mods[key]:
+            self.import_module(key)
 
-        module = self.mods[id]['module']
-        if not self.mods[id]['activated']:
-            module.start(win, self.mods[id]['context'])
+        module = self.mods[key]['module']
+        if not self.mods[key]['activated']:
+            module.start(win, self.mods[key]['context'])
 
-    def deactivate_module(self, id, win):
+    def deactivate_module(self, key, win):
         '''Deactivate a module from a window'''
-        if not id in self.mods:
-            pymt.pymt_logger.warning('Module <%s> not found' % id)
+        if not key in self.mods:
+            pymt.pymt_logger.warning('Module <%s> not found' % key)
             return
-        if not hasattr(self.mods[id], 'module'):
+        if not hasattr(self.mods[key], 'module'):
             return
-        module = self.mods[id]['module']
-        if self.mods[id]['activated']:
-            module.stop(win, self.mods[id]['context'])
+        module = self.mods[key]['module']
+        if self.mods[key]['activated']:
+            module.stop(win, self.mods[key]['context'])
 
     def register_window(self, win):
         '''Add window in window list'''
@@ -82,11 +84,11 @@ class Modules:
         '''Update status of module for each windows'''
         modules_to_activate = map(lambda x: x[0], pymt.pymt_config.items('modules'))
         for win in self.wins:
-            for id in self.mods:
-                if not id in modules_to_activate:
-                    self.deactivate_module(id, win)
-            for id in modules_to_activate:
-                self.activate_module(id, win)
+            for key in self.mods:
+                if not key in modules_to_activate:
+                    self.deactivate_module(key, win)
+            for key in modules_to_activate:
+                self.activate_module(key, win)
 
     def usage_list(self):
         print

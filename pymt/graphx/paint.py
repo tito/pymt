@@ -87,28 +87,57 @@ def paintLine(points, numsteps=None, **kwargs):
     ::
 
         set_brush("mybrush.png", 10)
-        paintLine(0, 0, 20, 50)
+        paintLine((0, 0, 20, 50))
+        paintLine((1, 2, 1, 5, 4, 6, 8, 7))
 
     '''
     global _brush_texture, _brush_size
     if not _brush_texture:
         pymt_logger.warning('No brush set to paint line, abort')
         return
+    if len(points) % 2 == 1:
+        raise Exception('Points list must be a pair length number (not impair)')
     kwargs.setdefault('sfactor', GL_SRC_ALPHA)
     kwargs.setdefault('dfactor', GL_ONE_MINUS_SRC_ALPHA)
-    p1 = (points[0], points[1])
-    p2 = (points[2], points[3])
     blending = GlBlending(sfactor=kwargs.get('sfactor'), dfactor=kwargs.get('dfactor'))
     with DO(blending, gx_enable(GL_POINT_SPRITE_ARB), gx_enable(_brush_texture.target)):
+
+        # prepare env
         set_texture(_brush_texture.id, target=_brush_texture.target)
         glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE)
         glPointSize(_brush_size)
-        dx,dy = p2[0]-p1[0], p2[1]-p1[1]
-        dist = math.sqrt(dx*dx +dy*dy)
-        if numsteps is None:
-            numsteps = max(1, int(dist)/4)
-        pointList = [0,0] * numsteps
-        for i in range(numsteps):
-            pointList[i * 2]   = p1[0] + dx* (float(i)/numsteps)
-            pointList[i * 2 + 1] = p1[1] + dy* (float(i)/numsteps)
-        draw(numsteps, GL_POINTS, ('v2f', pointList))
+
+        # initialize outputList
+        outputList = []
+
+        # extract 4 points each 2 points
+        for i in xrange(0, len(points) - 2, 2):
+
+            # extract our 2 points
+            p1 = (points[i], points[i+1])
+            p2 = (points[i+2], points[i+3])
+
+            # calculate vector and distance
+            dx,dy = p2[0]-p1[0], p2[1]-p1[1]
+            dist = math.sqrt(dx*dx +dy*dy)
+
+            # determine step
+            steps = numsteps
+            if steps is None:
+                steps = max(1, int(dist)/4)
+
+            # construct pointList
+            pointList = [0,0] * steps
+            for i in range(steps):
+                pointList[i * 2]   = p1[0] + dx* (float(i)/steps)
+                pointList[i * 2 + 1] = p1[1] + dy* (float(i)/steps)
+
+            # append to the result
+            outputList += pointList
+
+        # draw !
+        if len(outputList) < 2:
+            return
+        with gx_begin(GL_POINTS):
+            for i in xrange(0, len(outputList), 2):
+                glVertex2f(outputList[i], outputList[i+1])

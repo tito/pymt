@@ -204,12 +204,17 @@ class MTScatterWidget(MTWidget):
             self.flip_to('back')
         with gx_matrix:
             glMultMatrixf(self.transform_mat)
-            glTranslatef(self.width / 2, 0, 0)
-            if self.side == 'front':
-                glRotatef(self.zangle, 0, 1, 0)
-            else:
-                glRotatef(self.zangle + 180, 0, 1, 0)
-            glTranslatef(-self.width / 2, 0, 0)
+
+            # in animation state, do rotation at the center
+            # to make it more nice too look :)
+            if (self.side == 'front' and self.zangle != 0) or \
+               (self.side == 'back' and self.zangle != 180):
+                glTranslatef(self.width / 2, 0, 0)
+                if self.side == 'front':
+                    glRotatef(self.zangle, 0, 1, 0)
+                else:
+                    glRotatef(self.zangle + 180, 0, 1, 0)
+                glTranslatef(-self.width / 2, 0, 0)
             super(MTScatterWidget, self).on_draw()
 
     def to_parent(self, x, y):

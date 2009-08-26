@@ -5,8 +5,10 @@ Shader: abstract compilation and usage
 __all__ = ['ShaderException', 'Shader']
 
 import ctypes as c
-from pyglet import *
-from pyglet.gl import *
+from pyglet.gl import glCreateShader, glCreateProgram, glUseProgram, \
+    GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, glLinkProgram, glAttachShader, \
+    glCompileShader, glGetUniformLocation, glUniform1f, glUniform1i, \
+    glGetShaderInfoLog, glGetProgramInfoLog
 from logger import pymt_logger
 
 class ShaderException(Exception):
@@ -42,7 +44,6 @@ class Shader(object):
         sbuffer = c.create_string_buffer(source)
         pointer = c.cast(c.pointer(c.pointer(sbuffer)),
                          c.POINTER(c.POINTER(c.c_char)))
-        nulll = c.POINTER(c.c_long)()
         shader = glCreateShader(shadertype)
         glShaderSource(shader, 1, pointer, None)
         glCompileShader(shader)

@@ -6,7 +6,6 @@ from __future__ import with_statement
 __all__ = ['MTLabel']
 
 from pyglet.text import Label
-from ...graphx import drawLabel
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 

@@ -108,11 +108,5 @@ class MTMultiSlider(MTWidget):
     def return_slider(self, x):
         return int((x - self.x) / float(self.width)  * self._sliders)
 
+# Register all base widgets
 MTWidgetFactory.register('MTMultiSlider', MTMultiSlider)
-
-if __name__ == '__main__':
-    from pymt import *
-    w = MTWindow()
-    mms = MTMultiSlider(pos = (40,40))
-    w.add_widget(mms)
-    runTouchApp()

@@ -4,8 +4,6 @@ Simulator: generate touch event with mouse
 
 __all__ = ['MTSimulator']
 
-from pyglet import *
-from pyglet.gl import *
 from pyglet.window import key
 from ..graphx import drawCircle, set_color
 from ..input import TouchFactory
@@ -39,13 +37,14 @@ class MTSimulator(MTWidget):
             self.current_drag = newTouch
         else:
             self.counter += 1
-            id = 'mouse' + str(self.counter)
+            tid = 'mouse' + str(self.counter)
             rx = x / float(self.get_parent_window().width)
             ry = 1. - (y / float(self.get_parent_window().height))
-            self.current_drag = cur = TouchFactory.get('tuio').create('/tuio/2Dcur', id=id, args=[rx, ry])
+            self.current_drag = cur = \
+                TouchFactory.get('tuio').create('/tuio/2Dcur', id=tid, args=[rx, ry])
             if modifiers & key.MOD_SHIFT:
                 cur.is_double_tap = True
-            self.touches[id] = cur
+            self.touches[tid] = cur
             getEventLoop().post_dispatch_input('down', cur)
         return True
 

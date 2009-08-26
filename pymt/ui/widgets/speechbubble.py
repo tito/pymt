@@ -6,7 +6,8 @@ from __future__ import with_statement
 from label import MTLabel
 from ...graphx import drawPolygon, drawRoundedRectangle, gx_matrix
 from ...vector import Vector
-from pyglet.gl import *
+from pyglet.gl import glEnable, GL_LINE_SMOOTH, glLineWidth, \
+    glTranslatef, GL_LINE_LOOP
 
 __all__ = ['MTSpeechBubble']
 
@@ -101,12 +102,3 @@ class MTSpeechBubble(MTLabel):
             glTranslatef(rx, ry, 0)
             super(MTSpeechBubble, self).draw()
 
-if __name__ == '__main__':
-    w = MTWindow()
-    bl = MTSpeechBubble(
-        color=(0,0,0,1),
-        label="Bubble"
-    )
-    bl.pos = (100, 100)
-    w.add_widget(bl)
-    runTouchApp()

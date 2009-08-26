@@ -26,12 +26,10 @@ __all__ = ['default_css', 'css_get_style', 'get_truncated_classname',
            'pymt_sheet', 'css_add_sheet', 'css_get_widget_id']
 
 from ..logger import pymt_logger
-from parser import *
+from parser import parse_color, parse_int, parse_float, parse_string, \
+    parse_float4, parse_bool, parse_int2
 import os
-import sys
-import shutil
 import logging
-import re
 import cssutils
 
 # Auto conversion from css to a special type.
@@ -384,11 +382,3 @@ def css_add_sheet(text):
     global pymt_sheet
     pymt_sheet.cssText += text
 
-if __name__ == '__main__':
-    from pymt import *
-    w = MTWidget()
-    print w
-    print css_get_style(widget=w)
-    w = MTWindow()
-    print w
-    print css_get_style(widget=w)

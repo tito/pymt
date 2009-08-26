@@ -73,7 +73,7 @@ class TuioTouchProvider(TouchProvider):
         TuioTouchProvider.__handlers__[oscpath] = classname
 
     @staticmethod
-    def unregister(oscpath, classname):
+    def unregister(oscpath):
         '''Unregister a new path to handle in tuio provider'''
         if oscpath in TuioTouchProvider.__handlers__:
             del TuioTouchProvider.__handlers__[oscpath]
@@ -122,15 +122,15 @@ class TuioTouchProvider(TouchProvider):
 
         # move or create a new touch
         if command == 'set':
-            id = args[1]
-            if id not in self.touches[oscpath]:
+            tid = args[1]
+            if tid not in self.touches[oscpath]:
                 # new touch
-                touch = TuioTouchProvider.__handlers__[oscpath](id, args[2:])
-                self.touches[oscpath][id] = touch
+                touch = TuioTouchProvider.__handlers__[oscpath](tid, args[2:])
+                self.touches[oscpath][tid] = touch
                 dispatch_fn('down', touch)
             else:
                 # update a current touch
-                touch = self.touches[oscpath][id]
+                touch = self.touches[oscpath][tid]
                 touch.move(args[2:])
                 dispatch_fn('move', touch)
 
@@ -138,10 +138,10 @@ class TuioTouchProvider(TouchProvider):
         if command == 'alive':
             alives = args[1:]
             to_delete = []
-            for id in self.touches[oscpath]:
-                if not id in alives:
+            for tid in self.touches[oscpath]:
+                if not tid in alives:
                     # touch up
-                    touch = self.touches[oscpath][id]
+                    touch = self.touches[oscpath][tid]
                     if not touch in to_delete:
                         to_delete.append(touch)
 

@@ -5,7 +5,6 @@ Touch: base for all touch objects
 __all__ = ['Touch']
 
 import pyglet
-from ..logger import pymt_logger
 
 touch_clock = pyglet.clock.Clock()
 

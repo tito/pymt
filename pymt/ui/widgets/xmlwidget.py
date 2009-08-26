@@ -39,7 +39,6 @@ class XMLWidget(MTWidget):
             self.loadString(xml)
 
     def createNode(self, node):
-        factory = MTWidgetFactory
         if node.nodeType == Node.ELEMENT_NODE:
             class_name = node.nodeName
 

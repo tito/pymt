@@ -38,7 +38,7 @@ class MTPlugins(object):
                     if not a.IS_PYMT_PLUGIN:
                         continue
                     self.plugins[plugin] = a
-                except Exception, e:
+                except:
                     pass
 
     def list(self):

@@ -13,7 +13,7 @@ class ModuleContext:
     pass
 
 class Modules:
-    def __init__(self, **kwargs):
+    def __init__(self):
         self.mods = {}
         self.wins = []
 

@@ -4,11 +4,15 @@ Window package: provide a window + a touch display
 
 __all__ = ['MTWindow', 'MTDisplay']
 
-import sys
 import pyglet
-from pyglet.gl import *
-from pyglet import *
 import pymt
+from pyglet import window
+from pyglet.gl import GLint, glGetIntegerv, GL_SAMPLES, GL_FASTEST, \
+    GL_NICEST, GL_MULTISAMPLE_ARB, glEnable, glHint, Config, \
+    GL_MULTISAMPLE_FILTER_HINT_NV, GL_POLYGON_SMOOTH_HINT, GL_POLYGON_SMOOTH, \
+    GL_LINE_SMOOTH, GL_LINE_SMOOTH_HINT, glClearColor, glViewport, glMatrixMode,\
+    glLoadIdentity, glFrustum, glScalef, glTranslatef, GL_PROJECTION, \
+    GL_MODELVIEW
 from ..mtpyglet import TouchWindow, stopTouchApp, getAvailableTouchs
 from ..graphx import set_color, drawCircle
 from ..modules import pymt_modules
@@ -74,10 +78,9 @@ class MTWindow(TouchWindow):
         # add view + simulator
         if 'view' in kwargs:
             self.add_widget(kwargs.get('view'))
-            
+
          # Accept or don't accept mouse input.
         enablemouse = kwargs.get('enablemouse')
-        
         try:
             if pymt.pymt_config.getboolean('pymt', 'enablemouse') == False:
                 enablemouse = False
@@ -137,7 +140,7 @@ class MTWindow(TouchWindow):
         try:
             config = kwargs.get('config')
             if not config:
-                config = Config()
+                config = window.Config()
                 config.sample_buffers = 1
                 config.samples = 4
                 config.depth_size = 16
@@ -290,7 +293,7 @@ class MTWindow(TouchWindow):
         self.draw()
         for w in self.children:
             w.dispatch_event('on_draw')
-        
+
         if self.sim:
             self.sim.dispatch_event('on_draw')
 
@@ -374,12 +377,12 @@ class MTWindow(TouchWindow):
 
     def on_resize(self, width, height):
         glViewport(0, 0, width, height)
-        glMatrixMode(gl.GL_PROJECTION)
+        glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         glFrustum(-width/2, width/2, -height/2, height/2, 0.1, 1000)
         glScalef(5000,5000,1)
         glTranslatef(-width/2,-height/2,-500)
-        glMatrixMode(gl.GL_MODELVIEW)
+        glMatrixMode(GL_MODELVIEW)
 
 
 class MTDisplay(MTWidget):

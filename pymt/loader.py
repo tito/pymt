@@ -20,7 +20,6 @@ __all__ = ['ProxySprite', 'ProxyImage', 'Loader']
 import threading
 import pyglet.image
 import pyglet.sprite
-import time
 import urllib
 from logger import pymt_logger
 

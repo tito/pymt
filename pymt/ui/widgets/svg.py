@@ -44,13 +44,13 @@ class MTSvg(MTWidget):
 	    else:
 		pymt_logger.debug('loading %s from rawdata' % filename)
 		self.svg = squirtle.SVG(filename=filename, rawdata=self.rawdata)
-        except Exception, e:
+        except:
             try:
                 svgpath = os.path.join(os.path.dirname(pymt.__file__), 'data/icons/svg')
                 pymt_logger.exception('unable to load %s' % filename)
                 pymt_logger.warning('trying %s' % (svgpath + filename))
                 self.svg = squirtle.SVG(os.path.join(svgpath, filename))
-            except Exception, e:
+            except:
                 pymt_logger.exception('unable to load file %s' % filename)
         self._filename = filename
         self.size = (self.svg.width, self.svg.height)

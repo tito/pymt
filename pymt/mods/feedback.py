@@ -3,7 +3,7 @@ A global feedback effect (aka Surface)
 '''
 
 import pyglet
-from pymt import *
+from pymt import MTWidget, getFrameDt, set_color, set_brush, Vector, paintLine
 import os
 
 particle_fn = os.path.join(pymt_data_dir, 'particle.png')
@@ -81,7 +81,7 @@ class GlobalFeedbackTouch(MTWidget):
                 continue
 
             # calcute steps for having a nice line
-            numsteps = max(20, int(Vector(ox, oy).distance(Vector(x, y)))/20)
+            #numsteps = max(20, int(Vector(ox, oy).distance(Vector(x, y)))/20)
 
             # draw the line !
             set_color(1, 1, 1, alpha)

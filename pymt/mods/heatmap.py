@@ -3,9 +3,8 @@ Create/fill an heatmap in database (need PIL + sqlite3)
 '''
 
 from pymt import MTWidget, pymt_logger, pymt_config, stopTouchApp
-from math import sin, pi, sqrt
+from math import sqrt
 import sys
-import os
 
 try:
     from PIL import Image

@@ -218,7 +218,15 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0), tex_coords=None):
                 pos[0] + size[0], pos[1],
                 pos[0] + size[0], pos[1] + size[1],
                 pos[0], pos[1] + size[1])
-        draw(4, GL_QUADS, ('v2f', pos), ('t2f', texcoords))
+        with gx_begin(GL_QUADS):
+            glVertex2f(pos[0], pos[1])
+            glTexCoord2f(texcoords[0], texcoords[1])
+            glVertex2f(pos[2], pos[3])
+            glTexCoord2f(texcoords[2], texcoords[3])
+            glVertex2f(pos[4], pos[5])
+            glTexCoord2f(texcoords[4], texcoords[5])
+            glVertex2f(pos[6], pos[7])
+            glTexCoord2f(texcoords[6], texcoords[7])
 
 def drawLine(points, width=None):
     '''Draw a line

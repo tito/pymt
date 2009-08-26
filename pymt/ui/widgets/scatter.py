@@ -498,15 +498,14 @@ class MTScatterImage(MTScatterWidget):
         # Use loader if available
         loader = kwargs.get('loader')
         if loader:
-            self.image  = loader.sprite(kwargs.get('filename'))
+            self.image  = loader.image(kwargs.get('filename'))
         else:
-            img         = pyglet.image.load(kwargs.get('filename'))
-            self.image  = pyglet.sprite.Sprite(img)
+            self.image  = pyglet.image.load(kwargs.get('filename'))
 
     def draw(self):
-        with gx_matrix:
-            glScaled(float(self.width)/self.image.width, float(self.height)/self.image.height, 2.0)
-            self.image.draw()
+        glDisable(GL_BLEND)
+        set_color(1, 1, 1)
+        drawTexturedRectangle(texture=self.image.get_texture(), size=self.size)
 
 class MTScatterSvg(MTScatterWidget):
     '''Render an svg image into a scatter widget

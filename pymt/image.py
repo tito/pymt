@@ -2,6 +2,8 @@
 Image: a simple image loader
 '''
 
+from __future__ import with_statement
+
 __all__ = ('Image', )
 
 import pyglet

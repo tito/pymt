@@ -1,6 +1,15 @@
 from pymt import *
 from pyglet.gl import GL_LINE_LOOP
 
+flowcss = '''
+flowchart {
+    bg-color: rgba(255, 255, 255, 255);
+    draw-alpha-background: 0;
+    draw-border: 0;
+}
+'''
+css_add_sheet(flowcss)
+
 
 class FlowText(MTTextInput):
     def __init__(self, **kwargs):
@@ -51,9 +60,9 @@ class FlowElement(MTScatterWidget):
         drawRoundedRectangle(size=self.size, linewidth=2, style=GL_LINE_LOOP)
         '''
 
-        set_color(.435, .749, .996, .95)
+        set_color(.435, .749, .996)
         drawRoundedRectangle(size=self.size)
-        set_color(.094, .572, .858, .95)
+        set_color(.094, .572, .858)
         drawRoundedRectangle(size=self.size, linewidth=2, style=GL_LINE_LOOP)
         # 24 146 219 (black)
         # 111 191 254 (white)
@@ -68,7 +77,7 @@ class FlowLink(MTWidget):
     def draw(self):
         ax, ay = self.to_widget(*self.to_window(*self.node1.pos))
         bx, by = self.to_widget(*self.to_window(*self.node2.pos))
-        set_color(1, 1, 1)
+        set_color(.094, .572, .858)
         drawLine((ax, ay, bx, by), width=8. * self.parent.get_scale_factor())
 
 
@@ -131,18 +140,35 @@ class FlowChart(MTScatterPlane):
     def draw_ui(self):
         w = self.get_parent_window()
         drawLabel(label='-', pos=(w.width - 25, 25), font_size=40,
-            color=(255, 255, 255, 50))
+            color=(0, 0, 0, 50))
         drawLabel(label='+', pos=(w.width - 25, 250), font_size=40,
-            color=(255, 255, 255, 50))
-        set_color(1, 1, 1, .1)
+            color=(0, 0, 0, 50))
+        set_color(0, 0, 0, .1)
         drawRoundedRectangle(pos=(w.width - 40, 40), size=(30, 175))
-        set_color(1, 1, 1, .1)
+        set_color(0, 0, 0, .1)
         drawRoundedRectangle(pos=(w.width - 40, 40),
              size=(30, 175 * self.get_scale_factor()))
 
     def on_draw(self):
+        w = self.get_parent_window()
+        set_color(*self.style['bg-color'])
+        drawCSSRectangle(size=w.size, style=self.style)
         super(FlowChart, self).on_draw()
         self.draw_ui()
+
+    def draw(self):
+        w = self.get_parent_window()
+        a = self.to_local(0, 0)
+        b = self.to_local(w.width, w.height)
+        scale = int(1 / self.get_scale_factor())
+        step = 200 * scale
+        a = int(a[0] / step - 1) * step, int(a[1] / step - 1) * step
+        b = int(b[0] / step + 1) * step, int(b[1] / step + 1) * step
+        for x in xrange(a[0], b[0], step):
+            for y in xrange(a[1], b[1], step):
+                set_color(.9, .9, .9)
+                drawLine((a[0], y, b[0], y))
+                drawLine((x, a[1], x, b[1]))
 
 
 if __name__ == '__main__':

@@ -7,6 +7,7 @@ __all__ = ['MTButton', 'MTToggleButton', 'MTImageButton']
 
 from pyglet.gl import *
 from pyglet.text import Label
+from ...image import Image
 from ...graphx import GlDisplayList, set_color, gx_blending
 from ...graphx import drawCSSRectangle
 from ...utils import get_color_for_pyglet
@@ -210,34 +211,28 @@ class MTImageButton(MTButton):
             Scaling of image, default is 100%, ie 1.0
     '''
     def __init__(self, **kwargs):
-        # Preserve this way to do
-        # Later, we'll give another possibility, like using a loader...
         kwargs.setdefault('scale', 1.0)
         kwargs.setdefault('filename', None)
         if kwargs.get('filename') is None:
             raise Exception('No filename given to MTImageButton')
 
         super(MTImageButton, self).__init__(**kwargs)
-        self.filename		= kwargs.get('filename')
-        self.image.x        = self.x
-        self.image.y        = self.y
+        self.image          = None
         self.scale          = kwargs.get('scale')
-        self.image.scale    = self.scale
-        self.size           = (self.image.width, self.image.height)
+        self.filename		= kwargs.get('filename')
+        self.size           = self.image.size
 
     def _get_filename(self):
         return self._filename
     def _set_filename(self, filename):
         self._filename = filename
-        img            = pyglet.image.load(filename)
-        self.image     = pyglet.sprite.Sprite(img)
+        self.image     = Image(self.filename)
     filename = property(_get_filename, _set_filename)
 
     def draw(self):
-        self.image.x        = self.x
-        self.image.y        = self.y
-        self.image.scale    = self.scale
-        self.size           = (self.image.width, self.image.height)
+        self.image.pos  = self.pos
+        self.image.scale= self.scale
+        self.size       = self.image.size
         self.image.draw()
 
 

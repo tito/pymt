@@ -14,6 +14,7 @@ import pyglet
 import pymt
 from pyglet.gl import *
 from pyglet.media import *
+from ....image import Image
 from ....graphx import set_color, drawRectangle, DO, gx_matrix
 from ...factory import MTWidgetFactory
 from ..button import MTImageButton
@@ -30,27 +31,29 @@ class MTVideoPlayPause(MTImageButton):
         kwargs.setdefault('filename_pause', iconPath + 'videoWidgetPause.png')
         kwargs.setdefault('player', None)
         super(MTVideoPlayPause, self).__init__(**kwargs)
-        self.player        = kwargs.get('player')
-        self.playState  = 'Pause'
+        self.player         = kwargs.get('player')
+        self.playState      = 'Pause'
 
-        self.images = {} #crate a python dictionary..like a hash map
-        self.images['Play']  = pyglet.sprite.Sprite(pyglet.image.load(kwargs.get('filename')))
-        self.images['Pause'] = pyglet.sprite.Sprite(pyglet.image.load(kwargs.get('filename_pause')))
+        self.images         = {}
+        self.images['Play'] = Image(kwargs.get('filename'))
+        self.images['Pause']= Image(kwargs.get('filename_pause'))
 
         self.scale    = 0.75
 
     def on_touch_down(self, touch):
-        if self.collide_point(touch.x, touch.y):
-            self.state = ('down', touch.id)
-            if self.playState == 'Pause':
-                self.player.play()
-                self.playState = 'Play'
-            elif self.playState == 'Play':
-                self.player.pause()
-                self.playState = 'Pause'
+        if not self.collide_point(touch.x, touch.y):
+            return
 
-            #set the correct image
-            self.image = self.images[self.playState]  #playState is one of the two strings that are used as keys/lookups in the dictionary
+        self.state = ('down', touch.id)
+
+        if self.playState == 'Pause':
+            self.player.play()
+            self.playState = 'Play'
+        elif self.playState == 'Play':
+            self.player.pause()
+            self.playState = 'Pause'
+
+        self.image = self.images[self.playState]
 
 
 class MTVideoMute(MTImageButton):

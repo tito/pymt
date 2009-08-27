@@ -171,8 +171,8 @@ class Tuio2dCurTouch(Touch):
             self.profile = 'xyXYmh'
             if self.shape is None:
                 self.shape = TouchShapeRect()
-                self.shape.width = width
-                self.shape.height = height
+            self.shape.width = width
+            self.shape.height = height
         self.sy = 1 - self.sy
         super(Tuio2dCurTouch, self).depack(args)
 

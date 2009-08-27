@@ -6,6 +6,7 @@ import os
 import re
 import pyglet
 import pymt
+from ....image import Image
 from ....utils import is_color_transparent, curry
 from ....graphx import drawCSSRectangle, set_color
 from ...factory import MTWidgetFactory
@@ -89,8 +90,7 @@ class MTFileListEntryView(MTFileEntryView):
     def __init__(self, **kwargs):
         super(MTFileListEntryView, self).__init__(**kwargs)
         self.height         = 25
-        img                 = pyglet.image.load(self.type_image)
-        self.image          = pyglet.sprite.Sprite(img)
+        self.image          = Image(self.type_image, scale=0.5)
         self.labelWX        = MTLabel(label=self.striptext(self.label_txt, 50),
                 anchor_x='left', anchor_y='center', halign='center')
         self.add_widget(self.labelWX)
@@ -99,10 +99,8 @@ class MTFileListEntryView(MTFileEntryView):
 
     def draw(self):
         self.labelWX.pos    = self.x + self.image.width + 3, self.y + int(self.height / 2.)
-        self.image.x, self.image.y = self.x, self.y
-        self.image.scale    = .5
-
         super(MTFileListEntryView, self).draw()
+        self.image.pos = self.pos
         self.image.draw()
 
 
@@ -111,9 +109,7 @@ class MTFileIconEntryView(MTFileEntryView):
     def __init__(self, **kwargs):
         super(MTFileIconEntryView, self).__init__(**kwargs)
         self.size           = (80, 80)
-        img                 = pyglet.image.load(self.type_image)
-        self.image          = pyglet.sprite.Sprite(img)
-        self.image.pos      = self.pos
+        self.image          = Image(filename=self.type_image)
         self.labelWX        = MTLabel(label=self.striptext(self.label_txt, 10),
                 anchor_x='center', anchor_y='center', halign='center')
         self.add_widget(self.labelWX)
@@ -122,11 +118,11 @@ class MTFileIconEntryView(MTFileEntryView):
 
     def draw(self):
         self.labelWX.pos    = int(self.x + self.width / 2.), int(self.y + 10)
-        self.image.x        = self.x+int(self.image.width/2)-5
-        self.image.y        = self.y+int(self.image.height/2)-5
+        self.image.x        = self.x + int(self.image.width / 2) - 5
+        self.image.y        = self.y + int(self.image.height / 2) - 5
 
         super(MTFileIconEntryView, self).draw()
-        self.image.draw()
+        self.image.draw(pos=imagepos)
 
 
 class MTFileBrowserView(MTKineticList):
@@ -293,15 +289,14 @@ class MTFileBrowserToggle(MTToggleButton):
         self.icon = kwargs.get('icon')
 
     def _set_icon(self, value):
-        img = pyglet.image.load(os.path.join(pymt.pymt_data_dir, 'icons', value))
-        self.sprite = pyglet.sprite.Sprite(img)
+        self.image = Image(filename=os.path.join(pymt.pymt_data_dir, 'icons', value))
     icon = property(fset=_set_icon)
 
     def draw(self):
         super(MTFileBrowserToggle, self).draw()
-        self.sprite.x = self.x + (self.width - self.sprite.width) / 2.
-        self.sprite.y = self.y + (self.height - self.sprite.height) / 2.
-        self.sprite.draw()
+        self.image.x = self.x + (self.width - self.image.width) / 2.
+        self.image.y = self.y + (self.height - self.image.height) / 2.
+        self.image.draw()
 
 
 class MTFileBrowser(MTPopup):
@@ -405,7 +400,7 @@ class MTFileBrowser(MTPopup):
             self.close()
         else:
             self.hide()
-    
+
     def on_cancel(self):
         self.reset_selection()
         if self.exit_on_submit:
@@ -415,11 +410,11 @@ class MTFileBrowser(MTPopup):
 
     def on_select(self, filelist):
         pass
-    
+
     def reset_selection(self):
         self.view.selection = []
         self.view.update()
-        
+
 # Register Default File types with their icons
 FileTypeFactory.register(['jpg','jpeg'],
     os.path.join(icons_filetype_dir, 'image-jpeg.png'))

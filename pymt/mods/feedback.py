@@ -6,10 +6,9 @@ import pyglet
 from pymt import *
 import os
 
-particle_fn = os.path.join(pymt_data_dir, 'particle.png')
-particle2_fn = os.path.join(pymt_data_dir, 'particle2.png')
+particle_fn = os.path.join(pymt_data_dir, 'particle2.png')
 ring_fn = os.path.join(pymt_data_dir, 'ring.png')
-ring_img = pyglet.image.load(ring_fn)
+ring_img = Image(ring_fn)
 ring_img.anchor_x = ring_img.width / 2
 ring_img.anchor_y = ring_img.height / 2
 
@@ -49,7 +48,7 @@ class GlobalFeedbackTouch(MTWidget):
         if self.timer > self.mintimenomove:
             alpha = min(0.9, (self.timer - self.mintimenomove) * 4)
             set_color(1, 1, 1, alpha)
-            set_brush(particle2_fn, size=alpha * 50)
+            set_brush(particle_fn, size=alpha * 50)
             paintLine((self.x, self.y, self.x + 1, self.y + 1))
 
         # show moves
@@ -60,7 +59,7 @@ class GlobalFeedbackTouch(MTWidget):
         alpha = 0
 
         # prepare brush
-        set_brush(particle2_fn, size=5)
+        set_brush(particle_fn, size=5)
 
         # show all moves
         for idx in xrange(0, len(self.moves)):
@@ -104,10 +103,7 @@ class GlobalFeedback(MTWidget):
             if touch.id not in self.touches:
                 self.touches[touch.id] = GlobalFeedbackTouch(pos=(touch.x, touch.y))
                 self.add_widget(self.touches[touch.id])
-
-                newsprite = pyglet.sprite.Sprite(ring_img, x=touch.x, y=touch.y)
-                newsprite.opacity = 195
-                newsprite.scale = 0.10
+                newsprite = Image(ring_img, pos=touch.pos, opacity=0.75, scale=0.10)
                 self.rings.append(newsprite)
             else:
                 self.touches[touch.id].pos = (touch.x, touch.y)
@@ -131,7 +127,7 @@ class GlobalFeedback(MTWidget):
         for i in xrange(0, len(self.rings)):
             ring = self.rings[i]
             ring.draw()
-            ring.opacity -= getFrameDt() * 400
+            ring.opacity -= getFrameDt() * 1.5
             ring.scale += getFrameDt() * 2
             if ring.opacity <= 0:
                 rings_to_delete.append(ring)

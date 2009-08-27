@@ -7,6 +7,7 @@ __all__ = ['MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane', 'MTScatterImage'
 
 import pyglet
 from pyglet.gl import *
+from ...image import Image
 from ...graphx import drawRectangle, gx_matrix, gx_matrix_identity, set_color, \
     drawTexturedRectangle, gx_blending
 from ...vector import Vector, matrix_mult, matrix_inv_mult
@@ -156,11 +157,11 @@ class MTScatterWidget(MTWidget):
             scale = self.scale_max
         self.scale = scale
         with gx_matrix_identity:
-            glTranslated(trans[0], trans[1], 0)
-            glTranslated(point[0], point[1], 0)
+            glTranslatef(trans[0], trans[1], 0)
+            glTranslatef(point[0], point[1], 0)
             glScalef(scale, scale, 1)
-            glRotated(angle,0,0,1)
-            glTranslated(-point[0], -point[1], 0)
+            glRotatef(angle,0,0,1)
+            glTranslatef(-point[0], -point[1], 0)
             glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
 
     def draw(self):
@@ -271,13 +272,13 @@ class MTScatterWidget(MTWidget):
             scale = 1
         with gx_matrix_identity:
             if self.do_translation:
-                glTranslated(trans.x * self.do_translation_x, trans.y * self.do_translation_y, 0)
-            glTranslated(point.x, point.y, 0)
+                glTranslatef(trans.x * self.do_translation_x, trans.y * self.do_translation_y, 0)
+            glTranslatef(point.x, point.y, 0)
             if self.do_scale:
-                glScaled(scale, scale, 1)
+                glScalef(scale, scale, 1)
             if self.do_rotation:
-                glRotated(angle, 0, 0, 1)
-            glTranslated(-point.x, -point.y,0)
+                glRotatef(angle, 0, 0, 1)
+            glTranslatef(-point.x, -point.y,0)
             glMultMatrixf(self.transform_mat)
             glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
 
@@ -501,12 +502,18 @@ class MTScatterImage(MTScatterWidget):
         if loader:
             self.image  = loader.image(kwargs.get('filename'))
         else:
-            self.image  = pyglet.image.load(kwargs.get('filename'))
+            self.image  = Image(kwargs.get('filename'))
 
     def draw(self):
-        set_color(1, 1, 1)
-        with gx_blending:
-            drawTexturedRectangle(texture=self.image.get_texture(), size=self.size)
+        if type(self.image) == Image:
+            # fast part
+            self.image.size = self.size
+            self.image.draw()
+        else:
+            # loader part
+            set_color(1, 1, 1)
+            with gx_blending:
+                drawTexturedRectangle(texture=self.image.get_texture(), size=self.size)
 
 class MTScatterSvg(MTScatterWidget):
     '''Render an svg image into a scatter widget

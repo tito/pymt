@@ -9,11 +9,12 @@ __all__ = [
     'DO',
     'GlDisplayList', 'GlBlending',
     'GlMatrix', 'GlEnable', 'GlBegin',
+    'GlAttrib', 'GlColor',
     # aliases
     'gx_blending', 'gx_alphablending',
     'gx_matrix', 'gx_matrix_identity',
     'gx_enable', 'gx_begin',
-    'gx_attrib',
+    'gx_attrib', 'gx_color'
 ]
 
 from pyglet import *
@@ -185,6 +186,30 @@ class GlAttrib:
         glPushAttrib(self.flag)
 
     def __exit__(self, type, value, traceback):
-        glEnd()
+        glPopAttrib()
 
 gx_attrib = GlAttrib
+
+class GlColor:
+    '''Statement of glPushAttrib/glPopAttrib on COLOR BUFFER + color,
+    designed to be use with "with" keyword
+
+    Alias: gx_color.
+    '''
+    def __init__(self, r, g, b, a=None):
+        if a is None:
+            self.color = (r, g, b)
+        else:
+            self.color = (r, g, b, a)
+
+    def __enter__(self):
+        glPushAttrib(GL_COLOR_BUFFER_BIT)
+        if len(self.color) == 3:
+            glColor3f(*self.color)
+        else:
+            glColor4f(*self.color)
+
+    def __exit__(self, type, value, traceback):
+        glPopAttrib()
+
+gx_color = GlColor

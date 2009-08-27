@@ -12,6 +12,8 @@ from ...mtpyglet import getFrameDt, getAvailableTouchs
 from stencilcontainer import MTStencilContainer
 from widget import MTWidget
 
+from pymt import *
+
 class KineticTouch(Touch):
     counter = 0
     def __init__(self, args):
@@ -71,12 +73,21 @@ class MTKinetic(MTWidget):
         self.touch      = {} # internals
 
     def on_touch_down(self, touch):
+        #This is a fix for a bug caused by more than one on_touch_down being sent for the same touch in a short period.
+        if id(touch) in self.touch:
+            oldktouch = self.touch[id(touch)]
+            #put it in a new place on the list, and set it to be removed immediately.
+            oldktouch.mode = 'spinning'
+            oldktouch.X = -1.0
+            oldktouch.Y = -1.0
+            self.touch[oldktouch.id] = oldktouch
+
         # do a copy of the touch for kinetic
         args            = (touch.x, touch.y)
         ktouch          = KineticTouch(args)
         ktouch.userdata = touch.userdata
         ktouch.is_double_tap = touch.is_double_tap
-        self.touch[touch.id] = ktouch
+        self.touch[id(touch)] = ktouch
         # grab the touch for not lost it !
         touch.grab(self)
         getAvailableTouchs().append(ktouch)
@@ -86,9 +97,9 @@ class MTKinetic(MTWidget):
     def on_touch_move(self, touch):
         if touch.grab_current != self:
             return
-        if touch.id not in self.touch:
+        if id(touch) not in self.touch:
             return
-        ktouch = self.touch[touch.id]
+        ktouch = self.touch[id(touch)]
         ktouch.move([touch.x, touch.y])
         ktouch.userdata = touch.userdata
         ret = super(MTKinetic, self).on_touch_move(ktouch)
@@ -114,9 +125,9 @@ class MTKinetic(MTWidget):
         if touch.grab_current != self:
             return
         touch.ungrab(self)
-        if touch.id not in self.touch:
+        if id(touch) not in self.touch:
             return
-        ktouch = self.touch[touch.id]
+        ktouch = self.touch[id(touch)]
         ktouch.userdata = touch.userdata
         ktouch.mode = 'spinning'
 
@@ -124,8 +135,10 @@ class MTKinetic(MTWidget):
         '''Processing of kinetic, called in draw time.'''
         dt = getFrameDt()
         todelete = []
+
         for touchID in self.touch:
             ktouch = self.touch[touchID]
+
             if ktouch.mode != 'spinning':
                 continue
 

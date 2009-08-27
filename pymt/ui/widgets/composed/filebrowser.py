@@ -109,7 +109,7 @@ class MTFileIconEntryView(MTFileEntryView):
     def __init__(self, **kwargs):
         super(MTFileIconEntryView, self).__init__(**kwargs)
         self.size           = (80, 80)
-        self.image          = Image(filename=self.type_image)
+        self.image          = Image(self.type_image)
         self.labelWX        = MTLabel(label=self.striptext(self.label_txt, 10),
                 anchor_x='center', anchor_y='center', halign='center')
         self.add_widget(self.labelWX)
@@ -122,7 +122,7 @@ class MTFileIconEntryView(MTFileEntryView):
         self.image.y        = self.y + int(self.image.height / 2) - 5
 
         super(MTFileIconEntryView, self).draw()
-        self.image.draw(pos=imagepos)
+        self.image.draw()
 
 
 class MTFileBrowserView(MTKineticList):
@@ -289,7 +289,7 @@ class MTFileBrowserToggle(MTToggleButton):
         self.icon = kwargs.get('icon')
 
     def _set_icon(self, value):
-        self.image = Image(filename=os.path.join(pymt.pymt_data_dir, 'icons', value))
+        self.image = Image(os.path.join(pymt.pymt_data_dir, 'icons', value))
     icon = property(fset=_set_icon)
 
     def draw(self):

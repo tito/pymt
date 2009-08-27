@@ -28,6 +28,12 @@ class KineticTouch(Touch):
         self.profile = 'xy'
         super(KineticTouch, self).depack(args)
 
+class KineticTouchXY(KineticTouch):
+    def depack(self, args):
+        self.x, self.y, self.X, self.Y = args
+        self.profile = 'xyXY'
+        Touch.depack(self, args)
+
 class MTKinetic(MTWidget):
     '''Kinetic container.
     All widgets inside this container will have the kinetic applied
@@ -81,8 +87,12 @@ class MTKinetic(MTWidget):
             self.touch[oldktouch.id] = oldktouch
 
         # do a copy of the touch for kinetic
-        args            = (touch.x, touch.y)
-        ktouch          = KineticTouch(args)
+        if 'X' in touch.profile and 'Y' in touch.profile:
+            args            = (touch.x, touch.y, touch.X, touch.Y)
+            ktouch          = KineticTouchXY(args)
+        else:
+            args            = (touch.x, touch.y)
+            ktouch          = KineticTouch(args)
         ktouch.userdata = touch.userdata
         ktouch.is_double_tap = touch.is_double_tap
         self.touch[id(touch)] = ktouch
@@ -98,7 +108,10 @@ class MTKinetic(MTWidget):
         if id(touch) not in self.touch:
             return
         ktouch = self.touch[id(touch)]
-        ktouch.move([touch.x, touch.y])
+        if isinstance(ktouch, KineticTouchXY):
+            ktouch.move([touch.x, touch.y, touch.X, touch.Y])
+        else:
+            ktouch.move([touch.x, touch.y])
         ktouch.userdata = touch.userdata
         ret = super(MTKinetic, self).on_touch_move(ktouch)
 

@@ -42,6 +42,7 @@ class MTPaintColorPicker(MTWidget):
         drawRectangle(pos=(self.x+10, self.y+220), size=(110,60))
 
         pos = self.x + 170, self.y + 250
+        set_brush_size(self.brush_size)
         paintLine(pos+pos)
 
 
@@ -150,8 +151,8 @@ class Canvas(MTWidget):
         if self.touch_positions.has_key(touch.id):
             del self.touch_positions[touch.id]
 
-def update_brush(brush, *largs):
-    set_brush(brush)
+def update_brush(brush, size, *largs):
+    set_brush(brush, size=size)
 
 def clear_canvas(canvas, *largs):
     canvas.clear()
@@ -175,7 +176,8 @@ def pymt_plugin_activate(root, ctx):
     ctx.brushes = PaintBrushLayout(pos=(300, 0))
     for brush in glob('../paint/brushes/*.png'):
         button = MTImageButton(filename=brush)
-        button.push_handlers(on_press=curry(update_brush, brush))
+        button.push_handlers(on_press=curry(update_brush, brush,
+                                            ctx.slider.brush_size))
         ctx.brushes.add_widget(button)
     root.add_widget(ctx.brushes)
 

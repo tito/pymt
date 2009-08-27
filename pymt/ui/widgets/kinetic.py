@@ -12,8 +12,6 @@ from ...mtpyglet import getFrameDt, getAvailableTouchs
 from stencilcontainer import MTStencilContainer
 from widget import MTWidget
 
-from pymt import *
-
 class KineticTouch(Touch):
     counter = 0
     def __init__(self, args):

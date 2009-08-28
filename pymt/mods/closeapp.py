@@ -5,7 +5,6 @@ from __future__ import with_statement
 from pymt import MTWidget, getFrameDt, getAvailableTouchs, Vector, set_color
 from pymt import stopTouchApp, gx_matrix
 from pyglet import clock
-from pyglet.gl import gluNewQuadric, gluPartialDisk, glTranslated
 
 class CloseApp(MTWidget):
     def __init__(self, **kwargs):

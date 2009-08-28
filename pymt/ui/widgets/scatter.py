@@ -285,6 +285,7 @@ class MTScatterWidget(MTWidget):
         self.dispatch_event('on_transform', angle, scale, trans, point)
 
     def rotate_zoom_move(self, touchID, x, y):
+
         # we definitly have one point
         p1_start = Vector(*self.touches[touchID])
         p1_now   = Vector(x, y)
@@ -399,7 +400,7 @@ class MTScatterWidget(MTWidget):
         if self.auto_bring_to_front:
             self.bring_to_front()
 
-        self.touches[touch.id] = Vector(x, y)
+        self.touches[touch.uid] = Vector(x, y)
         return True
 
     def on_touch_move(self, touch):
@@ -415,9 +416,21 @@ class MTScatterWidget(MTWidget):
             touch.pop()
 
         # rotate/scale/translate
-        if touch.id in self.touches and touch.grab_current == self:
+        if touch.uid in self.touches and touch.grab_current == self:
 
-            self.rotate_zoom_move(touch.id, x, y)
+            # check if we got multiple touch, if current touch
+            # have kinetic activated, and they are other touch
+            if 'K' in touch.profile and touch.mode == 'spinning' \
+                and len(self.touches) > 1 and self.find_second_touch(touch.uid):
+
+                # suppress the touch
+                touch.ungrab(self)
+                del self.touches[touch.uid]
+
+                return True
+
+            # apply the rotate/zoom/move
+            self.rotate_zoom_move(touch.uid, x, y)
 
             # precalculate size of container
             container_width = int(self.width * self.get_scale_factor())
@@ -458,8 +471,9 @@ class MTScatterWidget(MTWidget):
             touch.pop()
 
         # remove it from our saved touches
-        if touch.id in self.touches and touch.grab_state:
-            del self.touches[touch.id]
+        if touch.uid in self.touches and touch.grab_state:
+            touch.ungrab(self)
+            del self.touches[touch.uid]
 
         # stop porpagating if its within our bounds
         if self.collide_point(x, y):

@@ -25,7 +25,7 @@ class KineticTouch(Touch):
         if self.dxpos is not None:
             self.X = self.x - self.dxpos
             self.Y = self.y - self.dypos
-        self.profile = 'xy'
+        self.profile = 'xyK'
         super(KineticTouch, self).depack(args)
 
 class KineticTouchXY(KineticTouch):

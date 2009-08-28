@@ -18,9 +18,16 @@ class Touch(object):
         `args` : list
             list of parameters, passed to depack() function
     '''
+
+    __uniq_id = 0
+
     def __init__(self, id, args):
         if self.__class__ == Touch:
             raise NotImplementedError, 'class Touch is abstract'
+
+        # Uniq ID
+        Touch.__uniq_id += 1
+        self.uid = Touch.__uniq_id
 
         # For push/pop
         self.attr = []

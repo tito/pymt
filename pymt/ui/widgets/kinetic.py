@@ -53,10 +53,6 @@ class MTKinetic(MTWidget):
         w.add_widget(k)
         runTouchApp()
 
-    .. warning::
-        In the on_touch_move/on_touch_up, the touchID will not exists in
-        the touches arguments.
-
     :Parameters:
         `friction` : float, defaults to 10
             The Pseudo-friction of the pseudo-kinetic scrolling.
@@ -77,15 +73,6 @@ class MTKinetic(MTWidget):
         self.touch      = {} # internals
 
     def on_touch_down(self, touch):
-        #This is a fix for a bug caused by more than one on_touch_down being sent for the same touch in a short period.
-        if id(touch) in self.touch:
-            oldktouch = self.touch[id(touch)]
-            #put it in a new place on the list, and set it to be removed immediately.
-            oldktouch.mode = 'spinning'
-            oldktouch.X = -1.0
-            oldktouch.Y = -1.0
-            self.touch[oldktouch.id] = oldktouch
-
         # do a copy of the touch for kinetic
         if 'X' in touch.profile and 'Y' in touch.profile:
             args            = (touch.x, touch.y, touch.X, touch.Y)
@@ -95,7 +82,7 @@ class MTKinetic(MTWidget):
             ktouch          = KineticTouch(args)
         ktouch.userdata = touch.userdata
         ktouch.is_double_tap = touch.is_double_tap
-        self.touch[id(touch)] = ktouch
+        self.touch[touch.uid] = ktouch
         # grab the touch for not lost it !
         touch.grab(self)
         getAvailableTouchs().append(ktouch)
@@ -105,9 +92,9 @@ class MTKinetic(MTWidget):
     def on_touch_move(self, touch):
         if touch.grab_current != self:
             return
-        if id(touch) not in self.touch:
+        if touch.uid not in self.touch:
             return
-        ktouch = self.touch[id(touch)]
+        ktouch = self.touch[touch.uid]
         if isinstance(ktouch, KineticTouchXY):
             ktouch.move([touch.x, touch.y, touch.X, touch.Y])
         else:
@@ -131,14 +118,13 @@ class MTKinetic(MTWidget):
             ktouch.pop()
         return ret
 
-
     def on_touch_up(self, touch):
         if touch.grab_current != self:
             return
         touch.ungrab(self)
-        if id(touch) not in self.touch:
+        if touch.uid not in self.touch:
             return
-        ktouch = self.touch[id(touch)]
+        ktouch = self.touch[touch.uid]
         ktouch.userdata = touch.userdata
         ktouch.mode = 'spinning'
 

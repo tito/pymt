@@ -47,10 +47,10 @@ def parse_string(text):
     return text.strip()
 
 def parse_int2(text):
-    '''Parse a string to a integer with exactly 2 number ::
+    '''Parse a string to a integer with exactly 2 number
 
-        >>> print parse_int2("12 54")
-        12, 54
+	>>> print parse_int2("12 54")
+	12, 54
 
     '''
     texts = [x for x in text.split(' ') if x.strip() != '']
@@ -64,10 +64,10 @@ def parse_int2(text):
     return value
 
 def parse_float4(text):
-    '''Parse a string to a float with exactly 4 floats ::
+    '''Parse a string to a float with exactly 4 floats
 
-        >>> parse_float4('54 87. 35 0')
-        54, 87., 35, 0
+	>>> parse_float4('54 87. 35 0')
+	54, 87., 35, 0
 
     '''
     texts = [x for x in text.split(' ') if x.strip() != '']

@@ -141,8 +141,8 @@ def drawCircle(pos=(0,0), radius=1.0, linewidth=None):
     '''
     x, y = pos[0], pos[1]
     with gx_matrix:
-        glTranslated(x, y, 0)
-        glScaled(radius, radius, 1.0)
+        glTranslatef(x, y, 0)
+        glScalef(radius, radius, 1.0)
         if linewidth:
             gluDisk(gluNewQuadric(), 1-linewidth/float(radius), 1, 32,1)
         else:
@@ -382,6 +382,6 @@ def drawSemiCircle(pos=(0,0), inner_radius=100, outer_radius=120, slices=32, loo
             Angle to finish drawing
     '''
     with gx_matrix:
-        glTranslated(pos[0], pos[1], 0)
+        glTranslatef(pos[0], pos[1], 0)
         gluPartialDisk(gluNewQuadric(), inner_radius, outer_radius, slices, loops, start_angle, sweep_angle)
 

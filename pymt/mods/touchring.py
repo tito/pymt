@@ -12,8 +12,11 @@ class TouchRing(MTWidget):
         self.bring_to_front()
 
     def draw(self):
-        set_color(1, 1, 1, .7)
         for touch in getAvailableTouchs():
+            if 'K' in touch.profile:
+                set_color(1, 1, 1, .2)
+            else:
+                set_color(1, 1, 1, .7)
             drawCircle(pos=touch.pos, radius=25., linewidth=3.)
 
 def start(win, ctx):

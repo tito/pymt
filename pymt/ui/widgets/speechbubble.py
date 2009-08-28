@@ -16,21 +16,21 @@ class MTSpeechBubble(MTLabel):
     :Parameters:
         `multiline` : bool, default to True
             Make label multiline
-         `bgcolor` : list, default to (183./255, 224./255, 1)
+        `bgcolor` : list, default to (183./255, 224./255, 1)
             Background color of bubble
-         `bordercolor` : list, default to (1, 1, 1)
+        `bordercolor` : list, default to (1, 1, 1)
             Border color of bubble
-         `bordersize` : int, default to 2
+        `bordersize` : int, default to 2
             Size of border
-         `radius` : int, default to 8
+        `radius` : int, default to 8
             Size of radius box
-         `padding` : int, default to 5
+        `padding` : int, default to 5
             Padding inside label
-         `relpos` : list, default to (-30, 20)
+        `relpos` : list, default to (-30, 20)
             Relative position of the bubble
-         `trisize` : int, default to 8
+        `trisize` : int, default to 8
             Size of triangle
-         `trirelpos` : list, default to (0, 0)
+    	`trirelpos` : list, default to (0, 0)
             Relative position of the triangle
     '''
     def __init__(self, **kwargs):

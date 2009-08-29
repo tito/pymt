@@ -38,6 +38,8 @@ class MTWindow(TouchWindow):
             Display index to use
         `config` : `Config`
             Default configuration to pass on TouchWindow
+        `enable_simulator` : bool, default to True
+            Enable mouse simulator
 
     :Styles:
         `bg-color` : color
@@ -47,7 +49,6 @@ class MTWindow(TouchWindow):
     def __init__(self, **kwargs):
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
-        kwargs.setdefault('enablemouse', True)
         kwargs.setdefault('style', {})
 
         # apply styles for window
@@ -74,21 +75,18 @@ class MTWindow(TouchWindow):
         # add view + simulator
         if 'view' in kwargs:
             self.add_widget(kwargs.get('view'))
-            
-         # Accept or don't accept mouse input.
-        enablemouse = kwargs.get('enablemouse')
-        
-        try:
-            if pymt.pymt_config.getboolean('pymt', 'enablemouse') == False:
-                enablemouse = False
-        except:
-            pass #They probably just don't have it added to their config file.
 
-        if enablemouse:
+        # if enablemouse is activated, add the simulator.
+        self.sim = None
+        if 'enable_simulator' in kwargs:
+            enable_simulator = kwargs.get('enable_simulator')
+        else:
+            enable_simulator = pymt.pymt_config.getboolean(
+                'pymt', 'enable_simulator')
+
+        if enable_simulator:
             self.sim = MTSimulator()
             self.add_widget(self.sim)
-        else:
-            self.sim = False
 
         # get window params, user options before config option
         params = {}
@@ -191,18 +189,9 @@ class MTWindow(TouchWindow):
                 pymt.pymt_logger.debug('Multisampling is not available')
                 MTWindow.have_multisample = False
 
-        polygon_smooth = pymt.pymt_config.getint('graphics', 'polygon_smooth')
-        if polygon_smooth:
-            if polygon_smooth == 1:
-                hint = GL_FASTEST
-            else:
-                hint = GL_NICEST
-            if MTWindow.have_multisample:
-                glEnable(GL_MULTISAMPLE_ARB)
-                glHint(GL_MULTISAMPLE_FILTER_HINT_NV, hint)
-            else:
-                glEnable(GL_POLYGON_SMOOTH)
-                glHint(GL_POLYGON_SMOOTH_HINT, hint)
+        if MTWindow.have_multisample:
+            glEnable(GL_MULTISAMPLE_ARB)
+            glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_FASTEST)
 
         line_smooth = pymt.pymt_config.getint('graphics', 'line_smooth')
         if line_smooth:
@@ -290,7 +279,7 @@ class MTWindow(TouchWindow):
         self.draw()
         for w in self.children:
             w.dispatch_event('on_draw')
-        
+
         if self.sim:
             self.sim.dispatch_event('on_draw')
 

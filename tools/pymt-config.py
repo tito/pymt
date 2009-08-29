@@ -136,10 +136,9 @@ Label(g_graphics, text='Fullscreen').grid(row=0)
 #Label(g_graphics, text='Height').grid(row=2)
 Label(g_graphics, text='Screen').grid(row=1)
 Label(g_graphics, text='Dimension').grid(row=2)
-Label(g_graphics, text='Polygon smooth').grid(row=3)
-Label(g_graphics, text='Line smooth').grid(row=4)
-Label(g_graphics, text='Vertical sync').grid(row=5)
-Label(g_graphics, text='FBO').grid(row=6)
+Label(g_graphics, text='Line smooth').grid(row=3)
+Label(g_graphics, text='Vertical sync').grid(row=4)
+Label(g_graphics, text='FBO').grid(row=5)
 
 e_graphics_fullscreen = Checkbutton(g_graphics,
         variable=c['graphics.fullscreen'], onvalue='1', offvalue='0')
@@ -147,8 +146,6 @@ e_graphics_fullscreen = Checkbutton(g_graphics,
 #e_graphics_height = Entry(g_graphics, textvariable=c['graphics.height'])
 e_graphics_screen = OptionMenu(g_graphics, c_screen, *opt_screen)
 e_graphics_display = Spinbox(g_graphics, from_=-1, to=100, textvariable=c['graphics.display'])
-e_graphics_polygon_smooth = Checkbutton(g_graphics,
-        variable=c['graphics.polygon_smooth'], onvalue='1', offvalue='0')
 e_graphics_line_smooth = Checkbutton(g_graphics,
         variable=c['graphics.line_smooth'], onvalue='1', offvalue='0')
 e_graphics_vertical_sync = Checkbutton(g_graphics,
@@ -160,10 +157,9 @@ e_graphics_fullscreen.grid(row=0, column=1)
 #e_graphics_height.grid(row=2, column=1)
 e_graphics_screen.grid(row=1, column=1)
 e_graphics_display.grid(row=2, column=1)
-e_graphics_polygon_smooth.grid(row=3, column=1)
-e_graphics_line_smooth.grid(row=4, column=1)
-e_graphics_vertical_sync.grid(row=5, column=1)
-e_graphics_fbo.grid(row=6, column=1)
+e_graphics_line_smooth.grid(row=3, column=1)
+e_graphics_vertical_sync.grid(row=4, column=1)
+e_graphics_fbo.grid(row=5, column=1)
 
 
 # ================================================================

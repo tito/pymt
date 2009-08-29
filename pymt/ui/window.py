@@ -191,18 +191,9 @@ class MTWindow(TouchWindow):
                 pymt.pymt_logger.debug('Multisampling is not available')
                 MTWindow.have_multisample = False
 
-        polygon_smooth = pymt.pymt_config.getint('graphics', 'polygon_smooth')
-        if polygon_smooth:
-            if polygon_smooth == 1:
-                hint = GL_FASTEST
-            else:
-                hint = GL_NICEST
-            if MTWindow.have_multisample:
-                glEnable(GL_MULTISAMPLE_ARB)
-                glHint(GL_MULTISAMPLE_FILTER_HINT_NV, hint)
-            else:
-                glEnable(GL_POLYGON_SMOOTH)
-                glHint(GL_POLYGON_SMOOTH_HINT, hint)
+        if MTWindow.have_multisample:
+            glEnable(GL_MULTISAMPLE_ARB)
+            glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_FASTEST)
 
         line_smooth = pymt.pymt_config.getint('graphics', 'line_smooth')
         if line_smooth:

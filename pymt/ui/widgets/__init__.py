@@ -10,7 +10,6 @@ from kinetic import *
 from label import *
 from layout import *
 from modalwindow import *
-from multislider import *
 from radial import *
 from rectangle import *
 from scatter import *

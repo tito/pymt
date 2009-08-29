@@ -1,7 +1,7 @@
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
 PLUGIN_TITLE = 'Video Player'
-PLUGIN_AUTHOR = 'Sharath Patali'
+PLUGIN_AUTHOR = 'Sharath Patali '
 PLUGIN_DESCRIPTION = 'This shows how to use the video player module present in the library'
 
 from pymt import *

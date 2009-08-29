@@ -41,6 +41,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_config.set('pymt', 'log_level', 'info')
     pymt_config.set('pymt', 'double_tap_time', '250')
     pymt_config.set('pymt', 'double_tap_distance', '20')
+    pymt_config.set('pymt', 'enable_simulator', '1')
     pymt_config.set('pymt', 'ignore', '[]')
     pymt_config.add_section('keyboard')
     pymt_config.set('keyboard', 'layout', 'qwerty')

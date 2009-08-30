@@ -6,7 +6,7 @@ import sys
 sys.argv.append('install')
 pylib = get_python_lib()
 setup (name='pymt',
-      version='0.2',
+      version='0.3',
       author='Thomas Hansen',
       author_email='thomas.hansen@gmail.com',
       url='http://code.google.com/p/pymt/',

@@ -25,13 +25,13 @@ class KineticTouch(Touch):
         if self.dxpos is not None:
             self.X = self.x - self.dxpos
             self.Y = self.y - self.dypos
-        self.profile = 'xyK'
+        self.profile = ('pos', 'kinetic')
         super(KineticTouch, self).depack(args)
 
 class KineticTouchXY(KineticTouch):
     def depack(self, args):
         self.x, self.y, self.X, self.Y = args
-        self.profile = 'xyXY'
+        self.profile = ('pos', 'mov', 'kinetic')
         Touch.depack(self, args)
 
 class MTKinetic(MTWidget):
@@ -74,7 +74,7 @@ class MTKinetic(MTWidget):
 
     def on_touch_down(self, touch):
         # do a copy of the touch for kinetic
-        if 'X' in touch.profile and 'Y' in touch.profile:
+        if 'mov' in touch.profile:
             args            = (touch.x, touch.y, touch.X, touch.Y)
             ktouch          = KineticTouchXY(args)
         else:

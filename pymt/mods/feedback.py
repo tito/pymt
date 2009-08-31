@@ -99,7 +99,7 @@ class GlobalFeedback(MTWidget):
     def on_draw(self):
         alivetouches = []
         for touch in getAvailableTouchs():
-            if 'K' in touch.profile and touch.mode == 'spinning':
+            if 'kinetic' in touch.profile and touch.mode == 'spinning':
                 continue
             alivetouches.append(touch.id)
             if touch.id not in self.touches:

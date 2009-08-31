@@ -1,5 +1,42 @@
 '''
 Touch: base for all touch objects
+
+
+Every touch in PyMT application are derivated from Touch class.
+A touch can be more or less specific, it depend on the provider.
+As example, TUIO provider can give you lot of information about position,
+acceleration, width/height of the shape etc.. And the wiimote provider can
+give you information about the button up/down etc...
+
+So, we call that "capabilities.". Capabilities is handle in the "profile"
+property on a Touch. It's a simple list with string that contains :
+
+    * pos (tuio/property x, y)
+    * pos3d (tuio/property x, y, z)
+    * mov (tuio/property X, Y)
+    * mov3d (tuio/property X, Y, Z)
+    * dim (tuio/property w, h)
+    * dim3d (tuio/property w, h, d)
+    * markerid (tuio/property i (fid property))
+    * sessionid (tuio/property s (id property))
+    * angle (tuio/property a)
+    * angle3D (tuio/property a, b, c)
+    * rotacc (tuio/property A)
+    * rotacc3d (tuio/property A, B, C)
+    * motacc (tuio/property m)
+    * shape (property shape)
+    * kinetic
+    * ... and other could be added by new classes
+
+When you are on the on_touch_down(self, touch) handler, you can filter by
+testing the profile ::
+
+    def on_touch_down(self, touch):
+        if 'markerid' not in touch:
+            # not a fiducial, abandon
+            return
+
+
 '''
 
 __all__ = ['Touch']
@@ -54,7 +91,7 @@ class Touch(object):
         self.C = 0.0
         self.m = 0.0
         self.r = 0.0
-        self.profile = 'ixyzabcXYZABCmrh'
+        self.profile = ('pos', )
 
         # new parameters
         self.x = 0.0

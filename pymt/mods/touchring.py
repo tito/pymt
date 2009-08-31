@@ -13,7 +13,7 @@ class TouchRing(MTWidget):
 
     def draw(self):
         for touch in getAvailableTouchs():
-            if 'K' in touch.profile:
+            if 'kinetic' in touch.profile:
                 set_color(1, 1, 1, .2)
             else:
                 set_color(1, 1, 1, .7)

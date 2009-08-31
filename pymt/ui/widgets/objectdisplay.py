@@ -19,7 +19,7 @@ class MTObjectDisplay(MTWidget):
         self.objects = {}
 
     def on_touch_down(self, touch):
-        if not 'a' in touch.profile:
+        if not 'markerid' in touch.profile:
             return
         self.objects[touch.id] = (touch.x, touch.y, -touch.a * 180. / pi)
 

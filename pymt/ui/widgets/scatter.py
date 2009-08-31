@@ -420,7 +420,7 @@ class MTScatterWidget(MTWidget):
 
             # check if we got multiple touch, if current touch
             # have kinetic activated, and they are other touch
-            if 'K' in touch.profile and touch.mode == 'spinning' \
+            if 'kinetic' in touch.profile and touch.mode == 'spinning' \
                 and len(self.touches) > 1 and self.find_second_touch(touch.uid):
 
                 # suppress the touch

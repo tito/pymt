@@ -36,7 +36,7 @@ class TuioTouchProvider(TouchProvider):
                 # for a simple x, y, value, you can do this :
                 if len(args) == 2:
                     self.sx, self.sy = args
-                    self.profile = 'xy'
+                    self.profile = ('pos', )
                 self.sy = 1 - self.sy
                 super(TuioNEWPATHTouch, self).depack(args)
 
@@ -162,13 +162,13 @@ class Tuio2dCurTouch(Touch):
     def depack(self, args):
         if len(args) < 5:
             self.sx, self.sy = map(float, args[0:2])
-            self.profile = 'xy'
+            self.profile = ('pos', )
         elif len(args) == 5:
             self.sx, self.sy, self.X, self.Y, self.m = map(float, args[0:5])
-            self.profile = 'xyXYm'
+            self.profile = ('pos', 'mov', 'motacc')
         else:
             self.sx, self.sy, self.X, self.Y, self.m, width, height = map(float, args[0:7])
-            self.profile = 'xyXYmh'
+            self.profile = ('pos', 'mov', 'motacc', 'shape')
             if self.shape is None:
                 self.shape = TouchShapeRect()
             self.shape.width = width
@@ -190,13 +190,14 @@ class Tuio2dObjTouch(Touch):
     def depack(self, args):
         if len(args) < 5:
             self.sx, self.sy = args[0:2]
-            self.profile = 'xy'
+            self.profile = ('pos', )
         elif len(args) == 9:
             self.fid, self.sx, self.sy, self.a, self.X, self.Y, self.A, self.m, self.r = args[0:9]
-            self.profile = 'ixyaXYAmr'
+            self.profile = ('markerid', 'pos', 'angle', 'mov', 'rot', 'rotacc')
         else:
             self.fid, self.sx, self.sy, self.a, self.X, self.Y, self.A, self.m, self.r, width, height = args[0:11]
-            self.profile = 'ixyaXYAmrh'
+            self.profile = ('markerid', 'pos', 'angle', 'mov', 'rot', 'rotacc',
+                           'shape')
             if self.shape is None:
                 self.shape = TouchShapeRect()
                 self.shape.width = width

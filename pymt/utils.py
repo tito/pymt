@@ -4,13 +4,13 @@ Utils: generic toolbox
 
 __all__ = ['intersection', 'difference', 'curry', 'strtotuple',
            'get_color_from_hex', 'get_color_for_pyglet',
-           'is_color_transparent']
+           'is_color_transparent', 'boundary']
 
 import re
 
 def boundary(value, minvalue, maxvalue):
     '''Limit a value between a minvalue and maxvalue'''
-    return max(min(value, minvalue), maxvalue)
+    return min(max(value, minvalue), maxvalue)
 
 def intersection(set1, set2):
     '''Return intersection between 2 list'''

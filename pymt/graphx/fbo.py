@@ -5,7 +5,8 @@ Fbo: abstraction to use hardware/software FrameBuffer object
 from __future__ import with_statement
 
 __all__ = [
-    'Fbo', 'HardwareFbo', 'SoftwareFbo'
+    'Fbo', 'HardwareFbo', 'SoftwareFbo',
+    'UnsupportedFboException'
 ]
 
 from pyglet import *
@@ -15,6 +16,9 @@ from paint import *
 from colors import *
 from draw import *
 from ..logger import pymt_logger
+
+class UnsupportedFboException(Exception):
+    pass
 
 class AbstractFbo(object):
     '''Abstraction of Framebuffer implementation.
@@ -76,10 +80,35 @@ class HardwareFbo(AbstractFbo):
     '''
     fbo_stack = [0]
 
+    gl_fbo_errors = {
+        GL_FRAMEBUFFER_COMPLETE_EXT:
+            'Framebuffer complete.',
+        GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+            'Framebuffer incomplete: Attachment is NOT complete.',
+        GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+            'Framebuffer incomplete: No image is attached to FBO.',
+        GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+            'Framebuffer incomplete: Attached images have different dimensions.',
+        GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+            'Framebuffer incomplete: Color attached images have different internal formats.',
+        GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+            'Framebuffer incomplete: Draw buffer.',
+        GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+            'Framebuffer incomplete: Read buffer.',
+        GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+            'Unsupported by FBO implementation.',
+    }
+
     def __init__(self, **kwargs):
         super(HardwareFbo, self).__init__(**kwargs)
         self.framebuffer    = c_uint(0)
         self.depthbuffer    = c_uint(0)
+
+        set_texture(self.texture)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.realsize[0], self.realsize[1],
+                0, GL_RGB, GL_UNSIGNED_BYTE, 0)
 
         glGenFramebuffersEXT(1, byref(self.framebuffer))
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
@@ -91,21 +120,37 @@ class HardwareFbo(AbstractFbo):
             glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, self.depthbuffer)
             glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT,
                                      self.realsize[0], self.realsize[1])
-            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, self.depthbuffer)
+            glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0)
+            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
+                                         GL_RENDERBUFFER_EXT, self.depthbuffer)
 
-        set_texture(self.texture)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.realsize[0], self.realsize[1],
-                0, GL_RGB, GL_UNSIGNED_BYTE, 0)
         glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                 GL_TEXTURE_2D, get_texture_id(self.texture), 0)
-        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0)
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0)
 
+        # check the fbo status
         status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
         if status != GL_FRAMEBUFFER_COMPLETE_EXT:
-            pymt_logger.error('error in framebuffer activation')
+            pymt_logger.error('Error in framebuffer activation')
+            pymt_logger.error('Details: HardwareFbo size=%s, realsize=%s, format=GL_RGBA' % (
+                str(self.size), str(self.realsize)))
+            if status in HardwareFbo.gl_fbo_errors:
+                pymt_logger.error('Details: %s (%d)' % (HardwareFbo.gl_fbo_errors[status], status))
+            else:
+                pymt_logger.error('Details: Unknown error (%d)' % status)
+
+            pymt_logger.error('')
+            pymt_logger.error('You cannot use Hardware FBO.')
+            pymt_logger.error('Please change the configuration to use Software FBO.')
+            pymt_logger.error('You can use the pymt-config tools, or edit the configuration to set:')
+            pymt_logger.error('')
+            pymt_logger.error('[graphics]')
+            pymt_logger.error('fbo = software')
+            pymt_logger.error('')
+
+            raise UnsupportedFboException()
+
+        # unbind framebuffer
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0)
 
     def __del__(self):
         glDeleteFramebuffersEXT(1, byref(self.framebuffer))

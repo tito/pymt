@@ -148,13 +148,13 @@ def drawCircle(pos=(0,0), radius=1.0, linewidth=None):
         else:
             gluDisk(gluNewQuadric(), 0, 1, 32,1)
 
-def drawPolygon(points, style=GL_TRIANGLES):
+def drawPolygon(points, style=GL_POLYGON):
     '''Draw polygon from points list
 
     :Parameters:
         `points` : list
             List of points, length must be power of 2. (x,y,x,y...)
-        `style` : opengl begin, default to GL_TRIANGLES
+        `style` : opengl begin, default to GL_POLYGON
             Default type to draw (will be passed to glBegin)
     '''
     points = list(points)

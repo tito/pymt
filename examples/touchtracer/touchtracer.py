@@ -66,10 +66,9 @@ class TouchTracer(MTWidget):
             drawLabel(x,y, touchID)
 
 def pymt_plugin_activate(w, ctx):
-    ctx.k = MTKinetic()
     ctx.c = TouchTracer()
-    ctx.k.add_widget(ctx.c)
-    w.add_widget(ctx.k)
+    w.add_widget(ctx.c)
+
 def pymt_plugin_deactivate(w, ctx):
     w.remove_widget(ctx.c)
 

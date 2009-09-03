@@ -147,7 +147,7 @@ class MTGestureDetector(MTGestureWidget):
             glLineWidth(3)
             with gx_begin(GL_LINE_STRIP):
                 while i < math.pi * 2:
-                    x, y = math.cos(self.dt + i) * radius, math.sin(self.dt + i) * radius
+                    x, y = math.cos(self.dt - i) * radius, math.sin(self.dt - i) * radius
                     glColor4f(1, 1, 1, min(alpha, i / math.pi))
                     glVertex2f(x + s2.x, y + s2.y - 70)
                     i += step

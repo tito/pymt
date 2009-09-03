@@ -433,14 +433,14 @@ class MTKineticList(MTStencilContainer):
             if size < self.height:
                 self.yoffset = 0
             else:
-                self.yoffset = boundary(self.yoffset, 0, -size + self.height)
+                self.yoffset = boundary(self.yoffset, -size + self.height, 0)
                 self._scrollbar_size = self.height / size
                 self._scrollbar_index = -self.yoffset / size
         elif self.do_x:
             if size < self.width:
                 self.xoffset = 0
             else:
-                self.xoffset = boundary(self.xoffset, 0, -size + self.width)
+                self.xoffset = boundary(self.xoffset, -size + self.width, 0)
                 self._scrollbar_size = self.width / size
                 self._scrollbar_index = -self.xoffset / size
 

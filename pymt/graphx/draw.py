@@ -205,8 +205,7 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0), tex_coords=None):
         `size` : tuple, default to (1.0, 1.0)
             Size of rectangle
     '''
-    with gx_enable(GL_TEXTURE_2D):
-        set_texture(texture, target=GL_TEXTURE_2D)
+    with gx_texture(texture):
         if type(texture) in (Texture, TextureRegion):
             t = texture.tex_coords
             texcoords = (t[0], t[1], t[3], t[4], t[6], t[7], t[9], t[10])

@@ -9,16 +9,18 @@ __all__ = [
     'DO',
     'GlDisplayList', 'GlBlending',
     'GlMatrix', 'GlEnable', 'GlBegin',
-    'GlAttrib', 'GlColor',
+    'GlAttrib', 'GlColor', 'GlTexture',
     # aliases
     'gx_blending', 'gx_alphablending',
     'gx_matrix', 'gx_matrix_identity',
     'gx_enable', 'gx_begin',
-    'gx_attrib', 'gx_color'
+    'gx_attrib', 'gx_color',
+    'gx_texture'
 ]
 
 from pyglet import *
 from pyglet.gl import *
+from pyglet.image import Texture, TextureRegion
 
 gl_displaylist_generate = False
 class GlDisplayList:
@@ -213,3 +215,39 @@ class GlColor:
         glPopAttrib()
 
 gx_color = GlColor
+
+class GlTexture:
+    '''Statement of setting a texture
+
+    Alias: gx_texture.
+    '''
+    def __init__(self, texture):
+        self.texture = texture
+
+    def __enter__(self):
+        target = self.get_target()
+        glPushAttrib(GL_ENABLE_BIT)
+        glEnable(target)
+        glBindTexture(target, self.get_id())
+
+    def __exit__(self, type, value, traceback):
+        glPopAttrib()
+
+    def get_id(self):
+        '''Return the openid of texture'''
+        if isinstance(self.texture, TextureRegion):
+            return self.texture.owner.id
+        elif isinstance(self.texture, Texture):
+            return self.texture.id
+        else:
+            return self.texture
+
+    def get_target(self):
+        if isinstance(self.texture, TextureRegion):
+            return self.texture.owner.target
+        elif isinstance(self.texture, Texture):
+            return self.texture.target
+        else:
+            return GL_TEXTURE_2D
+
+gx_texture = GlTexture

@@ -22,7 +22,7 @@ class MTWallpaperWindow(MTWindow):
             * MTWallpaperWindow.CENTER
             * MTWallpaperWindow.REPEAT
             * MTWallpaperWindow.SCALE
-        '''
+    '''
 
         NOREPEAT = 0
         CENTER = 1

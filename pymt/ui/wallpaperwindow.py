@@ -17,16 +17,20 @@ class MTWallpaperWindow(MTWindow):
         `wallpaper` : string, default is None
             Filename of wallpaper
         `position` : const, default to MTWallpaperWindow.CENTER
-            Default position of wallpaper
-    '''
+            Default position of wallpaper. Can be one of :
+            * MTWallpaperWindow.NOREPEAT
+            * MTWallpaperWindow.CENTER
+            * MTWallpaperWindow.REPEAT
+            * MTWallpaperWindow.SCALE
+        '''
 
-    NOREPEAT = 0
-    CENTER = 1
-    REPEAT = 2
-    SCALE = 3
+        NOREPEAT = 0
+        CENTER = 1
+        REPEAT = 2
+        SCALE = 3
 
-    def __init__(self, **kwargs):
-        kwargs.setdefault('wallpaper', None)
+        def __init__(self, **kwargs):
+            kwargs.setdefault('wallpaper', None)
         kwargs.setdefault('position', MTWallpaperWindow.CENTER)
         super(MTWallpaperWindow, self).__init__(**kwargs)
         self.wallpaper  = kwargs.get('wallpaper')

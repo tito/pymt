@@ -24,13 +24,13 @@ class MTWallpaperWindow(MTWindow):
             * MTWallpaperWindow.SCALE
     '''
 
-        NOREPEAT = 0
-        CENTER = 1
-        REPEAT = 2
-        SCALE = 3
+    NOREPEAT = 0
+    CENTER = 1
+    REPEAT = 2
+    SCALE = 3
 
-        def __init__(self, **kwargs):
-            kwargs.setdefault('wallpaper', None)
+    def __init__(self, **kwargs):
+        kwargs.setdefault('wallpaper', None)
         kwargs.setdefault('position', MTWallpaperWindow.CENTER)
         super(MTWallpaperWindow, self).__init__(**kwargs)
         self.wallpaper  = kwargs.get('wallpaper')

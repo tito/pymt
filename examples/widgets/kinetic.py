@@ -12,7 +12,7 @@ mms.add_widget(w)
 k = MTKineticList(pos=(20, 20), size=(400, 400), w_limit=3)
 w.add_widget(k)
 
-d = range(0, 10)
+d = range(0, 20)
 for x in d:
     item = MTKineticItem(label=str(x))
     item.push_handlers(on_press=curry(print_me, item))

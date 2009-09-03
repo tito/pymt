@@ -38,7 +38,7 @@ class MTicon(MTButton):
         self.image.y        = self.y
         self.size           = (self.image.width, self.image.height)
         #
-        with DO(gx_enable(GL_BLEND),gx_enable(GL_TEXTURE_2D)):
+        with DO(gx_enable(GL_BLEND)):
 
             glColor4f(1, 1, 1, 1)
             glPushMatrix()
@@ -78,8 +78,7 @@ class MTicon(MTButton):
         self.draw()
 
 def drawCover(texture, pos=(0,0), size=(1.0,1.0)):
-    with gx_enable(GL_TEXTURE_2D):
-        set_texture(texture, GL_TEXTURE_2D)
+    with gx_texture(texture):
         pos = ( pos[0],pos[1],   pos[0]+size[0],pos[1],   pos[0]+size[0],pos[1]+size[1],  pos[0],pos[1]+size[1] )
         texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
         draw(4, GL_QUADS, ('v2f', pos), ('t2f', texcoords))

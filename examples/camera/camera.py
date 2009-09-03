@@ -78,12 +78,13 @@ class MTCameraBase(MTWidget):
 
     def copy_buffer_to_gpu(self):
         '''copies the openCV image to the gpu, so we can use it as a texture'''
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, get_texture_id(self.frame_texture));
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.resolution[0],self.resolution[1], 0, self.format, GL_UNSIGNED_BYTE, self.buffer);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glBindTexture(GL_TEXTURE_2D,0);
+        target = get_texture_target(self.frame_texture)
+        glEnable(target);
+        glBindTexture(target, get_texture_id(self.frame_texture));
+        glTexImage2D(target, 0, GL_RGBA, self.resolution[0],self.resolution[1], 0, self.format, GL_UNSIGNED_BYTE, self.buffer);
+        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glBindTexture(target, 0);
 
 
     def draw(self):

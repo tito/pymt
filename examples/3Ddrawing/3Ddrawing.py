@@ -120,9 +120,7 @@ class ModelPainter(MTWidget):
         #draw into FBO
         glClearColor(0.3,0.6,0.3,0)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        with self.perspective:
-            glEnable(GL_TEXTURE_2D)
-            set_texture(self.painting_fbo.texture, GL_TEXTURE_2D)
+        with DO(self.perspective, gx_texture(self.painting_fbo.texture)):
             self.draw()
 
         #display teh FBO contents
@@ -144,9 +142,8 @@ class ModelPainter(MTWidget):
     def draw_picking(self):
         glDisable(GL_LIGHTING)
         glColor3f(1,1,1)
-        glEnable(GL_TEXTURE_2D)
-        set_texture(self.picking_texture.texture)
-        self.draw()
+        with gx_texture(self.picking_texture.texture):
+            self.draw()
 
 
     def pick(self, x,y):

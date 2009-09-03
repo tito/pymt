@@ -2,6 +2,7 @@
 #Website http://kaswy.free.fr
 #Depend of PyMT from  Thomas Hansen
 
+from __future__ import with_statement
 import sys
 from math import sqrt
 from pymt import *
@@ -27,21 +28,20 @@ class GLWindow(MTWindow):
 		glMatrixMode(GL_MODELVIEW)
 		glLoadIdentity()
 		#glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-		glEnable(GL_TEXTURE_2D)
-		glBindTexture(GL_TEXTURE_2D,image.id)
-		Vertex = 0
-		for y in range(res-1):
-			glBegin(GL_QUAD_STRIP)
-			for x in range(res):
-				xyz = Data[Vertex]
-				glTexCoord2f(float(x)/res,float(y)/res);
-				glVertex2f(xyz[0],xyz[1])
-				Vertex += 1
-				xyz = Data[Vertex]
-				glTexCoord2f(float(x)/res,float(y+1)/res);
-				glVertex2f(xyz[0],xyz[1])
-				Vertex += 1
-			glEnd()
+        with gx_texture(image):
+            Vertex = 0
+            for y in range(res-1):
+                glBegin(GL_QUAD_STRIP)
+                for x in range(res):
+                    xyz = Data[Vertex]
+                    glTexCoord2f(float(x)/res,float(y)/res);
+                    glVertex2f(xyz[0],xyz[1])
+                    Vertex += 1
+                    xyz = Data[Vertex]
+                    glTexCoord2f(float(x)/res,float(y+1)/res);
+                    glVertex2f(xyz[0],xyz[1])
+                    Vertex += 1
+                glEnd()
 
 	def on_touch_down(self, touches, touchID, x, y):
 		vertexImpact[touchID]=[(x,y)]

@@ -7,6 +7,7 @@ __all__ = ['MTWallpaperWindow']
 import pyglet.image
 from pyglet.gl import glClearColor
 from ..logger import pymt_logger
+from ..image import Image
 from window import MTWindow
 
 class MTWallpaperWindow(MTWindow):
@@ -22,6 +23,7 @@ class MTWallpaperWindow(MTWindow):
     NOREPEAT = 0
     CENTER = 1
     REPEAT = 2
+    SCALE = 3
 
     def __init__(self, **kwargs):
         kwargs.setdefault('wallpaper', None)
@@ -35,7 +37,6 @@ class MTWallpaperWindow(MTWindow):
         self.clear()
         if self.position == MTWallpaperWindow.NOREPEAT:
             super(MTWallpaperWindow, self).draw()
-            self.wallpaper.x, self.wallpaper.y = (0, 0)
             self.wallpaper.draw()
         elif self.position == MTWallpaperWindow.CENTER:
             super(MTWallpaperWindow, self).draw()
@@ -54,13 +55,15 @@ class MTWallpaperWindow(MTWindow):
                     self.wallpaper.x = x * self.wallpaper.width
                     self.wallpaper.y = y * self.wallpaper.height
                     self.wallpaper.draw()
+        elif self.position == MTWallpaperWindow.SCALE:
+            self.wallpaper.size = self.size
+            self.wallpaper.draw()
 
     def _set_wallpaper(self, image):
         if not image:
             return
         try:
-            img = pyglet.image.load(image)
-            self._image = pyglet.sprite.Sprite(img)
+            self._image = Image(image)
         except Exception, e:
             pymt_logger.error('error while loading wallpaper : %s', e)
     def _get_wallpaper(self):

@@ -10,6 +10,7 @@ __all__ = [
     'drawTriangle', 'drawRectangle',
     'drawTexturedRectangle', 'drawLine',
     'drawRectangleAlpha', 'drawRoundedRectangleAlpha',
+    'drawSemiCircle',
 ]
 
 from pyglet import *

@@ -3,7 +3,7 @@ Close an application with one finger
 '''
 from __future__ import with_statement
 from pymt import MTWidget, getFrameDt, getAvailableTouchs, Vector, set_color
-from pymt import stopTouchApp, gx_matrix
+from pymt import stopTouchApp, gx_matrix, drawSemiCircle
 from pyglet import clock
 
 class CloseApp(MTWidget):
@@ -43,12 +43,12 @@ class CloseApp(MTWidget):
 
         # search 
         for touch in touches:
-            if hasattr(touch, '__invalid_for_close') and touch.__invalid_for_close:
+            if 'closeapp.invalid_for_close' in touch.userdata:
                 continue
             # distance < 20
             if Vector(*touch.opos).distance(Vector(touch.sx, touch.sy)) > 0.015:
                 # flag
-                touch.__invalid_for_close = True
+                touch.userdata['closeapp.invalid_for_close'] = True
                 if touch.id in self.closetouches:
                     del self.closetouches[touch.id]
                 return

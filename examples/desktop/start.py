@@ -2,6 +2,7 @@ from __future__ import with_statement
 import math
 from pymt import *
 from pyglet.gl import GL_LINE_STRIP, glColor4f, glVertex2f, GL_LINE_BIT, glLineWidth
+from pyglet.gl import glTranslatef
 
 plugins = MTPlugins(plugin_paths=['..'])
 plugins.search_plugins()
@@ -69,13 +70,15 @@ class MTMenu(MTKineticList):
 
         self.size = (180, 230)
         self.center = self.pos
+        self.fbo = Fbo(size=self.size)
 
         self.orig_x = self.x
         self.orig_y = self.y
         self.color = kwargs.get('color')
+        self.alpha = 0
 
         w = MTKineticItem(label='Close Menu', size=(220, 30),
-                          style={'font-size': 12, 'bg-color': (.2, .2, .2)})
+                          style={'font-size': 12, 'bg-color': (.2, .2, .2, .9)})
         w.push_handlers(on_press=curry(action_close_menu,
             self, w, []))
         self.add_widget(w)
@@ -85,10 +88,25 @@ class MTMenu(MTKineticList):
             name, plugin = plist.popitem()
             infos = plugins.get_infos(plugin)
             w = MTKineticItem(label=infos.get('title'), size=(180, 30),
-                              style={'font-size': 12})
+                              style={'font-size': 12, 'bg-color': (.2, .2, .2, .5)})
             w.push_handlers(on_press=curry(action_launch_plugin,
                 self, w, [name, plugin]))
             self.add_widget(w)
+
+    def on_draw(self):
+        self.alpha += getFrameDt() * 3
+        if self.alpha < 1:
+            with DO(self.fbo, gx_matrix):
+                glTranslatef(-self.x, -self.y, 0)
+                super(MTMenu, self).on_draw()
+            set_color(1, 1, 1, self.alpha)
+            a = (1 - self.alpha) * 100
+            pos = Vector(self.pos) + Vector(a, a)
+            size = Vector(self.size) - Vector(a, a) * 2
+            drawTexturedRectangle(texture=self.fbo.texture, pos=pos, size=size)
+        else:
+            super(MTMenu, self).on_draw()
+
 
 class MTGestureDetector(MTGestureWidget):
     def __init__(self, gdb, **kwargs):

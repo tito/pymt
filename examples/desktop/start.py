@@ -13,18 +13,6 @@ def gesture_add_default(gdb):
     g.id = 'circle'
     gdb.add_gesture(g)
 
-    # up_left, bottom_left, bottom_right, up_right
-    g = gdb.str_to_gesture('eNqllt1qHEcQhe/nRaSbiPr/eQHlNqAHCI4tjIljLdo1xG+fMy1pZwRJesBiQRcz/U13nVOn+vbL6cdfl7vPj+fL9+fH5dfX/ydabj+deHm4OV+en/58PN8sJ1luv550uf3XFQ/jteVk6zrHutPTl2+XdVmsy/I/lv22vrWcal3VWPUDC5iWe7rjcDNSjzRLco3l/HDz9/qYl/tf6E5NNNRUIzKLupfzHx/+9yMs40y6fH75AnmmFVmTi3YGL+fPV3hac2hle9f6ZMYe52Z/YYNASeZJ2eySSl72M/QY9LzSuVQyvblTxVR0B1dhfFzUmBUbyDl9VJ/7SpcgIYqo6lAhlR2dwsK7M5PUXGRKl+Ek4Ssdp9ci9qD0orRd2aVDqL3SWVt9zh6Kil7ZxkYWJZImKDLFjk1NSkykanBUzP0iQ1PxI3QWLqdgZbeO9ckMPiSVPAInbqlwJm8qh2l0jh+aSu/wzekkWUkBV+YrHvQqQyt0MrFZQ5opXYemumlq0qZsWixJ1X6FC0cwtTiMg3Y70KU6NNWdpvCZd8Dl7vjMtU1Xq++feM+trkNS9QNw02TRNC9uPdSlOiTVPALPYmutKHPStgNlGYLqEUE9XKUKHhJ0aNR85zb0tE1PQWOyWrVRw5cZG7ypo6s7wnEqnTvdhqC2CYp6uhqRCPodwb7tPIhFQhHmwogCrzl8CGqboEyhbs5OTvCeblYMZitJIc7SlAPsoadteiI7sslYrNDiSCjZFA0UOlLVPaSreN6iNhS1fhtH2B57YVQYWI4w2Ngm4txOjdxC7M5r7kNQ5zc2qtqJXZWUoiq92/e7NEa6zNlDT7+OURw3U6OJMIZh6Z2cyt2Oo+CDEB15OmW/XB/8ja3vayKy+VA7KstKS53ogMl9yOl5ZaPxiBFWQoEZmrV15/vQyrmWPrT03mqiYW5laO2CKeInMiuGlrFpWeWckl0IV0GAXNn8bm6zz30SQ8vQORsZUy24JXkVHI75PIcPMcM3uGo1Jn70enlT20+4vc748LzkMeSMPEJvhkG0ROFvnIHnRowhaPQBOlIMzmyhslzTdr71HIrmpmgUkZm3YhbTGMDbfYtVMTcFGYAg5rnNc0iam6Tv7ski+3sopgM3it2yThMZ8PX3cHN5+vr4/OHbx0dcuNOGuej9H6/38dct/H56fvr0/eNlfdmX+7pDxFqs84fXARJr1t79A9YLUNw=')
-    g.label = 'Square'
-    g.id = 'square'
-    gdb.add_gesture(g)
-
-    # NUI-wave
-    g = gdb.str_to_gesture('eNq1lttqHEcURd/7R6SXiHO//IDzGtAHBMcehIljDZoxxH+f3eXRdCskKSVBQiDBTK2urnVqn3P76fjtt/Pdw+F0/vp0WH68/D3ScvvxyMv9zen89Pjr4XSzHGW5/XzU5fYvV9yPry1HW9c51h0fP305r8tiXZZ/s+yn9VvLsdZVjVXfsIBpefcD3UmIsXqGRlJY53K6v/l9/ZzH566cxmSqUe0kupx+ef+PT2EZL6XLw+URXKwq1i7lXVpAPPx3+nh19o0u5MJRZumcSv2/6DHoeaUTNyepKouWcOaOziWSLl3uphGvoA8B3N/pgFtpp6iZaZp3x0a3xosRNl1SRh0xpcsoJuFnOmN3wu6VUZQELRvccS6R3GQW4tVz+JAq+jbw4VT8Cs/I9GC8u7CY1A4O0xmc5WRUrjKHD6WSz3ARo5RmYm5D4fgGR2lSi7alkBK7zeHDqFyNimNnEa1Nirq0XakrXc5K2ztzvnEdPpVfwRbL9hRvL+eIVxS6Dp969SlM7kBHkDcV7SqRn5+I68TwPvepw6duPtk7rEhw5oqwsR1cu1DqzpZJXjo/ch0+Nd8GPnzqdkPd2bWf76Lnrs6pG06DqTWQPO5Tug2jxrt0+VP48g4f7mIlyS6pmllz/pBqW/Jie6nZRNGs1cq7w6GX4Ug0TxgbXm2XvZHF1YVcRAmOgB140OHDJI2MEXKa4a/Y/jBr+Vb44db6ihepkM5GRqnUNcLWo/GSwOlzw2+6zuE+1PqmFp2hJQm7L8LFtdjogT6oKCwRD0O6zS+UD7G+iUVOJSNQ0HbQemR3Moxgcyorx01FWs6t+vdhYrMqHdxAX0BpGzwzuUClxnXoeYb5UOqbUvQM5hDUZDRSfjsV8ZdGc84ePn3zyQj25nZDL0VHlR0cV9WIQGVBSPA8CGL4DH4b+NAZu3uajSpnU5BCBZlzpasrGhJhColgdL15KcbwGZtP5Na+FNVyo1fCaSG8DNNH1TzDYhiNa/ySWpWiYSIMRdE86wqHzn9XLTGMxpa+mLgK9XyZs1AvGxsdryoKyUmJf+fwHEZzOh6BHSh8YShJk5ael2IOoblNR425DU0jVD00a3cmUetIhD6uyN7ucffX3/ub8+Pnw9P7Lx8OGL5x51YMvfzhdTa/7ODn49Pjx68fzuuXfXlnd4FpBhdK1kMThD7Ad38A6q5S7Q==')
-    g.label = 'NUI-wave'
-    g.id = 'menu'
-    gdb.add_gesture(g)
-
     #X up_letf, bottom_right, top_right, bottom_left
     g = gdb.str_to_gesture('eNq1VttqHFcQfJ8fkV4s+n75Afk1oA8Iji2EiWMt2jXEf+86x6udSXAySoTFgmB3Tk2fqq7qvv54+PrH6ebh/nj68nS/vD3/P9By/eHAy93V8fT0+Pv98Wo5yHL96aDL9Q9P3M3HloONc45zh8ePn0/jWIxj+Q/HfhlPLYcapxqnvuIA03JLN0rRaZqhWekmthzvrv4cP/Ny+4ZuwiLYQtLFODt9Of727l9fwjLvpMvD9zeIFCBYVCOSvHM5PpzB3UzIuqqjO6RtH3xenP0ZnCusxQyvyGZqXcEts7VbKqW6m19QeUzwfAanCGJyofakSK1N6Sqpms5NTYb3v6D0yT73z0GX2UnCF3TyjHZPJg7z0uYVXkyJ8D1ol3JT2YefospZVECwUOpojm5L7ZQVnQrNBLHxQUuV0D7zMmUV/1nwU1jJFb4S93dJUZCvaWf4wZt2ZZYwwxXmQbEPP5WVvsADldukS4XImGSFTxKXMjzhqqW+T71OZZUv6MrtClEzGbZlXdG5DHqjl6IotGOfGZ266qorqE0rZwdFzlQrM+IQA1cipWQQU/vgU1VdVTXqaoVLnQilV6zgMGiUE37wthdIqlNSXSWVZBBaicZQJAnpK7CnnrrRE2dhUAaniDES+//YNtW0VU3EAJrFuxGwhUToV5BiU01b1YTLxc1RdilC1hAmr4GfetoavlQYCSg+3CtktNszdCUcrCyiaKawfQ/Z1NNyL9iH0BAD9mxDDiSPebKHPfW0S/JKob7sptJw5F9vepww4pC9LRyktp+7PvX0S+4qIBBbYERdi3LDCQliBWOuNMHVuNEe9pTT10lqsLYaI0EUTW65Gn/YPTFMkYnerPuc+PcNYtXScV2sAKRu4bmdFkRIkxFj4RjgmKgvyBWfcvo6SjtYGd1YiKhEM24GNWH/QJcmVScumLyfLD4V9XWWGjcbo3a2wj7hm1nK/3mDialpbDzKSPJA1xhsIgKCN7OUqzFBysAgyM/eh5+yxsalTcHesCL4xbKCfl3hG50+8ixHr3Ptz4uYysZmliKriwkxQGh6uQy7kfYBf2IDSeQl9sDa92lMYWOTu6gQVSO4YJcxOjcb2OAbPoA6ngYR9tGnrrFJ3sZ64hLCWE6hYW+Wx7+15b6fcuqam0lqCjsSvAT2kZXb1dRDMGURcHiDIW/20aesqZtphwmH1TMZmwbyZLPD/HCrHp+7q9Pjp/und5/f32MHh1TT3H/947Gin2v49fD0+OHL+9N42JdbHz4eaT5gDWoD9+YbKhZUkQ==')
     g.label = 'X'
@@ -37,20 +25,20 @@ def gesture_add_default(gdb):
 
 
 
-def action_close_menu(menu, w, args):
-    menu.parent.parent.remove_widget(menu.parent)
+def action_close_menu(menu, w, args, *largs):
+    menu.parent.remove_widget(menu)
     del menu
 
 def action_close_all(menu, w, args):
     sys.exit()
 
-def action_launch_plugin(menu, w, args):
+def action_launch_plugin(menu, w, args, *largs):
     name, plugin = args
 
-    pos = w.parent.parent.to_parent(*w.pos)
+    pos = w.parent.to_parent(*w.pos)
     win = MTInnerWindow(size=(320,280), pos=pos)
     plugins.activate(plugin, win)
-    menu.parent.parent.add_widget(win)
+    menu.parent.add_widget(win)
 
     action_close_menu(menu, w, None)
 
@@ -70,51 +58,37 @@ class MTActionButton(MTButton):
         if self.action:
             self.action(self.parent, self, self.args)
 
-class MTMenuBase(MTBoxLayout):
+class MTMenu(MTKineticList):
     def __init__(self, **kwargs):
-        kwargs.setdefault('orientation', 'vertical')
-        kwargs.setdefault('uniform_width', True)
-        kwargs.setdefault('uniform_height', True)
-        kwargs.setdefault('color', (0,0,0,0))
-        super(MTMenuBase, self).__init__(**kwargs)
+        kwargs.setdefault('title', None)
+        kwargs.setdefault('searchable', False)
+        kwargs.setdefault('deletable', False)
+        kwargs.setdefault('padding_x', 0)
+        kwargs.setdefault('padding_y', 1)
+        super(MTMenu, self).__init__(**kwargs)
+
+        self.size = (180, 230)
+        self.center = self.pos
 
         self.orig_x = self.x
         self.orig_y = self.y
         self.color = kwargs.get('color')
 
+        w = MTKineticItem(label='Close Menu', size=(220, 30),
+                          style={'font-size': 12, 'bg-color': (.2, .2, .2)})
+        w.push_handlers(on_press=curry(action_close_menu,
+            self, w, []))
+        self.add_widget(w)
+
         plist = plugins.list()
         while len(plist):
             name, plugin = plist.popitem()
             infos = plugins.get_infos(plugin)
-            w = MTActionButton(label=infos.get('title'), bgcolor=self.color,
-                    action=action_launch_plugin, args=[name, plugin])
+            w = MTKineticItem(label=infos.get('title'), size=(180, 30),
+                              style={'font-size': 12})
+            w.push_handlers(on_press=curry(action_launch_plugin,
+                self, w, [name, plugin]))
             self.add_widget(w)
-
-        self.add_widget(MTActionButton(
-            label='Close Menu', action=action_close_menu))
-
-        self.add_widget(MTActionButton(
-            label='Close PyMT', action=action_close_all))
-
-    def on_draw(self):
-        with gx_blending:
-            super(MTMenuBase, self).on_draw()
-
-    def on_move(self, x, y):
-        pass
-
-class MTMenu(MTScatterWidget):
-    def __init__(self, **kwargs):
-        kwargs.setdefault('pos', (0, 0))
-        kwargs.setdefault('rotation', 0)
-        rotation = kwargs.get('rotation')
-        pos = kwargs.get('pos')
-        del kwargs['rotation']
-        del kwargs['pos']
-        super(MTMenu, self).__init__(do_scale=False, pos=pos, rotation=rotation)
-        self.menubase = MTMenuBase(**kwargs)
-        self.add_widget(self.menubase)
-        self.size = self.menubase.size
 
 class MTGestureDetector(MTGestureWidget):
     def __init__(self, gdb, **kwargs):
@@ -167,7 +141,7 @@ class MTGestureDetector(MTGestureWidget):
     def on_gesture(self, gesture, touch):
         print self.gdb.gesture_to_str(gesture)
         try:
-            score, best = self.gdb.find(gesture, minscore=.7)
+            score, best = self.gdb.find(gesture, minscore=.5)
         except Exception, e:
             return
 

@@ -20,6 +20,7 @@ class GLPerspectiveWidget(MTWidget):
         self.fbo = Fbo(size=self.size)
 
     def on_resize(self, w, h):
+        self.size = w, h
         del self.fbo
         self.fbo = Fbo(size=self.size)
         self.needs_redisplay = True
@@ -104,13 +105,17 @@ class ModelViewer(GLPerspectiveWidget):
         self.touch_position[touch.id] = (touch.x, touch.y)
         if len(self.touch_position) == 1:
             self.touch1 = touch
+            touch.grab(self)
         elif len(self.touch_position) == 2:
             self.touch2 = touch
+            touch.grab(self)
             v1 = Vector(*self.touch_position[self.touch1.id])
             v2 = Vector(*self.touch_position[self.touch2.id])
             self.scale_dist = v1.distance(v2)
 
     def on_touch_move(self, touch):
+        if not touch.grab_current == self:
+            return
         self.check_touches(getAvailableTouchs())
         dx, dy = 0,0
         scale = 1.0
@@ -153,6 +158,8 @@ class ModelViewer(GLPerspectiveWidget):
         self.needs_redisplay = True
 
     def on_touch_up(self, touch):
+        if not touch.grab_current == self:
+            return
         self.check_touches(getAvailableTouchs())
         if touch.id in self.touch_position:
             del self.touch_position[touch.id]

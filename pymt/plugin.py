@@ -37,6 +37,8 @@ class MTPlugins(object):
                     a = __import__(name='%s.%s' % (plugin, plugin), fromlist=plugin)
                     if not a.IS_PYMT_PLUGIN:
                         continue
+                    a.__internal_path = os.path.join(path, plugin)
+                    a.__internal_name = plugin
                     self.plugins[plugin] = a
                 except Exception, e:
                     pass
@@ -64,7 +66,8 @@ class MTPlugins(object):
             'author': self.get_key(plugin, 'PLUGIN_AUTHOR'),
             'email': self.get_key(plugin, 'PLUGIN_EMAIL'),
             'description': self.get_key(plugin, 'PLUGIN_DESCRIPTION'),
-            'icon': self.get_key(plugin, 'PLUGIN_ICON')
+            'icon': self.get_key(plugin, 'PLUGIN_ICON', '%s.png' % plugin.__internal_name),
+            'path': plugin.__internal_path
         }
 
     def activate(self, plugin, container):

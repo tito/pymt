@@ -59,6 +59,28 @@ class MTActionButton(MTButton):
         if self.action:
             self.action(self.parent, self, self.args)
 
+class MTMenuItem(MTKineticItem):
+    def __init__(self, path, label, icon, **kwargs):
+        super(MTMenuItem, self).__init__(**kwargs)
+        self._label = MTLabel(label=label, font_size=12, anchor_x='left',
+                           anchor_y='top', size=(self.width, self.height))
+        self._icon = None
+        try:
+            if icon != '':
+                self._icon = Image(os.path.join(path, icon))
+        except:
+            pass
+
+    def draw(self):
+        set_color(.2, .2, .2, .5)
+        drawRectangle(pos=self.pos, size=self.size)
+        self._label.x, self._label.y = self.x + 32, self.y + self.height - 12 / 2.
+        self._label.draw()
+        if self._icon:
+            self._icon.x = self.x + (32 - self._icon.width) / 2.
+            self._icon.y = self.y + (self.height - self._icon.height) / 2.
+            self._icon.draw()
+
 class MTMenu(MTKineticList):
     def __init__(self, **kwargs):
         kwargs.setdefault('title', None)
@@ -68,7 +90,7 @@ class MTMenu(MTKineticList):
         kwargs.setdefault('padding_y', 1)
         super(MTMenu, self).__init__(**kwargs)
 
-        self.size = (180, 230)
+        self.size = (190, 230)
         self.center = self.pos
         self.fbo = Fbo(size=self.size)
 
@@ -77,7 +99,7 @@ class MTMenu(MTKineticList):
         self.color = kwargs.get('color')
         self.alpha = 0
 
-        w = MTKineticItem(label='Close Menu', size=(220, 30),
+        w = MTKineticItem(label='Close Menu', size=(190, 32),
                           style={'font-size': 12, 'bg-color': (.2, .2, .2, .9)})
         w.push_handlers(on_press=curry(action_close_menu,
             self, w, []))
@@ -87,8 +109,7 @@ class MTMenu(MTKineticList):
         while len(plist):
             name, plugin = plist.popitem()
             infos = plugins.get_infos(plugin)
-            w = MTKineticItem(label=infos.get('title'), size=(180, 30),
-                              style={'font-size': 12, 'bg-color': (.2, .2, .2, .5)})
+            w = MTMenuItem(infos.get('path'), infos.get('title'), infos.get('icon'), size=(190, 32))
             w.push_handlers(on_press=curry(action_launch_plugin,
                 self, w, [name, plugin]))
             self.add_widget(w)

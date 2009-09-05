@@ -71,15 +71,27 @@ class MTMenuItem(MTKineticItem):
         except:
             pass
 
+    def on_move(self, x, y):
+        # don't invalidate cache when moving position
+        # we'll optimize the position by using pop/push matrix
+        pass
+
     def draw(self):
-        set_color(.2, .2, .2, .5)
-        drawRectangle(pos=self.pos, size=self.size)
-        self._label.x, self._label.y = self.x + 32, self.y + self.height - 12 / 2.
-        self._label.draw()
-        if self._icon:
-            self._icon.x = self.x + (32 - self._icon.width) / 2.
-            self._icon.y = self.y + (self.height - self._icon.height) / 2.
-            self._icon.draw()
+        if not self.button_dl.is_compiled():
+            # cache button in a display list
+            with self.button_dl:
+                set_color(.2, .2, .2, .5)
+                drawRectangle(size=self.size)
+                self._label.x, self._label.y = 32, self.height - 12 / 2.
+                self._label.draw()
+                if self._icon:
+                    self._icon.x = (32 - self._icon.width) / 2.
+                    self._icon.y = (self.height - self._icon.height) / 2.
+                    self._icon.draw()
+        # draw the display list at the good position
+        with gx_matrix:
+            glTranslatef(self.x, self.y, 0)
+            self.button_dl.draw()
 
 class MTMenu(MTKineticList):
     def __init__(self, **kwargs):
@@ -98,6 +110,10 @@ class MTMenu(MTKineticList):
         self.orig_y = self.y
         self.color = kwargs.get('color')
         self.alpha = 0
+        self.dragpos = 0, 0
+        self.dragid = 0
+
+        self.label = MTLabel(label='Menu', font_size=16)
 
         w = MTKineticItem(label='Close Menu', size=(190, 32),
                           style={'font-size': 12, 'bg-color': (.2, .2, .2, .9)})
@@ -127,6 +143,45 @@ class MTMenu(MTKineticList):
             drawTexturedRectangle(texture=self.fbo.texture, pos=pos, size=size)
         else:
             super(MTMenu, self).on_draw()
+
+    def collide_menu(self, x, y):
+        if x > self.x and x < self.x + self.width and \
+            y > self.y + self.height and y < self.y + self.height + 40:
+            return True
+
+    def on_touch_down(self, touch):
+        if self.collide_menu(touch.x, touch.y):
+            self.dragpos = touch.x - self.x, touch.y - self.y
+            self.dragid = touch.uid
+            touch.grab(self)
+            return True
+        return super(MTMenu, self).on_touch_down(touch)
+
+    def on_touch_move(self, touch):
+        if touch.grab_current == self and self.dragid == touch.uid:
+            self.pos = Vector(touch.pos) - Vector(self.dragpos)
+            return True
+        return super(MTMenu, self).on_touch_move(touch)
+
+    def on_touch_up(self, touch):
+        if touch.grab_current == self and self.dragid == touch.uid:
+            touch.ungrab(self)
+            return True
+        return super(MTMenu, self).on_touch_up(touch)
+
+    def draw(self):
+        set_color(*self.style.get('bg-color'))
+
+        # outter
+        pos = self.x - 5, self.y - 5
+        size = self.width + 10, self.height + 40
+        drawRoundedRectangle(pos=pos, size=size)
+
+        # title
+        self.label.pos = self.x + 5, self.y + self.height + 4
+        self.label.draw()
+
+        super(MTMenu, self).draw()
 
 
 class MTGestureDetector(MTGestureWidget):

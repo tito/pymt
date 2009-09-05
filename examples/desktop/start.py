@@ -33,9 +33,7 @@ def action_close_menu(menu, w, args, *largs):
 def action_close_all(menu, w, args):
     sys.exit()
 
-def action_launch_plugin(menu, w, args, *largs):
-    name, plugin = args
-
+def action_launch_plugin(menu, w, plugin, *largs):
     pos = w.parent.to_parent(*w.pos)
     win = MTInnerWindow(size=(320,280), pos=pos)
     plugins.activate(plugin, win)
@@ -121,13 +119,16 @@ class MTMenu(MTKineticList):
             self, w, []))
         self.add_widget(w)
 
-        plist = plugins.list()
-        while len(plist):
-            name, plugin = plist.popitem()
+        pluginlist = plugins.list()
+        keylist = sorted(pluginlist, cmp=lambda x,y:
+            cmp(plugins.get_infos(pluginlist[x]).get('title').lower(),
+                plugins.get_infos(pluginlist[y]).get('title').lower()))
+        for key in keylist:
+            plugin = pluginlist[key]
             infos = plugins.get_infos(plugin)
             w = MTMenuItem(infos.get('path'), infos.get('title'), infos.get('icon'), size=(190, 32))
             w.push_handlers(on_press=curry(action_launch_plugin,
-                self, w, [name, plugin]))
+                self, w, plugin))
             self.add_widget(w)
 
     def on_draw(self):

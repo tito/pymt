@@ -100,7 +100,7 @@ class ShadowSurface(MTWidget):
         self.fbo.bind()              #bind the fbo...all openGl drawing calls now go into the fbo texture instead of teh screen
         glClearColor(1,1,1,1)    #set clear color
         glClear(GL_COLOR_BUFFER_BIT) #clear the color of the fbo texture
-        #self.bg_image.draw()
+        self.bg_image.draw()
         self.drawing_shadows = True #this is used in draw, while we are drawing shadows, we dont want to draw ourselves...but MTWidget.on_draw(self) will draw this and child widgets
         self.shadow_shader.use()    #use the shaodw shader...it just draws all teh child widgets as completly black
         MTWidget.on_draw(self)      #this will draw the child widgets

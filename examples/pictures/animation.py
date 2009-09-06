@@ -2,9 +2,9 @@ from pymt import *
 
 c = MTWidget()
 
-for i in range (20):
-        img_src = 'bilder/testpic'+str(i+1)+'.jpg'
-        x , y =  i/5*300+150, i%5*200+100
+for i in xrange(5):
+        img_src = 'images/pic'+str(i+1)+'.jpg'
+        x , y =  i/2*300+150, i%2*200+100
         b = MTImageButton(filename = img_src, scale=0.16, pos = (x,y))
         b.status = 'not zoomed'
 

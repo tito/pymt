@@ -1,3 +1,9 @@
+# PYMT Plugin integration
+IS_PYMT_PLUGIN = True
+PLUGIN_TITLE = 'Gesture tester'
+PLUGIN_AUTHOR = 'Mathieu Virbel'
+PLUGIN_DESCRIPTION = 'A tester of gesture'
+
 from pymt import *
 
 class CaptureGesture(MTGestureWidget):
@@ -97,7 +103,7 @@ class GestureUI(MTWidget):
         self.gdb = gdb
         self.capture = CaptureGesture(gdb)
         self.add_widget(self.capture)
-        self.title = MTLabel(label='Gesture Recognition Example')
+        self.title = MTLabel(label='Gesture Recognition')
         self.add_widget(self.title)
 
     def on_draw(self):
@@ -110,7 +116,7 @@ class GestureUI(MTWidget):
         self.title.font_size = h * 0.07
         super(GestureUI, self).on_draw()
 
-if __name__ == '__main__':
+def pymt_plugin_activate(root, ctx):
     gdb = GestureDatabase()
 
     # Circle
@@ -149,7 +155,15 @@ if __name__ == '__main__':
     g.id = 'close'
     gdb.add_gesture(g)
 
+    ctx.ui = GestureUI(gdb)
+    root.add_widget(ctx.ui)
+
+def pymt_plugin_deactivate(root, ctx):
+    root.remove_widget(ctx.ui)
+
+if __name__ == '__main__':
     w = MTWindow()
-    ui = GestureUI(gdb)
-    w.add_widget(ui)
+    ctx = MTContext()
+    pymt_plugin_activate(w, ctx)
     runTouchApp()
+    pymt_plugin_deactivate(w, ctx)

@@ -6,9 +6,9 @@ from __future__ import with_statement
 __all__ = ['MTButtonMatrix']
 
 from pyglet.gl import *
-from ....graphx import set_color, drawRectangle,drawRoundedRectangle, gx_matrix
-from ...factory import MTWidgetFactory
-from ..widget import MTWidget
+from ...graphx import set_color, drawRectangle,drawRoundedRectangle, gx_matrix
+from ..factory import MTWidgetFactory
+from widget import MTWidget
 
 
 class MTButtonMatrix(MTWidget):
@@ -38,8 +38,10 @@ class MTButtonMatrix(MTWidget):
         kwargs.setdefault('buttoncolor', (0.2,0.2,0.2,1))
         kwargs.setdefault('downcolor', (0,0.5,1,1))
         super(MTButtonMatrix, self).__init__(**kwargs)
+
         self.register_event_type('on_value_change')
-        self.register_event_type('on_press')    
+        self.register_event_type('on_press')
+
         self._matrix_size = kwargs.get('matrix_size')
         self.border = kwargs.get('border')
         self.buttoncolor = kwargs.get('buttoncolor')

@@ -7,9 +7,9 @@ sys.argv.append('install')
 pylib = get_python_lib()
 setup (name='pymt',
       version='0.3',
-      author='Thomas Hansen',
-      author_email='thomas.hansen@gmail.com',
-      url='http://code.google.com/p/pymt/',
+      author='PyMT Crew'
+      author_email='pymt-dev@googlegroups.com',
+      url='http://pymt.txzone.net/',
       license='GPL',
       packages=['pymt', 'pymt.lib','pymt.lib.osc', 'pymt.lib.cssutils',
                 'pymt.lib.cssutils.css',

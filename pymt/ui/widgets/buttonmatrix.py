@@ -28,7 +28,9 @@ class MTButtonMatrix(MTWidget):
     
     :Events:
         `on_value_change` (matrix)
-            Fired when a button is pushed
+            Returns the whole matrix and a button is touched
+        `on_press` (row,column,state)
+            Returns the state and cell position of a button when touched
     '''
     def __init__(self,**kwargs):
         kwargs.setdefault('matrix_size', (3,3))
@@ -37,6 +39,7 @@ class MTButtonMatrix(MTWidget):
         kwargs.setdefault('downcolor', (0,0.5,1,1))
         super(MTButtonMatrix, self).__init__(**kwargs)
         self.register_event_type('on_value_change')
+        self.register_event_type('on_press')    
         self._matrix_size = kwargs.get('matrix_size')
         self.border = kwargs.get('border')
         self.buttoncolor = kwargs.get('buttoncolor')
@@ -94,6 +97,7 @@ class MTButtonMatrix(MTWidget):
             else:
                 self.matrix[i][j] = 1
             self.dispatch_event('on_value_change', self.matrix)
+            self.dispatch_event('on_press', (i,j, self.matrix[i][j]))
             self.last_tile = (i,j)
 
     def on_touch_move(self, touch):

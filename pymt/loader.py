@@ -50,7 +50,8 @@ class ProxyImage(pyglet.image.AbstractImage):
         self.loader = loader
         self.image = image
         self.loading_image = loading_image
-        self._width, self._height = (0, 0)
+        self._width = self.loading_image.width
+        self._height = self.loading_image.height
         self._sprite = None
         super(ProxyImage, self).__init__(self.width, self.height)
 

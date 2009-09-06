@@ -8,15 +8,30 @@ from pymt import *
 import os
 import random
 
+def handle_image_move(image, *largs):
+    w = image.get_parent_window()
+    if not w:
+        return
+    if image.x < 0:
+        image.pos = (0, image.y)
+    if image.y < 0:
+        image.pos = (image.x, 0)
+    if image.x > w.width:
+        image.pos = (w.width, image.y)
+    if image.y > w.height:
+        image.pos = (image.x, w.height)
+
 def pymt_plugin_activate(w, ctx):
     ctx.c = MTKinetic()
-    for i in range (10):
-        img_src = '../pictures/bilder/testpic'+str(i+1)+'.jpg'
+    for i in range(7):
+        img_src = '../pictures/images/pic'+str(i+1)+'.jpg'
         x = int(random.uniform(100, w.width-100))
         y = int(random.uniform(100, w.height-100))
-        size = random.uniform(0.5, 4.1)*100
         rot = random.uniform(0, 360)
-        b = MTScatterImage(filename=img_src, pos=(x,y), size=(size,size), rotation=rot)
+        scale = random.uniform(3, 10)
+        b = MTScatterImage(filename=img_src, pos=(x,y), rotation=rot)
+        b.size = b.image.width / scale, b.image.height / scale
+        b.push_handlers(on_move=curry(handle_image_move, b))
         ctx.c.add_widget(b)
     w.add_widget(ctx.c)
 

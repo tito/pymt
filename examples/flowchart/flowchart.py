@@ -82,7 +82,10 @@ class FlowLink(MTWidget):
 
     def draw(self):
         ax, ay = self.to_widget(*self.to_window(*self.node1.pos))
-        bx, by = self.to_widget(*self.to_window(*self.node2.pos))
+        if type(self.node2) == FlowElement:
+            bx, by = self.to_widget(*self.to_window(*self.node2.pos))
+        else: # touch case
+            bx, by = self.parent.to_local(*self.node2.pos)
         set_color(.094, .572, .858)
         drawLine((ax, ay, bx, by), width=8. * self.parent.get_scale_factor())
 
@@ -94,6 +97,8 @@ class FlowChart(MTScatterPlane):
         kwargs.setdefault('scale_max', 1.0)
         super(FlowChart, self).__init__(**kwargs)
         self.keyboard = MTVKeyboard()
+        self.show_ui_help = True
+        self.inactivity_timer = 0
 
     def create_node(self, x, y):
         node = FlowElement(pos=(x, y), keyboard=self.keyboard)
@@ -112,6 +117,8 @@ class FlowChart(MTScatterPlane):
 
     def on_touch_down(self, touch):
         x, y = self.to_local(*touch.pos)
+        self.show_ui_help = False
+        self.inactivity_timer = 0
         if touch.is_double_tap:
             node = self.find_node(x, y)
             if node:
@@ -130,7 +137,7 @@ class FlowChart(MTScatterPlane):
         if touch.grab_current == self and 'flow.link' in touch.userdata:
             link = touch.userdata['flow.link']
             node = self.find_node(x, y)
-            if node is None:
+            if node is None or node == link.node1:
                 self.remove_widget(link)
             else:
                 link.node2 = node
@@ -154,6 +161,25 @@ class FlowChart(MTScatterPlane):
         set_color(0, 0, 0, .1)
         drawRoundedRectangle(pos=(w.width - 40, 40),
              size=(30, 175 * self.get_scale_factor()))
+
+        self.inactivity_timer += getFrameDt()
+        if self.inactivity_timer > 10:
+            self.show_ui_help = True
+        if self.show_ui_help:
+            p = w.width / 2., 50
+            c = (0, 0, 0, 180)
+            fs = 22
+            set_color(0, 0, 0, .1)
+            w2 = (w.width - 750) / 2.
+            drawRoundedRectangle(pos=(w2, 20), size=(w.width - w2 * 2, 140))
+            drawLabel(label='Double-tap on background to create a node',
+                      pos=p, color=c, font_size=24)
+            p = w.width / 2., 90
+            drawLabel(label='Double-tap & hold on a node to create a link',
+                      pos=p, color=c, font_size=24)
+            p = w.width / 2., 130
+            drawLabel(label='Tap a node to toggle keyboard',
+                      pos=p, color=c, font_size=24)
 
     def on_draw(self):
         w = self.get_parent_window()
@@ -184,7 +210,7 @@ def pymt_plugin_deactivate(root, ctx):
     root.remove_widget(ctx.flowchart)
 
 if __name__ == '__main__':
-    m = MTWindow()
+    w = MTWindow()
     ctx = MTContext()
     pymt_plugin_activate(w, ctx)
     runTouchApp()

@@ -234,7 +234,7 @@ class MTGestureDetector(MTGestureWidget):
         self.label.draw()
 
     def on_gesture(self, gesture, touch):
-        print self.gdb.gesture_to_str(gesture)
+        #print self.gdb.gesture_to_str(gesture)
         try:
             score, best = self.gdb.find(gesture, minscore=.5)
         except Exception, e:

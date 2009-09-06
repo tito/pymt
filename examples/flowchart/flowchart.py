@@ -1,3 +1,9 @@
+# PYMT Plugin integration
+IS_PYMT_PLUGIN = True
+PLUGIN_TITLE = 'FlowChart'
+PLUGIN_AUTHOR = 'Mathieu Virbel'
+PLUGIN_DESCRIPTION = 'A test for doing some flowchart'
+
 from pymt import *
 from pyglet.gl import GL_LINE_LOOP
 
@@ -170,8 +176,16 @@ class FlowChart(MTScatterPlane):
                 drawLine((a[0], y, b[0], y))
                 drawLine((x, a[1], x, b[1]))
 
+def pymt_plugin_activate(root, ctx):
+    ctx.flowchart = FlowChart()
+    root.add_widget(ctx.flowchart)
+
+def pymt_plugin_deactivate(root, ctx):
+    root.remove_widget(ctx.flowchart)
 
 if __name__ == '__main__':
     m = MTWindow()
-    m.add_widget(FlowChart())
+    ctx = MTContext()
+    pymt_plugin_activate(w, ctx)
     runTouchApp()
+    pymt_plugin_deactivate(w, ctx)

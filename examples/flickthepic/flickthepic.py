@@ -26,8 +26,7 @@ class FlickrPhoto(MTScatterImage):
         self.update_ratio()
         glColor4f(*self.color)
         drawRectangle((-6,-6),(self.width+12,self.width*self.aspectRatio+12))
-        glScaled(float(self.width)/float(self.image.width), float(self.width*self.aspectRatio)/float(self.image.height), 1.0)
-        self.image.draw()
+        super(FlickrPhoto, self).draw()
 
     def update_ratio(self):
         ratio = float(self.image.height)/float(self.image.width)

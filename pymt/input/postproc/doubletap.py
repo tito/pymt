@@ -30,7 +30,6 @@ class InputPostprocDoubleTap(object):
         self.double_tap_distance = pymt.pymt_config.getint('pymt', 'double_tap_distance') / 1000.0
         self.double_tap_time = pymt.pymt_config.getint('pymt', 'double_tap_time') / 1000.0
         self.touches = {}
-        self.ignoretouch = []
 
     def find_double_tap(self, ref):
         for touchID in self.touches:
@@ -47,6 +46,7 @@ class InputPostprocDoubleTap(object):
 
     def process(self, events):
         gen_events = []
+        remove_list = []
 
         # check old/new touches
         for type, touch in events:
@@ -73,7 +73,7 @@ class InputPostprocDoubleTap(object):
                 touch_double_tap = self.find_double_tap(touch)
                 if touch_double_tap:
                     # ignore old double tap
-                    self.ignoretouch.append(touch_double_tap.id)
+                    remove_list.append(touch_double_tap.id)
                     # set new touch as double tap touch
                     touch.is_double_tap = True
                     touch.double_tap_time = touch.time_start - touch_double_tap.time_start
@@ -97,7 +97,6 @@ class InputPostprocDoubleTap(object):
 
         # now, generate appropriate events
         time_current = clock.get_default().time()
-        remove_list = []
         for touchID in self.touches:
             touch = self.touches[touchID]
 
@@ -110,7 +109,7 @@ class InputPostprocDoubleTap(object):
                     touch.__pp_is_timeout = True
                 if not touch.__pp_is_timeout:
                     # at least, check double_tap_distance
-                    distance = pymt.Vector.distance(pymt.Vector(touch.dxpos, touch.dypos),
+                    distance = pymt.Vector.distance(pymt.Vector(touch.oxpos, touch.oypos),
                                                     pymt.Vector(touch.sx, touch.sy))
                     if distance < self.double_tap_distance:
                         # ok, time and distance is ok, don't generate.
@@ -120,6 +119,7 @@ class InputPostprocDoubleTap(object):
             # ok, now check event !
             event_str = None
             if not touch.__pp_have_event_down:
+                touch.sx, touch.sy = touch.oxpos, touch.oypos
                 event_str = 'down'
                 touch.__pp_have_event_down = True
             elif touch.__pp_do_event:

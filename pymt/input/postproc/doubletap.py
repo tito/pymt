@@ -42,6 +42,7 @@ class InputPostprocDoubleTap(object):
                                             pymt.Vector(touch.sx, touch.sy))
             if distance > self.double_tap_distance:
                 continue
+            touch.double_tap_distance = distance
             return touch
 
     def process(self, events):
@@ -77,6 +78,7 @@ class InputPostprocDoubleTap(object):
                     # set new touch as double tap touch
                     touch.is_double_tap = True
                     touch.double_tap_time = touch.time_start - touch_double_tap.time_start
+                    touch.double_tap_distance = touch_double_tap.double_tap_distance
                     touch.time_start = touch_double_tap.time_start
                     gen_events.append((type, touch))
                     continue

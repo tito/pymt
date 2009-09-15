@@ -8,9 +8,6 @@
 class MTWidget
 {
 public:
-	MTWidget();
-	virtual ~MTWidget();
-
     virtual void add_widget(MTWidget *widget)
     {
         this->children.push_back(widget);

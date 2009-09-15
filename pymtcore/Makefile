@@ -4,5 +4,5 @@ all:
 clean:
 	scons -c
 
-test:
+test: all
 	PYTHONPATH=src python tests/launch.py --verbose

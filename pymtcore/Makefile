@@ -1,5 +1,4 @@
 all:
-	swig -python -c++ -external-runtime src/pymtcore_swig.h
 	scons
 
 clean:

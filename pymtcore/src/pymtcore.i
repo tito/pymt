@@ -7,4 +7,7 @@
 
 %feature("director");
 
+%feature("ref")   MTWidget "$this->ref();"
+%feature("unref") MTWidget "$this->unref();"
+
 %include "widget.h"

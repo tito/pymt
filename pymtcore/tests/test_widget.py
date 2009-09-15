@@ -45,3 +45,51 @@ class WidgetTestCase(unittest.TestCase):
         widget1.add_widget(widget2)
         widget1.on_update()
         self.failUnless(widget2.var == 1)
+
+    '''
+    def testPerformanceOnupdate(self):
+        class SubWidget(pymtcore.MTWidget):
+            def __init__(self):
+                super(SubWidget, self).__init__()
+                self.var = 0
+            def on_update(self):
+                super(SubWidget, self).on_update()
+
+        print 'Preparing...'
+        root = pymtcore.MTWidget()
+        for x in xrange(100):
+            wid = SubWidget().__disown__()
+            for y in xrange(1000):
+                wid.add_widget(SubWidget().__disown__())
+            root.add_widget(wid)
+
+        import sys, time
+        starttime = time.time()
+        print 'Start update on 100*1000 widgets'
+        for x in xrange(20):
+            sys.stderr.write('.')
+            root.on_update()
+        endtime = time.time()
+        print 'Update finished', endtime - starttime
+
+        # real pymt
+        sys.argv = ['']
+        import pymt
+
+        print 'Preparing...'
+        root = pymt.MTWidget()
+        for x in xrange(100):
+            wid = pymt.MTDragable()
+            for y in xrange(1000):
+                wid.add_widget(pymt.MTButton())
+            root.add_widget(wid)
+
+        import sys, time
+        starttime = time.time()
+        print 'Start update on 100*1000 widgets'
+        for x in xrange(20):
+            sys.stderr.write('.')
+            root.on_update()
+        endtime = time.time()
+        print 'Update finished', endtime - starttime
+    '''

@@ -5,11 +5,6 @@
 #include "widget.h"
 %}
 
-%include "widget.h"
-
-%typemap(out) int {
-    $result = PyInt_FromString($1);
-}
-
 %feature("director");
 
+%include "widget.h"

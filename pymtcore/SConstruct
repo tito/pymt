@@ -46,8 +46,8 @@ for key in [ 'CC', 'CCFLAGS', 'CXX', 'CXXFLAGS' ]:
 	if environ.has_key(key):
 		env.Replace( **{key: environ[key].split(' ')} )
 
-env.Append( CCFLAGS = [ '-Wall', '-Wconversion', '-Wno-unused-parameter' ],
-	    CXXFLAGS = [ '-Wall', '-Wconversion', '-Wno-unused-parameter' ] )
+flags = ['-Wall', '-Wconversion', '-Wno-unused-parameter']
+env.Append(CCFLAGS=flags, CXXFLAGS=flags)
 
 if 'DEBUG' in environ:
     flags = [ '-O0', '-ggdb' ]

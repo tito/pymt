@@ -49,10 +49,8 @@ env.Append( CCFLAGS = [ '-Wall', '-Wconversion', '-Wno-unused-parameter' ],
 	    CXXFLAGS = [ '-Wall', '-Wconversion', '-Wno-unused-parameter' ] )
 
 if 'DEBUG' in environ:
-    env.Append(
-        LINKFLAGS = [ '-O0', '-ggdb' ],
-        CCFLAGS = [ '-O0', '-ggdb' ],
-        CXXFLAGS = [ '-O0', '-ggdb' ])
+    flags = [ '-O0', '-ggdb' ]
+    env.Append(LINKFLAGS=flags, CCFLAGS=flags, CXXFLAGS=flags)
 
 #env.ParseConfig(environ['SDL_CONFIG'] + ' --cflags --libs')
 

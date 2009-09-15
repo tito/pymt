@@ -9,8 +9,8 @@ public:
 	MTWidget();
 	virtual ~MTWidget();
 
-    virtual void add_widget(PyObject *widget);
-    virtual void remove_widget(PyObject *widget);
+    virtual void add_widget(MTWidget *widget);
+    virtual void remove_widget(MTWidget *widget);
 
     virtual void on_update(void);
 

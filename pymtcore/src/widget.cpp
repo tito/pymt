@@ -10,14 +10,14 @@ MTWidget::~MTWidget()
     Py_XDECREF(this->children);
 }
 
-void MTWidget::add_widget(PyObject *widget)
+void MTWidget::add_widget(MTWidget *widget)
 {
     if ( widget == NULL )
         return;
-    PyList_Append(this->children, widget);
+    PyList_Append(this->children, static_cast<PyObject *>(widget));
 }
 
-void MTWidget::remove_widget(PyObject *widget)
+void MTWidget::remove_widget(MTWidget *widget)
 {
 	int			i;
 
@@ -29,7 +29,7 @@ void MTWidget::remove_widget(PyObject *widget)
 	i = PyList_Size(this->children);
 	while ( --i >= 0 )
 	{
-		if ( widget != PyList_GET_ITEM(this->children, i) )
+		if ( static_cast<PyObject *>(widget) != PyList_GET_ITEM(this->children, i) )
 			continue;
 		PySequence_DelItem(this->children, i);
 		return;

@@ -7,5 +7,9 @@
 
 %include "widget.h"
 
+%typemap(out) int {
+    $result = PyInt_FromString($1);
+}
+
 %feature("director");
 

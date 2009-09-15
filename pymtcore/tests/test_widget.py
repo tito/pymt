@@ -32,4 +32,16 @@ class WidgetTestCase(unittest.TestCase):
         widget1 = pymtcore.MTWidget()
         widget1.remove_widget(None)
 
-
+    def testInheritance(self):
+        class SubWidget(pymtcore.MTWidget):
+            def __init__(self):
+                super(SubWidget, self).__init__()
+                self.var = 0
+            def on_update(self):
+                self.var += 1
+                super(SubWidget, self).on_update()
+        widget1 = pymtcore.MTWidget()
+        widget2 = SubWidget()
+        widget1.add_widget(widget2)
+        widget1.on_update()
+        self.failUnless(widget2.var == 1)

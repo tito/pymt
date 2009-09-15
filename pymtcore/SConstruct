@@ -35,8 +35,8 @@ def SWIGSharedLibrary(env, library, sources, **args):
   return cat
 
 # Source files
-sources = ['src/pymtcore.i']
-sources += glob('src/*.cpp')
+sources = [os.path.join('src', 'pymtcore.i')]
+sources += glob(os.path.join('src', '*.cpp'))
 
 env = Environment(CPPPATH=[distutils.sysconfig.get_python_inc()])
 
@@ -48,8 +48,14 @@ for key in [ 'CC', 'CCFLAGS', 'CXX', 'CXXFLAGS' ]:
 env.Append( CCFLAGS = [ '-Wall', '-Wconversion', '-Wno-unused-parameter' ],
 	    CXXFLAGS = [ '-Wall', '-Wconversion', '-Wno-unused-parameter' ] )
 
+if 'DEBUG' in environ:
+    env.Append(
+        LINKFLAGS = [ '-O0', '-ggdb' ],
+        CCFLAGS = [ '-O0', '-ggdb' ],
+        CXXFLAGS = [ '-O0', '-ggdb' ])
+
 #env.ParseConfig(environ['SDL_CONFIG'] + ' --cflags --libs')
 
 env['BUILDERS']['PythonModule'] = SWIGSharedLibrary
 
-env.PythonModule('_pymtcore', sources)
+env.PythonModule(os.path.join('src', '_pymtcore'), sources)

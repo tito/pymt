@@ -1,7 +1,11 @@
-%module pymtcore
+%module(directors="1") pymtcore
+
 %{
 #define SWIG_FILE_WITH_INIT
-#include "window.h"
+#include "widget.h"
 %}
 
-%include "window.h"
+%include "widget.h"
+
+%feature("director");
+

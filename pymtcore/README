@@ -1,0 +1,14 @@
+PyMT - A Multitouch UI Toolkit for Pyglet
+=========================================
+
+Website: http://pymt.txzone.net/
+Planet: http://pymt.txzone.net/planet/
+
+This is the future Core of PyMT.
+
+
+Dependices
+----------
+
+  * Scons
+  * libSDL 1.2

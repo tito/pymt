@@ -1,0 +1,55 @@
+#!/usr/bin/scons
+
+import distutils.sysconfig
+import os
+from os import environ
+from glob import glob
+import re
+import sys
+
+def SWIGSharedLibrary(env, library, sources, **args):
+  swigre = re.compile('(.*).i')
+  if env.WhereIs('swig') is None:
+    sourcesbis = []
+    for source in sources:
+      cName = swigre.sub(r'\1_wrap.c', source)
+      cppName = swigre.sub(r'\1_wrap.cc', source)
+      if os.path.exists(cName):
+        sourcesbis.append(cName)
+      elif os.path.exists(cppName):
+        sourcesbis.append(cppName)
+      else:
+        sourcesbis.append(source)
+  else:
+    sourcesbis = sources
+
+  if 'SWIGFLAGS' in args:
+    args['SWIGFLAGS'] += ['-python', '-c++']
+  else:
+    args['SWIGFLAGS'] = ['-python', '-c++'] + env['SWIGFLAGS']
+  args['SHLIBPREFIX'] = ''
+  if sys.version >= '2.5' and os.name == 'win32':
+    args['SHLIBSUFFIX'] = '.pyd'
+
+  cat = env.SharedLibrary(library, sourcesbis, **args)
+  return cat
+
+# Source files
+sources = ['src/pymtcore.i']
+sources += glob('src/*.cpp')
+
+env = Environment(CPPPATH=[distutils.sysconfig.get_python_inc()])
+
+
+for key in [ 'CC', 'CCFLAGS', 'CXX', 'CXXFLAGS' ]:
+	if environ.has_key(key):
+		env.Replace( **{key: environ[key].split(' ')} )
+
+env.Append( CCFLAGS = [ '-Wall', '-Wconversion', '-Wno-unused-parameter' ],
+	    CXXFLAGS = [ '-Wall', '-Wconversion', '-Wno-unused-parameter' ] )
+
+#env.ParseConfig(environ['SDL_CONFIG'] + ' --cflags --libs')
+
+env['BUILDERS']['PythonModule'] = SWIGSharedLibrary
+
+env.PythonModule('_pymtcore', sources)

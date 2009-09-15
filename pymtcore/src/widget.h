@@ -7,10 +7,41 @@
 
 class MTWidget
 {
+    // implement the ref counting mechanism
+    int __ref_count;
+
 public:
+    MTWidget()
+    {
+        __ref_count = 0;
+    }
+
+    virtual ~MTWidget()
+    {
+    }
+
+    int ref(void)
+    {
+        return ++this->__ref_count;
+    }
+
+    int unref(void)
+    {
+        this->__ref_count--;
+        if ( this->__ref_count <= 0 )
+        {
+            delete this;
+            return 0;
+        } 
+
+        return this->__ref_count;
+    }
+
+
     virtual void add_widget(MTWidget *widget)
     {
         this->children.push_back(widget);
+        widget->ref();
     }
 
     virtual void remove_widget(MTWidget *widget)
@@ -20,7 +51,7 @@ public:
         {
             if ( *i != widget )
                 continue;
-			delete *i;
+            (*i)->unref();
             return;
 		}
 

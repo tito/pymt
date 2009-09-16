@@ -126,6 +126,10 @@ public:
     {
     }
 
+    bool operator==(const MTWidget *widget)
+    {
+        return (this == widget) ? true : false;
+    }
 
     int get_ref_count(void)
     {

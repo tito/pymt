@@ -1,0 +1,8 @@
+MTWidget
+* reflect the same interface as python
+* fix the children list comparaison
+
+Global
+* implement image
+* implement texture
+* implement vector

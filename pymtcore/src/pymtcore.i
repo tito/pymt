@@ -2,8 +2,16 @@
 
 %{
 #define SWIG_FILE_WITH_INIT
+#include "vector.h"
+#include "texture.h"
+#include "image.h"
 #include "widget.h"
 %}
+
+%include "vector.h"
+%include "texture.h"
+%include "image.h"
+
 
 %feature("director");
 

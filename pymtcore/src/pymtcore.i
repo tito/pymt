@@ -15,11 +15,12 @@
 
 %feature("director");
 
-%feature("ref")   MTWidget "$this->ref();"
-%feature("unref") MTWidget "$this->unref(1);"
+%feature("ref")   MTCoreWidget "$this->ref();"
+%feature("unref") MTCoreWidget "$this->unref(1);"
 
-%director MTWidget;
+%director MTCoreWidget;
+%include "corewidget.h"
 %include "widget.h"
 
 %include <std_vector.i>
-%template(vecwidget) std::vector<MTWidget *>;
+%template(VectorCoreWidget) std::vector<MTCoreWidget *>;

@@ -23,7 +23,7 @@ def SWIGSharedLibrary(env, library, sources, **args):
   else:
     sourcesbis = sources
 
-  flags = ['-python', '-c++', '-noh']
+  flags = ['-python', '-c++', '-noh', '-dirvtable']
   if 'SWIGFLAGS' in args:
     args['SWIGFLAGS'] += flags
   else:

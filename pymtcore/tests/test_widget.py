@@ -49,25 +49,29 @@ class WidgetTestCase(unittest.TestCase):
 
     def testReferenceCount(self):
         widget = pymtcore.MTWidget()
-        widget.print_debug_internal()
         child = pymtcore.MTWidget()
-        child.print_debug_internal()
-        print "ADD WIDGET"
+        self.failUnless(widget.get_ref_count() == 1)
+        self.failUnless(child.get_ref_count() == 1)
         widget.add_widget(child)
-        child.print_debug_internal()
-        child.parent.print_debug_internal()
-        print "DERIVATION"
+        self.failUnless(widget.get_ref_count() == 2)
+        self.failUnless(child.get_ref_count() == 2)
+
+        # we stay in python, and swig is still used
+        # normally, reference counter don't move.
         a = widget
-        child.print_debug_internal()
-        child.parent.print_debug_internal()
-        print "DEL WIDGET"
+        self.failUnless(a.get_ref_count() == 2)
+        self.failUnless(child.get_ref_count() == 2)
+
+        # we remove one widget, but a still exist.
         del widget
-        child.print_debug_internal()
-        child.parent.print_debug_internal()
-        print "DEL DERIVATION"
+        self.failUnless(a.get_ref_count() == 2)
+        self.failUnless(child.get_ref_count() == 2)
+
+        # no more reference on initial widget
+        # the child is now orphan
         del a
-        child.print_debug_internal()
-        child.parent.print_debug_internal()
+        self.failUnless(child.get_ref_count() == 1)
+        self.failUnless(child.parent == None)
 
     '''
     def testPerformanceOnupdate(self):

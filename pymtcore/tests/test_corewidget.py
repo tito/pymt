@@ -1,35 +1,39 @@
 import unittest
 import pymtcore
 
-__all__ = ['VectorTestCase']
+__all__ = ['CoreWidgetTestCase']
 
-class WidgetTestCase(unittest.TestCase):
+class CoreWidgetTestCase(unittest.TestCase):
     def testMethodsAvailability(self):
-        self.failUnless(hasattr(pymtcore.MTWidget, 'add_widget'))
-        self.failUnless(hasattr(pymtcore.MTWidget, 'remove_widget'))
-        self.failUnless(hasattr(pymtcore.MTWidget, 'on_update'))
-        self.failUnless(hasattr(pymtcore.MTWidget, 'on_draw'))
-        self.failUnless(hasattr(pymtcore.MTWidget, 'draw'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'add_widget'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'remove_widget'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'draw'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'on_draw'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'on_touch_down'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'on_touch_move'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'on_touch_up'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'on_update'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'remove_widget'))
 
     def testCreate(self):
-        widget = pymtcore.MTWidget()
+        widget = pymtcore.MTCoreWidget()
         self.failUnless(widget is not None)
 
     def testChildrenVectorIn(self):
-        widget1 = pymtcore.MTWidget()
-        widget2 = pymtcore.MTWidget()
+        widget1 = pymtcore.MTCoreWidget()
+        widget2 = pymtcore.MTCoreWidget()
         widget1.add_widget(widget2)
         self.failUnless(widget2 in widget1.children)
 
     def testChildrenVector0(self):
-        widget1 = pymtcore.MTWidget()
-        widget2 = pymtcore.MTWidget()
+        widget1 = pymtcore.MTCoreWidget()
+        widget2 = pymtcore.MTCoreWidget()
         widget1.add_widget(widget2)
         self.failUnless(widget1.children[0] == widget2)
 
     def testAppendRemove(self):
-        widget1 = pymtcore.MTWidget()
-        widget2 = pymtcore.MTWidget()
+        widget1 = pymtcore.MTCoreWidget()
+        widget2 = pymtcore.MTCoreWidget()
         self.failUnless(widget2 not in widget1.children)
         self.failUnless(len(widget1.children) == 0)
 
@@ -42,26 +46,26 @@ class WidgetTestCase(unittest.TestCase):
         self.failUnless(widget2 not in widget1.children)
 
     def testInvalidRemove(self):
-        widget1 = pymtcore.MTWidget()
+        widget1 = pymtcore.MTCoreWidget()
         widget1.remove_widget(None)
 
     def testInheritance(self):
-        class SubWidget(pymtcore.MTWidget):
+        class SubWidget(pymtcore.MTCoreWidget):
             def __init__(self):
                 super(SubWidget, self).__init__()
                 self.var = 0
             def on_update(self):
                 self.var += 1
                 super(SubWidget, self).on_update()
-        widget1 = pymtcore.MTWidget()
+        widget1 = pymtcore.MTCoreWidget()
         widget2 = SubWidget().__disown__()
         widget1.add_widget(widget2)
         widget1.on_update()
         self.failUnless(widget2.var == 1)
 
     def testReferenceCount(self):
-        widget = pymtcore.MTWidget()
-        child = pymtcore.MTWidget()
+        widget = pymtcore.MTCoreWidget()
+        child = pymtcore.MTCoreWidget()
         self.failUnless(widget.get_ref_count() == 1)
         self.failUnless(child.get_ref_count() == 1)
         widget.add_widget(child)
@@ -87,7 +91,7 @@ class WidgetTestCase(unittest.TestCase):
 
     '''
     def testPerformanceOnupdate(self):
-        class SubWidget(pymtcore.MTWidget):
+        class SubWidget(pymtcore.MTCoreWidget):
             def __init__(self):
                 super(SubWidget, self).__init__()
                 self.var = 0
@@ -104,7 +108,7 @@ class WidgetTestCase(unittest.TestCase):
 
         starttime = time.time()
         print '[C++] Creating widgets structure (100 with 1000 childrens each)...'
-        root = pymtcore.MTWidget()
+        root = pymtcore.MTCoreWidget()
         for x in xrange(100):
             wid = SubWidget()
             for y in xrange(1000):
@@ -124,7 +128,7 @@ class WidgetTestCase(unittest.TestCase):
 
         starttime = time.time()
         print '[PyMT] Creating widgets structure (100 with 1000 childrens each)...'
-        root = pymt.MTWidget()
+        root = pymt.MTCoreWidget()
         for x in xrange(100):
             wid = pymt.MTDragable()
             for y in xrange(1000):

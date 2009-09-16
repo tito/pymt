@@ -30,9 +30,8 @@ public:
 
     void ref(void)
     {
-        /* automaticly disown the object if it's handled here
-         * we handle the reference counting ourself.
-         */
+        // automaticly disown the object if it's handled here
+        // we handle the reference counting ourself.
         Swig::Director *director = dynamic_cast<Swig::Director *>(this);
 
         this->__ref_count++;
@@ -43,14 +42,12 @@ public:
 
     void unref(int fromswig=0)
     {
-        /* if swig don't have anymore a reference on it,
-         * and we are orphan, clear our children list.
-         */
+        // if swig don't have anymore a reference on it,
+        // and we are orphan, clear our children list.
         if ( fromswig && this->parent == NULL )
             this->clear();
 
-        /* decrement the reference counting
-         */
+        // decrement the reference counting
         this->__ref_count--;
         if ( this->__ref_count <= 0 )
         {
@@ -66,12 +63,10 @@ public:
         if ( widget->parent != NULL )
             return;
 
-        /* add the widget at the back
-         */
+        // add the widget at the back
         this->children.push_back(widget);
 
-        /* reference the widget and ourself as parent
-         */
+        // reference the widget and ourself as parent
         this->ref();
         widget->ref();
         widget->parent = this;
@@ -82,37 +77,31 @@ public:
         MTWidget *parent;
         std::vector<MTWidget *>::iterator i = this->children.begin();
 
-        /* reference ourself, we don't want to be removed
-         * when a widget remove is done
-         */
+        // reference ourself, we don't want to be removed
+        // when a widget remove is done
         this->ref();
 
 		for ( ; i != this->children.end(); i++ )
         {
-            /* if the widget is not found, continue
-             */
+            // if the widget is not found, continue
             if ( *i != widget )
                 continue;
 
-            /* remove the widget from the list
-             */
+            // remove the widget from the list
             this->children.erase(i);
 
-            /* prevent recursion on unref() call
-             */
+            // prevent recursion on unref() call
             parent = (*i)->parent;
             (*i)->parent = NULL;
             if ( parent != NULL )
                 parent->unref();
 
-            /* unref the children.
-             */
+            // unref the children.
             (*i)->unref();
             break;
 		}
 
-        /* unref ourself.
-         */
+        // unref ourself.
         this->unref();
     }
 

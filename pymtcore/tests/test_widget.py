@@ -15,10 +15,22 @@ class WidgetTestCase(unittest.TestCase):
         widget = pymtcore.MTWidget()
         self.failUnless(widget is not None)
 
+    def testChildrenVectorIn(self):
+        widget1 = pymtcore.MTWidget()
+        widget2 = pymtcore.MTWidget()
+        widget1.add_widget(widget2)
+        self.failUnless(widget2 in widget1.children)
+
+    def testChildrenVector0(self):
+        widget1 = pymtcore.MTWidget()
+        widget2 = pymtcore.MTWidget()
+        widget1.add_widget(widget2)
+        self.failUnless(widget1.children[0] == widget2)
+
     def testAppendRemove(self):
         widget1 = pymtcore.MTWidget()
         widget2 = pymtcore.MTWidget()
-        self.failUnless(widget2 in widget1.children)
+        self.failUnless(widget2 not in widget1.children)
         self.failUnless(len(widget1.children) == 0)
 
         widget1.add_widget(widget2)

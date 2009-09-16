@@ -8,6 +8,6 @@
 %feature("director");
 
 %feature("ref")   MTWidget "$this->ref();"
-%feature("unref") MTWidget "$this->unref();"
+%feature("unref") MTWidget "$this->unref(1);"
 
 %include "widget.h"

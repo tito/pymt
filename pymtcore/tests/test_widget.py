@@ -18,6 +18,7 @@ class WidgetTestCase(unittest.TestCase):
     def testAppendRemove(self):
         widget1 = pymtcore.MTWidget()
         widget2 = pymtcore.MTWidget()
+        self.failUnless(widget2 in widget1.children)
         self.failUnless(len(widget1.children) == 0)
 
         widget1.add_widget(widget2)
@@ -41,10 +42,32 @@ class WidgetTestCase(unittest.TestCase):
                 self.var += 1
                 super(SubWidget, self).on_update()
         widget1 = pymtcore.MTWidget()
-        widget2 = SubWidget()
+        widget2 = SubWidget().__disown__()
         widget1.add_widget(widget2)
         widget1.on_update()
         self.failUnless(widget2.var == 1)
+
+    def testReferenceCount(self):
+        widget = pymtcore.MTWidget()
+        widget.print_debug_internal()
+        child = pymtcore.MTWidget()
+        child.print_debug_internal()
+        print "ADD WIDGET"
+        widget.add_widget(child)
+        child.print_debug_internal()
+        child.parent.print_debug_internal()
+        print "DERIVATION"
+        a = widget
+        child.print_debug_internal()
+        child.parent.print_debug_internal()
+        print "DEL WIDGET"
+        del widget
+        child.print_debug_internal()
+        child.parent.print_debug_internal()
+        print "DEL DERIVATION"
+        del a
+        child.print_debug_internal()
+        child.parent.print_debug_internal()
 
     '''
     def testPerformanceOnupdate(self):
@@ -55,41 +78,53 @@ class WidgetTestCase(unittest.TestCase):
             def on_update(self):
                 super(SubWidget, self).on_update()
 
-        print 'Preparing...'
+        import sys, time
+        sys.argv = ['']
+        import pymt
+
+
+        print ''
+        print '============================================================'
+
+        starttime = time.time()
+        print '[C++] Creating widgets structure (100 with 1000 childrens each)...'
         root = pymtcore.MTWidget()
         for x in xrange(100):
-            wid = SubWidget().__disown__()
+            wid = SubWidget()
             for y in xrange(1000):
-                wid.add_widget(SubWidget().__disown__())
+                wid.add_widget(SubWidget())
             root.add_widget(wid)
+        endtime = time.time()
+        print '[C++] Creation done in', endtime - starttime
 
-        import sys, time
         starttime = time.time()
-        print 'Start update on 100*1000 widgets'
+        print '[C++] Calling root.on_update()'
         for x in xrange(20):
             sys.stderr.write('.')
             root.on_update()
         endtime = time.time()
-        print 'Update finished', endtime - starttime
+        print
+        print '[C++] Calling done in', endtime - starttime
 
-        # real pymt
-        sys.argv = ['']
-        import pymt
-
-        print 'Preparing...'
+        starttime = time.time()
+        print '[PyMT] Creating widgets structure (100 with 1000 childrens each)...'
         root = pymt.MTWidget()
         for x in xrange(100):
             wid = pymt.MTDragable()
             for y in xrange(1000):
                 wid.add_widget(pymt.MTButton())
             root.add_widget(wid)
+        endtime = time.time()
+        print '[PyMT] Creation done in', endtime - starttime
 
         import sys, time
         starttime = time.time()
-        print 'Start update on 100*1000 widgets'
+        print '[PyMT] Calling root.on_update()'
         for x in xrange(20):
             sys.stderr.write('.')
             root.on_update()
         endtime = time.time()
-        print 'Update finished', endtime - starttime
+        print
+        print '[PyMT] Calling done in', endtime - starttime
+        print '============================================================'
     '''

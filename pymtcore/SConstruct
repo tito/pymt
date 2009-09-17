@@ -8,53 +8,57 @@ import re
 import sys
 
 def SWIGSharedLibrary(env, library, sources, **args):
-  swigre = re.compile('(.*).i')
-  if env.WhereIs('swig') is None:
-    sourcesbis = []
-    for source in sources:
-      cName = swigre.sub(r'\1_wrap.c', source)
-      cppName = swigre.sub(r'\1_wrap.cc', source)
-      if os.path.exists(cName):
-        sourcesbis.append(cName)
-      elif os.path.exists(cppName):
-        sourcesbis.append(cppName)
-      else:
-        sourcesbis.append(source)
-  else:
-    sourcesbis = sources
+    swigre = re.compile('(.*).i')
+    if env.WhereIs('swig') is None:
+        sourcesbis = []
+        for source in sources:
+            cName = swigre.sub(r'\1_wrap.c', source)
+            cppName = swigre.sub(r'\1_wrap.cc', source)
+            if os.path.exists(cName):
+                sourcesbis.append(cName)
+            elif os.path.exists(cppName):
+                sourcesbis.append(cppName)
+            else:
+                sourcesbis.append(source)
+    else:
+        sourcesbis = sources
 
-  flags = ['-python', '-c++', '-noh', '-dirvtable']
-  if 'SWIGFLAGS' in args:
-    args['SWIGFLAGS'] += flags
-  else:
-    args['SWIGFLAGS'] = flags + env['SWIGFLAGS']
-  args['SHLIBPREFIX'] = ''
-  if sys.version >= '2.5' and os.name == 'win32':
-    args['SHLIBSUFFIX'] = '.pyd'
+    flags = ['-python', '-c++', '-noh', '-dirvtable']
+    if 'SWIGFLAGS' in args:
+        args['SWIGFLAGS'] += flags
+    else:
+        args['SWIGFLAGS'] = flags + env['SWIGFLAGS']
+    if 'SWIGFLAGS' in env:
+        args['SWIGFLAGS'] += env['SWIGFLAGS']
 
-  cat = env.SharedLibrary(library, sourcesbis, **args)
-  return cat
+    args['SHLIBPREFIX'] = ''
+    if sys.version >= '2.5' and os.name == 'win32':
+        args['SHLIBSUFFIX'] = '.pyd'
+
+    cat = env.SharedLibrary(library, sourcesbis, **args)
+    return cat
 
 # Source files
 sources = [os.path.join('src', 'pymtcore.i')]
 sources += glob(os.path.join('src', '*.cpp'))
 
+# Create environment and substitute all vars with env vars
 env = Environment(CPPPATH=[distutils.sysconfig.get_python_inc()])
-
-
 for key in [ 'CC', 'CCFLAGS', 'CXX', 'CXXFLAGS' ]:
-	if environ.has_key(key):
-		env.Replace( **{key: environ[key].split(' ')} )
+    if environ.has_key(key):
+        env.Replace( **{key: environ[key].split(' ')} )
 
+# Append default flags for compilation
 flags = ['-Wall', '-Wconversion', '-Wno-unused-parameter']
 env.Append(CCFLAGS=flags, CXXFLAGS=flags)
 
+# If debug is asked, add some vars
 if 'DEBUG' in environ:
     flags = [ '-O0', '-ggdb' ]
     env.Append(LINKFLAGS=flags, CCFLAGS=flags, CXXFLAGS=flags)
 
 #env.ParseConfig(environ['SDL_CONFIG'] + ' --cflags --libs')
 
+# Create the library.
 env['BUILDERS']['PythonModule'] = SWIGSharedLibrary
-
 env.PythonModule(os.path.join('src', '_pymtcore'), sources)

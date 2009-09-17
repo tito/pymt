@@ -92,10 +92,9 @@ class CoreWidgetTestCase(unittest.TestCase):
     def testToLocal(self):
         widget = pymtcore.MTCoreWidget()
         res = widget.to_local(1, 2)
+        self.failUnless(type(res) == tuple)
+        self.failUnless(len(res) == 2)
         self.failUnless(res == (1, 2))
-
-    def testSpam(self):
-        pymtcore.spam(1, 2)
 
     '''
     def testPerformanceOnupdate(self):

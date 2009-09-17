@@ -2,25 +2,15 @@
 
 %{
 #define SWIG_FILE_WITH_INIT
-#include "vector.h"
-#include "texture.h"
-#include "image.h"
-#include "widget.h"
+#include <iostream>
+#include <vector>
+#include "Python.h"
 %}
-
-%include "vector.h"
-%include "texture.h"
-%include "image.h"
-
 
 %feature("director");
 
-%feature("ref")   MTCoreWidget "$this->ref();"
-%feature("unref") MTCoreWidget "$this->unref(1);"
-
-%director MTCoreWidget;
-%include "corewidget.h"
-%include "widget.h"
-
-%include <std_vector.i>
-%template(VectorCoreWidget) std::vector<MTCoreWidget *>;
+%include "vector.i"
+%include "image.i"
+%include "texture.i"
+%include "corewidget.i"
+%include "widget.i"

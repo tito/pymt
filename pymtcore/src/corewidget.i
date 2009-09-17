@@ -48,3 +48,14 @@
 
 %include <std_vector.i>
 %template(VectorCoreWidget) std::vector<MTCoreWidget *>;
+
+%pythoncode %{
+    MTCoreWidget.pos    = property(MTCoreWidget._get_pos,       MTCoreWidget._set_pos)
+    MTCoreWidget.size   = property(MTCoreWidget._get_size,      MTCoreWidget._set_size)
+    MTCoreWidget.center = property(MTCoreWidget._get_center,    MTCoreWidget._set_center)
+    MTCoreWidget.x      = property(MTCoreWidget._get_x,         MTCoreWidget._set_x)
+    MTCoreWidget.y      = property(MTCoreWidget._get_y,         MTCoreWidget._set_y)
+    MTCoreWidget.width  = property(MTCoreWidget._get_width,     MTCoreWidget._set_width)
+    MTCoreWidget.height = property(MTCoreWidget._get_height,    MTCoreWidget._set_height)
+%}
+

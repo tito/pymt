@@ -144,7 +144,7 @@ class CoreWidgetTestCase(unittest.TestCase):
 
     def testPosWithAccessor(self):
         widget = pymtcore.MTWidget()
-        widget._set_pos(54, 32)
+        widget._set_pos((54, 32))
         self.failUnless(widget._get_x() == 54)
         self.failUnless(widget._get_y() == 32)
         self.failUnless(widget._get_pos() == (54, 32))
@@ -161,6 +161,55 @@ class CoreWidgetTestCase(unittest.TestCase):
         self.failUnless(widget.y == 32)
         self.failUnless(widget.pos == (54, 32))
         self.failUnless(widget.center == (104, 82))
+
+    def testWidgetPositionProperties(self):
+        widget = pymtcore.MTWidget()
+        widget.x = 2
+        self.failUnless(widget.x == 2)
+        self.failUnless(widget.pos == (2, 0))
+        widget.x += 2
+        self.failUnless(widget.x == 4)
+        self.failUnless(widget.pos == (4, 0))
+        widget.y = 2
+        self.failUnless(widget.y == 2)
+        self.failUnless(widget.pos == (4, 2))
+        widget.y += 2
+        self.failUnless(widget.y == 4)
+        self.failUnless(widget.pos == (4, 4))
+        widget.pos = (10, 10)
+        self.failUnless(widget.x == 10)
+        self.failUnless(widget.y == 10)
+        self.failUnless(widget.pos == (10, 10))
+
+    def testWidgetCenterProperties(self):
+        widget = pymtcore.MTWidget()
+        widget.size = 10, 10
+        widget.center = 10, 10
+        self.failUnless(widget.x == 5)
+        self.failUnless(widget.y == 5)
+        self.failUnless(widget.center == (10, 10))
+        widget.pos = 10, 10
+        self.failUnless(widget.center == (15, 15))
+
+    def testWidgetSizeProperties(self):
+        widget = pymtcore.MTWidget()
+        widget.width = 2
+        self.failUnless(widget.width == 2)
+        self.failUnless(widget.size == (2, 100))
+        widget.width += 2
+        self.failUnless(widget.width == 4)
+        self.failUnless(widget.size == (4, 100))
+        widget.height = 2
+        self.failUnless(widget.height == 2)
+        self.failUnless(widget.size == (4, 2))
+        widget.height += 2
+        self.failUnless(widget.height == 4)
+        self.failUnless(widget.size == (4, 4))
+        widget.size = (10, 10)
+        self.failUnless(widget.width == 10)
+        self.failUnless(widget.height == 10)
+        self.failUnless(widget.size == (10, 10))
+
 
     '''
     def testPerformanceOnupdate(self):

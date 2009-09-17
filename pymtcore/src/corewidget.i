@@ -83,6 +83,12 @@
 %template(VectorCoreWidget) std::vector<MTCoreWidget *>;
 
 %include <attribute.i>
+%attribute(MTCoreWidget, double, x, _get_x, _set_x);
+%attribute(MTCoreWidget, double, y, _get_y, _set_y);
+%attribute(MTCoreWidget, double, width, _get_width, _set_width);
+%attribute(MTCoreWidget, double, height, _get_height, _set_height);
 %attribute(MTCoreWidget, pos2d&, pos, _get_pos, _set_pos);
+%attribute(MTCoreWidget, pos2d&, size, _get_size, _set_size);
+%attribute(MTCoreWidget, pos2d&, center, _get_center, _set_center);
 
 

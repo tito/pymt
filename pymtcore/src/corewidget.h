@@ -23,8 +23,8 @@ public:
         this->visible                   = true;
         this->__pos.x                   = 0;
         this->__pos.y                   = 0;
-        this->__size.x                  = 0;
-        this->__size.y                  = 0;
+        this->__size.x                  = 100;
+        this->__size.y                  = 100;
 
         this->__ref_count               = 0;
         this->__root_window             = NULL;
@@ -377,13 +377,7 @@ public:
         return this->__size.y;
     }
 
-    void _set_pos(double x, double y)
-    {
-        this->__pos.x = x;
-        this->__pos.y = y;
-    }
-
-    void _set_pos(const pos2d p)
+    void _set_pos(pos2d &p)
     {
         this->__pos = p;
     }
@@ -393,34 +387,28 @@ public:
         return this->__pos;
     }
 
-    void _get_pos(double *ox, double *oy)
+    void _set_size(pos2d &p)
     {
-        *ox = this->__pos.x;
-        *oy = this->__pos.y;
+        this->__size = p;
     }
 
-    void _set_size(double x, double y)
+    pos2d &_get_size(void)
     {
-        this->__size.x = x;
-        this->__size.y = y;
+        return this->__size;
     }
 
-    void _get_size(double *ox, double *oy)
+    void _set_center(pos2d &p)
     {
-        *ox = this->__size.x;
-        *oy = this->__size.y;
+        this->__pos.x = p.x - this->__size.x / 2.;
+        this->__pos.y = p.y - this->__size.y / 2.;
     }
 
-    void _set_center(double x, double y)
+    pos2d &_get_center(void)
     {
-        this->__pos.x = x - this->__size.x / 2.;
-        this->__pos.y = y - this->__size.y / 2.;
-    }
-
-    void _get_center(double *ox, double *oy)
-    {
-        *ox = this->__pos.x + this->__size.x / 2.;
-        *oy = this->__pos.y + this->__size.y / 2.;
+        static pos2d p;
+        p.x = this->__pos.x + this->__size.x / 2.;
+        p.y = this->__pos.y + this->__size.y / 2.;
+        return p;
     }
 
 

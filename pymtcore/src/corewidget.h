@@ -1,10 +1,6 @@
 #ifndef __PYMTCORE_COREWIDGET
 #define __PYTMCORE_COREWIDGET
 
-#include <iostream>
-#include <vector>
-#include "Python.h"
-
 class MTCoreWidget
 {
     // implement the ref counting mechanism

@@ -1,8 +1,6 @@
 #ifndef __PYMTCORE_VECTOR
 #define __PYMTCORE_VECTOR
 
-#include "Python.h"
-
 class Vector
 {
 public:

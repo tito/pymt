@@ -151,6 +151,13 @@ public:
     {
     }
 
+    virtual int to_local(double x, double y, double *ox, double *oy)
+    {
+        *ox = x;
+        *oy = y;
+        return 1;
+    }
+
     bool operator==(const MTCoreWidget *widget)
     {
         return (this == widget) ? true : false;
@@ -168,5 +175,12 @@ public:
     double width;
     double height;
 };
+
+int spam(double a, double b, double *oa, double *ob)
+{
+    *oa = a;
+    *ob = b;
+    return 0;
+}
 
 #endif

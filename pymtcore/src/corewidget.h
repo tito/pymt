@@ -3,19 +3,17 @@
 
 class MTCoreWidget
 {
-    // implement the ref counting mechanism
-    int __ref_count;
-
 public:
     MTCoreWidget()
     {
-        this->__ref_count               = 0;
         this->parent                    = NULL;
-        this->width                     = 0;
-        this->height                    = 0;
-        this->x                         = 0;
-        this->y                         = 0;
         this->visible                   = true;
+
+        this->__ref_count               = 0;
+        this->__width                   = 100;
+        this->__height                  = 100;
+        this->__x                       = 0;
+        this->__y                       = 0;
 
         this->__root_window             = NULL;
         this->__root_window_source      = NULL;
@@ -30,11 +28,10 @@ public:
         this->clear();
     }
 
-    void clear(void)
-    {
-        while ( !this->children.empty()  )
-            this->remove_widget(this->children.back());
-    }
+
+    //
+    // Reference counting
+    //
 
     void ref(void)
     {
@@ -64,6 +61,10 @@ public:
         } 
     }
 
+
+    //
+    // Children manipulation
+    //
 
     virtual void add_widget(MTCoreWidget *widget)
     {
@@ -113,6 +114,11 @@ public:
         this->unref();
     }
 
+
+    //
+    // Event functions
+    //
+
     virtual void on_update(void)
     {
         std::vector<MTCoreWidget *>::iterator i = this->children.begin();
@@ -159,17 +165,31 @@ public:
         return false;
     }
 
+    //
+    // Drawing functions
+    //
+
     virtual void draw(void)
     {
     }
 
+
+    //
+    // Collisions functions
+    //
+
     virtual bool collide_point(double x, double y)
     {
-        if ( x >= this->x && x <= (this->x + this->width) &&
-             y >= this->y && y <= (this->y + this->height) )
+        if ( x >= this->__x && x <= (this->__x + this->__width) &&
+             y >= this->__y && y <= (this->__y + this->__height) )
             return true;
         return false;
     }
+
+
+    //
+    // Coordinate transformation
+    //
 
     virtual void to_local(double x, double y, double *ox, double *oy)
     {
@@ -214,6 +234,10 @@ public:
         *oy = y;
     }
 
+
+    //
+    // Accessors for window / layout
+    //
 
     virtual MTCoreWidget *get_root_window(void)
     {
@@ -266,6 +290,11 @@ public:
         return this->__parent_layout;
     }
 
+
+    //
+    // Visibility of the widget
+    //
+
     void show(void)
     {
         this->visible = true;
@@ -275,6 +304,11 @@ public:
     {
         this->visible = false;
     }
+
+
+    //
+    // Operators
+    //
 
     bool operator==(const MTCoreWidget *widget)
     {
@@ -286,28 +320,120 @@ public:
         return this->__ref_count;
     }
 
+
+    //
+    // Accessors, will be transformed into property with swig wrapper.
+    //
+
+
+    void set_x(double value)
+    {
+        this->__x = value;
+    }
+
+    double get_x(void)
+    {
+        return this->__x;
+    }
+
+    void set_y(double value)
+    {
+        this->__y = value;
+    }
+
+    double get_y(void)
+    {
+        return this->__y;
+    }
+
+    void set_width(double value)
+    {
+        this->__width = value;
+    }
+
+    double get_width(void)
+    {
+        return this->__width;
+    }
+
+    void set_height(double value)
+    {
+        this->__height = value;
+    }
+
+    double get_height(void)
+    {
+        return this->__height;
+    }
+
+    void set_pos(double x, double y)
+    {
+        this->__x = x;
+        this->__y = y;
+    }
+
+    void get_pos(double *ox, double *oy)
+    {
+        *ox = this->__x;
+        *oy = this->__y;
+    }
+
+    void set_size(double x, double y)
+    {
+        this->__width  = x;
+        this->__height = y;
+    }
+
+    void get_size(double *ox, double *oy)
+    {
+        *ox = this->__width;
+        *oy = this->__height;
+    }
+
+    void set_center(double x, double y)
+    {
+        this->__x = x - this->__width / 2.;
+        this->__y = y - this->__height / 2.;
+    }
+
+    void get_center(double *ox, double *oy)
+    {
+        *ox = this->__x + this->__width / 2.;
+        *oy = this->__y + this->__height / 2.;
+    }
+
+
+    //
+    // Public properties
+    //
+
     std::vector<MTCoreWidget *> children;
     MTCoreWidget    *parent;
-    double          x;
-    double          y;
-    double          width;
-    double          height;
     bool            visible;
 
-private:
+protected:
+    double          __x;
+    double          __y;
+    double          __width;
+    double          __height;
     MTCoreWidget    *__root_window;
     MTCoreWidget    *__root_window_source;
     MTCoreWidget    *__parent_window;
     MTCoreWidget    *__parent_window_source;
     MTCoreWidget    *__parent_layout;
     MTCoreWidget    *__parent_layout_source;
-};
 
-int spam(double a, double b, double *oa, double *ob)
-{
-    *oa = a;
-    *ob = b;
-    return 0;
-}
+private:
+    // implement the ref counting mechanism
+    int             __ref_count;
+
+    void clear(void)
+    {
+        while ( !this->children.empty()  )
+            this->remove_widget(this->children.back());
+    }
+
+
+};
 
 #endif

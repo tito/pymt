@@ -21,6 +21,17 @@ class CoreWidgetTestCase(unittest.TestCase):
         self.failUnless(hasattr(pymtcore.MTCoreWidget, 'get_parent_layout'))
         self.failUnless(hasattr(pymtcore.MTCoreWidget, 'get_root_window'))
 
+    def testDefaultValues(self):
+        widget = pymtcore.MTCoreWidget()
+        self.failUnless(widget.visible == True)
+        self.failUnless(widget.get_x() == 0)
+        self.failUnless(widget.get_y() == 0)
+        self.failUnless(widget.get_width() == 100)
+        self.failUnless(widget.get_height() == 100)
+        self.failUnless(widget.get_pos() == (0, 0))
+        self.failUnless(widget.get_size() == (100, 100))
+        self.failUnless(widget.get_center() == (50, 50))
+
     def testCreate(self):
         widget = pymtcore.MTCoreWidget()
         self.failUnless(widget is not None)
@@ -131,6 +142,13 @@ class CoreWidgetTestCase(unittest.TestCase):
         widget.show()
         self.failUnless(widget.visible == True)
 
+    def testPosWithAccessor(self):
+        widget = pymtcore.MTWidget()
+        widget.set_pos(54, 32)
+        self.failUnless(widget.get_x() == 54)
+        self.failUnless(widget.get_y() == 32)
+        self.failUnless(widget.get_pos() == (54, 32))
+        self.failUnless(widget.get_center() == (104, 82))
 
     '''
     def testPerformanceOnupdate(self):

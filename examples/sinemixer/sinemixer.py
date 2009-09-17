@@ -20,7 +20,7 @@ def pymt_plugin_activate(w, ctx):
     # A global duration of -1 will make the sound last forever
     ounk.setGlobalDuration(-1)
     # We create buses that we will use to send control data
-    ounk.oscReceive(bus=['amp0','amp1','amp2','amp3','pitch0','pitch1','pitch2','pitch3'], adress=['/amp0','/amp1','/amp2','/amp3','/pitch0','/pitch1','/pitch2','/pitch3'], port = 9005, portamento = 0.05)
+    ounk.oscReceive(bus=['amp0','amp1','amp2','amp3','pitch0','pitch1','pitch2','pitch3'], address=['/amp0','/amp1','/amp2','/amp3','/pitch0','/pitch1','/pitch2','/pitch3'], port = 9005, portamento = 0.05)
     # We create 4 sines and associate pitch variation and amplitude variation with the corresponding buses.
     ounk.sine(pitch=[1,1,1,1], pitchVar=['pitch0','pitch1','pitch2','pitch3'], amplitudeVar=['amp0','amp1','amp2','amp3'])
     # Csound is started here
@@ -42,7 +42,7 @@ def pymt_plugin_activate(w, ctx):
 
     # This function gets called when a slider moves, it sets the pitch of each sine.
     def on_value_change_callback(slider, value):
-        ounk.sendOscControl(value, adress='/pitch%d' % slider, port=9005)
+        ounk.sendOscControl(value, address='/pitch%d' % slider, port=9005)
 
     # We push the handlers and feed it with the slider number so the callback function knows which sine to work on.
     # The time.sleep seems necessary to let Csound the time to initialize itself.
@@ -53,12 +53,12 @@ def pymt_plugin_activate(w, ctx):
 
     # When the button is pressed, the amplitude is changed to 0.5
     def on_press_callback(btn, *largs):
-        ounk.sendOscControl(0.5, adress='/amp%d' % btn, port=9005)
+        ounk.sendOscControl(0.5, address='/amp%d' % btn, port=9005)
         #print('Button {0} pressed'.format(btn+1))
 
     # When the button is released, the amplitude goes back to 0
     def on_release_callback(btn, *largs):
-        ounk.sendOscControl(0, adress='/amp%d' % btn, port=9005)
+        ounk.sendOscControl(0, address='/amp%d' % btn, port=9005)
         #print('Button {0} released'.format(btn+1))
 
     # Handlers for the buttons are pushed here.

@@ -94,6 +94,9 @@ class CoreWidgetTestCase(unittest.TestCase):
         res = widget.to_local(1, 2)
         self.failUnless(res == (1, 2))
 
+    def testSpam(self):
+        pymtcore.spam(1, 2)
+
     '''
     def testPerformanceOnupdate(self):
         class SubWidget(pymtcore.MTCoreWidget):

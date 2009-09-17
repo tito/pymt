@@ -29,7 +29,7 @@ def init_ounk():
 
     pit1 = ounk.genDataTable([1,1,1,1,.5,1,1,1,.25,1,1,1,.125,1,1,1])
 
-    ounk.oscReceive(bus='tempo', adress='/tempo', port = 9005, portamento = 0.05)
+    ounk.oscReceive(bus='tempo', address='/tempo', port = 9005, portamento = 0.05)
     ounk.metro(bus='metro', tempo=200, tempoVar = 'tempo')
 
 
@@ -45,7 +45,7 @@ def init_ounk():
 
     proc = ounk.startCsound()
     time.sleep(1)
-    ounk.sendOscControl(0.8, adress='/tempo', port=9005)
+    ounk.sendOscControl(0.8, address='/tempo', port=9005)
 
 def pymt_plugin_activate(w, ctx):
     init_ounk()
@@ -72,7 +72,7 @@ def pymt_plugin_activate(w, ctx):
 
     @temposlider.event
     def on_value_change(value):
-        ounk.sendOscControl(value, adress='/tempo', port=9005)
+        ounk.sendOscControl(value, address='/tempo', port=9005)
 
 def pymt_plugin_deactivate(w, ctx):
     w.remove_widget(ctx.c)

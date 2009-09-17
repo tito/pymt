@@ -151,11 +151,10 @@ public:
     {
     }
 
-    virtual int to_local(double x, double y, double *ox, double *oy)
+    virtual void to_local(double x, double y, double *ox, double *oy)
     {
         *ox = x;
         *oy = y;
-        return 1;
     }
 
     bool operator==(const MTCoreWidget *widget)

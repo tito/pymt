@@ -4,6 +4,7 @@
 
 %extend MTCoreWidget
 {
+
 /* Theses typemap can will convert output
  * arg *ox and *oy into a tuple
  */
@@ -40,6 +41,38 @@
 
 };
 
+%typemap(out) pos2d&
+{
+    PyObject *ox, *oy;
+    ox = PyFloat_FromDouble($1->x);
+    oy = PyFloat_FromDouble($1->y);
+    $result = PyTuple_New(2);
+    PyTuple_SetItem($result, 0, ox);
+    PyTuple_SetItem($result, 1, oy);
+}
+
+%typemap(in) pos2d&
+{
+    pos2d       p;
+
+    if ( !PyTuple_Check($input) )
+    {
+        PyErr_SetString(PyExc_TypeError, "only tuple are accepted");
+        return NULL;
+    }
+    else if ( PyTuple_Size($input) != 2 )
+    {
+        PyErr_SetString(PyExc_TypeError, "tuple must have exactly 2 doubles in");
+        return NULL;
+    }
+    else
+    {
+        p.x = PyFloat_AsDouble(PyTuple_GetItem($input, 0));
+        p.y = PyFloat_AsDouble(PyTuple_GetItem($input, 1));
+        $1 = &p;
+    }
+}
+
 %feature("ref")   MTCoreWidget "$this->ref();"
 %feature("unref") MTCoreWidget "$this->unref(1);"
 
@@ -49,13 +82,7 @@
 %include <std_vector.i>
 %template(VectorCoreWidget) std::vector<MTCoreWidget *>;
 
-%pythoncode %{
-    MTCoreWidget.pos    = property(MTCoreWidget._get_pos,       MTCoreWidget._set_pos)
-    MTCoreWidget.size   = property(MTCoreWidget._get_size,      MTCoreWidget._set_size)
-    MTCoreWidget.center = property(MTCoreWidget._get_center,    MTCoreWidget._set_center)
-    MTCoreWidget.x      = property(MTCoreWidget._get_x,         MTCoreWidget._set_x)
-    MTCoreWidget.y      = property(MTCoreWidget._get_y,         MTCoreWidget._set_y)
-    MTCoreWidget.width  = property(MTCoreWidget._get_width,     MTCoreWidget._set_width)
-    MTCoreWidget.height = property(MTCoreWidget._get_height,    MTCoreWidget._set_height)
-%}
+%include <attribute.i>
+%attribute(MTCoreWidget, pos2d&, pos, _get_pos, _set_pos);
+
 

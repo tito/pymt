@@ -1,6 +1,19 @@
 #ifndef __PYMTCORE_COREWIDGET
 #define __PYTMCORE_COREWIDGET
 
+struct pos2d
+{
+    double x;
+    double y;
+
+    char *__str__(void)
+    {
+        static char tmp[128];
+        snprintf(tmp, sizeof(tmp), "(%f, %f)", this->x, this->y);
+        return tmp;
+    }
+};
+
 class MTCoreWidget
 {
 public:
@@ -8,13 +21,12 @@ public:
     {
         this->parent                    = NULL;
         this->visible                   = true;
+        this->__pos.x                   = 0;
+        this->__pos.y                   = 0;
+        this->__size.x                  = 0;
+        this->__size.y                  = 0;
 
         this->__ref_count               = 0;
-        this->__width                   = 100;
-        this->__height                  = 100;
-        this->__x                       = 0;
-        this->__y                       = 0;
-
         this->__root_window             = NULL;
         this->__root_window_source      = NULL;
         this->__parent_window           = NULL;
@@ -180,8 +192,8 @@ public:
 
     virtual bool collide_point(double x, double y)
     {
-        if ( x >= this->__x && x <= (this->__x + this->__width) &&
-             y >= this->__y && y <= (this->__y + this->__height) )
+        if ( x >= this->__pos.x && x <= (this->__pos.x + this->__size.x) &&
+             y >= this->__pos.y && y <= (this->__pos.y + this->__size.y) )
             return true;
         return false;
     }
@@ -325,81 +337,90 @@ public:
     // Accessors, will be transformed into property with swig wrapper.
     //
 
-
     void _set_x(double value)
     {
-        this->__x = value;
+        this->__pos.x = value;
     }
 
     double _get_x(void)
     {
-        return this->__x;
+        return this->__pos.x;
     }
 
     void _set_y(double value)
     {
-        this->__y = value;
+        this->__pos.y = value;
     }
 
     double _get_y(void)
     {
-        return this->__y;
+        return this->__pos.y;
     }
 
     void _set_width(double value)
     {
-        this->__width = value;
+        this->__size.x = value;
     }
 
     double _get_width(void)
     {
-        return this->__width;
+        return this->__size.x;
     }
 
     void _set_height(double value)
     {
-        this->__height = value;
+        this->__size.y = value;
     }
 
     double _get_height(void)
     {
-        return this->__height;
+        return this->__size.y;
     }
 
     void _set_pos(double x, double y)
     {
-        this->__x = x;
-        this->__y = y;
+        this->__pos.x = x;
+        this->__pos.y = y;
+    }
+
+    void _set_pos(const pos2d p)
+    {
+        this->__pos = p;
+    }
+
+    pos2d &_get_pos(void)
+    {
+        return this->__pos;
     }
 
     void _get_pos(double *ox, double *oy)
     {
-        *ox = this->__x;
-        *oy = this->__y;
+        *ox = this->__pos.x;
+        *oy = this->__pos.y;
     }
 
     void _set_size(double x, double y)
     {
-        this->__width  = x;
-        this->__height = y;
+        this->__size.x = x;
+        this->__size.y = y;
     }
 
     void _get_size(double *ox, double *oy)
     {
-        *ox = this->__width;
-        *oy = this->__height;
+        *ox = this->__size.x;
+        *oy = this->__size.y;
     }
 
     void _set_center(double x, double y)
     {
-        this->__x = x - this->__width / 2.;
-        this->__y = y - this->__height / 2.;
+        this->__pos.x = x - this->__size.x / 2.;
+        this->__pos.y = y - this->__size.y / 2.;
     }
 
     void _get_center(double *ox, double *oy)
     {
-        *ox = this->__x + this->__width / 2.;
-        *oy = this->__y + this->__height / 2.;
+        *ox = this->__pos.x + this->__size.x / 2.;
+        *oy = this->__pos.y + this->__size.y / 2.;
     }
 
 
@@ -411,11 +432,6 @@ public:
     MTCoreWidget    *parent;
     bool            visible;
 
-protected:
-    double          __x;
-    double          __y;
-    double          __width;
-    double          __height;
     MTCoreWidget    *__root_window;
     MTCoreWidget    *__root_window_source;
     MTCoreWidget    *__parent_window;
@@ -426,6 +442,8 @@ protected:
 private:
     // implement the ref counting mechanism
     int             __ref_count;
+    pos2d           __pos;
+    pos2d           __size;
 
     void clear(void)
     {

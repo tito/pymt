@@ -53,7 +53,7 @@
 
 %typemap(in) pos2d&
 {
-    pos2d       p;
+    static pos2d       p;
 
     if ( !PyTuple_Check($input) )
     {
@@ -72,6 +72,7 @@
         $1 = &p;
     }
 }
+
 
 %feature("ref")   MTCoreWidget "$this->ref();"
 %feature("unref") MTCoreWidget "$this->unref(1);"

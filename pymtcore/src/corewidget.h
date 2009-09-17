@@ -131,6 +131,14 @@ public:
     // Event functions
     //
 
+    virtual void on_move(double x, double y)
+    {
+    }
+
+    virtual void on_resize(double width, double height)
+    {
+    }
+
     virtual void on_update(void)
     {
         std::vector<MTCoreWidget *>::iterator i = this->children.begin();
@@ -307,12 +315,12 @@ public:
     // Visibility of the widget
     //
 
-    void show(void)
+    virtual void show(void)
     {
         this->visible = true;
     }
 
-    void hide(void)
+    virtual void hide(void)
     {
         this->visible = false;
     }
@@ -337,78 +345,98 @@ public:
     // Accessors, will be transformed into property with swig wrapper.
     //
 
-    void _set_x(double value)
+    virtual void _set_x(double value)
     {
+        if ( this->__pos.x == value )
+            return;
         this->__pos.x = value;
+        this->on_move(this->__pos.x, this->__pos.y);
     }
 
-    double _get_x(void)
+    virtual double _get_x(void)
     {
         return this->__pos.x;
     }
 
-    void _set_y(double value)
+    virtual void _set_y(double value)
     {
+        if ( this->__pos.y == value )
+            return;
         this->__pos.y = value;
+        this->on_move(this->__pos.x, this->__pos.y);
     }
 
-    double _get_y(void)
+    virtual double _get_y(void)
     {
         return this->__pos.y;
     }
 
-    void _set_width(double value)
+    virtual void _set_width(double value)
     {
+        if ( this->__size.x == value )
+            return;
         this->__size.x = value;
+        this->on_resize(this->__size.x, this->__size.y);
     }
 
-    double _get_width(void)
+    virtual double _get_width(void)
     {
         return this->__size.x;
     }
 
-    void _set_height(double value)
+    virtual void _set_height(double value)
     {
+        if ( this->__size.y == value )
+            return;
         this->__size.y = value;
+        this->on_resize(this->__size.x, this->__size.y);
     }
 
-    double _get_height(void)
+    virtual double _get_height(void)
     {
         return this->__size.y;
     }
 
-    void _set_pos(pos2d &p)
+    virtual void _set_pos(pos2d &p)
     {
+        if ( p.x == this->__pos.x && p.y == this->__pos.y )
+            return;
         this->__pos = p;
+        this->on_move(this->__pos.x, this->__pos.y);
     }
 
-    pos2d &_get_pos(void)
+    virtual pos2d &_get_pos(void)
     {
         return this->__pos;
     }
 
-    void _set_size(pos2d &p)
+    virtual void _set_size(pos2d &p)
     {
+        if ( p.x == this->__size.x && p.y == this->__size.y )
+            return;
         this->__size = p;
+        this->on_resize(this->__size.x, this->__size.y);
     }
 
-    pos2d &_get_size(void)
+    virtual pos2d &_get_size(void)
     {
         return this->__size;
     }
 
-    void _set_center(pos2d &p)
+    virtual void _set_center(pos2d &p)
     {
-        this->__pos.x = p.x - this->__size.x / 2.;
-        this->__pos.y = p.y - this->__size.y / 2.;
+        static pos2d pos;
+        pos.x = p.x - this->__size.x / 2.;
+        pos.y = p.y - this->__size.y / 2.;
+        this->_set_pos(pos);
     }
 
-    pos2d &_get_center(void)
+    virtual pos2d &_get_center(void)
     {
-        static pos2d p;
-        p.x = this->__pos.x + this->__size.x / 2.;
-        p.y = this->__pos.y + this->__size.y / 2.;
-        return p;
+        static pos2d pos;
+        pos.x = this->__pos.x + this->__size.x / 2.;
+        pos.y = this->__pos.y + this->__size.y / 2.;
+        return pos;
     }
 
 
@@ -430,6 +458,7 @@ public:
 private:
     // implement the ref counting mechanism
     int             __ref_count;
+
     pos2d           __pos;
     pos2d           __size;
 

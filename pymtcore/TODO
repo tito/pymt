@@ -2,9 +2,8 @@ MTWidget
 * missing valuable constructor
 * missing animation
 * missing inner animation
-* missing pos and size
 * missing id
-* missing event on pos and size change
+* try to make event work with custom handlers
 
 Global
 * implement image

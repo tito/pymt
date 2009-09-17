@@ -1,6 +1,10 @@
 MTWidget
-* reflect the same interface as python
-* fix the children list comparaison
+* missing valuable constructor
+* missing animation
+* missing inner animation
+* missing pos and size
+* missing id
+* missing event on pos and size change
 
 Global
 * implement image

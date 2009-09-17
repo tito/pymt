@@ -13,7 +13,13 @@ class CoreWidgetTestCase(unittest.TestCase):
         self.failUnless(hasattr(pymtcore.MTCoreWidget, 'on_touch_move'))
         self.failUnless(hasattr(pymtcore.MTCoreWidget, 'on_touch_up'))
         self.failUnless(hasattr(pymtcore.MTCoreWidget, 'on_update'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'remove_widget'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'to_local'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'to_parent'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'to_widget'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'to_window'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'get_parent_window'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'get_parent_layout'))
+        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'get_root_window'))
 
     def testCreate(self):
         widget = pymtcore.MTCoreWidget()
@@ -92,6 +98,27 @@ class CoreWidgetTestCase(unittest.TestCase):
     def testToLocal(self):
         widget = pymtcore.MTCoreWidget()
         res = widget.to_local(1, 2)
+        self.failUnless(type(res) == tuple)
+        self.failUnless(len(res) == 2)
+        self.failUnless(res == (1, 2))
+
+    def testToParent(self):
+        widget = pymtcore.MTCoreWidget()
+        res = widget.to_parent(1, 2)
+        self.failUnless(type(res) == tuple)
+        self.failUnless(len(res) == 2)
+        self.failUnless(res == (1, 2))
+
+    def testToWidget(self):
+        widget = pymtcore.MTCoreWidget()
+        res = widget.to_widget(1, 2)
+        self.failUnless(type(res) == tuple)
+        self.failUnless(len(res) == 2)
+        self.failUnless(res == (1, 2))
+
+    def testToWindow(self):
+        widget = pymtcore.MTCoreWidget()
+        res = widget.to_widget(1, 2)
         self.failUnless(type(res) == tuple)
         self.failUnless(len(res) == 2)
         self.failUnless(res == (1, 2))

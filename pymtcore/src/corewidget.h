@@ -9,12 +9,19 @@ class MTCoreWidget
 public:
     MTCoreWidget()
     {
-        this->__ref_count   = 0;
-        this->parent        = NULL;
-        this->width         = 0;
-        this->height        = 0;
-        this->x             = 0;
-        this->y             = 0;
+        this->__ref_count               = 0;
+        this->parent                    = NULL;
+        this->width                     = 0;
+        this->height                    = 0;
+        this->x                         = 0;
+        this->y                         = 0;
+
+        this->__root_window             = NULL;
+        this->__root_window_source      = NULL;
+        this->__parent_window           = NULL;
+        this->__parent_window_source    = NULL;
+        this->__parent_layout           = NULL;
+        this->__parent_layout_source    = NULL;
     }
 
     virtual ~MTCoreWidget()
@@ -151,10 +158,107 @@ public:
     {
     }
 
+    virtual bool collide_point(double x, double y)
+    {
+        if ( x >= this->x && x <= (this->x + this->width) &&
+             y >= this->y && y <= (this->y + this->height) )
+            return true;
+        return false;
+    }
+
     virtual void to_local(double x, double y, double *ox, double *oy)
     {
         *ox = x;
         *oy = y;
+    }
+
+    virtual void to_parent(double x, double y, double *ox, double *oy)
+    {
+        *ox = x;
+        *oy = y;
+    }
+
+    virtual void to_widget(double x, double y, double *ox, double *oy)
+    {
+        if ( this->parent )
+        {
+            this->parent->to_widget(x, y, ox, oy);
+            x = *ox;
+            y = *oy;
+        }
+
+        this->to_local(x, y, ox, oy);
+    }
+
+    virtual void to_window(double x, double y, double *ox, double *oy, bool initial=true)
+    {
+        if ( !initial )
+        {
+            this->to_parent(x, y, ox, oy);
+            x = *ox;
+            y = *oy;
+        }
+
+        if ( this->parent )
+        {
+            this->parent->to_window(x, y, ox, oy, false);
+            return;
+        }
+
+        *ox = x;
+        *oy = y;
+    }
+
+
+    virtual MTCoreWidget *get_root_window(void)
+    {
+        if ( this->parent == NULL )
+            return NULL;
+
+        if ( this->__root_window_source != this->parent ||
+             this->__root_window == NULL )
+        {
+            this->__root_window = this->parent->get_root_window();
+            if ( this->__root_window == NULL )
+                return NULL;
+            this->__root_window_source = this->parent;
+        }
+
+        return this->__root_window;
+    }
+
+    virtual MTCoreWidget *get_parent_window(void)
+    {
+        if ( this->parent == NULL )
+            return NULL;
+
+        if ( this->__parent_window_source != this->parent ||
+             this->__parent_window == NULL )
+        {
+            this->__parent_window = this->parent->get_parent_window();
+            if ( this->__parent_window == NULL )
+                return NULL;
+            this->__parent_window_source = this->parent;
+        }
+
+        return this->__parent_window;
+    }
+
+    virtual MTCoreWidget *get_parent_layout(void)
+    {
+        if ( this->parent == NULL )
+            return NULL;
+
+        if ( this->__parent_layout_source != this->parent ||
+             this->__parent_layout == NULL )
+        {
+            this->__parent_layout = this->parent->get_parent_layout();
+            if ( this->__parent_layout == NULL )
+                return NULL;
+            this->__parent_layout_source = this->parent;
+        }
+
+        return this->__parent_layout;
     }
 
     bool operator==(const MTCoreWidget *widget)
@@ -173,6 +277,14 @@ public:
     double y;
     double width;
     double height;
+
+private:
+    MTCoreWidget *__root_window;
+    MTCoreWidget *__root_window_source;
+    MTCoreWidget *__parent_window;
+    MTCoreWidget *__parent_window_source;
+    MTCoreWidget *__parent_layout;
+    MTCoreWidget *__parent_layout_source;
 };
 
 int spam(double a, double b, double *oa, double *ob)

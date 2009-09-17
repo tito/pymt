@@ -89,6 +89,11 @@ class CoreWidgetTestCase(unittest.TestCase):
         self.failUnless(child.get_ref_count() == 1)
         self.failUnless(child.parent == None)
 
+    def testToLocal(self):
+        widget = pymtcore.MTCoreWidget()
+        res = widget.to_local(1, 2)
+        self.failUnless(res == (1, 2))
+
     '''
     def testPerformanceOnupdate(self):
         class SubWidget(pymtcore.MTCoreWidget):

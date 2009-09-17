@@ -5,7 +5,7 @@ __all__ = ['CoreWidgetEventTestCase']
 
 class CoreWidgetEventTestCase(unittest.TestCase):
     def testOnTouchDown(self):
-        class MyWidget(MTCoreWidget):
+        class MyWidget(pymtcore.MTCoreWidget):
             def on_touch_down(self, touch):
                 print touch
         class Touch:

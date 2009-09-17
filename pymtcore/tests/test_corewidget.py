@@ -123,6 +123,15 @@ class CoreWidgetTestCase(unittest.TestCase):
         self.failUnless(len(res) == 2)
         self.failUnless(res == (1, 2))
 
+    def testVisible(self):
+        widget = pymtcore.MTCoreWidget()
+        self.failUnless(widget.visible == True)
+        widget.hide()
+        self.failUnless(widget.visible == False)
+        widget.show()
+        self.failUnless(widget.visible == True)
+
+
     '''
     def testPerformanceOnupdate(self):
         class SubWidget(pymtcore.MTCoreWidget):

@@ -15,6 +15,7 @@ public:
         this->height                    = 0;
         this->x                         = 0;
         this->y                         = 0;
+        this->visible                   = true;
 
         this->__root_window             = NULL;
         this->__root_window_source      = NULL;
@@ -121,9 +122,13 @@ public:
 
     virtual void on_draw(void)
     {
-        std::vector<MTCoreWidget *>::iterator i = this->children.begin();
+        std::vector<MTCoreWidget *>::iterator i;
+
+        if ( this->visible == false )
+            return;
+        
         this->draw();
-        for ( ; i != this->children.end(); i++ )
+        for ( i = this->children.begin(); i != this->children.end(); i++ )
             (*i)->on_draw();
     }
 
@@ -180,7 +185,7 @@ public:
 
     virtual void to_widget(double x, double y, double *ox, double *oy)
     {
-        if ( this->parent )
+        if ( this->parent != NULL )
         {
             this->parent->to_widget(x, y, ox, oy);
             x = *ox;
@@ -192,14 +197,14 @@ public:
 
     virtual void to_window(double x, double y, double *ox, double *oy, bool initial=true)
     {
-        if ( !initial )
+        if ( initial == false )
         {
             this->to_parent(x, y, ox, oy);
             x = *ox;
             y = *oy;
         }
 
-        if ( this->parent )
+        if ( this->parent != NULL )
         {
             this->parent->to_window(x, y, ox, oy, false);
             return;
@@ -261,6 +266,16 @@ public:
         return this->__parent_layout;
     }
 
+    void show(void)
+    {
+        this->visible = true;
+    }
+
+    void hide(void)
+    {
+        this->visible = false;
+    }
+
     bool operator==(const MTCoreWidget *widget)
     {
         return (this == widget) ? true : false;
@@ -272,19 +287,20 @@ public:
     }
 
     std::vector<MTCoreWidget *> children;
-    MTCoreWidget *parent;
-    double x;
-    double y;
-    double width;
-    double height;
+    MTCoreWidget    *parent;
+    double          x;
+    double          y;
+    double          width;
+    double          height;
+    bool            visible;
 
 private:
-    MTCoreWidget *__root_window;
-    MTCoreWidget *__root_window_source;
-    MTCoreWidget *__parent_window;
-    MTCoreWidget *__parent_window_source;
-    MTCoreWidget *__parent_layout;
-    MTCoreWidget *__parent_layout_source;
+    MTCoreWidget    *__root_window;
+    MTCoreWidget    *__root_window_source;
+    MTCoreWidget    *__parent_window;
+    MTCoreWidget    *__parent_window_source;
+    MTCoreWidget    *__parent_layout;
+    MTCoreWidget    *__parent_layout_source;
 };
 
 int spam(double a, double b, double *oa, double *ob)

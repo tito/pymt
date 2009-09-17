@@ -326,77 +326,77 @@ public:
     //
 
 
-    void set_x(double value)
+    void _set_x(double value)
     {
         this->__x = value;
     }
 
-    double get_x(void)
+    double _get_x(void)
     {
         return this->__x;
     }
 
-    void set_y(double value)
+    void _set_y(double value)
     {
         this->__y = value;
     }
 
-    double get_y(void)
+    double _get_y(void)
     {
         return this->__y;
     }
 
-    void set_width(double value)
+    void _set_width(double value)
     {
         this->__width = value;
     }
 
-    double get_width(void)
+    double _get_width(void)
     {
         return this->__width;
     }
 
-    void set_height(double value)
+    void _set_height(double value)
     {
         this->__height = value;
     }
 
-    double get_height(void)
+    double _get_height(void)
     {
         return this->__height;
     }
 
-    void set_pos(double x, double y)
+    void _set_pos(double x, double y)
     {
         this->__x = x;
         this->__y = y;
     }
 
-    void get_pos(double *ox, double *oy)
+    void _get_pos(double *ox, double *oy)
     {
         *ox = this->__x;
         *oy = this->__y;
     }
 
-    void set_size(double x, double y)
+    void _set_size(double x, double y)
     {
         this->__width  = x;
         this->__height = y;
     }
 
-    void get_size(double *ox, double *oy)
+    void _get_size(double *ox, double *oy)
     {
         *ox = this->__width;
         *oy = this->__height;
     }
 
-    void set_center(double x, double y)
+    void _set_center(double x, double y)
     {
         this->__x = x - this->__width / 2.;
         this->__y = y - this->__height / 2.;
     }
 
-    void get_center(double *ox, double *oy)
+    void _get_center(double *ox, double *oy)
     {
         *ox = this->__x + this->__width / 2.;
         *oy = this->__y + this->__height / 2.;

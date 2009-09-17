@@ -24,13 +24,13 @@ class CoreWidgetTestCase(unittest.TestCase):
     def testDefaultValues(self):
         widget = pymtcore.MTCoreWidget()
         self.failUnless(widget.visible == True)
-        self.failUnless(widget.get_x() == 0)
-        self.failUnless(widget.get_y() == 0)
-        self.failUnless(widget.get_width() == 100)
-        self.failUnless(widget.get_height() == 100)
-        self.failUnless(widget.get_pos() == (0, 0))
-        self.failUnless(widget.get_size() == (100, 100))
-        self.failUnless(widget.get_center() == (50, 50))
+        self.failUnless(widget._get_x() == 0)
+        self.failUnless(widget._get_y() == 0)
+        self.failUnless(widget._get_width() == 100)
+        self.failUnless(widget._get_height() == 100)
+        self.failUnless(widget._get_pos() == (0, 0))
+        self.failUnless(widget._get_size() == (100, 100))
+        self.failUnless(widget._get_center() == (50, 50))
 
     def testCreate(self):
         widget = pymtcore.MTCoreWidget()
@@ -144,11 +144,23 @@ class CoreWidgetTestCase(unittest.TestCase):
 
     def testPosWithAccessor(self):
         widget = pymtcore.MTWidget()
-        widget.set_pos(54, 32)
-        self.failUnless(widget.get_x() == 54)
-        self.failUnless(widget.get_y() == 32)
-        self.failUnless(widget.get_pos() == (54, 32))
-        self.failUnless(widget.get_center() == (104, 82))
+        widget._set_pos(54, 32)
+        self.failUnless(widget._get_x() == 54)
+        self.failUnless(widget._get_y() == 32)
+        self.failUnless(widget._get_pos() == (54, 32))
+        self.failUnless(widget._get_center() == (104, 82))
+        self.failUnless(widget.x == 54)
+        self.failUnless(widget.y == 32)
+        self.failUnless(widget.pos == (54, 32))
+        self.failUnless(widget.center == (104, 82))
+
+    def testPosWithProperties(self):
+        widget = pymtcore.MTWidget()
+        widget.pos = (54, 32)
+        self.failUnless(widget.x == 54)
+        self.failUnless(widget.y == 32)
+        self.failUnless(widget.pos == (54, 32))
+        self.failUnless(widget.center == (104, 82))
 
     '''
     def testPerformanceOnupdate(self):

@@ -80,21 +80,25 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
 
     # Note: import are done after logger module initialization,
     # and configuration applied to logger.
+    import OpenGL
+    OpenGL.ERROR_LOGGING = False
+    OpenGL.FULL_LOGGING = False
+
     from exceptions import *
+    from base import *
     #from image import *
-    #from modules import *
-    #from input import *
+    from modules import *
+    from input import *
     #from mtpyglet import *
-    #from graphx import *
-    #from ui import *
+    from graphx import *
+    from ui import *
     #from obj import OBJ
     #from shader import *
-    #from vector import *
-    #from plugin import *
+    from vector import *
+    from plugin import *
     #from loader import *
-    #from gesture import *
-    #from utils import *
-
+    from gesture import *
+    from utils import *
 
     # Can be overrided in command line
     try:

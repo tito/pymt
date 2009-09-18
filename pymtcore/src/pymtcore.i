@@ -15,3 +15,4 @@
 %include "corewidget.i"
 %include "widget.i"
 %include "corewindow.i"
+%include "utils.i"

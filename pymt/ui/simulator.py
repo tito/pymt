@@ -4,16 +4,17 @@ Simulator: generate touch event with mouse
 
 __all__ = ['MTSimulator']
 
-from pyglet import *
-from pyglet.gl import *
-from pyglet.window import key
+#from pyglet import *
+#from pyglet.gl import *
+#from pyglet.window import key
+import pymtcore
 from ..graphx import drawCircle, set_color
 from ..input import TouchFactory
-from ..mtpyglet import getEventLoop
+from ..base import getEventLoop
 from factory import MTWidgetFactory
-from widgets.widget import MTWidget
+#from widgets.widget import MTWidget
 
-class MTSimulator(MTWidget):
+class MTSimulator(pymtcore.MTWidget):
     '''MTSimulator is a widget who generate touch event from mouse event'''
     def __init__(self, **kwargs):
         super(MTSimulator, self).__init__(**kwargs)
@@ -23,8 +24,8 @@ class MTSimulator(MTWidget):
         self.current_drag	= None
 
     def draw(self):
+        set_color(0.8,0.2,0.2,0.7)
         for t in self.touches.values():
-            set_color(0.8,0.2,0.2,0.7)
             drawCircle(pos=(t.x, t.y), radius=10)
 
     def find_touch(self,x,y):
@@ -43,8 +44,8 @@ class MTSimulator(MTWidget):
             rx = x / float(self.get_parent_window().width)
             ry = 1. - (y / float(self.get_parent_window().height))
             self.current_drag = cur = TouchFactory.get('tuio').create('/tuio/2Dcur', id=id, args=[rx, ry])
-            if modifiers & key.MOD_SHIFT:
-                cur.is_double_tap = True
+            #if modifiers & key.MOD_SHIFT:
+            #    cur.is_double_tap = True
             self.touches[id] = cur
             getEventLoop().post_dispatch_input('down', cur)
         return True
@@ -60,12 +61,13 @@ class MTSimulator(MTWidget):
 
     def on_mouse_release(self, x, y, button, modifiers):
         cur = self.find_touch(x, y)
-        if  button == 1 and cur and not (modifiers & key.MOD_CTRL):
+        if button == 1 and cur:# and not (modifiers & key.MOD_CTRL):
             rx = x / float(self.get_parent_window().width)
             ry = 1. - (y / float(self.get_parent_window().height))
             cur.move([rx, ry])
             del self.touches[cur.id]
             getEventLoop().post_dispatch_input('up', cur)
+        self.current_drag = None
         return True
 
 # Register all base widgets

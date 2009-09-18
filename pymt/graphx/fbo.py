@@ -9,9 +9,9 @@ __all__ = [
     'UnsupportedFboException'
 ]
 
-from pyglet import *
-from pyglet.gl import *
-from pyglet.image import Texture, TextureRegion
+import os
+import sys
+from OpenGL.GL import *
 from paint import *
 from colors import *
 from draw import *
@@ -240,8 +240,8 @@ if os.path.basename(sys.argv[0]) in ('sphinx-build', 'autostart.py'):
 else:
     from .. import pymt_config
     # Check if Fbo is supported by gl
-    if not 'GL_EXT_framebuffer_object' in gl_info.get_extensions():
-        pymt_config.set('graphics', 'fbo', 'software')
+    #if not 'GL_EXT_framebuffer_object' in gl_info.get_extensions():
+    #    pymt_config.set('graphics', 'fbo', 'software')
 
     if not os.path.basename(sys.argv[0]).startswith('sphinx'):
         # decide what to use

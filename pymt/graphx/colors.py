@@ -2,7 +2,7 @@
 Colors: manipulate colors
 '''
 
-from pyglet.gl import *
+from OpenGL.GL import *
 
 __all__ = ['set_color']
 

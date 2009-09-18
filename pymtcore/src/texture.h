@@ -9,4 +9,8 @@ public:
     // TODO
 };
 
+class TextureRegion : public Texture
+{
+};
+
 #endif

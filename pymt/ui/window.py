@@ -2,23 +2,22 @@
 Window package: provide a window + a touch display
 '''
 
-__all__ = ['MTWindow', 'MTDisplay']
+__all__ = ['MTWindow']
 
 import sys
-import pyglet
-from pyglet.gl import *
-from pyglet import *
 import pymt
-from ..mtpyglet import TouchWindow, stopTouchApp, getAvailableTouchs
+import pymtcore
+from ..base import stopTouchApp, getAvailableTouchs, registerWindow, unregisterWindow
 from ..graphx import set_color, drawCircle
-from ..modules import pymt_modules
+#from ..modules import pymt_modules
 from colors import css_get_style
 from factory import MTWidgetFactory
-from widgets import MTWidget
+#from widgets import MTWidget
 from simulator import MTSimulator
+from OpenGL.GL import *
 
 
-class MTWindow(TouchWindow):
+class MTWindow(pymtcore.MTCoreWindow):
     '''MTWindow is a window widget who use MTSimulator
     for generating touch event with mouse.
     Use MTWindow as main window application.
@@ -51,6 +50,8 @@ class MTWindow(TouchWindow):
         kwargs.setdefault('show_fps', False)
         kwargs.setdefault('style', {})
 
+        super(MTWindow, self).__init__()
+
         # apply styles for window
         self.cssstyle = {}
         style = css_get_style(widget=self)
@@ -61,7 +62,7 @@ class MTWindow(TouchWindow):
             self.apply_css(kwargs.get('style'))
 
         # initialize fps clock
-        self.fps_display =  pyglet.clock.ClockDisplay()
+        #self.fps_display =  pyglet.clock.ClockDisplay()
 
         # initialize handlers list
         self.on_key_press_handlers = []
@@ -69,7 +70,6 @@ class MTWindow(TouchWindow):
         self.on_text_motion_handlers = []
         self.on_text_motion_select_handlers = []
 
-        self.children = []
         self.parent = self
 
         # add view + simulator
@@ -118,6 +118,13 @@ class MTWindow(TouchWindow):
         else:
             displayidx = pymt.pymt_config.getint('graphics', 'display')
 
+        self.display = displayidx
+        self.vsync = params['vsync']
+        self.size = params['width'], params['height']
+        self.fullscreen = params['fullscreen']
+        self.setup()
+
+        '''
         if displayidx >= 0:
             display = window.get_platform().get_default_display()
             screens = display.get_screens()
@@ -145,12 +152,16 @@ class MTWindow(TouchWindow):
             super(MTWindow, self).__init__(config=config, **params)
         except:
             super(MTWindow, self).__init__(**params)
+        '''
 
         # show fps if asked
         self.show_fps = kwargs.get('show_fps')
         if pymt.pymt_config.getboolean('pymt', 'show_fps'):
             self.show_fps = True
 
+        registerWindow(self)
+
+        '''
         # initialize dump image
         self.dump_frame     = pymt.pymt_config.getboolean('dump', 'enabled')
         self.dump_prefix    = pymt.pymt_config.get('dump', 'prefix')
@@ -162,12 +173,13 @@ class MTWindow(TouchWindow):
 
         # init modules
         pymt_modules.register_window(self)
+        '''
 
     def apply_css(self, styles):
         self.cssstyle.update(styles)
 
     def on_close(self, *largs):
-        pymt_modules.unregister_window(self)
+        unregisterWindow(self)
         super(MTWindow, self).on_close(*largs)
 
     def _set_size(self, size):
@@ -250,8 +262,10 @@ class MTWindow(TouchWindow):
         '''Add a widget on window'''
         self.children.append(w)
         w.parent = self
+        '''
         if self.sim:
             self.sim.bring_to_front()
+        '''
 
     def remove_widget(self, w):
         '''Remove a widget from window'''
@@ -260,25 +274,7 @@ class MTWindow(TouchWindow):
         self.children.remove(w)
         w.parent = None
 
-    def draw(self):
-        '''Clear the window with background color'''
-        glClearColor(*self.cssstyle.get('bg-color'))
-        self.clear()
-
-    def on_draw(self):
-        '''Clear window, and dispatch event in root widget + simulator'''
-        # Update children first
-        for w in self.children:
-            w.dispatch_event('on_update')
-
-        # Draw
-        self.draw()
-        for w in self.children:
-            w.dispatch_event('on_draw')
-
-        if self.sim:
-            self.sim.dispatch_event('on_draw')
-
+        '''
         if self.show_fps:
             self.fps_display.draw()
 
@@ -288,6 +284,7 @@ class MTWindow(TouchWindow):
                                        self.dump_format)
             #print pyglet.image.get_buffer_manager().get_color_buffer().get_texture()
             pyglet.image.get_buffer_manager().get_color_buffer().save(filename=filename)
+        '''
 
     def to_widget(self, x, y):
         return (x, y)
@@ -308,7 +305,7 @@ class MTWindow(TouchWindow):
         handler = self.get_on_key_press()
         if handler and handler(symbol, modifiers):
             return True
-        if symbol == pyglet.window.key.ESCAPE:
+        if symbol == 27:
             stopTouchApp()
             return True
 
@@ -317,91 +314,36 @@ class MTWindow(TouchWindow):
         if handler and handler(text):
             return True
 
-    def on_text_motion(self, text):
-        handler = self.get_on_text_motion()
-        if handler and handler(text):
-            return True
-
-    def on_text_motion_select(self, text):
-        handler = self.get_on_text_motion_select()
-        if handler and handler(text):
-            return True
-
     def on_touch_down(self, touch):
         touch.scale_for_screen(*self.size)
         for w in reversed(self.children):
-            if w.dispatch_event('on_touch_down', touch):
+            if w.on_touch_down(touch):
                 return True
 
     def on_touch_move(self, touch):
         touch.scale_for_screen(*self.size)
         for w in reversed(self.children):
-            if w.dispatch_event('on_touch_move', touch):
+            if w.on_touch_move(touch):
                 return True
 
     def on_touch_up(self, touch):
         touch.scale_for_screen(*self.size)
         for w in reversed(self.children):
-            if w.dispatch_event('on_touch_up', touch):
+            if w.on_touch_up(touch):
                 return True
 
     def on_mouse_press(self, x, y, button, modifiers):
         if self.sim:
-            return self.sim.dispatch_event('on_mouse_press', x, y, button, modifiers)
+            return self.sim.on_mouse_press(x, y, button, modifiers)
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
         if self.sim:
-            return self.sim.dispatch_event('on_mouse_drag', x, y, dx, dy, button, modifiers)
+            return self.sim.on_mouse_drag(x, y, dx, dy, button, modifiers)
 
     def on_mouse_release(self, x, y, button, modifiers):
         if self.sim:
-            return self.sim.dispatch_event('on_mouse_release', x, y, button, modifiers)
+            return self.sim.on_mouse_release(x, y, button, modifiers)
 
-    def on_resize(self, width, height):
-        glViewport(0, 0, width, height)
-        glMatrixMode(gl.GL_PROJECTION)
-        glLoadIdentity()
-        glFrustum(-width/2, width/2, -height/2, height/2, 0.1, 1000)
-        glScalef(5000,5000,1)
-        glTranslatef(-width/2,-height/2,-500)
-        glMatrixMode(gl.GL_MODELVIEW)
-
-
-class MTDisplay(MTWidget):
-    '''MTDisplay is a widget that draw a circle
-    under every touch on window
-
-    :Parameters:
-        `touch_color` : list
-            Color of circle under finger
-        `radius` : int
-            Radius of circle under finger in pixel
-
-    :Styles:
-        `touch-color` : color
-            Color of circle under finger
-    '''
-
-    def __init__(self, **kwargs):
-        kwargs.setdefault('touch_color', (1,1,0))
-        kwargs.setdefault('radius', 20)
-        super(MTDisplay, self).__init__(**kwargs)
-
-        self.radius = kwargs['radius']
-        self.touch_color = kwargs['touch_color']
-        self.touches    = {}
-
-
-    def apply_css(self, styles):
-        if 'touch-color' in styles:
-            self.touch_color = styles.get('touch-color')
-
-    def draw(self):
-        '''Draw a circle under every touches'''
-        set_color(*self.touch_color)
-        for touch in getAvailableTouchs():
-            drawCircle(pos=(touch.x, touch.y), radius=self.radius)
 
 # Register all base widgets
 MTWidgetFactory.register('MTWindow', MTWindow)
-MTWidgetFactory.register('MTDisplay', MTDisplay)

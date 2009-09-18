@@ -95,6 +95,10 @@ public:
 	// Events
 	//
 
+	virtual void on_close(void)
+	{
+	}
+
 	virtual void on_resize(double width, double height)
 	{
 		// don't dispatch on_resize, if no screen is created.
@@ -104,7 +108,7 @@ public:
 		glViewport(0, 0, (int)width, (int)height);
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		glFrustum(-width / 2, width / 2, -height / 2, height / 2, 0.1, 1000.);
+		glFrustum(-width / 2, width / 2, height / 2, -height / 2, 0.1, 1000.);
 		glScalef(5000., 5000., 1);
 		glTranslatef(-width / 2, -height / 2, -500);
 		glMatrixMode(GL_MODELVIEW);

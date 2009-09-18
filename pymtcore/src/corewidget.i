@@ -39,6 +39,11 @@
     $1 = &temp;
 }
 
+%typemap(in) void *touch(PyObject *temp)
+{
+    $1 = temp;
+}
+
 };
 
 %typemap(out) pos2d&

@@ -57,7 +57,9 @@ if 'DEBUG' in environ:
     flags = [ '-O0', '-ggdb' ]
     env.Append(LINKFLAGS=flags, CCFLAGS=flags, CXXFLAGS=flags)
 
-#env.ParseConfig(environ['SDL_CONFIG'] + ' --cflags --libs')
+# Dependices
+env.Append(LIBS=["GL"])
+env.ParseConfig('sdl-config --cflags --libs')
 
 # Create the library.
 env['BUILDERS']['PythonModule'] = SWIGSharedLibrary

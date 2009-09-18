@@ -14,3 +14,4 @@
 %include "texture.i"
 %include "corewidget.i"
 %include "widget.i"
+%include "corewindow.i"

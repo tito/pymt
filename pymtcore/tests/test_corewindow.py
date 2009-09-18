@@ -6,9 +6,11 @@ __all__ = ['CoreWidgetTestCase']
 class CoreWindowTestCase(unittest.TestCase):
     def testSDL(self):
         w = pymtcore.MTCoreWindow()
+        print
         w.dump_video_info()
         w.dump_list_modes()
 
     def testWindowCreation(self):
         w = pymtcore.MTCoreWindow()
-        self.failUnless(w.setup(320, 200, False) == True)
+        w.size = 320, 240
+        self.failUnless(w.setup() == True)

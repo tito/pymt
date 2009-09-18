@@ -107,7 +107,7 @@ public:
 		glTranslatef(-width / 2, -height / 2, -500);
 		glMatrixMode(GL_MODELVIEW);
 
-		parent->on_resize(width, height);
+		MTCoreWidget::on_resize(width, height);
 	}
 
 	virtual void on_draw(void)
@@ -115,7 +115,7 @@ public:
 		if ( this->do_clear == true )
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		parent->on_draw();
+		MTCoreWidget::on_draw();
 
 		SDL_Flip(this->screen);
 	}
@@ -123,6 +123,9 @@ public:
 	virtual void on_update(void)
 	{
 		static SDL_Event event;
+		static char tmp[2];
+		tmp[1] = '\0';
+
 		while ( SDL_PollEvent(&event) )
 		{
 			switch ( event.type )
@@ -141,6 +144,21 @@ public:
 					this->on_mouse_drag(event.motion.x, event.motion.y,
 							event.motion.xrel, event.motion.yrel,
 							event.motion.state, 0);
+					continue;
+
+				case SDL_KEYDOWN:
+					this->on_key_press(event.key.keysym.sym, event.key.keysym.mod);
+						
+					if ( (event.key.keysym.unicode & 0xFF80) == 0 ) {
+						tmp[0] = event.key.keysym.unicode & 0x7F;
+					}
+					else
+					{
+						std::cout << "WARNING: an international character is pressed, ignore." << std::endl;
+						continue;
+					}
+
+					this->on_text(tmp);
 					continue;
 
 				default:
@@ -171,6 +189,14 @@ public:
 	{
 		if ( this->simulator == NULL )
 			return;
+	}
+
+	virtual void on_key_press(unsigned int symbol, unsigned int modifiers)
+	{
+	}
+
+	virtual void on_text(std::string str)
+	{
 	}
 
 	

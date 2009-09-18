@@ -26,3 +26,15 @@ class CoreWidgetEventTestCase(unittest.TestCase):
         self.failUnless(a.moveto == (50, 50))
         a.pos = (-88, 55)
         self.failUnless(a.moveto == (-88, 55))
+
+    def testOnResize(self):
+        class MyWidget(pymtcore.MTCoreWidget):
+            def on_resize(self, x, y):
+                self.sizeto = x, y
+        a = MyWidget()
+        a.width = 50
+        self.failUnless(a.sizeto == (50, 100))
+        a.height = 50
+        self.failUnless(a.sizeto == (50, 50))
+        a.size = (-88, 55)
+        self.failUnless(a.sizeto == (-88, 55))

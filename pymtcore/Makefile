@@ -7,5 +7,5 @@ clean:
 test: all
 	PYTHONPATH=src python tests/launch.py
 
-simple:
+simple: all
 	PYTHONPATH=src python examples/simple.py

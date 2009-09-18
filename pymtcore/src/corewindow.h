@@ -53,6 +53,8 @@ public:
 			return false;
 		}
 
+		this->on_resize(this->_get_width(), this->_get_height());
+
 		return true;
 	}
 
@@ -106,18 +108,40 @@ public:
 		glScalef(5000., 5000., 1);
 		glTranslatef(-width / 2, -height / 2, -500);
 		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
 
 		MTCoreWidget::on_resize(width, height);
 	}
 
 	virtual void on_draw(void)
 	{
+		static int fps_timer = 0;
+		static int fps_frame = 0;
+		static int t;
+
 		if ( this->do_clear == true )
+		{
+			glClearColor(0, 0, 0, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		}
 
 		MTCoreWidget::on_draw();
 
-		SDL_Flip(this->screen);
+		SDL_GL_SwapBuffers();
+		fps_frame++;
+
+		// update fps calculation
+		t = SDL_GetTicks();
+		if ( t - fps_timer >= 1000 )
+		{
+			double seconds = (t - fps_timer) / 1000.0;
+			this->fps = fps_frame / seconds;
+			std::cout << fps_frame << " frames in " << seconds
+				<< " seconds = " << this->fps << " FPS" << std::endl;
+			this->fps_frame = fps_frame;
+			fps_frame = 0;
+			fps_timer = t;
+		}
 	}
 
 	virtual void on_update(void)
@@ -162,7 +186,7 @@ public:
 					continue;
 
 				default:
-					std::cout << "WARNING: received unhandled event:" << event.type << std::endl;
+					std::cout << "WARNING: received unhandled event:" << (int)event.type << std::endl;
 					continue;
 			}
 		}
@@ -273,6 +297,8 @@ public:
 	bool	vsync;
 	int		display;
 	int		bpp;
+	int		fps_frame;
+	double	fps;
 
 protected:
 	void init_sdl(void)

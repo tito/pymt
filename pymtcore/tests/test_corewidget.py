@@ -71,13 +71,13 @@ class CoreWidgetTestCase(unittest.TestCase):
             def __init__(self):
                 super(SubWidget, self).__init__()
                 self.var = 0
-            def on_update(self):
+            def on_update(self, data):
                 self.var += 1
-                super(SubWidget, self).on_update()
+                super(SubWidget, self).on_update(data)
         widget1 = pymtcore.MTCoreWidget()
-        widget2 = SubWidget().__disown__()
+        widget2 = SubWidget()
         widget1.add_widget(widget2)
-        widget1.on_update()
+        widget2.dispatch_event('on_update', ())
         self.failUnless(widget2.var == 1)
 
     def testReferenceCount(self):

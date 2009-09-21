@@ -53,7 +53,7 @@ public:
 			return false;
 		}
 
-		this->on_resize(this->_get_width(), this->_get_height());
+		this->dispatch_event_dd("on_resize", this->_get_width(), this->_get_height());
 
 		return true;
 	}
@@ -95,29 +95,32 @@ public:
 	// Events
 	//
 
-	virtual void on_close(void)
+	virtual bool on_close(void *data)
 	{
+		return true;
 	}
 
-	virtual void on_resize(double width, double height)
+	virtual bool on_resize(void *data)
 	{
+		double width, height;
+
 		// don't dispatch on_resize, if no screen is created.
 		if ( this->screen == NULL )
-			return;
+			return false;
 
 		glViewport(0, 0, (int)width, (int)height);
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glFrustum(-width / 2, width / 2, height / 2, -height / 2, 0.1, 1000.);
 		glScalef(5000., 5000., 1);
-		glTranslatef(-width / 2, -height / 2, -500);
+		glTranslatef((GLfloat)(-width / 2.), (GLfloat)(-height / 2.), -500);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		MTCoreWidget::on_resize(width, height);
+		return MTCoreWidget::on_resize(data);
 	}
 
-	virtual void on_draw(void)
+	virtual bool on_draw(void *data)
 	{
 		static int fps_timer = 0;
 		static int fps_frame = 0;
@@ -129,7 +132,7 @@ public:
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
 
-		MTCoreWidget::on_draw();
+		MTCoreWidget::on_draw(data);
 
 		SDL_GL_SwapBuffers();
 		fps_frame++;
@@ -146,9 +149,11 @@ public:
 			fps_frame = 0;
 			fps_timer = t;
 		}
+
+		return true;
 	}
 
-	virtual void on_update(void)
+	virtual bool on_update(void *data)
 	{
 		static SDL_Event event;
 		static char tmp[2];
@@ -178,7 +183,7 @@ public:
 					this->on_key_press(event.key.keysym.sym, event.key.keysym.mod);
 						
 					if ( (event.key.keysym.unicode & 0xFF80) == 0 ) {
-						tmp[0] = event.key.keysym.unicode & 0x7F;
+						tmp[0] = (char)(event.key.keysym.unicode & 0x7F);
 					}
 					else
 					{
@@ -194,6 +199,20 @@ public:
 					continue;
 			}
 		}
+
+		return true;
+	}
+
+
+	//
+	// Event dispatching
+	//
+	
+	bool dispatch_event(const char *event_name, void *datadispatch)
+	{
+		if ( strcmp(event_name, "on_close") == 0 )
+			return this->on_close(datadispatch);
+		return MTCoreWidget::dispatch_event(event_name, datadispatch);
 	}
 
 

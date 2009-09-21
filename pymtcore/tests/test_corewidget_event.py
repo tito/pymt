@@ -17,8 +17,8 @@ class CoreWidgetEventTestCase(unittest.TestCase):
 
     def testOnMove(self):
         class MyWidget(pymtcore.MTCoreWidget):
-            def on_move(self, x, y):
-                self.moveto = x, y
+            def on_move(self, data):
+                self.moveto = data
         a = MyWidget()
         a.x = 50
         self.failUnless(a.moveto == (50, 0))
@@ -29,8 +29,8 @@ class CoreWidgetEventTestCase(unittest.TestCase):
 
     def testOnResize(self):
         class MyWidget(pymtcore.MTCoreWidget):
-            def on_resize(self, x, y):
-                self.sizeto = x, y
+            def on_resize(self, data):
+                self.sizeto = data
         a = MyWidget()
         a.width = 50
         self.failUnless(a.sizeto == (50, 100))

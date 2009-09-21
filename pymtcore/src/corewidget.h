@@ -131,59 +131,107 @@ public:
     // Event functions
     //
 
-    virtual void on_move(double x, double y)
+    virtual bool on_move(void *data)
     {
+        return true;
     }
 
-    virtual void on_resize(double width, double height)
+    virtual bool on_resize(void *data)
     {
+        return true;
     }
 
-    virtual void on_update(void)
+    virtual bool on_update(void *data)
     {
         std::vector<MTCoreWidget *>::iterator i = this->children.begin();
         for ( ; i != this->children.end(); i++ )
-            (*i)->on_update();
+            (*i)->on_update(data);
+        return true;
     }
 
-    virtual void on_draw(void)
+    virtual bool on_draw(void *data)
     {
         std::vector<MTCoreWidget *>::iterator i;
 
         if ( this->visible == false )
-            return;
+            return false;
         
         this->draw();
         for ( i = this->children.begin(); i != this->children.end(); i++ )
-            (*i)->on_draw();
+            (*i)->on_draw(data);
+
+        return true;
     }
 
-    virtual bool on_touch_down(void *touch)
+    virtual bool on_touch_down(void *data)
     {
         std::vector<MTCoreWidget *>::iterator i = this->children.begin();
         for ( ; i != this->children.end(); i++ )
-            if ( (*i)->on_touch_down(touch) )
+            if ( (*i)->on_touch_down(data) )
                 return true;
         return false;
     }
 
-    virtual bool on_touch_move(void *touch)
+    virtual bool on_touch_move(void *data)
     {
         std::vector<MTCoreWidget *>::iterator i = this->children.begin();
         for ( ; i != this->children.end(); i++ )
-            if ( (*i)->on_touch_move(touch) )
+            if ( (*i)->on_touch_move(data) )
                 return true;
         return false;
     }
 
-    virtual bool on_touch_up(void *touch)
+    virtual bool on_touch_up(void *data)
     {
         std::vector<MTCoreWidget *>::iterator i = this->children.begin();
         for ( ; i != this->children.end(); i++ )
-            if ( (*i)->on_touch_move(touch) )
+            if ( (*i)->on_touch_move(data) )
                 return true;
         return false;
     }
+
+
+    //
+    // Event dispatching
+    //
+
+    bool dispatch_event(const char *event_name, void *datadispatch)
+    {
+        if ( strcmp(event_name, "on_move") == 0 )
+            return this->on_move(datadispatch);
+        if ( strcmp(event_name, "on_resize") == 0 )
+            return this->on_resize(datadispatch);
+        if ( strcmp(event_name, "on_draw") == 0 )
+            return this->on_draw(datadispatch);
+        if ( strcmp(event_name, "on_update") == 0 )
+            return this->on_update(datadispatch);
+        if ( strcmp(event_name, "on_touch_up") == 0 )
+            return this->on_touch_up(datadispatch);
+        if ( strcmp(event_name, "on_touch_move") == 0 )
+            return this->on_touch_move(datadispatch);
+        if ( strcmp(event_name, "on_touch_down") == 0 )
+            return this->on_touch_down(datadispatch);
+        std::cout << "unknown dispatch_event for " << event_name << std::endl;
+        return false;
+    }
+
+    bool dispatch_event_dd(const char *event_name, double x, double y)
+    {
+        bool result;
+        PyObject *o, *o2, *o3;
+        o = PyTuple_New(2);
+        if ( o == NULL )
+            return false;
+        o2 = PyFloat_FromDouble(x);
+        o3 = PyFloat_FromDouble(y);
+        PyTuple_SetItem(o, 0, o2);
+        PyTuple_SetItem(o, 1, o3);
+
+        result = this->dispatch_event(event_name, o);
+
+        return result;
+    }
+
 
     //
     // Drawing functions
@@ -350,7 +398,7 @@ public:
         if ( this->__pos.x == value )
             return;
         this->__pos.x = value;
-        this->on_move(this->__pos.x, this->__pos.y);
+        this->dispatch_event_dd("on_move", this->__pos.x, this->__pos.y);
     }
 
     virtual double _get_x(void)
@@ -363,7 +411,7 @@ public:
         if ( this->__pos.y == value )
             return;
         this->__pos.y = value;
-        this->on_move(this->__pos.x, this->__pos.y);
+        this->dispatch_event_dd("on_move", this->__pos.x, this->__pos.y);
     }
 
     virtual double _get_y(void)
@@ -376,7 +424,7 @@ public:
         if ( this->__size.x == value )
             return;
         this->__size.x = value;
-        this->on_resize(this->__size.x, this->__size.y);
+        this->dispatch_event_dd("on_resize", this->__size.x, this->__size.y);
     }
 
     virtual double _get_width(void)
@@ -389,7 +437,7 @@ public:
         if ( this->__size.y == value )
             return;
         this->__size.y = value;
-        this->on_resize(this->__size.x, this->__size.y);
+        this->dispatch_event_dd("on_resize", this->__size.x, this->__size.y);
     }
 
     virtual double _get_height(void)
@@ -402,7 +450,7 @@ public:
         if ( p.x == this->__pos.x && p.y == this->__pos.y )
             return;
         this->__pos = p;
-        this->on_move(this->__pos.x, this->__pos.y);
+        this->dispatch_event_dd("on_move", this->__pos.x, this->__pos.y);
     }
 
     virtual pos2d &_get_pos(void)
@@ -415,7 +463,7 @@ public:
         if ( p.x == this->__size.x && p.y == this->__size.y )
             return;
         this->__size = p;
-        this->on_resize(this->__size.x, this->__size.y);
+        this->dispatch_event_dd("on_resize", this->__size.x, this->__size.y);
     }
 
     virtual pos2d &_get_size(void)

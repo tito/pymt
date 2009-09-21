@@ -8,6 +8,16 @@
 %}
 
 %feature("director");
+%feature("director:except") {
+    if ($error != NULL) {
+        throw Swig::DirectorMethodException();
+    }
+}
+
+%exception {
+    try { $action }
+    catch (Swig::DirectorException &e) { SWIG_fail; }
+}
 
 %include "vector.i"
 %include "image.i"

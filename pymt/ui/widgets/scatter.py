@@ -33,7 +33,7 @@ class MTScatterWidget(MTWidget):
             Set to False for disabling translation, and ['x'], ['y'] for limit translation only on x or y
         `do_scale` : boolean, default to True
             Set to False for disabling scale
-        `auto_bring_to_front` : boolean, default to False
+        `auto_bring_to_front` : boolean, default to True
             Set to False for disabling widget bring to front
         `scale_min` : float, default to 0.01
             Minimum scale allowed. Don't set to 0, or you can have error with singular matrix.

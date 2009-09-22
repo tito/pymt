@@ -24,10 +24,10 @@
 %include "coreimage.i"
 %include "corewidget.i"
 %include "corewindow.i"
+%include "widget.i"
 
 /**
 %include "vector.i"
 %include "texture.i"
-%include "widget.i"
 %include "utils.i"
 **/

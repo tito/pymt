@@ -10,9 +10,9 @@ static std::vector<loader_t> loaders;
 class CoreImage
 {
 public:
-    CoreImage()
+	CoreImage(std::string filename)
     {
-        this->filename  = "";
+        this->filename  = filename;
         this->opacity   = 1;
         this->scale     = 1;
         this->anchor_x  = "";
@@ -25,24 +25,31 @@ public:
         this->offset    = 0;
         this->pitch     = 0;
         this->pixels    = NULL;
-    }
 
-	CoreImage(std::string filename)
-	{
-        CoreImage::CoreImage();
-        this->filename  = filename;
         this->load();
-	}
+    }
 
     virtual ~CoreImage()
     {
         if ( this->pixels != NULL )
+        {
             free(this->pixels);
+            this->pixels = NULL;
+        }
     }
 
     virtual bool load()
     {
-        return true;
+        std::vector<loader_t>::iterator i;
+        bool ret;
+
+        for ( i = loaders.begin(); i != loaders.end(); i++ )
+        {
+            ret = (*i)(*this);
+            if ( ret == true )
+                return true;
+        }
+        return false;
     }
 
     virtual void draw()
@@ -80,8 +87,7 @@ bool load_with_sdlimage(CoreImage &image)
     image._height       = surface->h;
     image.offset        = surface->offset;
     image.pitch         = surface->pitch;
-    image.pixels        = surface->pixels;
-    surface->refcount   = 0;
+    //image.pixels        = surface->pixels;
     SDL_FreeSurface(surface);
     return true;
 };
@@ -99,7 +105,7 @@ bool load_with_imlib2(CoreImage &image)
     image._width        = imlib_image_get_width();
     image._height       = imlib_image_get_height();
     image.format        = imlib_image_format();
-    image.pixels        = imlib_image_get_data();
+    //image.pixels        = imlib_image_get_data();
     return true;
 }
 #endif // HAVE_IMLIB2

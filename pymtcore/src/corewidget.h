@@ -201,7 +201,7 @@ public:
     // Event dispatching
     //
 
-    void connect(const char *event_name, PyObject *callback)
+    void connect(const std::string &event_name, PyObject *callback)
     {
         callback_t c;
 
@@ -215,7 +215,7 @@ public:
         this->callbacks.push_back(c);
     }
 
-    void disconnect(const char *event_name, PyObject *callback)
+    void disconnect(const std::string &event_name, PyObject *callback)
     {
         std::vector<callback_t>::iterator i;
         for ( i = this->callbacks.begin(); i != this->callbacks.end(); i++ )
@@ -232,27 +232,27 @@ public:
         }
     }
 
-	virtual bool dispatch_event_internal(const char *event_name, void *datadispatch)
+	virtual bool dispatch_event_internal(const std::string &event_name, void *datadispatch)
 	{
-        if ( strcmp(event_name, "on_move") == 0 )
+        if ( event_name == "on_move" )
             return this->on_move(datadispatch);
-        if ( strcmp(event_name, "on_resize") == 0 )
+        if ( event_name == "on_resize" )
             return this->on_resize(datadispatch);
-        if ( strcmp(event_name, "on_draw") == 0 )
+        if ( event_name == "on_draw" )
             return this->on_draw(datadispatch);
-        if ( strcmp(event_name, "on_update") == 0 )
+        if ( event_name == "on_update" )
             return this->on_update(datadispatch);
-        if ( strcmp(event_name, "on_touch_up") == 0 )
+        if ( event_name == "on_touch_up" )
             return this->on_touch_up(datadispatch);
-        if ( strcmp(event_name, "on_touch_move") == 0 )
+        if ( event_name == "on_touch_move" )
             return this->on_touch_move(datadispatch);
-        if ( strcmp(event_name, "on_touch_down") == 0 )
+        if ( event_name == "on_touch_down" )
             return this->on_touch_down(datadispatch);
         std::cout << "unknown dispatch_event_internal for " << event_name << std::endl;
         return false;
     }
 
-    virtual bool dispatch_event(const char *event_name, void *datadispatch)
+    virtual bool dispatch_event(const std::string &event_name, void *datadispatch)
     {
 		PyObject *result;
         std::vector<callback_t>::iterator i;
@@ -552,7 +552,7 @@ public:
 
 protected:
 
-    bool __dispatch_event_dd(const char *event_name, double x, double y)
+    bool __dispatch_event_dd(const std::string &event_name, double x, double y)
     {
         bool result;
         PyObject *o, *o2, *o3;

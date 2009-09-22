@@ -7,6 +7,8 @@
 #include "Python.h"
 %}
 
+%include "std_string.i"
+
 %feature("director");
 %feature("director:except") {
     if ($error != NULL) {

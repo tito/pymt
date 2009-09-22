@@ -44,6 +44,7 @@
 %typemap(directorin) (void *data)
 {
     $input = ((PyObject *)data);
+    Py_INCREF($input);
 }
 
 %typemap(in) (void *datadispatch)

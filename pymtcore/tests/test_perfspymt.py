@@ -2,12 +2,12 @@ import unittest
 import pymtcore
 import os
 
-__all__ = ['PerfComparaisonTestCase']
+__all__ = ['Performance']
 
 if os.getenv('DOPERF') is not None:
 
-    class PerfComparaisonTestCase(unittest.TestCase):
-        def testPerformanceOnupdate(self):
+    class Performance(unittest.TestCase):
+        def testPerformanceCPP(self):
             class SubWidget(pymtcore.MTCoreWidget):
                 def __init__(self):
                     super(SubWidget, self).__init__()
@@ -17,8 +17,6 @@ if os.getenv('DOPERF') is not None:
 
             import sys, time
             sys.argv = ['']
-            import pymt
-
 
             print ''
             print '============================================================'
@@ -42,7 +40,23 @@ if os.getenv('DOPERF') is not None:
             endtime = time.time()
             print
             print '[C++] Calling done in', endtime - starttime
+            print '============================================================'
+            print ''
 
+        def testPerformancePython(self):
+            class SubWidget(pymtcore.MTCoreWidget):
+                def __init__(self):
+                    super(SubWidget, self).__init__()
+                    self.var = 0
+                def on_update(self, *largs):
+                    super(SubWidget, self).on_update(*largs)
+
+            import sys, time
+            sys.argv = ['']
+            import pymt
+
+            print ''
+            print '============================================================'
             starttime = time.time()
             print '[PyMT] Creating widgets structure (100 with 1000 childrens each)...'
             root = pymt.MTWidget()

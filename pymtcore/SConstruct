@@ -58,9 +58,34 @@ if 'DEBUG' in environ:
     env.Append(LINKFLAGS=flags, CCFLAGS=flags, CXXFLAGS=flags)
 
 # Dependices
+lib_files = [
+    # SDL
+    # http://www.libsdl.org/
+    'sdl'
+]
+for lib_file in lib_files:
+    env.ParseConfig('pkg-config %s --cflags' % lib_file)
+
+# OpenGL
 env.Append(LIBS=["GL"])
-env.ParseConfig('sdl-config --cflags --libs')
+
+# Optionnals
+conf = Configure(env)
+image_providers = []
+if conf.CheckHeader('SDL_image.h'):
+    image_providers.append('SDL_image')
+    env.AppendUnique(CXXFLAGS='-DHAVE_SDL_IMAGE')
+if conf.CheckHeader('Imlib2.h'):
+    image_providers.append('imlib2')
+    env.AppendUnique(CXXFLAGS='-DHAVE_IMLIB2')
+    env.ParseConfig('pkg-config imlib2 --cflags')
 
 # Create the library.
 env['BUILDERS']['PythonModule'] = SWIGSharedLibrary
 env.PythonModule(os.path.join('src', '_pymtcore'), sources)
+
+print
+print 'PyMT Core Configuration'
+print
+print '  Image providers: ', ', '.join(image_providers)
+print 

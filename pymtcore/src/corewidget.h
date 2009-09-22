@@ -215,7 +215,7 @@ public:
         return false;
     }
 
-    bool dispatch_event_dd(const char *event_name, double x, double y)
+    bool __dispatch_event_dd(const char *event_name, double x, double y)
     {
         bool result;
         PyObject *o, *o2, *o3;
@@ -228,6 +228,8 @@ public:
         PyTuple_SetItem(o, 1, o3);
 
         result = this->dispatch_event(event_name, o);
+
+        Py_XDECREF(o);
 
         return result;
     }
@@ -398,7 +400,7 @@ public:
         if ( this->__pos.x == value )
             return;
         this->__pos.x = value;
-        this->dispatch_event_dd("on_move", this->__pos.x, this->__pos.y);
+        this->__dispatch_event_dd("on_move", this->__pos.x, this->__pos.y);
     }
 
     virtual double _get_x(void)
@@ -411,7 +413,7 @@ public:
         if ( this->__pos.y == value )
             return;
         this->__pos.y = value;
-        this->dispatch_event_dd("on_move", this->__pos.x, this->__pos.y);
+        this->__dispatch_event_dd("on_move", this->__pos.x, this->__pos.y);
     }
 
     virtual double _get_y(void)
@@ -424,7 +426,7 @@ public:
         if ( this->__size.x == value )
             return;
         this->__size.x = value;
-        this->dispatch_event_dd("on_resize", this->__size.x, this->__size.y);
+        this->__dispatch_event_dd("on_resize", this->__size.x, this->__size.y);
     }
 
     virtual double _get_width(void)
@@ -437,7 +439,7 @@ public:
         if ( this->__size.y == value )
             return;
         this->__size.y = value;
-        this->dispatch_event_dd("on_resize", this->__size.x, this->__size.y);
+        this->__dispatch_event_dd("on_resize", this->__size.x, this->__size.y);
     }
 
     virtual double _get_height(void)
@@ -450,7 +452,7 @@ public:
         if ( p.x == this->__pos.x && p.y == this->__pos.y )
             return;
         this->__pos = p;
-        this->dispatch_event_dd("on_move", this->__pos.x, this->__pos.y);
+        this->__dispatch_event_dd("on_move", this->__pos.x, this->__pos.y);
     }
 
     virtual pos2d &_get_pos(void)
@@ -463,7 +465,7 @@ public:
         if ( p.x == this->__size.x && p.y == this->__size.y )
             return;
         this->__size = p;
-        this->dispatch_event_dd("on_resize", this->__size.x, this->__size.y);
+        this->__dispatch_event_dd("on_resize", this->__size.x, this->__size.y);
     }
 
     virtual pos2d &_get_size(void)

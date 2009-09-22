@@ -53,7 +53,7 @@ public:
 			return false;
 		}
 
-		this->dispatch_event_dd("on_resize", this->_get_width(), this->_get_height());
+		this->__dispatch_event_dd("on_resize", this->_get_width(), this->_get_height());
 
 		return true;
 	}

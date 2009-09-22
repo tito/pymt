@@ -21,10 +21,13 @@
     catch (Swig::DirectorException &e) { SWIG_fail; }
 }
 
-%include "vector.i"
-%include "image.i"
-%include "texture.i"
+%include "coreimage.i"
 %include "corewidget.i"
-%include "widget.i"
 %include "corewindow.i"
+
+/**
+%include "vector.i"
+%include "texture.i"
+%include "widget.i"
 %include "utils.i"
+**/

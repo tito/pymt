@@ -43,19 +43,16 @@
 
 %typemap(directorin) (void *data)
 {
-    //std::cout << "Receive object at input from director:" << $input << std::endl;
     $input = ((PyObject *)data);
 }
 
 %typemap(in) (void *datadispatch)
 {
-    //std::cout << "Receive object at input from classic dispatch_event:" << $input << std::endl;
     arg3 = $input;
 }
 
 %typemap(in) (void *data)
 {
-    std::cout << "Receive object at input from classic:" << $input << std::endl;
     arg2 = $input;
 }
 

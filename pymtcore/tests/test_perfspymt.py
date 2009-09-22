@@ -12,8 +12,8 @@ if os.getenv('DOPERF') is not None:
                 def __init__(self):
                     super(SubWidget, self).__init__()
                     self.var = 0
-                def on_update(self):
-                    super(SubWidget, self).on_update()
+                def on_update(self, *largs):
+                    super(SubWidget, self).on_update(*largs)
 
             import sys, time
             sys.argv = ['']
@@ -38,7 +38,7 @@ if os.getenv('DOPERF') is not None:
             print '[C++] Calling root.on_update()'
             for x in xrange(20):
                 sys.stderr.write('.')
-                root.on_update()
+                root.on_update([])
             endtime = time.time()
             print
             print '[C++] Calling done in', endtime - starttime

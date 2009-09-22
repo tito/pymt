@@ -3,9 +3,9 @@ MTWidget
 * missing animation
 * missing inner animation
 * missing id
-* try to make event work with custom handlers
 
 Global
 * implement image
 * implement texture
 * implement vector
+* implement graphx

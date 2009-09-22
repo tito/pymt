@@ -41,6 +41,12 @@
 
 };
 
+%typemap(directorin) (void *datadispatch)
+{
+    $input = ((PyObject *)datadispatch);
+    Py_INCREF($input);
+}
+
 %typemap(directorin) (void *data)
 {
     $input = ((PyObject *)data);

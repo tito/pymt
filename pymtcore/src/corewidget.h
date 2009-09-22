@@ -195,7 +195,7 @@ public:
     // Event dispatching
     //
 
-    bool dispatch_event(const char *event_name, void *datadispatch)
+    virtual bool dispatch_event(const char *event_name, void *datadispatch)
     {
         if ( strcmp(event_name, "on_move") == 0 )
             return this->on_move(datadispatch);

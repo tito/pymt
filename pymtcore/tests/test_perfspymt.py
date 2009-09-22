@@ -2,11 +2,11 @@ import unittest
 import pymtcore
 import os
 
-__all__ = ['Performance']
+__all__ = ['PerformanceTestCase']
 
 if os.getenv('DOPERF') is not None:
 
-    class Performance(unittest.TestCase):
+    class PerformanceTestCase(unittest.TestCase):
         def testPerformanceCPP(self):
             class SubWidget(pymtcore.MTCoreWidget):
                 def __init__(self):

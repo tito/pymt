@@ -206,7 +206,7 @@ public:
         callback_t c;
 
         // disconnect event_name first.
-        this->disconnect(event_name, callback);
+        this->disconnect(event_name, NULL);
 
         // push new callback
         c.event_name    = std::string(event_name);
@@ -220,11 +220,13 @@ public:
         std::vector<callback_t>::iterator i;
         for ( i = this->callbacks.begin(); i != this->callbacks.end(); i++ )
         {
+			// event name match ?
             if ( (*i).event_name != event_name )
                 continue;
-            if ( (*i).callback != callback )
+			// match a specific callback ?
+            if ( callback != NULL && (*i).callback != callback )
                 continue;
-            Py_DECREF(callback);
+            Py_DECREF((*i).callback);
             this->callbacks.erase(i);
             return;
         }
@@ -275,25 +277,6 @@ public:
 	
 		return this->dispatch_event_internal(event_name, datadispatch);
 	}
-
-    bool __dispatch_event_dd(const char *event_name, double x, double y)
-    {
-        bool result;
-        PyObject *o, *o2, *o3;
-        o = PyTuple_New(2);
-        if ( o == NULL )
-            return false;
-        o2 = PyFloat_FromDouble(x);
-        o3 = PyFloat_FromDouble(y);
-        PyTuple_SetItem(o, 0, o2);
-        PyTuple_SetItem(o, 1, o3);
-
-        result = this->dispatch_event(event_name, o);
-
-        Py_XDECREF(o);
-
-        return result;
-    }
 
 
     //
@@ -566,6 +549,27 @@ public:
     MTCoreWidget    *__parent_window_source;
     MTCoreWidget    *__parent_layout;
     MTCoreWidget    *__parent_layout_source;
+
+protected:
+
+    bool __dispatch_event_dd(const char *event_name, double x, double y)
+    {
+        bool result;
+        PyObject *o, *o2, *o3;
+        o = PyTuple_New(2);
+        if ( o == NULL )
+            return false;
+        o2 = PyFloat_FromDouble(x);
+        o3 = PyFloat_FromDouble(y);
+        PyTuple_SetItem(o, 0, o2);
+        PyTuple_SetItem(o, 1, o3);
+
+        result = this->dispatch_event(event_name, o);
+
+        Py_XDECREF(o);
+
+        return result;
+    }
 
 private:
     // implement the ref counting mechanism

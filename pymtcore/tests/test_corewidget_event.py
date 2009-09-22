@@ -4,7 +4,7 @@ import pymtcore
 __all__ = ['CoreWidgetEventTestCase']
 
 class CoreWidgetEventTestCase(unittest.TestCase):
-    def testOnTouchDown(self):
+    def testEventOnTouchDown(self):
         class MyWidget(pymtcore.MTCoreWidget):
             def on_touch_down(self, touch):
                 touch.ok = 1
@@ -15,7 +15,7 @@ class CoreWidgetEventTestCase(unittest.TestCase):
         a.on_touch_down(touch)
         self.failUnless(touch.ok == 1)
 
-    def testOnMove(self):
+    def testEventOnMove(self):
         class MyWidget(pymtcore.MTCoreWidget):
             def on_move(self, data):
                 self.moveto = data
@@ -27,7 +27,7 @@ class CoreWidgetEventTestCase(unittest.TestCase):
         a.pos = (-88, 55)
         self.failUnless(a.moveto == (-88, 55))
 
-    def testOnResize(self):
+    def testEventOnResize(self):
         class MyWidget(pymtcore.MTCoreWidget):
             def on_resize(self, data):
                 self.sizeto = data
@@ -39,7 +39,7 @@ class CoreWidgetEventTestCase(unittest.TestCase):
         a.size = (-88, 55)
         self.failUnless(a.sizeto == (-88, 55))
 
-    def testConnect(self):
+    def testEventConnect(self):
         global on_move_called, on_move_data
         on_move_called = 0
         on_move_data = None
@@ -59,3 +59,38 @@ class CoreWidgetEventTestCase(unittest.TestCase):
         a.y = 50
         self.failUnless(on_move_called == 2)
         self.failUnless(on_move_data == (50, 50))
+
+    def testEventConnectDisconnectMultiple(self):
+        global on_move_called
+        on_move_called = 0
+        def callback(*largs):
+            global on_move_called
+            on_move_called = 1
+        def callback2(*largs):
+            global on_move_called
+            on_move_called = 2
+
+        a = pymtcore.MTCoreWidget()
+        self.failUnless(on_move_called == 0)
+        a.connect('on_move', callback)
+        a.x = 50
+        self.failUnless(on_move_called == 1)
+
+        a.connect('on_move', callback2)
+        a.x = 52
+        self.failUnless(on_move_called == 2)
+
+        a.disconnect('on_move', callback) # not exist, normaly
+        a.x = 53
+        self.failUnless(on_move_called == 2)
+
+        a.disconnect('on_move', callback2)
+        a.x = 50
+        self.failUnless(on_move_called == 2)
+
+    def testEventConnectDisconnectInvalid(self):
+        a = pymtcore.MTCoreWidget()
+        a.disconnect('on_move', None)
+        a.disconnect('on_move', 456)
+        a.connect('on_move', None)
+        a.connect('on_move', self.testEventConnectDisconnectInvalid)

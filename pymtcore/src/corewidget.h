@@ -1,6 +1,12 @@
 #ifndef __PYMTCORE_COREWIDGET
 #define __PYTMCORE_COREWIDGET
 
+typedef struct callback_s
+{
+    std::string event_name;
+    PyObject    *callback;
+} callback_t;
+
 struct pos2d
 {
     double x;
@@ -195,8 +201,37 @@ public:
     // Event dispatching
     //
 
-    virtual bool dispatch_event(const char *event_name, void *datadispatch)
+    void connect(const char *event_name, PyObject *callback)
     {
+        callback_t c;
+
+        // disconnect event_name first.
+        this->disconnect(event_name, callback);
+
+        // push new callback
+        c.event_name    = std::string(event_name);
+        c.callback      = callback;
+        Py_INCREF(c.callback);
+        this->callbacks.push_back(c);
+    }
+
+    void disconnect(const char *event_name, PyObject *callback)
+    {
+        std::vector<callback_t>::iterator i;
+        for ( i = this->callbacks.begin(); i != this->callbacks.end(); i++ )
+        {
+            if ( (*i).event_name != event_name )
+                continue;
+            if ( (*i).callback != callback )
+                continue;
+            Py_DECREF(callback);
+            this->callbacks.erase(i);
+            return;
+        }
+    }
+
+	virtual bool dispatch_event_internal(const char *event_name, void *datadispatch)
+	{
         if ( strcmp(event_name, "on_move") == 0 )
             return this->on_move(datadispatch);
         if ( strcmp(event_name, "on_resize") == 0 )
@@ -211,9 +246,35 @@ public:
             return this->on_touch_move(datadispatch);
         if ( strcmp(event_name, "on_touch_down") == 0 )
             return this->on_touch_down(datadispatch);
-        std::cout << "unknown dispatch_event for " << event_name << std::endl;
+        std::cout << "unknown dispatch_event_internal for " << event_name << std::endl;
         return false;
     }
+
+    virtual bool dispatch_event(const char *event_name, void *datadispatch)
+    {
+		PyObject *result;
+        std::vector<callback_t>::iterator i;
+
+		// check if a callback exist for this event
+        for ( i = this->callbacks.begin(); i != this->callbacks.end(); i++ )
+        {
+            if ( (*i).event_name != event_name )
+                continue;
+
+			// event found, let's call the function !
+            result = PyObject_CallFunctionObjArgs(
+                (*i).callback, (PyObject *)datadispatch, NULL);
+			if ( PyErr_Occurred() )
+				throw Swig::DirectorMethodException("Error while calling dispatch_event.");
+
+			// convert the return to a boolean
+            if ( result == NULL )
+                return false;
+            return PyObject_IsTrue(result) ? true : false;
+        }
+	
+		return this->dispatch_event_internal(event_name, datadispatch);
+	}
 
     bool __dispatch_event_dd(const char *event_name, double x, double y)
     {
@@ -494,6 +555,7 @@ public:
     // Public properties
     //
 
+    std::vector<callback_t>     callbacks;
     std::vector<MTCoreWidget *> children;
     MTCoreWidget    *parent;
     bool            visible;
@@ -516,6 +578,12 @@ private:
     {
         while ( !this->children.empty()  )
             this->remove_widget(this->children.back());
+
+        while ( !this->callbacks.empty() )
+        {
+            callback_t c = this->callbacks.back();
+            this->disconnect(c.event_name.c_str(), c.callback);
+        }
     }
 
 

@@ -38,3 +38,24 @@ class CoreWidgetEventTestCase(unittest.TestCase):
         self.failUnless(a.sizeto == (50, 50))
         a.size = (-88, 55)
         self.failUnless(a.sizeto == (-88, 55))
+
+    def testConnect(self):
+        global on_move_called, on_move_data
+        on_move_called = 0
+        on_move_data = None
+        def callback_on_move(data):
+            global on_move_called, on_move_data
+            on_move_called += 1
+            on_move_data = data
+        a = pymtcore.MTCoreWidget()
+        self.failUnless(on_move_called == 0)
+        self.failUnless(on_move_data == None)
+        a.connect('on_move', callback_on_move)
+        self.failUnless(on_move_called == 0)
+        self.failUnless(on_move_data == None)
+        a.x = 50
+        self.failUnless(on_move_called == 1)
+        self.failUnless(on_move_data == (50, 0))
+        a.y = 50
+        self.failUnless(on_move_called == 2)
+        self.failUnless(on_move_data == (50, 50))

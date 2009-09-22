@@ -208,11 +208,11 @@ public:
 	// Event dispatching
 	//
 	
-	virtual bool dispatch_event(const char *event_name, void *datadispatch)
+	virtual bool dispatch_event_internal(const char *event_name, void *datadispatch)
 	{
 		if ( strcmp(event_name, "on_close") == 0 )
 			return this->on_close(datadispatch);
-		return MTCoreWidget::dispatch_event(event_name, datadispatch);
+		return MTCoreWidget::dispatch_event_internal(event_name, datadispatch);
 	}
 
 

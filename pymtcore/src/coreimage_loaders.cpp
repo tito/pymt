@@ -37,18 +37,22 @@ bool load_with_imlib2(CoreImage &image)
 	image.pitch			= 0;
     image.format        = "ARGB";
     image.pixels        = imlib_image_get_data();
-	imlib_free_image();
+
+    // XXX Fix leak here.
+	//imlib_free_image();
     return true;
 }
 #endif // HAVE_IMLIB2
 
 void core_image_init()
 {
-#ifdef HAVE_SDL_IMAGE
-    loaders.push_back(load_with_sdlimage);
-#endif
 #ifdef HAVE_IMLIB2
+    std::cout << "Core: Image provider <imlib2> loaded." << std::endl;
     loaders.push_back(load_with_imlib2);
+#endif
+#ifdef HAVE_SDL_IMAGE
+    std::cout << "Core: Image provider <SDLImage> loaded." << std::endl;
+    loaders.push_back(load_with_sdlimage);
 #endif
 }
 

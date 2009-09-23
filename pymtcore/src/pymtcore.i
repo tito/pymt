@@ -31,3 +31,9 @@
 %include "vector.i"
 %include "utils.i"
 **/
+
+/* initialisation
+*/
+%init %{
+    core_image_init();
+%}

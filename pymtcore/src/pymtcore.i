@@ -25,9 +25,9 @@
 %include "corewidget.i"
 %include "corewindow.i"
 %include "widget.i"
+%include "texture.i"
 
 /**
 %include "vector.i"
-%include "texture.i"
 %include "utils.i"
 **/

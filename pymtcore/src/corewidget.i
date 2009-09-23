@@ -138,6 +138,22 @@ __swig_getmethods__["height"] = _pymtcore.MTCoreWidget__get_height
 %director MTCoreWidget;
 %include "corewidget.h"
 
+/* inline needed for Swig::Director things :/
+*/
+%inline %{
+void MTCoreWidget::ref(void)
+{
+    // automaticly disown the object if it's handled here
+    // we handle the reference counting ourself.
+    Swig::Director *director = dynamic_cast<Swig::Director *>(this);
+
+    this->__ref_count++;
+
+    if ( director )
+        director->swig_disown();
+}
+%}
+
 %include <std_vector.i>
 %template(VectorCoreWidget) std::vector<MTCoreWidget *>;
 

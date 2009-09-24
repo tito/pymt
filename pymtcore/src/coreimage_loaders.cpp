@@ -35,7 +35,7 @@ bool load_with_imlib2(CoreImage &image)
     image._height       = imlib_image_get_height();
 	image.offset		= 0;
 	image.pitch			= 0;
-    image.format        = "ARGB";
+    image.format        = "BGRA";
     image.pixels        = imlib_image_get_data();
 
     // XXX Fix leak here.

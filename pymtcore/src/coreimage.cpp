@@ -163,6 +163,36 @@ Texture *CoreImage::create_texture(bool rectangle)
         // conversion is needed
         format = GL_RGBA;
         type = GL_UNSIGNED_BYTE;
+        data = this->pixels;
+
+		std::cout << "Texture: unable to found appropriate type for " <<
+			this->format << ", do conversion." << std::endl;
+		data = PyMem_Malloc(this->_width * this->_height * 4);
+		if ( data == NULL )
+		{
+			std::cerr << "Texture: unable to request memory" << std::endl;
+			return NULL;
+		}
+
+		if ( this->format == "BGRA" )
+		{
+			std::cout << "Texture: convert from ARGB to BGRA" << std::endl;
+			unsigned char *out	= (unsigned char *)data,
+						  *in	= (unsigned char *)this->pixels,
+						  *limit	= out + this->_width * this->_height * 4;
+			for ( ; out < limit; out += 4, in += 4 )
+			{
+				*(out)		= *(in + 2);
+				*(out + 1)	= *(in + 1);
+				*(out + 2)	= *(in + 0);
+				*(out + 3)	= *(in + 3);
+			}
+		}
+		else
+		{
+			std::cout << "Texture: no converter found from format " << this->format << std::endl;
+			data = this->pixels;
+		}
     }
     else
     {
@@ -170,9 +200,16 @@ Texture *CoreImage::create_texture(bool rectangle)
     }
 
     GL( glBindTexture(texture->target, texture->id) );
+
     GL( glTexImage2D(texture->target, 0, internalformat,
         this->_width, this->_height, 0,
         format, type, data) );
+
+	// some conversion have been done, free memory
+	if ( data != this->pixels )
+	{
+		PyMem_Free(data), data = NULL;
+	}
 
     return texture;
 }

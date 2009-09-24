@@ -126,7 +126,7 @@ bool MTCoreWidget::on_update(void *data)
 {
     std::vector<MTCoreWidget *>::iterator i = this->children.begin();
     for ( ; i != this->children.end(); i++ )
-        (*i)->on_update(data);
+        (*i)->dispatch_event("on_update", data);
     return true;
 }
 
@@ -139,7 +139,7 @@ bool MTCoreWidget::on_draw(void *data)
 
     this->draw();
     for ( i = this->children.begin(); i != this->children.end(); i++ )
-        (*i)->on_draw(data);
+        (*i)->dispatch_event("on_draw", data);
 
     return true;
 }
@@ -148,7 +148,7 @@ bool MTCoreWidget::on_touch_down(void *data)
 {
     std::vector<MTCoreWidget *>::iterator i = this->children.begin();
     for ( ; i != this->children.end(); i++ )
-        if ( (*i)->on_touch_down(data) )
+        if ( (*i)->dispatch_event("on_touch_down", data) )
             return true;
     return false;
 }
@@ -157,7 +157,7 @@ bool MTCoreWidget::on_touch_move(void *data)
 {
     std::vector<MTCoreWidget *>::iterator i = this->children.begin();
     for ( ; i != this->children.end(); i++ )
-        if ( (*i)->on_touch_move(data) )
+        if ( (*i)->dispatch_event("on_touch_move", data) )
             return true;
     return false;
 }
@@ -166,7 +166,7 @@ bool MTCoreWidget::on_touch_up(void *data)
 {
     std::vector<MTCoreWidget *>::iterator i = this->children.begin();
     for ( ; i != this->children.end(); i++ )
-        if ( (*i)->on_touch_move(data) )
+        if ( (*i)->dispatch_event("on_touch_move", data) )
             return true;
     return false;
 }
@@ -242,7 +242,10 @@ bool MTCoreWidget::dispatch_event(const std::string &event_name, void *datadispa
         result = PyObject_CallFunctionObjArgs(
             (*i).callback, (PyObject *)datadispatch, NULL);
         if ( PyErr_Occurred() )
-            throw CoreWidgetException;
+		{
+			PyErr_Print();
+			return false;
+		}
 
         // convert the return to a boolean
         if ( result == NULL )

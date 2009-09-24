@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "coreimage.h"
 #include "coreimage_private.h"
+#include "private.h"
 
 std::vector<loader_t> loaders;
 
@@ -152,7 +153,7 @@ Texture *CoreImage::create_texture(bool rectangle)
     void    *data;
 
     internalformat = _get_internalformat(this->format);
-    texture = new Texture(this->_width, this->_height, internalformat, rectangle);
+    texture = Texture::create(this->_width, this->_height, internalformat, rectangle);
     if ( texture == NULL )
         return NULL;
 
@@ -160,18 +161,18 @@ Texture *CoreImage::create_texture(bool rectangle)
     {
         // unable to found a suitable format for opengl
         // conversion is needed
-        delete texture;
-        throw std::exception();
+        format = GL_RGBA;
+        type = GL_UNSIGNED_BYTE;
     }
     else
     {
         data = this->pixels;
     }
 
-    glBindTexture(texture->target, texture->id);
-    glTexImage2D(texture->target, 0, internalformat,
+    GL( glBindTexture(texture->target, texture->id) );
+    GL( glTexImage2D(texture->target, 0, internalformat,
         this->_width, this->_height, 0,
-        format, type, data);
+        format, type, data) );
 
     return texture;
 }

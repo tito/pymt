@@ -3,6 +3,7 @@
 
 #include <SDL/SDL.h>
 #include <GL/gl.h>
+#include "private.h"
 
 static bool is_sdl_init = false;
 
@@ -102,20 +103,21 @@ public:
 
 	virtual bool on_resize(void *data)
 	{
-		double width, height;
+		double width = this->_get_width(),
+			   height = this->_get_height();
 
 		// don't dispatch on_resize, if no screen is created.
 		if ( this->screen == NULL )
 			return false;
 
-		glViewport(0, 0, (int)width, (int)height);
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glFrustum(-width / 2, width / 2, height / 2, -height / 2, 0.1, 1000.);
-		glScalef(5000., 5000., 1);
-		glTranslatef((GLfloat)(-width / 2.), (GLfloat)(-height / 2.), -500);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+		GL( glViewport(0, 0, (int)width, (int)height) );
+		GL( glMatrixMode(GL_PROJECTION) );
+		GL( glLoadIdentity() );
+		GL( glFrustum(-width / 2, width / 2, height / 2, -height / 2, 0.1, 1000.) );
+		GL( glScalef(5000., 5000., 1) );
+		GL( glTranslatef((GLfloat)(-width / 2.), (GLfloat)(-height / 2.), -500) );
+		GL( glMatrixMode(GL_MODELVIEW) );
+		GL( glLoadIdentity() );
 
 		return MTCoreWidget::on_resize(data);
 	}

@@ -23,15 +23,15 @@ public:
 class Texture : public AbstractImage
 {
 public:
-	Texture(int width, int height, int target, GLuint id);
+	Texture(int width, int height, unsigned int target, unsigned int id);
 
     static Texture *create(int width, int height, int internalformat=GL_RGBA, bool rectangle=false);
 	virtual void *get_image_data();
 	virtual void *get_texture(bool rectangle=false);
 	virtual TextureRegion *get_region(int x, int y, int width, int height);
 
-	GLuint	id;
-	int		target;
+	unsigned int	id;
+	unsigned int	target;
 };
 
 class TextureRegion : public Texture

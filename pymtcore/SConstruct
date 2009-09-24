@@ -67,7 +67,7 @@ for lib_file in lib_files:
     env.ParseConfig('pkg-config %s --cflags --libs' % lib_file)
 
 # OpenGL
-env.Append(LIBS=['GL'])
+env.Append(LIBS=['GL', 'GLU'])
 
 # Optionnals
 conf = Configure(env)

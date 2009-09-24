@@ -1,7 +1,6 @@
 #include <iostream>
 #include "texture.h"
-
-#define is_pow2(x) (((x) & ((x) - 1)) == 0)
+#include "private.h"
 
 inline int nearest_pow2(int v)
 {
@@ -20,7 +19,7 @@ AbstractImage::AbstractImage(int width, int height)
     this->height	= height;
 }
 
-Texture::Texture(int width, int height, int target, GLuint id) :
+Texture::Texture(int width, int height, unsigned int target, unsigned int id) :
     AbstractImage(width, height)
 {
     this->target	= target;
@@ -63,12 +62,12 @@ Texture *Texture::create(int width, int height, int internalformat, bool rectang
 		texture_height	= nearest_pow2(height);
 	}
 
-	glGenTextures(1, &id);
-	glBindTexture(target, id);
-	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(target, 0, internalformat,
+	GL( glGenTextures(1, &id) );
+	GL( glBindTexture(target, id) );
+	GL( glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR) );
+	GL( glTexImage2D(target, 0, internalformat,
 		texture_width, texture_height, 0, GL_RGBA,
-		GL_UNSIGNED_BYTE, NULL);
+		GL_UNSIGNED_BYTE, NULL) );
 
 	texture = new Texture(texture_width, texture_height, target, id);
 
@@ -78,7 +77,7 @@ Texture *Texture::create(int width, int height, int internalformat, bool rectang
 		// 0., 0., width, height, 0., 0., height, 0.)
 	}
 
-	glFlush();
+	GL( glFlush() );
 
 	if ( texture_width == width && texture_height == height )
 		return texture;

@@ -84,6 +84,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     OpenGL.ERROR_LOGGING = False
     OpenGL.FULL_LOGGING = False
 
+    from pymtcore import *
     from exceptions import *
     from base import *
     #from image import *

@@ -26,10 +26,10 @@
 %include "corewindow.i"
 %include "widget.i"
 %include "texture.i"
+%include "utils.i"
 
 /**
 %include "vector.i"
-%include "utils.i"
 **/
 
 /* initialisation

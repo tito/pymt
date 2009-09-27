@@ -9,7 +9,7 @@ import pymt
 import pymtcore
 from ..base import stopTouchApp, getAvailableTouchs, registerWindow, unregisterWindow
 from ..graphx import set_color, drawCircle
-#from ..modules import pymt_modules
+from ..modules import pymt_modules
 from colors import css_get_style
 from factory import MTWidgetFactory
 #from widgets import MTWidget
@@ -171,9 +171,9 @@ class MTWindow(pymtcore.MTCoreWindow):
         # init some gl
         self.init_gl()
 
+        '''
         # init modules
         pymt_modules.register_window(self)
-        '''
 
     def apply_css(self, styles):
         self.cssstyle.update(styles)

@@ -6,7 +6,7 @@ from __future__ import with_statement
 
 __all__ = ('Image', )
 
-import pyglet
+import pymtcore
 from graphx import DO, gx_color, gx_blending, drawTexturedRectangle, set_color
 
 class Image(object):
@@ -50,7 +50,7 @@ class Image(object):
         if type(arg) == Image:
             for attr in Image.copy_attributes:
                 self.__setattr__(attr, arg.__getattribute__(attr))
-        elif type(arg) in (pyglet.image.Texture, pyglet.image.TextureRegion):
+        elif type(arg) in (pymtcore.CoreImage):
             self.texture    = arg.texture
             self.width      = texture.width
             self.height     = texture.height
@@ -84,7 +84,7 @@ class Image(object):
         if value == self._filename:
             return
         self._filename = value
-        self.image      = pyglet.image.load(self._filename)
+        self.image      = pymtcore.CoreImage(self._filename)
         self.texture    = self.image.get_texture()
         self.width      = self.image.width
         self.height     = self.image.height

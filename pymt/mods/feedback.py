@@ -2,7 +2,6 @@
 A global feedback effect (aka Surface)
 '''
 
-import pyglet
 from pymt import *
 import os
 

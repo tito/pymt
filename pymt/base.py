@@ -113,12 +113,11 @@ class TouchEventLoop:
             if type == 'down':
                 # don't dispatch again touch in on_touch_down
                 # a down event are nearly uniq here.
-                # wid.dispatch_event('on_touch_down', touch)
-                pass
+                wid.dispatch_event('on_touch_down', (touch, ))
             elif type == 'move':
-                wid.dispatch_event('on_touch_move', touch)
+                wid.dispatch_event('on_touch_move', (touch, ))
             elif type == 'up':
-                wid.dispatch_event('on_touch_up', touch)
+                wid.dispatch_event('on_touch_up', (touch, ))
 
             touch.grab_current = None
 
@@ -166,8 +165,8 @@ class TouchEventLoop:
         #
         global pymt_windows
         for window in pymt_windows:
-            window.on_update()
-            window.on_draw()
+            window.dispatch_event('on_update', ())
+            window.dispatch_event('on_draw', ())
 
         # don't loop if we don't have listeners !
         global touch_event_listeners

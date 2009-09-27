@@ -12,12 +12,11 @@ from ..graphx import set_color, drawCircle
 from ..modules import pymt_modules
 from colors import css_get_style
 from factory import MTWidgetFactory
-#from widgets import MTWidget
 from simulator import MTSimulator
 from OpenGL.GL import *
 
 
-class MTWindow(pymtcore.MTCoreWindow):
+class MTWindow(pymtcore.CoreWindow):
     '''MTWindow is a window widget who use MTSimulator
     for generating touch event with mouse.
     Use MTWindow as main window application.
@@ -168,10 +167,10 @@ class MTWindow(pymtcore.MTCoreWindow):
         self.dump_format    = pymt.pymt_config.get('dump', 'format')
         self.dump_idx       = 0
 
+        '''
         # init some gl
         self.init_gl()
 
-        '''
         # init modules
         pymt_modules.register_window(self)
 
@@ -191,15 +190,17 @@ class MTWindow(pymtcore.MTCoreWindow):
 
     def init_gl(self):
         # check if window have multisample
+        '''
         if MTWindow.have_multisample is None:
             s = (GLint)()
-            glGetIntegerv(GL_SAMPLES, s)
+            s = glGetIntegerv(GL_SAMPLES, s)
             if s.value > 0:
                 pymt.pymt_logger.debug('Multisampling is available (%d)' % s.value)
                 MTWindow.have_multisample = True
             else:
                 pymt.pymt_logger.debug('Multisampling is not available')
                 MTWindow.have_multisample = False
+        '''
 
         line_smooth = pymt.pymt_config.getint('graphics', 'line_smooth')
         if line_smooth:

@@ -10,7 +10,7 @@ class CoreWidgetException_s : public std::exception
     }
 } CoreWidgetException;
 
-MTCoreWidget::MTCoreWidget()
+CoreWidget::CoreWidget()
 {
     this->parent                    = NULL;
     this->visible                   = true;
@@ -28,7 +28,7 @@ MTCoreWidget::MTCoreWidget()
     this->__parent_layout_source    = NULL;
 }
 
-MTCoreWidget::~MTCoreWidget()
+CoreWidget::~CoreWidget()
 {
     this->clear();
 }
@@ -38,7 +38,7 @@ MTCoreWidget::~MTCoreWidget()
 // Reference counting
 //
 
-void MTCoreWidget::unref(int fromswig)
+void CoreWidget::unref(int fromswig)
 {
     // if swig don't have anymore a reference on it,
     // and we are orphan, clear our children list.
@@ -59,7 +59,7 @@ void MTCoreWidget::unref(int fromswig)
 // Children manipulation
 //
 
-void MTCoreWidget::add_widget(MTCoreWidget *widget)
+void CoreWidget::add_widget(CoreWidget *widget)
 {
     // TODO add exception, a widget cannot have 2 parent !
     if ( widget->parent != NULL )
@@ -74,10 +74,10 @@ void MTCoreWidget::add_widget(MTCoreWidget *widget)
     widget->parent = this;
 }
 
-void MTCoreWidget::remove_widget(MTCoreWidget *widget)
+void CoreWidget::remove_widget(CoreWidget *widget)
 {
-    MTCoreWidget *parent;
-    std::vector<MTCoreWidget *>::iterator i = this->children.begin();
+    CoreWidget *parent;
+    std::vector<CoreWidget *>::iterator i = this->children.begin();
 
     // reference ourself, we don't want to be removed
     // when a widget remove is done
@@ -112,27 +112,27 @@ void MTCoreWidget::remove_widget(MTCoreWidget *widget)
 // Event functions
 //
 
-bool MTCoreWidget::on_move(void *data)
+bool CoreWidget::on_move(void *data)
 {
     return true;
 }
 
-bool MTCoreWidget::on_resize(void *data)
+bool CoreWidget::on_resize(void *data)
 {
     return true;
 }
 
-bool MTCoreWidget::on_update(void *data)
+bool CoreWidget::on_update(void *data)
 {
-    std::vector<MTCoreWidget *>::iterator i = this->children.begin();
+    std::vector<CoreWidget *>::iterator i = this->children.begin();
     for ( ; i != this->children.end(); i++ )
         (*i)->dispatch_event("on_update", data);
     return true;
 }
 
-bool MTCoreWidget::on_draw(void *data)
+bool CoreWidget::on_draw(void *data)
 {
-    std::vector<MTCoreWidget *>::iterator i;
+    std::vector<CoreWidget *>::iterator i;
 
     if ( this->visible == false )
         return false;
@@ -144,27 +144,27 @@ bool MTCoreWidget::on_draw(void *data)
     return true;
 }
 
-bool MTCoreWidget::on_touch_down(void *data)
+bool CoreWidget::on_touch_down(void *data)
 {
-    std::vector<MTCoreWidget *>::iterator i = this->children.begin();
+    std::vector<CoreWidget *>::iterator i = this->children.begin();
     for ( ; i != this->children.end(); i++ )
         if ( (*i)->dispatch_event("on_touch_down", data) )
             return true;
     return false;
 }
 
-bool MTCoreWidget::on_touch_move(void *data)
+bool CoreWidget::on_touch_move(void *data)
 {
-    std::vector<MTCoreWidget *>::iterator i = this->children.begin();
+    std::vector<CoreWidget *>::iterator i = this->children.begin();
     for ( ; i != this->children.end(); i++ )
         if ( (*i)->dispatch_event("on_touch_move", data) )
             return true;
     return false;
 }
 
-bool MTCoreWidget::on_touch_up(void *data)
+bool CoreWidget::on_touch_up(void *data)
 {
-    std::vector<MTCoreWidget *>::iterator i = this->children.begin();
+    std::vector<CoreWidget *>::iterator i = this->children.begin();
     for ( ; i != this->children.end(); i++ )
         if ( (*i)->dispatch_event("on_touch_move", data) )
             return true;
@@ -176,7 +176,7 @@ bool MTCoreWidget::on_touch_up(void *data)
 // Event dispatching
 //
 
-void MTCoreWidget::connect(const std::string &event_name, PyObject *callback)
+void CoreWidget::connect(const std::string &event_name, PyObject *callback)
 {
     callback_t c;
 
@@ -190,7 +190,7 @@ void MTCoreWidget::connect(const std::string &event_name, PyObject *callback)
     this->callbacks.push_back(c);
 }
 
-void MTCoreWidget::disconnect(const std::string &event_name, PyObject *callback)
+void CoreWidget::disconnect(const std::string &event_name, PyObject *callback)
 {
     std::vector<callback_t>::iterator i;
     for ( i = this->callbacks.begin(); i != this->callbacks.end(); i++ )
@@ -207,7 +207,7 @@ void MTCoreWidget::disconnect(const std::string &event_name, PyObject *callback)
     }
 }
 
-bool MTCoreWidget::dispatch_event_internal(const std::string &event_name, void *datadispatch)
+bool CoreWidget::dispatch_event_internal(const std::string &event_name, void *datadispatch)
 {
     if ( event_name == "on_move" )
         return this->on_move(datadispatch);
@@ -227,7 +227,7 @@ bool MTCoreWidget::dispatch_event_internal(const std::string &event_name, void *
     return false;
 }
 
-bool MTCoreWidget::dispatch_event(const std::string &event_name, void *datadispatch)
+bool CoreWidget::dispatch_event(const std::string &event_name, void *datadispatch)
 {
     PyObject *result;
     std::vector<callback_t>::iterator i;
@@ -261,7 +261,7 @@ bool MTCoreWidget::dispatch_event(const std::string &event_name, void *datadispa
 // Drawing functions
 //
 
-void MTCoreWidget::draw(void)
+void CoreWidget::draw(void)
 {
 }
 
@@ -270,7 +270,7 @@ void MTCoreWidget::draw(void)
 // Collisions functions
 //
 
-bool MTCoreWidget::collide_point(double x, double y)
+bool CoreWidget::collide_point(double x, double y)
 {
     if ( x >= this->__pos.x && x <= (this->__pos.x + this->__size.x) &&
          y >= this->__pos.y && y <= (this->__pos.y + this->__size.y) )
@@ -283,19 +283,19 @@ bool MTCoreWidget::collide_point(double x, double y)
 // Coordinate transformation
 //
 
-void MTCoreWidget::to_local(double x, double y, double *ox, double *oy)
+void CoreWidget::to_local(double x, double y, double *ox, double *oy)
 {
     *ox = x;
     *oy = y;
 }
 
-void MTCoreWidget::to_parent(double x, double y, double *ox, double *oy)
+void CoreWidget::to_parent(double x, double y, double *ox, double *oy)
 {
     *ox = x;
     *oy = y;
 }
 
-void MTCoreWidget::to_widget(double x, double y, double *ox, double *oy)
+void CoreWidget::to_widget(double x, double y, double *ox, double *oy)
 {
     if ( this->parent != NULL )
     {
@@ -307,7 +307,7 @@ void MTCoreWidget::to_widget(double x, double y, double *ox, double *oy)
     this->to_local(x, y, ox, oy);
 }
 
-void MTCoreWidget::to_window(double x, double y, double *ox, double *oy, bool initial)
+void CoreWidget::to_window(double x, double y, double *ox, double *oy, bool initial)
 {
     if ( initial == false )
     {
@@ -331,7 +331,7 @@ void MTCoreWidget::to_window(double x, double y, double *ox, double *oy, bool in
 // Accessors for window / layout
 //
 
-MTCoreWidget *MTCoreWidget::get_root_window(void)
+CoreWidget *CoreWidget::get_root_window(void)
 {
     if ( this->parent == NULL )
         return NULL;
@@ -348,7 +348,7 @@ MTCoreWidget *MTCoreWidget::get_root_window(void)
     return this->__root_window;
 }
 
-MTCoreWidget *MTCoreWidget::get_parent_window(void)
+CoreWidget *CoreWidget::get_parent_window(void)
 {
     if ( this->parent == NULL )
         return NULL;
@@ -365,7 +365,7 @@ MTCoreWidget *MTCoreWidget::get_parent_window(void)
     return this->__parent_window;
 }
 
-MTCoreWidget *MTCoreWidget::get_parent_layout(void)
+CoreWidget *CoreWidget::get_parent_layout(void)
 {
     if ( this->parent == NULL )
         return NULL;
@@ -387,12 +387,12 @@ MTCoreWidget *MTCoreWidget::get_parent_layout(void)
 // Visibility of the widget
 //
 
-void MTCoreWidget::show(void)
+void CoreWidget::show(void)
 {
     this->visible = true;
 }
 
-void MTCoreWidget::hide(void)
+void CoreWidget::hide(void)
 {
     this->visible = false;
 }
@@ -402,12 +402,12 @@ void MTCoreWidget::hide(void)
 // Operators
 //
 
-bool MTCoreWidget::operator==(const MTCoreWidget *widget)
+bool CoreWidget::operator==(const CoreWidget *widget)
 {
     return (this == widget) ? true : false;
 }
 
-int MTCoreWidget::get_ref_count(void)
+int CoreWidget::get_ref_count(void)
 {
     return this->__ref_count;
 }
@@ -417,7 +417,7 @@ int MTCoreWidget::get_ref_count(void)
 // Accessors, will be transformed into property with swig wrapper.
 //
 
-void MTCoreWidget::_set_x(double value)
+void CoreWidget::_set_x(double value)
 {
     if ( this->__pos.x == value )
         return;
@@ -425,12 +425,12 @@ void MTCoreWidget::_set_x(double value)
     this->__dispatch_event_dd("on_move", this->__pos.x, this->__pos.y);
 }
 
-double MTCoreWidget::_get_x(void)
+double CoreWidget::_get_x(void)
 {
     return this->__pos.x;
 }
 
-void MTCoreWidget::_set_y(double value)
+void CoreWidget::_set_y(double value)
 {
     if ( this->__pos.y == value )
         return;
@@ -438,12 +438,12 @@ void MTCoreWidget::_set_y(double value)
     this->__dispatch_event_dd("on_move", this->__pos.x, this->__pos.y);
 }
 
-double MTCoreWidget::_get_y(void)
+double CoreWidget::_get_y(void)
 {
     return this->__pos.y;
 }
 
-void MTCoreWidget::_set_width(double value)
+void CoreWidget::_set_width(double value)
 {
     if ( this->__size.x == value )
         return;
@@ -451,12 +451,12 @@ void MTCoreWidget::_set_width(double value)
     this->__dispatch_event_dd("on_resize", this->__size.x, this->__size.y);
 }
 
-double MTCoreWidget::_get_width(void)
+double CoreWidget::_get_width(void)
 {
     return this->__size.x;
 }
 
-void MTCoreWidget::_set_height(double value)
+void CoreWidget::_set_height(double value)
 {
     if ( this->__size.y == value )
         return;
@@ -464,12 +464,12 @@ void MTCoreWidget::_set_height(double value)
     this->__dispatch_event_dd("on_resize", this->__size.x, this->__size.y);
 }
 
-double MTCoreWidget::_get_height(void)
+double CoreWidget::_get_height(void)
 {
     return this->__size.y;
 }
 
-void MTCoreWidget::_set_pos(pos2d &p)
+void CoreWidget::_set_pos(pos2d &p)
 {
     if ( p.x == this->__pos.x && p.y == this->__pos.y )
         return;
@@ -477,12 +477,12 @@ void MTCoreWidget::_set_pos(pos2d &p)
     this->__dispatch_event_dd("on_move", this->__pos.x, this->__pos.y);
 }
 
-pos2d &MTCoreWidget::_get_pos(void)
+pos2d &CoreWidget::_get_pos(void)
 {
     return this->__pos;
 }
 
-void MTCoreWidget::_set_size(pos2d &p)
+void CoreWidget::_set_size(pos2d &p)
 {
     if ( p.x == this->__size.x && p.y == this->__size.y )
         return;
@@ -490,12 +490,12 @@ void MTCoreWidget::_set_size(pos2d &p)
     this->__dispatch_event_dd("on_resize", this->__size.x, this->__size.y);
 }
 
-pos2d &MTCoreWidget::_get_size(void)
+pos2d &CoreWidget::_get_size(void)
 {
     return this->__size;
 }
 
-void MTCoreWidget::_set_center(pos2d &p)
+void CoreWidget::_set_center(pos2d &p)
 {
     static pos2d pos;
     pos.x = p.x - this->__size.x / 2.;
@@ -503,7 +503,7 @@ void MTCoreWidget::_set_center(pos2d &p)
     this->_set_pos(pos);
 }
 
-pos2d &MTCoreWidget::_get_center(void)
+pos2d &CoreWidget::_get_center(void)
 {
     static pos2d pos;
     pos.x = this->__pos.x + this->__size.x / 2.;
@@ -511,7 +511,7 @@ pos2d &MTCoreWidget::_get_center(void)
     return pos;
 }
 
-bool MTCoreWidget::__dispatch_event_dd(const std::string &event_name, double x, double y)
+bool CoreWidget::__dispatch_event_dd(const std::string &event_name, double x, double y)
 {
     bool result;
     PyObject *o, *o2, *o3;
@@ -530,7 +530,7 @@ bool MTCoreWidget::__dispatch_event_dd(const std::string &event_name, double x, 
     return result;
 }
 
-void MTCoreWidget::clear(void)
+void CoreWidget::clear(void)
 {
     while ( !this->children.empty()  )
         this->remove_widget(this->children.back());

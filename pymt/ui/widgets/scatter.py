@@ -5,8 +5,7 @@ Scatter package: provide lot of widgets based on scatter (base, svg, plane, imag
 from __future__ import with_statement
 __all__ = ['MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane', 'MTScatterImage']
 
-import pyglet
-from pyglet.gl import *
+from OpenGL.GL import *
 from ...image import Image
 from ...graphx import drawRectangle, gx_matrix, gx_matrix_identity, set_color, \
     drawTexturedRectangle, gx_blending
@@ -61,8 +60,6 @@ class MTScatterWidget(MTWidget):
         kwargs.setdefault('scale_min', 0.01)
         kwargs.setdefault('scale_max', None)
 
-        self.register_event_type('on_transform')
-
         super(MTScatterWidget, self).__init__(**kwargs)
 
         self.auto_bring_to_front = kwargs.get('auto_bring_to_front')
@@ -98,7 +95,7 @@ class MTScatterWidget(MTWidget):
         # Holds children for both sides
         self.children_front = []
         self.children_back = []
-        self.children = self.children_front
+        #self.children = self.children_front
 
         self.anim = Animation(self, 'flip', 'zangle', 180, 1, 10, func=AnimationAlpha.ramp)
 
@@ -109,6 +106,11 @@ class MTScatterWidget(MTWidget):
             self.init_transform(kwargs.get('rotation'), kwargs.get('scale'), kwargs.get('translation'))
         else:
             self.init_transform(kwargs.get('rotation'), kwargs.get('scale'), super(MTScatterWidget, self).pos)
+
+    def dispatch_event_internal(self, event_name, data):
+        if event_name == 'on_transform':
+            return self.on_transform(data)
+        return super(MTScatterWidget, self).dispatch_event_internal(event_name, data)
 
     def add_widget(self, w, side='front', front=True):
         '''Add a widget to a side of scatter.
@@ -162,7 +164,7 @@ class MTScatterWidget(MTWidget):
             glScalef(scale, scale, 1)
             glRotatef(angle,0,0,1)
             glTranslatef(-point[0], -point[1], 0)
-            glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
+            self.transform_mat = glGetFloatv(GL_MODELVIEW_MATRIX)
 
     def draw(self):
         set_color(*self.style.get('bg-color'))
@@ -199,7 +201,7 @@ class MTScatterWidget(MTWidget):
        self.anim.reset()
        self.anim.start()
 
-    def on_draw(self):
+    def on_draw(self, data):
         if self.zangle < 90:
             self.flip_to('front')
         else:
@@ -217,7 +219,7 @@ class MTScatterWidget(MTWidget):
                 else:
                     glRotatef(self.zangle + 180, 0, 1, 0)
                 glTranslatef(-self.width / 2, 0, 0)
-            super(MTScatterWidget, self).on_draw()
+            super(MTScatterWidget, self).on_draw(data)
 
     def to_parent(self, x, y):
         if self.__to_parent == (x, y):
@@ -280,7 +282,7 @@ class MTScatterWidget(MTWidget):
                 glRotatef(angle, 0, 0, 1)
             glTranslatef(-point.x, -point.y,0)
             glMultMatrixf(self.transform_mat)
-            glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
+            self.transform_mat = glGetFloatv(GL_MODELVIEW_MATRIX)
 
         self.dispatch_event('on_transform', angle, scale, trans, point)
 

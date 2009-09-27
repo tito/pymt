@@ -9,16 +9,13 @@ __all__ = ['getWidgetById',
 
 import sys
 import os
-import pyglet
+import pymtcore
 from ...logger import pymt_logger
-from ...mtpyglet import getAvailableTouchs
+from ...base import getAvailableTouchs
 from ...input import Touch
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
 from ..colors import css_get_style
-
-import inspect
-
 
 _id_2_widget = {}
 
@@ -43,7 +40,7 @@ def event_stats_print():
     for k in _event_stats:
         pymt_logger.info('%6d: %s' % (_event_stats[k], k))
 
-class MTWidget(pyglet.event.EventDispatcher):
+class MTWidget(pymtcore.CoreWidget):
     '''Global base for any multitouch widget.
     Implement event for mouse, object, touch and animation.
 
@@ -106,6 +103,8 @@ class MTWidget(pyglet.event.EventDispatcher):
         'on_animation_start'
     ]
     def __init__(self, **kwargs):
+        super(MTWidget, self).__init__()
+
         kwargs.setdefault('pos', (0, 0))
         kwargs.setdefault('x', None)
         kwargs.setdefault('y', None)
@@ -123,31 +122,9 @@ class MTWidget(pyglet.event.EventDispatcher):
         if 'id' in kwargs:
             self.id = kwargs.get('id')
 
-        pyglet.event.EventDispatcher.__init__(self)
-
-        # Registers events
-        for ev in MTWidget.visible_events:
-            self.register_event_type(ev)
-
-        self.parent					= None
-        self.children				= []
         self._visible				= False
-        self._x, self._y			= kwargs.get('pos')
-        self._width, self._height	= kwargs.get('size')
         self.animations				= []
-        self.visible				= kwargs.get('visible')
-        self.draw_children          = kwargs.get('draw_children')
-
-        # cache for get_parent_window()
-        self._parent_window         = None
-        self._parent_window_source  = None
-        self._parent_layout         = None
-        self._parent_layout_source  = None
-        self._root_window           = None
-        self._root_window_source    = None
-
-        self.register_event_type('on_resize')
-        self.register_event_type('on_move')
+        #self.draw_children          = kwargs.get('draw_children')
 
         if kwargs.get('x'):
             self.x = kwargs.get('x')
@@ -176,8 +153,6 @@ class MTWidget(pyglet.event.EventDispatcher):
                 prop, kw = prop
             self.enable_inner_animation(prop, **kw)
 
-        self.init()
-
     def _set_id(self, id):
         global _id_2_widget
         if self._id and self._id in _id_2_widget:
@@ -189,6 +164,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         return self._id
     id = property(_get_id, _set_id, doc='str: id of widget')
 
+    '''
     def _set_visible(self, visible):
         if self._visible == visible:
             return
@@ -196,207 +172,18 @@ class MTWidget(pyglet.event.EventDispatcher):
     def _get_visible(self):
         return self._visible
     visible = property(_get_visible, _set_visible, doc='bool: visibility of widget')
-
-    def _set_x(self, x):
-        if self._x == x:
-            return
-        self._x = x
-        self.dispatch_event('on_move', self.x, self.y)
-    def _get_x(self):
-        return self._x
-    x = property(_get_x, _set_x, doc='int: X position of widget')
-
-    def _set_y(self, y):
-        if self._y == y:
-            return
-        self._y = y
-        self.dispatch_event('on_move', self.x, self.y)
-    def _get_y(self):
-        return self._y
-    y = property(_get_y, _set_y, doc='int: Y position of widget')
-
-    def _set_width(self, w):
-        if self._width == w:
-            return
-        self._width = w
-        self.dispatch_event('on_resize', self._width, self._height)
-    def _get_width(self):
-        return self._width
-    width = property(_get_width, _set_width, doc='int: width of widget')
-
-    def _set_height(self, h):
-        if self._height == h:
-            return
-        self._height = h
-        self.dispatch_event('on_resize', self._width, self._height)
-    def _get_height(self):
-        return self._height
-    height = property(_get_height, _set_height, doc='int: height of widget')
-
-    def _get_center(self):
-        return (self._x + self._width/2, self._y+self._height/2)
-    def _set_center(self, center):
-        self.pos = (center[0] - self.width/2, center[1] - self.height/2)
-    center = property(_get_center, _set_center, doc='tuple(x, y): center of widget')
-
-    def _set_pos(self, pos):
-        if self._x == pos[0] and self._y == pos[1]:
-            return
-        self._x, self._y = pos
-        self.dispatch_event('on_move', self._x, self._y)
-    def _get_pos(self):
-        return (self._x, self._y)
-    pos = property(_get_pos, _set_pos, doc='tuple(x, y): position of widget')
-
-    def _set_size(self, size):
-        if self._width == size[0] and self._height == size[1]:
-            return
-        self._width, self._height = size
-        self.dispatch_event('on_resize', self.width, self.height)
-    def _get_size(self):
-        return (self.width, self.height)
-    size = property(_get_size, _set_size,
-                    doc='tuple(width, height): width/height of widget')
+    '''
 
     def apply_css(self, styles):
         '''Called at __init__ time to applied css attribute in current class.
         '''
         self.style.update(styles)
 
-    def dispatch_event(self, event_type, *args):
-        '''Dispatch a single event to the attached handlers.
-
-        The event is propogated to all handlers from from the top of the stack
-        until one returns `EVENT_HANDLED`.  This method should be used only by
-        `EventDispatcher` implementors; applications should call
-        the ``dispatch_events`` method.
-
-        :Parameters:
-            `event_type` : str
-                Name of the event.
-            `args` : sequence
-                Arguments to pass to the event handler.
-
-        '''
-
-        # Don't dispatch event for visible widget if we are not visible
-        if event_type in MTWidget.visible_events and not self.visible:
-            return
-
-        #assert event_type in self.event_types
-        if event_type not in self.event_types:
-            return
-
-        # Search handler stack for matching event handlers
-        for frame in self._event_stack:
-            handler = frame.get(event_type, None)
-            if handler:
-                try:
-                    if handler(*args):
-                        return True
-                except TypeError:
-                    self._raise_dispatch_exception(event_type, args, handler)
-
-
-        # Check instance for an event handler
-        if hasattr(self, event_type):
-            try:
-                # Statistics
-                global _event_stats_activate
-                if _event_stats_activate:
-                    global _event_stats
-                    if not event_type in _event_stats:
-                        _event_stats[event_type] = 1
-                    else:
-                        _event_stats[event_type] = _event_stats[event_type] + 1
-
-                # Call event
-                func = getattr(self, event_type)
-                if func(*args):
-                    return True
-
-            except TypeError, e:
-                #print 'error in', self, e
-                self._raise_dispatch_exception(
-                    event_type, args, getattr(self, event_type))
-
-    def to_widget(self, x, y):
-        '''Return the coordinate from window to local widget'''
-        x, y = self.parent.to_widget(x, y)
-        return self.to_local(x, y)
-
-    def to_window(self, x, y, initial=True):
-        '''Transform local coordinate to window coordinate'''
-        if not initial:
-            x, y = self.to_parent(x, y)
-        if self.parent:
-            return self.parent.to_window(x, y, initial=False)
-        return (x, y)
-
-    def to_parent(self, x, y):
-        '''Transform local coordinate to parent coordinate'''
-        return (x, y)
-
-    def to_local(self, x, y):
-        '''Transform parent coordinate to local coordinate'''
-        return (x, y)
-
-    def collide_point(self, x, y):
-        '''Test if the (x,y) is in widget bounding box'''
-        if( x > self.x  and x < self.x + self.width and
-           y > self.y and y < self.y + self.height  ):
-            return True
-
-    def init(self):
-        pass
-
-    def get_root_window(self):
-        '''Return the root window of widget'''
-        if not self.parent:
-            return None
-
-        # cache value
-        if self._root_window_source != self.parent or self._root_window is None:
-            self._root_window = self.parent.get_root_window()
-            if not self._root_window:
-                return None
-            self._root_window_source = self.parent
-
-        return self._root_window
-
-    def get_parent_window(self):
-        '''Return the parent window of widget'''
-        if not self.parent:
-            return None
-
-        # cache value
-        if self._parent_window_source != self.parent or self._parent_window is None:
-            self._parent_window = self.parent.get_parent_window()
-            if not self._parent_window:
-                return None
-            self._parent_window_source = self.parent
-
-        return self._parent_window
-
-    def get_parent_layout(self):
-        '''Return the parent layout of widget'''
-        if not self.parent:
-            return None
-
-        # cache value
-        if self._parent_layout_source != self.parent or self._parent_layout is None:
-            self._parent_layout = self.parent.get_parent_layout()
-            if not self._parent_layout:
-                return None
-            self._parent_layout_source = self.parent
-
-        return self._parent_layout
-
     def bring_to_front(self):
         '''Remove it from wherever it is and add it back at the top'''
         if self.parent:
-            self.parent.children.remove(self)
-            self.parent.children.append(self)
+            self.parent.remove_widget(self)
+            self.parent.add_widget(self)
 
     def hide(self):
         '''Hide the widget'''
@@ -406,24 +193,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         '''Show the widget'''
         self.visible = True
 
-    def on_update(self):
-        for w in self.children:
-            w.dispatch_event('on_update')
-
-    def on_draw(self):
-        if not self.visible:
-            return
-
-        self.draw()
-        if self.draw_children:
-            for w in self.children:
-                w.dispatch_event('on_draw')
-
-    def draw(self):
-        '''Handle the draw of widget.
-        Derivate this method to draw your widget.'''
-        pass
-
+    """
     def add_widget(self, w, front=True):
         '''Add a widget in the children list.'''
         if front:
@@ -439,6 +209,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         '''Remove a widget from the children list'''
         if w in self.children:
             self.children.remove(w)
+    """
 
     def add_animation(self, *largs, **kwargs):
         '''Add an animation in widget.'''
@@ -513,44 +284,6 @@ class MTWidget(pyglet.event.EventDispatcher):
             self.start_animations(label=label)
         else:
             super(MTWidget, self).__setattr__(name, value)
-
-    def on_resize(self, w, h):
-        for c in self.children:
-            c.dispatch_event('on_resize', w, h)
-
-    def on_move(self, x, y):
-        for c in self.children:
-            c.dispatch_event('on_move', x, y)
-
-    def on_touch_down(self, touch):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_touch_down', touch):
-                return True
-
-    def on_touch_move(self, touch):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_touch_move', touch):
-                return True
-
-    def on_touch_up(self, touch):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_touch_up', touch):
-                return True
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_press',x, y, button, modifiers):
-                return True
-
-    def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_drag',x, y, dx, dy, button, modifiers):
-                return True
-
-    def on_mouse_release(self, x, y, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_release', x, y, button, modifiers):
-                return True
 
 # Register all base widgets
 MTWidgetFactory.register('MTWidget', MTWidget)

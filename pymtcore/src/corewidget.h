@@ -22,11 +22,11 @@ struct pos2d
     }
 };
 
-class MTCoreWidget
+class CoreWidget
 {
 public:
-    MTCoreWidget();
-    virtual ~MTCoreWidget();
+    CoreWidget();
+    virtual ~CoreWidget();
 
     //
     // Reference counting
@@ -40,8 +40,8 @@ public:
     // Children manipulation
     //
 
-    virtual void add_widget(MTCoreWidget *widget);
-    virtual void remove_widget(MTCoreWidget *widget);
+    virtual void add_widget(CoreWidget *widget);
+    virtual void remove_widget(CoreWidget *widget);
 
     //
     // Event functions
@@ -89,9 +89,9 @@ public:
     // Accessors for window / layout
     //
 
-    virtual MTCoreWidget *get_root_window(void);
-    virtual MTCoreWidget *get_parent_window(void);
-    virtual MTCoreWidget *get_parent_layout(void);
+    virtual CoreWidget *get_root_window(void);
+    virtual CoreWidget *get_parent_window(void);
+    virtual CoreWidget *get_parent_layout(void);
 
     //
     // Visibility of the widget
@@ -104,7 +104,7 @@ public:
     // Operators
     //
 
-    bool operator==(const MTCoreWidget *widget);
+    bool operator==(const CoreWidget *widget);
 
     //
     // Accessors, will be transformed into property with swig wrapper.
@@ -130,16 +130,16 @@ public:
     //
 
     std::vector<callback_t>     callbacks;
-    std::vector<MTCoreWidget *> children;
-    MTCoreWidget    *parent;
+    std::vector<CoreWidget *> children;
+    CoreWidget      *parent;
     bool            visible;
 
-    MTCoreWidget    *__root_window;
-    MTCoreWidget    *__root_window_source;
-    MTCoreWidget    *__parent_window;
-    MTCoreWidget    *__parent_window_source;
-    MTCoreWidget    *__parent_layout;
-    MTCoreWidget    *__parent_layout_source;
+    CoreWidget      *__root_window;
+    CoreWidget      *__root_window_source;
+    CoreWidget      *__parent_window;
+    CoreWidget      *__parent_window_source;
+    CoreWidget      *__parent_layout;
+    CoreWidget      *__parent_layout_source;
 
 protected:
 

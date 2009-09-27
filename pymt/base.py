@@ -3,7 +3,6 @@ Base: base of multitouch, osc, window management
 '''
 
 import osc
-import pyglet
 import pymt
 import pymtcore
 import sys, getopt, os

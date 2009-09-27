@@ -12,9 +12,9 @@ from ..graphx import drawCircle, set_color
 from ..input import TouchFactory
 from ..base import getEventLoop
 from factory import MTWidgetFactory
-#from widgets.widget import MTWidget
+from widgets.widget import MTWidget
 
-class MTSimulator(pymtcore.MTWidget):
+class MTSimulator(MTWidget):
     '''MTSimulator is a widget who generate touch event from mouse event'''
     def __init__(self, **kwargs):
         super(MTSimulator, self).__init__(**kwargs)

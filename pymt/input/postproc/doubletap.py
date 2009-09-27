@@ -5,7 +5,6 @@ InputPostproc Double Tap: search touch for a double tap
 __all__ = ['InputPostprocDoubleTap']
 
 import pymt
-from pyglet import clock
 
 #
 # About attribute added in a touch:
@@ -98,7 +97,7 @@ class InputPostprocDoubleTap(object):
                 self.touches[touch.id].__pp_do_event = type
 
         # now, generate appropriate events
-        time_current = clock.get_default().time()
+        time_current = 0 #TODO clock.get_default().time()
         for touchID in self.touches:
             touch = self.touches[touchID]
 

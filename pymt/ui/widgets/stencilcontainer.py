@@ -6,7 +6,7 @@ from __future__ import with_statement
 
 __all__ = ['MTStencilContainer']
 
-from pyglet.gl import *
+from OpenGL.GL import *
 from widget import MTWidget
 from ...graphx import drawRectangle, stencilPush, stencilPop, stencilUse
 from ..factory import MTWidgetFactory

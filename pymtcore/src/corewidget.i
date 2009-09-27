@@ -2,7 +2,7 @@
 #include "corewidget.h"
 %}
 
-%extend MTCoreWidget
+%extend CoreWidget
 {
 
 /* Theses typemap can will convert output
@@ -106,42 +106,42 @@
  * Regression test are now working. Don't move that
  * until all the regressing tests work.
  */
-%feature("shadow") MTCoreWidget::_get_center() %{
+%feature("shadow") CoreWidget::_get_center() %{
 def _get_center(*args): return $action(*args)
 if _newclass:pos = property(_get_pos, _set_pos)
-__swig_setmethods__["pos"] = _pymtcore.MTCoreWidget__set_pos
-__swig_getmethods__["pos"] = _pymtcore.MTCoreWidget__get_pos
+__swig_setmethods__["pos"] = _pymtcore.CoreWidget__set_pos
+__swig_getmethods__["pos"] = _pymtcore.CoreWidget__get_pos
 if _newclass:size = property(_get_size, _set_size)
-__swig_setmethods__["size"] = _pymtcore.MTCoreWidget__set_size
-__swig_getmethods__["size"] = _pymtcore.MTCoreWidget__get_size
+__swig_setmethods__["size"] = _pymtcore.CoreWidget__set_size
+__swig_getmethods__["size"] = _pymtcore.CoreWidget__get_size
 if _newclass:center = property(_get_center, _set_center)
-__swig_setmethods__["center"] = _pymtcore.MTCoreWidget__set_center
-__swig_getmethods__["center"] = _pymtcore.MTCoreWidget__get_center
+__swig_setmethods__["center"] = _pymtcore.CoreWidget__set_center
+__swig_getmethods__["center"] = _pymtcore.CoreWidget__get_center
 if _newclass:x = property(_get_x, _set_x)
-__swig_setmethods__["x"] = _pymtcore.MTCoreWidget__set_x
-__swig_getmethods__["x"] = _pymtcore.MTCoreWidget__get_x
+__swig_setmethods__["x"] = _pymtcore.CoreWidget__set_x
+__swig_getmethods__["x"] = _pymtcore.CoreWidget__get_x
 if _newclass:y = property(_get_y, _set_y)
-__swig_setmethods__["y"] = _pymtcore.MTCoreWidget__set_y
-__swig_getmethods__["y"] = _pymtcore.MTCoreWidget__get_y
+__swig_setmethods__["y"] = _pymtcore.CoreWidget__set_y
+__swig_getmethods__["y"] = _pymtcore.CoreWidget__get_y
 if _newclass:width = property(_get_width, _set_width)
-__swig_setmethods__["width"] = _pymtcore.MTCoreWidget__set_width
-__swig_getmethods__["width"] = _pymtcore.MTCoreWidget__get_width
+__swig_setmethods__["width"] = _pymtcore.CoreWidget__set_width
+__swig_getmethods__["width"] = _pymtcore.CoreWidget__get_width
 if _newclass:height = property(_get_height, _set_height)
-__swig_setmethods__["height"] = _pymtcore.MTCoreWidget__set_height
-__swig_getmethods__["height"] = _pymtcore.MTCoreWidget__get_height
+__swig_setmethods__["height"] = _pymtcore.CoreWidget__set_height
+__swig_getmethods__["height"] = _pymtcore.CoreWidget__get_height
 %}
 
 
-%feature("ref")   MTCoreWidget "$this->ref();"
-%feature("unref") MTCoreWidget "$this->unref(1);"
+%feature("ref")   CoreWidget "$this->ref();"
+%feature("unref") CoreWidget "$this->unref(1);"
 
-%director MTCoreWidget;
+%director CoreWidget;
 %include "corewidget.h"
 
 /* inline needed for Swig::Director things :/
 */
 %inline %{
-void MTCoreWidget::ref(void)
+void CoreWidget::ref(void)
 {
     // automaticly disown the object if it's handled here
     // we handle the reference counting ourself.
@@ -155,5 +155,5 @@ void MTCoreWidget::ref(void)
 %}
 
 %include <std_vector.i>
-%template(VectorCoreWidget) std::vector<MTCoreWidget *>;
+%template(VectorCoreWidget) std::vector<CoreWidget *>;
 

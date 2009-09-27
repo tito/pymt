@@ -50,7 +50,7 @@ class Image(object):
         if type(arg) == Image:
             for attr in Image.copy_attributes:
                 self.__setattr__(attr, arg.__getattribute__(attr))
-        elif type(arg) in (pymtcore.CoreImage):
+        elif type(arg) == pymtcore.CoreImage:
             self.texture    = arg.texture
             self.width      = texture.width
             self.height     = texture.height
@@ -86,8 +86,8 @@ class Image(object):
         self._filename = value
         self.image      = pymtcore.CoreImage(self._filename)
         self.texture    = self.image.get_texture()
-        self.width      = self.image.width
-        self.height     = self.image.height
+        self.width      = self.image._width
+        self.height     = self.image._height
     filename = property(_get_filename, _set_filename,
             doc='Get/set the filename of image')
 

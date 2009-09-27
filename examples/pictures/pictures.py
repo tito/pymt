@@ -31,7 +31,7 @@ def pymt_plugin_activate(w, ctx):
         scale = random.uniform(3, 10)
         b = MTScatterImage(filename=img_src, pos=(x,y), rotation=rot)
         b.size = b.image.width / scale, b.image.height / scale
-        b.push_handlers(on_move=curry(handle_image_move, b))
+        b.connect('on_move', curry(handle_image_move, b))
         ctx.c.add_widget(b)
     w.add_widget(ctx.c)
 

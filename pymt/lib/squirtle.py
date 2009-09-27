@@ -9,7 +9,8 @@ Example usage:
 
 __all__ = ['SVG', 'setup_gl']
 
-from pyglet.gl import *
+from OpenGL.GL import *
+from OpenGL.GLU import *
 from xml.etree.cElementTree import parse
 import re
 import math

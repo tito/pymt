@@ -7,10 +7,10 @@
 
 static bool is_sdl_init = false;
 
-class MTCoreWindow : public MTCoreWidget
+class CoreWindow : public CoreWidget
 {
 public:
-	MTCoreWindow(): MTCoreWidget()
+	CoreWindow(): CoreWidget()
 	{
 		this->screen			= NULL;
 		this->simulator			= NULL;
@@ -25,7 +25,7 @@ public:
 			this->init_sdl();
 	}
 
-	virtual ~MTCoreWindow()
+	virtual ~CoreWindow()
 	{
 	}
 
@@ -76,17 +76,17 @@ public:
         *oy = y;
     }
 
-	virtual MTCoreWidget *get_root_window(void)
+	virtual CoreWidget *get_root_window(void)
 	{
 		return this;
 	}
 
-	virtual MTCoreWidget *get_parent_window(void)
+	virtual CoreWidget *get_parent_window(void)
 	{
 		return this;
 	}
 
-	virtual MTCoreWidget *get_parent_layout(void)
+	virtual CoreWidget *get_parent_layout(void)
 	{
 		return NULL;
 	}
@@ -119,7 +119,7 @@ public:
 		GL( glMatrixMode(GL_MODELVIEW) );
 		GL( glLoadIdentity() );
 
-		return MTCoreWidget::on_resize(data);
+		return CoreWidget::on_resize(data);
 	}
 
 	virtual bool on_draw(void *data)
@@ -134,7 +134,7 @@ public:
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
 
-		MTCoreWidget::on_draw(data);
+		CoreWidget::on_draw(data);
 
 		SDL_GL_SwapBuffers();
 		fps_frame++;
@@ -214,7 +214,7 @@ public:
 	{
 		if ( event_name == "on_close" )
 			return this->on_close(datadispatch);
-		return MTCoreWidget::dispatch_event_internal(event_name, datadispatch);
+		return CoreWidget::dispatch_event_internal(event_name, datadispatch);
 	}
 
 

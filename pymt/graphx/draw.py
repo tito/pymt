@@ -21,6 +21,7 @@ from OpenGL.GLU import *
 from paint import *
 from statement import *
 from colors import *
+from pymtcore import Texture, TextureRegion
 import math
 
 def drawLabel(label, pos=(0,0), **kwargs):

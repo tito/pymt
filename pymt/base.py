@@ -88,11 +88,11 @@ class TouchEventLoop:
             global touch_event_listeners
             for listener in touch_event_listeners:
                 if type == 'down':
-                    listener.on_touch_down(touch)
+                    listener.on_touch_down((touch, ))
                 elif type == 'move':
-                    listener.on_touch_move(touch)
+                    listener.on_touch_move((touch, ))
                 elif type == 'up':
-                    listener.on_touch_up(touch)
+                    listener.on_touch_up((touch, ))
 
         # dispatch grabbed touch
         touch.grab_state = True
@@ -112,7 +112,8 @@ class TouchEventLoop:
             if type == 'down':
                 # don't dispatch again touch in on_touch_down
                 # a down event are nearly uniq here.
-                wid.dispatch_event('on_touch_down', (touch, ))
+                #wid.dispatch_event('on_touch_down', (touch, ))
+                pass
             elif type == 'move':
                 wid.dispatch_event('on_touch_move', (touch, ))
             elif type == 'up':

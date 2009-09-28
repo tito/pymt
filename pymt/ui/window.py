@@ -315,23 +315,20 @@ class MTWindow(pymtcore.CoreWindow):
         if handler and handler(text):
             return True
 
-    def on_touch_down(self, touch):
+    def on_touch_down(self, data):
+        touch = data[0]
         touch.scale_for_screen(*self.size)
-        for w in reversed(self.children):
-            if w.on_touch_down(touch):
-                return True
+        return super(MTWindow, self).on_touch_down((touch,))
 
-    def on_touch_move(self, touch):
+    def on_touch_move(self, data):
+        touch = data[0]
         touch.scale_for_screen(*self.size)
-        for w in reversed(self.children):
-            if w.on_touch_move(touch):
-                return True
+        return super(MTWindow, self).on_touch_move((touch,))
 
-    def on_touch_up(self, touch):
+    def on_touch_up(self, data):
+        touch = data[0]
         touch.scale_for_screen(*self.size)
-        for w in reversed(self.children):
-            if w.on_touch_up(touch):
-                return True
+        return super(MTWindow, self).on_touch_up((touch,))
 
     def on_mouse_press(self, x, y, button, modifiers):
         if self.sim:

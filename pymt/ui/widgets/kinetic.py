@@ -71,7 +71,8 @@ class MTKinetic(MTWidget):
         self.velstop    = kwargs.get('velstop')
         self.touch      = {} # internals
 
-    def on_touch_down(self, touch):
+    def on_touch_down(self, data):
+        touch, = data
         # do a copy of the touch for kinetic
         if 'mov' in touch.profile:
             args            = (touch.x, touch.y, touch.X, touch.Y)
@@ -88,7 +89,8 @@ class MTKinetic(MTWidget):
         # and dispatch !
         return super(MTKinetic, self).on_touch_down(ktouch)
 
-    def on_touch_move(self, touch):
+    def on_touch_move(self, data):
+        touch, = data
         if touch.grab_current != self:
             return
         if touch.uid not in self.touch:
@@ -117,7 +119,8 @@ class MTKinetic(MTWidget):
             ktouch.pop()
         return ret
 
-    def on_touch_up(self, touch):
+    def on_touch_up(self, data):
+        touch, = data
         if touch.grab_current != self:
             return
         touch.ungrab(self)

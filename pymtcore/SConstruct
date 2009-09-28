@@ -72,21 +72,37 @@ env.Append(LIBS=['GL', 'GLU'])
 # Optionnals
 conf = Configure(env)
 image_providers = []
+text_providers = []
 if conf.CheckHeader('SDL_image.h'):
     image_providers.append('SDL_image')
     env.Append(LIBS=['SDL_image'])
     env.AppendUnique(CXXFLAGS='-DHAVE_SDL_IMAGE')
+
+env.ParseConfig('pkg-config imlib2 --cflags --libs')
 if conf.CheckHeader('Imlib2.h'):
     image_providers.append('imlib2')
     env.AppendUnique(CXXFLAGS='-DHAVE_IMLIB2')
-    env.ParseConfig('pkg-config imlib2 --cflags --libs')
+
+env.ParseConfig('pkg-config cairo --cflags --libs')
+if conf.CheckHeader('cairo.h'):
+    text_providers.append('cairo')
+    env.Append(CXXFLAGS='-DHAVE_CAIRO')
 
 # Create the library.
 env['BUILDERS']['PythonModule'] = SWIGSharedLibrary
 env.PythonModule(os.path.join('src', '_pymtcore'), sources)
 
+if len(image_providers) == 0:
+    print 'ERROR: you must have at least one image provider'
+    sys.exit(-1)
+
+if len(text_providers) == 0:
+    print 'ERROR: you must have at least one text provider'
+    sys.exit(-1)
+
 print
 print 'PyMT Core Configuration'
 print
 print '  Image providers: ', ', '.join(image_providers)
+print '  Text providers:  ', ', '.join(text_providers)
 print

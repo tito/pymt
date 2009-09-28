@@ -24,6 +24,7 @@
 %include "coreimage.i"
 %include "corewidget.i"
 %include "corewindow.i"
+%include "coretext.i"
 %include "texture.i"
 %include "utils.i"
 

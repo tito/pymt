@@ -52,6 +52,6 @@ class CoreImageTestCase(unittest.TestCase):
         # start displaying for 1s
         import time
         start = time.time()
-        while time.time() - start < 1:
+        while time.time() - start < 0.1:
             win.dispatch_event('on_update', [])
             win.dispatch_event('on_draw', [])

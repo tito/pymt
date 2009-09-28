@@ -32,6 +32,7 @@ public:
 
 	unsigned int	id;
 	unsigned int	target;
+	double			tex_coords[12];
 };
 
 class TextureRegion : public Texture

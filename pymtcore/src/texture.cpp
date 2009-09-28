@@ -22,8 +22,20 @@ AbstractImage::AbstractImage(int width, int height)
 Texture::Texture(int width, int height, unsigned int target, unsigned int id) :
     AbstractImage(width, height)
 {
-    this->target	= target;
-    this->id		= id;
+    this->target		= target;
+    this->id			= id;
+	this->tex_coords[0] = 0.;
+	this->tex_coords[1] = 0.;
+	this->tex_coords[2] = 0.;
+	this->tex_coords[3] = 1.;
+	this->tex_coords[4] = 0.;
+	this->tex_coords[5] = 0.;
+	this->tex_coords[6] = 1.;
+	this->tex_coords[7] = 1.;
+	this->tex_coords[8] = 0.;
+	this->tex_coords[9] = 0.;
+	this->tex_coords[10] = 1.;
+	this->tex_coords[11] = 0.;
 }
 
 Texture *Texture::create(int width, int height, int internalformat, bool rectangle)

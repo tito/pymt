@@ -17,7 +17,7 @@ class CoreImageTestCase(unittest.TestCase):
         filename = os.path.join(os.path.dirname(__file__), 'pngtest.png')
 
         # setup a window
-        win = pymtcore.MTCoreWindow()
+        win = pymtcore.CoreWindow()
         win.size = 640, 480
         win.setup()
 
@@ -45,7 +45,7 @@ class CoreImageTestCase(unittest.TestCase):
             glEnd()
 
         # create a widget
-        wid = pymtcore.MTWidget()
+        wid = pymtcore.CoreWidget()
         wid.connect('on_draw', on_wid_draw)
         win.add_widget(wid)
 

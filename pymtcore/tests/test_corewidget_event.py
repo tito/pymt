@@ -5,7 +5,7 @@ __all__ = ['CoreWidgetEventTestCase']
 
 class CoreWidgetEventTestCase(unittest.TestCase):
     def testEventOnTouchDown(self):
-        class MyWidget(pymtcore.MTCoreWidget):
+        class MyWidget(pymtcore.CoreWidget):
             def on_touch_down(self, touch):
                 touch.ok = 1
         class Touch:
@@ -16,7 +16,7 @@ class CoreWidgetEventTestCase(unittest.TestCase):
         self.failUnless(touch.ok == 1)
 
     def testEventOnMove(self):
-        class MyWidget(pymtcore.MTCoreWidget):
+        class MyWidget(pymtcore.CoreWidget):
             def on_move(self, data):
                 self.moveto = data
         a = MyWidget()
@@ -28,7 +28,7 @@ class CoreWidgetEventTestCase(unittest.TestCase):
         self.failUnless(a.moveto == (-88, 55))
 
     def testEventOnResize(self):
-        class MyWidget(pymtcore.MTCoreWidget):
+        class MyWidget(pymtcore.CoreWidget):
             def on_resize(self, data):
                 self.sizeto = data
         a = MyWidget()
@@ -47,7 +47,7 @@ class CoreWidgetEventTestCase(unittest.TestCase):
             global on_move_called, on_move_data
             on_move_called += 1
             on_move_data = data
-        a = pymtcore.MTCoreWidget()
+        a = pymtcore.CoreWidget()
         self.failUnless(on_move_called == 0)
         self.failUnless(on_move_data == None)
         a.connect('on_move', callback_on_move)
@@ -70,7 +70,7 @@ class CoreWidgetEventTestCase(unittest.TestCase):
             global on_move_called
             on_move_called = 2
 
-        a = pymtcore.MTCoreWidget()
+        a = pymtcore.CoreWidget()
         self.failUnless(on_move_called == 0)
         a.connect('on_move', callback)
         a.x = 50
@@ -89,7 +89,7 @@ class CoreWidgetEventTestCase(unittest.TestCase):
         self.failUnless(on_move_called == 2)
 
     def testEventConnectDisconnectInvalid(self):
-        a = pymtcore.MTCoreWidget()
+        a = pymtcore.CoreWidget()
         a.disconnect('on_move', None)
         a.disconnect('on_move', 456)
         a.connect('on_move', None)

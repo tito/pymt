@@ -5,28 +5,28 @@ __all__ = ['CoreWidgetTestCase']
 
 class CoreWidgetTestCase(unittest.TestCase):
     def testWidgetMethodsAvailability(self):
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'add_widget'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'remove_widget'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'draw'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'on_draw'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'on_touch_down'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'on_touch_move'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'on_touch_up'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'on_update'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'to_local'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'to_parent'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'to_widget'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'to_window'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'get_parent_window'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'get_parent_layout'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'get_root_window'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'connect'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'disconnect'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'dispatch_event'))
-        self.failUnless(hasattr(pymtcore.MTCoreWidget, 'dispatch_event_internal'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'add_widget'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'remove_widget'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'draw'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'on_draw'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'on_touch_down'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'on_touch_move'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'on_touch_up'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'on_update'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'to_local'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'to_parent'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'to_widget'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'to_window'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'get_parent_window'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'get_parent_layout'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'get_root_window'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'connect'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'disconnect'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'dispatch_event'))
+        self.failUnless(hasattr(pymtcore.CoreWidget, 'dispatch_event_internal'))
 
     def testWidgetDefaultValues(self):
-        widget = pymtcore.MTCoreWidget()
+        widget = pymtcore.CoreWidget()
         self.failUnless(widget.visible == True)
         self.failUnless(widget._get_x() == 0)
         self.failUnless(widget._get_y() == 0)
@@ -37,24 +37,24 @@ class CoreWidgetTestCase(unittest.TestCase):
         self.failUnless(widget._get_center() == (50, 50))
 
     def testWidgetCreation(self):
-        widget = pymtcore.MTCoreWidget()
+        widget = pymtcore.CoreWidget()
         self.failUnless(widget is not None)
 
     def testWidgetChildrenVectorIn(self):
-        widget1 = pymtcore.MTCoreWidget()
-        widget2 = pymtcore.MTCoreWidget()
+        widget1 = pymtcore.CoreWidget()
+        widget2 = pymtcore.CoreWidget()
         widget1.add_widget(widget2)
         self.failUnless(widget2 in widget1.children)
 
     def testWidgetChildrenVector0(self):
-        widget1 = pymtcore.MTCoreWidget()
-        widget2 = pymtcore.MTCoreWidget()
+        widget1 = pymtcore.CoreWidget()
+        widget2 = pymtcore.CoreWidget()
         widget1.add_widget(widget2)
         self.failUnless(widget1.children[0] == widget2)
 
     def testWidgetAppendRemoveChildren(self):
-        widget1 = pymtcore.MTCoreWidget()
-        widget2 = pymtcore.MTCoreWidget()
+        widget1 = pymtcore.CoreWidget()
+        widget2 = pymtcore.CoreWidget()
         self.failUnless(widget2 not in widget1.children)
         self.failUnless(len(widget1.children) == 0)
 
@@ -67,26 +67,26 @@ class CoreWidgetTestCase(unittest.TestCase):
         self.failUnless(widget2 not in widget1.children)
 
     def testWidgetInvalidRemoveChildren(self):
-        widget1 = pymtcore.MTCoreWidget()
+        widget1 = pymtcore.CoreWidget()
         widget1.remove_widget(None)
 
     def testWidgetInheritance(self):
-        class SubWidget(pymtcore.MTCoreWidget):
+        class SubWidget(pymtcore.CoreWidget):
             def __init__(self):
                 super(SubWidget, self).__init__()
                 self.var = 0
             def on_update(self, data):
                 self.var += 1
                 super(SubWidget, self).on_update(data)
-        widget1 = pymtcore.MTCoreWidget()
+        widget1 = pymtcore.CoreWidget()
         widget2 = SubWidget()
         widget1.add_widget(widget2)
         widget2.dispatch_event('on_update', ())
         self.failUnless(widget2.var == 1)
 
     def testWidgetReferenceCount(self):
-        widget = pymtcore.MTCoreWidget()
-        child = pymtcore.MTCoreWidget()
+        widget = pymtcore.CoreWidget()
+        child = pymtcore.CoreWidget()
         self.failUnless(widget.get_ref_count() == 1)
         self.failUnless(child.get_ref_count() == 1)
         widget.add_widget(child)
@@ -111,35 +111,35 @@ class CoreWidgetTestCase(unittest.TestCase):
         self.failUnless(child.parent == None)
 
     def testWidgetTransformationToLocal(self):
-        widget = pymtcore.MTCoreWidget()
+        widget = pymtcore.CoreWidget()
         res = widget.to_local(1, 2)
         self.failUnless(type(res) == tuple)
         self.failUnless(len(res) == 2)
         self.failUnless(res == (1, 2))
 
     def testWidgetTransformationToParent(self):
-        widget = pymtcore.MTCoreWidget()
+        widget = pymtcore.CoreWidget()
         res = widget.to_parent(1, 2)
         self.failUnless(type(res) == tuple)
         self.failUnless(len(res) == 2)
         self.failUnless(res == (1, 2))
 
     def testWidgetTransformationToWidget(self):
-        widget = pymtcore.MTCoreWidget()
+        widget = pymtcore.CoreWidget()
         res = widget.to_widget(1, 2)
         self.failUnless(type(res) == tuple)
         self.failUnless(len(res) == 2)
         self.failUnless(res == (1, 2))
 
     def testWidgetTransformationToWindow(self):
-        widget = pymtcore.MTCoreWidget()
+        widget = pymtcore.CoreWidget()
         res = widget.to_widget(1, 2)
         self.failUnless(type(res) == tuple)
         self.failUnless(len(res) == 2)
         self.failUnless(res == (1, 2))
 
     def testWidgetVisible(self):
-        widget = pymtcore.MTCoreWidget()
+        widget = pymtcore.CoreWidget()
         self.failUnless(widget.visible == True)
         widget.hide()
         self.failUnless(widget.visible == False)
@@ -147,7 +147,7 @@ class CoreWidgetTestCase(unittest.TestCase):
         self.failUnless(widget.visible == True)
 
     def testWidgetPosWithAccessor(self):
-        widget = pymtcore.MTWidget()
+        widget = pymtcore.CoreWidget()
         widget._set_pos((54, 32))
         self.failUnless(widget._get_x() == 54)
         self.failUnless(widget._get_y() == 32)
@@ -159,7 +159,7 @@ class CoreWidgetTestCase(unittest.TestCase):
         self.failUnless(widget.center == (104, 82))
 
     def testWidgetPosWithProperties(self):
-        widget = pymtcore.MTWidget()
+        widget = pymtcore.CoreWidget()
         widget.pos = (54, 32)
         self.failUnless(widget.x == 54)
         self.failUnless(widget.y == 32)
@@ -167,7 +167,7 @@ class CoreWidgetTestCase(unittest.TestCase):
         self.failUnless(widget.center == (104, 82))
 
     def testWidgetPositionProperties(self):
-        widget = pymtcore.MTWidget()
+        widget = pymtcore.CoreWidget()
         widget.x = 2
         self.failUnless(widget.x == 2)
         self.failUnless(widget.pos == (2, 0))
@@ -186,7 +186,7 @@ class CoreWidgetTestCase(unittest.TestCase):
         self.failUnless(widget.pos == (10, 10))
 
     def testWidgetCenterProperties(self):
-        widget = pymtcore.MTWidget()
+        widget = pymtcore.CoreWidget()
         widget.size = 10, 10
         widget.center = 10, 10
         self.failUnless(widget.x == 5)
@@ -196,7 +196,7 @@ class CoreWidgetTestCase(unittest.TestCase):
         self.failUnless(widget.center == (15, 15))
 
     def testWidgetSizeProperties(self):
-        widget = pymtcore.MTWidget()
+        widget = pymtcore.CoreWidget()
         widget.width = 2
         self.failUnless(widget.width == 2)
         self.failUnless(widget.size == (2, 100))

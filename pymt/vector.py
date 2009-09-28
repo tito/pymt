@@ -218,10 +218,10 @@ def matrix_inv_mult(m, v):
         return Vector(result[0,0],result[0,1])
     else:
         mat = Matrix([
-            RowVector(m[0:4]),
-            RowVector(m[4:8]),
-            RowVector(m[8:12]),
-            RowVector(m[12:16])] )
+            RowVector(list(m[0])),
+            RowVector(list(m[1])),
+            RowVector(list(m[2])),
+            RowVector(list(m[3]))] )
         vec = RowVector(v)
         result = vec*mat.inverse()
 

@@ -110,7 +110,8 @@ CoreImage::CoreImage(std::string filename)
 
     this->texture   = NULL;
 
-    this->load();
+    if ( filename != "" )
+        this->load();
 }
 
 CoreImage::~CoreImage()

@@ -140,6 +140,8 @@ void CoreText::provider_refresh(void)
     if ( this->cr == NULL )
         return;
 
+    cairo_set_font_size(this->cr, 24);
+
     cairo_text_extents(this->cr, this->label.c_str(), &extents);
     std::cout << "Text <" << this->label.c_str() << "> is " << extents.width << "x" << extents.height << std::endl;
 
@@ -154,7 +156,12 @@ void CoreText::provider_refresh(void)
         this->provider_create();
     }
 
+    cairo_set_font_size(this->cr, 24);
+
+    cairo_move_to(this->cr, 0, extents.height);
+    cairo_set_source_rgb(this->cr, 1., 1., 1.);
     cairo_show_text(this->cr, this->label.c_str());
+    cairo_surface_write_to_png(this->cr_surface, "output.png");
 
     if ( this->image != NULL )
     {
@@ -162,7 +169,7 @@ void CoreText::provider_refresh(void)
              this->image->_height != this->height )
         {
             // TODO add unref
-            delete this->image;
+            //delete this->image;
             this->image = NULL;
         }
     }

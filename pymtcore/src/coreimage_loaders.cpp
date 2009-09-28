@@ -27,7 +27,10 @@ bool load_with_imlib2(CoreImage &image)
     Imlib_Image surface;
     surface = imlib_load_image(image.filename.c_str());
     if ( surface == NULL )
+    {
+        std::cout << "Imlib2: unable to load image <" << image.filename << ">" << std::endl;
         return false;
+    }
 
 	imlib_context_set_image(surface);
 

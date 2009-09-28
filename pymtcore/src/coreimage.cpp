@@ -165,18 +165,18 @@ Texture *CoreImage::create_texture(bool rectangle)
         type = GL_UNSIGNED_BYTE;
         data = this->pixels;
 
-		std::cout << "Texture: unable to found appropriate type for " <<
-			this->format << ", do conversion." << std::endl;
+		std::cout << "Image: unable to found appropriate type for <" <<
+			this->format << ">, do conversion." << std::endl;
 		data = PyMem_Malloc(this->_width * this->_height * 4);
 		if ( data == NULL )
 		{
-			std::cerr << "Texture: unable to request memory" << std::endl;
+			std::cerr << "Image: unable to request memory" << std::endl;
 			return NULL;
 		}
 
 		if ( this->format == "BGRA" )
 		{
-			std::cout << "Texture: convert from ARGB to BGRA" << std::endl;
+			std::cout << "Image: convert from ARGB to BGRA" << std::endl;
 			unsigned char *out	= (unsigned char *)data,
 						  *in	= (unsigned char *)this->pixels,
 						  *limit	= out + this->_width * this->_height * 4;
@@ -190,7 +190,7 @@ Texture *CoreImage::create_texture(bool rectangle)
 		}
 		else
 		{
-			std::cout << "Texture: no converter found from format " << this->format << std::endl;
+			std::cout << "Image: no converter found from format " << this->format << std::endl;
 			data = this->pixels;
 		}
     }

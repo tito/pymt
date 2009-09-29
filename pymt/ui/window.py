@@ -287,12 +287,6 @@ class MTWindow(pymtcore.CoreWindow):
             pyglet.image.get_buffer_manager().get_color_buffer().save(filename=filename)
         '''
 
-    def to_widget(self, x, y):
-        return (x, y)
-
-    def to_window(self, x, y, initial=True):
-        return (x, y)
-
     def get_root_window(self):
         return self
 

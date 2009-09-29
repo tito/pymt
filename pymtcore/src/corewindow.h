@@ -70,7 +70,7 @@ public:
 		return p;
     }
 
-    virtual pos2d to_window(double x, double y)
+    virtual pos2d to_window(double x, double y, bool initial=false)
     {
 		pos2d p = { x, y };
 		return p;

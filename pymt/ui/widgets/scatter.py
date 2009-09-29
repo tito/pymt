@@ -112,6 +112,9 @@ class MTScatterWidget(MTWidget):
             return self.on_transform(data)
         return super(MTScatterWidget, self).dispatch_event_internal(event_name, data)
 
+    def on_transform(self, data):
+        pass
+
     def add_widget(self, w, side='front', front=True):
         '''Add a widget to a side of scatter.
 
@@ -284,7 +287,7 @@ class MTScatterWidget(MTWidget):
             glMultMatrixf(self.transform_mat)
             self.transform_mat = glGetFloatv(GL_MODELVIEW_MATRIX)
 
-        self.dispatch_event('on_transform', angle, scale, trans, point)
+        self.dispatch_event('on_transform', (angle, scale, trans, point))
 
     def rotate_zoom_move(self, touchID, x, y):
 
@@ -348,7 +351,7 @@ class MTScatterWidget(MTWidget):
             return
         self._x, self._y = center
         if do_event:
-            self.dispatch_event('on_move', self._x, self._y)
+            self.dispatch_event('on_move', (self._x, self._y))
     center = property(_get_center, _set_center)
     pos = property(_get_center, _set_center)
 
@@ -380,7 +383,8 @@ class MTScatterWidget(MTWidget):
         else:
             return self.scale
 
-    def on_touch_down(self, touch):
+    def on_touch_down(self, data):
+        touch = data[0]
         x, y = touch.x, touch.y
 
         # if the touch isnt on the widget we do nothing
@@ -390,7 +394,7 @@ class MTScatterWidget(MTWidget):
         # let the child widgets handle the event if they want
         touch.push()
         touch.x, touch.y = self.to_local(x, y)
-        if super(MTScatterWidget, self).on_touch_down(touch):
+        if super(MTScatterWidget, self).on_touch_down((touch,)):
             touch.pop()
             return True
         touch.pop()
@@ -405,14 +409,15 @@ class MTScatterWidget(MTWidget):
         self.touches[touch.uid] = Vector(x, y)
         return True
 
-    def on_touch_move(self, touch):
+    def on_touch_move(self, data):
+        touch = data[0]
         x, y = touch.x, touch.y
 
         # let the child widgets handle the event if they want
         if self.collide_point(x, y) and not touch.grab_current == self:
             touch.push()
             touch.x, touch.y = self.to_local(x, y)
-            if super(MTScatterWidget, self).on_touch_move(touch):
+            if super(MTScatterWidget, self).on_touch_move((touch,)):
                 touch.pop()
                 return True
             touch.pop()
@@ -450,24 +455,25 @@ class MTScatterWidget(MTWidget):
             # dispatch move event
             #self._set_center(self.to_parent(0, 0), do_event=False)
             center = self.to_local(*self.to_parent(0, 0))
-            if self._x == center[0] and self._y == center[1]:
+            if self.x == center[0] and self.y == center[1]:
                 return
             self._x, self._y = center
-            self.dispatch_event('on_move', self.x, self.y)
+            self.dispatch_event('on_move', (self.x, self.y))
             return True
 
         # stop porpagation if its within our bounds
         if self.collide_point(x, y):
             return True
 
-    def on_touch_up(self, touch):
+    def on_touch_up(self, data):
+        touch = data[0]
         x, y = touch.x, touch.y
 
         # if the touch isnt on the widget we do nothing
         if not touch.grab_state:
             touch.push()
             touch.x, touch.y = self.to_local(x, y)
-            if super(MTScatterWidget, self).on_touch_up(touch):
+            if super(MTScatterWidget, self).on_touch_up((touch,)):
                 touch.pop()
                 return True
             touch.pop()

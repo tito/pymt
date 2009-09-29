@@ -87,7 +87,7 @@ class MTKinetic(MTWidget):
         touch.grab(self)
         getAvailableTouchs().append(ktouch)
         # and dispatch !
-        return super(MTKinetic, self).on_touch_down(ktouch)
+        return super(MTKinetic, self).on_touch_down((ktouch,))
 
     def on_touch_move(self, data):
         touch, = data
@@ -101,7 +101,7 @@ class MTKinetic(MTWidget):
         else:
             ktouch.move([touch.x, touch.y])
         ktouch.userdata = touch.userdata
-        ret = super(MTKinetic, self).on_touch_move(ktouch)
+        ret = super(MTKinetic, self).on_touch_move((ktouch,))
 
         # dispatch ktouch also in grab mode
         for wid in ktouch.grab_list:
@@ -113,7 +113,7 @@ class MTKinetic(MTWidget):
                 ktouch.x, ktouch.y = wid.to_parent(*wid.to_widget(ktouch.x, ktouch.y))
             ktouch.grab_current = wid
             ktouch.grab_state   = True
-            wid.dispatch_event('on_touch_move', ktouch)
+            wid.dispatch_event('on_touch_move', (ktouch,))
             ktouch.grab_state   = False
             ktouch.grab_current = None
             ktouch.pop()
@@ -152,12 +152,12 @@ class MTKinetic(MTWidget):
                 # simulation finished
                 type = 'up'
                 getAvailableTouchs().remove(ktouch)
-                super(MTKinetic, self).on_touch_up(ktouch)
+                super(MTKinetic, self).on_touch_up((ktouch,))
                 todelete.append(touchID)
             else:
                 # simulation in progress
                 type = 'move'
-                super(MTKinetic, self).on_touch_move(ktouch)
+                super(MTKinetic, self).on_touch_move((ktouch,))
 
             # dispatch ktouch also in grab mode
             for wid in ktouch.grab_list:
@@ -170,9 +170,9 @@ class MTKinetic(MTWidget):
                 ktouch.grab_current = wid
                 ktouch.grab_state   = True
                 if type == 'move':
-                    wid.dispatch_event('on_touch_move', ktouch)
+                    wid.dispatch_event('on_touch_move', (ktouch,))
                 else:
-                    wid.dispatch_event('on_touch_up', ktouch)
+                    wid.dispatch_event('on_touch_up', (ktouch,))
                 ktouch.grab_state   = False
                 ktouch.grab_current = None
                 ktouch.pop()

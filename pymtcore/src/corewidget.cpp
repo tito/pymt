@@ -140,6 +140,7 @@ bool CoreWidget::on_draw(PyObject *data)
     this->draw();
     for ( i = this->children.begin(); i != this->children.end(); i++ )
         (*i)->dispatch_event("on_draw", data);
+	this->drawend();
 
     return true;
 }
@@ -262,6 +263,10 @@ bool CoreWidget::dispatch_event(const std::string &event_name, PyObject *data)
 //
 
 void CoreWidget::draw(void)
+{
+}
+
+void CoreWidget::drawend(void)
 {
 }
 

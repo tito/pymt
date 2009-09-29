@@ -85,7 +85,7 @@ class MTWindow(pymtcore.CoreWindow):
 
         if enable_simulator:
             self.sim = MTSimulator()
-            self.add_widget(self.sim)
+            self.sim.parent = self
 
         # get window params, user options before config option
         params = {}
@@ -259,22 +259,6 @@ class MTWindow(pymtcore.CoreWindow):
             return None
         return self.on_text_motion_select_handlers[-1]
 
-    def add_widget(self, w):
-        '''Add a widget on window'''
-        self.children.append(w)
-        w.parent = self
-        '''
-        if self.sim:
-            self.sim.bring_to_front()
-        '''
-
-    def remove_widget(self, w):
-        '''Remove a widget from window'''
-        if not w in self.children:
-            return
-        self.children.remove(w)
-        w.parent = None
-
         '''
         if self.show_fps:
             self.fps_display.draw()
@@ -335,6 +319,10 @@ class MTWindow(pymtcore.CoreWindow):
     def on_mouse_release(self, x, y, button, modifiers):
         if self.sim:
             return self.sim.on_mouse_release(x, y, button, modifiers)
+
+    def drawend(self):
+        self.sim.dispatch_event('on_draw', ())
+        super(MTWindow, self).drawend()
 
 
 # Register all base widgets

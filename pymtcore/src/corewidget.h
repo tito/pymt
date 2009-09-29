@@ -69,6 +69,7 @@ public:
     //
 
     virtual void draw(void);
+    virtual void drawend(void);
 
     //
     // Collisions functions

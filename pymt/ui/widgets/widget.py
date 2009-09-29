@@ -182,8 +182,12 @@ class MTWidget(pymtcore.CoreWidget):
     def bring_to_front(self):
         '''Remove it from wherever it is and add it back at the top'''
         if self.parent:
-            self.parent.remove_widget(self)
-            self.parent.add_widget(self)
+            parent = self.parent
+            print "p", self.parent
+            parent.remove_widget(self)
+            print "a", self.parent
+            parent.add_widget(self)
+            print "b", self.parent
 
     def hide(self):
         '''Hide the widget'''

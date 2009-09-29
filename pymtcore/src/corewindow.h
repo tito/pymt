@@ -64,16 +64,16 @@ public:
 	// Transformation
 	//
 
-    virtual void to_widget(double x, double y, double *ox, double *oy)
+    virtual pos2d to_widget(double x, double y)
     {
-        *ox = x;
-        *oy = y;
+		pos2d p = { x, y };
+		return p;
     }
 
-    virtual void to_window(double x, double y, double *ox, double *oy)
+    virtual pos2d to_window(double x, double y)
     {
-        *ox = x;
-        *oy = y;
+		pos2d p = { x, y };
+		return p;
     }
 
 	virtual CoreWidget *get_root_window(void)

@@ -283,47 +283,51 @@ bool CoreWidget::collide_point(double x, double y)
 // Coordinate transformation
 //
 
-void CoreWidget::to_local(double x, double y, double *ox, double *oy)
+pos2d CoreWidget::to_local(double x, double y)
 {
-    *ox = x;
-    *oy = y;
+	pos2d p = { x, y };
+	return p;
 }
 
-void CoreWidget::to_parent(double x, double y, double *ox, double *oy)
+pos2d CoreWidget::to_parent(double x, double y)
 {
-    *ox = x;
-    *oy = y;
+	pos2d p = { x, y };
+	return p;
 }
 
-void CoreWidget::to_widget(double x, double y, double *ox, double *oy)
+pos2d CoreWidget::to_widget(double x, double y)
 {
+	pos2d p;
+
     if ( this->parent != NULL )
     {
-        this->parent->to_widget(x, y, ox, oy);
-        x = *ox;
-        y = *oy;
+        p = this->parent->to_widget(x, y);
+        x = p.x;
+        y = p.y;
     }
 
-    this->to_local(x, y, ox, oy);
+    return this->to_local(x, y);
 }
 
-void CoreWidget::to_window(double x, double y, double *ox, double *oy, bool initial)
+pos2d CoreWidget::to_window(double x, double y, bool initial)
 {
+	pos2d p;
+
     if ( initial == false )
     {
-        this->to_parent(x, y, ox, oy);
-        x = *ox;
-        y = *oy;
+        p = this->to_parent(x, y);
+        x = p.x;
+        y = p.y;
     }
 
     if ( this->parent != NULL )
     {
-        this->parent->to_window(x, y, ox, oy, false);
-        return;
+        return this->parent->to_window(x, y, false);
     }
 
-    *ox = x;
-    *oy = y;
+	p.x = x;
+	p.y = y;
+	return p;
 }
 
 
@@ -477,7 +481,7 @@ void CoreWidget::_set_pos(pos2d &p)
     this->__dispatch_event_dd("on_move", this->__pos.x, this->__pos.y);
 }
 
-pos2d &CoreWidget::_get_pos(void)
+pos2d CoreWidget::_get_pos(void)
 {
     return this->__pos;
 }
@@ -490,7 +494,7 @@ void CoreWidget::_set_size(pos2d &p)
     this->__dispatch_event_dd("on_resize", this->__size.x, this->__size.y);
 }
 
-pos2d &CoreWidget::_get_size(void)
+pos2d CoreWidget::_get_size(void)
 {
     return this->__size;
 }
@@ -503,7 +507,7 @@ void CoreWidget::_set_center(pos2d &p)
     this->_set_pos(pos);
 }
 
-pos2d &CoreWidget::_get_center(void)
+pos2d CoreWidget::_get_center(void)
 {
     static pos2d pos;
     pos.x = this->__pos.x + this->__size.x / 2.;

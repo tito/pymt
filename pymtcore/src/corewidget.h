@@ -80,10 +80,10 @@ public:
     // Coordinate transformation
     //
 
-    virtual void to_local(double x, double y, double *ox, double *oy);
-    virtual void to_parent(double x, double y, double *ox, double *oy);
-    virtual void to_widget(double x, double y, double *ox, double *oy);
-    virtual void to_window(double x, double y, double *ox, double *oy, bool initial=true);
+    virtual pos2d to_local(double x, double y);
+    virtual pos2d to_parent(double x, double y);
+    virtual pos2d to_widget(double x, double y);
+    virtual pos2d to_window(double x, double y, bool initial=true);
 
     //
     // Accessors for window / layout
@@ -119,11 +119,11 @@ public:
     virtual void _set_height(double value);
     virtual double _get_height(void);
     virtual void _set_pos(pos2d &p);
-    virtual pos2d &_get_pos(void);
+    virtual pos2d _get_pos(void);
     virtual void _set_size(pos2d &p);
-    virtual pos2d &_get_size(void);
+    virtual pos2d _get_size(void);
     virtual void _set_center(pos2d &p);
-    virtual pos2d &_get_center(void);
+    virtual pos2d _get_center(void);
 
     //
     // Public properties

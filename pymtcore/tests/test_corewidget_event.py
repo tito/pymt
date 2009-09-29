@@ -21,7 +21,7 @@ class CoreWidgetEventTestCase(unittest.TestCase):
                 self.moveto = data
         a = MyWidget()
         a.x = 50
-        self.failUnless(a.moveto == (50, 0))
+        self.failUnless(a.moveto == (50., 0.))
         a.y = 50
         self.failUnless(a.moveto == (50, 50))
         a.pos = (-88, 55)

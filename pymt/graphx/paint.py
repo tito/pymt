@@ -34,11 +34,12 @@ def set_brush(sprite, size=None):
         `size` : int, default to None
             Size of brush
     '''
+    from ..image import Image
     global _brushs_cache, _brush_size, _brush_filename, _brush_texture
     if size:
         _brush_size = size
     if not sprite in _brushs_cache:
-        point_sprite_img = pyglet.image.load(sprite)
+        point_sprite_img = Image(sprite)
         _brush_texture = point_sprite_img.get_texture()
         _brushs_cache[sprite] = _brush_texture
     _brush_filename = sprite

@@ -4,28 +4,29 @@ PLUGIN_TITLE = 'Touch Tracer'
 PLUGIN_AUTHOR = 'Thomas Hansen'
 PLUGIN_DESCRIPTION = ''
 
-import pyglet
-from pyglet.gl import *
+from OpenGL.GL import *
 from pymt import *
 from random import random
 
-label = pyglet.text.Label('', font_size=10,anchor_x="left", anchor_y="top")
-label2 = pyglet.text.Label('', font_size=8,anchor_x="left", anchor_y="top")
-crosshair = pyglet.sprite.Sprite(pyglet.image.load('../touchtracer/crosshair.png'))
-crosshair.scale = 0.6
+label = CoreText()
+#pyglet.text.Label('', font_size=10,anchor_x="left", anchor_y="top")
+label2 = CoreText()
+#pyglet.text.Label('', font_size=8,anchor_x="left", anchor_y="top")
+#crosshair = pyglet.sprite.Sprite(pyglet.image.load('../touchtracer/crosshair.png'))
+#crosshair.scale = 0.6
 
 
 def drawLabel(x,y, ID):
-    label.text = "touch["+ str(ID) +"]"
-    label2.text = "x:"+str(int(x))+" y:"+str(int(y))
-    label.x = label2.x = x +20
-    label.y = label2.y = y +20
-    label2.y -= 20
-    label.draw()
-    label2.draw()
-    crosshair.x = x -12
-    crosshair.y = y -12
-    crosshair.draw()
+    label.label = "touch["+ str(ID) +"]"
+    label2.label = "x:"+str(int(x))+" y:"+str(int(y))
+    #label.x = label2.x = x +20
+    #label.y = label2.y = y +20
+    #label2.y -= 20
+    #label.draw()
+    #label2.draw()
+    #crosshair.x = x -12
+    #    crosshair.y = y -12
+    #crosshair.draw()
 
 
 class TouchTracer(MTWidget):
@@ -33,17 +34,20 @@ class TouchTracer(MTWidget):
         super(TouchTracer, self).__init__(**kwargs)
         self.touchPositions = {}
 
-    def on_touch_down(self, touch):
+    def on_touch_down(self, data):
+        touch = data[0]
         color = (random(), random(), random())
         self.touchPositions[touch.id] = [(touch.id,color,touch.x,touch.y)]
 
 
-    def on_touch_up(self, touch):
+    def on_touch_up(self, data):
+        touch = data[0]
         if touch.id in self.touchPositions:
             del self.touchPositions[touch.id]
 
 
-    def on_touch_move(self, touch):
+    def on_touch_move(self, data):
+        touch = data[0]
         if touch.id in self.touchPositions:
             self.touchPositions[touch.id].append((touch.x,touch.y))
 

@@ -207,11 +207,7 @@ def matrix_inv_mult(m, v):
     '''Takes an openGL matrix and a 2 Vector and returns
     the inverse of teh matrix applied to the vector'''
     if _use_numpy:
-        mat = numpy.matrix(
-        [[m[0],m[1],m[2],m[3]],
-         [m[4],m[5],m[6],m[7]],
-         [m[8],m[9],m[10],m[11]],
-         [m[12],m[13],m[14],m[15]]] )
+        mat = numpy.matrix(m)
         vec = numpy.matrix(v)
         inv = mat.I
         result = vec*inv

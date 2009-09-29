@@ -112,17 +112,17 @@ void CoreWidget::remove_widget(CoreWidget *widget)
 // Event functions
 //
 
-bool CoreWidget::on_move(void *data)
+bool CoreWidget::on_move(PyObject *data)
 {
     return true;
 }
 
-bool CoreWidget::on_resize(void *data)
+bool CoreWidget::on_resize(PyObject *data)
 {
     return true;
 }
 
-bool CoreWidget::on_update(void *data)
+bool CoreWidget::on_update(PyObject *data)
 {
     std::vector<CoreWidget *>::iterator i = this->children.begin();
     for ( ; i != this->children.end(); i++ )
@@ -130,7 +130,7 @@ bool CoreWidget::on_update(void *data)
     return true;
 }
 
-bool CoreWidget::on_draw(void *data)
+bool CoreWidget::on_draw(PyObject *data)
 {
     std::vector<CoreWidget *>::iterator i;
 
@@ -144,7 +144,7 @@ bool CoreWidget::on_draw(void *data)
     return true;
 }
 
-bool CoreWidget::on_touch_down(void *data)
+bool CoreWidget::on_touch_down(PyObject *data)
 {
     std::vector<CoreWidget *>::iterator i = this->children.begin();
     for ( ; i != this->children.end(); i++ )
@@ -153,7 +153,7 @@ bool CoreWidget::on_touch_down(void *data)
     return false;
 }
 
-bool CoreWidget::on_touch_move(void *data)
+bool CoreWidget::on_touch_move(PyObject *data)
 {
     std::vector<CoreWidget *>::iterator i = this->children.begin();
     for ( ; i != this->children.end(); i++ )
@@ -162,7 +162,7 @@ bool CoreWidget::on_touch_move(void *data)
     return false;
 }
 
-bool CoreWidget::on_touch_up(void *data)
+bool CoreWidget::on_touch_up(PyObject *data)
 {
     std::vector<CoreWidget *>::iterator i = this->children.begin();
     for ( ; i != this->children.end(); i++ )
@@ -207,27 +207,27 @@ void CoreWidget::disconnect(const std::string &event_name, PyObject *callback)
     }
 }
 
-bool CoreWidget::dispatch_event_internal(const std::string &event_name, void *datadispatch)
+bool CoreWidget::dispatch_event_internal(const std::string &event_name, PyObject *data)
 {
     if ( event_name == "on_move" )
-        return this->on_move(datadispatch);
+        return this->on_move(data);
     if ( event_name == "on_resize" )
-        return this->on_resize(datadispatch);
+        return this->on_resize(data);
     if ( event_name == "on_draw" )
-        return this->on_draw(datadispatch);
+        return this->on_draw(data);
     if ( event_name == "on_update" )
-        return this->on_update(datadispatch);
+        return this->on_update(data);
     if ( event_name == "on_touch_up" )
-        return this->on_touch_up(datadispatch);
+        return this->on_touch_up(data);
     if ( event_name == "on_touch_move" )
-        return this->on_touch_move(datadispatch);
+        return this->on_touch_move(data);
     if ( event_name == "on_touch_down" )
-        return this->on_touch_down(datadispatch);
+        return this->on_touch_down(data);
     std::cout << "unknown dispatch_event_internal for " << event_name << std::endl;
     return false;
 }
 
-bool CoreWidget::dispatch_event(const std::string &event_name, void *datadispatch)
+bool CoreWidget::dispatch_event(const std::string &event_name, PyObject *data)
 {
     PyObject *result;
     std::vector<callback_t>::iterator i;
@@ -240,7 +240,7 @@ bool CoreWidget::dispatch_event(const std::string &event_name, void *datadispatc
 
         // event found, let's call the function !
         result = PyObject_CallFunctionObjArgs(
-            (*i).callback, (PyObject *)datadispatch, NULL);
+            (*i).callback, data, NULL);
         if ( PyErr_Occurred() )
 		{
 			PyErr_Print();
@@ -253,7 +253,7 @@ bool CoreWidget::dispatch_event(const std::string &event_name, void *datadispatc
         return PyObject_IsTrue(result) ? true : false;
     }
 
-    return this->dispatch_event_internal(event_name, datadispatch);
+    return this->dispatch_event_internal(event_name, data);
 }
 
 

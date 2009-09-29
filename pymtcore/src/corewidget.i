@@ -24,6 +24,12 @@
     arg2 = $input;
 }
 
+%typemap(directorin) PyObject *data
+{
+    $input = data;
+    Py_INCREF(data);
+}
+
 
 %typemap(directorout) pos2d
 {

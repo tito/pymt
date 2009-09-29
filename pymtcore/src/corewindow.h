@@ -96,12 +96,12 @@ public:
 	// Events
 	//
 
-	virtual bool on_close(void *data)
+	virtual bool on_close(PyObject *data)
 	{
 		return true;
 	}
 
-	virtual bool on_resize(void *data)
+	virtual bool on_resize(PyObject *data)
 	{
 		double width = this->_get_width(),
 			   height = this->_get_height();
@@ -122,7 +122,7 @@ public:
 		return CoreWidget::on_resize(data);
 	}
 
-	virtual bool on_draw(void *data)
+	virtual bool on_draw(PyObject *data)
 	{
 		static int fps_timer = 0;
 		static int fps_frame = 0;
@@ -155,7 +155,7 @@ public:
 		return true;
 	}
 
-	virtual bool on_update(void *data)
+	virtual bool on_update(PyObject *data)
 	{
 		static SDL_Event event;
 		static char tmp[2];
@@ -210,11 +210,11 @@ public:
 	// Event dispatching
 	//
 	
-	virtual bool dispatch_event_internal(const std::string &event_name, void *datadispatch)
+	virtual bool dispatch_event_internal(const std::string &event_name, PyObject *data)
 	{
 		if ( event_name == "on_close" )
-			return this->on_close(datadispatch);
-		return CoreWidget::dispatch_event_internal(event_name, datadispatch);
+			return this->on_close(data);
+		return CoreWidget::dispatch_event_internal(event_name, data);
 	}
 
 

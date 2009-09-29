@@ -47,13 +47,13 @@ public:
     // Event functions
     //
 
-    virtual bool on_move(void *data);
-    virtual bool on_resize(void *data);
-    virtual bool on_update(void *data);
-    virtual bool on_draw(void *data);
-    virtual bool on_touch_down(void *data);
-    virtual bool on_touch_move(void *data);
-    virtual bool on_touch_up(void *data);
+    virtual bool on_move(PyObject *data);
+    virtual bool on_resize(PyObject *data);
+    virtual bool on_update(PyObject *data);
+    virtual bool on_draw(PyObject *data);
+    virtual bool on_touch_down(PyObject *data);
+    virtual bool on_touch_move(PyObject *data);
+    virtual bool on_touch_up(PyObject *data);
 
     //
     // Event dispatching
@@ -61,8 +61,8 @@ public:
 
     void connect(const std::string &event_name, PyObject *callback);
     void disconnect(const std::string &event_name, PyObject *callback);
-	virtual bool dispatch_event_internal(const std::string &event_name, void *datadispatch);
-    virtual bool dispatch_event(const std::string &event_name, void *datadispatch);
+	virtual bool dispatch_event_internal(const std::string &event_name, PyObject *data);
+    virtual bool dispatch_event(const std::string &event_name, PyObject *data);
 
     //
     // Drawing functions

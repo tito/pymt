@@ -124,7 +124,7 @@ CoreImage::~CoreImage()
 
     if ( this->texture != NULL )
     {
-        delete this->texture;
+        this->texture->unref();
         this->texture = NULL;
     }
 }
@@ -218,7 +218,10 @@ Texture *CoreImage::create_texture(bool rectangle)
 Texture *CoreImage::get_texture(bool rectangle)
 {
     if ( this->texture == NULL )
+	{
         this->texture = this->create_texture(rectangle);
+		this->texture->ref();
+	}
     return this->texture;
 }
 

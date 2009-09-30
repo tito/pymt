@@ -17,6 +17,23 @@ AbstractImage::AbstractImage(int width, int height)
 {
     this->width		= width;
     this->height	= height;
+	this->refcount	= 0;
+}
+
+AbstractImage::~AbstractImage(void)
+{
+}
+
+void AbstractImage::ref(void)
+{
+	this->refcount++;
+}
+
+void AbstractImage::unref(void)
+{
+	this->refcount--;
+	if ( this->refcount <= 0 )
+		delete this;
 }
 
 Texture::Texture(int width, int height, unsigned int target, unsigned int id) :
@@ -36,6 +53,10 @@ Texture::Texture(int width, int height, unsigned int target, unsigned int id) :
 	this->tex_coords[9] = 0.;
 	this->tex_coords[10] = 1.;
 	this->tex_coords[11] = 0.;
+}
+
+Texture::~Texture()
+{
 }
 
 Texture *Texture::create(int width, int height, int internalformat, bool rectangle)
@@ -97,7 +118,7 @@ Texture *Texture::create(int width, int height, int internalformat, bool rectang
 	return reinterpret_cast<Texture *>(texture->get_region(0, 0, width, height));
 }
 
-void *Texture::get_image_data()
+void *Texture::get_image_data(void)
 {
 	return NULL;
 }
@@ -118,5 +139,10 @@ TextureRegion::TextureRegion(int x, int y, int width, int height, Texture *owner
 	this->x		= x;
 	this->y		= y;
 	this->owner = owner;
+	this->owner->ref();
 }
 
+TextureRegion::~TextureRegion(void)
+{
+	this->owner->unref();
+}

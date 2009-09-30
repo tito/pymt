@@ -12,4 +12,7 @@
 }
 }
 
+%feature("ref")   AbstractImage "$this->ref();"
+%feature("unref") AbstractImage "$this->unref();"
+
 %include "texture.h"

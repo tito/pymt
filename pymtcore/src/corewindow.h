@@ -1,11 +1,13 @@
 #ifndef __PYMTCORE_COREWINDOW
 #define __PYTMCORE_COREWINDOW
 
-#include <SDL/SDL.h>
+#include <GL/glew.h>
 #include <GL/gl.h>
+#include <SDL/SDL.h>
 #include "private.h"
 
 static bool is_sdl_init = false;
+static bool is_glew_init = false;
 
 class CoreWindow : public CoreWidget
 {
@@ -47,6 +49,10 @@ public:
 		}
 
 		screen = SDL_SetVideoMode((int)this->_get_width(), (int)this->_get_height(), this->bpp, flags);
+
+        if ( is_glew_init == false )
+            this->init_glew();
+
 		if ( screen == NULL )
 		{
 			// TODO add exception
@@ -333,7 +339,18 @@ protected:
 			// TODO launch exception
 			return;
 		}
+
 		is_sdl_init = true;
+    }
+
+    void init_glew(void)
+    {
+        GLenum err = glewInit();
+        if ( err != GLEW_OK )
+        {
+            std::cerr << "Unable to initialize GLEW " << glewGetErrorString(err) << std::endl;
+            return;
+        }
 	}
 
 private:

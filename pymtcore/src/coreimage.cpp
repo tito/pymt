@@ -2,6 +2,7 @@
 #include <vector>
 #include <exception>
 #include <stdlib.h>
+#include <GL/glew.h>
 #include "coreimage.h"
 #include "coreimage_private.h"
 #include "private.h"
@@ -72,9 +73,6 @@ bool _get_gl_format_and_type(std::string &format, GLuint *outformat, GLuint *out
         *outformat = GL_RGBA;
         *outtype = GL_UNSIGNED_BYTE;
     }
-    else
-        return false;
-    return true;
 /**
     else if ( format == "ARGB' and
           gl_info.have_extension('GL_EXT_bgra') and
@@ -86,10 +84,15 @@ bool _get_gl_format_and_type(std::string &format, GLuint *outformat, GLuint *out
     else if (format == 'BGR' and
           gl_info.have_extension('GL_EXT_bgra')):
         return GL_BGR, GL_UNSIGNED_BYTE
-    else if (format == 'BGRA' and
-          gl_info.have_extension('GL_EXT_bgra')):
-        return GL_BGRA, GL_UNSIGNED_BYTE
 **/
+    else if ( format == "BGRA" and glewIsSupported("GL_EXT_bgra") )
+	{
+		*outformat = GL_BGRA;
+		*outtype = GL_UNSIGNED_BYTE;
+	}
+    else
+        return false;
+    return true;
 }
 
 CoreImage::CoreImage(std::string filename)

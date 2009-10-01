@@ -67,12 +67,16 @@ for lib_file in lib_files:
     env.ParseConfig('pkg-config %s --cflags --libs' % lib_file)
 
 # OpenGL
-env.Append(LIBS=['GL', 'GLU'])
+env.Append(LIBS=['GL', 'GLU', 'GLEW'])
 
 # Optionnals
 conf = Configure(env)
 image_providers = []
 text_providers = []
+if not conf.CheckHeader('GL/glew.h'):
+    print 'ERROR: GLew is missing (http://glew.sourceforge.net/)'
+    sys.exit(-1)
+
 if conf.CheckHeader('SDL_image.h'):
     image_providers.append('SDL_image')
     env.Append(LIBS=['SDL_image'])

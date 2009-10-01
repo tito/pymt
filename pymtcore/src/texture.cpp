@@ -1,4 +1,5 @@
 #include <iostream>
+#include <GL/glew.h>
 #include "texture.h"
 #include "private.h"
 

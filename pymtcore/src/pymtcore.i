@@ -4,6 +4,9 @@
 #define SWIG_FILE_WITH_INIT
 #include <iostream>
 #include <vector>
+#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include "Python.h"
 %}
 

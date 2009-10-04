@@ -8,6 +8,8 @@ from glob import glob
 import re
 import sys
 
+error = False
+
 def SWIGSharedLibrary(env, library, sources, **args):
     swigre = re.compile('(.*).i')
     if env.WhereIs('swig') is None:
@@ -82,6 +84,7 @@ libraries_available = {
 }
 providers_image = []
 providers_text = []
+core_needed = ('gl', 'glu', 'glew')
 
 conf = Configure(env)
 
@@ -156,9 +159,16 @@ print
 
 if len(providers_image) == 0:
     print 'ERROR: you must have at least one image provider (i)'
-    sys.exit(-1)
+    error = True
 
 if len(providers_text) == 0:
     print 'ERROR: you must have at least one text provider (t)'
+    error = True
+
+for lib in core_needed:
+    if not libraries_available[lib]:
+        print 'ERROR: Core library %s is needed.' % lib
+        error = True
+if error:
     sys.exit(-1)
 

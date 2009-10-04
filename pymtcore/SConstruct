@@ -162,4 +162,3 @@ if len(providers_text) == 0:
     print 'ERROR: you must have at least one text provider (t)'
     sys.exit(-1)
 
-sys.exit(-1)

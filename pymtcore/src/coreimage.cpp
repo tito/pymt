@@ -1,3 +1,4 @@
+#include <Python.h>
 #include <iostream>
 #include <vector>
 #include <exception>
@@ -7,7 +8,9 @@
 #include "texture.h"
 #include "coreimage.h"
 #include "coreimage_private.h"
+#include "utils.h"
 #include "private.h"
+#include "graphx.h"
 
 std::vector<loader_t> loaders;
 
@@ -150,6 +153,13 @@ bool CoreImage::load()
 
 void CoreImage::draw()
 {
+    pos2d   p, s;
+    Texture *texture = this->get_texture();
+    p.x = this->x;
+    p.y = this->y;
+    s.x = this->_width;
+    s.y = this->_height;
+    drawTexturedRectangle(texture, p, s, texture->tex_coords);
 }
 
 Texture *CoreImage::create_texture(bool rectangle)

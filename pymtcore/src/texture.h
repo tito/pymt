@@ -40,7 +40,7 @@ public:
 
 	unsigned int	id;
 	unsigned int	target;
-	double			tex_coords[12];
+	float			tex_coords[12];
 
 protected:
 	virtual ~Texture();

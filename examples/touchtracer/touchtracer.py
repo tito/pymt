@@ -12,8 +12,7 @@ label = CoreText()
 #pyglet.text.Label('', font_size=10,anchor_x="left", anchor_y="top")
 label2 = CoreText()
 #pyglet.text.Label('', font_size=8,anchor_x="left", anchor_y="top")
-#crosshair = pyglet.sprite.Sprite(pyglet.image.load('../touchtracer/crosshair.png'))
-#crosshair.scale = 0.6
+crosshair = CoreImage('../touchtracer/crosshair.png')
 
 
 def drawLabel(x,y, ID):
@@ -24,9 +23,9 @@ def drawLabel(x,y, ID):
     #label2.y -= 20
     #label.draw()
     #label2.draw()
-    #crosshair.x = x -12
-    #    crosshair.y = y -12
-    #crosshair.draw()
+    crosshair.x = x - crosshair._width / 2.
+    crosshair.y = y - crosshair._height / 2.
+    crosshair.draw()
 
 
 class TouchTracer(MTWidget):

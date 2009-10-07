@@ -1,5 +1,5 @@
-#include <iostream>
 #include <Python.h>
+#include <iostream>
 #include "corewidget.h"
 
 class CoreWidgetException_s : public std::exception

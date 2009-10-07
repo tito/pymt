@@ -2,25 +2,13 @@
 #define __PYTMCORE_COREWIDGET
 
 #include <vector>
+#include "utils.h"
 
 typedef struct callback_s
 {
     std::string event_name;
     PyObject    *callback;
 } callback_t;
-
-struct pos2d
-{
-    double x;
-    double y;
-
-    char *__str__(void)
-    {
-        static char tmp[128];
-        snprintf(tmp, sizeof(tmp), "(%f, %f)", this->x, this->y);
-        return tmp;
-    }
-};
 
 class CoreWidget
 {

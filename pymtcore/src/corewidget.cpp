@@ -167,7 +167,7 @@ bool CoreWidget::on_touch_up(PyObject *data)
 {
     std::vector<CoreWidget *>::iterator i = this->children.begin();
     for ( ; i != this->children.end(); i++ )
-        if ( (*i)->dispatch_event("on_touch_move", data) )
+        if ( (*i)->dispatch_event("on_touch_up", data) )
             return true;
     return false;
 }

@@ -7,6 +7,8 @@
 
 void drawTexturedRectangle(Texture *texture, pos2d pos, pos2d size, float texcoords[12])
 {
+    glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_TEXTURE_BIT);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(texture->target);
@@ -22,4 +24,6 @@ void drawTexturedRectangle(Texture *texture, pos2d pos, pos2d size, float texcoo
     glTexCoord2d(texcoords[9], texcoords[10]);
     glVertex2f((GLfloat)pos.x, (GLfloat)(pos.y + size.y));
     glEnd();
+
+    glPopAttrib();
 }

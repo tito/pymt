@@ -62,7 +62,7 @@ std::string CoreText::_get_fontname(void)
     return this->fontname;
 }
 
-void CoreText::_set_fontsize(double size)
+void CoreText::_set_fontsize(float size)
 {
     if ( this->fontsize == size )
         return;
@@ -166,8 +166,8 @@ void CoreText::provider_refresh(void)
     if ( cairo_image_surface_get_width(this->cr_surface) != extents.width ||
          cairo_image_surface_get_height(this->cr_surface) != extents.height )
     {
-        this->width = extents.width;
-        this->height = extents.height;
+        this->width = (int)extents.width;
+        this->height = (int)extents.height;
         this->provider_destroy();
         this->provider_create();
     }
@@ -198,8 +198,8 @@ void CoreText::provider_refresh(void)
     }
 
     // draw cairo onto texture
-    this->image->_width     = extents.width;
-    this->image->_height    = extents.height;
+    this->image->_width     = (int)extents.width;
+    this->image->_height    = (int)extents.height;
     this->image->offset     = 0;
     this->image->pitch      = 0;
     this->image->format     = "BGRA";

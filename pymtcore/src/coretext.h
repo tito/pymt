@@ -20,7 +20,7 @@ public:
     void _set_fontname(const std::string &fontname);
     std::string _get_fontname(void);
 
-    void _set_fontsize(double size);
+    void _set_fontsize(float size);
     double _get_fontsize(void);
 
     void _set_bold(bool bold);

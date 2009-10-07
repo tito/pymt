@@ -1,9 +1,9 @@
 #ifndef __PYMTCORE_COREIMAGE
 #define __PYMTCORE_COREIMAGE
 
-#include "texture.h"
-
 void core_image_init();
+
+class Texture;
 
 class CoreImage
 {

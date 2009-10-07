@@ -107,8 +107,8 @@ __swig_getmethods__["height"] = _pymtcore.CoreWidget__get_height
 %}
 
 
-%feature("ref")   CoreWidget "$this->ref();"
-%feature("unref") CoreWidget "$this->unref(1);"
+%feature("ref")   CoreWidget        "$this->ref();"
+%feature("unref") CoreWidget        "$this->unref(1);"
 
 %director CoreWidget;
 %include "corewidget.h"

@@ -18,7 +18,7 @@ AbstractImage::AbstractImage(int width, int height)
 {
     this->width		= width;
     this->height	= height;
-	this->refcount	= 0;
+	this->__ref_count	= 0;
 }
 
 AbstractImage::~AbstractImage(void)
@@ -27,14 +27,19 @@ AbstractImage::~AbstractImage(void)
 
 void AbstractImage::ref(void)
 {
-	this->refcount++;
+	this->__ref_count++;
 }
 
 void AbstractImage::unref(void)
 {
-	this->refcount--;
-	if ( this->refcount <= 0 )
+	this->__ref_count--;
+	if ( this->__ref_count <= 0 )
 		delete this;
+}
+
+int AbstractImage::get_ref_count(void)
+{
+    return this->__ref_count;
 }
 
 Texture::Texture(int width, int height, unsigned int target, unsigned int id) :
@@ -124,7 +129,7 @@ void *Texture::get_image_data(void)
 	return NULL;
 }
 
-void *Texture::get_texture(bool rectangle)
+Texture *Texture::get_texture(bool rectangle)
 {
 	return this;
 }

@@ -12,6 +12,7 @@ __all__ = [
     'paintLine',
 ]
 
+import pymtcore
 from OpenGL.GL import *
 #from pyglet.image import Texture, TextureRegion
 #from pyglet.text import Label
@@ -58,18 +59,18 @@ def set_brush_size(size):
 
 def get_texture_id(texture):
     '''Return the openid of texture'''
-    if isinstance(texture, TextureRegion):
+    if isinstance(texture, pymtcore.TextureRegion):
         return texture.owner.id
-    elif isinstance(texture, Texture):
+    elif isinstance(texture, pymtcore.Texture):
         return texture.id
     else:
         return texture
 
 def get_texture_target(texture):
     '''Return the target of texture. If none, return GL_TEXTURE_2D'''
-    if isinstance(texture, TextureRegion):
+    if isinstance(texture, pymtcore.TextureRegion):
         return texture.owner.target
-    elif isinstance(texture, Texture):
+    elif isinstance(texture, pymtcore.Texture):
         return texture.target
     else:
         return GL_TEXTURE_2D
@@ -99,7 +100,7 @@ def paintLine(points, numsteps=None, **kwargs):
     kwargs.setdefault('sfactor', GL_SRC_ALPHA)
     kwargs.setdefault('dfactor', GL_ONE_MINUS_SRC_ALPHA)
     blending = GlBlending(sfactor=kwargs.get('sfactor'), dfactor=kwargs.get('dfactor'))
-    with DO(blending, gx_enable(GL_POINT_SPRITE_ARB), gx_enable(_brush_texture.target)):
+    with DO(blending, gx_enable(GL_POINT_SPRITE_ARB), gx_enable(get_texture_target(_brush_texture))):
 
         # prepare env
         set_texture(_brush_texture.id, target=_brush_texture.target)

@@ -5,16 +5,19 @@
 #include "Python.h"
 
 class TextureRegion;
+//class Texture;
 
 class AbstractImage
 {
 public:
 	AbstractImage(int width, int height);
+	virtual ~AbstractImage(void);
 	void ref(void);
 	void unref(void);
+    int get_ref_count(void);
 
 	virtual void *get_image_data(void) = 0;
-	virtual void *get_texture(bool rectangle=false) = 0;
+	//virtual Texture *get_texture(bool rectangle=false) = 0;
 	//virtual void *get_mipmapped_texture() = 0;
 	virtual TextureRegion *get_region(int x, int y, int width, int height) = 0;
 
@@ -22,8 +25,7 @@ public:
 	int height;
 
 protected:
-	virtual ~AbstractImage(void);
-	int	refcount;
+	int	__ref_count;
 };
 
 class Texture : public AbstractImage
@@ -33,7 +35,7 @@ public:
 
     static Texture *create(int width, int height, int internalformat=GL_RGBA, bool rectangle=false);
 	virtual void *get_image_data();
-	virtual void *get_texture(bool rectangle=false);
+	virtual Texture *get_texture(bool rectangle=false);
 	virtual TextureRegion *get_region(int x, int y, int width, int height);
 
 	unsigned int	id;

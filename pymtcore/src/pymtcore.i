@@ -24,6 +24,8 @@
     catch (Swig::DirectorException &e) { SWIG_fail; }
 }
 
+%include "coretypemaps.i"
+
 %include "coreimage.i"
 %include "corewidget.i"
 %include "corewindow.i"

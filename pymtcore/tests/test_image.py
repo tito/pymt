@@ -6,6 +6,14 @@ from OpenGL.GL import *
 __all__ = ['CoreImageTestCase']
 
 class CoreImageTestCase(unittest.TestCase):
+    def testImageTextureRefcount(self):
+        filename = os.path.join(os.path.dirname(__file__), 'pngtest.png')
+        image = pymtcore.CoreImage(filename)
+        tex = image.get_texture()
+        self.failUnless(tex.get_ref_count() == 2)
+        del image
+        self.failUnless(tex.get_ref_count() == 1)
+
     def testImagePNG(self):
         filename = os.path.join(os.path.dirname(__file__), 'pngtest.png')
         image = pymtcore.CoreImage(filename)
@@ -48,10 +56,5 @@ class CoreImageTestCase(unittest.TestCase):
         wid = pymtcore.CoreWidget()
         wid.connect('on_draw', on_wid_draw)
         win.add_widget(wid)
-
-        # start displaying for 1s
-        import time
-        start = time.time()
-        while time.time() - start < 0.1:
-            win.dispatch_event('on_update', [])
-            win.dispatch_event('on_draw', [])
+        win.dispatch_event('on_update', [])
+        win.dispatch_event('on_draw', [])

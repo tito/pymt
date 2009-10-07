@@ -3,6 +3,8 @@
 #include <exception>
 #include <stdlib.h>
 #include <GL/glew.h>
+
+#include "texture.h"
 #include "coreimage.h"
 #include "coreimage_private.h"
 #include "private.h"

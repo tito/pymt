@@ -32,122 +32,52 @@ class InputPostprocDoubleTap(object):
         self.touches = {}
 
     def find_double_tap(self, ref):
-        for touchID in self.touches:
-            touch = self.touches[touchID]
-            if touch.__pp_is_timeout or \
-               touch.__pp_have_event_down or \
-               touch.__pp_do_event != 'up':
+        '''Find a double tap touch within self.touches.
+        The touch must be not a previous double tap, and the distance must be
+        ok'''
+        for touchid in self.touches:
+            if ref.id == touchid:
                 continue
-            distance = pymt.Vector.distance(pymt.Vector(ref.sx, ref.sy),
-                                            pymt.Vector(touch.sx, touch.sy))
+            type, touch = self.touches[touchid]
+            if touch.is_double_tap:
+                continue
+            distance = pymt.Vector.distance(
+                pymt.Vector(ref.sx, ref.sy),
+                pymt.Vector(touch.oxpos, touch.oypos))
             if distance > self.double_tap_distance:
                 continue
             touch.double_tap_distance = distance
             return touch
+        return None
+
 
     def process(self, events):
-        gen_events = []
-        remove_list = []
-
-        # check old/new touches
+        # first, check if a touch down have a double tap
         for type, touch in events:
-
-            # double tap ?
-            if touch.is_double_tap:
-                gen_events.append((type, touch))
-                continue
-
-            # release ?
-            if type == 'up':
-                if touch.id in self.touches:
-                    self.touches[touch.id].__pp_do_event = 'up'
-
-            # new touch ?
-            elif not touch.id in self.touches:
-
-                # select first touch only on down state
-                if type != 'down':
-                    pymt.pymt_logger.warning('Ignore new touch with initial state at %s' % type)
-                    continue
-
-                # search for a double tap
+            if type == 'down':
                 touch_double_tap = self.find_double_tap(touch)
                 if touch_double_tap:
-                    # ignore old double tap
-                    remove_list.append(touch_double_tap.id)
-                    # set new touch as double tap touch
                     touch.is_double_tap = True
                     touch.double_tap_time = touch.time_start - touch_double_tap.time_start
                     touch.double_tap_distance = touch_double_tap.double_tap_distance
-                    touch.time_start = touch_double_tap.time_start
-                    gen_events.append((type, touch))
-                    continue
-                else:
-                    # can be a double tap candidate, add some infos
-                    touch.__pp_do_event = 'down'
-                    touch.__pp_have_event_down = False
-                    touch.__pp_no_event = False
-                    touch.__pp_is_timeout = False
 
-                # initialization
-                self.touches[touch.id] = touch
+            # add the touch internaly
+            self.touches[touch.id] = (type, touch)
 
-            # just a move ?
-            else:
-                # update next event
-                self.touches[touch.id].__pp_do_event = type
-
-        # now, generate appropriate events
+        # second, check if up-touch is timeout for double tap
+        to_remove = []
         time_current = clock.get_default().time()
-        for touchID in self.touches:
-            touch = self.touches[touchID]
-
-            if touch.is_double_tap:
+        for touchid in self.touches:
+            type, touch = self.touches[touchid]
+            if type != 'up':
                 continue
-
-            # not timeout state, calculate !
-            if not touch.__pp_is_timeout:
-                if time_current - touch.time_start > self.double_tap_time:
-                    touch.__pp_is_timeout = True
-                if not touch.__pp_is_timeout:
-                    # at least, check double_tap_distance
-                    distance = pymt.Vector.distance(pymt.Vector(touch.oxpos, touch.oypos),
-                                                    pymt.Vector(touch.sx, touch.sy))
-                    if distance < self.double_tap_distance:
-                        # ok, time and distance is ok, don't generate.
-                        continue
-                    touch.__pp_is_timeout = True
-
-            # ok, now check event !
-            event_str = None
-            if not touch.__pp_have_event_down:
-                touch.sx, touch.sy = touch.oxpos, touch.oypos
-                event_str = 'down'
-                touch.__pp_have_event_down = True
-            elif touch.__pp_do_event:
-                event_str = touch.__pp_do_event
-                # no down 2 times!
-                if event_str == 'down':
-                    event_str = None
-                touch.__pp_do_event = False
-
-            # event to do ?
-            if not event_str:
+            if time_current - touch.time_start < self.double_tap_time:
                 continue
-            if not touch.__pp_no_event:
-                '''
-                if event_str == 'down':
-                    xpos, ypos = cur.dxpos, cur.dypos
-                else:
-                    xpos, ypos = cur.xpos, cur.ypos
-                '''
-                gen_events.append((event_str, touch))
+            to_remove.append(touch.id)
 
-            if event_str == 'up':
-                remove_list.append(touch.id)
+        # third, remove expired internal touches
+        for touchid in to_remove:
+            if touchid in self.touches:
+                del self.touches[touchid]
 
-        for touchID in remove_list:
-            if touchID in self.touches:
-                del self.touches[touchID]
-
-        return gen_events
+        return events

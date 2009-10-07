@@ -52,8 +52,8 @@ class Image(object):
                 self.__setattr__(attr, arg.__getattribute__(attr))
         elif type(arg) in (pyglet.image.Texture, pyglet.image.TextureRegion):
             self.texture    = arg.texture
-            self.width      = texture.width
-            self.height     = texture.height
+            self.width      = self.texture.width
+            self.height     = self.texture.height
         elif type(arg) == str:
             self.filename   = arg
         else:

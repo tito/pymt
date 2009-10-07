@@ -222,6 +222,7 @@ class MTScatterWidget(MTWidget):
     def to_parent(self, x, y):
         if self.__to_parent == (x, y):
             return (self.__to_parent_x, self.__to_parent_y)
+        
         self.__to_parent = (x, y)
         self.new_point = matrix_mult(self.transform_mat, (x, y, 0, 1))
         self.__to_parent_x, self.__to_parent_y = self.new_point.x, self.new_point.y
@@ -281,6 +282,10 @@ class MTScatterWidget(MTWidget):
             glTranslatef(-point.x, -point.y,0)
             glMultMatrixf(self.transform_mat)
             glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
+
+        #invalidate cashed values for parent transform calucaltion
+        self.__to_local = (-9999, 9999)
+        self.__to_parent = (-9999, 9999)
 
         self.dispatch_event('on_transform', angle, scale, trans, point)
 

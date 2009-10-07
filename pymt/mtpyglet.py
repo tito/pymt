@@ -126,7 +126,6 @@ class TouchEventLoop(pyglet.app.EventLoop):
         global pymt_providers
 
         # first, aquire input events
-        self.input_events = []
         for provider in pymt_providers:
             provider.update(dispatch_fn=self._dispatch_input)
 
@@ -137,6 +136,8 @@ class TouchEventLoop(pyglet.app.EventLoop):
         # real dispatch input
         for type, touch in self.input_events:
             self.post_dispatch_input(type=type, touch=touch)
+
+        self.input_events = []
 
 
     def idle(self):

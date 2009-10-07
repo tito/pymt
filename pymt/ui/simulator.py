@@ -46,7 +46,7 @@ class MTSimulator(MTWidget):
             if modifiers & key.MOD_SHIFT:
                 cur.is_double_tap = True
             self.touches[id] = cur
-            getEventLoop().post_dispatch_input('down', cur)
+            getEventLoop()._dispatch_input('down', cur)
         return True
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
@@ -55,7 +55,7 @@ class MTSimulator(MTWidget):
             rx = x / float(self.get_parent_window().width)
             ry = 1. - (y / float(self.get_parent_window().height))
             cur.move([rx, ry])
-            getEventLoop().post_dispatch_input('move', cur)
+            getEventLoop()._dispatch_input('move', cur)
         return True
 
     def on_mouse_release(self, x, y, button, modifiers):
@@ -65,7 +65,7 @@ class MTSimulator(MTWidget):
             ry = 1. - (y / float(self.get_parent_window().height))
             cur.move([rx, ry])
             del self.touches[cur.id]
-            getEventLoop().post_dispatch_input('up', cur)
+            getEventLoop()._dispatch_input('up', cur)
         return True
 
 # Register all base widgets

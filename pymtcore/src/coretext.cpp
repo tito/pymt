@@ -1,6 +1,8 @@
 #include <Python.h>
 #include <iostream>
 #include "coretext.h"
+#include "utils.h"
+#include "graphx.h"
 
 CoreText::CoreText()
 {
@@ -12,6 +14,8 @@ CoreText::CoreText()
     this->need_refresh  = true;
     this->width         = width;
     this->height        = height;
+    this->x             = 0;
+    this->y             = 0;
     this->image         = NULL;
     this->provider_create();
 }
@@ -19,6 +23,17 @@ CoreText::CoreText()
 CoreText::~CoreText()
 {
     this->provider_destroy();
+}
+
+void CoreText::draw(void)
+{
+    pos2d   p, s;
+    Texture *texture = this->get_texture();
+    p.x = this->x;
+    p.y = this->y;
+    s.x = this->width;
+    s.y = this->height;
+    drawTexturedRectangle(texture, p, s, texture->tex_coords);
 }
 
 void CoreText::_set_label(const std::string &label)

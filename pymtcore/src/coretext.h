@@ -31,16 +31,21 @@ public:
 
     Texture *get_texture();
 
+    void draw(void);
+
+    float           x;
+    float           y;
+
 protected:
     std::string     label;
     std::string     fontname;
-    double          fontsize;
+    float           fontsize;
     bool            bold;
     bool            multiline;
     bool            need_refresh;
-    CoreImage       *image;
     int             width;
     int             height;
+    CoreImage       *image;
 
     void            provider_create(void);
     void            provider_destroy(void);

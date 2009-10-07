@@ -9,8 +9,10 @@ from pymt import *
 from random import random
 
 label = CoreText()
+label.fontsize = 10
 #pyglet.text.Label('', font_size=10,anchor_x="left", anchor_y="top")
 label2 = CoreText()
+label.fontsize = 8
 #pyglet.text.Label('', font_size=8,anchor_x="left", anchor_y="top")
 crosshair = CoreImage('../touchtracer/crosshair.png')
 
@@ -18,11 +20,11 @@ crosshair = CoreImage('../touchtracer/crosshair.png')
 def drawLabel(x,y, ID):
     label.label = "touch["+ str(ID) +"]"
     label2.label = "x:"+str(int(x))+" y:"+str(int(y))
-    #label.x = label2.x = x +20
-    #label.y = label2.y = y +20
-    #label2.y -= 20
-    #label.draw()
-    #label2.draw()
+    label.x = label2.x = x +20
+    label.y = label2.y = y +20
+    label2.y -= 20
+    label.draw()
+    label2.draw()
     crosshair.x = x - crosshair._width / 2.
     crosshair.y = y - crosshair._height / 2.
     crosshair.draw()

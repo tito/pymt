@@ -7,7 +7,7 @@ from pyglet.gl import *
 __all__ = ['set_color']
 
 def set_color(*colors, **kwargs):
-    '''Define current color to be used ::
+    '''Define current color to be used (as float values between 0 and 1) ::
 
         set_color(1, 0, 0, 1)
         drawLabel('Hello', pos=(100, 0))
@@ -38,4 +38,3 @@ def set_color(*colors, **kwargs):
     if len(colors) == 3:
         glColor3f(*colors)
         glDisable(GL_BLEND)
-

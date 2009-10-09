@@ -159,7 +159,6 @@ void CoreText::provider_refresh(void)
     cairo_set_font_size(this->cr, 24);
 
     cairo_text_extents(this->cr, this->label.c_str(), &extents);
-    std::cout << "Text <" << this->label.c_str() << "> is " << extents.width << "x" << extents.height << std::endl;
 
     /* update the size of the surface
      */

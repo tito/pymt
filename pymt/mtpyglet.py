@@ -25,6 +25,7 @@ from input import *
 # list upon creation
 touch_event_listeners   = []
 touch_list              = []
+pymt_windows            = []
 pymt_providers          = []
 pymt_evloop             = None
 frame_dt                = 0.01 # init to a non-zero value, to prevent user zero division
@@ -37,6 +38,10 @@ def getFrameDt():
 def getAvailableTouchs():
     global touch_list
     return touch_list
+
+def getWindowInstances():
+    global pymt_windows
+    return pymt_windows
 
 def getEventLoop():
     global pymt_evloop
@@ -84,6 +89,7 @@ class TouchEventLoop(pyglet.app.EventLoop):
                 if type == 'down':
                     listener.dispatch_event('on_touch_down', touch)
                 elif type == 'move':
+                    #print "post_dispatch", touch.id, touch.x
                     listener.dispatch_event('on_touch_move', touch)
                 elif type == 'up':
                     listener.dispatch_event('on_touch_up', touch)
@@ -120,12 +126,15 @@ class TouchEventLoop(pyglet.app.EventLoop):
         touch.grab_state = False
 
     def _dispatch_input(self, type, touch):
+        # have to remeber sx,sy..otherwise if multiple events for this touch only attr inside touch will be dispatched for all prior events also
+         
         self.input_events.append((type, touch))
 
     def dispatch_input(self):
         global pymt_providers
 
         # first, aquire input events
+        
         for provider in pymt_providers:
             provider.update(dispatch_fn=self._dispatch_input)
 
@@ -135,10 +144,9 @@ class TouchEventLoop(pyglet.app.EventLoop):
 
         # real dispatch input
         for type, touch in self.input_events:
-            self.post_dispatch_input(type=type, touch=touch)
+            self.post_dispatch_input(type=type, touch=touch)            
 
         self.input_events = []
-
 
     def idle(self):
         # update dt
@@ -161,6 +169,49 @@ class TouchEventLoop(pyglet.app.EventLoop):
 
         return 0
 
+
+
+from ctypes import *
+from pyglet.window import _PlatformEventHandler
+WM_TOUCH         = 0x0240
+TOUCHEVENTF_MOVE = 0x0001
+TOUCHEVENTF_DOWN = 0x0002
+TOUCHEVENTF_UP   = 0x0004
+WM_MOUSEMOVE = 512
+WM_LBUTTONDOWN = 513
+WM_LBUTTONUP = 514
+MI_WP_SIGNATURE = 0xFF515700
+SIGNATURE_MASK = 0xFFFFFF00
+PEN_EVENT_TOUCH_MASK = 0x80
+
+
+
+class TOUCHINPUT(Structure):
+    _fields_= [
+                ("x",c_ulong),
+                ("y",c_ulong),
+                ("pSource",c_ulong),
+                ("id",c_ulong),
+                ("flags",c_ulong),
+                ("mask",c_ulong),
+                ("time",c_ulong),
+                ("extraInfo",c_ulong),
+                ("xContact",c_ulong),
+                ("yContact",c_ulong)
+               ]
+    
+    def screen_x(self):
+        return self.x/100.0
+    def screen_y(self):
+        return self.y/100.0
+    def get_event_type(self):
+        if self.flags & TOUCHEVENTF_MOVE:
+            return 'move'
+        if self.flags & TOUCHEVENTF_DOWN:
+            return 'down'
+        if self.flags & TOUCHEVENTF_UP:
+            return 'up'
+
 #any window that inherhits this or an instance will have event handlers triggered on Tuio touch events
 class TouchWindow(pyglet.window.Window):
     '''Base implementation of Tuio event in top of pyglet window.
@@ -179,9 +230,14 @@ class TouchWindow(pyglet.window.Window):
         self.register_event_type('on_touch_move')
         self.register_event_type('on_touch_up')
         touch_event_listeners.append(self)
+        pymt_windows.append(self)
+        self.wm_touch_events = []
+        
+        self.last_mouse_event_device = 'mouse'
 
     def on_close(self, *largs):
         touch_event_listeners.remove(self)
+        pymt_windows.remove(self)
         super(TouchWindow, self).on_close(*largs)
 
     def on_touch_down(self, touch):
@@ -192,7 +248,35 @@ class TouchWindow(pyglet.window.Window):
 
     def on_touch_up(self, touch):
         pass
+    
+    
+    #has to go here?  I tried attaching at runtime in event handle, but didnt work...
+    #one nice side effect os that each window has a seperate q..so we can dispatch directly to only that window ( how its meant to be with MW_TOUCH) inside input provider
+    @_PlatformEventHandler(WM_TOUCH)
+    def wm_touch_callback(self, msg, wparam, lParam):
+        touches = (TOUCHINPUT * wparam)()
+        windll.user32.GetTouchInputInfo(c_int(lParam), wparam, pointer(touches), sizeof(TOUCHINPUT))
+        self.wm_touch_events.extend(touches)
 
+    
+    def _wnd_proc(self, hwnd, msg, wParam, lParam):
+        if msg == WM_MOUSEMOVE:
+            info = windll.user32.GetMessageExtraInfo()
+            if (info & SIGNATURE_MASK) == MI_WP_SIGNATURE:
+                if info & PEN_EVENT_TOUCH_MASK:
+                    self.last_mouse_event_device = 'touch'
+                else:
+                    self.last_mouse_event_device = 'pen'
+            else:
+                self.last_mouse_event_device = 'mouse'
+                        
+        return super(TouchWindow, self)._wnd_proc( hwnd, msg, wParam, lParam)
+    
+        
+
+            
+            
+            
 def pymt_usage():
     '''PyMT Usage: %s [OPTION...] ::
 

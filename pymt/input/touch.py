@@ -112,6 +112,8 @@ class Touch(object):
         self.double_tap_time = 0
         self.no_event = False
         self.userdata = {}
+    
+        self.device = 'touch'
 
         self.depack(args)
 

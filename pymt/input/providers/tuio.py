@@ -186,6 +186,7 @@ class Tuio2dObjTouch(Touch):
     '''
     def __init__(self, id, args):
         super(Tuio2dObjTouch, self).__init__(id, args)
+        self.device = 'touch'
 
     def depack(self, args):
         if len(args) < 5:

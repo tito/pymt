@@ -258,11 +258,15 @@ def drawLine(points, width=None):
 
     :Parameters:
         `points` : list
-            List of point to draw, len must be power of 2
-        `widget` : float, default to 5.0
+            List of corresponding coordinates representing the points that the
+            line comprises, like [x1, y1, x2, y2]. Hence, len(points) must be
+            a power of 2.
+        `width` : float, defaults to 5.0
             Default width of line
     '''
     style = GL_LINES
+    # XXX Where does the default of 5.0 for width come from? pyglet? opengl?
+    #     Should perhaps be set here explicitly instead.
     if width is not None:
         glPushAttrib(GL_LINE_BIT)
         glLineWidth(width)

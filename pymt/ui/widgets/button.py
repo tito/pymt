@@ -213,11 +213,12 @@ class MTImageButton(MTButton):
     def __init__(self, **kwargs):
         kwargs.setdefault('scale', 1.0)
         kwargs.setdefault('filename', None)
-        if kwargs.get('filename') is None:
-            raise Exception('No filename given to MTImageButton')
+        kwargs.setdefault('image', None)
+        if kwargs.get('filename') is None and kwargs.get('image') is None:
+            raise Exception('No filename or image given to MTImageButton')
 
         super(MTImageButton, self).__init__(**kwargs)
-        self.image          = None
+        self.image          = kwargs.get('image')
         self.scale          = kwargs.get('scale')
         self.filename		= kwargs.get('filename')
         self.size           = self.image.size
@@ -226,7 +227,8 @@ class MTImageButton(MTButton):
         return self._filename
     def _set_filename(self, filename):
         self._filename = filename
-        self.image     = Image(self.filename)
+        if filename: #dont set it if e.g. its None 
+            self.image     = Image(self.filename)
     filename = property(_get_filename, _set_filename)
 
     def draw(self):

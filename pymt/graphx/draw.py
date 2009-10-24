@@ -21,7 +21,22 @@ from pyglet.text import Label
 from paint import *
 from statement import *
 from colors import *
+from time import time
 import math
+
+label_cache = {}
+label_cache_purge = 2.
+label_cache_lastpurge = 0
+def _purge_drawLabel():
+    '''Purge label cache used for speedup drawLabel() call.
+    By default, label are purged after 2s idle.
+    '''
+    global label_cache, label_cache_purge, label_cache_lastpurge
+    label_cache_lastpurge = time()
+    for label in label_cache.keys():
+        tmp, dt = label_cache[label]
+        if label_cache_lastpurge - dt > label_cache_purge:
+            del label_cache[label]
 
 def drawLabel(label, pos=(0,0), **kwargs):
     '''Draw a label on the window.
@@ -40,6 +55,7 @@ def drawLabel(label, pos=(0,0), **kwargs):
         Use only for debugging, it's a performance killer function.
         The label is recreated each time the function is called !
     '''
+    global label_cache
     kwargs.setdefault('font_size', 16)
     kwargs.setdefault('center', True)
     if kwargs.get('center'):
@@ -49,10 +65,19 @@ def drawLabel(label, pos=(0,0), **kwargs):
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
     del kwargs['center']
-    temp_label = Label(label, **kwargs)
+    now = time()
+    if not label in label_cache:
+        temp_label = Label(label, **kwargs)
+    else:
+        temp_label, last_access = label_cache[label]
+    label_cache[label] = (temp_label, now)
     temp_label.x, temp_label.y = pos
     temp_label.draw()
+    # call purging every seconds
+    if now - label_cache_lastpurge > 1:
+        _purge_drawLabel()
     return temp_label.content_width
+
 
 def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
                          linewidth=None, precision=0.5, style=GL_POLYGON):

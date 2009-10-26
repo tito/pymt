@@ -58,13 +58,14 @@ class Touch(object):
 
     __uniq_id = 0
 
-    def __init__(self, id, args):
+    def __init__(self, device, id, args):
         if self.__class__ == Touch:
             raise NotImplementedError, 'class Touch is abstract'
 
         # Uniq ID
         Touch.__uniq_id += 1
         self.uid = Touch.__uniq_id
+        self.device = device
 
         # For push/pop
         self.attr = []
@@ -134,7 +135,7 @@ class Touch(object):
                     # i receive my grabbed touch
                 else:
                     # it's a normal touch
-            
+
             def on_touch_up(self, touch):
                 if touch.grab_current == self:
                     # i receive my grabbed touch, i must ungrab it !
@@ -202,4 +203,3 @@ class Touch(object):
     mot_accel = property(lambda self: self.m)
     rot_accel = property(lambda self: self.r)
     angle = property(lambda self: self.a)
-

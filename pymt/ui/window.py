@@ -15,12 +15,10 @@ from ..modules import pymt_modules
 from colors import css_get_style
 from factory import MTWidgetFactory
 from widgets import MTWidget
-from simulator import MTSimulator
 
 
 class MTWindow(TouchWindow):
-    '''MTWindow is a window widget who use MTSimulator
-    for generating touch event with mouse.
+    '''MTWindow is a window widget.
     Use MTWindow as main window application.
 
     :Parameters:
@@ -38,8 +36,6 @@ class MTWindow(TouchWindow):
             Display index to use
         `config` : `Config`
             Default configuration to pass on TouchWindow
-        `enable_simulator` : bool, default to True
-            Enable mouse simulator
 
     :Styles:
         `bg-color` : color
@@ -72,21 +68,9 @@ class MTWindow(TouchWindow):
         self.children = []
         self.parent = self
 
-        # add view + simulator
+        # add view
         if 'view' in kwargs:
             self.add_widget(kwargs.get('view'))
-
-        # if enablemouse is activated, add the simulator.
-        self.sim = None
-        if 'enable_simulator' in kwargs:
-            enable_simulator = kwargs.get('enable_simulator')
-        else:
-            enable_simulator = pymt.pymt_config.getboolean(
-                'pymt', 'enable_simulator')
-
-        if enable_simulator:
-            self.sim = MTSimulator()
-            self.add_widget(self.sim)
 
         # get window params, user options before config option
         params = {}
@@ -250,8 +234,6 @@ class MTWindow(TouchWindow):
         '''Add a widget on window'''
         self.children.append(w)
         w.parent = self
-        if self.sim:
-            self.sim.bring_to_front()
 
     def remove_widget(self, w):
         '''Remove a widget from window'''
@@ -266,7 +248,7 @@ class MTWindow(TouchWindow):
         self.clear()
 
     def on_draw(self):
-        '''Clear window, and dispatch event in root widget + simulator'''
+        '''Clear window, and dispatch event in root widget'''
         # Update children first
         for w in self.children:
             w.dispatch_event('on_update')
@@ -275,9 +257,6 @@ class MTWindow(TouchWindow):
         self.draw()
         for w in self.children:
             w.dispatch_event('on_draw')
-
-        if self.sim:
-            self.sim.dispatch_event('on_draw')
 
         if self.show_fps:
             self.fps_display.draw()
@@ -288,6 +267,15 @@ class MTWindow(TouchWindow):
                                        self.dump_format)
             #print pyglet.image.get_buffer_manager().get_color_buffer().get_texture()
             pyglet.image.get_buffer_manager().get_color_buffer().save(filename=filename)
+
+        self.draw_mouse_touch()
+
+    def draw_mouse_touch(self):
+        '''Compatibility for MouseTouch, drawing a little red circle around
+        under each mouse touches.'''
+        set_color(0.8, 0.2, 0.2, 0.7)
+        for t in [x for x in getAvailableTouchs() if x.device == 'mouse']:
+            drawCircle(pos=(t.x, t.y), radius=10)
 
     def to_widget(self, x, y):
         return (x, y)
@@ -344,18 +332,6 @@ class MTWindow(TouchWindow):
         for w in reversed(self.children):
             if w.dispatch_event('on_touch_up', touch):
                 return True
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        if self.sim:
-            return self.sim.dispatch_event('on_mouse_press', x, y, button, modifiers)
-
-    def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
-        if self.sim:
-            return self.sim.dispatch_event('on_mouse_drag', x, y, dx, dy, button, modifiers)
-
-    def on_mouse_release(self, x, y, button, modifiers):
-        if self.sim:
-            return self.sim.dispatch_event('on_mouse_release', x, y, button, modifiers)
 
     def on_resize(self, width, height):
         glViewport(0, 0, width, height)

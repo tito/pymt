@@ -8,7 +8,6 @@ import os
 import sys
 import doubletap
 import ignorelist
-import tuiosender
 
 pymt_postproc_modules = []
 
@@ -16,4 +15,3 @@ pymt_postproc_modules = []
 if os.path.basename(sys.argv[0]) not in ('sphinx-build', 'autobuild.py'):
     pymt_postproc_modules.append(ignorelist.InputPostprocIgnoreList())
     pymt_postproc_modules.append(doubletap.InputPostprocDoubleTap())
-    pymt_postproc_modules.append(tuiosender.TuioSender())

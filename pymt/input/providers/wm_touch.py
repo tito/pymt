@@ -5,7 +5,7 @@ from ctypes import *
 from ..provider import TouchProvider
 from ..factory import TouchFactory
 from ..touch import Touch
-from ...mtpyglet import getWindowInstances, TouchWindow, getEventLoop
+from ...mtpyglet import getWindow, TouchWindow, getEventLoop
 from ...utils import curry
 
 

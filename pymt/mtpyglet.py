@@ -25,7 +25,7 @@ from input import *
 # list upon creation
 touch_event_listeners   = []
 touch_list              = []
-pymt_windows            = []
+pymt_window             = None
 pymt_providers          = []
 pymt_evloop             = None
 frame_dt                = 0.01 # init to a non-zero value, to prevent user zero division
@@ -39,9 +39,9 @@ def getAvailableTouchs():
     global touch_list
     return touch_list
 
-def getWindowInstances():
-    global pymt_windows
-    return pymt_windows
+def getWindow():
+    global pymt_window
+    return pymt_window
 
 def getEventLoop():
     global pymt_evloop
@@ -230,14 +230,14 @@ class TouchWindow(pyglet.window.Window):
         self.register_event_type('on_touch_move')
         self.register_event_type('on_touch_up')
         touch_event_listeners.append(self)
-        pymt_windows.append(self)
+        pymt_window = self
         self.wm_touch_events = []
         
         self.last_mouse_event_device = 'mouse'
 
     def on_close(self, *largs):
         touch_event_listeners.remove(self)
-        pymt_windows.remove(self)
+        pymt_window = None
         super(TouchWindow, self).on_close(*largs)
 
     def on_touch_down(self, touch):

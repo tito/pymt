@@ -5,139 +5,168 @@ from ctypes import *
 from ..provider import TouchProvider
 from ..factory import TouchFactory
 from ..touch import Touch
-from ...mtpyglet import getWindowInstances, TouchWindow, getEventLoop
+from ..shape import TouchShapeRect
+from ...mtpyglet import getWindow
 from ...utils import curry
 
 
 
+WM_TOUCH         = 0x0240
+TOUCHEVENTF_MOVE = 0x0001
+TOUCHEVENTF_DOWN = 0x0002
+TOUCHEVENTF_UP   = 0x0004
+WM_MOUSEMOVE = 512
+WM_LBUTTONDOWN = 513
+WM_LBUTTONUP = 514
+MI_WP_SIGNATURE = 0xFF515700
+SIGNATURE_MASK = 0xFFFFFF00
+PEN_EVENT_TOUCH_MASK = 0x80
+
+
+
+class TOUCHINPUT(Structure):
+    _fields_= [
+                ("x",c_ulong),
+                ("y",c_ulong),
+                ("pSource",c_ulong),
+                ("id",c_ulong),
+                ("flags",c_ulong),
+                ("mask",c_ulong),
+                ("time",c_ulong),
+                ("extraInfo",c_ulong),
+                ("size_x",c_ulong),
+                ("szie_y",c_ulong)
+               ]
+
+    def size(self):
+        return (self.size_x, self.screen_y)
+
+    def screen_x(self):
+        return self.x/100.0
+
+    def screen_y(self):
+        return self.y/100.0
+
+    def get_event_type(self):
+        if self.flags & TOUCHEVENTF_MOVE:
+            return 'move'
+        if self.flags & TOUCHEVENTF_DOWN:
+            return 'down'
+        if self.flags & TOUCHEVENTF_UP:
+            return 'up'
 
 
 
 class WM_TOUCHProvider(TouchProvider):
 
-    def pen_callback_move(self, win, type, x, y,dx,dy, mod=None, button=None):
-        return self.pen_callback(win,type, x, y, mod, button)
-        
-    def pen_callback(self, win, type, x, y, mod=None, button=None):        
-        if not win.last_mouse_event_device == 'pen':
-            if win.last_mouse_event_device == 'touch':
-                return True #keep touch form doing a touch and a mouse event
-            return False #it was something else...just ignore
-  
-        x = float(x)/win.width
-        y = float(y)/win.height
-        self.pen_events.append( (type,x,y) )
-        return True
 
+    def wm_touch_handler(self, win, msg, wparam, lParam):
+        touches = (TOUCHINPUT * wparam)()
+        windll.user32.GetTouchInputInfo(c_int(lParam), wparam, pointer(touches), sizeof(TOUCHINPUT))
+        win.wm_touch_events.extend(touches)
+
+
+    def mouse_msg_handler(self, win, msg, wparam, lParam):
+
+        info = windll.user32.GetMessageExtraInfo()
+        if (info & SIGNATURE_MASK) == MI_WP_SIGNATURE:
+            if info & PEN_EVENT_TOUCH_MASK:
+                win.last_mouse_event_device = 'touch'
+        else:
+            win.last_mouse_event_device = 'mouse'
+
+        self.old_mouse_handler(msg, wparam, lParam)
+
+
+    def mouse_callback_move(self, win, type, x, y,dx,dy, mod=None, button=None):
+        return self.mouse_callback(win,type, x, y, mod, button)
+
+
+    def mouse_callback(self, win, type, x, y, mod=None, button=None):
+        if win.last_mouse_event_device == 'touch':
+            return True #keep touch form doing a touch and a mouse event
 
 
     def start(self):
         self.touches = {}
-        self.pen = None
-        self.pen_events = []
         self.uid = 0
-        
-        for win in getWindowInstances():
-            windll.user32.RegisterTouchWindow(win._hwnd, 0)
-            
-            #pen and touch events come in as mouse events also
-            win.push_handlers(on_mouse_press   = curry(self.pen_callback, win,'down' ) )
-            win.push_handlers(on_mouse_drag    = curry(self.pen_callback_move, win,'move') )
-            win.push_handlers(on_mouse_release = curry(self.pen_callback, win,'up' ) )
+
+        win = getWindow()
+        win.wm_touch_events = []
+        windll.user32.RegisterTouchWindow(win._hwnd, 0)
+        win._event_handlers[WM_TOUCH] = curry(self.wm_touch_handler, win)
+
+
+        #pen and touch events come in as mouse events also
+        self.old_mouse_handler = win._event_handlers[WM_MOUSEMOVE]
+        win._event_handlers[WM_MOUSEMOVE] = curry(self.mouse_msg_handler, win)
+        win.push_handlers(on_mouse_press   = curry(self.mouse_callback, win,'down' ) )
+        win.push_handlers(on_mouse_drag    = curry(self.mouse_callback_move, win,'move') )
+        win.push_handlers(on_mouse_release = curry(self.mouse_callback, win,'up' ) )
 
 
 
     def update(self, dispatch_fn):
-        for win in getWindowInstances():
-            skipped = []
-            win_x, win_y = win.get_location()
-            
-            #dispatch pen events
-            while len(self.pen_events):
-                type,x,y = self.pen_events.pop(0)
-                
-                if  type == 'down':
-                    self.uid += 1 
-                    self.pen = WM_TOUCHProvider.create(self.uid, [x,y], device='pen')
+        win = getWindow()
+        win_x, win_y = win.get_location()
 
-            
-                if  self.pen:
-                    self.pen.move([x,y])
-                    dispatch_fn(type, self.pen )
-                    
-                if type == 'up':
-                    self.pen = None
+        #dispatch touch events
+        while len(win.wm_touch_events):
+            t = win.wm_touch_events.pop()
+            x = (t.screen_x()-win_x)/float(win.width)
+            y = 1.0 - (t.screen_y()-win_y)/float(win.height)
 
-            #dispatch touch events
-            while len(win.wm_touch_events):
-                t = win.wm_touch_events.pop()
-                x = (t.screen_x()-win_x)/float(win.width)
-                y = 1.0 - (t.screen_y()-win_y)/float(win.height)
-                
-                event_type = t.get_event_type()
-            
-                #little wierd...windows first dispataches on "move" event before the down event...so do some fixing
-                #i think its because it waits to check for 'gestures'...tried turning off woth win32 API call..but no luck so far
-                #so for now..make sure touch_down always comes first before move or up
-                if  event_type == 'up' and not self.touches.has_key(t.id):
-                    skipped.append(t)
+            event_type = t.get_event_type()
 
-                if event_type == 'down':
-                    self.uid += 1
-                    self.touches[t.id] = WM_TOUCHProvider.create(self.uid, [x,y])
-                    dispatch_fn(event_type, self.touches[t.id] )
-                    
-                if event_type == 'move' and self.touches.has_key(t.id):
-                    self.touches[t.id].move([x,y])
-                    dispatch_fn('move', self.touches[t.id] )
-                    
-                if event_type == 'up'  and self.touches.has_key(t.id):
-                    self.touches[t.id].move([x,y])
-                    dispatch_fn(event_type, self.touches[t.id] )
-                    del self.touches[t.id]
-                    
-            win.wm_touch_events.extend(skipped) #remeber the ones we skipped because there wa sno "down event yet"
-                        
+            #little wierd...windows first dispataches on "move" event before the down event...so do some fixing
+            #i think its because it waits to check for 'gestures'...tried turning off woth win32 API call..but no luck so far
+            #so for now..make sure touch_down always comes first before move or up
+            if  event_type == 'up' and not self.touches.has_key(t.id):
+                event_type = 'down'
+            elif event_type == 'down' and self.touches.has_key(t.id):
+                event_type = 'up'
 
-        
+
+            if event_type == 'down':
+                self.uid += 1
+                self.touches[t.id] = WM_Touch(self.device, self.uid, [x,y,t.size()])
+                dispatch_fn(event_type, self.touches[t.id] )
+
+            if event_type == 'move' and self.touches.has_key(t.id):
+                self.touches[t.id].move([x,y, t.size()])
+                dispatch_fn('move', self.touches[t.id] )
+
+            if event_type == 'up'  and self.touches.has_key(t.id):
+                self.touches[t.id].move([x,y, t.size()])
+                dispatch_fn(event_type, self.touches[t.id] )
+                del self.touches[t.id]
+
+
+
+
     def stop(self):
-        for win in getWindowInstances():
+        win = getWindow()
+        if win:
             windll.user32.UnregisterTouchWindow(win._hwnd)
 
 
 
-    @staticmethod
-    def create(id, pos, device='touch', area=0 ):
-        return WM_Touch(id, pos , device )
 
 
 
 class WM_Touch(Touch):
-    
-    def __init__(self, id, pos, device='touch'):
-        super(WM_Touch, self).__init__(id, pos)
-        self.device = device
-        
+
     def depack(self, args):
-        if len(args) == 2:
-            self.sx, self.sy = args
-        elif len(args) == 4:
-            self.shape = TouchShapeRect()
-            self.sx, self.sy = args[0], args[1]
-            self.shape.width = args[2]
-            self.shape.height = args[3]
-            self.profile = ('pos','shape')
-        else:
-            raise InvalidArgumnetListException("WM_Touch needs either 2 (position only) or 4 (with shape) arguments")
-            
+        self.shape = TouchShapeRect()
+        self.sx, self.sy = args[0], args[1]
+        self.shape.width = args[2][0]
+        self.shape.height = args[2][1]
+        self.profile = ('pos','shape')
+
         super(WM_Touch, self).depack(args)
-        
+
     def __str__(self):
         return "WMTouch, id:%d, pos:(%f,%f, device:%s )" % (self.id, self.sx, self.sy, self.device)
 
 
-
-
 TouchFactory.register('WM_TOUCH', WM_TOUCHProvider)
-
-

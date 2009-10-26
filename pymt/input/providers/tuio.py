@@ -46,8 +46,8 @@ class TuioTouchProvider(TouchProvider):
 
     __handlers__ = {}
 
-    def __init__(self, args):
-        super(TuioTouchProvider, self).__init__(args)
+    def __init__(self, device, args):
+        super(TuioTouchProvider, self).__init__(device, args)
         args = args.split(',')
         if len(args) <= 0:
             pymt_logger.error('Invalid configuration for TUIO provider')

@@ -65,7 +65,7 @@ class Touch(object):
         # Uniq ID
         Touch.__uniq_id += 1
         self.uid = Touch.__uniq_id
-        self.device = '<unknown>'
+        self.device = device
 
         # For push/pop
         self.attr = []

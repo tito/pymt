@@ -14,11 +14,12 @@ from factory import MTWidgetFactory
 from widgets.widget import MTWidget
 
 class SimulatorTouch(Touch):
-    def __init__(self, id, args):
-        super(SimulatorTouch, self).__init__(id, args)
+    def __init__(self, device, id, args):
+        super(SimulatorTouch, self).__init__(device, id, args)
 
     def depack(self, args):
         self.sx, self.sy = args
+        super(SimulatorTouch, self).depack(args)
 
 class MTSimulator(MTWidget):
     '''MTSimulator is a widget who generate touch event from mouse event'''
@@ -50,7 +51,7 @@ class MTSimulator(MTWidget):
         else:
             self.counter += 1
             id = 'mouse' + str(self.counter)
-            self.current_drag = cur = SimulatorTouch(id=id, args=[rx, ry])
+            self.current_drag = cur = SimulatorTouch('mouse', id=id, args=[rx, ry])
             if modifiers & key.MOD_SHIFT:
                 cur.is_double_tap = True
             self.touches[id] = cur

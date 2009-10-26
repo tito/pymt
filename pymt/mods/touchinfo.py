@@ -17,6 +17,7 @@ class TouchInfos(MTWidget):
         if hasattr(touch, 'xmot'):
             infos.append('Mot: (%.2f, %.2f)' % (touch.xmot, touch.ymot))
         infos.append('Double Tap: %s' % (touch.is_double_tap))
+        infos.append('Device: %s' % (touch.device))
         return "\n".join(infos)
 
     def on_touch_down(self, touch):

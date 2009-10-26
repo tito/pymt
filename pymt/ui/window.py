@@ -274,13 +274,10 @@ class MTWindow(TouchWindow):
         # Draw
         self.draw()
         for w in self.children:
-            set_color(1,1,1,1)
             w.dispatch_event('on_draw')
 
         if self.sim:
             self.sim.dispatch_event('on_draw')
-            #make sure standard color is always teh same at begnning of each draw
-        
 
         if self.show_fps:
             self.fps_display.draw()

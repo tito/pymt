@@ -58,13 +58,14 @@ class Touch(object):
 
     __uniq_id = 0
 
-    def __init__(self, id, args):
+    def __init__(self, device, id, args):
         if self.__class__ == Touch:
             raise NotImplementedError, 'class Touch is abstract'
 
         # Uniq ID
         Touch.__uniq_id += 1
         self.uid = Touch.__uniq_id
+        self.device = '<unknown>'
 
         # For push/pop
         self.attr = []
@@ -112,8 +113,6 @@ class Touch(object):
         self.double_tap_time = 0
         self.no_event = False
         self.userdata = {}
-    
-        self.device = 'touch'
 
         self.depack(args)
 

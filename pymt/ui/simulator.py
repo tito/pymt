@@ -8,10 +8,17 @@ from pyglet import *
 from pyglet.gl import *
 from pyglet.window import key
 from ..graphx import drawCircle, set_color
-from ..input import TouchFactory
+from ..input import Touch
 from ..mtpyglet import getEventLoop
 from factory import MTWidgetFactory
 from widgets.widget import MTWidget
+
+class SimulatorTouch(Touch):
+    def __init__(self, id, args):
+        super(SimulatorTouch, self).__init__(id, args)
+
+    def depack(self, args):
+        self.sx, self.sy = args
 
 class MTSimulator(MTWidget):
     '''MTSimulator is a widget who generate touch event from mouse event'''
@@ -24,25 +31,26 @@ class MTSimulator(MTWidget):
 
     def draw(self):
         for t in self.touches.values():
-            set_color(0.8,0.2,0.2,0.7)
+            set_color(0.8, 0.2, 0.2, 0.7)
             drawCircle(pos=(t.x, t.y), radius=10)
 
     def find_touch(self,x,y):
+        factor = 10. / self.get_parent_window().width
         for t in self.touches.values():
-            if (abs(x-t.x) < 10 and abs(y-t.y) < 10):
+            if abs(x-t.sx) < factor and abs(y-t.sy) < factor:
                 return t
         return False
 
     def on_mouse_press(self, x, y, button, modifiers):
-        newTouch = self.find_touch(x,y)
+        rx = x / float(self.get_parent_window().width)
+        ry = y / float(self.get_parent_window().height)
+        newTouch = self.find_touch(rx, ry)
         if newTouch:
             self.current_drag = newTouch
         else:
             self.counter += 1
             id = 'mouse' + str(self.counter)
-            rx = x / float(self.get_parent_window().width)
-            ry = 1. - (y / float(self.get_parent_window().height))
-            self.current_drag = cur = TouchFactory.get('tuio').create('/tuio/2Dcur', id=id, args=[rx, ry])
+            self.current_drag = cur = SimulatorTouch(id=id, args=[rx, ry])
             if modifiers & key.MOD_SHIFT:
                 cur.is_double_tap = True
             self.touches[id] = cur
@@ -50,19 +58,20 @@ class MTSimulator(MTWidget):
         return True
 
     def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
+        rx = x / float(self.get_parent_window().width)
+        ry = y / float(self.get_parent_window().height)
         if self.current_drag:
             cur = self.current_drag
-            rx = x / float(self.get_parent_window().width)
-            ry = 1. - (y / float(self.get_parent_window().height))
             cur.move([rx, ry])
             getEventLoop()._dispatch_input('move', cur)
         return True
 
     def on_mouse_release(self, x, y, button, modifiers):
-        cur = self.find_touch(x, y)
+        rx = x / float(self.get_parent_window().width)
+        ry = y / float(self.get_parent_window().height)
+        cur = self.find_touch(rx, ry)
+        print cur
         if  button == 1 and cur and not (modifiers & key.MOD_CTRL):
-            rx = x / float(self.get_parent_window().width)
-            ry = 1. - (y / float(self.get_parent_window().height))
             cur.move([rx, ry])
             del self.touches[cur.id]
             getEventLoop()._dispatch_input('up', cur)

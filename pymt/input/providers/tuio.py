@@ -125,7 +125,7 @@ class TuioTouchProvider(TouchProvider):
             id = args[1]
             if id not in self.touches[oscpath]:
                 # new touch
-                touch = TuioTouchProvider.__handlers__[oscpath](id, args[2:])
+                touch = TuioTouchProvider.__handlers__[oscpath](self.device, id, args[2:])
                 self.touches[oscpath][id] = touch
                 dispatch_fn('down', touch)
             else:
@@ -156,8 +156,8 @@ class Tuio2dCurTouch(Touch):
         * xyXYm
         * xyXYmh
     '''
-    def __init__(self, id, args):
-        super(Tuio2dCurTouch, self).__init__(id, args)
+    def __init__(self, device, id, args):
+        super(Tuio2dCurTouch, self).__init__(device, id, args)
 
     def depack(self, args):
         if len(args) < 5:
@@ -184,9 +184,8 @@ class Tuio2dObjTouch(Touch):
         * ixyaXYAmr
         * ixyaXYAmrh
     '''
-    def __init__(self, id, args):
-        super(Tuio2dObjTouch, self).__init__(id, args)
-        self.device = 'touch'
+    def __init__(self, device, id, args):
+        super(Tuio2dObjTouch, self).__init__(device, id, args)
 
     def depack(self, args):
         if len(args) < 5:

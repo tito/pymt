@@ -89,7 +89,6 @@ class TouchEventLoop(pyglet.app.EventLoop):
                 if type == 'down':
                     listener.dispatch_event('on_touch_down', touch)
                 elif type == 'move':
-                    #print "post_dispatch", touch.id, touch.x
                     listener.dispatch_event('on_touch_move', touch)
                 elif type == 'up':
                     listener.dispatch_event('on_touch_up', touch)
@@ -126,15 +125,12 @@ class TouchEventLoop(pyglet.app.EventLoop):
         touch.grab_state = False
 
     def _dispatch_input(self, type, touch):
-        # have to remeber sx,sy..otherwise if multiple events for this touch only attr inside touch will be dispatched for all prior events also
-
         self.input_events.append((type, touch))
 
     def dispatch_input(self):
         global pymt_providers
 
         # first, aquire input events
-
         for provider in pymt_providers:
             provider.update(dispatch_fn=self._dispatch_input)
 
@@ -170,9 +166,6 @@ class TouchEventLoop(pyglet.app.EventLoop):
         return 0
 
 
-
-
-#any window that inherhits this or an instance will have event handlers triggered on Tuio touch events
 class TouchWindow(pyglet.window.Window):
     '''Base implementation of Tuio event in top of pyglet window.
 
@@ -190,8 +183,6 @@ class TouchWindow(pyglet.window.Window):
         self.register_event_type('on_touch_move')
         self.register_event_type('on_touch_up')
         touch_event_listeners.append(self)
-        self.wm_touch_events = []
-        self.last_mouse_event_device = 'mouse'
 
         global pymt_window
         pymt_window = self
@@ -210,11 +201,6 @@ class TouchWindow(pyglet.window.Window):
 
     def on_touch_up(self, touch):
         pass
-
-
-
-
-
 
 
 def pymt_usage():

@@ -21,8 +21,8 @@ class MouseTouch(Touch):
 class MouseTouchProvider(TouchProvider):
     __handlers__ = {}
 
-    def __init__(self, args):
-        super(MouseTouchProvider, self).__init__(args)
+    def __init__(self, device, args):
+        super(MouseTouchProvider, self).__init__(device, args)
         self.waiting_event  = deque()
         self.window         = None
         self.touches		= {}
@@ -53,7 +53,7 @@ class MouseTouchProvider(TouchProvider):
         else:
             self.counter += 1
             id = 'mouse' + str(self.counter)
-            self.current_drag = cur = MouseTouch('mouse', id=id, args=[rx, ry])
+            self.current_drag = cur = MouseTouch(self.device, id=id, args=[rx, ry])
             if modifiers & key.MOD_SHIFT:
                 cur.is_double_tap = True
             self.touches[id] = cur

@@ -230,14 +230,16 @@ class TouchWindow(pyglet.window.Window):
         self.register_event_type('on_touch_move')
         self.register_event_type('on_touch_up')
         touch_event_listeners.append(self)
-        pymt_window = self
         self.wm_touch_events = []
-        
         self.last_mouse_event_device = 'mouse'
 
+        global pymt_window
+        pymt_window = self
+
     def on_close(self, *largs):
-        touch_event_listeners.remove(self)
+        global pymt_window
         pymt_window = None
+        touch_event_listeners.remove(self)
         super(TouchWindow, self).on_close(*largs)
 
     def on_touch_down(self, touch):

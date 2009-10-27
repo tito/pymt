@@ -4,7 +4,7 @@ Utils: generic toolbox
 
 __all__ = ['intersection', 'difference', 'curry', 'strtotuple',
            'get_color_from_hex', 'get_color_for_pyglet',
-           'is_color_transparent', 'boundary']
+           'is_color_transparent', 'boundary', 'connect']
 
 import re
 
@@ -72,3 +72,8 @@ def is_color_transparent(c):
     if float(c[3]) == 0.:
         return True
     return False
+
+def connect(w1, p1, w2, p2, func=lambda x: x):
+    '''Connect events to a widget property'''
+    w1.connect(p1, w2, p2, func)
+

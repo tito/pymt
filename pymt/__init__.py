@@ -10,8 +10,24 @@ You can visit http://code.google.com/p/pymt/ for more informations !
 
 from __future__ import with_statement
 import ConfigParser
-import sys, getopt, os
+import sys
+import getopt
+import os
 from logger import pymt_logger, LOG_LEVELS
+
+# Global settings options for pymt
+options = {
+    'shadow_window': True,
+}
+
+# Read environment
+for option in options:
+    key = 'PYMT_%s' % option.upper()
+    if key in os.environ:
+        try:
+            options[option] = bool(os.environ[key])
+        except:
+            pymt_logger.warning('Wrong value for %s environment key' % key)
 
 # Include lib as new module.
 pymt_base_dir = os.path.dirname(sys.modules[__name__].__file__)
@@ -148,7 +164,9 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
             sys.exit(0)
 
         # last initialization
-        #shadow_window = MTWindow(shadow=True)
+        if options['shadow_window']:
+            pymt_logger.debug('Creating shadow window')
+            shadow_window = MTWindow(shadow=True)
 
     except getopt.GetoptError, err:
         pymt_logger.error(err)

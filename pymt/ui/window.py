@@ -8,17 +8,19 @@ import sys
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 import pymt
+from ..logger import pymt_logger
 from ..mtpyglet import stopTouchApp, getAvailableTouchs, setWindow, touch_event_listeners
 from ..graphx import set_color, drawCircle
 from ..modules import pymt_modules
 from ..utils import curry
+from ..event import EventDispatcher
 from colors import css_get_style
 from factory import MTWidgetFactory
 from widgets import MTWidget
 
 glut_window = None
 
-class BaseWindow(object):
+class BaseWindow(EventDispatcher):
     '''BaseWindow is a abstract window widget, for any window implementation.
 
     :Parameters:
@@ -38,7 +40,6 @@ class BaseWindow(object):
             Background color of window
     '''
     _have_multisample = None
-    _event_stack = ()
     _modifiers = 0
 
     def __init__(self, **kwargs):
@@ -54,8 +55,6 @@ class BaseWindow(object):
 
         # event subsystem
         self.shadow = kwargs.get('shadow')
-        self.event_types = []
-        self._event_stack = []
 
         self.register_event_type('on_draw')
         self.register_event_type('on_update')
@@ -208,6 +207,7 @@ class BaseWindow(object):
         return self._size
     def _set_size(self, size):
         self._size = size
+        pymt_logger.debug('Resize window to %s' % str(self.size))
         self.dispatch_event('on_resize', *size)
     size = property(_get_size, _set_size)
 
@@ -258,32 +258,6 @@ class BaseWindow(object):
         glClearColor(*self.cssstyle.get('bg-color'))
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-    def on_update(self):
-        # Update children first
-        for w in self.children:
-            w.dispatch_event('on_update')
-
-    def on_draw(self):
-        '''Clear window, and dispatch event in root widget'''
-        # Draw
-        self.draw()
-        for w in self.children:
-            w.dispatch_event('on_draw')
-
-        '''
-        if self.show_fps:
-            self.fps_display.draw()
-
-        if self.dump_frame:
-            self.dump_idx = self.dump_idx + 1
-            filename = '%s%05d.%s' % (self.dump_prefix, self.dump_idx,
-                                       self.dump_format)
-            #print pyglet.image.get_buffer_manager().get_color_buffer().get_texture()
-            pyglet.image.get_buffer_manager().get_color_buffer().save(filename=filename)
-        '''
-
-        self.draw_mouse_touch()
-
     def draw_mouse_touch(self):
         '''Compatibility for MouseTouch, drawing a little red circle around
         under each mouse touches.'''
@@ -306,123 +280,91 @@ class BaseWindow(object):
     def get_parent_layout(self):
         return None
 
+    def on_update(self):
+        '''Event called when window are update the widget tree.
+        (Usually before on_draw call.)
+        '''
+        for w in self.children:
+            w.dispatch_event('on_update')
+
+    def on_draw(self):
+        '''Event called when window we are drawing window.
+        This function are cleaning the buffer with bg-color css,
+        and call children drawing + show fps timer on demand'''
+
+        # draw our window
+        self.draw()
+
+        # then, draw childrens
+        for w in self.children:
+            w.dispatch_event('on_draw')
+
+        '''
+        if self.show_fps:
+            self.fps_display.draw()
+
+        if self.dump_frame:
+            self.dump_idx = self.dump_idx + 1
+            filename = '%s%05d.%s' % (self.dump_prefix, self.dump_idx,
+                                       self.dump_format)
+            #print pyglet.image.get_buffer_manager().get_color_buffer().get_texture()
+            pyglet.image.get_buffer_manager().get_color_buffer().save(filename=filename)
+        '''
+
+        self.draw_mouse_touch()
+
     def on_touch_down(self, touch):
+        '''Event called when a touch is down'''
         touch.scale_for_screen(*self.size)
         for w in reversed(self.children):
             if w.dispatch_event('on_touch_down', touch):
                 return True
 
     def on_touch_move(self, touch):
+        '''Event called when a touch move'''
         touch.scale_for_screen(*self.size)
         for w in reversed(self.children):
             if w.dispatch_event('on_touch_move', touch):
                 return True
 
     def on_touch_up(self, touch):
+        '''Event called when a touch up'''
         touch.scale_for_screen(*self.size)
         for w in reversed(self.children):
             if w.dispatch_event('on_touch_up', touch):
                 return True
 
     def on_resize(self, width, height):
+        '''Event called when the window is resized'''
         glViewport(0, 0, width, height)
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        glFrustum(-width/2, width/2, -height/2, height/2, 0.1, 1000)
-        glScalef(5000,5000,1)
-        glTranslatef(-width/2,-height/2,-500)
+        glFrustum(-width / 2, width / 2, -height / 2, height / 2, .1, 1000)
+        glScalef(5000, 5000, 1)
+        glTranslatef(-width / 2, -height / 2, -500)
         glMatrixMode(GL_MODELVIEW)
 
     def on_close(self, *largs):
+        '''Event called when the window is closed'''
         pymt_modules.unregister_window(self)
         if self in touch_event_listeners:
             touch_event_listeners.remove(self)
 
+    def on_resize(self, w, h):
+        '''Event called when window was resized'''
+        pass
+
     def on_mouse(self, button, state, x, y):
+        '''Event called when mouse is in action (press/release)'''
         pass
 
     def on_mouse_motion(self, x, y, button, modifiers):
+        '''Event called when mouse is moving, with buttons pressed'''
         pass
 
     def on_keyboard(self, key, x, y):
+        '''Event called when keyboard is in action'''
         pass
-
-    def register_event_type(self, event_type):
-        self.event_types.append(event_type)
-
-    def push_handlers(self, *args, **kwargs):
-        # Create event stack if necessary
-        if type(self._event_stack) is tuple:
-            self._event_stack = []
-
-        # Place dict full of new handlers at beginning of stack
-        self._event_stack.insert(0, {})
-        self.set_handlers(*args, **kwargs)
-
-    def _get_handlers(self, args, kwargs):
-        for object in args:
-            if inspect.isroutine(object):
-                # Single magically named function
-                name = object.__name__
-                if name not in self.event_types:
-                    raise Exception('Unknown event "%s"' % name)
-                yield name, object
-            else:
-                # Single instance with magically named methods
-                for name in dir(object):
-                    if name in self.event_types:
-                        yield name, getattr(object, name)
-        for name, handler in kwargs.items():
-            # Function for handling given event (no magic)
-            if name not in self.event_types:
-                raise Exception('Unknown event "%s"' % name)
-            yield name, handler
-
-    def set_handlers(self, *args, **kwargs):
-        # Create event stack if necessary
-        if type(self._event_stack) is tuple:
-            self._event_stack = [{}]
-
-        for name, handler in self._get_handlers(args, kwargs):
-            self.set_handler(name, handler)
-
-    def set_handler(self, name, handler):
-        # Create event stack if necessary
-        if type(self._event_stack) is tuple:
-            self._event_stack = [{}]
-        self._event_stack[0][name] = handler
-
-    def dispatch_event(self, event_type, *args):
-        # Don't dispatch event for visible widget if we are not visible
-        if not self.visible:
-            return
-
-        print' stop', event_type
-        if event_type not in self.event_types:
-            return
-
-        # Search handler stack for matching event handlers
-        for frame in self._event_stack:
-            handler = frame.get(event_type, None)
-            if handler:
-                try:
-                    if handler(*args):
-                        return True
-                except TypeError:
-                    self._raise_dispatch_exception(event_type, args, handler)
-
-
-        # Check instance for an event handler
-        if hasattr(self, event_type):
-            try:
-                # Call event
-                func = getattr(self, event_type)
-                if func(*args):
-                    return True
-
-            except TypeError, e:
-                self._raise_dispatch_exception(
-                    event_type, args, getattr(self, event_type))
 
 
 class MTWindow(BaseWindow):
@@ -435,16 +377,19 @@ class MTWindow(BaseWindow):
 
             # for shadow window, make it invisible
             if self.shadow:
+                pymt_logger.debug('Set next window as Shadow window (1x1)')
                 glutInitWindowPosition(0, 0)
                 glutInitWindowSize(1, 1)
 
             # init GLUT !
+            pymt_logger.debug('GLUT initialization')
             glutInit()
             glutInitDisplayMode(
                 GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH |
                 GLUT_MULTISAMPLE | GLUT_STENCIL | GLUT_ACCUM)
 
             # create the window
+            pymt_logger.debug('Create the window')
             glut_window = glutCreateWindow('pymt')
 
             # hide the shadow...
@@ -458,6 +403,7 @@ class MTWindow(BaseWindow):
         glutShowWindow()
         self.size = params['width'], params['height']
         if params['fullscreen']:
+            pymt_logger.debug('Set window to fullscreen mode')
             glutFullScreen()
 
         # register all callbcaks

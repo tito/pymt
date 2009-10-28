@@ -4,6 +4,8 @@ from syntaxhighlighter import Highlighter
 from qtmtwindow import MTWindow
 from pymt import pymt_logger
 from cStringIO import StringIO
+from pymt import BaseWindow, getEventLoop
+from qtmtwindow import *
 import sys
 
 class MainWindow(QtGui.QMainWindow):
@@ -70,11 +72,12 @@ class MainWindow(QtGui.QMainWindow):
         stdout = sys.stdout
         sys.stdout = buff
         try:
+            self.glWidget.pymt_window = MTSlaveWindow()
+            self.glWidget.pymt_window.size = (800, 600)
             exec str(self.editor.toPlainText())
         except:
             sys.stderr = buff
             pymt_logger.exception("Error executing code:")
-        print "printing this"
         sys.stdout = stdout
         self.console.setPlainText(buff.getvalue())
         print "buff", buff.getvalue()

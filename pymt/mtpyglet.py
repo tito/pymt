@@ -214,7 +214,7 @@ def pymt_usage():
     print pymt_usage.__doc__ % (os.path.basename(sys.argv[0]))
 
 
-def runTouchApp(slave=False):
+def runTouchApp(widget=None, slave=True):
     '''Static main function that starts the application loop'''
 
     global pymt_evloop
@@ -248,6 +248,10 @@ def runTouchApp(slave=False):
     # add postproc modules
     for mod in pymt_postproc_modules:
         pymt_evloop.add_postproc_module(mod)
+
+    # add main widget
+    if widget and getWindow():
+        getWindow().add_widget(widget)
 
     # start event loop
     pymt_evloop.start()

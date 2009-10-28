@@ -2,7 +2,7 @@
 Window package: provide a window + a touch display
 '''
 
-__all__ = ['MTWindow', 'MTDisplay']
+__all__ = ['BaseWindow', 'MTWindow', 'MTDisplay']
 
 import sys
 from OpenGL.GL import *

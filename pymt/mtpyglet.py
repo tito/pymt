@@ -214,7 +214,7 @@ def pymt_usage():
     print pymt_usage.__doc__ % (os.path.basename(sys.argv[0]))
 
 
-def runTouchApp():
+def runTouchApp(slave=False):
     '''Static main function that starts the application loop'''
 
     global pymt_evloop
@@ -252,23 +252,24 @@ def runTouchApp():
     # start event loop
     pymt_evloop.start()
 
-    while True:
-        try:
-            pymt_evloop.run()
-            stopTouchApp()
-            break
-        except BaseException, inst:
-            # use exception manager first
-            r = pymt_exception_manager.handle_exception(inst)
-            if r == ExceptionManager.RAISE:
+    if not slave:
+        while True:
+            try:
+                pymt_evloop.run()
                 stopTouchApp()
-                raise
-            else:
-                pass
+                break
+            except BaseException, inst:
+                # use exception manager first
+                r = pymt_exception_manager.handle_exception(inst)
+                if r == ExceptionManager.RAISE:
+                    stopTouchApp()
+                    raise
+                else:
+                    pass
 
-    # Show event stats
-    if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
-        pymt.widget.event_stats_print()
+        # Show event stats
+        if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
+            pymt.widget.event_stats_print()
 
 def stopTouchApp():
     global pymt_evloop

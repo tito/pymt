@@ -17,15 +17,11 @@ from factory import MTWidgetFactory
 from widgets import MTWidget
 
 glut_window = None
-_event_stats_activate = False
 
-class MTWindow(object):
-    '''MTWindow is a window widget.
-    Use MTWindow as main window application.
+class BaseWindow(object):
+    '''BaseWindow is a abstract window widget, for any window implementation.
 
     :Parameters:
-        `view` : `MTWidget`
-            Default view to add on window
         `fullscreen` : bool
             Make window as fullscreen
         `width` : int
@@ -36,24 +32,28 @@ class MTWindow(object):
             Vsync window
         `display` : int
             Display index to use
-        `config` : `Config`
-            Default configuration to pass on TouchWindow
 
     :Styles:
         `bg-color` : color
             Background color of window
     '''
-    have_multisample = None
+    _have_multisample = None
     _event_stack = ()
-    _size = (0, 0)
     _modifiers = 0
+
     def __init__(self, **kwargs):
+        if self.__class__ == BaseWindow:
+            raise NotImplementedError, 'class BaseWindow is abstract'
+
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
         kwargs.setdefault('style', {})
         kwargs.setdefault('shadow', False)
 
+        super(BaseWindow, self).__init__()
+
         # event subsystem
+        self.shadow = kwargs.get('shadow')
         self.event_types = []
         self._event_stack = []
 
@@ -69,26 +69,7 @@ class MTWindow(object):
         self.register_event_type('on_keyboard')
 
         # create window
-        global glut_window
-        if glut_window is None:
-
-            # for shadow window, make it invisible
-            if kwargs.get('shadow'):
-                glutInitWindowPosition(0, 0)
-                glutInitWindowSize(1, 1)
-
-            # init GLUT !
-            glutInit()
-            glutInitDisplayMode(
-                GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH |
-                GLUT_MULTISAMPLE | GLUT_STENCIL | GLUT_ACCUM)
-
-            # create the window
-            glut_window = glutCreateWindow('pymt')
-
-            # hide the shadow...
-            if kwargs.get('shadow'):
-                glutHideWindow()
+        self.create_window()
 
         # set out window as the main pymt window
         setWindow(self)
@@ -105,12 +86,6 @@ class MTWindow(object):
         # initialize fps clock
         # FIXME clock fps
         #self.fps_display =  pyglet.clock.ClockDisplay()
-
-        # initialize handlers list
-        self.on_key_press_handlers = []
-        self.on_text_handlers = []
-        self.on_text_motion_handlers = []
-        self.on_text_motion_select_handlers = []
 
         self.children = []
         self.parent = self
@@ -180,18 +155,8 @@ class MTWindow(object):
             super(MTWindow, self).__init__(**params)
         '''
 
-        # update window size
-        if not kwargs.get('shadow'):
-            glutShowWindow()
-            self.size = params['width'], params['height']
-            if params['fullscreen']:
-                glutFullScreen()
-
-            # register all callbcaks
-            glutReshapeFunc(curry(self.dispatch_event, 'on_resize'))
-            glutMouseFunc(curry(self.dispatch_event, 'on_mouse'))
-            glutMotionFunc(curry(self.dispatch_event, 'on_mouse_motion'))
-            glutKeyboardFunc(curry(self.dispatch_event, 'on_keyboard'))
+        # apply configuration
+        self.configure(params)
 
         # show fps if asked
         self.show_fps = kwargs.get('show_fps')
@@ -208,44 +173,42 @@ class MTWindow(object):
         self.init_gl()
 
         # init modules
-        if not kwargs.get('shadow'):
+        if self.shadow:
             pymt_modules.register_window(self)
             touch_event_listeners.append(self)
 
     def close(self):
-        global glut_window
-        if glut_window:
-            glutDestroyWindow(glut_window)
-            glut_window = None
+        '''Close the window'''
+        pass
+
+    def create_window(self):
+        '''Will create the main window'''
+        pass
+
+    def configure(self, params):
+        '''Will adapt main window for configuration'''
+        pass
+
+    def flip(self):
+        '''Flip between buffers'''
+        pass
+
+    def dispatch_events(self):
+        '''Dispatch all events from windows'''
+        pass
 
     def apply_css(self, styles):
         self.cssstyle.update(styles)
-
-    def on_close(self, *largs):
-        pymt_modules.unregister_window(self)
-        if self in touch_event_listeners:
-            touch_event_listeners.remove(self)
-
-    def on_mouse(self, button, state, x, y):
-        pass
-
-    def on_mouse_motion(self, x, y, button, modifiers):
-        pass
-
-    def on_keyboard(self, key, x, y):
-        self._modifiers = glutGetModifiers()
 
     def _get_modifiers(self):
         return self._modifiers
     modifiers = property(_get_modifiers)
 
-    def _set_size(self, size):
-        glutReshapeWindow(*size)
-        self._size = tuple(size)
     def _get_size(self):
         return self._size
-    size = property(_get_size, _set_size,
-            doc='''Return width/height of window''')
+    def _set_size(self, size):
+        self._size = size
+    size = property(_get_size, _set_size)
 
     def _get_width(self):
         return self._size[0]
@@ -258,14 +221,14 @@ class MTWindow(object):
     def init_gl(self):
         # check if window have multisample
         """
-        if MTWindow.have_multisample is None:
+        if MTWindow._have_multisample is None:
             s = glGetIntegerv(GL_SAMPLES)
             if s > 0:
                 pymt.pymt_logger.debug('Multisampling is available (%d)' % s.value)
-                MTWindow.have_multisample = True
+                MTWindow._have_multisample = True
             else:
                 pymt.pymt_logger.debug('Multisampling is not available')
-                MTWindow.have_multisample = False
+                MTWindow._have_multisample = False
         """
 
         line_smooth = pymt.pymt_config.getint('graphics', 'line_smooth')
@@ -276,54 +239,6 @@ class MTWindow(object):
                 hint = GL_NICEST
             glHint(GL_LINE_SMOOTH_HINT, hint)
             glEnable(GL_LINE_SMOOTH)
-
-    def add_on_key_press(self, func):
-        self.on_key_press_handlers.append(func)
-
-    def remove_on_key_press(self, func):
-        if func in self.on_key_press_handlers:
-            self.on_key_press_handlers.remove(func)
-
-    def get_on_key_press(self):
-        if len(self.on_key_press_handlers) == 0:
-            return None
-        return self.on_key_press_handlers[-1]
-
-    def add_on_text(self, func):
-        self.on_text_handlers.append(func)
-
-    def remove_on_text(self, func):
-        if func in self.on_text_handlers:
-            self.on_text_handlers.remove(func)
-
-    def get_on_text(self):
-        if len(self.on_text_handlers) == 0:
-            return None
-        return self.on_text_handlers[-1]
-
-    def add_on_text_motion(self, func):
-        self.on_text_motion_handlers.append(func)
-
-    def remove_on_text_motion(self, func):
-        if func in self.on_text_motion_handlers:
-            self.on_text_motion_handlers.remove(func)
-
-    def get_on_text_motion(self):
-        if len(self.on_text_motion_handlers) == 0:
-            return None
-        return self.on_text_motion_handlers[-1]
-
-    def add_on_text_motion_select(self, func):
-        self.on_text_motion_select_handlers.append(func)
-
-    def remove_on_text_motion_select(self, func):
-        if func in self.on_text_motion_select_handlers:
-            self.on_text_motion_select_handlers.remove(func)
-
-    def get_on_text_motion_select(self):
-        if len(self.on_text_motion_select_handlers) == 0:
-            return None
-        return self.on_text_motion_select_handlers[-1]
 
     def add_widget(self, w):
         '''Add a widget on window'''
@@ -390,29 +305,6 @@ class MTWindow(object):
     def get_parent_layout(self):
         return None
 
-    def on_key_press(self, symbol, modifiers):
-        handler = self.get_on_key_press()
-        if handler and handler(symbol, modifiers):
-            return True
-        if symbol == pyglet.window.key.ESCAPE:
-            stopTouchApp()
-            return True
-
-    def on_text(self, text):
-        handler = self.get_on_text()
-        if handler and handler(text):
-            return True
-
-    def on_text_motion(self, text):
-        handler = self.get_on_text_motion()
-        if handler and handler(text):
-            return True
-
-    def on_text_motion_select(self, text):
-        handler = self.get_on_text_motion_select()
-        if handler and handler(text):
-            return True
-
     def on_touch_down(self, touch):
         touch.scale_for_screen(*self.size)
         for w in reversed(self.children):
@@ -440,21 +332,24 @@ class MTWindow(object):
         glTranslatef(-width/2,-height/2,-500)
         glMatrixMode(GL_MODELVIEW)
 
+    def on_close(self, *largs):
+        pymt_modules.unregister_window(self)
+        if self in touch_event_listeners:
+            touch_event_listeners.remove(self)
+
+    def on_mouse(self, button, state, x, y):
+        pass
+
+    def on_mouse_motion(self, x, y, button, modifiers):
+        pass
+
+    def on_keyboard(self, key, x, y):
+        pass
+
     def register_event_type(self, event_type):
         self.event_types.append(event_type)
 
-    def flip(self):
-        glutSwapBuffers()
-
     def push_handlers(self, *args, **kwargs):
-        '''Push a level onto the top of the handler stack, then attach zero or
-        more event handlers.
-
-        If keyword arguments are given, they name the event type to attach.
-        Otherwise, a callable's `__name__` attribute will be used.  Any other
-        object may also be specified, in which case it will be searched for
-        callables with event names.
-        '''
         # Create event stack if necessary
         if type(self._event_stack) is tuple:
             self._event_stack = []
@@ -464,9 +359,6 @@ class MTWindow(object):
         self.set_handlers(*args, **kwargs)
 
     def _get_handlers(self, args, kwargs):
-        '''Implement handler matching on arguments for set_handlers and
-        remove_handlers.
-        '''
         for object in args:
             if inspect.isroutine(object):
                 # Single magically named function
@@ -486,11 +378,6 @@ class MTWindow(object):
             yield name, handler
 
     def set_handlers(self, *args, **kwargs):
-        '''Attach one or more event handlers to the top level of the handler
-        stack.
-        
-        See `push_handlers` for the accepted argument types.
-        '''
         # Create event stack if necessary
         if type(self._event_stack) is tuple:
             self._event_stack = [{}]
@@ -499,45 +386,17 @@ class MTWindow(object):
             self.set_handler(name, handler)
 
     def set_handler(self, name, handler):
-        '''Attach a single event handler.
-
-        :Parameters:
-            `name` : str
-                Name of the event type to attach to.
-            `handler` : callable
-                Event handler to attach.
-
-        '''
         # Create event stack if necessary
         if type(self._event_stack) is tuple:
             self._event_stack = [{}]
-
         self._event_stack[0][name] = handler
 
-    def dispatch_events(self):
-        glutMainLoopEvent()
-
     def dispatch_event(self, event_type, *args):
-        '''Dispatch a single event to the attached handlers.
-
-        The event is propogated to all handlers from from the top of the stack
-        until one returns `EVENT_HANDLED`.  This method should be used only by
-        `EventDispatcher` implementors; applications should call
-        the ``dispatch_events`` method.
-
-        :Parameters:
-            `event_type` : str
-                Name of the event.
-            `args` : sequence
-                Arguments to pass to the event handler.
-
-        '''
-
         # Don't dispatch event for visible widget if we are not visible
-        if event_type in MTWidget.visible_events and not self.visible:
+        if not self.visible:
             return
 
-        #assert event_type in self.event_types
+        print' stop', event_type
         if event_type not in self.event_types:
             return
 
@@ -555,24 +414,83 @@ class MTWindow(object):
         # Check instance for an event handler
         if hasattr(self, event_type):
             try:
-                # Statistics
-                global _event_stats_activate
-                if _event_stats_activate:
-                    global _event_stats
-                    if not event_type in _event_stats:
-                        _event_stats[event_type] = 1
-                    else:
-                        _event_stats[event_type] = _event_stats[event_type] + 1
-
                 # Call event
                 func = getattr(self, event_type)
                 if func(*args):
                     return True
 
             except TypeError, e:
-                #print 'error in', self, e
                 self._raise_dispatch_exception(
                     event_type, args, getattr(self, event_type))
+
+
+class MTWindow(BaseWindow):
+    def __init__(self, **kwargs):
+        super(MTWindow, self).__init__(**kwargs)
+
+    def create_window(self):
+        global glut_window
+        if glut_window is None:
+
+            # for shadow window, make it invisible
+            if self.shadow:
+                glutInitWindowPosition(0, 0)
+                glutInitWindowSize(1, 1)
+
+            # init GLUT !
+            glutInit()
+            glutInitDisplayMode(
+                GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH |
+                GLUT_MULTISAMPLE | GLUT_STENCIL | GLUT_ACCUM)
+
+            # create the window
+            glut_window = glutCreateWindow('pymt')
+
+            # hide the shadow...
+            if self.shadow:
+                glutHideWindow()
+
+        super(MTWindow, self).create_window()
+
+    def configure(self, params):
+        # update window size
+        glutShowWindow()
+        self.size = params['width'], params['height']
+        if params['fullscreen']:
+            glutFullScreen()
+
+        # register all callbcaks
+        glutReshapeFunc(curry(self.dispatch_event, 'on_resize'))
+        glutMouseFunc(curry(self.dispatch_event, 'on_mouse'))
+        glutMotionFunc(curry(self.dispatch_event, 'on_mouse_motion'))
+        glutKeyboardFunc(curry(self.dispatch_event, 'on_keyboard'))
+
+        super(MTWindow, self).configure(params)
+
+    def close(self):
+        global glut_window
+        if glut_window:
+            glutDestroyWindow(glut_window)
+            glut_window = None
+        super(MTWindow, self).close()
+
+    def on_keyboard(self, key, x, y):
+        self._modifiers = glutGetModifiers()
+        if ord(key) == 27:
+            stopTouchApp()
+        super(MTWindow, self).on_keyboard(key, x, y)
+
+    def dispatch_events(self):
+        glutMainLoopEvent()
+        super(MTWindow, self).dispatch_events()
+
+    def _set_size(self, size):
+        glutReshapeWindow(*size)
+        super(MTWindow, self)._set_size(size)
+
+    def flip(self):
+        glutSwapBuffers()
+        super(MTWindow, self).flip()
 
 
 class MTDisplay(MTWidget):

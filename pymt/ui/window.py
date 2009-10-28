@@ -208,6 +208,7 @@ class BaseWindow(object):
         return self._size
     def _set_size(self, size):
         self._size = size
+        self.dispatch_event('on_resize', *size)
     size = property(_get_size, _set_size)
 
     def _get_width(self):

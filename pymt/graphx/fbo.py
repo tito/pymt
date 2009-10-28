@@ -10,7 +10,8 @@ __all__ = [
 ]
 
 from pyglet import *
-from pyglet.gl import *
+from OpenGL.GL import *
+from OpenGL.GL.EXT import *
 from pyglet.image import Texture, TextureRegion
 from paint import *
 from colors import *
@@ -240,8 +241,11 @@ if os.path.basename(sys.argv[0]) in ('sphinx-build', 'autostart.py'):
 else:
     from .. import pymt_config
     # Check if Fbo is supported by gl
+    # FIXME gl_info
+    '''
     if not 'GL_EXT_framebuffer_object' in gl_info.get_extensions():
         pymt_config.set('graphics', 'fbo', 'software')
+    '''
 
     if not os.path.basename(sys.argv[0]).startswith('sphinx'):
         # decide what to use

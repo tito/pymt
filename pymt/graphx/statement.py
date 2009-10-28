@@ -19,7 +19,7 @@ __all__ = [
 ]
 
 from pyglet import *
-from pyglet.gl import *
+from OpenGL.GL import *
 from pyglet.image import Texture, TextureRegion
 
 gl_displaylist_generate = False

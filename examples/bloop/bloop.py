@@ -9,7 +9,7 @@ PLUGIN_DESCRIPTION = 'This is a music game inspired by Bloom App.'
 
 from pymt import *
 from pyglet.media import *
-from pyglet.gl import *
+from OpenGL.GL import *
 from pyglet.text import Label
 import random
 

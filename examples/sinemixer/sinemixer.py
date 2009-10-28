@@ -11,7 +11,7 @@ PLUGIN_AUTHOR = 'Nathanaël Lécaudé'
 PLUGIN_DESCRIPTION = 'This plugin is a demonstration of the integration between pymt and the ounk library.'
 
 from pymt import *
-from pyglet.gl import *
+from OpenGL.GL import *
 from ounk import ounklib as ounk
 import time
 

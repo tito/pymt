@@ -5,7 +5,7 @@ Vector slider: a radial slider that provide vector manipulation
 from __future__ import with_statement
 from __future__ import division
 
-from pyglet.gl import *
+from OpenGL.GL import *
 from math import *
 from ...graphx import drawCircle, set_color, gx_begin
 from ...vector import Vector

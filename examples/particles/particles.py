@@ -1,7 +1,7 @@
 from __future__ import with_statement
 from pymt import *
 import pyglet
-from pyglet.gl import *
+from OpenGL.GL import *
 import random
 
 # PYMT Plugin integration

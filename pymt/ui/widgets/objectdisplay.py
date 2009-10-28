@@ -5,7 +5,7 @@ ObjectDisplay: widget that handle fiducial object, and draw them
 from __future__ import with_statement
 __all__ = ['MTObjectDisplay']
 
-from pyglet.gl import *
+from OpenGL.GL import *
 from ...graphx import gx_matrix, gx_begin, set_color
 from ...graphx import drawCSSRectangle
 from ..factory import MTWidgetFactory

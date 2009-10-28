@@ -5,7 +5,7 @@ Kinetic List: Custom list with kinetic interaction
 __all__ = ['MTKineticList', 'MTKineticObject', 'MTKineticItem', 'MTKineticImage']
 
 import pymt
-from pyglet.gl import *
+from OpenGL.GL import *
 from pyglet.text import Label
 from ....graphx import set_color, drawRectangle
 from ....graphx import drawCSSRectangle

@@ -5,7 +5,7 @@ Wallpaper window: a window with background wallpaper
 __all__ = ['MTWallpaperWindow']
 
 import pyglet.image
-from pyglet.gl import glClearColor
+from OpenGL.GL import glClearColor
 from ..logger import pymt_logger
 from ..image import Image
 from window import MTWindow

@@ -2,7 +2,7 @@ from __future__ import with_statement
 
 from pymt.ui.widgets import MTAnimatedMenu
 from pymt import *
-from pyglet.gl import *
+from OpenGL.GL import *
 import time
 
 class MenuTestApp(MTWidget):

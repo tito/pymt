@@ -5,7 +5,7 @@ PLUGIN_AUTHOR = 'Thomas Hansen'
 PLUGIN_DESCRIPTION = ''
 
 import pyglet
-from pyglet.gl import *
+from OpenGL.GL import *
 from pymt import *
 from random import random
 

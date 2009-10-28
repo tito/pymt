@@ -2,7 +2,7 @@
 
 from pymt import *
 from pyglet import *
-from pyglet.gl import *
+from OpenGL.GL import *
 
 import pickle, pprint
 

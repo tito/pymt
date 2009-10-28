@@ -1,8 +1,8 @@
 from __future__ import with_statement
 import math
 from pymt import *
-from pyglet.gl import GL_LINE_STRIP, glColor4f, glVertex2f, GL_LINE_BIT, glLineWidth
-from pyglet.gl import glTranslatef
+from OpenGL.GL import GL_LINE_STRIP, glColor4f, glVertex2f, GL_LINE_BIT, glLineWidth
+from OpenGL.GL import glTranslatef
 
 plugins = MTPlugins(plugin_paths=['..'])
 plugins.search_plugins()

@@ -5,7 +5,7 @@ PLUGIN_AUTHOR = 'Mathieu Virbel'
 PLUGIN_DESCRIPTION = 'Secure Bubble Bomb before explosion !'
 
 from pymt import *
-from pyglet.gl import *
+from OpenGL.GL import *
 from pyglet import media
 from random import random, randint
 

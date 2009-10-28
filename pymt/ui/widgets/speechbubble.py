@@ -6,7 +6,7 @@ from __future__ import with_statement
 from label import MTLabel
 from ...graphx import drawPolygon, drawRoundedRectangle, gx_matrix
 from ...vector import Vector
-from pyglet.gl import *
+from OpenGL.GL import *
 
 __all__ = ['MTSpeechBubble']
 

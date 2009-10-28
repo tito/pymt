@@ -1,5 +1,5 @@
 from pymt import *
-from pyglet.gl import *
+from OpenGL.GL import *
 from pyglet.image import Texture
 
 try:

@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 from pyglet import *
-from pyglet.gl import *
+from OpenGL.GL import *
 from statement import *
 
 ### Stencil usage

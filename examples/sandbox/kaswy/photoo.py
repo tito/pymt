@@ -6,7 +6,7 @@ from __future__ import with_statement
 import sys
 from math import sqrt
 from pymt import *
-from pyglet.gl import *
+from OpenGL.GL import *
 from PIL import Image #just for resizing your source image to a 2n sized image (texture)
 
 res = 15

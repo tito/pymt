@@ -5,8 +5,8 @@ Shader: abstract compilation and usage
 __all__ = ['ShaderException', 'Shader']
 
 import ctypes as c
-from pyglet import *
-from pyglet.gl import *
+from OpenGL.GL import *
+from OpenGL.GLU import *
 from logger import pymt_logger
 
 class ShaderException(Exception):

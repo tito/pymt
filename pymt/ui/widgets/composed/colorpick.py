@@ -5,7 +5,7 @@ Color picker: a simple color picker with 3 slider
 from __future__ import with_statement
 __all__ = ['MTColorPicker']
 
-from pyglet.gl import *
+from OpenGL.GL import *
 from ....graphx import set_color, drawRectangle, GlDisplayList
 from ....graphx import drawCSSRectangle
 from ...factory import MTWidgetFactory

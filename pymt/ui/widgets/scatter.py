@@ -6,7 +6,7 @@ from __future__ import with_statement
 __all__ = ['MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane', 'MTScatterImage']
 
 import pyglet
-from pyglet.gl import *
+from OpenGL.GL import *
 from ...image import Image
 from ...graphx import drawRectangle, gx_matrix, gx_matrix_identity, set_color, \
     drawTexturedRectangle, gx_blending
@@ -162,7 +162,7 @@ class MTScatterWidget(MTWidget):
             glScalef(scale, scale, 1)
             glRotatef(angle,0,0,1)
             glTranslatef(-point[0], -point[1], 0)
-            glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
+            self.transform_mat = glGetFloatv(GL_MODELVIEW_MATRIX)
 
     def draw(self):
         set_color(*self.style.get('bg-color'))
@@ -281,7 +281,7 @@ class MTScatterWidget(MTWidget):
                 glRotatef(angle, 0, 0, 1)
             glTranslatef(-point.x, -point.y,0)
             glMultMatrixf(self.transform_mat)
-            glGetFloatv(GL_MODELVIEW_MATRIX, self.transform_mat)
+            self.transform_mat = glGetFloatv(GL_MODELVIEW_MATRIX)
 
         #invalidate cashed values for parent transform calucaltion
         self.__to_local = (-9999, 9999)

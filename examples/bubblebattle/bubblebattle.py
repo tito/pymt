@@ -5,7 +5,7 @@ PLUGIN_AUTHOR = 'Mathieu Virbel'
 PLUGIN_DESCRIPTION = 'Fight the bubbles !!!!! ]:X'
 
 from pymt import *
-from pyglet.gl import *
+from OpenGL.GL import *
 from random import random, randint
 
 class Basic(MTWidget):

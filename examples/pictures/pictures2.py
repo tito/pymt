@@ -7,7 +7,7 @@ PLUGIN_AUTHOR = 'Thomas Hansen & Sharath'
 PLUGIN_DESCRIPTION = 'Demonstration of MTScatterWidget object'
 
 from pymt import *
-from pyglet.gl import *
+from OpenGL.GL import *
 import os
 import random
 import math

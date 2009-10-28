@@ -7,7 +7,7 @@ PLUGIN_AUTHOR = 'Riley Dutton'
 PLUGIN_DESCRIPTION = 'A simple crayon physics game, with multi-touch!'
 
 from pymt import *
-from pyglet.gl import *
+from OpenGL.GL import *
 import random
 import pyglet
 import math

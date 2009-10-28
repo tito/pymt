@@ -1,7 +1,7 @@
 
 from pymt import *
 from pyglet.graphics import *
-from pyglet.gl import *
+from OpenGL.GL import *
 
 
 

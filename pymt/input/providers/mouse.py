@@ -6,7 +6,7 @@ __all__ = ['MouseTouchProvider']
 
 import osc
 from collections import deque
-from pyglet.window import key
+from OpenGL.GLUT import *
 from ...mtpyglet import getWindow
 from ..provider import TouchProvider
 from ..factory import TouchFactory
@@ -44,9 +44,26 @@ class MouseTouchProvider(TouchProvider):
                 return t
         return False
 
-    def on_mouse_press(self, x, y, button, modifiers):
+    def on_mouse_motion(self, x, y):
+        y -= 10
         rx = x / float(self.window.width)
-        ry = y / float(self.window.height)
+        ry = 1. - y / float(self.window.height)
+        if self.current_drag:
+            cur = self.current_drag
+            cur.move([rx, ry])
+            self.waiting_event.append(('move', cur))
+        return True
+
+    def on_mouse(self, button, state, x, y):
+        y -= 10
+        if state == GLUT_DOWN:
+            self.on_mouse_press(button, state, x, y)
+        else:
+            self.on_mouse_release(button, state, x, y)
+
+    def on_mouse_press(self, button, state, x, y):
+        rx = x / float(self.window.width)
+        ry = 1. - y / float(self.window.height)
         newTouch = self.find_touch(rx, ry)
         if newTouch:
             self.current_drag = newTouch
@@ -54,26 +71,17 @@ class MouseTouchProvider(TouchProvider):
             self.counter += 1
             id = 'mouse' + str(self.counter)
             self.current_drag = cur = MouseTouch(self.device, id=id, args=[rx, ry])
-            if modifiers & key.MOD_SHIFT:
+            if self.window.modifiers & GLUT_ACTIVE_SHIFT:
                 cur.is_double_tap = True
             self.touches[id] = cur
             self.waiting_event.append(('down', cur))
         return True
 
-    def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
+    def on_mouse_release(self, button, state, x, y):
         rx = x / float(self.window.width)
-        ry = y / float(self.window.height)
-        if self.current_drag:
-            cur = self.current_drag
-            cur.move([rx, ry])
-            self.waiting_event.append(('move', cur))
-        return True
-
-    def on_mouse_release(self, x, y, button, modifiers):
-        rx = x / float(self.window.width)
-        ry = y / float(self.window.height)
+        ry = 1. - y / float(self.window.height)
         cur = self.find_touch(rx, ry)
-        if  button == 1 and cur and not (modifiers & key.MOD_CTRL):
+        if button == GLUT_LEFT_BUTTON and cur and not (self.window.modifiers & GLUT_ACTIVE_CTRL):
             cur.move([rx, ry])
             del self.touches[cur.id]
             self.waiting_event.append(('up', cur))
@@ -85,9 +93,8 @@ class MouseTouchProvider(TouchProvider):
             self.window = getWindow()
             if self.window:
                 self.window.push_handlers(
-                    on_mouse_drag=self.on_mouse_drag,
-                    on_mouse_press=self.on_mouse_press,
-                    on_mouse_release=self.on_mouse_release
+                    on_mouse_motion=self.on_mouse_motion,
+                    on_mouse=self.on_mouse,
                 )
         if not self.window:
             return

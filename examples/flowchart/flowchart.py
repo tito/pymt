@@ -5,7 +5,7 @@ PLUGIN_AUTHOR = 'Mathieu Virbel'
 PLUGIN_DESCRIPTION = 'A test for doing some flowchart'
 
 from pymt import *
-from pyglet.gl import GL_LINE_LOOP
+from OpenGL.GL import GL_LINE_LOOP
 
 flowcss = '''
 flowchart {

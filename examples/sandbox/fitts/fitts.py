@@ -1,6 +1,6 @@
 from __future__ import with_statement
 from pymt import *
-from pyglet.gl import *
+from OpenGL.GL import *
 import time
 from random import randint
 from math import sqrt

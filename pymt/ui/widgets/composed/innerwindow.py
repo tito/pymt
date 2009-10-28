@@ -7,7 +7,7 @@ __all__ = ['MTInnerWindow']
 
 import os
 import pymt
-from pyglet.gl import *
+from OpenGL.GL import *
 from ....graphx import gx_matrix, drawRectangle, set_color, gx_stencil, stencilUse
 from ....graphx import drawRoundedRectangle, drawTexturedRectangle
 from ....vector import matrix_inv_mult

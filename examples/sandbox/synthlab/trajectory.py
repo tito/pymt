@@ -4,7 +4,7 @@
 from __future__ import with_statement
 __all__ = ['MTTrajectory']
 
-from pyglet.gl import *
+from OpenGL.GL import *
 from pymt.graphx import set_color, drawRectangle,drawRoundedRectangle, gx_matrix, GlDisplayList
 from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.widget import MTWidget

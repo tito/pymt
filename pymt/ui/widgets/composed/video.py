@@ -12,7 +12,7 @@ __all__ = ['MTVideo','MTVideoView','MTSimpleVideo']
 import os
 import pyglet
 import pymt
-from pyglet.gl import *
+from OpenGL.GL import *
 from pyglet.media import *
 from ....image import Image
 from ....utils import boundary

@@ -6,7 +6,7 @@ __all__ = ['OBJ']
 import os
 import warnings
 
-from pyglet.gl import *
+from OpenGL.GL import *
 from pyglet import image
 from graphx import *
 from geometric import *

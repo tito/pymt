@@ -6,7 +6,7 @@ __all__ = ['Material', 'MaterialGroup', 'Mesh']
 import os
 import warnings
 import pyglet
-from pyglet.gl import *
+from OpenGL.GL import *
 
 class Material(object):
     '''
@@ -24,7 +24,7 @@ class Material(object):
     def __init__(self, name):
         self.name = name
 
-    def apply(self, face=pyglet.gl.GL_FRONT_AND_BACK):
+    def apply(self, face=OpenGL.GL.GL_FRONT_AND_BACK):
         '''Apply the material on current context'''
         if self.texture:
             glEnable(self.texture.target)

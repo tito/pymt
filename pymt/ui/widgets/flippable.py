@@ -5,7 +5,7 @@ Flippable Widget: A widget with 2 sides who can flip between the sides.
 from __future__ import with_statement
 __all__ = ['MTFlippableWidget']
 
-from pyglet.gl import *
+from OpenGL.GL import *
 from ..factory import MTWidgetFactory
 from ...graphx import gx_matrix, drawCSSRectangle, set_color
 from widget import MTWidget

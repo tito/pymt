@@ -14,7 +14,7 @@ from ..scatter import MTScatterWidget
 from kineticlist import MTKineticList, MTKineticItem
 from pyglet import clock
 from pyglet import font
-from pyglet.gl import glScalef, glTranslatef
+from OpenGL.GL import glScalef, glTranslatef
 
 __all__ = ['MTVKeyboard']
 

@@ -14,7 +14,8 @@ __all__ = [
 ]
 
 from pyglet import *
-from pyglet.gl import *
+from OpenGL.GL import *
+from OpenGL.GLU import *
 from pyglet.image import Texture, TextureRegion
 from pyglet.graphics import draw
 from pyglet.text import Label

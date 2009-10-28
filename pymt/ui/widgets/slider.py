@@ -6,7 +6,7 @@ from __future__ import with_statement, division
 import random
 __all__ = ['MTSlider', 'MTXYSlider', 'MTBoundarySlider', 'MTMultiSlider']
 
-from pyglet.gl import *
+from OpenGL.GL import *
 from ...graphx import drawRectangle, drawCircle, drawLabel, set_color, drawRoundedRectangle, drawRectangleAlpha, drawRoundedRectangleAlpha
 from ...graphx import drawCSSRectangle
 from ..factory import MTWidgetFactory

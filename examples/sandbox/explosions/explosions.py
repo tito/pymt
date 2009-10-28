@@ -7,7 +7,7 @@ PLUGIN_DESCRIPTION = 'A fun explosions game, with modes for both whack a mole an
 
 from pymt import *
 from pyglet.media import *
-from pyglet.gl import *
+from OpenGL.GL import *
 from pyglet.text import Label
 import random
 import rabbyt.collisions

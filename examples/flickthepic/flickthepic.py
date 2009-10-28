@@ -5,7 +5,7 @@ PLUGIN_AUTHOR = 'Sharath Patali'
 PLUGIN_DESCRIPTION = 'This application download pictures asynchrnously and displays them as a MT Image'
 
 from pymt import *
-from pyglet.gl import *
+from OpenGL.GL import *
 from urllib import urlopen
 from FlickrClient import *
 import random, sys

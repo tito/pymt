@@ -3,19 +3,23 @@ Pyglet: Soup on pyglet to provide multitouch interface.
 '''
 
 __all__ = [
-    'TouchEventLoop', 'TouchWindow',
+    'TouchEventLoop',
     'pymt_usage', 'runTouchApp', 'stopTouchApp',
     'getFrameDt', 'getAvailableTouchs',
     'getEventLoop',
-    'touch_event_listeners', 'pymt_providers'
+    'touch_event_listeners',
+    'pymt_providers',
+    'getWindow', 'setWindow'
 ]
 
 import osc
-import pyglet
 import pymt
-import sys, getopt, os
+import sys
+import getopt
+import os
+import time
 from logger import pymt_logger
-from pyglet.gl import *
+from OpenGL.GL import *
 from exceptions import pymt_exception_manager, ExceptionManager
 from Queue import Queue
 from utils import intersection, difference, strtotuple
@@ -28,6 +32,7 @@ touch_list              = []
 pymt_window             = None
 pymt_providers          = []
 pymt_evloop             = None
+frame_last_time         = time.time()
 frame_dt                = 0.01 # init to a non-zero value, to prevent user zero division
 
 def getFrameDt():
@@ -43,15 +48,20 @@ def getWindow():
     global pymt_window
     return pymt_window
 
+def setWindow(win):
+    global pymt_window
+    pymt_window = win
+
 def getEventLoop():
     global pymt_evloop
     return pymt_evloop
 
-class TouchEventLoop(pyglet.app.EventLoop):
+class TouchEventLoop(object):
     '''Main event loop. This loop handle update of input + dispatch event
     '''
     def __init__(self, host='127.0.0.1', port=3333):
-        pyglet.app.EventLoop.__init__(self)
+        super(TouchEventLoop, self).__init__()
+        self.quit = False
         self.input_events = []
         self.postproc_modules = []
         self.double_tap_distance = pymt.pymt_config.getint('pymt', 'double_tap_distance') / 1000.0
@@ -147,17 +157,20 @@ class TouchEventLoop(pyglet.app.EventLoop):
 
     def idle(self):
         # update dt
-        global frame_dt
-        frame_dt = pyglet.clock.tick()
+        global frame_dt, frame_last_time
+        current_time = time.time()
+        frame_dt = frame_last_time - current_time
+        frame_last_time = current_time
 
         # read and dispatch input from providers
         self.dispatch_input()
 
-        # dispatch pyglet events
-        for window in pyglet.app.windows:
-            window.dispatch_events()
-            window.dispatch_event('on_draw')
-            window.flip()
+        global pymt_window
+        if pymt_window:
+            pymt_window.dispatch_events()
+            pymt_window.dispatch_event('on_update')
+            pymt_window.dispatch_event('on_draw')
+            pymt_window.flip()
 
         # don't loop if we don't have listeners !
         global touch_event_listeners
@@ -166,42 +179,20 @@ class TouchEventLoop(pyglet.app.EventLoop):
 
         return 0
 
-
-class TouchWindow(pyglet.window.Window):
-    '''Base implementation of Tuio event in top of pyglet window.
-
-    :Events:
-        `on_touch_down`
-            Fired when a down event occured
-        `on_touch_move`
-            Fired when a move event occured
-        `on_touch_up`
-            Fired when a up event occured
-    '''
-    def __init__(self, **kwargs):
-        super(TouchWindow, self).__init__(**kwargs)
-        self.register_event_type('on_touch_down')
-        self.register_event_type('on_touch_move')
-        self.register_event_type('on_touch_up')
-        touch_event_listeners.append(self)
-
-        global pymt_window
-        pymt_window = self
-
-    def on_close(self, *largs):
-        global pymt_window
-        pymt_window = None
-        touch_event_listeners.remove(self)
-        super(TouchWindow, self).on_close(*largs)
-
-    def on_touch_down(self, touch):
+    def start(self):
         pass
 
-    def on_touch_move(self, touch):
-        pass
+    def run(self):
+        while not self.quit:
+            self.idle()
 
-    def on_touch_up(self, touch):
-        pass
+    def close(self):
+        if pymt_window:
+            pymt_window.close()
+        self.quit = True
+
+    def exit(self):
+        self.close()
 
 
 def pymt_usage():

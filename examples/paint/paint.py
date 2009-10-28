@@ -1,6 +1,6 @@
 import collections
 from pymt import *
-from pyglet.gl import *
+from OpenGL.GL import *
 from glob import glob
 
 # PYMT Plugin integration

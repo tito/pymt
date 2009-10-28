@@ -14,7 +14,7 @@ from __future__ import with_statement
 __all__ = [ 'MTMenuItem', 'MTAnimatedMenu' ]
 
 import pyglet
-from pyglet.gl import *
+from OpenGL.GL import *
 from widget import MTWidget
 from ..factory import MTWidgetFactory
 

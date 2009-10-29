@@ -97,6 +97,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     # Note: import are done after logger module initialization,
     # and configuration applied to logger.
     from exceptions import *
+    from clock import *
     from image import *
     from modules import *
     from input import *

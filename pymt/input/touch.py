@@ -181,7 +181,8 @@ class Touch(object):
             setattr(self, attrs[i], values[i])
 
     def __str__(self):
-        return str(self.__class__)
+        classname = str(self.__class__).split('.')[-1].replace('>', '').replace('\'', '')
+        return '<%s spos=%s pos=%s>' % (classname, str(self.spos), str(self.pos))
 
     # facility
     pos = property(lambda self: (self.x, self.y),

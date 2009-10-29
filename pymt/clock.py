@@ -19,17 +19,18 @@ class Clock(object):
         # tick the current time
         current = time.time()
         self._dt = current - self._last_tick
+        self._fps_counter += 1
         self._last_tick = current
 
         # calculate fps things
         if self._last_fps_tick == None:
             self._last_fps_tick = current
-        elif current - self._last_fps_tick > 2.:
+        elif current - self._last_fps_tick > 1:
+            self._fps = self._fps_counter / float(current - self._last_fps_tick)
             self._last_fps_tick = current
-            self._fps = self._fps_counter / (current - self._last_fps_tick)
-            self._last_fps_tick = current
+            self._fps_counter = 0
 
-        return self.dt
+        return self._dt
 
     def get_fps(self):
         return self._fps

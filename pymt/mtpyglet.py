@@ -64,8 +64,6 @@ class TouchEventLoop(object):
         self.quit = False
         self.input_events = []
         self.postproc_modules = []
-        self.double_tap_distance = pymt.pymt_config.getint('pymt', 'double_tap_distance') / 1000.0
-        self.double_tap_time = pymt.pymt_config.getint('pymt', 'double_tap_time') / 1000.0
 
     def start(self):
         global pymt_providers

@@ -39,6 +39,8 @@
 
 __all__ = ('EventDispatcher', )
 
+import inspect
+
 class EventDispatcher(object):
     _event_stack = ()
     _event_types = []

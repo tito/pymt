@@ -17,11 +17,9 @@ import pymt
 import sys
 import getopt
 import os
-import time
 from logger import pymt_logger
-from OpenGL.GL import *
 from exceptions import pymt_exception_manager, ExceptionManager
-from Queue import Queue
+from clock import getClock
 from utils import intersection, difference, strtotuple
 from input import *
 
@@ -32,7 +30,6 @@ touch_list              = []
 pymt_window             = None
 pymt_providers          = []
 pymt_evloop             = None
-frame_last_time         = time.time()
 frame_dt                = 0.01 # init to a non-zero value, to prevent user zero division
 
 def getFrameDt():
@@ -155,10 +152,8 @@ class TouchEventLoop(object):
 
     def idle(self):
         # update dt
-        global frame_dt, frame_last_time
-        current_time = time.time()
-        frame_dt = frame_last_time - current_time
-        frame_last_time = current_time
+        global frame_dt
+        frame_dt = getClock().tick()
 
         # read and dispatch input from providers
         self.dispatch_input()

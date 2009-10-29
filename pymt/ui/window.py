@@ -58,6 +58,13 @@ class BaseWindow(EventDispatcher):
         # shadow window ?
         self.shadow = kwargs.get('shadow')
 
+        # create window
+        self.create_window()
+
+        # for shadow window, we've done !
+        if self.shadow:
+            return
+
         # event subsystem
         self.register_event_type('on_draw')
         self.register_event_type('on_update')
@@ -69,9 +76,6 @@ class BaseWindow(EventDispatcher):
         self.register_event_type('on_mouse')
         self.register_event_type('on_mouse_motion')
         self.register_event_type('on_keyboard')
-
-        # create window
-        self.create_window()
 
         # set out window as the main pymt window
         setWindow(self)
@@ -148,10 +152,6 @@ class BaseWindow(EventDispatcher):
         self.dump_prefix    = pymt.pymt_config.get('dump', 'prefix')
         self.dump_format    = pymt.pymt_config.get('dump', 'format')
         self.dump_idx       = 0
-
-        # for shadow window, we've done !
-        if self.shadow:
-            return
 
         # configure the window
         self.configure(params)
@@ -346,7 +346,7 @@ class BaseWindow(EventDispatcher):
         '''Event called when mouse is in action (press/release)'''
         pass
 
-    def on_mouse_motion(self, x, y, button, modifiers):
+    def on_mouse_motion(self, x, y):
         '''Event called when mouse is moving, with buttons pressed'''
         pass
 
@@ -388,18 +388,18 @@ class MTWindow(BaseWindow):
         super(MTWindow, self).create_window()
 
     def configure(self, params):
+        # register all callbcaks
+        glutReshapeFunc(self._glut_reshape)
+        glutMouseFunc(curry(self.dispatch_event, 'on_mouse'))
+        glutMotionFunc(curry(self.dispatch_event, 'on_mouse_motion'))
+        glutKeyboardFunc(curry(self.dispatch_event, 'on_keyboard'))
+
         # update window size
         glutShowWindow()
         self.size = params['width'], params['height']
         if params['fullscreen']:
             pymt_logger.debug('Set window to fullscreen mode')
             glutFullScreen()
-
-        # register all callbcaks
-        glutReshapeFunc(curry(self.dispatch_event, 'on_resize'))
-        glutMouseFunc(curry(self.dispatch_event, 'on_mouse'))
-        glutMotionFunc(curry(self.dispatch_event, 'on_mouse_motion'))
-        glutKeyboardFunc(curry(self.dispatch_event, 'on_keyboard'))
 
         super(MTWindow, self).configure(params)
 
@@ -423,6 +423,9 @@ class MTWindow(BaseWindow):
     def _set_size(self, size):
         glutReshapeWindow(*size)
         super(MTWindow, self)._set_size(size)
+
+    def _glut_reshape(self, w, h):
+        self.size = w, h
 
     def flip(self):
         glutSwapBuffers()

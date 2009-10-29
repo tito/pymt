@@ -10,7 +10,8 @@ from OpenGL.GLUT import *
 import pymt
 from ..logger import pymt_logger
 from ..base import stopTouchApp, getAvailableTouchs, setWindow, touch_event_listeners
-from ..graphx import set_color, drawCircle
+from ..clock import getClock
+from ..graphx import set_color, drawCircle, drawLabel
 from ..modules import pymt_modules
 from ..utils import curry
 from ..event import EventDispatcher
@@ -83,10 +84,6 @@ class BaseWindow(EventDispatcher):
         # apply inline css
         if len(kwargs.get('style')):
             self.apply_css(kwargs.get('style'))
-
-        # initialize fps clock
-        # FIXME clock fps
-        #self.fps_display =  pyglet.clock.ClockDisplay()
 
         self.children = []
         self.parent = self
@@ -291,10 +288,13 @@ class BaseWindow(EventDispatcher):
         for w in self.children:
             w.dispatch_event('on_draw')
 
-        '''
         if self.show_fps:
-            self.fps_display.draw()
+            fps = getClock().get_fps()
+            drawLabel(label='FPS: %.2f' % float(fps),
+                center=False, pos=(4, self.height - 4),
+                font_size=10, bold=False)
 
+        '''
         if self.dump_frame:
             self.dump_idx = self.dump_idx + 1
             filename = '%s%05d.%s' % (self.dump_prefix, self.dump_idx,

@@ -9,7 +9,7 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 import pymt
 from ..logger import pymt_logger
-from ..mtpyglet import stopTouchApp, getAvailableTouchs, setWindow, touch_event_listeners
+from ..base import stopTouchApp, getAvailableTouchs, setWindow, touch_event_listeners
 from ..graphx import set_color, drawCircle
 from ..modules import pymt_modules
 from ..utils import curry

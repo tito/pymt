@@ -4,7 +4,7 @@ from ctypes import *
 from ..provider import TouchProvider
 from ..factory import TouchFactory
 from ..touch import Touch
-from ...mtpyglet import getWindow
+from ...base import getWindow
 from ...utils import curry
 
 MI_WP_SIGNATURE = 0xFF515700

@@ -100,7 +100,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     from image import *
     from modules import *
     from input import *
-    from mtpyglet import *
+    from base import *
     from graphx import *
     from ui import *
     from obj import OBJ

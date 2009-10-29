@@ -11,7 +11,7 @@ from ....graphx import set_color, drawRectangle
 from ....graphx import drawCSSRectangle
 from ...factory import MTWidgetFactory
 from ....vector import Vector
-from ....mtpyglet import getFrameDt
+from ....base import getFrameDt
 from ....utils import boundary
 from ..stencilcontainer import MTStencilContainer
 from ..widget import MTWidget

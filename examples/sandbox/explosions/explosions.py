@@ -52,8 +52,8 @@ class PlayArea(MTWidget):
     def prepLevel(self, dt=0, level=0):
         self.score.showing = False
         self.notifications.new_notification(0, text="Level " + str(level))
-        pyglet.clock.schedule_once(self.notifications.new_notification, 3.0, text="Get ready!")
-        pyglet.clock.schedule_once(self.startLevel, 6.0, level=level)
+        getClock().schedule_once(self.notifications.new_notification, 3.0, text="Get ready!")
+        getClock().schedule_once(self.startLevel, 6.0, level=level)
     def startLevel(self, dt=0, level=0):
 
         self.bloop_points = 1
@@ -84,14 +84,14 @@ class PlayArea(MTWidget):
         self.time_left = self.timelimit
         self.score.showing = True
         #self.notifications.new_notification(0, text="EXPLODE")
-        pyglet.clock.schedule_interval(self.timerTick, 1)
-        pyglet.clock.schedule_interval(self.generateBloop, self.bloop_freq)
+        getClock().schedule_interval(self.timerTick, 1)
+        getClock().schedule_interval(self.generateBloop, self.bloop_freq)
 
     def endLevel(self):
         if not self.levelended:
             print("Ending level!")
-            pyglet.clock.unschedule(self.generateBloop)
-            pyglet.clock.unschedule(self.timerTick)
+            getClock().unschedule(self.generateBloop)
+            getClock().unschedule(self.timerTick)
             for obj in self.collisionobjects:
                 self.remove_widget(obj)
             if((self.bloop_points + self.bonus_points) >= self.required_points):
@@ -100,7 +100,7 @@ class PlayArea(MTWidget):
                 self.notifications.new_notification(0, text="Level Failed", color="red", speed=5.0)
                 self.level = self.level - 1 #Repeat the level
 
-            pyglet.clock.schedule_once(self.prepLevel, 5.0, level=self.level+1)
+            getClock().schedule_once(self.prepLevel, 5.0, level=self.level+1)
             self.levelended = True
 
     def generateBloop(self,dt):
@@ -208,7 +208,7 @@ class bloop(MTButton):
         self.showing = True
         self.highlight = False
 
-        pyglet.clock.schedule_once(self.BloopHide, self.expiretime)
+        getClock().schedule_once(self.BloopHide, self.expiretime)
 
         anim = self.add_animation('fadeout','radius', self.width+10, 1.0/60, 1.0)
         anim = self.add_animation('fadeout','alpha', 0.00, 1.0/60, 0.5)
@@ -370,7 +370,7 @@ def drawLabel(text, pos=(0,0),center=True,alpha = 75,scale=0.3,red=255,green=255
 
 def pymt_plugin_activate(root, ctx):
     ctx.PA = PlayArea(size=(root.width, root.height))
-    pyglet.clock.schedule_interval(showfps, 5.0)
+    getClock().schedule_interval(showfps, 5.0)
     root.add_widget(ctx.PA)
 
 

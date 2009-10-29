@@ -12,7 +12,7 @@ import rabbyt.collisions
 
 def pymt_plugin_activate(root, ctx):
     ctx.PA = PlayArea(size=(root.width, root.height))
-    pyglet.clock.schedule_interval(showfps, 5.0)
+    getClock().schedule_interval(showfps, 5.0)
     root.add_widget(ctx.PA)
     
 

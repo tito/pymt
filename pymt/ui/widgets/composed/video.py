@@ -14,6 +14,7 @@ import pyglet
 import pymt
 from OpenGL.GL import *
 from pyglet.media import *
+from ....clock import getClock
 from ....image import Image
 from ....utils import boundary
 from ....graphx import set_color, drawRectangle, drawTexturedRectangle, DO, gx_matrix
@@ -287,7 +288,7 @@ class MTVideo(MTSimpleVideo):
         if self.collide_point(touch.x, touch.y):
             if not self.controls_visible:
                 self.show_controls()
-                pyglet.clock.schedule_once(self.hide_controls, 5)
+                getClock().schedule_once(self.hide_controls, 5)
         return super(MTVideo, self).on_touch_down(touch)
 
     def show_controls(self, dt=0):

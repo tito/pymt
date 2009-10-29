@@ -23,6 +23,7 @@ import pyglet.sprite
 import time
 import urllib
 from logger import pymt_logger
+from clock import getClock
 
 try:
     # Used for gdk thread lock access.
@@ -178,7 +179,7 @@ class Loader(object):
         self.thread = None
         self.loading_image = self.image(loading_image, async=False)
         self.default_async=async
-        pyglet.clock.schedule_interval(self._run_update, 1/2.0)
+        getClock().schedule_interval(self._run_update, .5)
 
     def image(self, name, async=None):
         '''Load an image, and return a ProxyImage'''

@@ -113,7 +113,7 @@ print "Two finger to zoom"
 print "three finger to tilt"
 print  "\n"
 print "Have fun !!!!!!!!!"
-pyglet.clock.schedule_interval(cam.set,0.01)
+getClock().schedule_interval(cam.set,0.01)
 runTouchApp()
 
 	

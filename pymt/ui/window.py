@@ -41,6 +41,7 @@ class BaseWindow(EventDispatcher):
     '''
     _have_multisample = None
     _modifiers = 0
+    _size = (0, 0)
 
     def __init__(self, **kwargs):
         if self.__class__ == BaseWindow:
@@ -53,9 +54,10 @@ class BaseWindow(EventDispatcher):
 
         super(BaseWindow, self).__init__()
 
-        # event subsystem
+        # shadow window ?
         self.shadow = kwargs.get('shadow')
 
+        # event subsystem
         self.register_event_type('on_draw')
         self.register_event_type('on_update')
         self.register_event_type('on_resize')
@@ -137,25 +139,7 @@ class BaseWindow(EventDispatcher):
             except Exception, e:
                 pymt.pymt_logger.error('Invalid display specified %d' % displayidx)
                 pymt.pymt_logger.exception(e)
-
-        # create window
-        try:
-            config = kwargs.get('config')
-            if not config:
-                config = Config()
-                config.sample_buffers = 1
-                config.samples = 4
-                config.depth_size = 16
-                config.double_buffer = True
-                config.stencil_size = 1
-                config.alpha_size = 8
-            super(MTWindow, self).__init__(config=config, **params)
-        except:
-            super(MTWindow, self).__init__(**params)
         '''
-
-        # apply configuration
-        self.configure(params)
 
         # show fps if asked
         self.show_fps = kwargs.get('show_fps')
@@ -168,13 +152,19 @@ class BaseWindow(EventDispatcher):
         self.dump_format    = pymt.pymt_config.get('dump', 'format')
         self.dump_idx       = 0
 
+        # for shadow window, we've done !
+        if self.shadow:
+            return
+
+        # configure the window
+        self.configure(params)
+
         # init some gl
         self.init_gl()
 
-        # init modules
-        if self.shadow:
-            pymt_modules.register_window(self)
-            touch_event_listeners.append(self)
+        # attach modules + listener event
+        pymt_modules.register_window(self)
+        touch_event_listeners.append(self)
 
     def close(self):
         '''Close the window'''
@@ -206,6 +196,8 @@ class BaseWindow(EventDispatcher):
     def _get_size(self):
         return self._size
     def _set_size(self, size):
+        if self._size == size:
+            return
         self._size = size
         pymt_logger.debug('Resize window to %s' % str(self.size))
         self.dispatch_event('on_resize', *size)
@@ -350,10 +342,6 @@ class BaseWindow(EventDispatcher):
         if self in touch_event_listeners:
             touch_event_listeners.remove(self)
 
-    def on_resize(self, w, h):
-        '''Event called when window was resized'''
-        pass
-
     def on_mouse(self, button, state, x, y):
         '''Event called when mouse is in action (press/release)'''
         pass
@@ -383,7 +371,7 @@ class MTWindow(BaseWindow):
 
             # init GLUT !
             pymt_logger.debug('GLUT initialization')
-            glutInit()
+            glutInit('')
             glutInitDisplayMode(
                 GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH |
                 GLUT_MULTISAMPLE | GLUT_STENCIL | GLUT_ACCUM)
@@ -394,6 +382,7 @@ class MTWindow(BaseWindow):
 
             # hide the shadow...
             if self.shadow:
+                # FIXME seem not working... why ??
                 glutHideWindow()
 
         super(MTWindow, self).create_window()

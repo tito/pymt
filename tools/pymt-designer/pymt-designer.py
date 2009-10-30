@@ -42,6 +42,7 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def setupMTWindow(self):
+        pymt.pymt_config.set('modules', 'touchring', '')
         self.glWidget = QTMTWindow()
 
 
@@ -56,7 +57,7 @@ class MainWindow(QtGui.QMainWindow):
         self.console.readOnly = True
         self.console.setFont(font)
         self.editor.setFont(font)
-
+        self.editor.setMinimumSize(400,600)
         self.highlighter = Highlighter(self.editor.document())
         self.openFile('test.py')
 

@@ -33,12 +33,18 @@ class MainWindow(QtGui.QMainWindow):
 
     def setupFileMenu(self):
         fileMenu = QtGui.QMenu("&File", self)
+        pymtMenu = QtGui.QMenu("&PyMT",self)
+
         self.menuBar().addMenu(fileMenu)
+        self.menuBar().addMenu(pymtMenu)
 
         fileMenu.addAction("&New...", self.newFile, "Ctrl+N")
         fileMenu.addAction("&Open...", self.openFile, "Ctrl+O")
-        fileMenu.addAction("&Run", self.run, "Ctrl+R")
+        fileMenu.addAction("&Save", self.saveFile, "Ctrl+S")
+        fileMenu.addAction("Save As", self.saveFileAs, "Ctrl+Alt+S")
         fileMenu.addAction("E&xit", QtGui.qApp.quit, "Ctrl+Q")
+
+        pymtMenu.addAction("&Run", self.run, "Ctrl+R")
 
 
     def setupMTWindow(self):
@@ -64,7 +70,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def newFile(self):
         self.editor.clear()
-
+        self.current_file = None
 
     def openFile(self, path=None):
         if not path:
@@ -77,6 +83,25 @@ class MainWindow(QtGui.QMainWindow):
                 text = inFile.readAll()
                 text = str(text)
                 self.editor.setPlainText(text)
+
+        self.current_file = path
+        self.setWindowTitle("PyMT Designer | "+path)
+
+
+
+    def saveFile(self):
+        self.saveFileAs(self.current_file)
+
+    def saveFileAs(self, path=None):
+        if not path:
+            path = QtGui.QFileDialog.getSaveFileName(self, "Save File",
+                    '', "PyMT Files (*.py *.xml)")
+
+        outFile = QtCore.QFile(path)
+        if outFile.open(QtCore.QFile.WriteOnly | QtCore.QFile.Text):
+                outFile.write(str(self.editor.toPlainText()))
+        self.current_file = path
+
 
 
 

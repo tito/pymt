@@ -63,6 +63,7 @@ class QTMTWindow(QtOpenGL.QGLWidget):
 
         return x, y, button, self.modifiers
 
+
     def mousePressEvent(self, event):
         if self.pymt_window:
             x,y,b,m = self.read_mouse_properties(event)
@@ -78,7 +79,6 @@ class QTMTWindow(QtOpenGL.QGLWidget):
         if self.pymt_window:
             x,y,b,m = self.read_mouse_properties(event)
             self.pymt_window.dispatch_event('on_mouse_up', x,y,b,m)
-
 
 
     def create_new_pymt_window(self):

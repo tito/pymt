@@ -14,10 +14,10 @@ from widget import MTWidget
 
 class KineticTouch(Touch):
     counter = 0
-    def __init__(self, args):
+    def __init__(self, device, args):
         KineticTouch.counter += 1
         id = 'kinetic%d' % KineticTouch.counter
-        super(KineticTouch, self).__init__(id, args)
+        super(KineticTouch, self).__init__(device, id, args)
         self.mode = 'controlled'
 
     def depack(self, args):
@@ -76,10 +76,10 @@ class MTKinetic(MTWidget):
         # do a copy of the touch for kinetic
         if 'mov' in touch.profile:
             args            = (touch.x, touch.y, touch.X, touch.Y)
-            ktouch          = KineticTouchXY(args)
+            ktouch          = KineticTouchXY(touch.device, args)
         else:
             args            = (touch.x, touch.y)
-            ktouch          = KineticTouch(args)
+            ktouch          = KineticTouch(touch.device, args)
         ktouch.userdata = touch.userdata
         ktouch.is_double_tap = touch.is_double_tap
         self.touch[touch.uid] = ktouch

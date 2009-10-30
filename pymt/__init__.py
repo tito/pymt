@@ -25,7 +25,8 @@ for option in options:
     key = 'PYMT_%s' % option.upper()
     if key in os.environ:
         try:
-            options[option] = bool(os.environ[key])
+            options[option] = os.environ[key].lower() in \
+                ('true', '1', 'yes', 'yup')
         except:
             pymt_logger.warning('Wrong value for %s environment key' % key)
 
@@ -71,6 +72,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_config.set('graphics', 'line_smooth', '1')
     pymt_config.add_section('input')
     pymt_config.set('input', 'default', 'tuio,0.0.0.0:3333')
+    pymt_config.set('input', 'mouse', 'mouse')
     pymt_config.add_section('dump')
     pymt_config.set('dump', 'enabled', '0')
     pymt_config.set('dump', 'prefix', 'img_')

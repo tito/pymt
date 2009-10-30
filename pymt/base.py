@@ -12,11 +12,10 @@ __all__ = [
     'getWindow', 'setWindow'
 ]
 
-import osc
 import pymt
 import sys
-import getopt
 import os
+from OpenGL.GLUT import glutDisplayFunc, glutPostRedisplay, glutMainLoop
 from logger import pymt_logger
 from exceptions import pymt_exception_manager, ExceptionManager
 from clock import getClock
@@ -90,7 +89,6 @@ class TouchEventLoop(object):
 
         # dispatch to listeners
         if not touch.grab_exclusive_class:
-            global touch_event_listeners
             for listener in touch_event_listeners:
                 if type == 'down':
                     listener.dispatch_event('on_touch_down', touch)
@@ -158,7 +156,6 @@ class TouchEventLoop(object):
         # read and dispatch input from providers
         self.dispatch_input()
 
-        global pymt_window
         if pymt_window:
             pymt_window.dispatch_events()
             pymt_window.dispatch_event('on_update')
@@ -166,11 +163,11 @@ class TouchEventLoop(object):
             pymt_window.flip()
 
         # don't loop if we don't have listeners !
-        global touch_event_listeners
         if len(touch_event_listeners) == 0:
             self.exit()
+            return False
 
-        return 0
+        return self.quit
 
     def start(self):
         pass
@@ -178,14 +175,15 @@ class TouchEventLoop(object):
     def run(self):
         while not self.quit:
             self.idle()
+        self.exit()
 
     def close(self):
-        if pymt_window:
-            pymt_window.close()
         self.quit = True
 
     def exit(self):
         self.close()
+        if pymt_window:
+            pymt_window.close()
 
 
 def pymt_usage():
@@ -206,6 +204,41 @@ def pymt_usage():
     '''
     print pymt_usage.__doc__ % (os.path.basename(sys.argv[0]))
 
+
+def _run_mainloop():
+    '''Main loop is done by us.'''
+    while True:
+        try:
+            pymt_evloop.run()
+            stopTouchApp()
+            break
+        except BaseException, inst:
+            # use exception manager first
+            r = pymt_exception_manager.handle_exception(inst)
+            if r == ExceptionManager.RAISE:
+                stopTouchApp()
+                raise
+            else:
+                pass
+
+def _run_mainloop_glut():
+    '''Main loop is done by GLUT'''
+
+    # callback for ticking
+    def _glut_redisplay():
+        # hack, glut seem can't handle the leaving on the mainloop
+        # so... leave with sys.exit() :[
+        pymt_evloop.idle()
+        if pymt_evloop.quit:
+            sys.exit(0)
+
+        glutPostRedisplay()
+
+    # install handler
+    glutDisplayFunc(_glut_redisplay)
+
+    # run main loop
+    glutMainLoop()
 
 def runTouchApp(widget=None, slave=False):
     '''Static main function that starts the application loop.
@@ -281,19 +314,20 @@ def runTouchApp(widget=None, slave=False):
     if slave:
         return
 
-    while True:
-        try:
-            pymt_evloop.run()
-            stopTouchApp()
-            break
-        except BaseException, inst:
-            # use exception manager first
-            r = pymt_exception_manager.handle_exception(inst)
-            if r == ExceptionManager.RAISE:
-                stopTouchApp()
-                raise
-            else:
-                pass
+    # in non-slave mode, they are 2 issues
+    #
+    # 1. if user created a window, glut need to be called with
+    #    glutMainLoop(). Only FreeGLUT got a gluMainLoopEvent().
+    #    So, we are executing the dispatching function inside
+    #    a redisplay event.
+    #
+    # 2. if no window is created, we are dispatching event lopp
+    #    ourself (previous behavior.)
+    #
+    if pymt_window is None:
+        _run_mainloop()
+    else:
+        _run_mainloop_glut()
 
     # Show event stats
     if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
@@ -305,5 +339,3 @@ def stopTouchApp():
         return
     pymt_logger.info('Leaving application in progress...')
     pymt_evloop.close()
-    pymt_evloop.exit()
-    pymt_evloop = None

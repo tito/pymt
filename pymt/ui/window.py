@@ -73,10 +73,10 @@ class BaseWindow(EventDispatcher):
         self.register_event_type('on_touch_down')
         self.register_event_type('on_touch_move')
         self.register_event_type('on_touch_up')
-        self.register_event_type('on_mouse')
-        self.register_event_type('on_mouse_motion')
+        self.register_event_type('on_mouse_down')
+        self.register_event_type('on_mouse_move')
+        self.register_event_type('on_mouse_up')
         self.register_event_type('on_keyboard')
-
         # set out window as the main pymt window
         setWindow(self)
 
@@ -342,13 +342,18 @@ class BaseWindow(EventDispatcher):
         if self in touch_event_listeners:
             touch_event_listeners.remove(self)
 
-    def on_mouse(self, button, state, x, y):
+    def on_mouse_down(self, x, y, button, modifiers):
         '''Event called when mouse is in action (press/release)'''
         pass
 
-    def on_mouse_motion(self, x, y):
+    def on_mouse_move(self, x, y, button, modifiers):
         '''Event called when mouse is moving, with buttons pressed'''
         pass
+
+    def on_mouse_up(self, x, y, button, modifiers):
+        '''Event called when mouse is moving, with buttons pressed'''
+        pass
+
 
     def on_keyboard(self, key, x, y):
         '''Event called when keyboard is in action'''
@@ -390,8 +395,8 @@ class MTWindow(BaseWindow):
     def configure(self, params):
         # register all callbcaks
         glutReshapeFunc(self._glut_reshape)
-        glutMouseFunc(curry(self.dispatch_event, 'on_mouse'))
-        glutMotionFunc(curry(self.dispatch_event, 'on_mouse_motion'))
+        glutMouseFunc(glut_mouse)
+        glutMotionFunc(glut_mouse_motion)
         glutKeyboardFunc(curry(self.dispatch_event, 'on_keyboard'))
 
         # update window size
@@ -403,6 +408,24 @@ class MTWindow(BaseWindow):
 
         super(MTWindow, self).configure(params)
 
+
+
+    def glut_mouse(self, button, state, x, y):
+        btn = 'left'
+        if button == GLUT_RIGHT_BUTTON:
+            btn = 'right'
+
+        y -= 10
+        if state == GLUT_DOWN:
+            self.dispatch_event('on_mouse_down', x,y,btn, self.modifiers)
+        else:
+            self.dispatch_event('on_mouse_up', x,y, btn, self.modifiers)
+
+    def glut_mouse_motion(self, x,y):
+        y -= 10
+        self.dispatch_event('on_mouse_move', x,y, self.modifiers)
+
+
     def close(self):
         global glut_window
         if glut_window:
@@ -411,7 +434,16 @@ class MTWindow(BaseWindow):
         super(MTWindow, self).close()
 
     def on_keyboard(self, key, x, y):
-        self._modifiers = glutGetModifiers()
+        self._modifiers = []
+        mods = glutGetModifiers()
+        if mods & GLUT_ACTIVE_SHIFT:
+            self._modifiers.append('shift')
+        if mods & GLUT_ACTIVE_ALT:
+            self._modifiers.append('alt')
+        if mods & GLUT_ACTIVE_SHIFT:
+            self._modifiers.append('ctrl')
+
+
         if ord(key) == 27:
             stopTouchApp()
         super(MTWindow, self).on_keyboard(key, x, y)

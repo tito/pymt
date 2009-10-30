@@ -44,8 +44,7 @@ class MouseTouchProvider(TouchProvider):
                 return t
         return False
 
-    def on_mouse_motion(self, x, y):
-        y -= 10
+    def on_mouse_motion(self, x, y, modifiers):
         rx = x / float(self.window.width)
         ry = 1. - y / float(self.window.height)
         if self.current_drag:
@@ -54,14 +53,8 @@ class MouseTouchProvider(TouchProvider):
             self.waiting_event.append(('move', cur))
         return True
 
-    def on_mouse(self, button, state, x, y):
-        y -= 10
-        if state == GLUT_DOWN:
-            self.on_mouse_press(button, state, x, y)
-        else:
-            self.on_mouse_release(button, state, x, y)
 
-    def on_mouse_press(self, button, state, x, y):
+    def on_mouse_press(self, x, y, button, modifiers):
         rx = x / float(self.window.width)
         ry = 1. - y / float(self.window.height)
         newTouch = self.find_touch(rx, ry)
@@ -71,17 +64,17 @@ class MouseTouchProvider(TouchProvider):
             self.counter += 1
             id = 'mouse' + str(self.counter)
             self.current_drag = cur = MouseTouch(self.device, id=id, args=[rx, ry])
-            if self.window.modifiers & GLUT_ACTIVE_SHIFT:
+            if 'shift' in modifiers:
                 cur.is_double_tap = True
             self.touches[id] = cur
             self.waiting_event.append(('down', cur))
         return True
 
-    def on_mouse_release(self, button, state, x, y):
+    def on_mouse_release(self, x, y, button, modifiers):
         rx = x / float(self.window.width)
         ry = 1. - y / float(self.window.height)
         cur = self.find_touch(rx, ry)
-        if button == GLUT_LEFT_BUTTON and cur and not (self.window.modifiers & GLUT_ACTIVE_CTRL):
+        if button == 'left' and cur and not ('ctrl' in modifiers):
             cur.move([rx, ry])
             del self.touches[cur.id]
             self.waiting_event.append(('up', cur))
@@ -93,8 +86,9 @@ class MouseTouchProvider(TouchProvider):
             self.window = getWindow()
             if self.window:
                 self.window.push_handlers(
-                    on_mouse_motion=self.on_mouse_motion,
-                    on_mouse=self.on_mouse,
+                    on_mouse_move=self.on_mouse_motion,
+                    on_mouse_down=self.on_mouse_press,
+                    on_mouse_up=self.on_mouse_release
                 )
         if not self.window:
             return

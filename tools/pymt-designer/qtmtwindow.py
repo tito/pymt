@@ -2,6 +2,7 @@ import sys
 import math
 from OpenGL.GL import *
 from PyQt4 import QtOpenGL, QtGui, QtCore
+from PyQt4.Qt import Qt
 from pymt import BaseWindow, getEventLoop
 
 
@@ -41,20 +42,44 @@ class QTMTWindow(QtOpenGL.QGLWidget):
         if self.pymt_window:
             self.pymt_window.size = (width, height)
 
-    def mousePressEvent(self, event):
-        pos = event.pos()
-        x,y = pos.x, pos.y
 
-        #if event.button == Qt.LeftButton
-        #if event.button == Qt.RightButton
+    def read_mouse_properties(self, event):
+        pos = event.pos()
+        x,y = pos.x(), pos.y()
+        button = 'left'
+        if event.button == Qt.RightButton:
+            button = 'right'
+
+        self.modifiers = []
+        kmods = event.modifiers()
+        if kmods & Qt.ShiftModifier:
+            self.modifiers.append('shift')
+        if kmods & Qt.ControlModifier:
+            self.modifiers.append('ctrl')
+        if kmods & Qt.AltModifier:
+            self.modifiers.append('alt')
+        if kmods & Qt.MetaModifier:
+            self.modifiers.append('meta')
+
+        return x, y, button, self.modifiers
+
+    def mousePressEvent(self, event):
+        if self.pymt_window:
+            x,y,b,m = self.read_mouse_properties(event)
+            self.pymt_window.dispatch_event('on_mouse_down', x,y,b,m)
+
 
     def mouseMoveEvent(self, event):
-        pos = event.pos()
-        x,y = pos.x, pos.y
+        if self.pymt_window:
+            x,y,b,m = self.read_mouse_properties(event)
+            self.pymt_window.dispatch_event('on_mouse_move', x,y,m)
 
     def mouseReleaseEvent(self, event):
-        pos = event.pos()
-        x,y = pos.x, pos.y
+        if self.pymt_window:
+            x,y,b,m = self.read_mouse_properties(event)
+            self.pymt_window.dispatch_event('on_mouse_up', x,y,b,m)
+
+
 
     def create_new_pymt_window(self):
         if self.pymt_window:

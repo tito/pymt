@@ -416,10 +416,6 @@ class MTWindow(BaseWindow):
             stopTouchApp()
         super(MTWindow, self).on_keyboard(key, x, y)
 
-    def dispatch_events(self):
-        glutMainLoopEvent()
-        super(MTWindow, self).dispatch_events()
-
     def _set_size(self, size):
         glutReshapeWindow(*size)
         super(MTWindow, self)._set_size(size)

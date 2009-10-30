@@ -68,7 +68,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def setupEditor(self):
         font = QtGui.QFont()
-        font.setFamily('Courier')
+        font.setFamily('Lucida')
         font.setFixedPitch(True)
         font.setPointSize(10)
 

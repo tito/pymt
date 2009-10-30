@@ -46,7 +46,6 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                 quotationFormat))
 
         functionFormat = QtGui.QTextCharFormat()
-        functionFormat.setFontItalic(True)
         functionFormat.setForeground(QtCore.Qt.blue)
         self.highlightingRules.append((QtCore.QRegExp("\\b[A-Za-z0-9_]+(?=\\()"),
                 functionFormat))

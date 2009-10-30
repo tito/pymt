@@ -25,7 +25,8 @@ for option in options:
     key = 'PYMT_%s' % option.upper()
     if key in os.environ:
         try:
-            options[option] = bool(os.environ[key])
+            options[option] = os.environ[key].lower() in \
+                ('true', '1', 'yes', 'yup')
         except:
             pymt_logger.warning('Wrong value for %s environment key' % key)
 

@@ -1,12 +1,15 @@
+
+import sys,os
+os.environ['PYMT_SHADOW_WINDOW'] = 'False'
+
 from PyQt4 import QtCore, QtGui, QtOpenGL
 from OpenGL import GL
 from syntaxhighlighter import Highlighter
-from qtmtwindow import MTWindow
 from pymt import pymt_logger
 from cStringIO import StringIO
-from pymt import BaseWindow, getEventLoop
 from qtmtwindow import *
-import sys
+import pymt
+import traceback
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -18,7 +21,7 @@ class MainWindow(QtGui.QMainWindow):
         self.central_widget = QtGui.QWidget()
         self.layout = QtGui.QHBoxLayout()
         self.layout.addWidget(self.editor)
-        
+
         self.vlayout = QtGui.QVBoxLayout()
         self.vlayout.addWidget(self.glWidget)
         self.vlayout.addWidget(self.console)
@@ -26,32 +29,21 @@ class MainWindow(QtGui.QMainWindow):
 
         self.central_widget.setLayout(self.layout)
         self.setCentralWidget(self.central_widget)
-        self.setWindowTitle("Syntax Highlighter")
+        self.setWindowTitle("PyMT Designer")
 
-    def newFile(self):
-        self.editor.clear()
+    def setupFileMenu(self):
+        fileMenu = QtGui.QMenu("&File", self)
+        self.menuBar().addMenu(fileMenu)
 
-    def openFile(self, path=None):
-        if not path:
-            path = QtGui.QFileDialog.getOpenFileName(self, "Open File",
-                    '', "PyMT Files (*.py *.xml)")
+        fileMenu.addAction("&New...", self.newFile, "Ctrl+N")
+        fileMenu.addAction("&Open...", self.openFile, "Ctrl+O")
+        fileMenu.addAction("&Run", self.run, "Ctrl+R")
+        fileMenu.addAction("E&xit", QtGui.qApp.quit, "Ctrl+Q")
 
-        if path:
-            inFile = QtCore.QFile(path)
-            if inFile.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
-                text = inFile.readAll()
-
-                try:
-                    # Python v3.
-                    text = str(text, encoding='ascii')
-                except TypeError:
-                    # Python v2.
-                    text = str(text)
-
-                self.editor.setPlainText(text)
 
     def setupMTWindow(self):
-        self.glWidget = MTWindow()
+        self.glWidget = QTMTWindow()
+
 
     def setupEditor(self):
         font = QtGui.QFont()
@@ -66,31 +58,57 @@ class MainWindow(QtGui.QMainWindow):
         self.editor.setFont(font)
 
         self.highlighter = Highlighter(self.editor.document())
+        self.openFile('test.py')
+
+
+    def newFile(self):
+        self.editor.clear()
+
+
+    def openFile(self, path=None):
+        if not path:
+            path = QtGui.QFileDialog.getOpenFileName(self, "Open File",
+                    '', "PyMT Files (*.py *.xml)")
+
+        if path:
+            inFile = QtCore.QFile(path)
+            if inFile.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
+                text = inFile.readAll()
+                text = str(text)
+                self.editor.setPlainText(text)
+
+
 
     def run(self):
-        buff = StringIO()
+        pymt.stopTouchApp()
+        buff1 = StringIO()
+        buff2 = StringIO()
         stdout = sys.stdout
-        sys.stdout = buff
-        try:
-            self.glWidget.pymt_window = MTSlaveWindow()
-            self.glWidget.pymt_window.size = (800, 600)
-            exec str(self.editor.toPlainText())
-        except:
-            sys.stderr = buff
-            pymt_logger.exception("Error executing code:")
+        stderr = sys.stderr
+        sys.stdout = buff1
+        sys.stderr = buff2
+        self.execute_pymt_code()
+        self.console.setPlainText(buff1.getvalue() + buff2.getvalue())
         sys.stdout = stdout
-        self.console.setPlainText(buff.getvalue())
-        print "buff", buff.getvalue()
+        sys.stderr = stderr
 
 
-    def setupFileMenu(self):
-        fileMenu = QtGui.QMenu("&File", self)
-        self.menuBar().addMenu(fileMenu)
 
-        fileMenu.addAction("&New...", self.newFile, "Ctrl+N")
-        fileMenu.addAction("&Open...", self.openFile, "Ctrl+O")
-        fileMenu.addAction("&Run", self.run, "Ctrl+R")
-        fileMenu.addAction("E&xit", QtGui.qApp.quit, "Ctrl+Q")
+    def execute_pymt_code(self):
+        oldRunApp = pymt.runTouchApp
+        def designerRunTouchApp(w):
+            oldRunApp(w, slave=True)
+        pymt.runTouchApp = designerRunTouchApp
+
+        try:
+            self.glWidget.create_new_pymt_window()
+            d = {}
+            exec str(self.editor.toPlainText()) in d
+            #pymt.stopTouchApp()
+        except Exception as e:
+            #pymt.pymt_logger.exception("Error Running PyMT Code:")
+            traceback.print_exc()
+        pymt.runTouchApp = oldRunApp
 
 
 

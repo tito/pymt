@@ -10,6 +10,7 @@ from cStringIO import StringIO
 from qtmtwindow import *
 import pymt
 import traceback
+import os
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -17,19 +18,32 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setupFileMenu()
         self.setupEditor()
+        self.setupToolbar()
         self.setupMTWindow()
         self.central_widget = QtGui.QWidget()
         self.layout = QtGui.QHBoxLayout()
         self.layout.addWidget(self.editor)
 
         self.vlayout = QtGui.QVBoxLayout()
+        self.vlayout.addWidget(self.toolbar)
         self.vlayout.addWidget(self.glWidget)
         self.vlayout.addWidget(self.console)
         self.layout.addLayout(self.vlayout)
 
         self.central_widget.setLayout(self.layout)
         self.setCentralWidget(self.central_widget)
-        self.setWindowTitle("PyMT Designer")
+        self.setWindowTitle('PyMT Designer')
+
+        self._update_toolbar_status()
+
+    def setupToolbar(self):
+        self.toolbar = QtGui.QToolBar()
+        pixrun = QtGui.QPixmap('icons/player_play.png')
+        pixstop = QtGui.QPixmap('icons/player_stop.png')
+        pixpause = QtGui.QPixmap('icons/player_pause.png')
+        self.act_run = self.toolbar.addAction(QtGui.QIcon(pixrun), 'Run', self.run)
+        self.act_pause = self.toolbar.addAction(QtGui.QIcon(pixpause), 'Pause', self.pause)
+        self.act_stop = self.toolbar.addAction(QtGui.QIcon(pixstop), 'Stop', self.stop)
 
     def setupFileMenu(self):
         fileMenu = QtGui.QMenu("&File", self)
@@ -65,7 +79,6 @@ class MainWindow(QtGui.QMainWindow):
     def newFile(self):
         self.editor.clear()
 
-
     def openFile(self, path=None):
         if not path:
             path = QtGui.QFileDialog.getOpenFileName(self, "Open File",
@@ -79,6 +92,16 @@ class MainWindow(QtGui.QMainWindow):
                 self.editor.setPlainText(text)
 
 
+    def pause(self):
+        if self.glWidget.is_paused:
+            self.glWidget.play()
+        else:
+            self.glWidget.pause()
+        self._update_toolbar_status()
+
+    def stop(self):
+        self.glWidget.stop()
+        self._update_toolbar_status()
 
     def run(self):
         pymt.stopTouchApp()
@@ -92,8 +115,7 @@ class MainWindow(QtGui.QMainWindow):
         self.console.setPlainText(buff1.getvalue() + buff2.getvalue())
         sys.stdout = stdout
         sys.stderr = stderr
-
-
+        self._update_toolbar_status()
 
     def execute_pymt_code(self):
         oldRunApp = pymt.runTouchApp
@@ -111,8 +133,11 @@ class MainWindow(QtGui.QMainWindow):
             traceback.print_exc()
         pymt.runTouchApp = oldRunApp
 
-
-
+    def _update_toolbar_status(self):
+        self.act_run.setVisible(not self.glWidget.is_running or
+                                self.glWidget.is_paused)
+        self.act_stop.setEnabled(self.glWidget.is_running)
+        self.act_pause.setVisible(not self.act_run.isVisible())
 
 
 if __name__ == '__main__':

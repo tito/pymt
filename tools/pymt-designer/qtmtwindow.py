@@ -18,7 +18,9 @@ class QTMTWindow(QtOpenGL.QGLWidget):
         self.object = 0
         self.bg_color = QtGui.QColor(.5, .5, .5, 1.0)
         self.startTimer(40)
-
+        self.is_running = False
+        self.want_leave = False
+        self.is_paused = False
 
     def timerEvent(self, event):
         self.update()
@@ -29,19 +31,28 @@ class QTMTWindow(QtOpenGL.QGLWidget):
     def sizeHint(self):
         return QtCore.QSize(800, 600)
 
-
     def paintGL(self):
         pymt_evloop = getEventLoop()
         if pymt_evloop and self.pymt_window:
-            pymt_evloop.idle()
+            # leaving asked ?
+            if self.want_leave:
+                self.close_pymt_window()
+                return
+
+            # do idle only if it's not in paused
+            if not self.is_paused:
+                pymt_evloop.idle()
         else:
+            # force bit to running = False,
+            # application can leave by itself
+            self.want_leave = False
+            self.is_running = False
             glClearColor(0,1,0,1)
             glClear(GL_COLOR_BUFFER_BIT)
 
     def resizeGL(self, width, height):
         if self.pymt_window:
             self.pymt_window.size = (width, height)
-
 
     def read_mouse_properties(self, event):
         pos = event.pos()
@@ -79,12 +90,29 @@ class QTMTWindow(QtOpenGL.QGLWidget):
             x,y,b,m = self.read_mouse_properties(event)
             self.pymt_window.dispatch_event('on_mouse_up', x,y,b,m)
 
+    def reset(self):
+        self.resizeGL(self.width(), self.height())
+        self.is_running = True
+        self.is_paused = False
+        self.want_leave = False
 
+    def play(self):
+        self.is_paused = False
 
-    def create_new_pymt_window(self):
+    def stop(self):
+        self.want_leave = True
+        self.is_running = False
+
+    def pause(self):
+        self.is_paused = True
+
+    def close_pymt_window(self):
         if self.pymt_window:
             self.pymt_window.close()
             self.pymt_window = None
+
+    def create_new_pymt_window(self):
+        self.close_pymt_window()
         self.pymt_window = MTDesignerWindow()
-        self.resizeGL(self.width(), self.height())
+        self.reset()
 

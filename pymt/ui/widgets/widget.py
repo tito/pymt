@@ -9,7 +9,7 @@ __all__ = ['getWidgetById',
 
 import sys
 import os
-import pyglet
+from ...event import EventDispatcher
 from ...logger import pymt_logger
 from ...base import getAvailableTouchs
 from ...input import Touch
@@ -43,7 +43,7 @@ def event_stats_print():
     for k in _event_stats:
         pymt_logger.info('%6d: %s' % (_event_stats[k], k))
 
-class MTWidget(pyglet.event.EventDispatcher):
+class MTWidget(EventDispatcher):
     '''Global base for any multitouch widget.
     Implement event for mouse, object, touch and animation.
 
@@ -123,7 +123,7 @@ class MTWidget(pyglet.event.EventDispatcher):
         if 'id' in kwargs:
             self.id = kwargs.get('id')
 
-        pyglet.event.EventDispatcher.__init__(self)
+        super(MTWidget, self).__init__()
 
         # Registers events
         for ev in MTWidget.visible_events:
@@ -286,63 +286,6 @@ class MTWidget(pyglet.event.EventDispatcher):
                     pymt_logger.exception('cannot connect with different size')
                     raise
         self.push_handlers(**{p1: lambda_connect})
-
-    def dispatch_event(self, event_type, *args):
-        '''Dispatch a single event to the attached handlers.
-
-        The event is propogated to all handlers from from the top of the stack
-        until one returns `EVENT_HANDLED`.  This method should be used only by
-        `EventDispatcher` implementors; applications should call
-        the ``dispatch_events`` method.
-
-        :Parameters:
-            `event_type` : str
-                Name of the event.
-            `args` : sequence
-                Arguments to pass to the event handler.
-
-        '''
-
-        # Don't dispatch event for visible widget if we are not visible
-        if event_type in MTWidget.visible_events and not self.visible:
-            return
-
-        #assert event_type in self.event_types
-        if event_type not in self.event_types:
-            return
-
-        # Search handler stack for matching event handlers
-        for frame in self._event_stack:
-            handler = frame.get(event_type, None)
-            if handler:
-                try:
-                    if handler(*args):
-                        return True
-                except TypeError:
-                    self._raise_dispatch_exception(event_type, args, handler)
-
-
-        # Check instance for an event handler
-        if hasattr(self, event_type):
-            try:
-                # Statistics
-                global _event_stats_activate
-                if _event_stats_activate:
-                    global _event_stats
-                    if not event_type in _event_stats:
-                        _event_stats[event_type] = 1
-                    else:
-                        _event_stats[event_type] = _event_stats[event_type] + 1
-
-                # Call event
-                func = getattr(self, event_type)
-                if func(*args):
-                    return True
-
-            except TypeError, e:
-                #print 'error in', self, e
-                self._raise_dispatch_exception(
-                    event_type, args, getattr(self, event_type))
 
     def to_widget(self, x, y):
         '''Return the coordinate from window to local widget'''

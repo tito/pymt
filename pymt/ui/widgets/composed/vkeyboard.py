@@ -310,6 +310,8 @@ class MTVKeyboard(MTScatterWidget):
     #
 
     def _lazy_update(self):
+        self.container_width = int(self.width * self.get_scale_factor())
+        self.container_height = int(self.height * self.get_scale_factor())
         self._need_update = 'lazy'
         self._last_update = clock.get_default().time()
 
@@ -400,7 +402,9 @@ class MTVKeyboard(MTScatterWidget):
     #
 
     def on_resize(self, w, h):
-        self.container_width, self.container_height = w, h
+        self._lazy_update()
+
+    def on_transform(self, *largs):
         self._lazy_update()
 
     def on_layout_change(self, layout, *largs):

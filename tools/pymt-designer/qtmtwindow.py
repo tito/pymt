@@ -74,6 +74,7 @@ class QTMTWindow(QtOpenGL.QGLWidget):
 
         return x, y, button, self.modifiers
 
+
     def mousePressEvent(self, event):
         if self.pymt_window:
             x,y,b,m = self.read_mouse_properties(event)

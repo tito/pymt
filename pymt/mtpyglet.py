@@ -25,6 +25,7 @@ from input import *
 # list upon creation
 touch_event_listeners   = []
 touch_list              = []
+pymt_window             = None
 pymt_providers          = []
 pymt_evloop             = None
 frame_dt                = 0.01 # init to a non-zero value, to prevent user zero division
@@ -37,6 +38,10 @@ def getFrameDt():
 def getAvailableTouchs():
     global touch_list
     return touch_list
+
+def getWindow():
+    global pymt_window
+    return pymt_window
 
 def getEventLoop():
     global pymt_evloop
@@ -75,7 +80,8 @@ class TouchEventLoop(pyglet.app.EventLoop):
         if type == 'down':
             touch_list.append(touch)
         elif type == 'up':
-            touch_list.remove(touch)
+            if touch in touch_list:
+                touch_list.remove(touch)
 
         # dispatch to listeners
         if not touch.grab_exclusive_class:
@@ -139,7 +145,6 @@ class TouchEventLoop(pyglet.app.EventLoop):
 
         self.input_events = []
 
-
     def idle(self):
         # update dt
         global frame_dt
@@ -161,7 +166,7 @@ class TouchEventLoop(pyglet.app.EventLoop):
 
         return 0
 
-#any window that inherhits this or an instance will have event handlers triggered on Tuio touch events
+
 class TouchWindow(pyglet.window.Window):
     '''Base implementation of Tuio event in top of pyglet window.
 
@@ -180,7 +185,12 @@ class TouchWindow(pyglet.window.Window):
         self.register_event_type('on_touch_up')
         touch_event_listeners.append(self)
 
+        global pymt_window
+        pymt_window = self
+
     def on_close(self, *largs):
+        global pymt_window
+        pymt_window = None
         touch_event_listeners.remove(self)
         super(TouchWindow, self).on_close(*largs)
 
@@ -192,6 +202,7 @@ class TouchWindow(pyglet.window.Window):
 
     def on_touch_up(self, touch):
         pass
+
 
 def pymt_usage():
     '''PyMT Usage: %s [OPTION...] ::
@@ -237,7 +248,7 @@ def runTouchApp():
             continue
 
         # create provider
-        p = provider(args)
+        p = provider(key, args)
         if p:
             pymt_providers.append(p)
 
@@ -276,4 +287,3 @@ def stopTouchApp():
     pymt_evloop.close()
     pymt_evloop.exit()
     pymt_evloop = None
-

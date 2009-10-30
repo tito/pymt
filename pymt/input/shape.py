@@ -11,3 +11,4 @@ class TouchShape(object):
 class TouchShapeRect(TouchShape):
     '''Represent a rectangle shape.'''
     __slots__ = ['width', 'height']
+    

@@ -1,6 +1,5 @@
 from __future__ import with_statement
 from pymt import *
-import pyglet
 from OpenGL.GL import *
 import random
 
@@ -82,7 +81,7 @@ class ParticleEngine(MTWidget):
             self.particles[i].hide()
             self.add_widget(self.particles[i])
 
-        pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
+        getClock().schedule_once(self.advance_frame, 1/60.0)
 
     def on_draw(self):
         with gx_blending:
@@ -106,7 +105,7 @@ class ParticleEngine(MTWidget):
         for i in range(self.max):
             if self.particles[i].visible:
                 self.particles[i].advance_frame(dt)
-        pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
+        getClock().schedule_once(self.advance_frame, 1/60.0)
 
 class ParticleShow(MTWidget):
     def __init__(self, pos=(0, 0), size=(100, 100), color=(0.6, 0.6, 0.6, 1.0),

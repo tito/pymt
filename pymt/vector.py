@@ -207,21 +207,17 @@ def matrix_inv_mult(m, v):
     '''Takes an openGL matrix and a 2 Vector and returns
     the inverse of teh matrix applied to the vector'''
     if _use_numpy:
-        mat = numpy.matrix(
-        [[m[0],m[1],m[2],m[3]],
-         [m[4],m[5],m[6],m[7]],
-         [m[8],m[9],m[10],m[11]],
-         [m[12],m[13],m[14],m[15]]] )
+        mat = numpy.matrix(m)
         vec = numpy.matrix(v)
         inv = mat.I
         result = vec*inv
         return Vector(result[0,0],result[0,1])
     else:
         mat = Matrix([
-            RowVector(m[0:4]),
-            RowVector(m[4:8]),
-            RowVector(m[8:12]),
-            RowVector(m[12:16])] )
+            RowVector(list(m[0])),
+            RowVector(list(m[1])),
+            RowVector(list(m[2])),
+            RowVector(list(m[3]))] )
         vec = RowVector(v)
         result = vec*mat.inverse()
 
@@ -231,20 +227,16 @@ def matrix_trans_mult(m, v):
     '''Takes an openGL matrix and a 2 Vector and return
     the transpose of teh matrix applied to the vector'''
     if _use_numpy:
-        mat = numpy.matrix(
-        [[m[0],m[1],m[2],m[3]],
-         [m[4],m[5],m[6],m[7]],
-         [m[8],m[9],m[10],m[11]],
-         [m[12],m[13],m[14],m[15]]] )
+        mat = numpy.matrix(m)
         vec = numpy.matrix(v)
         result = vec*mat.T
         return Vector(result[0,0],result[0,1])
     else:
         mat = Matrix([
-            RowVector(m[0:4]),
-            RowVector(m[4:8]),
-            RowVector(m[8:12]),
-            RowVector(m[12:16])] )
+            RowVector(list(m[0])),
+            RowVector(list(m[1])),
+            RowVector(list(m[2])),
+            RowVector(list(m[3]))] )
         vec = RowVector(v)
         result = vec*mat.transpose()
         return Vector(result[1], result[2])
@@ -253,20 +245,16 @@ def matrix_mult(m, v):
     '''Takes an openGL matrix and a 2 Vector and returns
     the matrix applied to the vector'''
     if _use_numpy:
-        mat = numpy.matrix(
-        [[m[0],m[1],m[2],m[3]],
-         [m[4],m[5],m[6],m[7]],
-         [m[8],m[9],m[10],m[11]],
-         [m[12],m[13],m[14],m[15]]] )
+        mat = numpy.matrix(m)
         vec = numpy.matrix(v)
         result = vec*mat
         return Vector(result[0,0],result[0,1])
     else:
         mat = Matrix([
-        RowVector(m[0:4]),
-        RowVector(m[4:8]),
-        RowVector(m[8:12]),
-        RowVector(m[12:16])] )
+            RowVector(list(m[0])),
+            RowVector(list(m[1])),
+            RowVector(list(m[2])),
+            RowVector(list(m[3]))] )
         vec = RowVector(v)
         result = vec*mat
         return Vector(result[1], result[2])

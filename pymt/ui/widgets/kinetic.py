@@ -8,7 +8,7 @@ from OpenGL.GL import *
 from ..factory import MTWidgetFactory
 from ...input import Touch
 from ...vector import Vector
-from ...mtpyglet import getFrameDt, getAvailableTouchs
+from ...base import getFrameDt, getAvailableTouchs
 from stencilcontainer import MTStencilContainer
 from widget import MTWidget
 

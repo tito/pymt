@@ -7,7 +7,7 @@ __all__ = ['MouseTouchProvider']
 import osc
 from collections import deque
 from OpenGL.GLUT import *
-from ...mtpyglet import getWindow
+from ...base import getWindow
 from ..provider import TouchProvider
 from ..factory import TouchFactory
 from ..touch import Touch

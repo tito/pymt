@@ -17,11 +17,9 @@ import pymt
 import sys
 import getopt
 import os
-import time
 from logger import pymt_logger
-from OpenGL.GL import *
 from exceptions import pymt_exception_manager, ExceptionManager
-from Queue import Queue
+from clock import getClock
 from utils import intersection, difference, strtotuple
 from input import *
 
@@ -32,7 +30,6 @@ touch_list              = []
 pymt_window             = None
 pymt_providers          = []
 pymt_evloop             = None
-frame_last_time         = time.time()
 frame_dt                = 0.01 # init to a non-zero value, to prevent user zero division
 
 def getFrameDt():
@@ -64,8 +61,6 @@ class TouchEventLoop(object):
         self.quit = False
         self.input_events = []
         self.postproc_modules = []
-        self.double_tap_distance = pymt.pymt_config.getint('pymt', 'double_tap_distance') / 1000.0
-        self.double_tap_time = pymt.pymt_config.getint('pymt', 'double_tap_time') / 1000.0
 
     def start(self):
         global pymt_providers
@@ -157,10 +152,8 @@ class TouchEventLoop(object):
 
     def idle(self):
         # update dt
-        global frame_dt, frame_last_time
-        current_time = time.time()
-        frame_dt = frame_last_time - current_time
-        frame_last_time = current_time
+        global frame_dt
+        frame_dt = getClock().tick()
 
         # read and dispatch input from providers
         self.dispatch_input()
@@ -214,11 +207,39 @@ def pymt_usage():
     print pymt_usage.__doc__ % (os.path.basename(sys.argv[0]))
 
 
-def runTouchApp(widget=None, slave=True):
-    '''Static main function that starts the application loop'''
+def runTouchApp(widget=None, slave=False):
+    '''Static main function that starts the application loop.
+    You got some magic things, if you are using argument like this ::
+
+        `<empty>`
+            To make dispatching work, you need at least one
+            input listener. If not, application will leave.
+            (MTWindow act as an input listener)
+
+        `widget`
+            If you pass only a widget, a MTWindow will be created,
+            and your widget will be added on the window as the root
+            widget.
+
+        `slave`
+            No event dispatching are done. This will be your job.
+
+        `widget + slave`
+            No event dispatching are done. This will be your job, but
+            we are trying to get the window (must be created by you before),
+            and add the widget on it. Very usefull for embedding PyMT
+            in another toolkit. (like Qt, check pymt-designed)
+    
+    '''
 
     global pymt_evloop
     global pymt_providers
+
+    # Ok, we got one widget, and we are not in slave mode
+    # so, user don't create the window, let's create it for him !
+    if not slave and widget:
+        global pymt_window
+        pymt_window = MTWindow()
 
     # Check if we show event stats
     if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
@@ -256,24 +277,27 @@ def runTouchApp(widget=None, slave=True):
     # start event loop
     pymt_evloop.start()
 
-    if not slave:
-        while True:
-            try:
-                pymt_evloop.run()
-                stopTouchApp()
-                break
-            except BaseException, inst:
-                # use exception manager first
-                r = pymt_exception_manager.handle_exception(inst)
-                if r == ExceptionManager.RAISE:
-                    stopTouchApp()
-                    raise
-                else:
-                    pass
+    # we are in a slave mode, don't do dispatching.
+    if slave:
+        return
 
-        # Show event stats
-        if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
-            pymt.widget.event_stats_print()
+    while True:
+        try:
+            pymt_evloop.run()
+            stopTouchApp()
+            break
+        except BaseException, inst:
+            # use exception manager first
+            r = pymt_exception_manager.handle_exception(inst)
+            if r == ExceptionManager.RAISE:
+                stopTouchApp()
+                raise
+            else:
+                pass
+
+    # Show event stats
+    if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
+        pymt.widget.event_stats_print()
 
 def stopTouchApp():
     global pymt_evloop

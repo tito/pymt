@@ -11,7 +11,7 @@ import sys
 import os
 import pyglet
 from ...logger import pymt_logger
-from ...mtpyglet import getAvailableTouchs
+from ...base import getAvailableTouchs
 from ...input import Touch
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory

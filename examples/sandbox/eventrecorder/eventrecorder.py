@@ -89,7 +89,7 @@ class MTEventPlayer(MTWidget):
         self.speed = kwargs['speed']
         self.update_interval = kwargs['update_interval']
 
-        pyglet.clock.schedule_interval(self.update, self.update_interval)
+        getClock().schedule_interval(self.update, self.update_interval)
 
 
     def load(self, filename):

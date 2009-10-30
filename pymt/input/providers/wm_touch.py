@@ -6,7 +6,7 @@ from ..provider import TouchProvider
 from ..factory import TouchFactory
 from ..touch import Touch
 from ..shape import TouchShapeRect
-from ...mtpyglet import getWindow
+from ...base import getWindow
 from ...utils import curry
 
 

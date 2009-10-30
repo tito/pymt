@@ -25,7 +25,7 @@ class PlayArea(MTWidget):
         self.bloop_points = 1
         self.score = ScoreZone(parent=self)
         self.add_widget(self.score)
-        pyglet.clock.schedule_interval(self.generateBloop, 0.5)
+        getClock().schedule_interval(self.generateBloop, 0.5)
 
     
     def generateBloop(self,dt):
@@ -79,7 +79,7 @@ class bloop(MTButton):
         self.showing = True
         self.highlight = False
         
-        pyglet.clock.schedule_once(self.BloopHide, 2)
+        getClock().schedule_once(self.BloopHide, 2)
         
         anim = self.add_animation('fadeout','radius', self.width+10, 1.0/60, 1.0)
         anim = self.add_animation('fadeout','alpha', 0.00, 1.0/60, 0.5)
@@ -123,7 +123,7 @@ class ScoreZone(MTWidget):
         kwargs.setdefault('parent', None)
         super(ScoreZone, self).__init__(**kwargs)
         self.label = "1/1"
-        pyglet.clock.schedule_interval(self.drawScore, 0.5)        
+        getClock().schedule_interval(self.drawScore, 0.5)        
         
     def draw(self):
         glColor4f(1,0,0,1)

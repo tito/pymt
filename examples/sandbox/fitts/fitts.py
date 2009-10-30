@@ -82,7 +82,7 @@ class MTSourceWidget(MTScatterWidget):
 			and abs(self.rotation - self.target.rotation) < 5:
 					self.color = (0,1,0,0.3)
 					self.done = True
-					pyglet.clock.schedule_once(self.testStart, 1)
+					getClock().schedule_once(self.testStart, 1)
 
 
 

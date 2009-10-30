@@ -4,8 +4,8 @@ Animation package: handle animation, and default alpha method
 
 __all__ = ['AnimationAlpha', 'Animation']
 
-import pyglet
 import math
+from ..clock import getClock
 
 class AnimationAlpha(object):
     """Collection of animation function, to be used with Animation object."""
@@ -58,7 +58,7 @@ class Animation(object):
     def start(self):
         self.want_stop = False
         self.reset()
-        pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
+        getClock().schedule_once(self.advance_frame, 1/60.0)
         self.running = True
         self.widget.dispatch_event('on_animation_start', self)
 
@@ -76,7 +76,7 @@ class Animation(object):
         self.frame += self.timestep
         self.set_value_from(self.get_current_value())
         if self.frame < self.length:
-            pyglet.clock.schedule_once(self.advance_frame, 1/60.0)
+            getClock().schedule_once(self.advance_frame, 1/60.0)
         else:
             self.running = False
             self.widget.dispatch_event('on_animation_complete', self)

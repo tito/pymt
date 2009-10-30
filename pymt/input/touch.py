@@ -41,10 +41,8 @@ testing the profile ::
 
 __all__ = ['Touch']
 
-import pyglet
 from ..logger import pymt_logger
-
-touch_clock = pyglet.clock.Clock()
+from ..clock import getClock
 
 class Touch(object):
     '''Abstract class to represent a touch, and support TUIO 1.0 definition.
@@ -105,7 +103,7 @@ class Touch(object):
         self.oxpos = None
         self.oypos = None
         self.ozpos = None
-        self.time_start = touch_clock.time()
+        self.time_start = getClock().get_time()
         self.is_timeout = False
         self.have_event_down = False
         self.do_event = None

@@ -12,7 +12,7 @@ from ....vector import Vector
 from ...factory import MTWidgetFactory
 from ..scatter import MTScatterWidget
 from kineticlist import MTKineticList, MTKineticItem
-from pyglet import clock
+from ....clock import getClock
 from pyglet import font
 from OpenGL.GL import glScalef, glTranslatef
 
@@ -313,10 +313,10 @@ class MTVKeyboard(MTScatterWidget):
         self.container_width = int(self.width * self.get_scale_factor())
         self.container_height = int(self.height * self.get_scale_factor())
         self._need_update = 'lazy'
-        self._last_update = clock.get_default().time()
+        self._last_update = getClock().get_time()
 
     def _update(self):
-        dt = clock.get_default().time() - self._last_update
+        dt = getClock().get_time() - self._last_update
         if self._need_update is None:
             return
 
@@ -332,7 +332,7 @@ class MTVKeyboard(MTScatterWidget):
             self._do_update(mode='keys')
 
             # don't update too fast next time (if it's lazy)
-            self._last_update = clock.get_default().time()
+            self._last_update = getClock().get_time()
             self._last_update_scale = self.get_scale_factor()
             self._need_update = None
 

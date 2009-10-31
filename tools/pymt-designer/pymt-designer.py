@@ -1,4 +1,3 @@
-
 import sys,os
 os.environ['PYMT_SHADOW_WINDOW'] = 'False'
 
@@ -77,7 +76,7 @@ class MainWindow(QtGui.QMainWindow):
         self.console.readOnly = True
         self.console.setFont(font)
         self.editor.setFont(font)
-        self.editor.setMinimumSize(400,600)
+        self.editor.setMinimumSize(500,600)
         self.highlighter = Highlighter(self.editor.document())
         self.openFile('test.py')
 

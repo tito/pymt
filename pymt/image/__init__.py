@@ -6,10 +6,10 @@ from __future__ import with_statement
 
 __all__ = ('Image', 'ImageLoader')
 
-from graphx import DO, gx_color, gx_blending, drawTexturedRectangle, set_color
-from logger import pymt_logger
-from texture import Texture, TextureRegion
-from utils import deprecated
+from ..graphx import DO, gx_color, gx_blending, drawTexturedRectangle, set_color
+from ..logger import pymt_logger
+from ..texture import Texture, TextureRegion
+from ..utils import deprecated
 
 ImageLoader = None
 
@@ -35,7 +35,6 @@ class ImageData(object):
         self.height = height
         self.mode = mode
         self.data = data
-
 
 class ImageLoaderBase(object):
     '''Base to implement an image loader.'''
@@ -82,40 +81,28 @@ class ImageLoaderBase(object):
         return self.texture
 
 
-if use_pil:
-    # Use PIL to load image.
-    class ImageLoaderPIL(ImageLoaderBase):
-        '''Image loader based on PIL library'''
+class ImageLoader(object):
+    __slots__ = ('loaders')
+    loaders = []
 
-        def load(self, filename):
-            pymt_logger.debug('Load <%s>' % filename)
-            try:
-                im = PIL.Image.open(filename)
-            except:
-                pymt_logger.warning('Unable to load image <%s>' % filename)
-                raise
+    @staticmethod
+    def register(cls):
+        ImageLoader.loaders.append(cls)
 
-            # image loader work only with rgb/rgba image
-            if im.mode not in ('RGB', 'RGBA'):
-                try:
-                    imc = im.convert('RGBA')
-                except:
-                    pymt_logger.warning(
-                        'Unable to convert image <%s> to RGBA (was %s)' %
-                        filename, im.mode)
-                    raise
-                im = imc
+    @staticmethod
+    def load(filename):
+        # extract extensions
+        ext = filename.split('.')[-1].lower()
+        im = None
+        for loader in ImageLoader.loaders:
+            if ext not in loader.extensions():
+                continue
+            im = loader(filename)
+            break
+        if im is None:
+            raise Exception('Unsupported extension <%s>, no loader found.' % ext)
+        return im
 
-            # image are not in the good direction, flip !
-            im = im.transpose(PIL.Image.FLIP_TOP_BOTTOM)
-
-            # update internals
-            self.filename = filename
-
-            return ImageData(im.size[0], im.size[1],
-                im.mode, im.tostring())
-
-    ImageLoader = ImageLoaderPIL
 
 class Image(object):
     '''Load an image, and store the size and texture.
@@ -183,6 +170,10 @@ class Image(object):
         if 'y' in kwargs:
             self.y = kwargs.get('y')
 
+    @staticmethod
+    def load(filename):
+        '''Load an image'''
+        return ImageLoader.load(filename)
 
     def _get_filename(self):
         return self._filename
@@ -192,7 +183,7 @@ class Image(object):
         if value == self._filename:
             return
         self._filename = value
-        self.image      = ImageLoader(self._filename)
+        self.image      = Image.load(self._filename)
         self.texture    = self.image.texture
         self.width      = self.image.width
         self.height     = self.image.height
@@ -237,4 +228,20 @@ class Image(object):
         imgpos = (self.x - self.anchor_x * self.scale, self.y - self.anchor_y * self.scale)
         with DO(gx_color(1, 1, 1, self.opacity), gx_blending):
             drawTexturedRectangle(texture=self.texture, pos=imgpos, size=self.size)
+
+
+# load image loaders
+try:
+    import img_pygame
+    ImageLoader.register(img_pygame.ImageLoaderPygame)
+    pymt_logger.info('Image: register Pygame loader')
+except:
+    pass
+
+try:
+    import img_pil
+    ImageLoader.register(img_pil.ImageLoaderPIL)
+    pymt_logger.info('Image: register PIL loader')
+except:
+    pass
 

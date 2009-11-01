@@ -11,16 +11,6 @@ from ..logger import pymt_logger
 from ..texture import Texture, TextureRegion
 from ..utils import deprecated
 
-ImageLoader = None
-
-try:
-    import PIL.Image
-    use_pil = True
-except:
-    pymt_logger.error('Unable to import PIL')
-    use_pil = False
-
-
 class ImageData(object):
     '''Container for data image : width, height, mode and data.
     ..warning ::
@@ -35,6 +25,7 @@ class ImageData(object):
         self.height = height
         self.mode = mode
         self.data = data
+
 
 class ImageLoaderBase(object):
     '''Base to implement an image loader.'''

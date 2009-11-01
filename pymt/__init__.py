@@ -18,6 +18,7 @@ from logger import pymt_logger, LOG_LEVELS
 # Global settings options for pymt
 options = {
     'shadow_window': True,
+    'window': ('pygame', 'glut'),
 }
 
 # Read environment
@@ -25,10 +26,14 @@ for option in options:
     key = 'PYMT_%s' % option.upper()
     if key in os.environ:
         try:
-            options[option] = os.environ[key].lower() in \
-                ('true', '1', 'yes', 'yup')
+            if type(options[option]) in (list, tuple):
+                options[option] = (str(os.environ[key]),)
+            else:
+                options[option] = os.environ[key].lower() in \
+                    ('true', '1', 'yes', 'yup')
         except:
             pymt_logger.warning('Wrong value for %s environment key' % key)
+            pymt_logger.exception('')
 
 # Include lib as new module.
 pymt_base_dir = os.path.dirname(sys.modules[__name__].__file__)

@@ -15,11 +15,9 @@ __all__ = [
 import pymt
 import sys
 import os
-from OpenGL.GLUT import glutDisplayFunc, glutPostRedisplay, glutMainLoop
 from logger import pymt_logger
 from exceptions import pymt_exception_manager, ExceptionManager
 from clock import getClock
-from utils import intersection, difference, strtotuple
 from input import *
 
 # All event listeners will add themselves to this
@@ -221,28 +219,6 @@ def _run_mainloop():
             else:
                 pass
 
-def _run_mainloop_glut():
-    '''Main loop is done by GLUT'''
-
-    # callback for ticking
-    def _glut_redisplay():
-        # hack, glut seem can't handle the leaving on the mainloop
-        # so... leave with sys.exit() :[
-        try:
-            pymt_evloop.idle()
-        except KeyboardInterrupt:
-            pymt_evloop.quit = True
-        if pymt_evloop.quit:
-            sys.exit(0)
-
-        glutPostRedisplay()
-
-    # install handler
-    glutDisplayFunc(_glut_redisplay)
-
-    # run main loop
-    glutMainLoop()
-
 
 def runTouchApp(widget=None, slave=False):
     '''Static main function that starts the application loop.
@@ -320,7 +296,8 @@ def runTouchApp(widget=None, slave=False):
 
     # in non-slave mode, they are 2 issues
     #
-    # 1. if user created a window, glut need to be called with
+    # 1. if user created a window, call the mainloop from window.
+    #    This is due to glut, it need to be called with
     #    glutMainLoop(). Only FreeGLUT got a gluMainLoopEvent().
     #    So, we are executing the dispatching function inside
     #    a redisplay event.
@@ -331,7 +308,7 @@ def runTouchApp(widget=None, slave=False):
     if pymt_window is None:
         _run_mainloop()
     else:
-        _run_mainloop_glut()
+        pymt_window.mainloop()
 
     # Show event stats
     if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):

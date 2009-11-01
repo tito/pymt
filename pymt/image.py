@@ -4,16 +4,105 @@ Image: a simple image loader
 
 from __future__ import with_statement
 
-__all__ = ('Image', )
+__all__ = ('Image', 'ImageLoader')
 
-import pyglet
 from graphx import DO, gx_color, gx_blending, drawTexturedRectangle, set_color
+from logger import pymt_logger
+from texture import Texture, TextureRegion
+
+ImageLoader = None
+
+try:
+    import PIL.Image
+    use_pil = True
+except:
+    pymt_logger.error('Unable to import PIL')
+    use_pil = False
+
+class ImageData(object):
+
+    __slots__ = ('width', 'height', 'mode', 'data')
+
+    def __init__(self, width, height, mode, data):
+        self.width = width
+        self.height = height
+        self.mode = mode
+        self.data = data
+
+
+class ImageLoaderBase(object):
+
+    __slots__ = ('_texture', '_data', 'filename')
+
+    _texture = None
+    _data = None
+    filename = ''
+
+    def __init__(self, filename):
+        self._data = self.load(filename)
+
+    def load(self, filename):
+        return None
+
+    def _get_width(self):
+        return self._data.width
+    width = property(_get_width)
+
+    def _get_height(self):
+        return self._data.height
+    height = property(_get_height)
+
+    def _get_size(self):
+        return (self._data.width, self._data.height)
+    size = property(_get_size)
+
+    def _get_texture(self):
+        if self._texture is None:
+            if self._data is None:
+                return None
+            self._texture = Texture.create_from_data(self._data)
+        return self._texture
+    texture = property(_get_texture)
+
+    def get_texture(self):
+        return self.texture
+
+
+if use_pil:
+    # Use PIL to load image.
+    class ImageLoaderPIL(ImageLoaderBase):
+        def load(self, filename):
+            pymt_logger.debug('Load <%s>' % filename)
+            try:
+                im = PIL.Image.open(filename)
+            except:
+                pymt_logger.warning('Unable to load image <%s>' % filename)
+                raise
+
+            # image loader work only with rgb/rgba image
+            if im.mode not in ('RGB', 'RGBA'):
+                try:
+                    imc = im.convert('RGBA')
+                except:
+                    pymt_logger.warning(
+                        'Unable to convert image <%s> to RGBA (was %s)' %
+                        filename, im.mode)
+                    raise
+                im = imc
+
+            # update internals
+            self.filename = filename
+
+            return ImageData(im.size[0], im.size[1],
+                im.mode, im.tostring())
+
+    ImageLoader = ImageLoaderPIL
 
 class Image(object):
     '''Load an image, and store the size and texture.
     
     :Parameters:
-        `arg` : can be str or pyglet Texture or Image object
+        `arg` : can be str or Texture or Image object
             Filename of the image
         `opacity` : float, default to 1.0
             Opacity of the image
@@ -50,7 +139,7 @@ class Image(object):
         if type(arg) == Image:
             for attr in Image.copy_attributes:
                 self.__setattr__(attr, arg.__getattribute__(attr))
-        elif type(arg) in (pyglet.image.Texture, pyglet.image.TextureRegion):
+        elif type(arg) in (Texture, TextureRegion):
             self.texture    = arg.texture
             self.width      = self.texture.width
             self.height     = self.texture.height
@@ -84,7 +173,7 @@ class Image(object):
         if value == self._filename:
             return
         self._filename = value
-        self.image      = pyglet.image.load(self._filename)
+        self.image      = ImageLoader(self._filename)
         self.texture    = self.image.get_texture()
         self.width      = self.image.width
         self.height     = self.image.height

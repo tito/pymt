@@ -106,6 +106,9 @@ if use_pil:
                     raise
                 im = imc
 
+            # image are not in the good direction, flip !
+            im = im.transpose(PIL.Image.FLIP_TOP_BOTTOM)
+
             # update internals
             self.filename = filename
 

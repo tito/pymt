@@ -38,7 +38,7 @@ class Texture(object):
         self.id = id
 
     def __del__(self):
-        glDeleteTextures(1, self.id)
+        glDeleteTextures(self.id)
 
     def get_region(self, x, y, width, height):
         '''Return a part of the texture, from (x,y) with (width,height)
@@ -46,7 +46,7 @@ class Texture(object):
         return TextureRegion(x, y, width, height, self)
 
     @staticmethod
-    def create_from_size(width, height, format=GL_RGBA, rectangle=False):
+    def create(width, height, format=GL_RGBA, rectangle=False):
         '''Create a texture based on size.'''
         target = GL_TEXTURE_2D
         if rectangle:
@@ -99,7 +99,7 @@ class Texture(object):
         else:
             format = GL_RGB
 
-        texture = Texture.create_from_size(im.width, im.height, format)
+        texture = Texture.create(im.width, im.height, format)
         if texture is None:
             return None
 

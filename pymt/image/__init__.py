@@ -220,6 +220,9 @@ class Image(object):
         with DO(gx_color(1, 1, 1, self.opacity), gx_blending):
             drawTexturedRectangle(texture=self.texture, pos=imgpos, size=self.size)
 
+def load(filename):
+    '''Load an image'''
+    return Image.load(filename)
 
 # load image loaders
 try:

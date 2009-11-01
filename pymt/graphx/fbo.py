@@ -9,14 +9,15 @@ __all__ = [
     'UnsupportedFboException'
 ]
 
-from pyglet import *
+import os
+import sys
 from OpenGL.GL import *
-from OpenGL.GL.EXT import *
-from pyglet.image import Texture, TextureRegion
+from OpenGL.GL.EXT.framebuffer_object import *
 from paint import *
 from colors import *
 from draw import *
 from ..logger import pymt_logger
+from ..texture import Texture, TextureRegion
 
 class UnsupportedFboException(Exception):
     pass
@@ -102,8 +103,8 @@ class HardwareFbo(AbstractFbo):
 
     def __init__(self, **kwargs):
         super(HardwareFbo, self).__init__(**kwargs)
-        self.framebuffer    = c_uint(0)
-        self.depthbuffer    = c_uint(0)
+        self.framebuffer    = None
+        self.depthbuffer    = None
 
         set_texture(self.texture)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
@@ -111,13 +112,13 @@ class HardwareFbo(AbstractFbo):
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.realsize[0], self.realsize[1],
                 0, GL_RGB, GL_UNSIGNED_BYTE, 0)
 
-        glGenFramebuffersEXT(1, byref(self.framebuffer))
+        self.framebuffer = glGenFramebuffersEXT(1)
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
-        if self.framebuffer.value == 0:
+        if self.framebuffer == 0:
             raise 'Failed to initialize framebuffer'
 
         if self.with_depthbuffer:
-            glGenRenderbuffersEXT(1, byref(self.depthbuffer));
+            self.depthbuffer = glGenRenderbuffersEXT(1);
             glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, self.depthbuffer)
             glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT,
                                      self.realsize[0], self.realsize[1])
@@ -154,9 +155,13 @@ class HardwareFbo(AbstractFbo):
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0)
 
     def __del__(self):
-        glDeleteFramebuffersEXT(1, byref(self.framebuffer))
+        #FIXME: no need to delete framebuffer ? auto with pyopengl ??
+        '''
+        glDeleteFramebuffersEXT(1, self.framebuffer)
         if self.with_depthbuffer:
-            glDeleteRenderbuffersEXT(1, byref(self.depthbuffer))
+            glDeleteRenderbuffersEXT(1, self.depthbuffer)
+        '''
+        pass
 
     def bind(self):
         Fbo.fbo_stack.append(self.framebuffer)

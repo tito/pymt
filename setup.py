@@ -15,6 +15,7 @@ setup(
     packages=[
         'pymt',
         'pymt.graphx',
+        'pymt.image',
         'pymt.input',
         'pymt.input.postproc',
         'pymt.input.providers',

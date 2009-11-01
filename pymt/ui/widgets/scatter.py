@@ -5,7 +5,6 @@ Scatter package: provide lot of widgets based on scatter (base, svg, plane, imag
 from __future__ import with_statement
 __all__ = ['MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane', 'MTScatterImage']
 
-import pyglet
 from OpenGL.GL import *
 from ...image import Image
 from ...graphx import drawRectangle, gx_matrix, gx_matrix_identity, set_color, \

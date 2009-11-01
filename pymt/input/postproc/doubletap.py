@@ -5,7 +5,7 @@ InputPostproc Double Tap: search touch for a double tap
 __all__ = ['InputPostprocDoubleTap']
 
 import pymt
-from pyglet import clock
+from ...clock import getClock
 
 #
 # About attribute added in a touch:
@@ -66,7 +66,7 @@ class InputPostprocDoubleTap(object):
 
         # second, check if up-touch is timeout for double tap
         to_remove = []
-        time_current = clock.get_default().time()
+        time_current = getClock().get_time()
         for touchid in self.touches:
             type, touch = self.touches[touchid]
             if type != 'up':

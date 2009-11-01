@@ -13,11 +13,9 @@ __all__ = [
     'drawSemiCircle',
 ]
 
-from pyglet import *
+from ..texture import Texture, TextureRegion
 from OpenGL.GL import *
 from OpenGL.GLU import *
-from pyglet.image import Texture, TextureRegion
-from pyglet.graphics import draw
 from pyglet.text import Label
 from paint import *
 from statement import *
@@ -234,8 +232,7 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0), tex_coords=None):
     '''
     with gx_texture(texture):
         if type(texture) in (Texture, TextureRegion):
-            t = texture.tex_coords
-            texcoords = (t[0], t[1], t[3], t[4], t[6], t[7], t[9], t[10])
+            texcoords = texture.tex_coords
         else:
             texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
         if tex_coords:

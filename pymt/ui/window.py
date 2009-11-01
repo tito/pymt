@@ -448,14 +448,12 @@ class MTWindow(BaseWindow):
         if button == GLUT_RIGHT_BUTTON:
             btn = 'right'
 
-        y -= 10
         if state == GLUT_DOWN:
             self.dispatch_event('on_mouse_down', x, y, btn, self.modifiers)
         else:
             self.dispatch_event('on_mouse_up', x, y, btn, self.modifiers)
 
     def _glut_mouse_motion(self, x, y):
-        y -= 10
         self.dispatch_event('on_mouse_move', x, y, self.modifiers)
 
 

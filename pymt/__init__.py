@@ -1,5 +1,5 @@
 '''
-PyMT: a multi touch UI toolkit for pyglet.
+PyMT: a multi touch UI toolkit, designed for programming on novel interfaces.
 
 PyMT is a python module for developing multi-touch enabled media rich applications.
 

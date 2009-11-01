@@ -4,7 +4,6 @@ Close an application with one finger
 from __future__ import with_statement
 from pymt import MTWidget, getFrameDt, getAvailableTouchs, Vector, set_color
 from pymt import stopTouchApp, gx_matrix, drawSemiCircle
-from pyglet import clock
 
 class CloseApp(MTWidget):
     def __init__(self, **kwargs):
@@ -19,7 +18,7 @@ class CloseApp(MTWidget):
         self.bring_to_front()
 
     def draw(self):
-        t = clock.get_default().time()
+        t = getClock().get_time()
         touches = getAvailableTouchs()
 
         # draw closed touches

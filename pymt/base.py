@@ -1,5 +1,5 @@
 '''
-Pyglet: Soup on pyglet to provide multitouch interface.
+Base: Main event loop, provider creation, window management...
 '''
 
 __all__ = [
@@ -228,7 +228,10 @@ def _run_mainloop_glut():
     def _glut_redisplay():
         # hack, glut seem can't handle the leaving on the mainloop
         # so... leave with sys.exit() :[
-        pymt_evloop.idle()
+        try:
+            pymt_evloop.idle()
+        except KeyboardInterrupt:
+            pymt_evloop.quit = True
         if pymt_evloop.quit:
             sys.exit(0)
 
@@ -239,6 +242,7 @@ def _run_mainloop_glut():
 
     # run main loop
     glutMainLoop()
+
 
 def runTouchApp(widget=None, slave=False):
     '''Static main function that starts the application loop.

@@ -12,11 +12,8 @@ __all__ = [
     'paintLine',
 ]
 
-from pyglet import *
 from OpenGL.GL import *
-from pyglet.image import Texture, TextureRegion
-from pyglet.graphics import draw
-from pyglet.text import Label
+from ..texture import Texture, TextureRegion
 from ..logger import pymt_logger
 from statement import *
 import math, os

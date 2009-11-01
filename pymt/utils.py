@@ -9,7 +9,7 @@ __all__ = ['intersection', 'difference', 'curry', 'strtotuple',
 
 import re
 import functools
-import warning
+import warnings
 
 def boundary(value, minvalue, maxvalue):
     '''Limit a value between a minvalue and maxvalue'''

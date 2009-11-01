@@ -301,7 +301,7 @@ class BaseWindow(EventDispatcher):
         if self.show_fps:
             fps = getClock().get_fps()
             drawLabel(label='FPS: %.2f' % float(fps),
-                center=False, pos=(4, self.height - 4),
+                center=False, pos=(0, 0),
                 font_size=10, bold=False)
 
         '''

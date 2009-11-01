@@ -68,15 +68,7 @@ class MTWindowGlut(BaseWindow):
         super(MTWindowGlut, self).close()
 
     def on_keyboard(self, key, scancode=None, unicode=None):
-        self._modifiers = []
-        mods = glutGetModifiers()
-        if mods & GLUT_ACTIVE_SHIFT:
-            self._modifiers.append('shift')
-        if mods & GLUT_ACTIVE_ALT:
-            self._modifiers.append('alt')
-        if mods & GLUT_ACTIVE_SHIFT:
-            self._modifiers.append('ctrl')
-
+        self._glut_update_modifiers()
         if ord(key) == 27:
             stopTouchApp()
             return True
@@ -124,6 +116,8 @@ class MTWindowGlut(BaseWindow):
         self.size = w, h
 
     def _glut_mouse(self, button, state, x, y):
+        self._glut_update_modifiers()
+
         btn = 'left'
         if button == GLUT_RIGHT_BUTTON:
             btn = 'right'
@@ -138,3 +132,14 @@ class MTWindowGlut(BaseWindow):
 
     def _glut_keyboard(self, key, x, y):
         self.dispatch_event('on_keyboard', key, None, None)
+
+    def _glut_update_modifiers(self):
+        self._modifiers = []
+        mods = glutGetModifiers()
+        if mods & GLUT_ACTIVE_SHIFT:
+            self._modifiers.append('shift')
+        if mods & GLUT_ACTIVE_ALT:
+            self._modifiers.append('alt')
+        if mods & GLUT_ACTIVE_CTRL:
+            self._modifiers.append('ctrl')
+

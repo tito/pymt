@@ -81,12 +81,16 @@ class MTWindowPygame(BaseWindow):
 
                 # mouse move
                 elif event.type == pygame.MOUSEMOTION:
+                    # don't dispatch motion if no button are pressed
+                    if event.buttons == (0, 0, 0):
+                        continue
                     x, y = event.pos
                     self.dispatch_event('on_mouse_move', x, y, self.modifiers)
 
                 # mouse action
                 elif event.type in (pygame.MOUSEBUTTONDOWN,
                                     pygame.MOUSEBUTTONUP):
+                    self._pygame_update_modifiers()
                     x, y = event.pos
                     btn = 'left'
                     if event.button == 3:

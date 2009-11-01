@@ -248,10 +248,14 @@ class BaseWindow(EventDispatcher):
         self.children.remove(w)
         w.parent = None
 
-    def draw(self):
+    def clear(self):
         '''Clear the window with background color'''
         glClearColor(*self.cssstyle.get('bg-color'))
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+    def draw(self):
+        '''Draw the background window (actually, only clear)'''
+        self.clear()
 
     def draw_mouse_touch(self):
         '''Compatibility for MouseTouch, drawing a little red circle around

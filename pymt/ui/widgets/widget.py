@@ -402,6 +402,11 @@ class MTWidget(EventDispatcher):
         except:
             pass
 
+    def add_widgets(self, *widgets):
+        for w in widgets:
+            self.add_widget(w)
+
+
     def remove_widget(self, w):
         '''Remove a widget from the children list'''
         if w in self.children:

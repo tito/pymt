@@ -1,12 +1,21 @@
 from pymt import *
 
-w = MTLabel(label="Hello PyMT Designer!")
+#some basic widgets
+slider = MTSlider(orientation="horizontal")
+button = MTButton(label="Reset")
+label  = MTLabel(label="Label Text", font_size=20)
 
-def draw_touches():
-    for t in getAvailableTouchs():
-        set_color(1,0,0)
-        drawCircle(pos=t.pos, radius=50)
+#some event handling using connect
+slider.connect("on_value_change", label, "label")
 
-w.push_handlers(on_draw=draw_touches)
+#some event handling using custom event handler function
+def reset(*args):
+   label.label = "Label Text"
+button.push_handlers(on_press=reset)
 
-runTouchApp(w)
+#create a root wodget and add our example widgets to it
+root = MTBoxLayout(orientation="vertical")
+root.add_widgets(slider, button, label)
+
+#run the application
+runTouchApp(root)

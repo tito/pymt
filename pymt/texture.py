@@ -1,3 +1,7 @@
+'''
+Texture: abstraction to handle GL texture, and region
+'''
+
 __all__ = ('Texture', )
 
 from OpenGL.GL import *
@@ -21,6 +25,8 @@ def _is_pow2(v):
     return (v & (v - 1)) == 0
 
 class Texture(object):
+    '''Handle a OpenGL texture. This class can be used to create simple texture
+    or complex texture based on ImageData.'''
 
     __slots__ = ('tex_coords', 'width', 'height', 'target', 'id')
 
@@ -31,11 +37,17 @@ class Texture(object):
         self.target = target
         self.id = id
 
+    def __del__(self):
+        glDeleteTextures(1, self.id)
+
     def get_region(self, x, y, width, height):
+        '''Return a part of the texture, from (x,y) with (width,height)
+        dimensions'''
         return TextureRegion(x, y, width, height, self)
 
     @staticmethod
     def create_from_size(width, height, format=GL_RGBA, rectangle=False):
+        '''Create a texture based on size.'''
         target = GL_TEXTURE_2D
         if rectangle:
             if _is_pow2(width) and _is_pow2(height):
@@ -77,6 +89,7 @@ class Texture(object):
 
     @staticmethod
     def create_from_data(im):
+        '''Create a texture from an ImageData class'''
         if im.mode not in ('RGBA', 'RGB'):
             pymt_logger.error('Unsupported format for texture (%s)' % im.mode)
             return None
@@ -97,9 +110,12 @@ class Texture(object):
         return texture
 
 
-
 class TextureRegion(Texture):
+    '''Handle a region of a Texture class. Useful for non power-of-2
+    texture handling.'''
+
     __slots__ = ('x', 'y', 'owner')
+
     def __init__(self, x, y, width, height, origin):
         super(TextureRegion, self).__init__(
             width, height, origin.target, origin.id)

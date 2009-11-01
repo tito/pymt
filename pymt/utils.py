@@ -4,9 +4,12 @@ Utils: generic toolbox
 
 __all__ = ['intersection', 'difference', 'curry', 'strtotuple',
            'get_color_from_hex', 'get_color_for_pyglet',
-           'is_color_transparent', 'boundary', 'connect']
+           'is_color_transparent', 'boundary', 'connect',
+           'deprecated']
 
 import re
+import functools
+import warning
 
 def boundary(value, minvalue, maxvalue):
     '''Limit a value between a minvalue and maxvalue'''
@@ -76,4 +79,22 @@ def is_color_transparent(c):
 def connect(w1, p1, w2, p2, func=lambda x: x):
     '''Connect events to a widget property'''
     w1.connect(p1, w2, p2, func)
+
+def deprecated(func):
+    '''This is a decorator which can be used to mark functions
+    as deprecated. It will result in a warning being emitted
+    when the function is used.'''
+
+    @functools.wraps(func)
+    def new_func(*args, **kwargs):
+        warnings.warn_explicit(
+            "Call to deprecated function %(funcname)s." % {
+                'funcname': func.__name__,
+            },
+            category=DeprecationWarning,
+            filename=func.func_code.co_filename,
+            lineno=func.func_code.co_firstlineno + 1
+        )
+        return func(*args, **kwargs)
+    return new_func
 

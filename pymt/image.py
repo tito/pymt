@@ -1,5 +1,5 @@
 '''
-Image: a simple image loader
+Image: handle loading of images
 '''
 
 from __future__ import with_statement
@@ -9,6 +9,7 @@ __all__ = ('Image', 'ImageLoader')
 from graphx import DO, gx_color, gx_blending, drawTexturedRectangle, set_color
 from logger import pymt_logger
 from texture import Texture, TextureRegion
+from utils import deprecated
 
 ImageLoader = None
 
@@ -19,11 +20,17 @@ except:
     pymt_logger.error('Unable to import PIL')
     use_pil = False
 
+
 class ImageData(object):
+    '''Container for data image : width, height, mode and data.
+    ..warning ::
+        Only RGB and RGBA mode are allowed.
+    '''
 
     __slots__ = ('width', 'height', 'mode', 'data')
 
     def __init__(self, width, height, mode, data):
+        assert mode in ('RGB', 'RGBA')
         self.width = width
         self.height = height
         self.mode = mode
@@ -31,6 +38,7 @@ class ImageData(object):
 
 
 class ImageLoaderBase(object):
+    '''Base to implement an image loader.'''
 
     __slots__ = ('_texture', '_data', 'filename')
 
@@ -42,19 +50,21 @@ class ImageLoaderBase(object):
         self._data = self.load(filename)
 
     def load(self, filename):
+        '''Load an image'''
         return None
 
     def _get_width(self):
         return self._data.width
-    width = property(_get_width)
+    width = property(_get_width, doc='Image width')
 
     def _get_height(self):
         return self._data.height
-    height = property(_get_height)
+    height = property(_get_height, doc='Image height')
 
     def _get_size(self):
         return (self._data.width, self._data.height)
-    size = property(_get_size)
+    size = property(_get_size,
+                   doc='Image size (width, height)')
 
     def _get_texture(self):
         if self._texture is None:
@@ -62,15 +72,21 @@ class ImageLoaderBase(object):
                 return None
             self._texture = Texture.create_from_data(self._data)
         return self._texture
-    texture = property(_get_texture)
+    texture = property(_get_texture,
+                      doc='Get the image texture (created on the first call)')
 
+    @deprecated
     def get_texture(self):
+        '''Retreive the texture of image
+        @deprecated: use self.texture instead.'''
         return self.texture
 
 
 if use_pil:
     # Use PIL to load image.
     class ImageLoaderPIL(ImageLoaderBase):
+        '''Image loader based on PIL library'''
+
         def load(self, filename):
             pymt_logger.debug('Load <%s>' % filename)
             try:
@@ -207,8 +223,10 @@ class Image(object):
         return (self.x, self.y)
     pos = property(_get_pos, _set_pos, doc='tuple(x, y): position of widget')
 
+    @deprecated
     def get_texture(self):
-        '''Retreive the texture of image'''
+        '''Retreive the texture of image
+        @deprecated: use self.texture instead.'''
         return self.texture
 
     def draw(self):
@@ -216,3 +234,4 @@ class Image(object):
         imgpos = (self.x - self.anchor_x * self.scale, self.y - self.anchor_y * self.scale)
         with DO(gx_color(1, 1, 1, self.opacity), gx_blending):
             drawTexturedRectangle(texture=self.texture, pos=imgpos, size=self.size)
+

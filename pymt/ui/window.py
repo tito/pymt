@@ -41,7 +41,7 @@ class BaseWindow(EventDispatcher):
             Background color of window
     '''
     _have_multisample = None
-    _modifiers = 0
+    _modifiers = []
     _size = (0, 0)
 
     def __init__(self, **kwargs):
@@ -354,7 +354,6 @@ class BaseWindow(EventDispatcher):
         '''Event called when mouse is moving, with buttons pressed'''
         pass
 
-
     def on_keyboard(self, key, x, y):
         '''Event called when keyboard is in action'''
         pass
@@ -395,8 +394,8 @@ class MTWindow(BaseWindow):
     def configure(self, params):
         # register all callbcaks
         glutReshapeFunc(self._glut_reshape)
-        glutMouseFunc(glut_mouse)
-        glutMotionFunc(glut_mouse_motion)
+        glutMouseFunc(self._glut_mouse)
+        glutMotionFunc(self._glut_mouse_motion)
         glutKeyboardFunc(curry(self.dispatch_event, 'on_keyboard'))
 
         # update window size
@@ -407,24 +406,6 @@ class MTWindow(BaseWindow):
             glutFullScreen()
 
         super(MTWindow, self).configure(params)
-
-
-
-    def glut_mouse(self, button, state, x, y):
-        btn = 'left'
-        if button == GLUT_RIGHT_BUTTON:
-            btn = 'right'
-
-        y -= 10
-        if state == GLUT_DOWN:
-            self.dispatch_event('on_mouse_down', x,y,btn, self.modifiers)
-        else:
-            self.dispatch_event('on_mouse_up', x,y, btn, self.modifiers)
-
-    def glut_mouse_motion(self, x,y):
-        y -= 10
-        self.dispatch_event('on_mouse_move', x,y, self.modifiers)
-
 
     def close(self):
         global glut_window
@@ -443,7 +424,6 @@ class MTWindow(BaseWindow):
         if mods & GLUT_ACTIVE_SHIFT:
             self._modifiers.append('ctrl')
 
-
         if ord(key) == 27:
             stopTouchApp()
         super(MTWindow, self).on_keyboard(key, x, y)
@@ -452,12 +432,31 @@ class MTWindow(BaseWindow):
         glutReshapeWindow(*size)
         super(MTWindow, self)._set_size(size)
 
-    def _glut_reshape(self, w, h):
-        self.size = w, h
-
     def flip(self):
         glutSwapBuffers()
         super(MTWindow, self).flip()
+
+    #
+    # GLUT callbacks
+    #
+
+    def _glut_reshape(self, w, h):
+        self.size = w, h
+
+    def _glut_mouse(self, button, state, x, y):
+        btn = 'left'
+        if button == GLUT_RIGHT_BUTTON:
+            btn = 'right'
+
+        y -= 10
+        if state == GLUT_DOWN:
+            self.dispatch_event('on_mouse_down', x, y, btn, self.modifiers)
+        else:
+            self.dispatch_event('on_mouse_up', x, y, btn, self.modifiers)
+
+    def _glut_mouse_motion(self, x, y):
+        y -= 10
+        self.dispatch_event('on_mouse_move', x, y, self.modifiers)
 
 
 class MTDisplay(MTWidget):
@@ -494,6 +493,7 @@ class MTDisplay(MTWidget):
         set_color(*self.touch_color)
         for touch in getAvailableTouchs():
             drawCircle(pos=(touch.x, touch.y), radius=self.radius)
+
 
 # Register all base widgets
 MTWidgetFactory.register('MTWindow', MTWindow)

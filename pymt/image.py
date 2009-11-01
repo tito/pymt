@@ -190,7 +190,7 @@ class Image(object):
             return
         self._filename = value
         self.image      = ImageLoader(self._filename)
-        self.texture    = self.image.get_texture()
+        self.texture    = self.image.texture
         self.width      = self.image.width
         self.height     = self.image.height
     filename = property(_get_filename, _set_filename,

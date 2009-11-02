@@ -118,6 +118,8 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     from loader import *
     from gesture import *
     from utils import *
+    from texture import *
+    from text import *
 
 
     # Can be overrided in command line

@@ -38,7 +38,14 @@ class Texture(object):
         self.id = id
 
     def __del__(self):
-        glDeleteTextures(self.id)
+        #glDeleteTextures(self.id)
+        # FIXME: no need to delete texture too ? pyopengl ??
+        pass
+
+    def flip_vertical(self):
+        '''Flip tex_coords for vertical displaying'''
+        a, b, c, d, e, f, g, h = self.tex_coords
+        self.tex_coords = (g, h, e, f, c, d, a, b)
 
     def get_region(self, x, y, width, height):
         '''Return a part of the texture, from (x,y) with (width,height)
@@ -103,11 +110,18 @@ class Texture(object):
         if texture is None:
             return None
 
-        glTexImage2D(texture.target, 0, format,
-                     im.width, im.height, 0, format,
+        glTexSubImage2D(texture.target, 0, 0, 0,
+                     im.width, im.height, format,
                      GL_UNSIGNED_BYTE, im.data)
 
         return texture
+
+    @property
+    def size(self):
+        return (self.width, self.height)
+
+    def __str__(self):
+        return '<Texture size=(%d, %d)>' % self.size
 
 
 class TextureRegion(Texture):

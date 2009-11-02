@@ -6,7 +6,7 @@ from __future__ import with_statement
 __all__ = ['MTButton', 'MTToggleButton', 'MTImageButton']
 
 from OpenGL.GL import *
-from pyglet.text import Label
+from ...text import Label
 from ...image import Image
 from ...graphx import GlDisplayList, set_color, gx_blending
 from ...graphx import drawCSSRectangle
@@ -77,17 +77,7 @@ class MTButton(MTWidget):
         super(MTButton, self).__init__(**kwargs)
 
         fw = self.style.get('font-weight')
-        self.label_obj      = Label(
-            font_name = self.style.get('font-name'),
-            font_size = int(self.style.get('font-size')),
-            bold = (fw in ('bold', 'bolditalic')),
-            italic = (fw in ('italic', 'bolditalic')),
-            anchor_x = kwargs.get('anchor_x'),
-            anchor_y = kwargs.get('anchor_y'),
-            text = kwargs.get('label'),
-            multiline = kwargs.get('multiline'),
-            width = kwargs.get('width')
-        )
+        self.label_obj      = Label(**kwargs)
 
     def apply_css(self, styles):
         super(MTButton, self).apply_css(styles)

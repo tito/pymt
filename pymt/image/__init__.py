@@ -4,7 +4,7 @@ Image: handle loading of images
 
 from __future__ import with_statement
 
-__all__ = ('Image', 'ImageLoader')
+__all__ = ('Image', 'ImageLoader', 'ImageData')
 
 from ..graphx import DO, gx_color, gx_blending, drawTexturedRectangle, set_color
 from ..logger import pymt_logger
@@ -164,7 +164,7 @@ class Image(object):
     @staticmethod
     def load(filename):
         '''Load an image'''
-        return ImageLoader.load(filename)
+        return Image(filename)
 
     def _get_filename(self):
         return self._filename
@@ -174,7 +174,7 @@ class Image(object):
         if value == self._filename:
             return
         self._filename = value
-        self.image      = Image.load(self._filename)
+        self.image      = ImageLoader.load(self._filename)
         self.texture    = self.image.texture
         self.width      = self.image.width
         self.height     = self.image.height

@@ -25,6 +25,7 @@ setup(
         'pymt.lib.cssutils.stylesheets',
         'pymt.lib.osc',
         'pymt.mods',
+        'pymt.text',
         'pymt.ui',
         'pymt.ui.widgets',
         'pymt.ui.widgets.composed',

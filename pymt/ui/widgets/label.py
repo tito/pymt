@@ -5,7 +5,7 @@ Label: a simple text label
 from __future__ import with_statement
 __all__ = ['MTLabel']
 
-from pyglet.text import Label
+from ...text import Label
 from ...graphx import drawLabel
 from ..factory import MTWidgetFactory
 from widget import MTWidget
@@ -39,15 +39,11 @@ class MTLabel(MTWidget):
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('label', '')
-        kwargs.setdefault('anchor_x', 'left')
-        kwargs.setdefault('anchor_y', 'bottom')
-        kwargs.setdefault('font_name', '')
-        kwargs.setdefault('font_size', 10)
-        kwargs.setdefault('bold', False)
-        kwargs.setdefault('multiline', False)
-        kwargs.setdefault('color', (1,1,1,1))
-        kwargs.setdefault('halign', 'left')
+        kwargs.setdefault('color', (1, 1, 1, 1))
         kwargs.setdefault('autoheight', False)
+
+        label = kwargs['label']
+        del kwargs['label']
 
         super(MTLabel, self).__init__(**kwargs)
 
@@ -57,19 +53,8 @@ class MTLabel(MTWidget):
         if len(color) == 3:
             color[3] = 1
 
-        self.label_obj = Label(
-            font_name=kwargs.get('font_name'),
-            font_size=kwargs.get('font_size'),
-            bold=kwargs.get('bold'),
-            anchor_x=kwargs.get('anchor_x'),
-            anchor_y=kwargs.get('anchor_y'),
-            multiline=kwargs.get('multiline'),
-            halign=kwargs.get('halign'),
-            width=self.width,
-            color=map(lambda x: int(x * 255), kwargs.get('color')),
-            text=''
-        )
-        self.label = str(kwargs.get('label'))
+        self.label_obj = Label(label='', **kwargs)
+        self.label = str(label)
 
     def on_resize(self, w, h):
         self.label_obj.width = w

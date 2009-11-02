@@ -5,7 +5,6 @@ __all__ = ['Material', 'MaterialGroup', 'Mesh']
 
 import os
 import warnings
-import pyglet
 from OpenGL.GL import *
 
 class Material(object):

@@ -10,7 +10,6 @@ from ...text import Label
 from ...image import Image
 from ...graphx import GlDisplayList, set_color, gx_blending
 from ...graphx import drawCSSRectangle
-from ...utils import get_color_for_pyglet
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
@@ -21,9 +20,9 @@ class MTButton(MTWidget):
         `label` : string, default is ''
             Label of button
         `anchor_x` : string
-            X anchor of label, refer to pyglet.label.anchor_x documentation
+            X anchor of label (left, center, right)
         `anchor_y` : string
-            Y anchor of label, refer to pyglet.label.anchor_x documentation
+            Y anchor of label, (bottom, middle, top)
         `multiline` : bool, default is False
             Indicate if button is a multiline button
 
@@ -138,11 +137,11 @@ class MTButton(MTWidget):
                 tsp = self.style['text-shadow-position']
                 self.label_obj.x, self.label_obj.y = \
                     map(lambda x: self.pos[x] + self.size[x] / 2 + tsp[x], xrange(2))
-                self.label_obj.color = get_color_for_pyglet(self.style['text-shadow-color'])
+                self.label_obj.color = self.style['text-shadow-color']
                 self.label_obj.draw()
         self.label_obj.x, self.label_obj.y = \
             map(lambda x: self.pos[x] + self.size[x] / 2, xrange(2))
-        self.label_obj.color = get_color_for_pyglet(self.style['font-color'])
+        self.label_obj.color = self.style['font-color']
         self.label_obj.draw()
 
     def on_touch_down(self, touch):

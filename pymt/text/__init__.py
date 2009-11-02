@@ -9,12 +9,13 @@ from ..utils import deprecated
 from ..logger import pymt_logger
 
 class LabelBase(object):
-    __slots__ = ('options', '_data', 'texture', '_label', 'pos', 'size')
+    __slots__ = ('options', '_data', 'texture', '_label', 'pos', 'size', 'color')
 
     options = {}
     texture = None
     pos = (0, 0)
     size = (0, 0)
+    color = (1, 1, 1, 1)
     _label = None
 
     def __init__(self, label, **kwargs):
@@ -61,7 +62,7 @@ class LabelBase(object):
         elif anchor_y == 'top':
             y += h
 
-        pymt.set_color(1, 1, 1, 0.999)
+        pymt.set_color(*self.color, blend=True)
         pymt.drawTexturedRectangle(
             texture=self.texture,
             pos=(x, y), size=self.texture.size)

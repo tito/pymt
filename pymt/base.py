@@ -82,8 +82,7 @@ class TouchEventLoop(object):
         if type == 'down':
             touch_list.append(touch)
         elif type == 'up':
-            if touch in touch_list:
-                touch_list.remove(touch)
+            touch_list.remove(touch)
 
         # dispatch to listeners
         if not touch.grab_exclusive_class:

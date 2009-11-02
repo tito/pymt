@@ -1,15 +1,59 @@
-import sys,os
-os.environ['PYMT_SHADOW_WINDOW'] = 'False'
-
+import sys
+import os
+import traceback
+import os
 from PyQt4 import QtCore, QtGui, QtOpenGL
 from OpenGL import GL
 from syntaxhighlighter import Highlighter
-from pymt import pymt_logger
 from cStringIO import StringIO
-from qtmtwindow import *
+import logging.handlers
+
+# Configure pymt BEFORE instance
+os.environ['PYMT_SHADOW_WINDOW'] = 'False'
+sys._pymt_logging_handler = logging.handlers.MemoryHandler(0)
 import pymt
-import traceback
-import os
+from pymt import pymt_logger
+
+# don't import qtmt before pymt, otherwise, initialization will fail.
+from qtmtwindow import *
+
+class LoggerHandler:
+    __slots__ = ('output', 'colors')
+
+    def __init__(self, output):
+        self.output = output
+        self.colors = {
+            'WARNING': '#aaaa00',
+            'INFO': '#00cc00',
+            'DEBUG': '#0000cc',
+            'CRITICAL': '#cc0000',
+            'ERROR': '#cc0000'
+        }
+
+    def format_message(self, message):
+        return message.replace("\n", '<br/>').replace("\t", '&nbsp;&nbsp;')
+
+    def handle(self, record):
+        color = '#000000'
+        if record.levelname in self.colors:
+            color = self.colors[record.levelname]
+        message = self.format_message(record.getMessage())
+        html = '[<span style="color: %s">%s</span>] %s<br/><br/>' % \
+            (color, record.levelname, message)
+        self.appendHtml(html)
+
+    def appendText(self, text):
+        self.appendHtml(self.format_message(text) + '<br/>')
+
+    def appendHtml(self, html):
+        # ensure we are at the end
+        cur = self.output.textCursor()
+        cur.movePosition(cur.End)
+        self.output.setTextCursor(cur)
+        # insert HTML
+        self.output.insertHtml(html)
+        # scroll if necessary
+        self.output.ensureCursorVisible()
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -34,6 +78,10 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle('PyMT Designer')
 
         self._update_toolbar_status()
+
+        # install logger
+        self.logger = LoggerHandler(output=self.console)
+        sys._pymt_logging_handler.setTarget(self.logger)
 
     def setupToolbar(self):
         self.toolbar = QtGui.QToolBar()
@@ -137,7 +185,8 @@ class MainWindow(QtGui.QMainWindow):
         sys.stdout = buff1
         sys.stderr = buff2
         self.execute_pymt_code()
-        self.console.setPlainText(buff1.getvalue() + buff2.getvalue())
+        self.logger.appendText(buff1.getvalue())
+        self.logger.appendText(buff2.getvalue())
         sys.stdout = stdout
         sys.stderr = stderr
         self._update_toolbar_status()

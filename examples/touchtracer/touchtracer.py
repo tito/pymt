@@ -4,23 +4,21 @@ PLUGIN_TITLE = 'Touch Tracer'
 PLUGIN_AUTHOR = 'Thomas Hansen'
 PLUGIN_DESCRIPTION = ''
 
-import pyglet
 from OpenGL.GL import *
 from pymt import *
 from random import random
 
-label = pyglet.text.Label('', font_size=10,anchor_x="left", anchor_y="top")
-label2 = pyglet.text.Label('', font_size=8,anchor_x="left", anchor_y="top")
-crosshair = pyglet.sprite.Sprite(pyglet.image.load('../touchtracer/crosshair.png'))
+label = Label('', font_size=11, anchor_x="left", anchor_y="top")
+label2 = Label('', font_size=8, anchor_x="left", anchor_y="bottom")
+crosshair = Image.load('../touchtracer/crosshair.png')
 crosshair.scale = 0.6
 
 
 def drawLabel(x,y, ID):
     label.text = "touch["+ str(ID) +"]"
     label2.text = "x:"+str(int(x))+" y:"+str(int(y))
-    label.x = label2.x = x +20
-    label.y = label2.y = y +20
-    label2.y -= 20
+    label.x = label2.x = x + 20
+    label.y = label2.y = y
     label.draw()
     label2.draw()
     crosshair.x = x -12

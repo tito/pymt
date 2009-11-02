@@ -32,7 +32,8 @@ class LabelPygame(LabelBase):
                 italic=self.options['italic'])
 
             # fontobject
-            fontobject = pygame.font.Font(font, self.options['font_size'] * 1.4)
+            fontobject = pygame.font.Font(font,
+                            int(self.options['font_size'] * 1.333))
             pygame_cache[id] = fontobject
 
         return pygame_cache[id]

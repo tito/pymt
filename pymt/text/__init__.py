@@ -8,6 +8,8 @@ import pymt
 from ..utils import deprecated
 from ..logger import pymt_logger
 
+DEFAULT_FONT = 'LiberationSans,BitstreamVeraSans,FreeSans,Arial,Sans'
+
 class LabelBase(object):
     __slots__ = ('options', '_data', 'texture', '_label', 'pos', 'size', 'color')
 
@@ -20,7 +22,7 @@ class LabelBase(object):
 
     def __init__(self, label, **kwargs):
         kwargs.setdefault('font_size', 12)
-        kwargs.setdefault('font_name', 'Liberation Mono,Monospace')
+        kwargs.setdefault('font_name', DEFAULT_FONT)
         kwargs.setdefault('bold', False)
         kwargs.setdefault('italic', False)
         kwargs.setdefault('width', None)
@@ -58,9 +60,9 @@ class LabelBase(object):
         if anchor_y == 'bottom':
             pass
         elif anchor_y in ('center', 'middle'):
-            y += h * 0.5
+            y -= h * 0.5
         elif anchor_y == 'top':
-            y += h
+            y -= h
 
         pymt.set_color(*self.color, blend=True)
         pymt.drawTexturedRectangle(

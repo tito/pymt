@@ -28,14 +28,19 @@ def set_color(*colors, **kwargs):
 
     kwargs.setdefault('sfactor', GL_SRC_ALPHA)
     kwargs.setdefault('dfactor', GL_ONE_MINUS_SRC_ALPHA)
+    kwargs.setdefault('blend', None)
+    force_blend = kwargs['blend'] == True
     if len(colors) == 4:
         glColor4f(*colors)
-        if colors[3] == 1:
+        if colors[3] == 1 and not force_blend:
             glDisable(GL_BLEND)
         else:
             glEnable(GL_BLEND)
             glBlendFunc(kwargs.get('sfactor'), kwargs.get('dfactor'))
     if len(colors) == 3:
         glColor3f(*colors)
-        glDisable(GL_BLEND)
+        if force_blend:
+            glEnable(GL_BLEND)
+        else:
+            glDisable(GL_BLEND)
 

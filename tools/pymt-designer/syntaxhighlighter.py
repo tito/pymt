@@ -13,12 +13,12 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         keywordFormat.setForeground(QtCore.Qt.darkRed)
         keywordFormat.setFontWeight(QtGui.QFont.Bold)
 
-        keywords = ['class', 'def', 'for', 'in', 'try', 'excpet',
+        keywords = ['class', 'def', 'for', 'in', 'try', 'except',
                     'and', 'del', 'is', 'raise', 'assert', 'elif',
                     'global', 'lambda', 'return', 'break', 'else',
-                    'not', 'try', 'except', 'if', 'or', 'while',
+                    'not', 'try', 'from', 'if', 'or', 'while',
                     'continue', 'exec', 'import', 'pass', 'yield',
-                    'finally', 'print']
+                    'finally', 'print', 'eval']
 
         keywordPatterns = map(lambda x: "\\b"+x+"\\b", keywords)
 

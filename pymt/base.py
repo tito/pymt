@@ -288,6 +288,7 @@ def runTouchApp(widget=None, slave=False):
         getWindow().add_widget(widget)
 
     # start event loop
+    pymt_logger.info('Start application main loop')
     pymt_evloop.start()
 
     # we are in a slave mode, don't do dispatching.

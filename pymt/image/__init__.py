@@ -21,8 +21,8 @@ class ImageData(object):
 
     def __init__(self, width, height, mode, data):
         assert mode in ('RGB', 'RGBA')
-        self.width = width
-        self.height = height
+        self.width = int(width)
+        self.height = int(height)
         self.mode = mode
         self.data = data
 

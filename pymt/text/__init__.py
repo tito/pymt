@@ -8,7 +8,7 @@ import pymt
 from ..utils import deprecated
 from ..logger import pymt_logger
 
-DEFAULT_FONT = 'LiberationSans,BitstreamVeraSans,FreeSans,Arial,Sans'
+DEFAULT_FONT = 'Liberation Sans,Bitstream Vera Sans,Free Sans,Arial, Sans'
 
 class LabelBase(object):
     __slots__ = ('options', '_data', 'texture', '_label', 'pos', 'size', 'color')
@@ -38,8 +38,7 @@ class LabelBase(object):
         self.label = label
 
     def update(self):
-        if self.size == (None, None):
-            self.size = self.texture.size
+        self.size = self.texture.size
 
     def draw(self):
         if self.texture is None:
@@ -107,10 +106,19 @@ class LabelBase(object):
 Label = None
 
 try:
-    import text_pygame
-    Label = text_pygame.LabelPygame
+    import text_cairo
+    Label = text_cairo.LabelCairo
+    pymt_logger.info('Text: use Cairo as text provider')
 except:
-    pymt_logger.exception('')
-    import sys
-    sys.exit(0)
     pass
+
+if Label is None:
+    try:
+        import text_pygame
+        Label = text_pygame.LabelPygame
+        pymt_logger.info('Text: use Pygame as text provider')
+    except:
+        pymt_logger.exception('')
+        import sys
+        sys.exit(0)
+        pass

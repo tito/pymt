@@ -27,7 +27,7 @@ class LabelPygame(LabelBase):
         if id not in pygame_cache:
             # try to search the font
             font = pygame.font.match_font(
-                self.options['font_name'],
+                self.options['font_name'].replace(' ', ''),
                 bold=self.options['bold'],
                 italic=self.options['italic'])
 

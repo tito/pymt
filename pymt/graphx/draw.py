@@ -251,7 +251,7 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0), tex_coords=None):
             glTexCoord2f(texcoords[6], texcoords[7])
             glVertex2f(pos[6], pos[7])
 
-def drawLine(points, width=None):
+def drawLine(points, width=None, colors=[]):
     '''Draw a line
 
     :Parameters:
@@ -261,6 +261,11 @@ def drawLine(points, width=None):
             a power of 2.
         `width` : float, defaults to 5.0
             Default width of line
+        `colors` : list of tuples, defaults to []
+            If you want to draw colors between the points of the line, this
+            list has to be populated with a tuple for each point representing
+            that point's color. Hence, len(colors) == len(points) / 2 holds.
+            Turned off by default.
     '''
     style = GL_LINES
     # XXX Where does the default of 5.0 for width come from? pyglet? opengl?
@@ -269,15 +274,24 @@ def drawLine(points, width=None):
         glPushAttrib(GL_LINE_BIT)
         glLineWidth(width)
 
-    points = list(points)
+    points = list(points)[:]
     l = len(points)
     if l < 4:
         return
-    if l > 4:
+    elif l > 4:
         style = GL_LINE_STRIP
-    with gx_begin(style):
-        while len(points):
-            glVertex2f(points.pop(0), points.pop(0))
+    with DO(gx_attrib(GL_COLOR_BUFFER_BIT), gx_begin(style)):
+        # We don't want to do the if statement in every iteration of the while
+        # loop because that'd be expensive...
+        put_vertex = lambda: glVertex2f(points.pop(0), points.pop(0))
+        if colors:
+            colors = colors[:]
+            while points:
+                glColor3f(*colors.pop(0))
+                put_vertex()
+        else:
+            while points:
+                put_vertex()
 
     if width is not None:
         glPopAttrib()
@@ -411,4 +425,3 @@ def drawSemiCircle(pos=(0,0), inner_radius=100, outer_radius=120, slices=32, loo
     with gx_matrix:
         glTranslatef(pos[0], pos[1], 0)
         gluPartialDisk(gluNewQuadric(), inner_radius, outer_radius, slices, loops, start_angle, sweep_angle)
-

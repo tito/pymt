@@ -1,25 +1,29 @@
 '''
 Window package: provide a window + a touch display
+
+For windowing system, we try to use the best windowing system available for
+your system. Actually, theses libraries are handled :
+
+    * PyGame (wrapper around SDL)
+    * GLUT (last solution, really buggy :/)
+
 '''
 
 __all__ = ['BaseWindow', 'MTWindow', 'MTDisplay']
 
 import sys
 from OpenGL.GL import *
-from OpenGL.GLUT import *
 import pymt
-from ..logger import pymt_logger
-from ..base import stopTouchApp, getAvailableTouchs, setWindow, touch_event_listeners
-from ..clock import getClock
-from ..graphx import set_color, drawCircle, drawLabel
-from ..modules import pymt_modules
-from ..utils import curry
-from ..event import EventDispatcher
-from colors import css_get_style
-from factory import MTWidgetFactory
-from widgets import MTWidget
-
-glut_window = None
+from ...logger import pymt_logger
+from ...base import getAvailableTouchs, setWindow, touch_event_listeners
+from ...clock import getClock
+from ...graphx import set_color, drawCircle, drawLabel
+from ...modules import pymt_modules
+from ...utils import curry
+from ...event import EventDispatcher
+from ..colors import css_get_style
+from ..factory import MTWidgetFactory
+from ..widgets import MTWidget
 
 class BaseWindow(EventDispatcher):
     '''BaseWindow is a abstract window widget, for any window implementation.
@@ -41,7 +45,7 @@ class BaseWindow(EventDispatcher):
             Background color of window
     '''
     _have_multisample = None
-    _modifiers = 0
+    _modifiers = []
     _size = (0, 0)
 
     def __init__(self, **kwargs):
@@ -73,10 +77,10 @@ class BaseWindow(EventDispatcher):
         self.register_event_type('on_touch_down')
         self.register_event_type('on_touch_move')
         self.register_event_type('on_touch_up')
-        self.register_event_type('on_mouse')
-        self.register_event_type('on_mouse_motion')
+        self.register_event_type('on_mouse_down')
+        self.register_event_type('on_mouse_move')
+        self.register_event_type('on_mouse_up')
         self.register_event_type('on_keyboard')
-
         # set out window as the main pymt window
         setWindow(self)
 
@@ -194,11 +198,13 @@ class BaseWindow(EventDispatcher):
         return self._size
     def _set_size(self, size):
         if self._size == size:
-            return
+            return False
         self._size = size
         pymt_logger.debug('Resize window to %s' % str(self.size))
         self.dispatch_event('on_resize', *size)
-    size = property(_get_size, _set_size)
+        return True
+    size = property(lambda self: self._get_size(),
+                    lambda self, x: self._set_size(x))
 
     def _get_width(self):
         return self._size[0]
@@ -242,10 +248,14 @@ class BaseWindow(EventDispatcher):
         self.children.remove(w)
         w.parent = None
 
-    def draw(self):
+    def clear(self):
         '''Clear the window with background color'''
         glClearColor(*self.cssstyle.get('bg-color'))
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+    def draw(self):
+        '''Draw the background window (actually, only clear)'''
+        self.clear()
 
     def draw_mouse_touch(self):
         '''Compatibility for MouseTouch, drawing a little red circle around
@@ -291,7 +301,7 @@ class BaseWindow(EventDispatcher):
         if self.show_fps:
             fps = getClock().get_fps()
             drawLabel(label='FPS: %.2f' % float(fps),
-                center=False, pos=(4, self.height - 4),
+                center=False, pos=(0, 0),
                 font_size=10, bold=False)
 
         '''
@@ -342,91 +352,21 @@ class BaseWindow(EventDispatcher):
         if self in touch_event_listeners:
             touch_event_listeners.remove(self)
 
-    def on_mouse(self, button, state, x, y):
+    def on_mouse_down(self, x, y, button, modifiers):
         '''Event called when mouse is in action (press/release)'''
         pass
 
-    def on_mouse_motion(self, x, y):
+    def on_mouse_move(self, x, y, button, modifiers):
         '''Event called when mouse is moving, with buttons pressed'''
         pass
 
-    def on_keyboard(self, key, x, y):
-        '''Event called when keyboard is in action'''
+    def on_mouse_up(self, x, y, button, modifiers):
+        '''Event called when mouse is moving, with buttons pressed'''
         pass
 
-
-class MTWindow(BaseWindow):
-    def __init__(self, **kwargs):
-        super(MTWindow, self).__init__(**kwargs)
-
-    def create_window(self):
-        global glut_window
-        if glut_window is None:
-
-            # for shadow window, make it invisible
-            if self.shadow:
-                pymt_logger.debug('Set next window as Shadow window (1x1)')
-                glutInitWindowPosition(0, 0)
-                glutInitWindowSize(1, 1)
-
-            # init GLUT !
-            pymt_logger.debug('GLUT initialization')
-            glutInit('')
-            glutInitDisplayMode(
-                GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH |
-                GLUT_MULTISAMPLE | GLUT_STENCIL | GLUT_ACCUM)
-
-            # create the window
-            pymt_logger.debug('Create the window')
-            glut_window = glutCreateWindow('pymt')
-
-            # hide the shadow...
-            if self.shadow:
-                # FIXME seem not working... why ??
-                glutHideWindow()
-
-        super(MTWindow, self).create_window()
-
-    def configure(self, params):
-        # register all callbcaks
-        glutReshapeFunc(self._glut_reshape)
-        glutMouseFunc(curry(self.dispatch_event, 'on_mouse'))
-        glutMotionFunc(curry(self.dispatch_event, 'on_mouse_motion'))
-        glutKeyboardFunc(curry(self.dispatch_event, 'on_keyboard'))
-
-        # update window size
-        glutShowWindow()
-        self.size = params['width'], params['height']
-        if params['fullscreen']:
-            pymt_logger.debug('Set window to fullscreen mode')
-            glutFullScreen()
-
-        super(MTWindow, self).configure(params)
-
-    def close(self):
-        global glut_window
-        if glut_window:
-            glutDestroyWindow(glut_window)
-            glut_window = None
-        super(MTWindow, self).close()
-
-    def on_keyboard(self, key, x, y):
-        self._modifiers = glutGetModifiers()
-        if ord(key) == 27:
-            stopTouchApp()
-        super(MTWindow, self).on_keyboard(key, x, y)
-
-    def _set_size(self, size):
-        glutReshapeWindow(*size)
-        super(MTWindow, self)._set_size(size)
-
-    def _glut_reshape(self, w, h):
-        self.size = w, h
-
-    def flip(self):
-        glutSwapBuffers()
-        super(MTWindow, self).flip()
-
+    def on_keyboard(self, key, scancode=None, unicode=None):
+        '''Event called when keyboard is in action'''
+        pass
 
 class MTDisplay(MTWidget):
     '''MTDisplay is a widget that draw a circle
@@ -462,6 +402,29 @@ class MTDisplay(MTWidget):
         set_color(*self.touch_color)
         for touch in getAvailableTouchs():
             drawCircle(pos=(touch.x, touch.y), radius=self.radius)
+
+# Searching the best provider
+MTWindow = None
+if 'pygame' in pymt.options['window']:
+    try:
+        import win_pygame
+        MTWindow = win_pygame.MTWindowPygame
+        pymt_logger.info('Window: use Pygame as window provider.')
+    except ImportError:
+        pymt_logger.debug('Unable to use Pygame as window provider.')
+
+if MTWindow is None and 'glut' in pymt.options['window']:
+    try:
+        import win_glut
+        MTWindow = win_glut.MTWindowGlut
+        pymt_logger.info('Window: use GLUT as window provider.')
+    except ImportError:
+        pymt_logger.debug('Unable to use GLUT as window provider.')
+
+# No window provider ?
+if MTWindow is None:
+    pymt_logger.critical('No window provider found (configuration is %s)' %
+        str(pymt.options['window']))
 
 # Register all base widgets
 MTWidgetFactory.register('MTWindow', MTWindow)

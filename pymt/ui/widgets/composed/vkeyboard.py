@@ -7,6 +7,7 @@ import os
 import sys
 import pymt
 from ....graphx import set_color, drawCSSRectangle, drawLabel, GlDisplayList, gx_matrix, drawRoundedRectangle
+from ....clock import getClock
 from ....utils import curry
 from ....vector import Vector
 from ...factory import MTWidgetFactory

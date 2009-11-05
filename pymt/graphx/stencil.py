@@ -10,7 +10,6 @@ __all__ = [
     'stencilPush', 'stencilPop', 'stencilUse',
 ]
 
-from pyglet import *
 from OpenGL.GL import *
 from statement import *
 

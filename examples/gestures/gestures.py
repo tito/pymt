@@ -103,7 +103,7 @@ class GestureUI(MTWidget):
         self.gdb = gdb
         self.capture = CaptureGesture(gdb)
         self.add_widget(self.capture)
-        self.title = MTLabel(label='Gesture Recognition')
+        self.title = MTLabel(label='Gesture Recognition', font_size=24)
         self.add_widget(self.title)
 
     def on_draw(self):

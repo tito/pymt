@@ -50,6 +50,7 @@ class ParticleObject(MTWidget):
     def draw(self):
         if not self.visible:
             return
+        self.advance_frame(getFrameDt())
         if not self.dl.is_compiled():
             with self.dl:
                 glColor4f(*self.color)
@@ -71,7 +72,7 @@ class ParticleObject(MTWidget):
         self.hide()
 
 class ParticleEngine(MTWidget):
-    def __init__(self, max=150, **kargs):
+    def __init__(self, max=500, **kargs):
         MTWidget.__init__(self, **kargs)
         #print 'Particle Engine Initialized'
         self.max        = max
@@ -80,8 +81,6 @@ class ParticleEngine(MTWidget):
             self.particles[i] = ParticleObject()
             self.particles[i].hide()
             self.add_widget(self.particles[i])
-
-        getClock().schedule_once(self.advance_frame, 1/60.0)
 
     def on_draw(self):
         with gx_blending:
@@ -100,12 +99,6 @@ class ParticleEngine(MTWidget):
                 return
             self.particles[i].x, self.particles[i].y = pos
             self.particles[i].animate()
-
-    def advance_frame(self, dt):
-        for i in range(self.max):
-            if self.particles[i].visible:
-                self.particles[i].advance_frame(dt)
-        getClock().schedule_once(self.advance_frame, 1/60.0)
 
 class ParticleShow(MTWidget):
     def __init__(self, pos=(0, 0), size=(100, 100), color=(0.6, 0.6, 0.6, 1.0),

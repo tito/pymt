@@ -103,7 +103,6 @@ class MTInnerWindow(MTScatterWidget):
 
         # set new children
         root_win.children = []
-        root_win.add_widget(root_win.sim)
         root_win.add_widget(self.container)
 
         btn_unfullscreen = MTButton(pos=(root_win.width-50, root_win.height-50),

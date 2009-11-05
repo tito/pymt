@@ -12,11 +12,9 @@ __all__ = [
     'paintLine',
 ]
 
-from pyglet import *
+import pymt
 from OpenGL.GL import *
-from pyglet.image import Texture, TextureRegion
-from pyglet.graphics import draw
-from pyglet.text import Label
+from ..texture import Texture, TextureRegion
 from ..logger import pymt_logger
 from statement import *
 import math, os
@@ -40,7 +38,7 @@ def set_brush(sprite, size=None):
     if size:
         _brush_size = size
     if not sprite in _brushs_cache:
-        point_sprite_img = pyglet.image.load(sprite)
+        point_sprite_img = pymt.Image.load(sprite)
         _brush_texture = point_sprite_img.get_texture()
         _brushs_cache[sprite] = _brush_texture
     _brush_filename = sprite

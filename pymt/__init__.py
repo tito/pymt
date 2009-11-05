@@ -1,5 +1,5 @@
 '''
-PyMT: a multi touch UI toolkit for pyglet.
+PyMT: a multi touch UI toolkit, designed for programming on novel interfaces.
 
 PyMT is a python module for developing multi-touch enabled media rich applications.
 
@@ -18,6 +18,8 @@ from logger import pymt_logger, LOG_LEVELS
 # Global settings options for pymt
 options = {
     'shadow_window': True,
+    'window': ('pygame', 'glut'),
+    'text': ('cairo', 'pyglet', 'pygame'),
 }
 
 # Read environment
@@ -25,10 +27,14 @@ for option in options:
     key = 'PYMT_%s' % option.upper()
     if key in os.environ:
         try:
-            options[option] = os.environ[key].lower() in \
-                ('true', '1', 'yes', 'yup')
+            if type(options[option]) in (list, tuple):
+                options[option] = (str(os.environ[key]),)
+            else:
+                options[option] = os.environ[key].lower() in \
+                    ('true', '1', 'yes', 'yup')
         except:
             pymt_logger.warning('Wrong value for %s environment key' % key)
+            pymt_logger.exception('')
 
 # Include lib as new module.
 pymt_base_dir = os.path.dirname(sys.modules[__name__].__file__)
@@ -113,6 +119,8 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     from loader import *
     from gesture import *
     from utils import *
+    from texture import *
+    from text import *
 
 
     # Can be overrided in command line

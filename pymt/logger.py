@@ -21,7 +21,9 @@ Examples of usage ::
 
 '''
 
-import logging, os
+import logging
+import os
+import sys
 
 __all__ = ['pymt_logger', 'LOG_LEVELS', 'COLORS']
 
@@ -82,7 +84,12 @@ class ColoredLogger(logging.Logger):
         color_formatter = ColoredFormatter(self.COLOR_FORMAT, use_color=use_color)
         console = logging.StreamHandler()
         console.setFormatter(color_formatter)
-        self.addHandler(console)
+
+        # Use the custom handler instead of streaming one.
+        if hasattr(sys, '_pymt_logging_handler'):
+            self.addHandler(sys._pymt_logging_handler)
+        else:
+            self.addHandler(console)
         return
 
 logging.setLoggerClass(ColoredLogger)

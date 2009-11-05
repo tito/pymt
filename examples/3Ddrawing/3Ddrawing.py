@@ -8,13 +8,10 @@ PLUGIN_EMAIL = 'thomas.hansen@gmail.com'
 
 
 from pymt import *
-from pyglet import *
 from OpenGL.GL import *
-
+from OpenGL.GLU import *
 
 set_brush('../3Ddrawing/particle.png', 20)
-
-
 
 class GL3DPerspective:
     """
@@ -81,7 +78,7 @@ class ModelPainter(MTWidget):
 
         #stuff for rotating and keeping track of touches
         self.touch_position = {}
-        self.rotation_matrix = (GLfloat * 16)()
+        self.rotation_matrix = None
         self.reset_rotation()
         self.touch1, self.touch2 = None, None
         self.zoom = 3.0
@@ -99,7 +96,7 @@ class ModelPainter(MTWidget):
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
         glLoadIdentity()
-        glGetFloatv(GL_MODELVIEW_MATRIX, self.rotation_matrix)
+        self.rotation_matrix = glGetFloatv(GL_MODELVIEW_MATRIX)
         glPopMatrix()
 
 
@@ -111,7 +108,7 @@ class ModelPainter(MTWidget):
         glRotatef(x, 0,1,0)
         glRotatef(y, 1,0,0)
         glMultMatrixf(self.rotation_matrix)
-        glGetFloatv(GL_MODELVIEW_MATRIX, self.rotation_matrix)
+        self.rotation_matrix = glGetFloatv(GL_MODELVIEW_MATRIX)
         glPopMatrix()
         self.has_moved = True
 
@@ -142,7 +139,7 @@ class ModelPainter(MTWidget):
     def draw_picking(self):
         glDisable(GL_LIGHTING)
         glColor3f(1,1,1)
-        with gx_texture(self.picking_texture.texture):
+        with gx_texture(self.picking_texture):
             self.draw()
 
 

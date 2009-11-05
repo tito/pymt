@@ -13,16 +13,14 @@ __all__ = [
     'drawSemiCircle',
 ]
 
-from pyglet import *
+from ..texture import Texture, TextureRegion
+from ..clock import getClock
+from ..text import Label
 from OpenGL.GL import *
 from OpenGL.GLU import *
-from pyglet.image import Texture, TextureRegion
-from pyglet.graphics import draw
-from pyglet.text import Label
 from paint import *
 from statement import *
 from colors import *
-from time import time
 import math
 
 label_cache = {}
@@ -33,7 +31,7 @@ def _purge_drawLabel():
     By default, label are purged after 2s idle.
     '''
     global label_cache, label_cache_purge, label_cache_lastpurge
-    label_cache_lastpurge = time()
+    label_cache_lastpurge = getClock().get_time()
     for label in label_cache.keys():
         tmp, dt = label_cache[label]
         if label_cache_lastpurge - dt > label_cache_purge:
@@ -66,7 +64,7 @@ def drawLabel(label, pos=(0,0), **kwargs):
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
     del kwargs['center']
-    now = time()
+    now = getClock().get_time()
     if not label in label_cache:
         temp_label = Label(label, **kwargs)
     else:
@@ -234,8 +232,7 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0), tex_coords=None):
     '''
     with gx_texture(texture):
         if type(texture) in (Texture, TextureRegion):
-            t = texture.tex_coords
-            texcoords = (t[0], t[1], t[3], t[4], t[6], t[7], t[9], t[10])
+            texcoords = texture.tex_coords
         else:
             texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
         if tex_coords:

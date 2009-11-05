@@ -7,9 +7,9 @@ import os
 import warnings
 
 from OpenGL.GL import *
-from pyglet import image
 from graphx import *
 from geometric import *
+from image import Image
 
 class OBJ:
     '''3D object representation.
@@ -142,8 +142,8 @@ class OBJ:
                     material.opacity = float(values[1])
                 elif values[0] == 'map_Kd':
                     try:
-                        material.texture = image.load(values[1]).texture
-                    except image.ImageDecodeException:
+                        material.texture = Image(values[1]).get_texture()
+                    except:
                         warnings.warn('Could not load texture %s' % values[1])
             except:
                 warnings.warn('Parse error in %s.' % filename)

@@ -99,7 +99,7 @@ class Clock(object):
                 if to_remove is None:
                     to_remove = [event]
                 else:
-                    to_remove.remove(event)
+                    to_remove.append(event)
 
         # event to remove ?
         if to_remove is None:

@@ -18,9 +18,8 @@ __all__ = [
     'gx_texture'
 ]
 
-from pyglet import *
 from OpenGL.GL import *
-from pyglet.image import Texture, TextureRegion
+from ..texture import Texture, TextureRegion
 
 gl_displaylist_generate = False
 class GlDisplayList:

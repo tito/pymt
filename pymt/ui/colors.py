@@ -187,6 +187,7 @@ kineticlist {
     draw-alpha-background: 1;
 }
 
+basewindow,
 window {
     bg-color: rgb(20, 20, 20);
 }

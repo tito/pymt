@@ -10,6 +10,7 @@ __all__ = [
 ]
 
 import os
+import re
 import sys
 import OpenGL
 from OpenGL.GL import *
@@ -21,7 +22,7 @@ from ..logger import pymt_logger
 from ..texture import Texture, TextureRegion
 
 # for a specific bug in 3.0.0, about deletion of framebuffer.
-OpenGLversion = tuple(int(i) for i in OpenGL.__version__.split('.'))
+OpenGLversion = tuple(int(re.match('^(\d+)', i).groups()[0]) for i in OpenGL.__version__.split('.'))
 if OpenGLversion < (3, 0, 1):
     try:
         import numpy

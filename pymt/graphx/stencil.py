@@ -40,8 +40,7 @@ def stencilPush():
     glColorMask(0, 0, 0, 0)
 
     # save model view
-    m = (GLfloat * 16)()
-    glGetFloatv(GL_MODELVIEW_MATRIX, m)
+    m = glGetFloatv(GL_MODELVIEW_MATRIX)
     stencil_stack_view.append(m)
 
     # start recording GL operation

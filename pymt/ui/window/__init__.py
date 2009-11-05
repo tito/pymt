@@ -409,6 +409,7 @@ if 'pygame' in pymt.options['window']:
     try:
         import win_pygame
         MTWindow = win_pygame.MTWindowPygame
+        pymt_logger.info('Window: use Pygame as window provider.')
     except ImportError:
         pymt_logger.debug('Unable to use Pygame as window provider.')
 
@@ -416,6 +417,7 @@ if MTWindow is None and 'glut' in pymt.options['window']:
     try:
         import win_glut
         MTWindow = win_glut.MTWindowGlut
+        pymt_logger.info('Window: use GLUT as window provider.')
     except ImportError:
         pymt_logger.debug('Unable to use GLUT as window provider.')
 

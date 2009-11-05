@@ -19,6 +19,7 @@ from logger import pymt_logger, LOG_LEVELS
 options = {
     'shadow_window': True,
     'window': ('pygame', 'glut'),
+    'text': ('cairo', 'pyglet', 'pygame'),
 }
 
 # Read environment

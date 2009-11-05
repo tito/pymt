@@ -39,8 +39,8 @@ class LabelCairo(LabelBase):
 
     def update(self):
         x_bearing, y_bearing, width, height, x_advance, y_advance = self._get_extents()
-        width = max(width, 1)
-        height = max(height, 1)
+        width = int(max(width, 1))
+        height = int(max(height, 1))
 
         # create a surface, context, font...
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)

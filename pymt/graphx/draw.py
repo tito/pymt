@@ -266,7 +266,7 @@ def drawLine(points, width=None, colors=[]):
         `colors` : list of tuples, defaults to []
             If you want to draw colors between the points of the line, this
             list has to be populated with a tuple for each point representing
-            that point's color. Hence, len(colors) == len(points) / 2.
+            that point's color. Hence, len(colors) == len(points) / 2 holds.
             Turned off by default.
     '''
     style = GL_LINES
@@ -276,22 +276,23 @@ def drawLine(points, width=None, colors=[]):
         glPushAttrib(GL_LINE_BIT)
         glLineWidth(width)
 
-    points = list(points)
+    points = list(points)[:]
     l = len(points)
     if l < 4:
         return
-    if l > 4:
+    elif l > 4:
         style = GL_LINE_STRIP
     with DO(gx_attrib(GL_COLOR_BUFFER_BIT), gx_begin(style)):
         # We don't want to do the if statement in every iteration of the while
         # loop because that'd be expensive...
         put_vertex = lambda: glVertex2f(points.pop(0), points.pop(0))
         if colors:
-            while len(points):
+            colors = colors[:]
+            while points:
                 glColor3f(*colors.pop(0))
                 put_vertex()
         else:
-            while len(points):
+            while points:
                 put_vertex()
 
     if width is not None:

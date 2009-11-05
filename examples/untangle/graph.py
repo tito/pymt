@@ -1,6 +1,7 @@
 from __future__ import with_statement
 from random import randint
 from OpenGL.GL import *
+from OpenGL.GLU import *
 
 from pymt import *
 

@@ -109,16 +109,15 @@ class BaseWindow(EventDispatcher):
         else:
             params['fullscreen'] = pymt.pymt_config.getboolean('graphics', 'fullscreen')
 
-        if not params['fullscreen']:
-            if 'width' in kwargs:
-                params['width'] = kwargs.get('width')
-            else:
-                params['width'] = pymt.pymt_config.getint('graphics', 'width')
+        if 'width' in kwargs:
+            params['width'] = kwargs.get('width')
+        else:
+            params['width'] = pymt.pymt_config.getint('graphics', 'width')
 
-            if 'height' in kwargs:
-                params['height'] = kwargs.get('height')
-            else:
-                params['height'] = pymt.pymt_config.getint('graphics', 'height')
+        if 'height' in kwargs:
+            params['height'] = kwargs.get('height')
+        else:
+            params['height'] = pymt.pymt_config.getint('graphics', 'height')
 
         if 'vsync' in kwargs:
             params['vsync'] = kwargs.get('vsync')

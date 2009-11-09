@@ -17,6 +17,7 @@ if __name__ == '__main__':
 
     v = MTVideoBase(filename='super-fly.avi')
     v.video.play()
+    v.video.volume = 0.1
     m.add_widget(v)
 
     v = MTVideoBase(filename='http://media11.koreus.com/00069/200910/born-in-captivity.mp4')

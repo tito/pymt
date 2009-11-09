@@ -17,7 +17,8 @@ class VideoBase(BaseObject):
             Color filter of the video (usually white.)
     '''
 
-    __slots__ = ('_wantplay', '_buffer', '_filename', '_texture', 'color')
+    __slots__ = ('_wantplay', '_buffer', '_filename', '_texture', 'color',
+                 '_volume')
 
     def __init__(self, **kwargs):
         kwargs.setdefault('filename', None)
@@ -29,6 +30,7 @@ class VideoBase(BaseObject):
         self._buffer        = None
         self._filename      = None
         self._texture       = None
+        self._volume        = 1.
 
         self.color          = kwargs.get('color')
         self.filename       = kwargs.get('filename')
@@ -57,6 +59,14 @@ class VideoBase(BaseObject):
     position = property(lambda self: self._get_position(),
             lambda self, x: self._set_position(x),
             doc='Get/set the position in the video (in seconds)')
+
+    def _get_volume(self):
+        return self._volume
+    def _set_volume(self, volume):
+        self._volume = volume
+    volume = property(lambda self: self._get_volume(),
+            lambda self, x: self._set_volume(x),
+            doc='Get/set the volume in the video (1.0 = 100%)')
 
     def _get_duration(self):
         return 0

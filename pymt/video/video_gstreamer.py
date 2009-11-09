@@ -26,13 +26,15 @@ class VideoGStreamer(VideoBase):
     '''
 
     __slots__ = ('_pipeline', '_decoder', '_videosink', '_colorspace',
-                 '_videosize', '_buffer_lock')
+                 '_videosize', '_buffer_lock', '_audiosink', '_volumesink')
 
     def __init__(self, **kwargs):
         self._pipeline      = None
         self._decoder       = None
         self._videosink     = None
         self._colorspace    = None
+        self._audiosink     = None
+        self._volumesink    = None
         self._buffer_lock   = threading.Lock()
         self._videosize     = (0, 0)
         super(VideoGStreamer, self).__init__(**kwargs)
@@ -57,6 +59,8 @@ class VideoGStreamer(VideoBase):
         self._decoder = None
         self._videosink = None
         self._texture = None
+        self._audiosink = None
+        self._volumesink = None
 
     def load(self):
         # ensure that nothing is loaded before.
@@ -91,10 +95,14 @@ class VideoGStreamer(VideoBase):
         self._videosink.set_property('emit-signals', True)
         self._videosink.set_property('caps', caps)
         self._videosink.connect('new-buffer', self._gst_new_buffer)
+        self._audiosink = gst.element_factory_make('autoaudiosink', 'audiosink')
+        self._volumesink = gst.element_factory_make('volume', 'volume')
 
         # connect colorspace -> appsink
-        self._pipeline.add(self._colorspace, self._videosink)
+        self._pipeline.add(self._colorspace, self._videosink, self._audiosink,
+                           self._volumesink)
         gst.element_link_many(self._colorspace, self._videosink)
+        gst.element_link_many(self._volumesink, self._audiosink)
 
         # set to paused, for loading the file, and get the size information.
         self._pipeline.set_state(gst.STATE_PAUSED)
@@ -103,10 +111,11 @@ class VideoGStreamer(VideoBase):
         # a new pad from decoder ?
         # if it's a video, connect decoder -> colorspace
         c = pad.get_caps().to_string()
-        if not c.startswith('video'):
-            return
         try:
-            dbin.link(self._colorspace)
+            if c.startswith('video'):
+                dbin.link(self._colorspace)
+            elif c.startswith('audio'):
+                dbin.link(self._volumesink)
         except:
             pass
 
@@ -130,6 +139,18 @@ class VideoGStreamer(VideoBase):
             return self._videosink.query_duration(gst.FORMAT_TIME)[0] / 1000000000.
         except:
             return 0
+
+    def _get_volume(self):
+        if self._audiosink is not None:
+            self._volume = self._volumesink.get_property('volume')
+        else:
+            self._volume = 1.
+        return self._volume
+
+    def _set_volume(self, volume):
+        if self._audiosink is not None:
+            self._volumesink.set_property('volume', volume)
+            self._volume = volume
 
     def draw(self):
         # no video sink ?

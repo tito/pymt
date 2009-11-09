@@ -121,6 +121,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     from utils import *
     from texture import *
     from text import *
+    from video import *
 
 
     # Can be overrided in command line

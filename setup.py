@@ -31,7 +31,8 @@ setup(
         'pymt.ui.widgets.composed',
         'pymt.ui.widgets.form',
         'pymt.ui.widgets.layout',
-        'pymt.ui.window'
+        'pymt.ui.window',
+        'pymt.video'
     ],
     package_dir={'pymt': 'pymt'},
     package_data={'pymt': [

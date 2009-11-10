@@ -15,14 +15,17 @@ class VideoBase(BaseObject):
             Filename of the video. Can be a file or an URI.
         `color` : list
             Color filter of the video (usually white.)
+        `eos` : str
+            Action to do when EOS is hit. Can be one of 'pause' or 'loop'
     '''
 
     __slots__ = ('_wantplay', '_buffer', '_filename', '_texture', 'color',
-                 '_volume')
+                 '_volume', 'eos', '_state')
 
     def __init__(self, **kwargs):
         kwargs.setdefault('filename', None)
         kwargs.setdefault('color', (1, 1, 1, 1))
+        kwargs.setdefault('eos', 'pause')
 
         super(VideoBase, self).__init__(**kwargs)
 
@@ -31,7 +34,9 @@ class VideoBase(BaseObject):
         self._filename      = None
         self._texture       = None
         self._volume        = 1.
+        self._state         = ''
 
+        self.eos            = kwargs.get('eos')
         self.color          = kwargs.get('color')
         self.filename       = kwargs.get('filename')
 
@@ -78,17 +83,22 @@ class VideoBase(BaseObject):
     texture = property(lambda self: self._get_texture(),
             doc='Get the video texture')
 
+    def _get_state(self):
+        return self._state
+    state = property(lambda self: self._get_state(),
+            doc='Get the video playing status')
+
     def seek(self, percent):
         '''Move on percent position'''
         pass
 
     def stop(self):
         '''Stop the video playing'''
-        pass
+        self._state = ''
 
     def play(self):
         '''Play the video'''
-        pass
+        self._state = 'playing'
 
     def load(self):
         '''Load the video from the current filename'''
@@ -96,7 +106,11 @@ class VideoBase(BaseObject):
 
     def unload(self):
         '''Unload the actual video'''
-        pass
+        self._state = ''
+
+    def update(self):
+        '''Update the video content to texture.
+        Must be called every frame, before draw.'''
 
     def draw(self):
         '''Draw the current video on screen'''

@@ -14,7 +14,7 @@ import gobject
 import pymt
 from . import VideoBase
 from pymt.baseobject import BaseObject
-from pymt.graphx import get_texture_target, set_texture, drawTexturedRectangle, set_color
+from pymt.graphx import get_texture_target, set_texture, drawTexturedRectangle, set_color, drawRectangle
 from OpenGL.GL import glTexSubImage2D, GL_UNSIGNED_BYTE, GL_RGB
 
 # ensure that gobject have threads initialized.
@@ -43,12 +43,14 @@ class VideoGStreamer(VideoBase):
             return
         self._wantplay = False
         self._pipeline.set_state(gst.STATE_PAUSED)
+        self._state = ''
 
     def play(self):
         if self._pipeline is None:
             return
         self._wantplay = True
         self._pipeline.set_state(gst.STATE_PAUSED)
+        self._state = ''
 
     def unload(self):
         if self._pipeline is None:
@@ -60,6 +62,7 @@ class VideoGStreamer(VideoBase):
         self._texture = None
         self._audiosink = None
         self._volumesink = None
+        self._state = ''
 
     def load(self):
         # ensure that nothing is loaded before.
@@ -151,7 +154,7 @@ class VideoGStreamer(VideoBase):
             self._volumesink.set_property('volume', volume)
             self._volume = volume
 
-    def draw(self):
+    def update(self):
         # no video sink ?
         if self._videosink is None:
             return
@@ -174,6 +177,7 @@ class VideoGStreamer(VideoBase):
         # ok, we got a texture, user want play ?
         if self._wantplay:
             self._pipeline.set_state(gst.STATE_PLAYING)
+            self._state = 'playing'
             self._wantplay = False
 
         # update needed ?
@@ -184,6 +188,12 @@ class VideoGStreamer(VideoBase):
                 glTexSubImage2D(target, 0, 0, 0,
                                 self._videosize[0], self._videosize[1], GL_RGB,
                                 GL_UNSIGNED_BYTE, self._buffer.data)
-        # draw the texture
-        set_color(*self.color)
-        drawTexturedRectangle(texture=self._texture, pos=self.pos, size=self.size)
+                self._buffer = None
+
+    def draw(self):
+        if self._texture:
+            set_color(*self.color)
+            drawTexturedRectangle(texture=self._texture, pos=self.pos, size=self.size)
+        else:
+            set_color(0, 0, 0)
+            drawRectangle(pos=self.pos, size=self.size)

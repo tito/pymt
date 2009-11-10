@@ -20,7 +20,7 @@ if __name__ == '__main__':
     v.video.volume = 0.1
     m.add_widget(v)
 
-    v = MTVideoBase(filename='http://media11.koreus.com/00069/200910/born-in-captivity.mp4')
+    v = MTVideoBase(filename='http://samples.mplayerhq.hu/MPEG-4/MP4_with_ttxtSUB/1Video_2Audio_2SUBs(timed%20text%20streams).mp4')
     v.video.play()
     m.add_widget(v)
 

@@ -15,7 +15,10 @@ setup(
     packages=[
         'pymt',
         'pymt.graphx',
-        'pymt.image',
+        'pymt.core',
+        'pymt.core.image',
+        'pymt.core.text',
+        'pymt.core.video',
         'pymt.input',
         'pymt.input.postproc',
         'pymt.input.providers',
@@ -25,14 +28,12 @@ setup(
         'pymt.lib.cssutils.stylesheets',
         'pymt.lib.osc',
         'pymt.mods',
-        'pymt.text',
         'pymt.ui',
         'pymt.ui.widgets',
         'pymt.ui.widgets.composed',
         'pymt.ui.widgets.form',
         'pymt.ui.widgets.layout',
-        'pymt.ui.window',
-        'pymt.video'
+        'pymt.ui.window'
     ],
     package_dir={'pymt': 'pymt'},
     package_data={'pymt': [

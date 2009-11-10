@@ -6,7 +6,6 @@ __all__ = ['MTKineticList', 'MTKineticObject', 'MTKineticItem', 'MTKineticImage'
 
 import pymt
 from OpenGL.GL import *
-from pyglet.text import Label
 from ....graphx import set_color, drawRectangle
 from ....graphx import drawCSSRectangle
 from ...factory import MTWidgetFactory
@@ -125,12 +124,12 @@ class MTKineticList(MTStencilContainer):
     def _create_ui(self):
         # Title Text
         if self.titletext is not None:
-            self.title = Label(
+            self.title = pymt.Label(
                 font_size=18,
                 bold=True,
                 anchor_x='center',
                 anchor_y='center',
-                text=self.titletext)
+                label=self.titletext)
             self.title.x = self.width/2 + self.x
             self.title.y = self.height - 20 + self.y
 

@@ -6,10 +6,10 @@ from __future__ import with_statement
 
 __all__ = ('Image', 'ImageLoader', 'ImageData')
 
-from ..graphx import DO, gx_color, gx_blending, drawTexturedRectangle, set_color
-from ..logger import pymt_logger
-from ..texture import Texture, TextureRegion
-from ..utils import deprecated
+import pymt
+from pymt.graphx import DO, gx_color, gx_blending, drawTexturedRectangle, set_color
+from pymt.logger import pymt_logger
+from pymt.texture import Texture, TextureRegion
 
 class ImageData(object):
     '''Container for data image : width, height, mode and data.
@@ -65,7 +65,7 @@ class ImageLoaderBase(object):
     texture = property(_get_texture,
                       doc='Get the image texture (created on the first call)')
 
-    @deprecated
+    @pymt.deprecated
     def get_texture(self):
         '''Retreive the texture of image
         @deprecated: use self.texture instead.'''
@@ -208,7 +208,7 @@ class Image(object):
         return (self.x, self.y)
     pos = property(_get_pos, _set_pos, doc='tuple(x, y): position of widget')
 
-    @deprecated
+    @pymt.deprecated
     def get_texture(self):
         '''Retreive the texture of image
         @deprecated: use self.texture instead.'''

@@ -4,8 +4,8 @@ Form label: A text-label with align support
 
 __all__ = ['MTFormLabel']
 
+from pymt import Label
 from abstract import MTAbstractFormWidget
-from pyglet.text import Label
 from ...factory import MTWidgetFactory
 
 class MTFormLabel(MTAbstractFormWidget):

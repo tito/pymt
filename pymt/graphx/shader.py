@@ -4,10 +4,10 @@ Shader: abstract compilation and usage
 
 __all__ = ['ShaderException', 'Shader']
 
+import pymt
 import ctypes as c
 from OpenGL.GL import *
 from OpenGL.GLU import *
-from logger import pymt_logger
 
 class ShaderException(Exception):
     '''Exception launched by shader in error case'''
@@ -36,7 +36,7 @@ class Shader(object):
         glLinkProgram(self.program)
         message = self.get_program_log(self.program)
         if message:
-            pymt_logger.debug('shader message: %s' % message)
+            pymt.pymt_logger.debug('shader message: %s' % message)
 
     def create_shader(self, source, shadertype):
         sbuffer = c.create_string_buffer(source)
@@ -48,7 +48,7 @@ class Shader(object):
         glCompileShader(shader)
         message = self.get_shader_log(shader)
         if message:
-            pymt_logger.debug('shader message: %s' % message)
+            pymt.pymt_logger.debug('shader message: %s' % message)
         return shader
 
     def set_uniform_f(self, name, value):

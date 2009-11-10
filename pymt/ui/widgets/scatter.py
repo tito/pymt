@@ -5,8 +5,8 @@ Scatter package: provide lot of widgets based on scatter (base, svg, plane, imag
 from __future__ import with_statement
 __all__ = ['MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane', 'MTScatterImage']
 
+import pymt
 from OpenGL.GL import *
-from ...image import Image
 from ...graphx import drawRectangle, gx_matrix, gx_matrix_identity, set_color, \
     drawTexturedRectangle, gx_blending
 from ...vector import Vector, matrix_mult, matrix_inv_mult
@@ -520,7 +520,7 @@ class MTScatterImage(MTScatterWidget):
         if loader:
             self.image  = loader.image(kwargs.get('filename'))
         else:
-            self.image  = Image(kwargs.get('filename'))
+            self.image  = pymt.Image(kwargs.get('filename'))
 
     def draw(self):
         if type(self.image) == Image:

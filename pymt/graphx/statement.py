@@ -18,8 +18,8 @@ __all__ = [
     'gx_texture'
 ]
 
+import pymt
 from OpenGL.GL import *
-from ..texture import Texture, TextureRegion
 
 gl_displaylist_generate = False
 class GlDisplayList:
@@ -234,17 +234,17 @@ class GlTexture:
 
     def get_id(self):
         '''Return the openid of texture'''
-        if isinstance(self.texture, TextureRegion):
+        if isinstance(self.texture, pymt.TextureRegion):
             return self.texture.owner.id
-        elif isinstance(self.texture, Texture):
+        elif isinstance(self.texture, pymt.Texture):
             return self.texture.id
         else:
             return self.texture
 
     def get_target(self):
-        if isinstance(self.texture, TextureRegion):
+        if isinstance(self.texture, pymt.TextureRegion):
             return self.texture.owner.target
-        elif isinstance(self.texture, Texture):
+        elif isinstance(self.texture, pymt.Texture):
             return self.texture.target
         else:
             return GL_TEXTURE_2D

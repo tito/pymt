@@ -12,12 +12,10 @@ __all__ = [
     'paintLine',
 ]
 
+import os
+import math
 import pymt
 from OpenGL.GL import *
-from ..texture import Texture, TextureRegion
-from ..logger import pymt_logger
-from statement import *
-import math, os
 from statement import *
 
 _brushs_cache = {}
@@ -57,18 +55,18 @@ def set_brush_size(size):
 
 def get_texture_id(texture):
     '''Return the openid of texture'''
-    if isinstance(texture, TextureRegion):
+    if isinstance(texture, pymt.TextureRegion):
         return texture.owner.id
-    elif isinstance(texture, Texture):
+    elif isinstance(texture, pymt.Texture):
         return texture.id
     else:
         return texture
 
 def get_texture_target(texture):
     '''Return the target of texture. If none, return GL_TEXTURE_2D'''
-    if isinstance(texture, TextureRegion):
+    if isinstance(texture, pymt.TextureRegion):
         return texture.owner.target
-    elif isinstance(texture, Texture):
+    elif isinstance(texture, pymt.Texture):
         return texture.target
     else:
         return GL_TEXTURE_2D
@@ -91,7 +89,7 @@ def paintLine(points, numsteps=None, **kwargs):
     '''
     global _brush_texture, _brush_size
     if not _brush_texture:
-        pymt_logger.warning('No brush set to paint line, abort')
+        pymt.pymt_logger.warning('No brush set to paint line, abort')
         return
     if len(points) % 2 == 1:
         raise Exception('Points list must be a pair length number (not impair)')

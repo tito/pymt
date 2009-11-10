@@ -14,8 +14,6 @@ import pyglet
 import pymt
 from OpenGL.GL import *
 from pyglet.media import *
-from ....clock import getClock
-from ....image import Image
 from ....utils import boundary
 from ....graphx import set_color, drawRectangle, drawTexturedRectangle, DO, gx_matrix
 from ...factory import MTWidgetFactory
@@ -156,8 +154,8 @@ class MTVideoPlayPause(MTImageButton):
         self.playState       = 'Pause'
 
         self.images          = {}
-        self.images['Play']  = Image(kwargs.get('filename'))
-        self.images['Pause'] = Image(kwargs.get('filename_pause'))
+        self.images['Play']  = pymt.Image(kwargs.get('filename'))
+        self.images['Pause'] = pymt.Image(kwargs.get('filename_pause'))
 
         self.scale    = 0.75
 
@@ -288,7 +286,7 @@ class MTVideo(MTSimpleVideo):
         if self.collide_point(touch.x, touch.y):
             if not self.controls_visible:
                 self.show_controls()
-                getClock().schedule_once(self.hide_controls, 5)
+                pymt.getClock().schedule_once(self.hide_controls, 5)
         return super(MTVideo, self).on_touch_down(touch)
 
     def show_controls(self, dt=0):

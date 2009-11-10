@@ -4,8 +4,8 @@ VideoBase: base for implementing a video reader
 
 __all__ = ('VideoBase', 'Video')
 
-from ..baseobject import BaseObject
-from ..logger import pymt_logger
+from ...baseobject import BaseObject
+from ...logger import pymt_logger
 
 class VideoBase(BaseObject):
     '''VideoBase, a class to implement a video reader.

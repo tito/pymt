@@ -4,8 +4,8 @@ Pygame: Pygame image loader
 
 __all__ = ('ImageLoaderPygame', )
 
+import pymt
 from . import ImageLoaderBase, ImageData
-from ..logger import pymt_logger
 
 try:
     import pygame
@@ -23,11 +23,11 @@ class ImageLoaderPygame(ImageLoaderBase):
                'pbm', 'ppm', 'xpm')
 
     def load(self, filename):
-        pymt_logger.debug('Load <%s>' % filename)
+        pymt.pymt_logger.debug('Load <%s>' % filename)
         try:
             im = pygame.image.load(filename)
         except:
-            pymt_logger.warning('Unable to load image <%s>' % filename)
+            pymt.pymt_logger.warning('Unable to load image <%s>' % filename)
             raise
 
         mode = ''
@@ -41,7 +41,7 @@ class ImageLoaderPygame(ImageLoaderBase):
             try:
                 imc = im.convert(32)
             except:
-                pymt_logger.warning(
+                pymt.pymt_logger.warning(
                     'Unable to convert image <%s> to RGBA (was %s)' %
                     filename, im.mode)
                 raise

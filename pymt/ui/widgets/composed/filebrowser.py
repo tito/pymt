@@ -5,7 +5,6 @@ from __future__ import with_statement
 import os
 import re
 import pymt
-from ....image import Image
 from ....utils import is_color_transparent, curry
 from ....graphx import drawCSSRectangle, set_color
 from ...factory import MTWidgetFactory
@@ -89,7 +88,7 @@ class MTFileListEntryView(MTFileEntryView):
     def __init__(self, **kwargs):
         super(MTFileListEntryView, self).__init__(**kwargs)
         self.height         = 25
-        self.image          = Image(self.type_image, scale=0.5)
+        self.image          = pymt.Image(self.type_image, scale=0.5)
         self.labelWX        = MTLabel(label=self.striptext(self.label_txt, 50),
                 anchor_x='left', anchor_y='center', halign='center')
         self.add_widget(self.labelWX)
@@ -108,7 +107,7 @@ class MTFileIconEntryView(MTFileEntryView):
     def __init__(self, **kwargs):
         super(MTFileIconEntryView, self).__init__(**kwargs)
         self.size           = (80, 80)
-        self.image          = Image(self.type_image)
+        self.image          = pymt.Image(self.type_image)
         self.labelWX        = MTLabel(label=self.striptext(self.label_txt, 10),
                 anchor_x='center', anchor_y='center', halign='center')
         self.add_widget(self.labelWX)
@@ -288,7 +287,7 @@ class MTFileBrowserToggle(MTToggleButton):
         self.icon = kwargs.get('icon')
 
     def _set_icon(self, value):
-        self.image = Image(os.path.join(pymt.pymt_data_dir, 'icons', value))
+        self.image = pymt.Image(os.path.join(pymt.pymt_data_dir, 'icons', value))
     icon = property(fset=_set_icon)
 
     def draw(self):

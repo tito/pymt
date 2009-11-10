@@ -5,8 +5,6 @@ Text: Handle drawing of text
 __all__ = ('Label', )
 
 import pymt
-from ..utils import deprecated
-from ..logger import pymt_logger
 
 DEFAULT_FONT = 'Liberation Sans,Bitstream Vera Sans,Free Sans,Arial, Sans'
 
@@ -109,28 +107,28 @@ if 'cairo' in pymt.options['text']:
     try:
         import text_cairo
         Label = text_cairo.LabelCairo
-        pymt_logger.info('Text: use Cairo as text provider.')
+        pymt.pymt_logger.info('Text: use Cairo as text provider.')
     except:
-        pymt_logger.debug('Text: Unable to use Cairo as text provider.')
+        pymt.pymt_logger.debug('Text: Unable to use Cairo as text provider.')
 
 if Label is None and 'pygame' in pymt.options['text']:
     try:
         import text_pygame
         Label = text_pygame.LabelPygame
-        pymt_logger.info('Text: use Pygame as text provider.')
+        pymt.pymt_logger.info('Text: use Pygame as text provider.')
     except:
-        pymt_logger.debug('Text: Unable to use Pygame as text provider.')
+        pymt.pymt_logger.debug('Text: Unable to use Pygame as text provider.')
 
 if Label is None and 'pyglet' in pymt.options['text']:
     try:
         import text_pyglet
         Label = text_pyglet.LabelPyglet
-        pymt_logger.info('Text: use Pyglet as text provider.')
+        pymt.pymt_logger.info('Text: use Pyglet as text provider.')
     except:
-        pymt_logger.debug('Text: Unable to use Pyglet as text provider.')
+        pymt.pymt_logger.debug('Text: Unable to use Pyglet as text provider.')
 
 # No label provider ?
 if Label is None:
-    pymt_logger.critical('No text provider found (configuration is %s)' %
+    pymt.pymt_logger.critical('No text provider found (configuration is %s)' %
         str(pymt.options['text']))
 

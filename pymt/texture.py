@@ -2,7 +2,7 @@
 Texture: abstraction to handle GL texture, and region
 '''
 
-__all__ = ('Texture', )
+__all__ = ('Texture', 'TextureRegion')
 
 from OpenGL.GL import *
 from OpenGL.GL.NV.texture_rectangle import *

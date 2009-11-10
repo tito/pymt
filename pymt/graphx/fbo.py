@@ -13,13 +13,12 @@ import os
 import re
 import sys
 import OpenGL
+import pymt
 from OpenGL.GL import *
 from OpenGL.GL.EXT.framebuffer_object import *
 from paint import *
 from colors import *
 from draw import *
-from ..logger import pymt_logger
-from ..texture import Texture, TextureRegion
 
 # for a specific bug in 3.0.0, about deletion of framebuffer.
 OpenGLversion = tuple(int(re.match('^(\d+)', i).groups()[0]) for i in OpenGL.__version__.split('.'))
@@ -62,12 +61,12 @@ class AbstractFbo(object):
         self.push_viewport      = kwargs.get('push_viewport')
 
         # create texture
-        self.texture            = Texture.create(self.size[0], self.size[1])
+        self.texture            = pymt.Texture.create(self.size[0], self.size[1])
 
         # get real size (can be the same)
-        if isinstance(self.texture, TextureRegion):
+        if isinstance(self.texture, pymt.TextureRegion):
             self.realsize = self.texture.owner.width, self.texture.owner.height
-        elif isinstance(self.texture, Texture):
+        elif isinstance(self.texture, pymt.Texture):
             self.realsize = self.texture.width, self.texture.height
         else:
             raise 'Unknown type(self.texture). Please send a bug report on pymt dev.'
@@ -144,22 +143,22 @@ class HardwareFbo(AbstractFbo):
         # check the fbo status
         status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
         if status != GL_FRAMEBUFFER_COMPLETE_EXT:
-            pymt_logger.error('Error in framebuffer activation')
-            pymt_logger.error('Details: HardwareFbo size=%s, realsize=%s, format=GL_RGBA' % (
+            pymt.pymt_logger.error('Error in framebuffer activation')
+            pymt.pymt_logger.error('Details: HardwareFbo size=%s, realsize=%s, format=GL_RGBA' % (
                 str(self.size), str(self.realsize)))
             if status in HardwareFbo.gl_fbo_errors:
-                pymt_logger.error('Details: %s (%d)' % (HardwareFbo.gl_fbo_errors[status], status))
+                pymt.pymt_logger.error('Details: %s (%d)' % (HardwareFbo.gl_fbo_errors[status], status))
             else:
-                pymt_logger.error('Details: Unknown error (%d)' % status)
+                pymt.pymt_logger.error('Details: Unknown error (%d)' % status)
 
-            pymt_logger.error('')
-            pymt_logger.error('You cannot use Hardware FBO.')
-            pymt_logger.error('Please change the configuration to use Software FBO.')
-            pymt_logger.error('You can use the pymt-config tools, or edit the configuration to set:')
-            pymt_logger.error('')
-            pymt_logger.error('[graphics]')
-            pymt_logger.error('fbo = software')
-            pymt_logger.error('')
+            pymt.pymt_logger.error('')
+            pymt.pymt_logger.error('You cannot use Hardware FBO.')
+            pymt.pymt_logger.error('Please change the configuration to use Software FBO.')
+            pymt.pymt_logger.error('You can use the pymt-config tools, or edit the configuration to set:')
+            pymt.pymt_logger.error('')
+            pymt.pymt_logger.error('[graphics]')
+            pymt.pymt_logger.error('fbo = software')
+            pymt.pymt_logger.error('')
 
             raise UnsupportedFboException()
 
@@ -272,8 +271,8 @@ else:
     if not os.path.basename(sys.argv[0]).startswith('sphinx'):
         # decide what to use
         if pymt_config.get('graphics', 'fbo') == 'hardware':
-            pymt_logger.debug('Fbo will use hardware Framebuffer')
+            pymt.pymt_logger.debug('Fbo will use hardware Framebuffer')
             Fbo = HardwareFbo
         else:
-            pymt_logger.debug('Fbo will use software Framebuffer')
+            pymt.pymt_logger.debug('Fbo will use software Framebuffer')
             Fbo = SoftwareFbo

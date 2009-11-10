@@ -5,9 +5,8 @@ Button package: implement different type of button
 from __future__ import with_statement
 __all__ = ['MTButton', 'MTToggleButton', 'MTImageButton']
 
+import pymt
 from OpenGL.GL import *
-from ...text import Label
-from ...image import Image
 from ...graphx import GlDisplayList, set_color, gx_blending
 from ...graphx import drawCSSRectangle
 from ..factory import MTWidgetFactory
@@ -76,7 +75,7 @@ class MTButton(MTWidget):
         super(MTButton, self).__init__(**kwargs)
 
         fw = self.style.get('font-weight')
-        self.label_obj      = Label(**kwargs)
+        self.label_obj      = pymt.Label(**kwargs)
 
     def apply_css(self, styles):
         super(MTButton, self).apply_css(styles)
@@ -217,7 +216,7 @@ class MTImageButton(MTButton):
     def _set_filename(self, filename):
         self._filename = filename
         if filename: #dont set it if e.g. its None 
-            self.image     = Image(self.filename)
+            self.image     = pymt.Image(self.filename)
     filename = property(_get_filename, _set_filename)
 
     def draw(self):

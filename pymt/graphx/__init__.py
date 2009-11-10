@@ -9,3 +9,4 @@ from stencil import *
 from statement import *
 from fbo import *
 from css import *
+from shader import *

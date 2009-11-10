@@ -12,7 +12,7 @@ For example, if you want to get length of a vector ::
 __all__ = ['Vector', 'matrix_inv_mult', 'matrix_trans_mult', 'matrix_mult']
 
 import math
-from logger import pymt_logger
+from pymt.logger import pymt_logger
 
 _use_numpy = False
 

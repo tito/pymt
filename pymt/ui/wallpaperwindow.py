@@ -4,9 +4,9 @@ Wallpaper window: a window with background wallpaper
 
 __all__ = ['MTWallpaperWindow']
 
+import pymt
 from OpenGL.GL import glClearColor
 from ..logger import pymt_logger
-from ..image import Image
 from window import MTWindow
 
 class MTWallpaperWindow(MTWindow):
@@ -66,7 +66,7 @@ class MTWallpaperWindow(MTWindow):
         if not image:
             return
         try:
-            self._image = Image(image)
+            self._image = pymt.Image(image)
         except Exception, e:
             pymt_logger.error('error while loading wallpaper : %s', e)
     def _get_wallpaper(self):

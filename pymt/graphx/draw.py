@@ -13,15 +13,13 @@ __all__ = [
     'drawSemiCircle',
 ]
 
-from ..texture import Texture, TextureRegion
-from ..clock import getClock
-from ..text import Label
+import math
+import pymt
 from OpenGL.GL import *
-from OpenGL.GLU import *
+from OpenGL.GLU import gluNewQuadric, gluDisk, gluPartialDisk
 from paint import *
 from statement import *
 from colors import *
-import math
 
 label_cache = {}
 label_cache_purge = 2.
@@ -31,7 +29,7 @@ def _purge_drawLabel():
     By default, label are purged after 2s idle.
     '''
     global label_cache, label_cache_purge, label_cache_lastpurge
-    label_cache_lastpurge = getClock().get_time()
+    label_cache_lastpurge = pymt.getClock().get_time()
     for label in label_cache.keys():
         tmp, dt = label_cache[label]
         if label_cache_lastpurge - dt > label_cache_purge:
@@ -64,9 +62,9 @@ def drawLabel(label, pos=(0,0), **kwargs):
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
     del kwargs['center']
-    now = getClock().get_time()
+    now = pymt.getClock().get_time()
     if not label in label_cache:
-        temp_label = Label(label, **kwargs)
+        temp_label = pymt.Label(label, **kwargs)
     else:
         temp_label, last_access = label_cache[label]
     label_cache[label] = (temp_label, now)
@@ -231,7 +229,7 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0), tex_coords=None):
             Size of rectangle
     '''
     with gx_texture(texture):
-        if type(texture) in (Texture, TextureRegion):
+        if type(texture) in (pymt.Texture, pymt.TextureRegion):
             texcoords = texture.tex_coords
         else:
             texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)

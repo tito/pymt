@@ -5,8 +5,6 @@ Label: a simple text label
 from __future__ import with_statement
 __all__ = ['MTLabel']
 
-from ...text import Label
-from ...graphx import drawLabel
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
@@ -53,7 +51,7 @@ class MTLabel(MTWidget):
         if len(color) == 3:
             color[3] = 1
 
-        self.label_obj = Label(label='', **kwargs)
+        self.label_obj = pymt.Label(label='', **kwargs)
         self.label = str(label)
 
     def on_resize(self, w, h):

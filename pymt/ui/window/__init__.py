@@ -19,7 +19,6 @@ from ...base import getAvailableTouchs, setWindow, touch_event_listeners
 from ...clock import getClock
 from ...graphx import set_color, drawCircle, drawLabel
 from ...modules import pymt_modules
-from ...utils import curry
 from ...event import EventDispatcher
 from ..colors import css_get_style
 from ..factory import MTWidgetFactory

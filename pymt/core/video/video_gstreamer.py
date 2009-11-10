@@ -11,11 +11,10 @@ except:
 
 import threading
 import gobject
+import pymt
 from . import VideoBase
-from ..baseobject import BaseObject
-from ..graphx import get_texture_target, set_texture, drawTexturedRectangle, \
-                     set_color
-from ..texture import Texture
+from pymt.baseobject import BaseObject
+from pymt.graphx import get_texture_target, set_texture, drawTexturedRectangle, set_color
 from OpenGL.GL import glTexSubImage2D, GL_UNSIGNED_BYTE, GL_RGB
 
 # ensure that gobject have threads initialized.
@@ -164,7 +163,7 @@ class VideoGStreamer(VideoBase):
                 structure_name = cap.get_name()
                 if structure_name.startswith('video') and cap.has_key('width'):
                     self._videosize = self.size = (cap['width'], cap['height'])
-                    self._texture = Texture.create(
+                    self._texture = pymt.Texture.create(
                         self._videosize[0], self._videosize[1], format=GL_RGB)
                     self._texture.flip_vertical()
 

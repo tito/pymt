@@ -19,7 +19,7 @@ from logger import pymt_logger, LOG_LEVELS
 options = {
     'shadow_window': True,
     'window': ('pygame', 'glut'),
-    'text': ('cairo', 'pyglet', 'pygame'),
+    'text': ('pil', 'cairo', 'pyglet', 'pygame'),
     'video': ('gstreamer', )
 }
 
@@ -128,13 +128,15 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     from input import *
     from base import *
 
+    # after dependices
+    from gesture import *
+
     # widgets
     from ui import *
 
     #from obj import OBJ
     #from plugin import *
     #from loader import *
-    #from gesture import *
 
 
     # Can be overrided in command line

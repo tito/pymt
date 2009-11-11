@@ -6,16 +6,15 @@ __all__ = ('LabelBase', 'Label')
 
 import pymt
 from .. import core_select_lib
+from ...baseobject import BaseObject
 
 DEFAULT_FONT = 'Liberation Sans,Bitstream Vera Sans,Free Sans,Arial, Sans'
 
-class LabelBase(object):
-    __slots__ = ('options', '_data', 'texture', '_label', 'pos', 'size', 'color')
+class LabelBase(BaseObject):
+    __slots__ = ('options', '_data', 'texture', '_label', 'color')
 
     options = {}
     texture = None
-    pos = (0, 0)
-    size = (0, 0)
     color = (1, 1, 1, 1)
     _label = None
 
@@ -27,13 +26,12 @@ class LabelBase(object):
         kwargs.setdefault('width', None)
         kwargs.setdefault('height', None)
         kwargs.setdefault('multiline', False)
-        kwargs.setdefault('pos', (0, 0))
-        kwargs.setdefault('size', (None, None))
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
+
+        super(LabelBase, self).__init__(**kwargs)
+
         self.options = kwargs
-        self.pos = kwargs.get('pos')
-        self.size = kwargs.get('size')
         self.label = label
 
     def update(self):
@@ -76,18 +74,6 @@ class LabelBase(object):
         self.update()
     label = property(_get_label, _set_label)
     text = property(_get_label, _set_label)
-
-    def _get_x(self):
-        return self.pos[0]
-    def _set_x(self, x):
-        self.pos = (x, self.pos[1])
-    x = property(_get_x, _set_x)
-
-    def _get_y(self):
-        return self.pos[1]
-    def _set_y(self, y):
-        self.pos = (self.pos[0], y)
-    y = property(_get_y, _set_y)
 
     @property
     def content_width(self):

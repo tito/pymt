@@ -5,6 +5,7 @@ Label: a simple text label
 from __future__ import with_statement
 __all__ = ['MTLabel']
 
+import pymt
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 

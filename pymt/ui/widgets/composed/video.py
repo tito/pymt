@@ -74,6 +74,13 @@ class MTSimpleVideo(MTWidget):
         super(MTSimpleVideo, self).draw()
 
 
+class MTButtonVideo(MTImageButton):
+    def draw(self):
+        pymt.set_color(*self.style['bg-color'])
+        pymt.drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
+        self.image.color = self.style['color']
+        super(MTButtonVideo, self).draw()
+
 class MTVideo(MTSimpleVideo):
     '''MTVideo is a video player, with control buttons.
     You can use it like this ::
@@ -83,11 +90,11 @@ class MTVideo(MTSimpleVideo):
     :Parameters:
         `filename` : str
             Filename of video
-        `bordersize` : int, default to 20
+        `bordersize` : int, default to 10
             Border size of the video
     '''
     def __init__(self, **kwargs):
-        kwargs.setdefault('bordersize', 20)
+        kwargs.setdefault('bordersize', 10)
 
         super(MTVideo, self).__init__(**kwargs)
 
@@ -96,16 +103,17 @@ class MTVideo(MTSimpleVideo):
         self.bordersize = kwargs.get('bordersize')
 
         # images play/pause/mute
-        self.f_play = pymt.Image(iconPath + 'videoWidgetPlay.png')
-        self.f_pause = pymt.Image(iconPath + 'videoWidgetPause.png')
-        self.f_mute = pymt.Image(iconPath + 'videoWidgetMute.png')
+        self.f_play = pymt.Image(iconPath + 'video-play.png')
+        self.f_pause = pymt.Image(iconPath + 'video-pause.png')
+        self.f_vmute = pymt.Image(iconPath + 'video-volume-mute.png')
+        self.f_v100 = pymt.Image(iconPath + 'video-volume-100.png')
 
         # create UI
         box = MTBoxLayout(orientation='horizontal', uniform_height=True,
                           spacing=0, padding=0)
-        self._btnplay = MTImageButton(image=self.f_play,
+        self._btnplay = MTButtonVideo(image=self.f_play,
                                       cls='video-toggleplay')
-        self._btnmute = MTImageButton(image=self.f_mute,
+        self._btnmute = MTButtonVideo(image=self.f_v100,
                                       cls='video-togglemute')
         self._timeline = MTSlider(orientation='horizontal',
                                   cls='video-timeline')
@@ -124,17 +132,19 @@ class MTVideo(MTSimpleVideo):
     def _on_toggle_play(self, *largs):
         if self.player.state == 'playing':
             self.player.stop()
-            self._btnplay.image = self.f_play
+            self._btnplay.image = self.f_pause
         else:
             self.player.play()
-            self._btnplay.image = self.f_pause
+            self._btnplay.image = self.f_play
         return True
 
     def _on_toggle_mute(self, *largs):
         if self.player.volume == 1:
             self.player.volume = 0
+            self._btnmute.image = self.f_vmute
         else:
             self.player.volume = 1
+            self._btnmute.image = self.f_v100
         return True
 
     def on_update(self):
@@ -153,8 +163,9 @@ class MTVideo(MTSimpleVideo):
     def draw(self):
         b = self.bordersize
         b2 = b * 2
-        pymt.set_color(1, 1, 1, 0.5)
-        pymt.drawRectangle((-b, -b), (self.width + b2, self.height + b2))
+        pymt.set_color(*self.style['bg-color'])
+        pymt.drawCSSRectangle((-b, -b), (self.width + b2, self.height + b2),
+                              style=self.style)
         super(MTVideo, self).draw()
 
     def on_touch_down(self, touch):

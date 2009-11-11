@@ -40,6 +40,7 @@ setup(
         'data/icons/filetype/*.png',
         'data/icons/svg/*.svg',
         'data/icons/*.png',
+        'data/*.css',
         'data/*.png',
         'data/*.ttf']
     }

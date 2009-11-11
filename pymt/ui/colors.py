@@ -27,6 +27,7 @@ __all__ = ['default_css', 'css_get_style', 'get_truncated_classname',
 
 from ..logger import pymt_logger
 from parser import *
+import pymt
 import os
 import sys
 import shutil
@@ -86,169 +87,14 @@ auto_convert = {
 }
 
 # Default CSS of PyMT
-default_css = '''
-* {
-    /* text color */
-    color: rgba(255, 255, 255, 255);
+default_css_filename = os.path.join(pymt.pymt_data_dir, 'default.css')
+try:
+    fd = open(default_css_filename)
+    default_css = fd.read()
+except:
+    pymt_logger.exception('')
+    pymt_logger.critical('Unable to open the default CSS')
 
-    /* color when something is pushed */
-    color-down: rgba(150, 150, 150, 150);
-
-    /* background color of widget */
-    bg-color: rgba(60, 60, 60, 150);
-
-    /* fonts */
-    font-size: 10;
-    font-name: "";
-    font-weight: normal; /* normal, bold, italic, bolditalic */
-    font-color: rgba(255, 255, 255, 255);
-
-    /* borders */
-    border-width: 1.5;
-    border-radius: 0;
-	border-radius-precision: 1;
-    draw-border: 0;
-
-    /* background alpha layer */
-    draw-alpha-background: 0;
-    alpha-background: 1 1 0.5 0.5;
-
-    /* text shadow */
-    draw-text-shadow: 0;
-    text-shadow-color: rgba(22, 22, 22, 63);
-    text-shadow-position: -1 1;
-}
-
-vectorslider {
-    slider-color: rgba(255, 71, 0, 255);
-    bg-color: rgba(51, 102, 230);
-}
-
-display {
-    /* color of touch */
-    touch-color: rgba(255, 0, 0, 255);
-}
-
-popup,
-colorpicker,
-form,
-vkeyboard,
-flippablewidget,
-button {
-    bg-color: rgba(60, 60, 60, 100);
-}
-
-formslider,
-slider, xyslider, vectorslider, multislider, boundaryslider {
-    padding: 8;
-    bg-color: rgb(51, 51, 51);
-    slider-color: rgb(255, 127, 0);
-    draw-slider-border: 0;
-    slider-border-radius: 0;
-    slider-border-radius-precision: 1;
-    draw-slider-alpha-background: 0;
-    slider-alpha-background: 1 1 .5 .5;
-}
-
-fileentryview {
-    bg-color: rgba(0, 0, 0, 0);
-    item-selected: rgb(255, 100, 0, 200);
-    border-radius: 8;
-    border-radius-precision: .5;
-}
-
-kineticcontainer {
-    bg-color: rgba(90, 90, 90, 127)
-}
-
-kineticlist {
-    title-color: rgb(127, 127, 127);
-    draw-title-border: 0;
-    title-border-radius: 0;
-    title-border-radius-precision: 1;
-    draw-title-alpha-background: 0;
-    title-alpha-background: 1 1 .5 .5;
-    scrollbar-size: 3;
-    scrollbar-color: rgba(127, 127, 127, 127);
-    scrollbar-margin: 3 3 3 0;
-}
-
-.kineticlist-search {
-    /* kinetic search button */
-    bg-color: rgba(0, 255, 0, 127);
-    alpha-background: 1 1 .7 .7;
-    draw-alpha-background: 1;
-}
-
-.kineticlist-delete {
-    /* kinetic delete button */
-    bg-color: rgba(255, 0, 0, 127);
-    alpha-background: 1 1 .7 .7;
-    draw-alpha-background: 1;
-}
-
-basewindow,
-window {
-    bg-color: rgb(20, 20, 20);
-}
-
-modalwindow {
-	bg-color: rgba(0, 0, 0, 200);
-}
-
-innerwindow {
-    bg-color: rgba(255, 255, 255, 175);
-    bg-color-move: rgba(0, 175, 0, 175);
-    bg-color-full: rgba(175, 0, 0, 175);
-    border-width: 30;
-}
-
-innerwindowcontainer {
-    bg-color: rgba(0, 0, 0);
-}
-
-vectorslider,
-objectdisplay {
-    vector-color: rgb(255, 255, 255);
-}
-
-vkeyboard {
-    /* onboard keyboard */
-    margin: 10 50 10 50;
-    border-radius: 15;
-    border-radius-precision: 0.35;
-    key-border-radius: 5;
-    key-border-radius-precision: 1;
-    draw-key-border: 1;
-    key-alpha-background: 1 1 .7 .7;
-    draw-key-alpha-background: 1;
-    draw-border: 1;
-    key-color: rgba(20, 20, 20, 255);
-    syskey-color: rgba(20, 20, 40, 255);
-    color-down: rgba(200, 200, 200, 127);
-}
-
-popup {
-    /* popup widget */
-    border-radius: 5;
-    alpha-background: 1 1 .7 .7;
-    draw-alpha-background: 1;
-    draw-border: 1;
-}
-
-.popup-button {
-    bg-color: rgba(40, 40, 40, 255);
-    alpha-background: 1 1 .7 .7;
-    draw-alpha-background: 1;
-    draw-border: 1;
-    border-radius: 5;
-}
-
-.popup-button-submit {
-    bg-color: rgba(40, 40, 70, 255);
-}
-
-'''
 
 def get_truncated_classname(name):
     '''Return the css-ized name of a class

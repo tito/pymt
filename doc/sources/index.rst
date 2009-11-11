@@ -33,6 +33,7 @@ If this is your first time using PyMT, this is the place to start !
     :numbered:
 
     guide-introduction.rst
+    guide-installation.rst
     guide-exceptions.rst
     guide-animation.rst
     guide-styling.rst

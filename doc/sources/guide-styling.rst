@@ -95,7 +95,7 @@ And make a CSS like this ::
   }
 
 
-Additionnal CSS
+Additional CSS
 ~~~~~~~~~~~~~~~
 
 Your CSS must be the first thing to do before creating Widget.

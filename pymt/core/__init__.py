@@ -10,6 +10,8 @@ def core_select_lib(category, llist):
         try:
             # module activated in config ?
             if option not in pymt.options[category]:
+                pymt.pymt_logger.debug('%s: option <%s> ignored by config' %
+                    (category.capitalize(), option))
                 continue
 
             # import module

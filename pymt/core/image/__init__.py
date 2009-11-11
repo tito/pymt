@@ -118,7 +118,7 @@ class Image(object):
     '''
 
     copy_attributes = ('opacity', 'scale', 'anchor_x', 'anchor_y', '_width',
-                       '_height', 'texture', '_filename', 'x', 'y')
+                       '_height', 'texture', '_filename', 'x', 'y', 'color')
 
     def __init__(self, arg, **kwargs):
         self._filename  = None
@@ -132,6 +132,7 @@ class Image(object):
         self.anchor_y   = 0
         self.x          = 0
         self.y          = 0
+        self.color      = [1, 1, 1, 1]
 
         if type(arg) == Image:
             for attr in Image.copy_attributes:
@@ -146,10 +147,14 @@ class Image(object):
             raise Exception('Unable to load image with type %s' % str(type(arg)))
 
         # after loading, let the user take the place
+        if 'color' in kwargs:
+            self.color      = list(kwargs.get('color'))
+            if len(self.color) > 3:
+                self.opacity    = self.color[3]
         if 'opacity' in kwargs:
             self.opacity    = kwargs.get('opacity')
         if 'scale' in kwargs:
-           self.scale      = kwargs.get('scale')
+           self.scale       = kwargs.get('scale')
         if 'anchor_x' in kwargs:
             self.anchor_x   = kwargs.get('anchor_x')
         if 'anchor_y' in kwargs:
@@ -217,7 +222,8 @@ class Image(object):
     def draw(self):
         '''Draw the image on screen'''
         imgpos = (self.x - self.anchor_x * self.scale, self.y - self.anchor_y * self.scale)
-        with DO(gx_color(1, 1, 1, self.opacity), gx_blending):
+        r, g, b = self.color[:3]
+        with DO(gx_color(r, g, b, self.opacity), gx_blending):
             drawTexturedRectangle(texture=self.texture, pos=imgpos, size=self.size)
 
 def load(filename):

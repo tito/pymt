@@ -52,7 +52,7 @@ class BaseObject(object):
     def _get_y(self):
         return self._pos[1]
     def _set_y(self, y):
-        self.pos = (y, self.y)
+        self.pos = (self.x, y)
     y = property(lambda self: self._get_y(),
                  lambda self, x: self._set_y(x),
                  doc = 'Object Y position')

@@ -4,6 +4,7 @@ VideoBase: base for implementing a video reader
 
 __all__ = ('VideoBase', 'Video')
 
+from .. import core_select_lib
 from ...baseobject import BaseObject
 from ...logger import pymt_logger
 
@@ -116,14 +117,8 @@ class VideoBase(BaseObject):
         '''Draw the current video on screen'''
         pass
 
-Video = None
-try:
-    import video_gstreamer
-    Video = video_gstreamer.VideoGStreamer
-    pymt_logger.info('Video: use GStreamer as video provider.')
-except:
-    pymt_logger.debug('Video: Unable to use GStreamer as video provider.')
-    pymt_logger.exception('azpdok')
+# Load the appropriate provider
+Video = core_select_lib('video', (
+    ('gstreamer', 'video_gstreamer', 'VideoGStreamer'),
+))
 
-if Video is None:
-    pymt_logger.error('No video provider found')

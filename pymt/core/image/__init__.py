@@ -234,14 +234,14 @@ def load(filename):
 try:
     import img_pygame
     ImageLoader.register(img_pygame.ImageLoaderPygame)
-    pymt_logger.info('Image: register Pygame loader')
+    pymt_logger.info('Image: register <pygame> loader')
 except:
     pass
 
 try:
     import img_pil
     ImageLoader.register(img_pil.ImageLoaderPIL)
-    pymt_logger.info('Image: register PIL loader')
+    pymt_logger.info('Image: register <pil> loader')
 except:
     pass
 

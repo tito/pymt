@@ -57,6 +57,45 @@ class EventDispatcher(object):
         self._event_stack.insert(0, {})
         self.set_handlers(*args, **kwargs)
 
+    def remove_handler(self, name, handler):
+        for frame in self._event_stack:
+            try:
+                if frame[name] is handler:
+                    del frame[name]
+                    break
+            except KeyError:
+                pass
+
+    def remove_handlers(self, *args, **kwargs):
+        handlers = list(self._get_handlers(args, kwargs))
+
+        # Find the first stack frame containing any of the handlers
+        def find_frame():
+            for frame in self._event_stack:
+                for name, handler in handlers:
+                    try:
+                        if frame[name] == handler:
+                            return frame
+                    except KeyError:
+                        pass
+        frame = find_frame()
+
+        # No frame matched; no error.
+        if not frame:
+            return
+
+        # Remove each handler from the frame.
+        for name, handler in handlers:
+            try:
+                if frame[name] == handler:
+                    del frame[name]
+            except KeyError:
+                pass
+
+        # Remove the frame if it's empty.
+        if not frame:
+            self._event_stack.remove(frame)
+
     def _get_handlers(self, args, kwargs):
         for object in args:
             if inspect.isroutine(object):

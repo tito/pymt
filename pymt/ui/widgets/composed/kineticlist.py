@@ -500,6 +500,8 @@ class MTKineticList(MTStencilContainer):
             drawRectangle(pos=pos, size=size)
 
     def on_draw(self):
+        if not self.visible:
+            return
         self.do_layout()
         self.process_kinetic()
         self.draw()
@@ -582,9 +584,6 @@ class MTKineticObject(MTWidget):
         self.db.pos = (self.x + self.width-40, self.y + self.height-40)
         self.db.style['bg-color'] = (1, 0, 0, self.db_alpha)
 
-    def on_draw(self):
-        super(MTKineticObject, self).on_draw()
-
     def on_press(self, touch):
         if self.db.visible and self.db.on_touch_down(touch):
             return True
@@ -601,10 +600,12 @@ class MTKineticObject(MTWidget):
         self.a_delete_w.start()
         self.a_delete_h.start()
 
+
 class MTKineticItem(MTButton, MTKineticObject):
     def on_press(self, touch):
         if self.db.visible and self.db.on_touch_down(touch):
             return True
+
 
 class MTKineticImage(MTImageButton, MTKineticObject):
     def on_press(self, touch):

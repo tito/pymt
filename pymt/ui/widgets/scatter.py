@@ -199,6 +199,8 @@ class MTScatterWidget(MTWidget):
        self.anim.start()
 
     def on_draw(self):
+        if not self.visible:
+            return
         if self.zangle < 90:
             self.flip_to('front')
         else:

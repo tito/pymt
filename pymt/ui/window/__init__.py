@@ -363,7 +363,10 @@ class BaseWindow(EventDispatcher):
         pass
 
     def on_keyboard(self, key, scancode=None, unicode=None):
-        '''Event called when keyboard is in action'''
+        '''Event called when keyboard is in action
+        ..warning ::
+            Some providers can skip `scancode` or `unicode` !!
+        '''
         pass
 
 class MTDisplay(MTWidget):

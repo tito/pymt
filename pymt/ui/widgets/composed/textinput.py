@@ -8,7 +8,6 @@ from ....graphx import set_color, drawCSSRectangle, drawLine, GlDisplayList
 from ..button import MTButton
 from ...factory import MTWidgetFactory
 from vkeyboard import MTVKeyboard
-from pyglet import window
 
 class MTTextInput(MTButton):
     '''

@@ -14,7 +14,6 @@ from ...factory import MTWidgetFactory
 from ..scatter import MTScatterWidget
 from kineticlist import MTKineticList, MTKineticItem
 from ....clock import getClock
-from pyglet import font
 from OpenGL.GL import glScalef, glTranslatef
 
 __all__ = ['MTVKeyboard']
@@ -271,7 +270,8 @@ class MTVKeyboard(MTScatterWidget):
             MTVKeyboard.available_layout.append(layout_class)
             # Load custom font
             try:
-                font.add_file(layout_class.FONT_FILENAME)
+                #font.add_file(layout_class.FONT_FILENAME)
+                pass
             except:
                 pymt.pymt_logger.exception('Unable to load custom font')
 

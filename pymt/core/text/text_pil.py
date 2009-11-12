@@ -21,7 +21,7 @@ default_font = ImageFont.load_default()
 class LabelPIL(LabelBase):
     _cache = {}
     def _select_font(self):
-        fontsize = self.options['font_size'] * 1.333
+        fontsize = int(self.options['font_size'] * 1.333)
         fontname = self.options['font_name'].split(',')[0]
         id = '%s.%s' % (unicode(fontname), unicode(fontsize))
         if not id in self._cache:

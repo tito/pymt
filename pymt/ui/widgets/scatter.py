@@ -523,7 +523,7 @@ class MTScatterImage(MTScatterWidget):
             self.image  = pymt.Image(kwargs.get('filename'))
 
     def draw(self):
-        if type(self.image) == Image:
+        if type(self.image) == pymt.Image:
             # fast part
             self.image.size = self.size
             self.image.draw()

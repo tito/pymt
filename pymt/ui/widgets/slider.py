@@ -319,8 +319,8 @@ class MTBoundarySlider(MTWidget):
         set_color(*self.style.get('slider-color'))
         drawCSSRectangle(pos=pos, size=size, style=self.style, prefix='slider')
         if self.showtext:
-            drawLabel(str(self.value_min), pos=textposmin, font_size=self.style['font-size'])
-            drawLabel(str(self.value_max), pos=textposmax, font_size=self.style['font-size'])
+            drawLabel(unicode(self.value_min), pos=textposmin, font_size=self.style['font-size'])
+            drawLabel(unicode(self.value_max), pos=textposmax, font_size=self.style['font-size'])
 
     def on_touch_down(self, touch):
         # So the first on_touch_move in a

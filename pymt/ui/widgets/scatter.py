@@ -199,6 +199,8 @@ class MTScatterWidget(MTWidget):
        self.anim.start()
 
     def on_draw(self):
+        if not self.visible:
+            return
         if self.zangle < 90:
             self.flip_to('front')
         else:
@@ -523,7 +525,7 @@ class MTScatterImage(MTScatterWidget):
             self.image  = pymt.Image(kwargs.get('filename'))
 
     def draw(self):
-        if type(self.image) == Image:
+        if type(self.image) == pymt.Image:
             # fast part
             self.image.size = self.size
             self.image.draw()

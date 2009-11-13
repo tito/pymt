@@ -8,7 +8,6 @@ from ....graphx import set_color, drawCSSRectangle, drawLine, GlDisplayList
 from ..button import MTButton
 from ...factory import MTWidgetFactory
 from vkeyboard import MTVKeyboard
-from pyglet import window
 
 class MTTextInput(MTButton):
     '''
@@ -93,8 +92,7 @@ class MTTextInput(MTButton):
             return
         w = self.get_parent_window()
         w.add_widget(self.keyboard)
-        w.add_on_key_press(self.on_key_press)
-        w.add_on_text(self.on_text)
+        w.push_handlers(on_keyboard=self._window_on_keyboard)
         self.is_active_input = True
         if self._keyboard is not None:
             self._keyboard.push_handlers(
@@ -109,8 +107,7 @@ class MTTextInput(MTButton):
             return
         w = self.get_parent_window()
         w.remove_widget(self.keyboard)
-        w.remove_on_key_press(self.on_key_press)
-        w.remove_on_text(self.on_text)
+        w.remove_handlers(on_keyboard=self._window_on_keyboard)
         self.is_active_input = False
         if self._keyboard is not None:
             self._keyboard.remove_handlers(
@@ -132,24 +129,25 @@ class MTTextInput(MTButton):
             drawCSSRectangle((self.x,self.y) , (self.width, self.height), style=self.style)
         self.label_obj.draw()
 
-    def on_key_press(self, symbol, modifiers):
-        if symbol == window.key.ESCAPE:
+    def _window_on_keyboard(self, key, scancode=None, unicode=None):
+        if key == 27: # escape
             self.hide_keyboard()
             return True
-        elif symbol == window.key.BACKSPACE:
+        elif key == 8: # backspace
             key = (None, None, 'backspace', 1)
             self.keyboard.on_key_down(key)
             self.keyboard.on_key_up(key)
-        elif symbol in [window.key.ENTER, window.key.NUM_ENTER]:
+        elif key in (13, 271): # enter or numenter
             key = (None, None, 'enter', 1)
             self.keyboard.on_key_down(key)
             self.keyboard.on_key_up(key)
-
-    def on_text(self, text):
-        if text in ("\r", "\n"):
-            self.on_key_press(window.key.ENTER, None)
         else:
-            self.keyboard.text = self.keyboard.text + text
+            if unicode is not None:
+                self.keyboard.text = self.keyboard.text + unicode
+            else:
+                # oh god :[
+                self.keyboard.text = self.keyboard.text + chr(key)
+
 
 # Register all base widgets
 MTWidgetFactory.register('MTTextInput', MTTextInput)

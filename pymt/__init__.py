@@ -20,7 +20,9 @@ options = {
     'shadow_window': True,
     'window': ('pygame', 'glut'),
     'text': ('pil', 'cairo', 'pyglet', 'pygame'),
-    'video': ('gstreamer', )
+    'video': ('gstreamer', ),
+    'audio': ('pygame', ),
+    'image': ('pil', 'pygame'),
 }
 
 # Read environment

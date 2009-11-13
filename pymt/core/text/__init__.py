@@ -2,19 +2,19 @@
 Text: Handle drawing of text
 '''
 
-__all__ = ('Label', )
+__all__ = ('LabelBase', 'Label')
 
 import pymt
+from .. import core_select_lib
+from ...baseobject import BaseObject
 
 DEFAULT_FONT = 'Liberation Sans,Bitstream Vera Sans,Free Sans,Arial, Sans'
 
-class LabelBase(object):
-    __slots__ = ('options', '_data', 'texture', '_label', 'pos', 'size', 'color')
+class LabelBase(BaseObject):
+    __slots__ = ('options', '_data', 'texture', '_label', 'color')
 
     options = {}
     texture = None
-    pos = (0, 0)
-    size = (0, 0)
     color = (1, 1, 1, 1)
     _label = None
 
@@ -26,13 +26,12 @@ class LabelBase(object):
         kwargs.setdefault('width', None)
         kwargs.setdefault('height', None)
         kwargs.setdefault('multiline', False)
-        kwargs.setdefault('pos', (0, 0))
-        kwargs.setdefault('size', (None, None))
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
+
+        super(LabelBase, self).__init__(**kwargs)
+
         self.options = kwargs
-        self.pos = kwargs.get('pos')
-        self.size = kwargs.get('size')
         self.label = label
 
     def update(self):
@@ -76,18 +75,6 @@ class LabelBase(object):
     label = property(_get_label, _set_label)
     text = property(_get_label, _set_label)
 
-    def _get_x(self):
-        return self.pos[0]
-    def _set_x(self, x):
-        self.pos = (x, self.pos[1])
-    x = property(_get_x, _set_x)
-
-    def _get_y(self):
-        return self.pos[1]
-    def _set_y(self, y):
-        self.pos = (self.pos[0], y)
-    y = property(_get_y, _set_y)
-
     @property
     def content_width(self):
         if self.texture is None:
@@ -101,34 +88,11 @@ class LabelBase(object):
         return self.texture.height
 
 
-Label = None
-
-if 'cairo' in pymt.options['text']:
-    try:
-        import text_cairo
-        Label = text_cairo.LabelCairo
-        pymt.pymt_logger.info('Text: use Cairo as text provider.')
-    except:
-        pymt.pymt_logger.debug('Text: Unable to use Cairo as text provider.')
-
-if Label is None and 'pygame' in pymt.options['text']:
-    try:
-        import text_pygame
-        Label = text_pygame.LabelPygame
-        pymt.pymt_logger.info('Text: use Pygame as text provider.')
-    except:
-        pymt.pymt_logger.debug('Text: Unable to use Pygame as text provider.')
-
-if Label is None and 'pyglet' in pymt.options['text']:
-    try:
-        import text_pyglet
-        Label = text_pyglet.LabelPyglet
-        pymt.pymt_logger.info('Text: use Pyglet as text provider.')
-    except:
-        pymt.pymt_logger.debug('Text: Unable to use Pyglet as text provider.')
-
-# No label provider ?
-if Label is None:
-    pymt.pymt_logger.critical('No text provider found (configuration is %s)' %
-        str(pymt.options['text']))
+# Load the appropriate provider
+Label = core_select_lib('text', (
+    ('pil', 'text_pil', 'LabelPIL'),
+    ('cairo', 'text_cairo', 'LabelCairo'),
+    ('pygame', 'text_pygame', 'LabelPygame'),
+    ('pyglet', 'text_pyglet', 'LabelPyglet')
+))
 

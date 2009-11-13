@@ -19,7 +19,7 @@ pygame.font.init()
 
 class LabelPygame(LabelBase):
     def _get_font_id(self):
-        return '|'.join([str(self.options[x]) for x \
+        return '|'.join([unicode(self.options[x]) for x \
             in ('font_size', 'font_name', 'bold', 'italic')])
 
     def _get_font(self):

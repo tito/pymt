@@ -69,7 +69,7 @@ class MTButton(MTWidget):
 
         self.button_dl      = GlDisplayList()
         self._state         = ('normal', 0)
-        self._label         = str(kwargs.get('label'))
+        self._label         = unicode(kwargs.get('label'))
         self.label_obj      = None
 
         super(MTButton, self).__init__(**kwargs)
@@ -93,7 +93,7 @@ class MTButton(MTWidget):
     def get_label(self):
         return self._label
     def set_label(self, text):
-        self._label = str(text)
+        self._label = unicode(text)
         self.label_obj.text = self._label
         self.button_dl.clear()
     label = property(get_label, set_label)

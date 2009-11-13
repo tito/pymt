@@ -95,7 +95,7 @@ class ImageLoader(object):
         return im
 
 
-class Image(object):
+class Image(pymt.BaseObject):
     '''Load an image, and store the size and texture.
     
     :Parameters:
@@ -109,29 +109,20 @@ class Image(object):
             X anchor
         `anchor_y` : float, default to 0
             Y anchor
-        `pos` : list, default to (0, 0)
-            Position of image
-        `x` : float
-            X position
-        `y` : float
-            Y position
     '''
 
     copy_attributes = ('opacity', 'scale', 'anchor_x', 'anchor_y', '_width',
                        '_height', 'texture', '_filename', 'x', 'y', 'color')
 
     def __init__(self, arg, **kwargs):
+        super(Image, self).__init__(**kwargs)
         self._filename  = None
-        self._width     = 0
-        self._height    = 0
         self.texture    = None
         self.image      = None
         self.opacity    = 1.
         self.scale      = 1.
         self.anchor_x   = 0
         self.anchor_y   = 0
-        self.x          = 0
-        self.y          = 0
         self.color      = [1, 1, 1, 1]
 
         if type(arg) == Image:
@@ -186,33 +177,6 @@ class Image(object):
     filename = property(_get_filename, _set_filename,
             doc='Get/set the filename of image')
 
-    def _get_width(self):
-        return self._width * self.scale
-    def _set_width(self, value):
-        self._width = value
-    width = property(_get_width, _set_width)
-
-    def _get_height(self):
-        return self._height * self.scale
-    def _set_height(self, value):
-        self._height = value
-    height = property(_get_height, _set_height)
-
-    def _get_size(self):
-        return (self.width, self.height)
-    def _set_size(self, size):
-        self.width, self.height = size
-    size = property(_get_size, _set_size,
-            doc='tuple(width, height): width/height of image')
-
-    def _set_pos(self, pos):
-        if self.x == pos[0] and self.y == pos[1]:
-            return
-        self.x, self.y = pos
-    def _get_pos(self):
-        return (self.x, self.y)
-    pos = property(_get_pos, _set_pos, doc='tuple(x, y): position of widget')
-
     @pymt.deprecated
     def get_texture(self):
         '''Retreive the texture of image
@@ -234,14 +198,14 @@ def load(filename):
 try:
     import img_pygame
     ImageLoader.register(img_pygame.ImageLoaderPygame)
-    pymt_logger.info('Image: register Pygame loader')
+    pymt_logger.info('Image: register <pygame> loader')
 except:
     pass
 
 try:
     import img_pil
     ImageLoader.register(img_pil.ImageLoaderPIL)
-    pymt_logger.info('Image: register PIL loader')
+    pymt_logger.info('Image: register <pil> loader')
 except:
     pass
 

@@ -171,8 +171,8 @@ video {
 .video-timeline {
 	bg-color: rgba(100, 100, 100, 220);
 
-    color: rgb(255, 127, 0, 200);
-    slider-color: rgb(255, 127, 0, 200);
+    color: rgba(255, 127, 0, 200);
+    slider-color: rgba(255, 127, 0, 200);
 
     draw-slider-alpha-background: 1;
     slider-alpha-background: 1 1 .6 .6;

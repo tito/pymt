@@ -5,6 +5,7 @@ Label: a simple text label
 from __future__ import with_statement
 __all__ = ['MTLabel']
 
+import pymt
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
@@ -17,9 +18,9 @@ class MTLabel(MTWidget):
         `label`: string, default is ''
             Text of label
         `anchor_x`: string
-            X anchor of label, refer to pyglet.label.anchor_x documentation
+            X anchor of label, can be one of ('left', 'center', 'right')
         `anchor_y`: string
-            Y anchor of label, refer to pyglet.label.anchor_x documentation
+            Y anchor of label, can be one of ('top', 'middle', 'bottom')
         `font_name`: string, default is ''
             Font name of label
         `font_size`: integer, default is 10

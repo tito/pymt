@@ -26,11 +26,25 @@ class BaseObject(object):
 
     def _get_width(self):
         return self._size[0]
-    width = property(lambda self: self._get_width(), doc='Object width')
+    def _set_width(self, w):
+        if self._size[0] == w:
+            return False
+        self._size = (w, self._size[1])
+        return True
+    width = property(lambda self: self._get_width(),
+                     lambda self, x: self._set_width(x),
+                     doc='Object width')
 
     def _get_height(self):
         return self._size[1]
-    height = property(lambda self: self._get_height(), doc='Object height')
+    def _set_height(self, h):
+        if self._size[1] == h:
+            return False
+        self._size = (self._size[0], h)
+        return True
+    height = property(lambda self: self._get_height(),
+                     lambda self, x: self._set_height(x),
+                      doc='Object height')
 
     def _get_pos(self):
         return self._pos
@@ -52,7 +66,7 @@ class BaseObject(object):
     def _get_y(self):
         return self._pos[1]
     def _set_y(self, y):
-        self.pos = (y, self.y)
+        self.pos = (self.x, y)
     y = property(lambda self: self._get_y(),
                  lambda self, x: self._set_y(x),
                  doc = 'Object Y position')

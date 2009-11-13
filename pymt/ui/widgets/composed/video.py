@@ -10,7 +10,6 @@ from __future__ import with_statement
 __all__ = ('MTVideo', 'MTSimpleVideo')
 
 import os
-import pyglet
 import pymt
 from OpenGL.GL import *
 from ...factory import MTWidgetFactory

@@ -15,13 +15,13 @@ if __name__ == '__main__':
 
     m = MTWidget()
 
-    v = MTVideoBase(filename='super-fly.avi')
-    v.video.play()
-    v.video.volume = 0.1
+    v = MTVideo(filename='super-fly.avi')
+    v.player.play()
+    v.player.volume = 0.1
     m.add_widget(v)
 
-    v = MTVideoBase(filename='http://samples.mplayerhq.hu/MPEG-4/MP4_with_ttxtSUB/1Video_2Audio_2SUBs(timed%20text%20streams).mp4')
-    v.video.play()
+    v = MTVideo(filename='http://samples.mplayerhq.hu/MPEG-4/MP4_with_ttxtSUB/1Video_2Audio_2SUBs(timed%20text%20streams).mp4')
+    v.player.play()
     m.add_widget(v)
 
     runTouchApp(m)

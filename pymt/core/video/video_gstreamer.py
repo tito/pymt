@@ -56,6 +56,7 @@ class VideoGStreamer(VideoBase):
         if self._pipeline is None:
             return
         self._pipeline.set_state(gst.STATE_NULL)
+        self._pipeline.get_state() # block until the null is ok
         self._pipeline = None
         self._decoder = None
         self._videosink = None
@@ -108,6 +109,10 @@ class VideoGStreamer(VideoBase):
 
         # set to paused, for loading the file, and get the size information.
         self._pipeline.set_state(gst.STATE_PAUSED)
+
+        # be sync if asked
+        if self._async == False:
+            self._pipeline.get_state()
 
     def _gst_new_pad(self, dbin, pad, *largs):
         # a new pad from decoder ?

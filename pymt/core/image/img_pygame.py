@@ -5,7 +5,7 @@ Pygame: Pygame image loader
 __all__ = ('ImageLoaderPygame', )
 
 import pymt
-from . import ImageLoaderBase, ImageData
+from . import ImageLoaderBase, ImageData, ImageLoader
 
 try:
     import pygame
@@ -54,3 +54,5 @@ class ImageLoaderPygame(ImageLoaderBase):
             mode, data)
 
 
+# register
+ImageLoader.register(ImageLoaderPygame)

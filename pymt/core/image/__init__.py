@@ -7,6 +7,7 @@ from __future__ import with_statement
 __all__ = ('Image', 'ImageLoader', 'ImageData')
 
 import pymt
+from .. import core_register_libs
 from pymt.graphx import DO, gx_color, gx_blending, drawTexturedRectangle, set_color
 from pymt.logger import pymt_logger
 from pymt.texture import Texture, TextureRegion
@@ -195,17 +196,7 @@ def load(filename):
     return Image.load(filename)
 
 # load image loaders
-try:
-    import img_pygame
-    ImageLoader.register(img_pygame.ImageLoaderPygame)
-    pymt_logger.info('Image: register <pygame> loader')
-except:
-    pass
-
-try:
-    import img_pil
-    ImageLoader.register(img_pil.ImageLoaderPIL)
-    pymt_logger.info('Image: register <pil> loader')
-except:
-    pass
-
+core_register_libs('image', (
+    ('pygame', 'img_pygame'),
+    ('pil', 'img_pil'),
+))

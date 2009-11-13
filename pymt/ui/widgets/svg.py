@@ -5,7 +5,8 @@ __all__ = ['MTSvg', 'MTSvgButton']
 
 import os
 import squirtle
-import pymt
+
+from pymt import pymt_data_dir
 from ...logger import pymt_logger
 from ..factory import MTWidgetFactory
 from widget import MTWidget
@@ -46,7 +47,7 @@ class MTSvg(MTWidget):
 		self.svg = squirtle.SVG(filename=filename, rawdata=self.rawdata)
         except Exception, e:
             try:
-                svgpath = os.path.join(os.path.dirname(pymt.__file__), 'data/icons/svg')
+                svgpath = os.path.join(pymt_data_dir, 'icons/svg')
                 pymt_logger.exception('unable to load %s' % filename)
                 pymt_logger.warning('trying %s' % (svgpath + filename))
                 self.svg = squirtle.SVG(os.path.join(svgpath, filename))
@@ -83,7 +84,7 @@ class MTSvgButton(MTButton):
             self.svg = squirtle.SVG(filename)
         except Exception, e:
             try:
-                svgpath = os.path.join(os.path.dirname(pymt.__file__), 'data/icons/svg')
+                svgpath = os.path.join(pymt_data_dir, 'icons/svg')
                 pymt_logger.exception('unable to load %s' % filename)
                 pymt_logger.warning('trying %s' % (svgpath + filename))
                 self.svg = squirtle.SVG(os.path.join(svgpath, filename))

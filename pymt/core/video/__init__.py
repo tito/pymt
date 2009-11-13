@@ -18,15 +18,18 @@ class VideoBase(BaseObject):
             Color filter of the video (usually white.)
         `eos` : str
             Action to do when EOS is hit. Can be one of 'pause' or 'loop'
+        `async` : bool, default to True
+            Asynchronous loading (may be not supported by all providers)
     '''
 
     __slots__ = ('_wantplay', '_buffer', '_filename', '_texture', 'color',
-                 '_volume', 'eos', '_state')
+                 '_volume', 'eos', '_state', '_async')
 
     def __init__(self, **kwargs):
         kwargs.setdefault('filename', None)
         kwargs.setdefault('color', (1, 1, 1, 1))
         kwargs.setdefault('eos', 'pause')
+        kwargs.setdefault('async', True)
 
         super(VideoBase, self).__init__(**kwargs)
 
@@ -37,6 +40,7 @@ class VideoBase(BaseObject):
         self._volume        = 1.
         self._state         = ''
 
+        self._async         = kwargs.get('async')
         self.eos            = kwargs.get('eos')
         self.color          = kwargs.get('color')
         self.filename       = kwargs.get('filename')

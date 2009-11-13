@@ -6,7 +6,7 @@ from __future__ import with_statement
 __all__ = ['MTCircularSlider']
 
 from OpenGL.GL import *
-from ...graphx import drawSemiCircle,gx_matrix_identity,set_color
+from ...graphx import drawSemiCircle, gx_matrix_identity, set_color
 from ...vector import Vector
 from ..factory import MTWidgetFactory
 from widget import MTWidget
@@ -83,7 +83,7 @@ class MTCircularSlider(MTWidget):
             self.touchstarts.append(touch.id)
             self.last_touch = (touch.x - self.pos[0], touch.y - self.pos[1])
             self._value = (self.slider_fill_angle) * (self.max - self.min) / self.sweep_angle + self.min
-            self.calculate_angle()
+            self._calculate_angle()
             return True
 
     def on_touch_up(self, touch):
@@ -94,10 +94,10 @@ class MTCircularSlider(MTWidget):
         if self.collide_point(touch.x, touch.y) and touch.id in self.touchstarts:
             self.last_touch = (touch.x - self.pos[0], touch.y - self.pos[1])
             self._value = (self.slider_fill_angle) * (self.max - self.min) / self.sweep_angle + self.min
-            self.calculate_angle()
+            self._calculate_angle()
             return True
 
-    def calculate_angle(self):
+    def _calculate_angle(self):
         self.angle = Vector(self.radius_line).angle(self.last_touch)
         if self.angle<0:
             self.slider_fill_angle = self.angle+360
@@ -114,8 +114,12 @@ class MTCircularSlider(MTWidget):
             set_color(*self.style.get('slider-color'))
             drawSemiCircle((0,0),self.radius-self.thickness+self.padding,self.radius-self.padding,32,1,0,self.slider_fill_angle)
 
-    def set_initial_value(self,value):
+    def _get_value(self,value):
+        return self._value
+    def _set_value(self,value):
         self.slider_fill_angle = float(value)/float(100)*self.sweep_angle
         self._value = float(value)/float(100)*self.max
+        self._calculate_angle()
+    value = property(_get_value, _set_value, doc='Sets the current value of the slider')
 
 MTWidgetFactory.register('MTCircularSlider', MTCircularSlider)

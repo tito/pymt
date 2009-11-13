@@ -4,10 +4,22 @@ Texture: abstraction to handle GL texture, and region
 
 __all__ = ('Texture', 'TextureRegion')
 
+import re
 from OpenGL.GL import *
 from OpenGL.GL.NV.texture_rectangle import *
 from OpenGL.GL.ARB.texture_rectangle import *
 from OpenGL.extensions import hasGLExtension
+
+# for a specific bug in 3.0.0, about deletion of framebuffer.
+# same hack as FBO :(
+OpenGLversion = tuple(int(re.match('^(\d+)', i).groups()[0]) for i in OpenGL.__version__.split('.'))
+if OpenGLversion < (3, 0, 1):
+    try:
+        import numpy
+        have_numpy = True
+    except:
+        have_numpy = False
+
 
 def _nearest_pow2(v):
     # From http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
@@ -38,9 +50,21 @@ class Texture(object):
         self.id = id
 
     def __del__(self):
-        #glDeleteTextures(self.id)
-        # FIXME: no need to delete texture too ? pyopengl ??
-        pass
+        # try/except are here to prevent an error like this :
+        # Exception TypeError: "'NoneType' object is not callable"
+        # in <bound method Texture.__del__ of <pymt.texture.Texture
+        # object at 0x3a1acb0>> ignored
+        #
+        # It occured only when leaving the application.
+        # So, maybe numpy or pyopengl is unloaded, and have weird things happen.
+        #
+        try:
+            if OpenGLversion < (3, 0, 1) and have_numpy:
+                glDeleteTextures(numpy.array(self.id))
+            else:
+                glDeleteTextures(self.id)
+        except:
+            pass
 
     def flip_vertical(self):
         '''Flip tex_coords for vertical displaying'''
@@ -150,4 +174,6 @@ class TextureRegion(Texture):
         v2 = (y + height) / float(origin.height) * scale_v + origin_v1
         self.tex_coords = (u1, v1, u2, v1, u2, v2, u1, v2)
 
-
+    def __del__(self):
+        # don't use self of owner !
+        pass

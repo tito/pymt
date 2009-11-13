@@ -15,6 +15,7 @@ from radial import *
 from rectangle import *
 from scatter import *
 from slider import *
+from circularslider import *
 from stencilcontainer import *
 from svg import *
 from objectdisplay import *

@@ -129,7 +129,7 @@ class CameraBase(BaseObject):
 
 # Load the appropriate provider
 Camera = core_select_lib('camera', (
-    ('opencv', 'camera_opencv', 'CameraOpenCV'),
+    #('opencv', 'camera_opencv', 'CameraOpenCV'),
     ('gstreamer', 'camera_gstreamer', 'CameraGStreamer'),
-    ('videocapture', 'camera_videocapture', 'CameraVideoCapture'),
+    #('videocapture', 'camera_videocapture', 'CameraVideoCapture'),
 ))

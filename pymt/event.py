@@ -182,7 +182,7 @@ class EventDispatcher(object):
             n_handler_args = max(n_handler_args, n_args)
 
         # Allow default values to overspecify arguments
-        if (n_handler_args > n_args and 
+        if (n_handler_args > n_args and
             handler_defaults and
             n_handler_args - len(handler_defaults) <= n_args):
             n_handler_args = n_args
@@ -195,10 +195,47 @@ class EventDispatcher(object):
                     handler.func_code.co_firstlineno)
             else:
                 descr = repr(handler)
-            
+
             raise TypeError(
                 '%s event was dispatched with %d arguments, but '
                 'handler %s has an incompatible function signature' % 
                 (event_type, len(args), descr))
         else:
             raise
+
+    def event(self, *args):
+        """
+        A convenience decorator for event handlers.
+
+        There are two ways to use this decorator. The first is to bind onto a
+        defined event method::
+
+            @a.event
+            def on_event(self, *args):
+                # ...
+
+        Optionally, it can pass the event type as an argument and bind to an
+        arbitrary function provided that function has the correct parameters::
+
+            @a.event('on_event')
+            def foobar(self, *args):
+                # ...
+
+        """
+        if len(args) == 0: # @a.event()
+            def decorator(func):
+                name = func.__name__
+                self.set_handler(name, func)
+                return func
+            return decorator
+        elif inspect.isroutine(args[0]): # @a.event
+            func = args[0]
+            name = func.__name__
+            self.set_handler(name, func)
+            return args[0]
+        elif type(args[0]) in (str, unicode): # @a.event('on_event')
+            name = args[0]
+            def decorator(func):
+                self.set_handler(name, func)
+                return func
+            return decorator

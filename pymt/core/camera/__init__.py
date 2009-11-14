@@ -5,6 +5,9 @@ Camera: Backend for acquiring camera image
 __all__ = ('CameraBase', 'Camera')
 
 import pymt
+from OpenGL.GL import GL_RGB, glEnable, glBindTexture, glTexSubImage2D, \
+        glTexParameteri, GL_RGBA, GL_UNSIGNED_BYTE, GL_TEXTURE_MAG_FILTER, \
+        GL_TEXTURE_MIN_FILTER, GL_NEAREST
 from abc import ABCMeta, abstractmethod
 from .. import core_select_lib
 from ...baseobject import BaseObject
@@ -95,23 +98,34 @@ class CameraBase(BaseObject):
     def _copy_to_gpu(self):
         '''Copy the the buffer into the texture'''
         #FIXME: use a texture method for that
-        target = get_texture_target(self._texture)
+        if self._texture is None:
+            pymt.pymt_logger.debug('Video: copy_to_gpu() failed, _texture is None !')
+            return
+        '''
+        target = pymt.get_texture_target(self._texture)
         glEnable(target);
-        glBindTexture(target, get_texture_id(self._texture));
+        glBindTexture(target, pymt.get_texture_id(self._texture));
         glTexImage2D(target, 0, GL_RGBA, self.resolution[0],self.resolution[1],
                      0, self._format, GL_UNSIGNED_BYTE, self._buffer);
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glBindTexture(target, 0);
+        '''
+        target = pymt.get_texture_target(self._texture)
+        pymt.set_texture(self._texture)
+        glTexSubImage2D(target, 0, 0, 0,
+                        self._texture.width, self._texture.height, GL_RGB,
+                        GL_UNSIGNED_BYTE, self._buffer)
+        self._buffer = None
 
     def draw(self):
         '''Draw the current image camera'''
-        try:
-            set_color(*self.color)
-            drawTexturedRectangle(self._texture, pos=self.pos, size=self.size)
-        except:
-            drawRectangle(pos=self.pos, size=self.size)
-            drawLabel('No Camera :(', pos=(self.width/2, self.height/2))
+        if self._texture:
+            pymt.set_color(*self.color)
+            pymt.drawTexturedRectangle(self._texture, pos=self.pos, size=self.size)
+        else:
+            pymt.drawRectangle(pos=self.pos, size=self.size)
+            pymt.drawLabel('No Camera :(', pos=(self.width/2, self.height/2))
 
 # Load the appropriate provider
 Camera = core_select_lib('camera', (

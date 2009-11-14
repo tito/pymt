@@ -6,6 +6,7 @@ __all__ = ('CameraGStreamer', )
 
 import pymt
 from . import CameraBase
+from OpenGL.GL import GL_RGB
 
 try:
     import gst
@@ -28,7 +29,9 @@ class CameraGStreamer(CameraBase):
         kwargs.setdefault('video_src', 'v4l2src')
         self._pipeline = None
         self._camerasink = None
-        super(MTGstCamera, self).__init__(**kwargs)
+        self._decodebin = None
+        self._texturesize = None
+        super(CameraGStreamer, self).__init__(**kwargs)
 
     def init_camera(self):
         # TODO: This does not work when camera resolution is resized at runtime...
@@ -37,19 +40,26 @@ class CameraGStreamer(CameraBase):
             self._pipeline = None
 
         GL_CAPS = 'video/x-raw-rgb,red_mask=(int)0xff0000,green_mask=(int)0x00ff00,blue_mask=(int)0x0000ff'
-        self._pipeline = gst.parse_launch('%s ! ffmpegcolorspace ! appsink name=camerasink emit-signals=True caps=%s' % (self.video_src, GL_CAPS) )
+        self._pipeline = gst.parse_launch('%s ! decodebin name=decoder ! ffmpegcolorspace ! appsink name=camerasink emit-signals=True caps=%s' % (self.video_src, GL_CAPS) )
         self._camerasink = self._pipeline.get_by_name('camerasink')
         self._camerasink.connect('new-buffer', self._gst_new_buffer)
+        self._decodebin = self._pipeline.get_by_name('decoder')
 
         if self._camerasink and not self.stopped:
-            self.start_capture()
+            self.start()
 
-    def _gst_new_buffer(self):
+    def _gst_new_buffer(self, *largs):
         self._format = GL_RGB
-        self._buffer = self._camerasink.emit('pull-buffer')
-        if self._texture is None:
-            # try to get resolution
-            self._pipeline.src_pads()
+        frame = self._camerasink.emit('pull-buffer')
+        if frame is None:
+            return
+        self._buffer = frame.data
+        if self._texturesize is None:
+            # try to get the camera image size
+            for x in self._decodebin.src_pads():
+                for cap in x.get_caps():
+                    self._texturesize = (cap['width'], cap['height'])
+                    return
 
     def start(self):
         self.stopped = False
@@ -60,8 +70,10 @@ class CameraGStreamer(CameraBase):
         self._pipeline.set_state(gst.STATE_PAUSED)
 
     def update(self):
-        self.frame = self._camerasink.emit('pull-buffer')
-        self.format = GL_RGB
-
-        self.buffer = self.frame.data
-        self.copy_buffer_to_gpu()
+        if self._buffer is None:
+            return
+        self._copy_to_gpu()
+        if self._texture is None and self._texturesize is not None:
+            w, h = self._texturesize
+            self._texture = pymt.Texture.create(w, h, format=GL_RGB)
+            self._texture.flip_vertical()

@@ -23,6 +23,7 @@ options = {
     'video': ('gstreamer', ),
     'audio': ('pygame', ),
     'image': ('pil', 'pygame'),
+    'camera': ('opencv', 'gstreamer', 'videocapture'),
 }
 
 # Read environment

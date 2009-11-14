@@ -1,0 +1,121 @@
+'''
+Camera: Backend for acquiring camera image
+'''
+
+__all__ = ('CameraBase', 'Camera')
+
+import pymt
+from abc import ABCMeta, abstractmethod
+from .. import core_select_lib
+from ...baseobject import BaseObject
+from ...graphx import set_color, drawRectangle, drawTexturedRectangle, drawLabel
+
+class CameraBase(BaseObject):
+    '''Abstract Camera Widget class.
+    
+    Concrete camera classes must implement initializaation and
+    frame capturing to buffer that can be uploaded to gpu.
+
+    :Parameters:
+        `size` : tuple (int, int)
+            Size at which the image is drawn. If no size is specified,
+            it defaults to resolution of the camera image.
+        `resolution` : tuple (int, int)
+            Resolution to try to request from the camera.
+            Used in the gstreamer pipeline by forcing the appsink caps
+            to this resolution. If the camera doesnt support the resolution
+            a negotiation error might be thrown.
+    '''
+
+    __metaclass__ = ABCMeta
+
+    def __init__(self, **kwargs):
+        kwargs.setdefault('stopped', False)
+        kwargs.setdefault('resolution', (640,480))
+        kwargs.setdefault('video_src', 0)
+        kwargs.setdefault('color', (1, 1, 1, 1))
+
+        self.color          = kwargs.get('color')
+        self.stopped        = kwargs.get('stopped')
+        self._resolution    = kwargs.get('resolution')
+        self._video_src     = kwargs.get('video_src')
+        self._buffer        = None
+        self._format        = GL_RGB
+        self._texture       = None
+        self.capture_device = None
+        kwargs.setdefault('size', self._resolution)
+
+        super(CameraBase, self).__init__(**kwargs)
+
+        self.init_camera()
+
+        if not self.stopped:
+            self.start()
+
+
+    def _set_resolution(self, res):
+        self._resolution = res
+        self.init_camera()
+    def _get_resolution(self):
+        return self._resolution
+    resolution = property(lambda self: self._get_resolution(),
+                lambda self, x: self._set_resolution(x),
+                doc='Resolution of camera capture (width, height)')
+
+    def _set_video_src(self, src):
+        self._video_src = src
+        self.init_camera()
+    def _get_video_src(self):
+        return self._video_src
+    video_src = property(lambda self: self._get_video_src(),
+                lambda self, x: self._set_video_src(x),
+                doc='Source of the camera')
+
+    def _get_texture(self):
+        return self._texture
+    texture = property(lambda self: self._get_texture(),
+                doc='Return the camera texture with the latest capture')
+
+    @abstractmethod
+    def init_camera(self):
+        pass
+
+    @abstractmethod
+    def update(self):
+        pass
+
+    @abstractmethod
+    def start(self):
+        self.stopped = False
+
+    @abstractmethod
+    def stop(self):
+        self.stopped = True
+
+    def _copy_to_gpu(self):
+        '''Copy the the buffer into the texture'''
+        #FIXME: use a texture method for that
+        target = get_texture_target(self._texture)
+        glEnable(target);
+        glBindTexture(target, get_texture_id(self._texture));
+        glTexImage2D(target, 0, GL_RGBA, self.resolution[0],self.resolution[1],
+                     0, self._format, GL_UNSIGNED_BYTE, self._buffer);
+        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glBindTexture(target, 0);
+
+    def draw(self):
+        '''Draw the current image camera'''
+        try:
+            set_color(*self.color)
+            drawTexturedRectangle(self._texture, pos=self.pos, size=self.size)
+        except:
+            drawRectangle(pos=self.pos, size=self.size)
+            drawLabel('No Camera :(', pos=(self.width/2, self.height/2))
+
+# Load the appropriate provider
+Camera = core_select_lib('camera', (
+    ('opencv', 'camera_opencv', 'CameraOpenCV'),
+    ('gstreamer', 'camera_gstreamer', 'CameraGStreamer'),
+    ('videocapture', 'camera_videocapture', 'CameraVideoCapture'),
+))

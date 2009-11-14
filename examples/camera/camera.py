@@ -264,7 +264,7 @@ class MTVideoCaptureCamera(MTCameraBase):
 
 if __name__ == "__main__":
     w = MTWindow()
-    c = MTGstCamera()
+    c = MTOpenCVCamera()
     s = MTScatterWidget(size=c.size)
     s.add_widget(c)
     w.add_widget(s)

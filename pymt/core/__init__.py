@@ -58,6 +58,7 @@ def core_register_libs(category, libs):
 
 
 from audio import *
+from camera import *
 from image import *
 from text import *
 from video import *

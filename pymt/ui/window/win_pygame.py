@@ -68,6 +68,11 @@ class MTWindowPygame(BaseWindow):
         super(MTWindowPygame, self).flip()
 
     def mainloop(self):
+
+        # don't known why, but pygame required a resize event
+        # for opengl, before mainloop... window reinit ?
+        self.dispatch_event('on_resize', *self.size)
+
         evloop = getEventLoop()
         while not evloop.quit:
 

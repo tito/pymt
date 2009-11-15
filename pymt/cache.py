@@ -71,7 +71,7 @@ class Cache:
         '''
         try:
             Cache._objects[category][key]['lastaccess'] = getClock().get_time()
-            return Cache._objects[category][key]
+            return Cache._objects[category][key]['object']
         except:
             return None
 

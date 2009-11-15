@@ -53,10 +53,10 @@ def drawLabel(label, pos=(0,0), **kwargs):
     id = '%s##%s' % (label, str(kwargs))
 
     # get or store
-    temp_label = Cache.get('drawlabel', id)
+    temp_label = pymt.Cache.get('drawlabel', id)
     if not temp_label:
         temp_label = pymt.Label(label, **kwargs)
-        Cache.append('drawlabel', id, temp_label)
+        pymt.Cache.append('drawlabel', id, temp_label)
 
     # draw
     temp_label.x, temp_label.y = pos

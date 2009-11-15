@@ -114,7 +114,7 @@ class CameraBase(BaseObject):
         target = pymt.get_texture_target(self._texture)
         pymt.set_texture(self._texture)
         glTexSubImage2D(target, 0, 0, 0,
-                        self._texture.width, self._texture.height, GL_RGB,
+                        self._texture.width, self._texture.height, self._format,
                         GL_UNSIGNED_BYTE, self._buffer)
         self._buffer = None
 
@@ -129,7 +129,7 @@ class CameraBase(BaseObject):
 
 # Load the appropriate provider
 Camera = core_select_lib('camera', (
-    #('opencv', 'camera_opencv', 'CameraOpenCV'),
     ('gstreamer', 'camera_gstreamer', 'CameraGStreamer'),
+    ('opencv', 'camera_opencv', 'CameraOpenCV'),
     #('videocapture', 'camera_videocapture', 'CameraVideoCapture'),
 ))

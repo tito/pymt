@@ -87,11 +87,9 @@ class CameraBase(BaseObject):
     def update(self):
         pass
 
-    @abstractmethod
     def start(self):
         self.stopped = False
 
-    @abstractmethod
     def stop(self):
         self.stopped = True
 

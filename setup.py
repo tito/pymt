@@ -14,6 +14,7 @@ setup(
     license='GPL',
     packages=[
         'pymt',
+        'pymt.audio',
         'pymt.graphx',
         'pymt.core',
         'pymt.core.image',

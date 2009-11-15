@@ -21,20 +21,8 @@ from paint import *
 from statement import *
 from colors import *
 
-label_cache = {}
-label_cache_purge = 2.
-label_cache_lastpurge = 0
-def _purge_drawLabel():
-    '''Purge label cache used for speedup drawLabel() call.
-    By default, label are purged after 2s idle.
-    '''
-    global label_cache, label_cache_purge, label_cache_lastpurge
-    label_cache_lastpurge = pymt.getClock().get_time()
-    for label in label_cache.keys():
-        tmp, dt = label_cache[label]
-        if label_cache_lastpurge - dt > label_cache_purge:
-            del label_cache[label]
-
+# create a cache for label
+pymt.Cache.register('drawlabel', timeout=1., limit=100)
 def drawLabel(label, pos=(0,0), **kwargs):
     '''Draw a label on the window.
 
@@ -52,7 +40,6 @@ def drawLabel(label, pos=(0,0), **kwargs):
         Use only for debugging, it's a performance killer function.
         The label is recreated each time the function is called !
     '''
-    global label_cache
     kwargs.setdefault('font_size', 16)
     kwargs.setdefault('center', True)
     if kwargs.get('center'):
@@ -62,17 +49,18 @@ def drawLabel(label, pos=(0,0), **kwargs):
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
     del kwargs['center']
-    now = pymt.getClock().get_time()
-    if not label in label_cache:
+    # create an uniq id for this label
+    id = '%s##%s' % (label, str(kwargs))
+
+    # get or store
+    temp_label = Cache.get('drawlabel', id)
+    if not temp_label:
         temp_label = pymt.Label(label, **kwargs)
-    else:
-        temp_label, last_access = label_cache[label]
-    label_cache[label] = (temp_label, now)
+        Cache.append('drawlabel', id, temp_label)
+
+    # draw
     temp_label.x, temp_label.y = pos
     temp_label.draw()
-    # call purging every seconds
-    if now - label_cache_lastpurge > 1:
-        _purge_drawLabel()
     return temp_label.content_width
 
 

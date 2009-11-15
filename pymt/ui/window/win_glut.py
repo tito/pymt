@@ -19,24 +19,28 @@ class MTWindowGlut(BaseWindow):
     def create_window(self):
         global glut_window
         if glut_window is None:
-            # Initialize GLUT
-            pymt_logger.debug('Initializing GLUT...')
+
+            # for shadow window, make it invisible
+            if self.shadow:
+                pymt_logger.debug('Set next window as Shadow window (1x1)')
+                glutInitWindowPosition(0, 0)
+                glutInitWindowSize(1, 1)
+
+            # init GLUT !
+            pymt_logger.debug('GLUT initialization')
             glutInit('')
             glutInitDisplayMode(
                 GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH |
                 GLUT_MULTISAMPLE | GLUT_STENCIL | GLUT_ACCUM)
 
-        # If this instance is a shadow, initialize it
-        if self.shadow:
-            pymt_logger.debug('Creating Shadow Window (1x1)...')
-            glutInitWindowPosition(0, 0)
-            glutInitWindowSize(1, 1)
-            glut_window = glutCreateWindow('shadow')
-            glutHideWindow()
-        else:
-            pymt_logger.debug('Create Main Window...')
-            glutInitWindowSize(self.width, self.height)
+            # create the window
+            pymt_logger.debug('Create the window (shadow=%s)' % str(self.shadow))
             glut_window = glutCreateWindow('pymt')
+
+            # hide the shadow...
+            if self.shadow:
+                # FIXME seem not working... why ??
+                glutHideWindow()
 
         super(MTWindowGlut, self).create_window()
 
@@ -99,7 +103,6 @@ class MTWindowGlut(BaseWindow):
 
         # install handler
         glutDisplayFunc(_glut_redisplay)
-        self.on_resize(self.width, self.height) # XXX kind of hackish
 
         # run main loop
         glutMainLoop()

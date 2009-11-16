@@ -20,16 +20,19 @@ class VideoBase(BaseObject):
             Action to do when EOS is hit. Can be one of 'pause' or 'loop'
         `async` : bool, default to True
             Asynchronous loading (may be not supported by all providers)
+        `autoplay` : bool, default to False
+            Auto play the video at init
     '''
 
     __slots__ = ('_wantplay', '_buffer', '_filename', '_texture', 'color',
-                 '_volume', 'eos', '_state', '_async')
+                 '_volume', 'eos', '_state', '_async', '_autoplay')
 
     def __init__(self, **kwargs):
         kwargs.setdefault('filename', None)
         kwargs.setdefault('color', (1, 1, 1, 1))
         kwargs.setdefault('eos', 'pause')
         kwargs.setdefault('async', True)
+        kwargs.setdefault('autoplay', False)
 
         super(VideoBase, self).__init__(**kwargs)
 
@@ -40,10 +43,14 @@ class VideoBase(BaseObject):
         self._volume        = 1.
         self._state         = ''
 
+        self._autoplay      = kwargs.get('autoplay')
         self._async         = kwargs.get('async')
         self.eos            = kwargs.get('eos')
         self.color          = kwargs.get('color')
         self.filename       = kwargs.get('filename')
+
+        if self._autoplay:
+            self.play()
 
     def __del__(self):
         self.unload()
@@ -116,6 +123,7 @@ class VideoBase(BaseObject):
     def update(self):
         '''Update the video content to texture.
         Must be called every frame, before draw.'''
+        pass
 
     def draw(self):
         '''Draw the current video on screen'''

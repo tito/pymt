@@ -72,3 +72,9 @@ class BaseObject(object):
     y = property(lambda self: self._get_y(),
                  lambda self, x: self._set_y(x),
                  doc = 'Object Y position')
+
+    def update(self):
+        pass
+
+    def draw(self):
+        pass

@@ -9,6 +9,10 @@ from . import CameraBase
 from OpenGL.GL import GL_RGB
 
 try:
+    import pygst
+    if not hasattr(pygst, '_gst_already_checked'):
+        pygst.require('0.10')
+        pygst._gst_already_checked = True
     import gst
 except:
     raise

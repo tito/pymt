@@ -31,7 +31,13 @@ class LoggerHandler:
         }
 
     def format_message(self, message):
-        return message.replace("\n", '<br/>').replace("\t", '&nbsp;&nbsp;')
+        for pattern, replace in (
+            ("\n", '<br/>'),
+            ("\t", '&nbsp;&nbsp;'),
+            ('<', '&lt;'),
+            ('>', '&gt;')):
+            message = message.replace(pattern, replace)
+        return message
 
     def handle(self, record):
         color = '#000000'

@@ -3,6 +3,10 @@ VideoGStreamer: implementation of VideoBase with GStreamer
 '''
 
 try:
+    import pygst
+    if not hasattr(pygst, '_gst_already_checked'):
+        pygst.require('0.10')
+        pygst._gst_already_checked = True
     import gst
 except:
     raise

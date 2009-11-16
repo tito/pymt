@@ -11,12 +11,7 @@ from ...baseobject import BaseObject
 DEFAULT_FONT = 'Liberation Sans,Bitstream Vera Sans,Free Sans,Arial, Sans'
 
 class LabelBase(BaseObject):
-    __slots__ = ('options', '_data', 'texture', '_label', 'color')
-
-    options = {}
-    texture = None
-    color = (1, 1, 1, 1)
-    _label = None
+    __slots__ = ('options', 'texture', '_label', 'color')
 
     def __init__(self, label, **kwargs):
         kwargs.setdefault('font_size', 12)
@@ -31,8 +26,12 @@ class LabelBase(BaseObject):
 
         super(LabelBase, self).__init__(**kwargs)
 
-        self.options = kwargs
-        self.label = label
+        self._label     = None
+
+        self.color      = (1, 1, 1, 1)
+        self.options    = kwargs
+        self.texture    = None
+        self.label      = label
 
     def update(self):
         self.size = self.texture.size

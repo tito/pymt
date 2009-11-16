@@ -20,7 +20,10 @@ options = {
     'shadow_window': True,
     'window': ('pygame', 'glut'),
     'text': ('pil', 'cairo', 'pyglet', 'pygame'),
-    'video': ('gstreamer', )
+    'video': ('gstreamer', ),
+    'audio': ('pygame', ),
+    'image': ('pil', 'pygame'),
+    'camera': ('opencv', 'gstreamer', 'videocapture'),
 }
 
 # Read environment
@@ -109,6 +112,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     # no dependices at all
     from baseobject import *
     from exceptions import *
+    from cache import Cache
 
     # system dependices
     from utils import *

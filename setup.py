@@ -16,6 +16,8 @@ setup(
         'pymt',
         'pymt.graphx',
         'pymt.core',
+        'pymt.core.audio',
+        'pymt.core.camera',
         'pymt.core.image',
         'pymt.core.text',
         'pymt.core.video',

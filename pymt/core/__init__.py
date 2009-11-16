@@ -34,6 +34,31 @@ def core_select_lib(category, llist):
     pymt.pymt_logger.critical('%s: Unable to found a valuable provider !' %
         (category.capitalize()))
 
-from text import *
+
+def core_register_libs(category, libs):
+    category = category.lower()
+    for option, lib in libs:
+        try:
+            # module activated in config ?
+            if option not in pymt.options[category]:
+                pymt.pymt_logger.debug('%s: option <%s> ignored by config' %
+                    (category.capitalize(), option))
+                continue
+
+            # import module
+            mod = __import__(name='%s.%s' % (category, lib),
+                             globals=globals(),
+                             locals=locals(),
+                             fromlist=[lib], level=-1)
+
+        except:
+            pymt.pymt_logger.warning('%s: Unable to use <%s> as loader' %
+                (category.capitalize(), option))
+            pymt.pymt_logger.exception('')
+
+
+from audio import *
+from camera import *
 from image import *
+from text import *
 from video import *

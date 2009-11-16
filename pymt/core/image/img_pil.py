@@ -5,7 +5,7 @@ PIL: PIL image loader
 __all__ = ('ImageLoaderPIL', )
 
 import pymt
-from . import ImageLoaderBase, ImageData
+from . import ImageLoaderBase, ImageData, ImageLoader
 
 try:
     import PIL.Image
@@ -54,3 +54,5 @@ class ImageLoaderPIL(ImageLoaderBase):
         return ImageData(im.size[0], im.size[1],
             im.mode, im.tostring())
 
+# register
+ImageLoader.register(ImageLoaderPIL)

@@ -65,7 +65,7 @@ class MTFormLabel(MTAbstractFormWidget):
             opts['width'] = self.width
             print opts
 
-        self._label_obj = Label(**opts)
+        self._label_obj = Label(label=label, **opts)
         self.size = self._label_obj.content_width, self._label_obj.content_height
     label = property(_get_label, _set_label)
 

@@ -53,7 +53,7 @@ def getEventLoop():
 class TouchEventLoop(object):
     '''Main event loop. This loop handle update of input + dispatch event
     '''
-    def __init__(self, host='127.0.0.1', port=3333):
+    def __init__(self):
         super(TouchEventLoop, self).__init__()
         self.quit = False
         self.input_events = []

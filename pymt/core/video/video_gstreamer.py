@@ -3,8 +3,6 @@ VideoGStreamer: implementation of VideoBase with GStreamer
 '''
 
 try:
-    import pygst
-    pygst.require('0.10')
     import gst
 except:
     raise

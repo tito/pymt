@@ -77,6 +77,8 @@ class MTWidget(EventDispatcher):
             Format is: ('pos', ('size': {func=AnimationAlpha.sin}), )
 
     :Events:
+        `on_update` ()
+            Used to update the widget and his children.
         `on_draw` ()
             Used to draw the widget and his children.
         `on_mouse_press` (int x, int y, int button, int modifiers)
@@ -91,6 +93,10 @@ class MTWidget(EventDispatcher):
             Fired when a blob is moving
         `on_touch_up` (Touch touch)
             Fired when a blob disappear
+        `on_resize` (float width, float height)
+            Fired when widget is resized
+        `on_parent_resize` (float width, float height)
+            Fired when parent widget is resized
     '''
     visible_events = [
         'on_update',
@@ -147,6 +153,7 @@ class MTWidget(EventDispatcher):
         self._root_window_source    = None
 
         self.register_event_type('on_resize')
+        self.register_event_type('on_parent_resize')
         self.register_event_type('on_move')
 
         if kwargs.get('x'):
@@ -489,9 +496,12 @@ class MTWidget(EventDispatcher):
         else:
             super(MTWidget, self).__setattr__(name, value)
 
+    def on_parent_resize(self, w, h):
+        pass
+
     def on_resize(self, w, h):
         for c in self.children:
-            c.dispatch_event('on_resize', w, h)
+            c.dispatch_event('on_parent_resize', w, h)
 
     def on_move(self, x, y):
         for c in self.children:

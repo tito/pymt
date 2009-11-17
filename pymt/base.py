@@ -5,7 +5,7 @@ Base: Main event loop, provider creation, window management...
 __all__ = [
     'TouchEventLoop',
     'pymt_usage', 'runTouchApp', 'stopTouchApp',
-    'getFrameDt', 'getAvailableTouchs', 'getCurrentTouches'
+    'getFrameDt', 'getAvailableTouchs', 'getCurrentTouches',
     'getEventLoop',
     'touch_event_listeners',
     'pymt_providers',

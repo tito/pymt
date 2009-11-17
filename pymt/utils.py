@@ -3,7 +3,7 @@ Utils: generic toolbox
 '''
 
 __all__ = ['intersection', 'difference', 'curry', 'strtotuple',
-           'get_color_from_hex', 'get_color_for_pyglet',
+           'get_color_from_hex', 'get_color_for_pyglet', 'get_random_color',
            'is_color_transparent', 'boundary', 'connect',
            'deprecated']
 
@@ -64,6 +64,20 @@ def get_color_from_hex(s):
     if len(value) == 3:
         value.append(1)
     return value
+
+
+def get_random_color(alpha=1.0):
+    ''' Returns a random color (4 tuple)
+        optional arg:  alpha
+            default: alpha=1.0
+            if alpha == 'random' a random alpha value is generated
+    '''
+    from random import random
+    if alpha == 'random':
+        return [random(), random(), random(), random()]
+    else:
+        return [random(), random(), random(), alpha]
+
 
 def get_color_for_pyglet(c):
     '''Transform from pymt color to pyglet color'''

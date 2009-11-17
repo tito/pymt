@@ -5,7 +5,7 @@ Base: Main event loop, provider creation, window management...
 __all__ = [
     'TouchEventLoop',
     'pymt_usage', 'runTouchApp', 'stopTouchApp',
-    'getFrameDt', 'getAvailableTouchs',
+    'getFrameDt', 'getAvailableTouchs', 'getCurrentTouches'
     'getEventLoop',
     'touch_event_listeners',
     'pymt_providers',
@@ -34,9 +34,13 @@ def getFrameDt():
     global frame_dt
     return frame_dt
 
-def getAvailableTouchs():
+def getCurrentTouches():
     global touch_list
     return touch_list
+
+@pymt.deprecated
+def getAvailableTouchs():
+    return getCurrentTouches()
 
 def getWindow():
     global pymt_window

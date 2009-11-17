@@ -166,9 +166,6 @@ class TouchEventLoop(object):
 
         return self.quit
 
-    def start(self):
-        pass
-
     def run(self):
         while not self.quit:
             self.idle()

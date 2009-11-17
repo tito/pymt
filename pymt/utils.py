@@ -10,6 +10,7 @@ __all__ = ['intersection', 'difference', 'curry', 'strtotuple',
 import re
 import functools
 import warnings
+import logger
 
 def boundary(value, minvalue, maxvalue):
     '''Limit a value between a minvalue and maxvalue'''
@@ -87,14 +88,8 @@ def deprecated(func):
 
     @functools.wraps(func)
     def new_func(*args, **kwargs):
-        warnings.warn_explicit(
-            "Call to deprecated function %(funcname)s." % {
-                'funcname': func.__name__,
-            },
-            category=DeprecationWarning,
-            filename=func.func_code.co_filename,
-            lineno=func.func_code.co_firstlineno + 1
-        )
+        warning = "Call to deprecated function %s.  In %s, Line: %d." % (func.__name__, func.func_code.co_filename, func.func_code.co_firstlineno + 1 )
+        logger.pymt_logger.warn(warning)
         return func(*args, **kwargs)
     return new_func
 

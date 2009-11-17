@@ -22,7 +22,7 @@ import pymt
 from OpenGL.GL import *
 
 gl_displaylist_generate = False
-class GlDisplayList:
+class GlDisplayList(object):
     '''Abstraction to opengl display-list usage. Here is an example of usage
     ::
 
@@ -74,6 +74,10 @@ class GlDisplayList:
             return
         glCallList(self.dl)
 
+    def __unserialize_end__(self):
+        self.dl = glGenLists(1)
+        self.do_compile = False
+
 class DO:
     '''A way to do multiple action in with statement
     ::
@@ -94,7 +98,7 @@ class DO:
             item.__exit__(type, value, traceback)
 
 
-class GlBlending:
+class GlBlending(object):
     '''Abstraction to use blending ! Don't use directly this class.
     We've got an alias you can use ::
 
@@ -116,7 +120,7 @@ gx_blending = GlBlending()
 gx_alphablending = GlBlending(sfactor=GL_DST_COLOR, dfactor=GL_ONE_MINUS_SRC_ALPHA)
 
 
-class GlMatrix:
+class GlMatrix(object):
     '''Statement of glPushMatrix/glPopMatrix, designed to be use with "with" keyword.
 
     Alias: gx_matrix, gx_matrix_identity ::
@@ -143,7 +147,7 @@ class GlMatrix:
 gx_matrix = GlMatrix()
 gx_matrix_identity = GlMatrix(do_loadidentity=True)
 
-class GlEnable:
+class GlEnable(object):
     '''Statement of glEnable/glDisable, designed to be use with "with" keyword.
 
     Alias: gx_enable.
@@ -159,7 +163,7 @@ class GlEnable:
 
 gx_enable = GlEnable
 
-class GlBegin:
+class GlBegin(object):
     '''Statement of glBegin/glEnd, designed to be use with "with" keyword
 
     Alias: gx_begin.
@@ -175,7 +179,7 @@ class GlBegin:
 
 gx_begin = GlBegin
 
-class GlAttrib:
+class GlAttrib(object):
     '''Statement of glPushAttrib/glPopAttrib, designed to be use with "with" keyword
 
     Alias: gx_attrib.
@@ -191,7 +195,7 @@ class GlAttrib:
 
 gx_attrib = GlAttrib
 
-class GlColor:
+class GlColor(object):
     '''Statement of glPushAttrib/glPopAttrib on COLOR BUFFER + color,
     designed to be use with "with" keyword
 
@@ -215,7 +219,7 @@ class GlColor:
 
 gx_color = GlColor
 
-class GlTexture:
+class GlTexture(object):
     '''Statement of setting a texture
 
     Alias: gx_texture.

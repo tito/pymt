@@ -1,7 +1,22 @@
+'''
+Network serialization: a way to save and restore a widget tree
+
+Many method are available for subclass ::
+    * __serialize_start__() : called when serialization on the object start. if False, object will be not serialized
+    * __serialize_classname__() : may return the real classname to use
+    * __serialize_member__(member) : ask the value of a member, if None, the member will be skipped
+    * __serialize_end__() : end of serialization
+    * __unserialize_start__() : unserialization start
+    * __unserialize_end__() : end of unserialization
+
+'''
+
+
 import os
 os.environ['PYMT_SHADOW_WINDOW'] = '0'
 from pymt import *
 
+import pymt
 import inspect
 import new
 import xml.dom.minidom as x
@@ -9,6 +24,7 @@ import xml.dom.minidom as x
 builtinlist = (int, float, str, unicode, long,
                float, complex, bool)
 builtinliststr = map(lambda x: x.__name__, builtinlist)
+
 
 class NetworkShare:
 
@@ -21,14 +37,20 @@ class NetworkShare:
         elif type(value) in (list, tuple):
             v = doc.createElement(type(value).__name__)
             for element in value:
-                v.appendChild(self.serialize_value(doc, element))
+                c = self.serialize_value(doc, element)
+                if c is None:
+                    continue
+                v.appendChild(c)
             return v
         elif type(value) in (dict, ):
             v = doc.createElement(type(value).__name__)
             for key in value.keys():
+                c = self.serialize_value(doc, value[key])
+                if c is None:
+                    continue
                 node = doc.createElement('entry')
                 node.setAttribute('key', key)
-                node.appendChild(self.serialize_value(doc, value[key]))
+                node.appendChild(c)
                 v.appendChild(node)
             return v
         elif type(value) in builtinlist:
@@ -39,37 +61,97 @@ class NetworkShare:
         return v
 
     def serialize_subclass(self, doc, w):
-        # check if class hav(e already been serialized
+        # check if class have already been serialized
         classid = w.__hash__()
         if classid in self.maps:
             root = doc.createElement('refobject')
             root.setAttribute('classid', str(classid))
             return root
 
+        # inform object that serialization start
+        # object may return a list of attribute he want to serialize
+        members = None
+        try:
+            members = w.__serialize_start__()
+        except:
+            pymt.pymt_logger.debug('Missing __serialize_start__ for <%s>' % w.__class__.__name__)
+            pass
+
+        # skip this subclass ?
+        if members == False:
+            return
+        if type(members) not in (list, tuple):
+            members = inspect.getmembers(w)
+
+        # if class got a name for serialization ?
+        classname = w.__class__.__name__
+        try:
+            classname = w.__serialize_classname__()
+        except:
+            pass
+
+
         # ok, create the class
-        root = doc.createElement(w.__class__.__name__)
+        root = doc.createElement(classname)
         root.setAttribute('classid', str(classid))
+
         # add to maps
         self.maps[classid] = (w, root)
+
         # fill the class
-        for name, value in inspect.getmembers(w):
+        for name, value in members:
             if name.startswith('__'):
                 continue
+
+            # match name like _OBJNAME__value
+            v = name.split('_', 2)
+            if len(v) > 2 and v[2][0] == '_':
+                continue
+
+            # ignore instance
             if type(value) == new.instancemethod:
                 continue
+
+            # ignore constructed properties
+            if hasattr(w.__class__, name):
+                if type(getattr(w.__class__, name)) == property:
+                    continue
+
+            # ask to object about serialize the current member
+            try:
+                value = w.__serialize_member__(name)
+            except:
+                pymt.pymt_logger.debug('Missing __serialize_member__ for <%s>' % w.__class__.__name__)
+                value = getattr(w, name)
+            if value is None:
+                continue
+
             p = doc.createElement('prop')
             p.setAttribute('name', name)
             if value is not None:
-                value = self.serialize_value(doc, value)
-                p.appendChild(value)
+                try:
+                    value = self.serialize_value(doc, value)
+                except:
+                    print 'Error while serialize value for', w, name, value
+                    raise
+                if value is not None:
+                    p.appendChild(value)
             root.appendChild(p)
+
+        # inform object that serialization end
+        try:
+            w.__serialize_end__()
+        except:
+            pymt.pymt_logger.debug('Missing __serialize_end__ for <%s>' % w.__class__.__name__)
+            pass
 
         return root
 
     def serialize(self, w):
         doc = x.Document()
         root = self.serialize_subclass(doc, w)
-        doc.appendChild(root)
+        if root is not None:
+            doc.appendChild(root)
         return doc.toprettyxml()
 
 
@@ -80,18 +162,18 @@ class NetworkShare:
         ptype = node.nodeName
         ptypenode = node
 
-        if ptype is None:
+        if ptype in ('None', None):
             value = None
         elif ptype in builtinliststr:
             pvalue = node.getAttribute('value')
             if ptype == 'str':
-                s = '%s("%s")' % (ptype, pvalue.replace('"', '\"'))
+                value = str(pvalue)
             elif ptype == 'unicode':
-                s = '%s(u"%s")' % (ptype, pvalue.replace('"', '\"'))
+                value = unicode(pvalue)
             else:
                 s = '%s(%s)' % (ptype, pvalue)
-            # FIXME secure this
-            pvalue = eval(s)
+                # FIXME secure this
+                value = eval(s)
 
         elif ptype in ('list', 'tuple'):
             value = list()
@@ -122,15 +204,29 @@ class NetworkShare:
             value = self.unserialize_subclass(node)
         return value
 
+
     def unserialize_subclass(self, node):
-        print 'unserialize_subclass', node
 
         # get classid
         classid = node.getAttribute('classid')
 
         # search widget, and create
-        clsobj = MTWidgetFactory.get(node.nodeName)
+        try:
+            clsobj = MTWidgetFactory.get(node.nodeName)
+        except:
+            try:
+                # widget not found in factory ?
+                clsobj = globals()[node.nodeName]
+                print clsobj
+            except:
+                raise Exception('Unable to found a class for <%s>' % node.nodeName)
         cls = object.__new__(clsobj)
+
+        try:
+            cls.__unserialize_start__()
+        except:
+            pymt.pymt_logger.debug('Missing __unserialize_start__ for <%s>' % node.nodeName)
+            pass
 
         # set to map
         self.maps[classid] = cls
@@ -150,8 +246,13 @@ class NetworkShare:
                 valuenode = subchild
             if valuenode is not None:
                 value = self.unserialize_value(valuenode)
-            print 'update', cls, key, value
-            cls.__dict__.update({key: value})
+            cls.__setattr__(key, value)
+
+        try:
+            cls.__unserialize_end__()
+        except:
+            pymt.pymt_logger.debug('Missing __unserialize_end__ for <%s>' % node.nodeName)
+            pass
 
         return cls
 
@@ -161,9 +262,10 @@ class NetworkShare:
         return instance
 
 
-box = MTBoxLayout()
-box.add_widget(MTSlider(max=2000, value=500))
-box.add_widget(MTSlider(value=75, orientation='horizontal'))
+#box = MTBoxLayout()
+#box.add_widget(MTSlider(max=2000, value=500))
+#box.add_widget(MTSlider(value=75, orientation='horizontal'))
+box = MTButton(label='hello')
 
 data = NetworkShare()
 xml = data.serialize(box)
@@ -172,4 +274,6 @@ print xml
 
 data = NetworkShare()
 box = data.unserialize(xml)
+
 runTouchApp(box)
+

@@ -86,6 +86,29 @@ class LabelBase(BaseObject):
             return 0
         return self.texture.height
 
+    #
+    # Serialization
+    #
+    def __serialize_start__(self):
+        pass
+
+    def __serialize_end__(self):
+        pass
+
+    def __serialize_member__(self, member):
+        if member in ('texture', ):
+            return
+        return self.__getattribute__(member)
+
+    def __serialize_classname__(self):
+        return 'Label'
+
+    def __unserialize_start__(self):
+        pass
+
+    def __unserialize_end__(self):
+        self.update()
+
 
 # Load the appropriate provider
 Label = core_select_lib('text', (

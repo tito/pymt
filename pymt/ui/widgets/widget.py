@@ -467,5 +467,17 @@ class MTWidget(EventDispatcher):
             if arg.set_widget(self):
                 arg.start(self)
 
+    #
+    # Serialization part
+    #
+    def __serialize_start__(self):
+        pass
+
+    def __serialize_member__(self, member):
+        return self.__getattribute__(member)
+
+    def __serialize_end__(self):
+        pass
+
 # Register all base widgets
 MTWidgetFactory.register('MTWidget', MTWidget)

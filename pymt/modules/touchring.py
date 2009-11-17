@@ -2,7 +2,7 @@
 Show a circle under all touchs
 '''
 
-from pymt import MTWidget, set_color, drawCircle, getAvailableTouchs
+from pymt import MTWidget, set_color, drawCircle, getCurrentTouches
 
 class TouchRing(MTWidget):
     def __init__(self, **kwargs):
@@ -12,7 +12,7 @@ class TouchRing(MTWidget):
         self.bring_to_front()
 
     def draw(self):
-        for touch in getAvailableTouchs():
+        for touch in getCurrentTouches():
             if 'kinetic' in touch.profile:
                 set_color(1, 1, 1, .2)
             else:

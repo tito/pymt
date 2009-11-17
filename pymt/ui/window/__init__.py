@@ -15,7 +15,7 @@ import sys
 from OpenGL.GL import *
 import pymt
 from ...logger import pymt_logger
-from ...base import getAvailableTouchs, setWindow, touch_event_listeners
+from ...base import getCurrentTouches, setWindow, touch_event_listeners
 from ...clock import getClock
 from ...graphx import set_color, drawCircle, drawLabel
 from ...modules import pymt_modules
@@ -259,7 +259,7 @@ class BaseWindow(EventDispatcher):
         '''Compatibility for MouseTouch, drawing a little red circle around
         under each mouse touches.'''
         set_color(0.8, 0.2, 0.2, 0.7)
-        for t in [x for x in getAvailableTouchs() if x.device == 'mouse']:
+        for t in [x for x in getCurrentTouches() if x.device == 'mouse']:
             drawCircle(pos=(t.x, t.y), radius=10)
 
     def to_widget(self, x, y):
@@ -401,7 +401,7 @@ class MTDisplay(MTWidget):
     def draw(self):
         '''Draw a circle under every touches'''
         set_color(*self.touch_color)
-        for touch in getAvailableTouchs():
+        for touch in getCurrentTouches():
             drawCircle(pos=(touch.x, touch.y), radius=self.radius)
 
 # Searching the best provider

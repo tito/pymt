@@ -196,7 +196,7 @@ class MTGestureDetector(MTGestureWidget):
         self.inactivity_timeout = 5
 
     def draw(self):
-        if len(getAvailableTouchs()):
+        if len(getCurrentTouches()):
             self.inactivity = 0
             return
         self.inactivity += getFrameDt()

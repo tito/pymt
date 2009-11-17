@@ -11,7 +11,7 @@ import sys
 import os
 from ...event import EventDispatcher
 from ...logger import pymt_logger
-from ...base import getAvailableTouchs
+from ...base import getCurrentTouches
 from ...input import Touch
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory

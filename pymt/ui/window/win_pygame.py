@@ -29,15 +29,8 @@ class MTWindowPygame(BaseWindow):
         super(MTWindowPygame, self).__init__(**kwargs)
 
     def create_window(self):
-
-        if self.shadow:
-            pymt_logger.debug('Set next window as Shadow window (1x1)')
-            self.flags |= pygame.RESIZABLE
-            self._pygame_set_mode((1, 1))
-        else:
-            self.flags &= ~pygame.RESIZABLE
-
-        pymt_logger.debug('Create the window (shadow=%s)' % str(self.shadow))
+        self.flags &= ~pygame.RESIZABLE
+        self._pygame_set_mode((1, 1))
         pygame.display.set_caption('pymt')
 
         super(MTWindowPygame, self).create_window()
@@ -51,15 +44,13 @@ class MTWindowPygame(BaseWindow):
         super(MTWindowPygame, self).configure(params)
 
     def close(self):
-        global glut_window
-        if glut_window:
-            glutDestroyWindow(glut_window)
-            glut_window = None
-        super(MTWindowPygame, self).close()
+        import sys
+        sys.exit(0)
 
     def on_keyboard(self, key, scancode=None, unicode=None):
         if key == 27:
             stopTouchApp()
+            self.close()  #not sure what to do here
             return True
         super(MTWindowPygame, self).on_keyboard(key, scancode, unicode)
 
@@ -69,13 +60,15 @@ class MTWindowPygame(BaseWindow):
 
     def mainloop(self):
 
+
+
         # don't known why, but pygame required a resize event
         # for opengl, before mainloop... window reinit ?
         self.dispatch_event('on_resize', *self.size)
 
         evloop = getEventLoop()
         while not evloop.quit:
-
+            
             evloop.idle()
 
             for event in pygame.event.get():
@@ -83,6 +76,7 @@ class MTWindowPygame(BaseWindow):
                 # kill application (SIG_TERM)
                 if event.type == pygame.QUIT:
                     evloop.quit = True
+                    self.close()
 
                 # mouse move
                 elif event.type == pygame.MOUSEMOTION:
@@ -127,6 +121,9 @@ class MTWindowPygame(BaseWindow):
                 # unhandled event !
                 else:
                     pymt_logger.debug('Unhandled event %s' % str(event))
+                    
+            
+        
 
     def _set_size(self, size):
         # set pygame mode only if size have really changed

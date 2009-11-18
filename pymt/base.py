@@ -250,10 +250,11 @@ def runTouchApp(widget=None, slave=False):
 
     # Ok, we got one widget, and we are not in slave mode
     # so, user don't create the window, let's create it for him !
-    if not slave and widget:
-        global pymt_window
-        from ui.window import MTWindow
-        pymt_window = MTWindow()
+    ### Not needed, since we always create window ?!
+    #if not slave and widget:
+    #    global pymt_window
+    #    from ui.window import MTWindow
+    #    pymt_window = MTWindow()
 
     # Check if we show event stats
     if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):

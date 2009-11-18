@@ -195,9 +195,8 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
             sys.exit(0)
 
         # last initialization
-        if options['shadow_window']:
-            pymt_logger.debug('Creating shadow window')
-            shadow_window = MTWindow(shadow=True)
+        pymt_logger.debug('Creating PyMT Window')
+        shadow_window = MTWindow()
 
     except getopt.GetoptError, err:
         pymt_logger.error(err)

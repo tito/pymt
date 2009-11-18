@@ -54,19 +54,13 @@ class BaseWindow(EventDispatcher):
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
         kwargs.setdefault('style', {})
-        kwargs.setdefault('shadow', False)
-
+        
         super(BaseWindow, self).__init__()
 
-        # shadow window ?
-        self.shadow = kwargs.get('shadow')
-
+        
         # create window
         self.create_window()
 
-        # for shadow window, we've done !
-        if self.shadow:
-            return
 
         # event subsystem
         self.register_event_type('on_draw')

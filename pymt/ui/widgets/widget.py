@@ -474,6 +474,11 @@ class MTWidget(EventDispatcher):
         pass
 
     def __serialize_member__(self, member):
+        if member in ('_root_window_source', '_root_window',
+                      '_parent_window_source', '_parent_window',
+                      '_parent_layout_source', '_parent_layout'):
+            print 'zap', member
+            return
         return self.__getattribute__(member)
 
     def __serialize_end__(self):

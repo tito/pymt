@@ -81,20 +81,20 @@ class MTScatterWidget(MTWidget):
             self.do_translation = True
 
         # Cache to_local value
-        self.__to_local = (-9999, 9999) # Invalid cache for the first run
-        self.__to_local_x = 0
-        self.__to_local_y = 0
-        self.__to_parent = (-9999, 9999) # Invalid cache for the first run
-        self.__to_parent_x = 0
-        self.__to_parent_y = 0
-        self.__width = 0
-        self.__height = 0
+        self._cc_to_local = (-9999, 9999) # Invalid cache for the first run
+        self._cc_to_local_x = 0
+        self._cc_to_local_y = 0
+        self._cc_to_parent = (-9999, 9999) # Invalid cache for the first run
+        self._cc_to_parent_x = 0
+        self._cc_to_parent_y = 0
+        self._cc_width = 0
+        self._cc_height = 0
 
         self.children = []
 
         self.touches        = {}
         self.scale          = 1
-        self.transform_mat  = (GLfloat * 16)()
+        self.transform_mat  = None
         if kwargs.get('translation')[0] != 0 or kwargs.get('translation')[1] != 0:
             self.init_transform(kwargs.get('rotation'), kwargs.get('scale'), kwargs.get('translation'))
         else:
@@ -143,21 +143,25 @@ class MTScatterWidget(MTWidget):
         super(MTScatterWidget, self).on_draw()
 
     def to_parent(self, x, y):
-        if self.__to_parent == (x, y):
-            return (self.__to_parent_x, self.__to_parent_y)
-        
-        self.__to_parent = (x, y)
-        self.new_point = matrix_mult(self.transform_mat, (x, y, 0, 1))
-        self.__to_parent_x, self.__to_parent_y = self.new_point.x, self.new_point.y
-        return (self.new_point.x, self.new_point.y)
+        if self._cc_to_parent == (x, y):
+            return (self._cc_to_parent_x, self._cc_to_parent_y)
+
+        self._cc_to_parent = (x, y)
+        p = matrix_mult(self.transform_mat, (x, y, 0, 1))
+        p = map(float, (p.x, p.y))
+        self._cc_to_parent_x = p[0]
+        self._cc_to_parent_y = p[1]
+        return p
 
     def to_local(self, x, y):
-        if self.__to_local == (x, y):
-            return (self.__to_local_x, self.__to_local_y)
-        self.__to_local = (x, y)
-        self.new_point = matrix_inv_mult(self.transform_mat, (x, y, 0, 1))
-        self.__to_local_x, self.__to_local_y = self.new_point.x, self.new_point.y
-        return (self.new_point.x, self.new_point.y)
+        if self._cc_to_local == (x, y):
+            return (self._cc_to_local_x, self._cc_to_local_y)
+        self._cc_to_local = (x, y)
+        p = matrix_inv_mult(self.transform_mat, (x, y, 0, 1))
+        p = map(float, (p.x, p.y))
+        self._cc_to_local_x = p[0]
+        self._cc_to_local_y = p[1]
+        return p
 
     def collide_point(self, x, y):
         local_coords = self.to_local(x, y)
@@ -207,8 +211,8 @@ class MTScatterWidget(MTWidget):
             self.transform_mat = glGetFloatv(GL_MODELVIEW_MATRIX)
 
         #invalidate cashed values for parent transform calucaltion
-        self.__to_local = (-9999, 9999)
-        self.__to_parent = (-9999, 9999)
+        self._cc_to_local = (-9999, 9999)
+        self._cc_to_parent = (-9999, 9999)
 
         self.dispatch_event('on_transform', angle, scale, trans, point)
 
@@ -365,13 +369,13 @@ class MTScatterWidget(MTWidget):
             container_height = int(self.height * self.get_scale_factor())
 
             # dispatch event only if it change
-            if container_width != self.__width or container_height != self.__height:
+            if container_width != self._cc_width or container_height != self._cc_height:
                 # Not entirely sure about this. We must generate one resize
                 # event for us, but not for children, since content is not
                 # resized...
                 #self.dispatch_event('on_resize', container_width, container_height)
-                self.__width = container_width
-                self.__height = container_height
+                self._cc_width = container_width
+                self._cc_height = container_height
 
             # dispatch move event
             #self._set_center(self.to_parent(0, 0), do_event=False)
@@ -406,6 +410,23 @@ class MTScatterWidget(MTWidget):
         # stop porpagating if its within our bounds
         if self.collide_point(x, y):
             return True
+
+    #
+    # Serialization part
+    #
+    def __serialize_member__(self, member):
+        if member == 'transform_mat':
+            return self.transform_mat.tolist()
+        return super(MTScatterWidget, self).__serialize_member__(member)
+
+    def __unserialize_start__(self):
+        print self, dir(self)
+
+    def __unserialize_end__(self):
+        import numpy
+        self.transform_mat = numpy.array(
+            self.transform_mat, dtype=numpy.float32)
+
 
 class MTScatterPlane(MTScatterWidget):
     '''A Plane that transforms for zoom/rotate/pan.
@@ -456,6 +477,7 @@ class MTScatterImage(MTScatterWidget):
             set_color(1, 1, 1)
             with gx_blending:
                 drawTexturedRectangle(texture=self.image.get_texture(), size=self.size)
+
 
 class MTScatterSvg(MTScatterWidget):
     '''Render an svg image into a scatter widget

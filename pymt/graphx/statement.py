@@ -76,7 +76,8 @@ class GlDisplayList(object):
 
     def __unserialize_end__(self):
         self.dl = glGenLists(1)
-        self.do_compile = False
+        self.do_compile = True
+        self.compiled = False
 
 class DO:
     '''A way to do multiple action in with statement

@@ -12,8 +12,6 @@ Many method are available for subclass ::
 '''
 
 
-import os
-os.environ['PYMT_SHADOW_WINDOW'] = '0'
 from pymt import *
 
 import pymt
@@ -130,6 +128,9 @@ class NetworkShare:
             p.setAttribute('name', name)
             if value is not None:
                 try:
+                    pymt.pymt_logger.debug(
+                        'Serialize subclass %s:%s:%s' %
+                        (w.__class__.__name__, name, str(value)))
                     value = self.serialize_value(doc, value)
                 except:
                     print 'Error while serialize value for', w, name, value
@@ -265,7 +266,9 @@ class NetworkShare:
 #box = MTBoxLayout()
 #box.add_widget(MTSlider(max=2000, value=500))
 #box.add_widget(MTSlider(value=75, orientation='horizontal'))
-box = MTButton(label='hello')
+#box.add_widget(MTButton(label='hello'))
+#box.add_widget(MTScatterWidget())
+box = MTScatterWidget()
 
 data = NetworkShare()
 xml = data.serialize(box)

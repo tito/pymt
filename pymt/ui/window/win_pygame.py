@@ -128,6 +128,10 @@ class MTWindowPygame(BaseWindow):
                 else:
                     pymt_logger.debug('Unhandled event %s' % str(event))
 
+        # force deletion of window
+        pygame.display.quit()
+
+
     def _set_size(self, size):
         # set pygame mode only if size have really changed
         if super(MTWindowPygame, self)._set_size(size):

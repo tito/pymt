@@ -47,9 +47,8 @@ class VideoPyglet(VideoBase):
         self.time = self._player.time 
 
     def update(self):
-        if self._source.duration  - self.time < 0.01 :
+        if self._source.duration  - self.time < 0.1 :
             self.seek(0)
-            self.time = 0
         if self.state == 'playing':
             self.time += pymt.getFrameDt()
             self._player.dispatch_events(pymt.getFrameDt())

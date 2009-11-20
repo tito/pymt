@@ -108,5 +108,5 @@ v2.add_widget(MTXYSlider(cls=('simple', 'colored')))
 h.add_widget(v2)
 
 m.add_widget(h)
-m.add_widget(ObjectPicker())
+#m.add_widget(ObjectPicker())
 runTouchApp()

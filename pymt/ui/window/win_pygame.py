@@ -16,7 +16,7 @@ except:
     raise
 
 class MTWindowPygame(BaseWindow):
-    def __init__(self, **kwargs):
+    def create_window(self, params):
         # init some opengl, same as before.
         self.flags = pygame.HWSURFACE | pygame.OPENGL | pygame.DOUBLEBUF
         pygame.display.init()
@@ -25,23 +25,15 @@ class MTWindowPygame(BaseWindow):
         pygame.display.gl_set_attribute(pygame.GL_DEPTH_SIZE, 16)
         pygame.display.gl_set_attribute(pygame.GL_STENCIL_SIZE, 1)
         pygame.display.gl_set_attribute(pygame.GL_ALPHA_SIZE, 8)
-
-        super(MTWindowPygame, self).__init__(**kwargs)
-
-    def create_window(self):
-        self.flags &= ~pygame.RESIZABLE
-        self._pygame_set_mode((1, 1))
         pygame.display.set_caption('pymt')
 
-        super(MTWindowPygame, self).create_window()
-
-    def configure(self, params):
         if params['fullscreen']:
             pymt_logger.debug('Set window to fullscreen mode')
             self.flags |= pygame.FULLSCREEN
+
         self.size = params['width'], params['height']
 
-        super(MTWindowPygame, self).configure(params)
+        super(MTWindowPygame, self).create_window(params)
 
     def close(self):
         import sys
@@ -59,16 +51,13 @@ class MTWindowPygame(BaseWindow):
         super(MTWindowPygame, self).flip()
 
     def mainloop(self):
-
-
-
         # don't known why, but pygame required a resize event
         # for opengl, before mainloop... window reinit ?
         self.dispatch_event('on_resize', *self.size)
 
         evloop = getEventLoop()
         while not evloop.quit:
-            
+
             evloop.idle()
 
             for event in pygame.event.get():
@@ -121,9 +110,6 @@ class MTWindowPygame(BaseWindow):
                 # unhandled event !
                 else:
                     pymt_logger.debug('Unhandled event %s' % str(event))
-                    
-            
-        
 
         # force deletion of window
         pygame.display.quit()

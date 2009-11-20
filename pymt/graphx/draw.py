@@ -257,7 +257,8 @@ def drawLine(points, width=None, colors=[]):
     # XXX Where does the default of 5.0 for width come from? pyglet? opengl?
     #     Should perhaps be set here explicitly instead.
     if width is not None:
-        glPushAttrib(GL_LINE_BIT)
+        #glPushAttrib(GL_LINE_BIT) 
+        old_width = glGetIntegerv(GL_LINE_WIDTH) #manual workaround to python bug related to with statement and exception? ..pushAttrib casues exception otherwise
         glLineWidth(width)
 
     points = list(points)[:]
@@ -280,7 +281,8 @@ def drawLine(points, width=None, colors=[]):
                 put_vertex()
 
     if width is not None:
-        glPopAttrib()
+        glLineWidth(old_width)
+        #glPopAttrib()
 
 def drawRoundedRectangleAlpha(pos=(0,0), size=(100,50), radius=5, alpha=(1,1,1,1),
                          linewidth=1.5, precision=0.5, style=GL_TRIANGLE_FAN):

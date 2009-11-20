@@ -43,24 +43,33 @@ class BaseWindow(EventDispatcher):
         `bg-color` : color
             Background color of window
     '''
-    _have_multisample = None
-    _modifiers = []
-    _size = (0, 0)
+
+    __instance = None
+    __initialized = False
+
+    def __new__(type, **kwargs):
+        if type.__instance is None:
+            type.__instance = EventDispatcher.__new__(type)
+        return type.__instance
 
     def __init__(self, **kwargs):
-        if self.__class__ == BaseWindow:
-            raise NotImplementedError, 'class BaseWindow is abstract'
 
+        kwargs.setdefault('force', False)
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
         kwargs.setdefault('style', {})
-        
+
+        # don't init window 2 times,
+        # except if force is specified
+        if self.__initialized and not kwargs.get('force'):
+            return
+
         super(BaseWindow, self).__init__()
 
-        
-        # create window
-        self.create_window()
-
+        # init privates
+        self._have_multisample = None
+        self._modifiers = []
+        self._size = (0, 0)
 
         # event subsystem
         self.register_event_type('on_draw')
@@ -74,6 +83,7 @@ class BaseWindow(EventDispatcher):
         self.register_event_type('on_mouse_move')
         self.register_event_type('on_mouse_up')
         self.register_event_type('on_keyboard')
+
         # set out window as the main pymt window
         setWindow(self)
 
@@ -150,7 +160,7 @@ class BaseWindow(EventDispatcher):
         self.dump_idx       = 0
 
         # configure the window
-        self.configure(params)
+        self.create_window(params)
 
         # init some gl
         self.init_gl()
@@ -159,16 +169,15 @@ class BaseWindow(EventDispatcher):
         pymt_modules.register_window(self)
         touch_event_listeners.append(self)
 
+        # mark as initialized
+        self.__initialized = True
+
     def close(self):
         '''Close the window'''
         pass
 
-    def create_window(self):
-        '''Will create the main window'''
-        pass
-
-    def configure(self, params):
-        '''Will adapt main window for configuration'''
+    def create_window(self, params):
+        '''Will create the main window and configure it'''
         pass
 
     def flip(self):

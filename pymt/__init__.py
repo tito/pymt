@@ -20,7 +20,7 @@ options = {
     'shadow_window': True,
     'window': ('pygame', 'glut'),
     'text': ('pil', 'cairo', 'pyglet', 'pygame'),
-    'video': ('gstreamer', ),
+    'video': ('gstreamer', 'pyglet' ),
     'audio': ('pygame', ),
     'image': ('pil', 'pygame'),
     'camera': ('opencv', 'gstreamer', 'videocapture'),

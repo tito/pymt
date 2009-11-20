@@ -132,5 +132,6 @@ class VideoBase(BaseObject):
 # Load the appropriate provider
 Video = core_select_lib('video', (
     ('gstreamer', 'video_gstreamer', 'VideoGStreamer'),
+    ('pyglet', 'video_pyglet', 'VideoPyglet'),
 ))
 

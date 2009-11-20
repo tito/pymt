@@ -20,13 +20,8 @@ except:
 import threading
 import pymt
 from . import VideoBase
-from pymt.baseobject import BaseObject
 from pymt.graphx import get_texture_target, set_texture, drawTexturedRectangle, set_color, drawRectangle
 from OpenGL.GL import *
-
-
-
-
 
 
 
@@ -44,22 +39,20 @@ class VideoPyglet(VideoBase):
         self._source = source = pyglet.media.load(self._filename)
         self._format = self._source.video_format
         self.size = (self._format.width, self._format.height)
-        self._fbo = pymt.Fbo(size=self.size)
+        self._player = None
         self._player = pyglet.media.Player()
         self._player.queue(self._source)
-        self._player.play()
-        self._player.pause()
+        self.play()
+        self.stop()
+        self.time = self._player.time 
 
     def update(self):
-        if self._player.time < self._source.duration:
+        if self._source.duration  - self.time < 0.01 :
+            self.seek(0)
+            self.time = 0
+        if self.state == 'playing':
+            self.time += pymt.getFrameDt()
             self._player.dispatch_events(pymt.getFrameDt())
-        else:
-            self.restart()
-
-    def restart(self):
-        self.seek(0.1)
-        self.play()
-        self._player.pause()
         
 
     def stop(self):
@@ -71,15 +64,30 @@ class VideoPyglet(VideoBase):
         super(VideoPyglet,self).play()
 
     def seek(self, percent):
-        self._player.seek(self._source.duration*percent)
+        t = self._source.duration*percent
+        self.time = t
+        self._player.seek(t)
+        self.stop()
+        
 
     def _get_position(self):
         if self._player:
-            return self._player.time
+            return self.time
 
     def _get_duration(self):
         if self._source:
             return self._source.duration
+        
+        
+    def _get_volume(self):
+        if self._player:
+            return self._player.volume
+        return 0
+    
+    def _set_volume(self, volume):
+        if self._player:
+            self._player.volume = volume
+        
 
     def draw(self):
         if self._player.get_texture():

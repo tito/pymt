@@ -100,7 +100,9 @@ kineticlist {
 
 basewindow,
 window {
-    bg-color: rgb(20, 20, 20);
+    bg-color: rgb(150, 150, 150);
+    draw-alpha-background: 1;
+    alpha-background: 0.8 0.8 0.0 0.0;
 }
 
 modalwindow {

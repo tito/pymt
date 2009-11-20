@@ -17,7 +17,7 @@ import pymt
 from ...logger import pymt_logger
 from ...base import getCurrentTouches, setWindow, touch_event_listeners
 from ...clock import getClock
-from ...graphx import set_color, drawCircle, drawLabel
+from ...graphx import set_color, drawCircle, drawLabel, drawRectangle, drawCSSRectangle
 from ...modules import pymt_modules
 from ...event import EventDispatcher
 from ..colors import css_get_style
@@ -250,8 +250,11 @@ class BaseWindow(EventDispatcher):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
     def draw(self):
-        '''Draw the background window (actually, only clear)'''
+        '''Draw the window background'''
         self.clear()
+        #draw a nice gradient
+        set_color(*self.cssstyle.get('bg-color'))
+        drawCSSRectangle(size=self.size, style=self.cssstyle)
 
     def draw_mouse_touch(self):
         '''Compatibility for MouseTouch, drawing a little red circle around

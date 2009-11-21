@@ -214,7 +214,7 @@ class BaseWindow(EventDispatcher):
     def _get_height(self):
         return self._size[1]
     height = property(_get_height)
-    
+
     def _get_center(self):
         return (self.width/2, self.height/2)
     center = property(_get_center)

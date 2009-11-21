@@ -22,14 +22,13 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
         * alpha-background
 
     '''
-    #Check if we have a cached version
-    cache_id ="%s:%s:%s:%s"%(pos,size,style,prefix)
+    # Check if we have a cached version
+    cache_id = '%s:%s:%s:%s' % (pos, size, style, prefix)
     cache = Cache.get('css_rect', cache_id)
     if cache:
         cache.draw()
         return
-    
-        
+
     # hack to remove prefix in style
     if prefix is not None:
         prefix += '-'
@@ -46,10 +45,10 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
     style.setdefault('alpha-background', (1, 1, .5, .5))
 
     k = { 'pos': pos, 'size': size }
-    
+
     new_cache = GlDisplayList()
     with new_cache:
-        
+
         if style['border-radius'] > 0:
             k.update({
                 'radius': style['border-radius'],
@@ -66,7 +65,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
                 drawRectangle(style=GL_LINE_LOOP, **k)
             if style['draw-alpha-background']:
                 drawRectangleAlpha(alpha=style['alpha-background'], **k)
-    
+
     Cache.append('css_rect', cache_id, new_cache)
     new_cache.draw()
 

@@ -131,21 +131,42 @@ class Texture(object):
         if texture is None:
             return None
 
-        glTexSubImage2D(texture.target, 0, 0, 0,
-                     im.width, im.height, format,
-                     GL_UNSIGNED_BYTE, im.data)
+        texture.blit_data(im)
 
         return texture
 
     def blit_data(self, im, pos=(0, 0)):
         '''Replace a whole texture with a image data'''
-        format = self.mode_to_gl_format(im.mode)
+        self.blit_buffer(im.data, size=(im.width, im.height),
+                         mode=im.mode, pos=pos)
+
+    def blit_buffer(self, buffer, size=None, mode='RGB', format=None, pos=(0, 0),
+                    buffertype=GL_UNSIGNED_BYTE):
+        '''Blit a buffer into a texture.
+
+        :Parameters:
+            `buffer` : str
+                Image data
+            `size` : tuple, default to texture size
+                Size of the image (width, height)
+            `mode` : str, default to 'RGB'
+                Image mode, can be one of RGB, RGBA, BGR, BGRA
+            `format` : glconst, default to None
+                if format is passed, it will be used instead of mode
+            `pos` : tuple, default to (0, 0)
+                Position to blit in the texture
+            `buffertype` : glglconst, default to GL_UNSIGNED_BYTE
+                Type of the data buffer
+        '''
+        if size is None:
+            size = self.size
+        if format is None:
+            format = self.mode_to_gl_format(mode)
         glBindTexture(self.target, self.id)
         glEnable(self.target)
         glTexSubImage2D(self.target, 0, pos[0], pos[1],
-                        im.width, im.height, format,
-                        GL_UNSIGNED_BYTE, im.data)
-
+                        size[0], size[1], format,
+                        buffertype, buffer)
 
     @property
     def size(self):

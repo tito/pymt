@@ -125,10 +125,7 @@ class Texture(object):
             pymt_logger.error('Unsupported format for texture (%s)' % im.mode)
             return None
 
-        if im.mode == 'RGBA':
-            format = GL_RGBA
-        else:
-            format = GL_RGB
+        format = Texture.mode_to_gl_format(im.mode)
 
         texture = Texture.create(im.width, im.height, format)
         if texture is None:
@@ -140,9 +137,30 @@ class Texture(object):
 
         return texture
 
+    def blit_data(self, im, pos=(0, 0)):
+        '''Replace a whole texture with a image data'''
+        format = self.mode_to_gl_format(im.mode)
+        glBindTexture(self.target, self.id)
+        glEnable(self.target)
+        glTexSubImage2D(self.target, 0, pos[0], pos[1],
+                        im.width, im.height, format,
+                        GL_UNSIGNED_BYTE, im.data)
+
+
     @property
     def size(self):
         return (self.width, self.height)
+
+    @staticmethod
+    def mode_to_gl_format(format):
+        if format == 'RGBA':
+            return GL_RGBA
+        elif format == 'BGRA':
+            return GL_BGRA
+        elif format == 'BGR':
+            return GL_BGR
+        else:
+            return GL_RGB
 
     def __str__(self):
         return '<Texture size=(%d, %d)>' % self.size

@@ -5,11 +5,11 @@ __all__ = ['OBJ']
 
 import os
 import warnings
+import pymt
 
 from OpenGL.GL import *
 from graphx import *
 from geometric import *
-from image import Image
 
 class OBJ:
     '''3D object representation.
@@ -142,7 +142,7 @@ class OBJ:
                     material.opacity = float(values[1])
                 elif values[0] == 'map_Kd':
                     try:
-                        material.texture = Image(values[1]).get_texture()
+                        material.texture = pymt.Image(values[1]).get_texture()
                     except:
                         warnings.warn('Could not load texture %s' % values[1])
             except:

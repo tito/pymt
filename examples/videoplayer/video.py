@@ -5,7 +5,6 @@ PLUGIN_AUTHOR = 'Sharath Patali '
 PLUGIN_DESCRIPTION = 'This shows how to use the video player module present in the library'
 
 from pymt import *
-from pyglet.media import *
 
 
 if __name__ == '__main__':

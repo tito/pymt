@@ -10,22 +10,13 @@ from ...logger import pymt_logger
 from ...utils import curry
 from ...base import stopTouchApp, getEventLoop
 
-glut_window = None
 
 class MTWindowGlut(BaseWindow):
-    def __init__(self, **kwargs):
-        super(MTWindowGlut, self).__init__(**kwargs)
 
-    def create_window(self):
-        global glut_window
-        if glut_window is None:
+    __glut_window = None
 
-            # for shadow window, make it invisible
-            if self.shadow:
-                pymt_logger.debug('Set next window as Shadow window (1x1)')
-                glutInitWindowPosition(0, 0)
-                glutInitWindowSize(1, 1)
-
+    def create_window(self, params):
+        if self.__glut_window is None:
             # init GLUT !
             pymt_logger.debug('GLUT initialization')
             glutInit('')
@@ -34,17 +25,8 @@ class MTWindowGlut(BaseWindow):
                 GLUT_MULTISAMPLE | GLUT_STENCIL | GLUT_ACCUM)
 
             # create the window
-            pymt_logger.debug('Create the window (shadow=%s)' % str(self.shadow))
-            glut_window = glutCreateWindow('pymt')
+            self.__glut_window = glutCreateWindow('pymt')
 
-            # hide the shadow...
-            if self.shadow:
-                # FIXME seem not working... why ??
-                glutHideWindow()
-
-        super(MTWindowGlut, self).create_window()
-
-    def configure(self, params):
         # register all callbcaks
         glutReshapeFunc(self._glut_reshape)
         glutMouseFunc(self._glut_mouse)
@@ -58,13 +40,12 @@ class MTWindowGlut(BaseWindow):
             pymt_logger.debug('Set window to fullscreen mode')
             glutFullScreen()
 
-        super(MTWindowGlut, self).configure(params)
+        super(MTWindowGlut, self).create_window(params)
 
     def close(self):
-        global glut_window
-        if glut_window:
-            glutDestroyWindow(glut_window)
-            glut_window = None
+        if self.__glut_window:
+            glutDestroyWindow(self.__glut_window)
+            self.__glut_window = None
         super(MTWindowGlut, self).close()
 
     def on_keyboard(self, key, scancode=None, unicode=None):
@@ -81,7 +62,6 @@ class MTWindowGlut(BaseWindow):
     def flip(self):
         glutSwapBuffers()
         super(MTWindowGlut, self).flip()
-
 
     def mainloop(self):
         '''Main loop is done by GLUT itself.'''

@@ -22,17 +22,17 @@ def core_select_lib(category, llist):
             cls = mod.__getattribute__(classname)
 
             # ok !
-            pymt.pymt_logger.info('%s: use <%s> as %s provider' %
+            pymt.pymt_logger.info('%s: using <%s> as %s provider' %
                 (category.capitalize(), option, category))
             return cls
 
-        except:
+        except Exception as e:
             pymt.pymt_logger.warning('%s: Unable to use <%s> as %s provider' %
                 (category.capitalize(), option, category))
-            pymt.pymt_logger.exception('')
+            pymt.pymt_logger.debug('', exc_info=e)
 
-    pymt.pymt_logger.critical('%s: Unable to found a valuable provider !' %
-        (category.capitalize()))
+    pymt.pymt_logger.critical('%s: Unable to find any valuable %s provider at all!' %
+        (category.capitalize(),category.capitalize()))
 
 
 def core_register_libs(category, libs):
@@ -51,10 +51,10 @@ def core_register_libs(category, libs):
                              locals=locals(),
                              fromlist=[lib], level=-1)
 
-        except:
-            pymt.pymt_logger.warning('%s: Unable to use <%s> as loader' %
+        except Exception as e:
+            pymt.pymt_logger.warning('%s: Unable to use <%s> as loader!' %
                 (category.capitalize(), option))
-            pymt.pymt_logger.exception('')
+            pymt.pymt_logger.debug('', exc_info=e)
 
 
 from audio import *

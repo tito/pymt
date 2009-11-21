@@ -16,50 +16,38 @@ except:
     raise
 
 class MTWindowPygame(BaseWindow):
-    def __init__(self, **kwargs):
+    def create_window(self, params):
         # init some opengl, same as before.
         self.flags = pygame.HWSURFACE | pygame.OPENGL | pygame.DOUBLEBUF
         pygame.display.init()
-        pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 1)
-        pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 4)
+        # FIXME found a general way to check samplebuffers
+        # (is it really needed ??)
+        #pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 1)
+        #pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 4)
         pygame.display.gl_set_attribute(pygame.GL_DEPTH_SIZE, 16)
         pygame.display.gl_set_attribute(pygame.GL_STENCIL_SIZE, 1)
         pygame.display.gl_set_attribute(pygame.GL_ALPHA_SIZE, 8)
-
-        super(MTWindowPygame, self).__init__(**kwargs)
-
-    def create_window(self):
-
-        if self.shadow:
-            pymt_logger.debug('Set next window as Shadow window (1x1)')
-            self.flags |= pygame.RESIZABLE
-            self._pygame_set_mode((1, 1))
-        else:
-            self.flags &= ~pygame.RESIZABLE
-
-        pymt_logger.debug('Create the window (shadow=%s)' % str(self.shadow))
         pygame.display.set_caption('pymt')
 
-        super(MTWindowPygame, self).create_window()
-
-    def configure(self, params):
         if params['fullscreen']:
             pymt_logger.debug('Set window to fullscreen mode')
             self.flags |= pygame.FULLSCREEN
-        self.size = params['width'], params['height']
 
-        super(MTWindowPygame, self).configure(params)
+        # init ourself size + setmode
+        # before calling on_resize
+        self._size = params['width'], params['height']
+        self._pygame_set_mode()
+
+        super(MTWindowPygame, self).create_window(params)
 
     def close(self):
-        global glut_window
-        if glut_window:
-            glutDestroyWindow(glut_window)
-            glut_window = None
-        super(MTWindowPygame, self).close()
+        import sys
+        sys.exit(0)
 
     def on_keyboard(self, key, scancode=None, unicode=None):
         if key == 27:
             stopTouchApp()
+            self.close()  #not sure what to do here
             return True
         super(MTWindowPygame, self).on_keyboard(key, scancode, unicode)
 
@@ -68,7 +56,6 @@ class MTWindowPygame(BaseWindow):
         super(MTWindowPygame, self).flip()
 
     def mainloop(self):
-
         # don't known why, but pygame required a resize event
         # for opengl, before mainloop... window reinit ?
         self.dispatch_event('on_resize', *self.size)
@@ -83,6 +70,7 @@ class MTWindowPygame(BaseWindow):
                 # kill application (SIG_TERM)
                 if event.type == pygame.QUIT:
                     evloop.quit = True
+                    self.close()
 
                 # mouse move
                 elif event.type == pygame.MOUSEMOTION:
@@ -127,6 +115,10 @@ class MTWindowPygame(BaseWindow):
                 # unhandled event !
                 else:
                     pymt_logger.debug('Unhandled event %s' % str(event))
+
+        # force deletion of window
+        pygame.display.quit()
+
 
     def _set_size(self, size):
         # set pygame mode only if size have really changed

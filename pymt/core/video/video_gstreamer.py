@@ -190,11 +190,9 @@ class VideoGStreamer(VideoBase):
         # update needed ?
         with self._buffer_lock:
             if self._buffer is not None:
-                target = get_texture_target(self._texture)
-                set_texture(self._texture)
-                glTexSubImage2D(target, 0, 0, 0,
-                                self._videosize[0], self._videosize[1], GL_RGB,
-                                GL_UNSIGNED_BYTE, self._buffer.data)
+                self._texture.blit_buffer(self._buffer.data,
+                                          size=self._videosize,
+                                          format=GL_RGB)
                 self._buffer = None
 
     def draw(self):

@@ -20,7 +20,7 @@ options = {
     'shadow_window': True,
     'window': ('pygame', 'glut'),
     'text': ('pil', 'cairo', 'pyglet', 'pygame'),
-    'video': ('gstreamer', ),
+    'video': ('gstreamer', 'pyglet' ),
     'audio': ('pygame', ),
     'image': ('pil', 'pygame'),
     'camera': ('opencv', 'gstreamer', 'videocapture'),
@@ -196,8 +196,8 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
 
         # last initialization
         if options['shadow_window']:
-            pymt_logger.debug('Creating shadow window')
-            shadow_window = MTWindow(shadow=True)
+            pymt_logger.debug('Creating PyMT Window')
+            shadow_window = MTWindow()
 
     except getopt.GetoptError, err:
         pymt_logger.error(err)

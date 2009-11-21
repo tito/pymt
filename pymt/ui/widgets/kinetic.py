@@ -8,7 +8,7 @@ from OpenGL.GL import *
 from ..factory import MTWidgetFactory
 from ...input import Touch
 from ...vector import Vector
-from ...base import getFrameDt, getAvailableTouchs
+from ...base import getFrameDt, getCurrentTouches
 from stencilcontainer import MTStencilContainer
 from widget import MTWidget
 
@@ -85,7 +85,7 @@ class MTKinetic(MTWidget):
         self.touch[touch.uid] = ktouch
         # grab the touch for not lost it !
         touch.grab(self)
-        getAvailableTouchs().append(ktouch)
+        getCurrentTouches().append(ktouch)
         # and dispatch !
         return super(MTKinetic, self).on_touch_down(ktouch)
 
@@ -149,7 +149,7 @@ class MTKinetic(MTWidget):
             if Vector(ktouch.X, ktouch.Y).length() < self.velstop:
                 # simulation finished
                 type = 'up'
-                getAvailableTouchs().remove(ktouch)
+                getCurrentTouches().remove(ktouch)
                 super(MTKinetic, self).on_touch_up(ktouch)
                 todelete.append(touchID)
             else:

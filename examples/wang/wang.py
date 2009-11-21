@@ -430,7 +430,7 @@ class Wang(MTWidget):
         # update bats
         self.bats = []
         self.batsid = []
-        touches = getAvailableTouchs()
+        touches = getCurrentTouches()
         for a in touches:
             for b in touches[1:]:
                 if a == b:

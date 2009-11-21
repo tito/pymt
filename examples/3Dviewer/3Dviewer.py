@@ -101,7 +101,7 @@ class ModelViewer(GLPerspectiveWidget):
             self.touch2 = None
 
     def on_touch_down(self, touch):
-        self.check_touches(getAvailableTouchs())
+        self.check_touches(getCurrentTouches())
         self.touch_position[touch.id] = (touch.x, touch.y)
         if len(self.touch_position) == 1:
             self.touch1 = touch
@@ -116,7 +116,7 @@ class ModelViewer(GLPerspectiveWidget):
     def on_touch_move(self, touch):
         if not touch.grab_current == self:
             return
-        self.check_touches(getAvailableTouchs())
+        self.check_touches(getCurrentTouches())
         dx, dy = 0,0
         scale = 1.0
         angle = 0.0
@@ -160,7 +160,7 @@ class ModelViewer(GLPerspectiveWidget):
     def on_touch_up(self, touch):
         if not touch.grab_current == self:
             return
-        self.check_touches(getAvailableTouchs())
+        self.check_touches(getCurrentTouches())
         if touch.id in self.touch_position:
             del self.touch_position[touch.id]
             self.needs_redisplay = True

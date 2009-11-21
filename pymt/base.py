@@ -5,7 +5,7 @@ Base: Main event loop, provider creation, window management...
 __all__ = [
     'TouchEventLoop',
     'pymt_usage', 'runTouchApp', 'stopTouchApp',
-    'getFrameDt', 'getAvailableTouchs',
+    'getFrameDt', 'getAvailableTouchs', 'getCurrentTouches',
     'getEventLoop',
     'touch_event_listeners',
     'pymt_providers',
@@ -34,9 +34,13 @@ def getFrameDt():
     global frame_dt
     return frame_dt
 
-def getAvailableTouchs():
+def getCurrentTouches():
     global touch_list
     return touch_list
+
+@pymt.deprecated
+def getAvailableTouchs():
+    return getCurrentTouches()
 
 def getWindow():
     global pymt_window
@@ -166,9 +170,6 @@ class TouchEventLoop(object):
 
         return self.quit
 
-    def start(self):
-        pass
-
     def run(self):
         while not self.quit:
             self.idle()
@@ -249,10 +250,11 @@ def runTouchApp(widget=None, slave=False):
 
     # Ok, we got one widget, and we are not in slave mode
     # so, user don't create the window, let's create it for him !
-    if not slave and widget:
-        global pymt_window
-        from ui.window import MTWindow
-        pymt_window = MTWindow()
+    ### Not needed, since we always create window ?!
+    #if not slave and widget:
+    #    global pymt_window
+    #    from ui.window import MTWindow
+    #    pymt_window = MTWindow()
 
     # Check if we show event stats
     if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):

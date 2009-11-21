@@ -167,6 +167,7 @@ class Texture(object):
         glTexSubImage2D(self.target, 0, pos[0], pos[1],
                         size[0], size[1], format,
                         buffertype, buffer)
+        glDisable(self.target)
 
     @property
     def size(self):

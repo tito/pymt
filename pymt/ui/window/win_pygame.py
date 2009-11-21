@@ -20,8 +20,10 @@ class MTWindowPygame(BaseWindow):
         # init some opengl, same as before.
         self.flags = pygame.HWSURFACE | pygame.OPENGL | pygame.DOUBLEBUF
         pygame.display.init()
-        pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 1)
-        pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 4)
+        # FIXME found a general way to check samplebuffers
+        # (is it really needed ??)
+        #pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 1)
+        #pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 4)
         pygame.display.gl_set_attribute(pygame.GL_DEPTH_SIZE, 16)
         pygame.display.gl_set_attribute(pygame.GL_STENCIL_SIZE, 1)
         pygame.display.gl_set_attribute(pygame.GL_ALPHA_SIZE, 8)
@@ -31,7 +33,10 @@ class MTWindowPygame(BaseWindow):
             pymt_logger.debug('Set window to fullscreen mode')
             self.flags |= pygame.FULLSCREEN
 
-        self.size = params['width'], params['height']
+        # init ourself size + setmode
+        # before calling on_resize
+        self._size = params['width'], params['height']
+        self._pygame_set_mode()
 
         super(MTWindowPygame, self).create_window(params)
 

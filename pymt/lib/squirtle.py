@@ -25,11 +25,6 @@ except ImportError:
 from pymt.logger import pymt_logger
 
 
-if not os.path.basename(sys.argv[0]) in ('sphinx-build', 'autobuild.py'):
-    tess = gluNewTess()
-    gluTessNormal(tess, 0, 0, 1)
-    gluTessProperty(tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO)
-
 if sys.platform == 'win32':
     from ctypes import WINFUNCTYPE
     c_functype = WINFUNCTYPE
@@ -45,7 +40,7 @@ callback_types = {GLU_TESS_VERTEX: c_functype(None, POINTER(GLvoid)),
 def set_tess_callback(which):
     def set_call(func):
         cb = callback_types[which](func)
-        gluTessCallback(tess, which, cast(cb, CFUNCTYPE(None)))
+        gluTessCallback(SVG._tess, which, cast(cb, CFUNCTYPE(None)))
         return cb
     return set_call
 
@@ -396,6 +391,7 @@ class SVG(object):
 
     """
 
+    _tess = None
     _disp_list_cache = {}
     def __init__(self, filename, anchor_x=0, anchor_y=0, bezier_points=BEZIER_POINTS, circle_points=CIRCLE_POINTS, rawdata=None):
         """Creates an SVG object from a .svg or .svgz file.
@@ -417,6 +413,9 @@ class SVG(object):
                 Raw data string (you need to set a fake filename for cache anyway)
                 Defaults to None.
         """
+        self._tess = gluNewTess()
+        gluTessNormal(self._tess, 0, 0, 1)
+        gluTessProperty(self._tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO)
 
         self.filename = filename
         self.rawdata = rawdata
@@ -898,13 +897,13 @@ class SVG(object):
                 v_data = (GLdouble * 3)(x, y, 0)
                 d_list.append(v_data)
             data_lists.append(d_list)
-        gluTessBeginPolygon(tess, None)
+        gluTessBeginPolygon(self._tess, None)
         for d_list in data_lists:
-            gluTessBeginContour(tess)
+            gluTessBeginContour(self._tess)
             for v_data in d_list:
-                gluTessVertex(tess, v_data, v_data)
-            gluTessEndContour(tess)
-        gluTessEndPolygon(tess)
+                gluTessVertex(self._tess, v_data, v_data)
+            gluTessEndContour(self._tess)
+        gluTessEndPolygon(self._tess)
         return tlist
 
     def warn(self, message):

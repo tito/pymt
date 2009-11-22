@@ -58,6 +58,7 @@ class BaseWindow(EventDispatcher):
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
         kwargs.setdefault('style', {})
+        kwargs.setdefault('draw_gradient', True)
 
         # don't init window 2 times,
         # except if force is specified
@@ -70,6 +71,7 @@ class BaseWindow(EventDispatcher):
         self._have_multisample = None
         self._modifiers = []
         self._size = (0, 0)
+        self.draw_gradient = kwargs.get('draw_gradient')
 
         # event subsystem
         self.register_event_type('on_draw')
@@ -261,9 +263,11 @@ class BaseWindow(EventDispatcher):
     def draw(self):
         '''Draw the window background'''
         self.clear()
-        #draw a nice gradient
-        set_color(*self.cssstyle.get('bg-color'))
-        drawCSSRectangle(size=self.size, style=self.cssstyle)
+        if self.draw_gradient:
+            # FIXME: avoid to clear the background if we are drawing a rect
+            # draw a nice gradient
+            set_color(*self.cssstyle.get('bg-color'))
+            drawCSSRectangle(size=self.size, style=self.cssstyle)
 
     def draw_mouse_touch(self):
         '''Compatibility for MouseTouch, drawing a little red circle around

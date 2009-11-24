@@ -2,35 +2,44 @@
 Animation package: handle animation with ease in PyMT
 
 Animation
-======= 
+=========
+
 This is an Animation Framework, using which you can animate any
 property of an object over a provided duration. You can even animate 
 CSS property.
 
-Simple Animation:
------------------
+Simple Animation
+----------------
+
+::
     widget = SomeWidget()
     animobj = Animation(duration=5,x=100,style={'bg-color':(1.0,1.0,1.0,1.0)})
     widget.do (animobj)
  
 You create a animation class object and pass the object into the widget
 that you would like to animate, the object will be animated from its current state
-to the state specified in the animation object
-OR
-You can also use animate() method of the Animation class to animate the widget
+to the state specified in the animation object.
+
+You can also use animate() method of the Animation class to animate the widget ::
     
     animobj.animate(widget)
   
-you can also pass multiple widgets, to animate the same way
+You can also pass multiple widgets, to animate the same way ::
+
+     # solution 1
      animobj.animate(widget1, widget2)
-     or
+     
+     # solution 2
      widget1.do(animobj)
      widget2.do(animobj)
  
-Complex Animations:
---------------------
-You can sequence several animations togather
-for example:
+
+Complex Animations
+------------------
+
+You can sequence several animations together ::
+
+::
     anim1 = Animation(duration=1, x=100)
     anim2 = Animation(duration=2, y = 200)
     anim3 = Animation(duration=1, rotation = 60)
@@ -39,11 +48,13 @@ for example:
     
     widget.do(anim_xyrot)
     
-This is execute the animations sequentially, "+" is used to execute them sequentially. First the widget will move to x=100 in 1 sec
-then it will move to y=200 in secs and finally rotate clockwise 60 Degress in 1 sec.
+This is execute the animations sequentially, "+" is used to execute them sequentially.
+First the widget will move to x=100 in 1 sec then it will move to y=200 in secs and
+finally rotate clockwise 60 Degress in 1 sec.
 
-You can also run several animations parallel.
-for example: 
+You can also run several animations parallel ::
+
+::
     anim1 = Animation(duration=1, x=100)
     anim2 = Animation(duration=2, y = 200)
     anim3 = Animation(duration=1, rotation = 60)
@@ -52,8 +63,8 @@ for example:
     
     widget.do(anim_xyrot)
     
-This will execute all the animations on the properties togather. "&" operator is used to run
-them parallel 
+This will execute all the animations on the properties togather. "&" operator is used
+to run them parallel 
 '''
 
 __all__ = ['AnimationAlpha', 'Animation']
@@ -233,7 +244,7 @@ class Animation(object):
 
     def _return_params(self):
         return self.params
-        
+
     def _set_params(self, key, value):
         self.params[key] = value
 

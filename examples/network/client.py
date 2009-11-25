@@ -9,7 +9,6 @@ if __name__ == '__main__':
 
     # Connect a client to the default port
     client = SerializerNetworkClient('127.0.0.1', 12000)
-    client.start()
 
     # Create a tree
     box = MTBoxLayout()

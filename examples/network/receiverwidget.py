@@ -8,16 +8,15 @@ from serializer import SerializerNetworkServer, Serializer
 import time
 from pymt import MTWidget, runTouchApp, pymt_logger
 
-class ReceiverWidget(MTWidget):
-    def __init__(self):
-        super(ReceiverWidget, self).__init__()
+class NetworkClientWidget(MTWidget):
+    def __init__(self, **kwargs):
+        super(NetworkClientWidget, self).__init__()
 
         # start a network server
-        self.server = SerializerNetworkServer()
-        self.server.start()
+        self.server = SerializerNetworkServer(**kwargs)
 
     def on_update(self):
-        super(ReceiverWidget, self).on_update()
+        super(NetworkClientWidget, self).on_update()
         try:
             clientid, message = self.server.queue.pop()
 
@@ -34,8 +33,6 @@ class ReceiverWidget(MTWidget):
         except:
             pymt_logger.exception('Error while unserialize xml')
 
-
-
 if __name__ == '__main__':
-    w = ReceiverWidget()
+    w = NetworkClientWidget()
     runTouchApp(w)

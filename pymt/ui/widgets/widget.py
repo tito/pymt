@@ -72,9 +72,6 @@ class MTWidget(EventDispatcher):
 			Add inline CSS
 		`cls` : str, default is ''
 			CSS class of this widget
-        `inner_animation` : custom, default is ()
-            You can activate default inner animation with this keyword
-            Format is: ('pos', ('size': {func=AnimationAlpha.sin}), )
 
     :Events:
         `on_update` ()
@@ -123,7 +120,6 @@ class MTWidget(EventDispatcher):
         kwargs.setdefault('no_css', False)
         kwargs.setdefault('cls', '')
         kwargs.setdefault('style', {})
-        kwargs.setdefault('inner_animation', ())
 
         self._id = None
         if 'id' in kwargs:
@@ -177,11 +173,6 @@ class MTWidget(EventDispatcher):
             self.apply_css(kwargs.get('style'))
 
         self.a_properties = {}
-        for prop in kwargs.get('inner_animation'):
-            kw = dict()
-            if type(prop) in (list, tuple):
-                prop, kw = prop
-            self.enable_inner_animation(prop, **kw)
 
         self.init()
 
@@ -422,79 +413,8 @@ class MTWidget(EventDispatcher):
         if w in self.children:
             self.children.remove(w)
 
-    def add_animation(self, *largs, **kwargs):
-        '''Add an animation in widget.'''
-        anim = Animation(self, *largs, **kwargs)
-        self.animations.append(anim)
-        return anim
-
-    def start_animations(self, label='all'):
-        '''Start all widget animation that match the label'''
-        for anim in self.animations:
-            if anim.label == label or label == 'all':
-                anim.reset()
-                anim.start()
-
-    def stop_animations(self, label='all'):
-        '''Stop all widget animation that match the label'''
-        for anim in self.animations:
-            if anim.label == label or label == 'all':
-                anim.stop()
-
-    def remove_animation(self, label):
-        '''Remove widget animation that match the label'''
-        for anim in self.animations:
-            if anim.label == label:
-                self.animations.remove(anim)
-
-    def enable_inner_animation(self, props, **kwargs):
-        '''Activate inner animation for listed properties'''
-        if type(props) == tuple:
-            props = list(props)
-        elif type(props) == str:
-            props = [props, ]
-        accepted_kw = ['timestep', 'length', 'func']
-        for k in kwargs:
-            if k not in accepted_kw:
-                raise Exception('Invalid keyword %s' % k)
-        for prop in props:
-            self.a_properties[prop] = kwargs
-
-    def disable_inner_animation(self, props):
-        '''Deactivate inner animation for listed properties'''
-        props = list(props)
-        for prop in props:
-            if prop in self.a_properties:
-                del self.a_properties[prop]
-
-    def update_inner_animation(self):
-        if not hasattr(self, 'a_properties'):
-            return
-        if len(self.a_properties):
-            self.__setattr__ = self.__setattr_inner_animation__
-        else:
-            self.__setattr__ = super(MTWidget, self).__setattr__
-
-    def __setattr__(self, name, value, inner=False):
-        if hasattr(self, 'a_properties') and len(self.a_properties) \
-            and name in self.a_properties and not inner:
-            label = '__%s' % name
-            kw = self.a_properties[name]
-            kw.setdefault('timestep', 1./60)
-            kw.setdefault('length', 1.)
-            kw['inner'] = True
-            kw['prop']  = name
-            kw['to']    = value
-
-            # remove old animation
-            self.stop_animations(label=label)
-            self.remove_animation(label=label)
-
-            # add new
-            self.add_animation(label=label, **kw)
-            self.start_animations(label=label)
-        else:
-            super(MTWidget, self).__setattr__(name, value)
+    def __setattr__(self, name, value):
+        super(MTWidget, self).__setattr__(name, value)
 
     def on_parent_resize(self, w, h):
         pass
@@ -536,6 +456,16 @@ class MTWidget(EventDispatcher):
         for w in reversed(self.children):
             if w.dispatch_event('on_mouse_release', x, y, button, modifiers):
                 return True
+    
+    def do(self,*largs):
+        '''Apply/Start animations on the widgets.
+        :Parameters:
+            `animation` : Animation Object
+                Animation object with properties to be animateds ","
+        '''
+        for arg in largs:
+            if arg.set_widget(self):
+                arg.start(self)
 
 # Register all base widgets
 MTWidgetFactory.register('MTWidget', MTWidget)

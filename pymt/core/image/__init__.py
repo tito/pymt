@@ -189,7 +189,7 @@ class Image(pymt.BaseObject):
         imgpos = (self.x - self.anchor_x * self.scale, self.y - self.anchor_y * self.scale)
         r, g, b = self.color[:3]
         with DO(gx_color(r, g, b, self.opacity), gx_blending):
-            drawTexturedRectangle(texture=self.texture, pos=imgpos, size=self.size)
+            drawTexturedRectangle(texture=self.texture, pos=imgpos, size=(self.size[0] * self.scale, self.size[1] * self.scale))
 
 def load(filename):
     '''Load an image'''

@@ -90,16 +90,7 @@ class MTScatterWidget(MTWidget):
         self.__width = 0
         self.__height = 0
 
-        # For flipping animations
-        self.zangle = 0
-        self.side = 'front'
-
-        # Holds children for both sides
-        self.children_front = []
-        self.children_back = []
-        self.children = self.children_front
-
-        self.anim = Animation(self, 'flip', 'zangle', 180, 1, 10, func=AnimationAlpha.ramp)
+        self.children = []
 
         self.touches        = {}
         self.scale          = 1
@@ -109,30 +100,9 @@ class MTScatterWidget(MTWidget):
         else:
             self.init_transform(kwargs.get('rotation'), kwargs.get('scale'), super(MTScatterWidget, self).pos)
 
-    def add_widget(self, w, side='front', front=True):
-        '''Add a widget to a side of scatter.
-
-        :Parameters:
-            `side` : str, default is 'front'
-                Side to be added. Can be one of 'front', 'back' or '' (mean both.)
-            `front` : bool, default is True
-                Indicate if the widget must be pulled in the front of the screen
-        '''
-        if side == 'front':
-            if front:
-                self.children_front.append(w)
-            else:
-                self.children_front.insert(0, w)
-        elif side == 'back':
-            if front:
-                self.children_back.append(w)
-            else:
-                self.children_back.insert(0, w)
-        else:
-            # add to both side
-            self.add_widget(w, side='front', front=front)
-            self.add_widget(w, side='back', front=front)
-
+    def add_widget(self, w):
+        '''Add a widget to a side of scatter.'''
+        self.children.append(w)
         try:
             w.parent = self
         except:
@@ -167,58 +137,10 @@ class MTScatterWidget(MTWidget):
         set_color(*self.style.get('bg-color'))
         drawRectangle((0,0), (self.width, self.height))
 
-    def flip_children(self):
-        '''Flips the children.
-        This has to be called exactly half way through the animation
-        so it looks like there are actually two sides'''
-        if self.side == 'front':
-            self.side = 'back'
-            self.children = self.children_back
-        else:
-            self.side = 'front'
-            self.children = self.children_front
-
-    def flip_to(self, to):
-        '''Flip to a specified side
-        :Parameters:
-            `to` : string
-                Side to switch on, can be 'back' or 'front'.
-        '''
-        if to == 'back' and self.side == 'front':
-            self.flip_children()
-        elif to == 'front' and self.side == 'back':
-            self.flip_children()
-
-    def flip(self):
-       '''Triggers a flipping animation'''
-       if self.side == 'front':
-           self.anim.value_to = 180
-       else:
-           self.anim.value_to = 0
-       self.anim.reset()
-       self.anim.start()
-
     def on_draw(self):
         if not self.visible:
             return
-        if self.zangle < 90:
-            self.flip_to('front')
-        else:
-            self.flip_to('back')
-        with gx_matrix:
-            glMultMatrixf(self.transform_mat)
-
-            # in animation state, do rotation at the center
-            # to make it more nice too look :)
-            if (self.side == 'front' and self.zangle != 0) or \
-               (self.side == 'back' and self.zangle != 180):
-                glTranslatef(self.width / 2, 0, 0)
-                if self.side == 'front':
-                    glRotatef(self.zangle, 0, 1, 0)
-                else:
-                    glRotatef(self.zangle + 180, 0, 1, 0)
-                glTranslatef(-self.width / 2, 0, 0)
-            super(MTScatterWidget, self).on_draw()
+        super(MTScatterWidget, self).on_draw()
 
     def to_parent(self, x, y):
         if self.__to_parent == (x, y):

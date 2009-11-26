@@ -140,7 +140,9 @@ class MTScatterWidget(MTWidget):
     def on_draw(self):
         if not self.visible:
             return
-        super(MTScatterWidget, self).on_draw()
+        with gx_matrix:
+            glMultMatrixf(self.transform_mat)
+            super(MTScatterWidget, self).on_draw()
 
     def to_parent(self, x, y):
         if self.__to_parent == (x, y):

@@ -20,6 +20,7 @@ from ...clock import getClock
 from ...graphx import set_color, drawCircle, drawLabel, drawRectangle, drawCSSRectangle
 from ...modules import pymt_modules
 from ...event import EventDispatcher
+from ...utils import SafeList
 from ..colors import css_get_style
 from ..factory import MTWidgetFactory
 from ..widgets import MTWidget
@@ -96,7 +97,7 @@ class BaseWindow(EventDispatcher):
         if len(kwargs.get('style')):
             self.apply_css(kwargs.get('style'))
 
-        self.children = []
+        self.children = SafeList()
         self.parent = self
         self.visible = True
 
@@ -291,7 +292,7 @@ class BaseWindow(EventDispatcher):
         '''Event called when window are update the widget tree.
         (Usually before on_draw call.)
         '''
-        for w in self.children:
+        for w in self.children.iterate():
             w.dispatch_event('on_update')
 
     def on_draw(self):
@@ -303,7 +304,7 @@ class BaseWindow(EventDispatcher):
         self.draw()
 
         # then, draw childrens
-        for w in self.children:
+        for w in self.children.iterate():
             w.dispatch_event('on_draw')
 
         if self.show_fps:
@@ -326,21 +327,21 @@ class BaseWindow(EventDispatcher):
     def on_touch_down(self, touch):
         '''Event called when a touch is down'''
         touch.scale_for_screen(*self.size)
-        for w in reversed(self.children):
+        for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_down', touch):
                 return True
 
     def on_touch_move(self, touch):
         '''Event called when a touch move'''
         touch.scale_for_screen(*self.size)
-        for w in reversed(self.children):
+        for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_move', touch):
                 return True
 
     def on_touch_up(self, touch):
         '''Event called when a touch up'''
         touch.scale_for_screen(*self.size)
-        for w in reversed(self.children):
+        for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_up', touch):
                 return True
 
@@ -357,7 +358,7 @@ class BaseWindow(EventDispatcher):
     def on_close(self, *largs):
         '''Event called when the window is closed'''
         pymt_modules.unregister_window(self)
-        if self in touch_event_listeners:
+        if self in touch_event_listeners[:]:
             touch_event_listeners.remove(self)
 
     def on_mouse_down(self, x, y, button, modifiers):

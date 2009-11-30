@@ -68,8 +68,9 @@ def get_color_from_hex(s):
 
 def get_random_color(alpha=1.0):
     ''' Returns a random color (4 tuple)
-        optional arg:  alpha
-            default: alpha=1.0
+
+    :Parameters:
+        `alpha` : float, default to 1.0
             if alpha == 'random' a random alpha value is generated
     '''
     from random import random

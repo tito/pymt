@@ -144,23 +144,28 @@ class MTButton(MTWidget):
         self.label_obj.draw()
 
     def on_touch_down(self, touch):
-        if self.collide_point(touch.x, touch.y):
-            self._state = ('down', touch.id)
-            self.dispatch_event('on_press', touch)
-            return True
+        if not self.collide_point(touch.x, touch.y):
+            return False
+        if self._state[1] != 0:
+            return False
+        self._state = ('down', touch.id)
+        self.dispatch_event('on_press', touch)
+        touch.grab(self)
+        return True
 
     def on_touch_move(self, touch):
-        if self._state[1] == touch.id and not self.collide_point(touch.x, touch.y):
-            self._state = ('normal', 0)
-            return True
-        return self.collide_point(touch.x, touch.y)
+        # take the grabbed touch for us.
+        if not touch.grab_current == self:
+            return False
+        return True
 
     def on_touch_up(self, touch):
-        if self._state[1] == touch.id and self.collide_point(touch.x, touch.y):
-            self._state = ('normal', 0)
-            self.dispatch_event('on_release', touch)
-            return True
-        return self.collide_point(touch.x, touch.y)
+        if not touch.grab_current == self:
+            return False
+        touch.ungrab(self)
+        self._state = ('normal', 0)
+        self.dispatch_event('on_release', touch)
+        return True
 
 
 class MTToggleButton(MTButton):
@@ -170,23 +175,25 @@ class MTToggleButton(MTButton):
         super(MTToggleButton, self).__init__(**kwargs)
 
     def on_touch_down(self, touch):
-        if self.collide_point(touch.x, touch.y):
-            if self.get_state() == 'down':
-                self._state = ('normal', touch.id)
-            else:
-                self._state = ('down', touch.id)
-            self.dispatch_event('on_press', touch)
-            return True
-
-    def on_touch_move(self, touch):
-        if self._state[1] == touch.id and not self.collide_point(touch.x, touch.y):
-            return True
+        if not self.collide_point(touch.x, touch.y):
+            return False
+        if self._state[1] != 0:
+            return False
+        if self.get_state() == 'down':
+            self._state = ('normal', touch.id)
+        else:
+            self._state = ('down', touch.id)
+        self.dispatch_event('on_press', touch)
+        touch.grab(self)
+        return True
 
     def on_touch_up(self, touch):
-        if self._state[1] == touch.id and self.collide_point(touch.x, touch.y):
-            self.dispatch_event('on_release', touch)
-            return True
-
+        if not touch.grab_current == self:
+            return False
+        touch.ungrab(self)
+        self._state = (self.state, 0)
+        self.dispatch_event('on_release', touch)
+        return True
 
 class MTImageButton(MTButton):
     '''MTImageButton is a enhanced MTButton

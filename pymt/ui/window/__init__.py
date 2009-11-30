@@ -115,7 +115,6 @@ class BaseWindow(EventDispatcher):
             if params['fullscreen'] != 'auto':
                 params['fullscreen'] = params['fullscreen'].lower() in \
                     ('true', '1', 'yes', 'yup')
-                params['']
 
         if 'width' in kwargs:
             params['width'] = kwargs.get('width')

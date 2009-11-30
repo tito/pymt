@@ -10,6 +10,7 @@ from OpenGL.GL import *
 from ...graphx import drawRectangle, gx_matrix, gx_matrix_identity, set_color, \
     drawTexturedRectangle, gx_blending
 from ...vector import Vector, matrix_mult, matrix_inv_mult
+from ...utils import SafeList
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
 from svg import MTSvg
@@ -90,7 +91,7 @@ class MTScatterWidget(MTWidget):
         self.__width = 0
         self.__height = 0
 
-        self.children = []
+        self.children = SafeList()
 
         self.touches        = {}
         self.scale          = 1

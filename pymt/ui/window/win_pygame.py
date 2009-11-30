@@ -32,6 +32,7 @@ class MTWindowPygame(BaseWindow):
         if params['fullscreen']:
             pymt_logger.debug('Set window to fullscreen mode')
             self.flags |= pygame.FULLSCREEN
+        self._fullscreenmode = params['fullscreen']
 
         # init ourself size + setmode
         # before calling on_resize
@@ -132,7 +133,12 @@ class MTWindowPygame(BaseWindow):
     def _pygame_set_mode(self, size=None):
         if size is None:
             size = self.size
-        pygame.display.set_mode(size, self.flags)
+        if self._fullscreenmode == 'auto':
+            pygame.display.set_mode((0, 0), self.flags)
+            info = pygame.display.Info()
+            self._size = (info.current_w, info.current_h)
+        else:
+            pygame.display.set_mode(size, self.flags)
 
     def _pygame_update_modifiers(self, mods=None):
         # Available mod, from dir(pygame)

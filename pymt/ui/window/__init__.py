@@ -111,7 +111,11 @@ class BaseWindow(EventDispatcher):
         if 'fullscreen' in kwargs:
             params['fullscreen'] = kwargs.get('fullscreen')
         else:
-            params['fullscreen'] = pymt.pymt_config.getboolean('graphics', 'fullscreen')
+            params['fullscreen'] = pymt.pymt_config.get('graphics', 'fullscreen')
+            if params['fullscreen'] != 'auto':
+                params['fullscreen'] = params['fullscreen'].lower() in \
+                    ('true', '1', 'yes', 'yup')
+                params['']
 
         if 'width' in kwargs:
             params['width'] = kwargs.get('width')

@@ -95,10 +95,7 @@ class MTWidget(EventDispatcher):
         'on_draw',
         'on_touch_up',
         'on_touch_move',
-        'on_touch_down',
-        'on_animation_complete',
-        'on_animation_reset',
-        'on_animation_start'
+        'on_touch_down'
     ]
     def __init__(self, **kwargs):
         kwargs.setdefault('pos', (0, 0))
@@ -362,9 +359,17 @@ class MTWidget(EventDispatcher):
         '''Hide the widget'''
         self.visible = False
 
+        # unregister all event used for drawing / interaction
+        for ev in MTWidget.visible_events:
+            self.unregister_event_type(ev)
+
     def show(self):
         '''Show the widget'''
         self.visible = True
+
+        # register all event used for drawing / interaction
+        for ev in MTWidget.visible_events:
+            self.register_event_type(ev)
 
     def on_update(self):
         for w in self.children.iterate():

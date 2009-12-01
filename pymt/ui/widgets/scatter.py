@@ -148,7 +148,7 @@ class MTScatterWidget(MTWidget):
     def to_parent(self, x, y):
         if self.__to_parent == (x, y):
             return (self.__to_parent_x, self.__to_parent_y)
-        
+
         self.__to_parent = (x, y)
         self.new_point = matrix_mult(self.transform_mat, (x, y, 0, 1))
         self.__to_parent_x, self.__to_parent_y = self.new_point.x, self.new_point.y

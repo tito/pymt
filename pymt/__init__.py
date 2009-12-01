@@ -9,11 +9,14 @@ You can visit http://code.google.com/p/pymt/ for more informations !
 '''
 
 from __future__ import with_statement
-import ConfigParser
+from ConfigParser import ConfigParser
 import sys
 import getopt
 import os
 from logger import pymt_logger, LOG_LEVELS
+
+# Version number of current configuration format
+PYMT_CONFIG_VERSION = 2
 
 # Global settings options for pymt
 options = {
@@ -60,34 +63,32 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     if not os.path.exists(pymt_usermodules_dir):
         os.mkdir(pymt_usermodules_dir)
 
+
+    #
+    # Read, analyse configuration file
+    # Support upgrade of older config file version
+    # FIXME: move configuration part in another file
+    #
+
+    class PyMTConfigParser(ConfigParser):
+        def setdefault(self, section, option, value):
+            if self.has_option(section, option):
+                return
+            self.set(section, option, value)
+        def getdefault(self, section, option, defaultvalue):
+            if not self.has_section(section):
+                return defaultvalue
+            if not self.has_option(section, option):
+                return defaultvalue
+            return self.getint(section, option)
+        def adddefaultsection(self, section):
+            if self.has_section(section):
+                return
+            self.add_section(section)
+
+
     # Create default configuration
-    pymt_config = ConfigParser.ConfigParser()
-    pymt_config.add_section('pymt')
-    pymt_config.set('pymt', 'show_fps', '0')
-    pymt_config.set('pymt', 'show_eventstats', '0')
-    pymt_config.set('pymt', 'log_level', 'info')
-    pymt_config.set('pymt', 'double_tap_time', '250')
-    pymt_config.set('pymt', 'double_tap_distance', '20')
-    pymt_config.set('pymt', 'enable_simulator', '1')
-    pymt_config.set('pymt', 'ignore', '[]')
-    pymt_config.add_section('keyboard')
-    pymt_config.set('keyboard', 'layout', 'qwerty')
-    pymt_config.add_section('graphics')
-    pymt_config.set('graphics', 'fbo', 'hardware')
-    pymt_config.set('graphics', 'fullscreen', '1')
-    pymt_config.set('graphics', 'width', '640')
-    pymt_config.set('graphics', 'height', '480')
-    pymt_config.set('graphics', 'vsync', '1')
-    pymt_config.set('graphics', 'display', '-1')
-    pymt_config.set('graphics', 'line_smooth', '1')
-    pymt_config.add_section('input')
-    pymt_config.set('input', 'default', 'tuio,0.0.0.0:3333')
-    pymt_config.set('input', 'mouse', 'mouse')
-    pymt_config.add_section('dump')
-    pymt_config.set('dump', 'enabled', '0')
-    pymt_config.set('dump', 'prefix', 'img_')
-    pymt_config.set('dump', 'format', 'jpeg')
-    pymt_config.add_section('modules')
+    pymt_config = PyMTConfigParser()
 
     # Read config file if exist
     if os.path.exists(pymt_config_fn):
@@ -95,12 +96,81 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
             pymt_config.read(pymt_config_fn)
         except Exception, e:
             pymt_logger.exception('error while reading local configuration')
-    else:
+
+    pymt_config_version = pymt_config.getdefault('pymt', 'config_version', 0)
+
+    # Add defaults section
+    pymt_config.adddefaultsection('pymt')
+    pymt_config.adddefaultsection('keyboard')
+    pymt_config.adddefaultsection('graphics')
+    pymt_config.adddefaultsection('input')
+    pymt_config.adddefaultsection('dump')
+    pymt_config.adddefaultsection('modules')
+
+    # Upgrade default configuration until having the current version
+    need_save = False
+    if pymt_config_version != PYMT_CONFIG_VERSION:
+        pymt_logger.warning('Config: Older configuration version detected (%d instead of %d)' % (
+                            pymt_config_version, PYMT_CONFIG_VERSION))
+        pymt_logger.warning('Config: Upgrading configuration in progress.')
+        need_save = True
+
+    while pymt_config_version != PYMT_CONFIG_VERSION:
+        pymt_logger.debug('Config: Upgrading from %d' % pymt_config_version)
+
+        # Versionning introduced in version 0.4.
+        if pymt_config_version == 0:
+
+            pymt_config.setdefault('pymt', 'show_fps', '0')
+            pymt_config.setdefault('pymt', 'show_eventstats', '0')
+            pymt_config.setdefault('pymt', 'log_level', 'info')
+            pymt_config.setdefault('pymt', 'double_tap_time', '250')
+            pymt_config.setdefault('pymt', 'double_tap_distance', '20')
+            pymt_config.setdefault('pymt', 'enable_simulator', '1')
+            pymt_config.setdefault('pymt', 'ignore', '[]')
+            pymt_config.setdefault('keyboard', 'layout', 'qwerty')
+            pymt_config.setdefault('graphics', 'fbo', 'hardware')
+            pymt_config.setdefault('graphics', 'fullscreen', '1')
+            pymt_config.setdefault('graphics', 'width', '640')
+            pymt_config.setdefault('graphics', 'height', '480')
+            pymt_config.setdefault('graphics', 'vsync', '1')
+            pymt_config.setdefault('graphics', 'display', '-1')
+            pymt_config.setdefault('graphics', 'line_smooth', '1')
+            pymt_config.setdefault('dump', 'enabled', '0')
+            pymt_config.setdefault('dump', 'prefix', 'img_')
+            pymt_config.setdefault('dump', 'format', 'jpeg')
+            pymt_config.setdefault('input', 'default', 'tuio,0.0.0.0:3333')
+            pymt_config.setdefault('input', 'mouse', 'mouse')
+
+            # activate native input provider in configuration
+            if sys.platform == 'darwin':
+                pymt_config.setdefault('input', 'mactouch', 'mactouch')
+            elif sys.platform == 'win32':
+                pymt_config.setdefault('input', 'wm_touch', 'wm_touch')
+                pymt_config.setdefault('input', 'wm_pen', 'wm_pen')
+
+        elif pymt_config_version == 1:
+            # add retain postproc configuration
+            pymt_config.setdefault('pymt', 'retain_time', '0')
+            pymt_config.setdefault('pymt', 'retain_distance', '50')
+
+        else:
+            # for future.
+            pass
+
+        # Pass to the next version
+        pymt_config_version += 1
+
+    # Said to pymt_config that we've upgrade to latest version.
+    pymt_config.set('pymt', 'config_version', PYMT_CONFIG_VERSION)
+
+    if not os.path.exists(pymt_config_fn) or need_save:
         try:
             with open(pymt_config_fn, 'w') as fd:
                 pymt_config.write(fd)
         except Exception, e:
             pymt_logger.exception('error while saving default configuration file')
+
 
     # Set level of logger
     level = LOG_LEVELS.get(pymt_config.get('pymt', 'log_level'))

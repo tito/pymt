@@ -20,6 +20,7 @@ from ...clock import getClock
 from ...graphx import set_color, drawCircle, drawLabel, drawRectangle, drawCSSRectangle
 from ...modules import pymt_modules
 from ...event import EventDispatcher
+from ...utils import SafeList
 from ..colors import css_get_style
 from ..factory import MTWidgetFactory
 from ..widgets import MTWidget
@@ -46,6 +47,8 @@ class BaseWindow(EventDispatcher):
 
     __instance = None
     __initialized = False
+    _wallpaper = None
+    _wallpaper_position = 'norepeat'
 
     def __new__(type, **kwargs):
         if type.__instance is None:
@@ -98,7 +101,7 @@ class BaseWindow(EventDispatcher):
         if len(kwargs.get('style')):
             self.apply_css(kwargs.get('style'))
 
-        self.children = []
+        self.children = SafeList()
         self.parent = self
         self.visible = True
 
@@ -112,7 +115,10 @@ class BaseWindow(EventDispatcher):
         if 'fullscreen' in kwargs:
             params['fullscreen'] = kwargs.get('fullscreen')
         else:
-            params['fullscreen'] = pymt.pymt_config.getboolean('graphics', 'fullscreen')
+            params['fullscreen'] = pymt.pymt_config.get('graphics', 'fullscreen')
+            if params['fullscreen'] != 'auto':
+                params['fullscreen'] = params['fullscreen'].lower() in \
+                    ('true', '1', 'yes', 'yup')
 
         if 'width' in kwargs:
             params['width'] = kwargs.get('width')
@@ -221,6 +227,23 @@ class BaseWindow(EventDispatcher):
         return (self.width/2, self.height/2)
     center = property(_get_center)
 
+
+    def _get_wallpaper(self):
+        return self._wallpaper
+    def _set_wallpaper(self, filename):
+        self._wallpaper = pymt.Image(filename)
+    wallpaper = property(_get_wallpaper, _set_wallpaper,
+            doc='Get/set the wallpaper (must be a valid filename)')
+
+    def _get_wallpaper_position(self):
+        return self._wallpaper_position
+    def _set_wallpaper_position(self, position):
+        self._wallpaper_position = position
+    wallpaper_position = property(
+            _get_wallpaper_position, _set_wallpaper_position,
+            doc='Get/set the wallpaper position (can be one of' +
+                '"norepeat", "center", "repeat", "scale")')
+
     def init_gl(self):
         # check if window have multisample
         """
@@ -263,11 +286,43 @@ class BaseWindow(EventDispatcher):
     def draw(self):
         '''Draw the window background'''
         self.clear()
-        if self.draw_gradient:
             # FIXME: avoid to clear the background if we are drawing a rect
             # draw a nice gradient
             set_color(*self.cssstyle.get('bg-color'))
             drawCSSRectangle(size=self.size, style=self.cssstyle)
+        if self.wallpaper is not None:
+            self.draw_wallpaper()
+        elif self.draw_gradient:
+            self.draw_gradient()
+
+    def draw_gradient(self):
+        set_color(*self.cssstyle.get('bg-color'))
+        drawCSSRectangle(size=self.size, style=self.cssstyle)
+
+    def draw_wallpaper(self):
+        if self.wallpaper_position == 'center':
+            self.wallpaper.x = (self.width - self.wallpaper.width) / 2
+            self.wallpaper.y = (self.height - self.wallpaper.height) / 2
+            self.wallpaper.draw()
+        elif self.wallpaper_position == 'repeat':
+            r_x = float(self.width) / self.wallpaper.width
+            r_y = float(self.height) / self.wallpaper.height
+            if int(r_x) != r_x:
+                r_x = int(r_x) + 1
+            if int(r_y) != r_y:
+                r_y = int(r_y) + 1
+            for x in xrange(int(r_x)):
+                for y in xrange(int(r_y)):
+                    self.wallpaper.x = x * self.wallpaper.width
+                    self.wallpaper.y = y * self.wallpaper.height
+                    self.wallpaper.draw()
+        elif self.wallpaper_position == 'scale':
+            self.wallpaper.size = self.size
+            self.wallpaper.draw()
+        else:
+            # no-repeat or any other options
+            self.wallpaper.draw()
+
 
     def draw_mouse_touch(self):
         '''Compatibility for MouseTouch, drawing a little red circle around
@@ -295,7 +350,7 @@ class BaseWindow(EventDispatcher):
         '''Event called when window are update the widget tree.
         (Usually before on_draw call.)
         '''
-        for w in self.children:
+        for w in self.children.iterate():
             w.dispatch_event('on_update')
 
     def on_draw(self):
@@ -307,7 +362,7 @@ class BaseWindow(EventDispatcher):
         self.draw()
 
         # then, draw childrens
-        for w in self.children:
+        for w in self.children.iterate():
             w.dispatch_event('on_draw')
 
         if self.show_fps:
@@ -330,21 +385,21 @@ class BaseWindow(EventDispatcher):
     def on_touch_down(self, touch):
         '''Event called when a touch is down'''
         touch.scale_for_screen(*self.size)
-        for w in reversed(self.children):
+        for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_down', touch):
                 return True
 
     def on_touch_move(self, touch):
         '''Event called when a touch move'''
         touch.scale_for_screen(*self.size)
-        for w in reversed(self.children):
+        for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_move', touch):
                 return True
 
     def on_touch_up(self, touch):
         '''Event called when a touch up'''
         touch.scale_for_screen(*self.size)
-        for w in reversed(self.children):
+        for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_up', touch):
                 return True
 
@@ -361,7 +416,7 @@ class BaseWindow(EventDispatcher):
     def on_close(self, *largs):
         '''Event called when the window is closed'''
         pymt_modules.unregister_window(self)
-        if self in touch_event_listeners:
+        if self in touch_event_listeners[:]:
             touch_event_listeners.remove(self)
 
     def on_mouse_down(self, x, y, button, modifiers):

@@ -62,7 +62,7 @@ class LabelBase(BaseObject):
         pymt.set_color(*self.color, blend=True)
         pymt.drawTexturedRectangle(
             texture=self.texture,
-            pos=(x, y), size=self.texture.size)
+            pos=(int(x), int(y)), size=self.texture.size)
 
     def _get_label(self):
         return self._label

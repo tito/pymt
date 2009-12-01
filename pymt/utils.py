@@ -5,7 +5,7 @@ Utils: generic toolbox
 __all__ = ['intersection', 'difference', 'curry', 'strtotuple',
            'get_color_from_hex', 'get_color_for_pyglet', 'get_random_color',
            'is_color_transparent', 'boundary', 'connect',
-           'deprecated']
+           'deprecated', 'SafeList']
 
 import re
 import functools
@@ -68,8 +68,9 @@ def get_color_from_hex(s):
 
 def get_random_color(alpha=1.0):
     ''' Returns a random color (4 tuple)
-        optional arg:  alpha
-            default: alpha=1.0
+
+    :Parameters:
+        `alpha` : float, default to 1.0
             if alpha == 'random' a random alpha value is generated
     '''
     from random import random
@@ -106,4 +107,55 @@ def deprecated(func):
         logger.pymt_logger.warn(warning)
         return func(*args, **kwargs)
     return new_func
+
+class SafeList(list):
+    '''Special list that some case of list modification while iterating on it.
+    It's mainly used for children ::
+
+        children = SafeList()
+        for child in children.iterate():
+            if child == mychild:
+                children.remove(child)
+
+    .. warning::
+        Only append,remove,insert methods are protected.
+    '''
+    def __init__(self, *largs, **kwargs):
+        super(SafeList, self).__init__(*largs, **kwargs)
+        self.clone = None
+        self.in_iterate = False
+
+    def iterate(self, reverse=False):
+        '''Safe iteration in items.
+        
+        .. warning::
+            Iterate don't support recursive call.
+        '''
+        self.in_iterate = True
+        ref = self
+        if reverse:
+            rng = xrange(len(ref) - 1, -1, -1)
+        else:
+            rng = xrange(0, len(ref))
+        for x in rng:
+            yield ref[x]
+            if self.clone:
+                ref = self.clone
+        self.clone = None
+        self.in_iterate = False
+
+    def append(self, value):
+        if self.in_iterate and not self.clone:
+            self.clone = self[:]
+        super(SafeList, self).append(value)
+
+    def remove(self, value):
+        if self.in_iterate and not self.clone:
+            self.clone = self[:]
+        super(SafeList, self).remove(value)
+
+    def insert(self, index, value):
+        if self.in_iterate and not self.clone:
+            self.clone = self[:]
+        super(SafeList, self).insert(index, value)
 

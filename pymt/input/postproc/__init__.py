@@ -8,10 +8,12 @@ import os
 import sys
 import doubletap
 import ignorelist
+import retaintouch
 
 pymt_postproc_modules = []
 
 # Don't go further if we generate documentation
 if os.path.basename(sys.argv[0]) not in ('sphinx-build', 'autobuild.py'):
+    pymt_postproc_modules.append(retaintouch.InputPostprocRetainTouch())
     pymt_postproc_modules.append(ignorelist.InputPostprocIgnoreList())
     pymt_postproc_modules.append(doubletap.InputPostprocDoubleTap())

@@ -13,6 +13,7 @@ from ...event import EventDispatcher
 from ...logger import pymt_logger
 from ...base import getCurrentTouches
 from ...input import Touch
+from ...utils import SafeList
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
 from ..colors import css_get_style
@@ -78,12 +79,6 @@ class MTWidget(EventDispatcher):
             Used to update the widget and his children.
         `on_draw` ()
             Used to draw the widget and his children.
-        `on_mouse_press` (int x, int y, int button, int modifiers)
-            Fired when mouse is pressed
-        `on_mouse_release` (int x, int y, int button, int modifiers)
-            Fired when mouse is release
-        `on_mouse_drag` (int x, int y, int dx, int dy, int button, int modifiers)
-            Fired when mouse is draw
         `on_touch_down` (Touch touch)
             Fired when a blob appear
         `on_touch_move` (Touch touch)
@@ -98,15 +93,9 @@ class MTWidget(EventDispatcher):
     visible_events = [
         'on_update',
         'on_draw',
-        'on_mouse_press',
-        'on_mouse_drag',
-        'on_mouse_release',
         'on_touch_up',
         'on_touch_move',
-        'on_touch_down',
-        'on_animation_complete',
-        'on_animation_reset',
-        'on_animation_start'
+        'on_touch_down'
     ]
     def __init__(self, **kwargs):
         kwargs.setdefault('pos', (0, 0))
@@ -132,7 +121,7 @@ class MTWidget(EventDispatcher):
             self.register_event_type(ev)
 
         self.parent					= None
-        self.children				= []
+        self.children				= SafeList()
         self._visible				= False
         self._x, self._y			= kwargs.get('pos')
         self._width, self._height	= kwargs.get('size')
@@ -370,12 +359,20 @@ class MTWidget(EventDispatcher):
         '''Hide the widget'''
         self.visible = False
 
+        # unregister all event used for drawing / interaction
+        for ev in MTWidget.visible_events:
+            self.unregister_event_type(ev)
+
     def show(self):
         '''Show the widget'''
         self.visible = True
 
+        # register all event used for drawing / interaction
+        for ev in MTWidget.visible_events:
+            self.register_event_type(ev)
+
     def on_update(self):
-        for w in self.children:
+        for w in self.children.iterate():
             w.dispatch_event('on_update')
 
     def on_draw(self):
@@ -384,7 +381,7 @@ class MTWidget(EventDispatcher):
 
         self.draw()
         if self.draw_children:
-            for w in self.children:
+            for w in self.children.iterate():
                 w.dispatch_event('on_draw')
 
     def draw(self):
@@ -410,7 +407,7 @@ class MTWidget(EventDispatcher):
 
     def remove_widget(self, w):
         '''Remove a widget from the children list'''
-        if w in self.children:
+        if w in self.children.iterate():
             self.children.remove(w)
 
     def __setattr__(self, name, value):
@@ -420,43 +417,28 @@ class MTWidget(EventDispatcher):
         pass
 
     def on_resize(self, w, h):
-        for c in self.children:
+        for c in self.children.iterate():
             c.dispatch_event('on_parent_resize', w, h)
 
     def on_move(self, x, y):
-        for c in self.children:
+        for c in self.children.iterate():
             c.dispatch_event('on_move', x, y)
 
     def on_touch_down(self, touch):
-        for w in reversed(self.children):
+        for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_down', touch):
                 return True
 
     def on_touch_move(self, touch):
-        for w in reversed(self.children):
+        for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_move', touch):
                 return True
 
     def on_touch_up(self, touch):
-        for w in reversed(self.children):
+        for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_up', touch):
                 return True
 
-    def on_mouse_press(self, x, y, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_press',x, y, button, modifiers):
-                return True
-
-    def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_drag',x, y, dx, dy, button, modifiers):
-                return True
-
-    def on_mouse_release(self, x, y, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_release', x, y, button, modifiers):
-                return True
-    
     def do(self,*largs):
         '''Apply/Start animations on the widgets.
         :Parameters:

@@ -10,6 +10,7 @@ from OpenGL.GL import *
 from ...graphx import drawRectangle, gx_matrix, gx_matrix_identity, set_color, \
     drawTexturedRectangle, gx_blending
 from ...vector import Vector, matrix_mult, matrix_inv_mult
+from ...utils import SafeList
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
 from svg import MTSvg
@@ -60,9 +61,9 @@ class MTScatterWidget(MTWidget):
         kwargs.setdefault('scale_min', 0.01)
         kwargs.setdefault('scale_max', None)
 
-        self.register_event_type('on_transform')
-
         super(MTScatterWidget, self).__init__(**kwargs)
+
+        self.register_event_type('on_transform')
 
         self.auto_bring_to_front = kwargs.get('auto_bring_to_front')
         self.scale_min      = kwargs.get('scale_min')
@@ -90,7 +91,7 @@ class MTScatterWidget(MTWidget):
         self.__width = 0
         self.__height = 0
 
-        self.children = []
+        self.children = SafeList()
 
         self.touches        = {}
         self.scale          = 1
@@ -140,12 +141,14 @@ class MTScatterWidget(MTWidget):
     def on_draw(self):
         if not self.visible:
             return
-        super(MTScatterWidget, self).on_draw()
+        with gx_matrix:
+            glMultMatrixf(self.transform_mat)
+            super(MTScatterWidget, self).on_draw()
 
     def to_parent(self, x, y):
         if self.__to_parent == (x, y):
             return (self.__to_parent_x, self.__to_parent_y)
-        
+
         self.__to_parent = (x, y)
         self.new_point = matrix_mult(self.transform_mat, (x, y, 0, 1))
         self.__to_parent_x, self.__to_parent_y = self.new_point.x, self.new_point.y

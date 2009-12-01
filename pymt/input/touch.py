@@ -55,6 +55,12 @@ class Touch(object):
     '''
 
     __uniq_id = 0
+    copy_attributes = \
+        ('id','sx','sy','sz','a','b','c',
+         'X','Y','Z','A','B','C','m','r',
+         'profile','x','y','z','dxpos',
+         'dypos','dzpos',)
+
 
     def __init__(self, device, id, args):
         if self.__class__ == Touch:
@@ -177,6 +183,11 @@ class Touch(object):
         attrs, values = self.attr.pop()
         for i in xrange(len(attrs)):
             setattr(self, attrs[i], values[i])
+
+    def copy_to(self, to):
+        '''Copy some attribute to another touch object.'''
+        for attr in self.copy_attributes:
+            to.__setattr__(attr, self.__getattribute__(attr))
 
     def __str__(self):
         classname = str(self.__class__).split('.')[-1].replace('>', '').replace('\'', '')

@@ -16,7 +16,7 @@ import os
 from logger import pymt_logger, LOG_LEVELS
 
 # Version number of current configuration format
-PYMT_CONFIG_VERSION = 1
+PYMT_CONFIG_VERSION = 2
 
 # Global settings options for pymt
 options = {
@@ -108,12 +108,13 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     pymt_config.adddefaultsection('modules')
 
     # Upgrade default configuration until having the current version
+    need_save = False
     if pymt_config_version != PYMT_CONFIG_VERSION:
         pymt_logger.warning('Config: Older configuration version detected (%d instead of %d)' % (
                             pymt_config_version, PYMT_CONFIG_VERSION))
         pymt_logger.warning('Config: Upgrading configuration in progress.')
-        pymt_logger.warning('Config: To prevent to see this message, you need to write your new configuration file.')
-        pymt_logger.warning('Config: Run any example with -s option to save your new configuration file.')
+        need_save = True
+
     while pymt_config_version != PYMT_CONFIG_VERSION:
         pymt_logger.debug('Config: Upgrading from %d' % pymt_config_version)
 
@@ -148,6 +149,11 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
                 pymt_config.setdefault('input', 'wm_touch', 'wm_touch')
                 pymt_config.setdefault('input', 'wm_pen', 'wm_pen')
 
+        elif pymt_config_version == 1:
+            # add retain postproc configuration
+            pymt_config.setdefault('pymt', 'retain_time', '0')
+            pymt_config.setdefault('pymt', 'retain_distance', '50')
+
         else:
             # for future.
             pass
@@ -158,7 +164,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     # Said to pymt_config that we've upgrade to latest version.
     pymt_config.set('pymt', 'config_version', PYMT_CONFIG_VERSION)
 
-    if not os.path.exists(pymt_config_fn):
+    if not os.path.exists(pymt_config_fn) or need_save:
         try:
             with open(pymt_config_fn, 'w') as fd:
                 pymt_config.write(fd)

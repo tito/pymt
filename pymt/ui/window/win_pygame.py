@@ -37,6 +37,7 @@ class MTWindowPygame(BaseWindow):
         # init ourself size + setmode
         # before calling on_resize
         self._size = params['width'], params['height']
+        self._vsync = params['vsync']
         self._pygame_set_mode()
 
         super(MTWindowPygame, self).create_window(params)
@@ -55,6 +56,19 @@ class MTWindowPygame(BaseWindow):
     def flip(self):
         pygame.display.flip()
         super(MTWindowPygame, self).flip()
+
+        # do software vsync if asked
+        # FIXME: vsync is surely not 60 for everyone
+        # this is not a real vsync. this must be done by driver...
+        # but pygame can't do vsync on X11, and some people 
+        # use hack to make it work under darwin...
+        if self._vsync:
+            from pymt.clock import getClock
+            import time
+            s = 1/60. - (time.time() - getClock().get_time())
+            if s > 0:
+                time.sleep(s)
+
 
     def mainloop(self):
         # don't known why, but pygame required a resize event

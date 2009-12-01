@@ -64,15 +64,15 @@ class MTButton(MTWidget):
         kwargs.setdefault('multiline', False)
         kwargs.setdefault('width', 0)
 
-        self.register_event_type('on_press')
-        self.register_event_type('on_release')
-
         self.button_dl      = GlDisplayList()
         self._state         = ('normal', 0)
         self._label         = unicode(kwargs.get('label'))
         self.label_obj      = None
 
         super(MTButton, self).__init__(**kwargs)
+
+        self.register_event_type('on_press')
+        self.register_event_type('on_release')
 
         fw = self.style.get('font-weight')
         self.label_obj      = pymt.Label(**kwargs)

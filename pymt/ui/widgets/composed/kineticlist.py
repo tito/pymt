@@ -83,6 +83,7 @@ class MTKineticList(MTStencilContainer):
         kwargs.setdefault('trigger_distance', 3)
 
         super(MTKineticList, self).__init__(**kwargs)
+
         self.register_event_type('on_delete')
 
         self.do_x       = kwargs.get('do_x')

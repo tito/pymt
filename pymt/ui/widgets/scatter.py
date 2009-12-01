@@ -61,9 +61,9 @@ class MTScatterWidget(MTWidget):
         kwargs.setdefault('scale_min', 0.01)
         kwargs.setdefault('scale_max', None)
 
-        self.register_event_type('on_transform')
-
         super(MTScatterWidget, self).__init__(**kwargs)
+
+        self.register_event_type('on_transform')
 
         self.auto_bring_to_front = kwargs.get('auto_bring_to_front')
         self.scale_min      = kwargs.get('scale_min')

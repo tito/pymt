@@ -43,10 +43,18 @@ import inspect
 
 class EventDispatcher(object):
     _event_stack = ()
-    _event_types = []
+
+    def __init__(self):
+        super(EventDispatcher, self).__init__()
+        self._event_types = []
+
+    def unregister_event_type(self, event_type):
+        if event_type in self._event_types:
+            self._event_types.remove(event_type)
 
     def register_event_type(self, event_type):
-        self._event_types.append(event_type)
+        if not event_type in self._event_types:
+            self._event_types.append(event_type)
 
     def push_handlers(self, *args, **kwargs):
         # Create event stack if necessary

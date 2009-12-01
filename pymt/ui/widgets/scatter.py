@@ -61,9 +61,9 @@ class MTScatterWidget(MTWidget):
         kwargs.setdefault('scale_min', 0.01)
         kwargs.setdefault('scale_max', None)
 
-        self.register_event_type('on_transform')
-
         super(MTScatterWidget, self).__init__(**kwargs)
+
+        self.register_event_type('on_transform')
 
         self.auto_bring_to_front = kwargs.get('auto_bring_to_front')
         self.scale_min      = kwargs.get('scale_min')
@@ -148,7 +148,7 @@ class MTScatterWidget(MTWidget):
     def to_parent(self, x, y):
         if self.__to_parent == (x, y):
             return (self.__to_parent_x, self.__to_parent_y)
-        
+
         self.__to_parent = (x, y)
         self.new_point = matrix_mult(self.transform_mat, (x, y, 0, 1))
         self.__to_parent_x, self.__to_parent_y = self.new_point.x, self.new_point.y

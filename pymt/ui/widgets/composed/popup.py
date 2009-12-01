@@ -47,7 +47,7 @@ class MTPopup(MTScatterWidget):
 
         self.register_event_type('on_submit')
         self.register_event_type('on_cancel')
-        
+
         self.exit_on_submit = kwargs.get('exit_on_submit')
 
         # Create layouts

@@ -79,12 +79,6 @@ class MTWidget(EventDispatcher):
             Used to update the widget and his children.
         `on_draw` ()
             Used to draw the widget and his children.
-        `on_mouse_press` (int x, int y, int button, int modifiers)
-            Fired when mouse is pressed
-        `on_mouse_release` (int x, int y, int button, int modifiers)
-            Fired when mouse is release
-        `on_mouse_drag` (int x, int y, int dx, int dy, int button, int modifiers)
-            Fired when mouse is draw
         `on_touch_down` (Touch touch)
             Fired when a blob appear
         `on_touch_move` (Touch touch)
@@ -99,9 +93,6 @@ class MTWidget(EventDispatcher):
     visible_events = [
         'on_update',
         'on_draw',
-        'on_mouse_press',
-        'on_mouse_drag',
-        'on_mouse_release',
         'on_touch_up',
         'on_touch_move',
         'on_touch_down',
@@ -441,21 +432,6 @@ class MTWidget(EventDispatcher):
     def on_touch_up(self, touch):
         for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_up', touch):
-                return True
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        for w in self.children.iterate(reverse=True):
-            if w.dispatch_event('on_mouse_press',x, y, button, modifiers):
-                return True
-
-    def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
-        for w in self.children.iterate(reverse=True):
-            if w.dispatch_event('on_mouse_drag',x, y, dx, dy, button, modifiers):
-                return True
-
-    def on_mouse_release(self, x, y, button, modifiers):
-        for w in self.children.iterate(reverse=True):
-            if w.dispatch_event('on_mouse_release', x, y, button, modifiers):
                 return True
 
     def do(self,*largs):

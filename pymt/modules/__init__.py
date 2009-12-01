@@ -34,7 +34,7 @@ class Modules:
         return self.mods
 
     def import_module(self, id):
-        module = __import__(name=id, fromlist='mods')
+        module = __import__(name=id, fromlist='.')
         # basic check on module
         if not hasattr(module, 'start'):
             pymt.pymt_logger.warning('Module <%s> missing start() function' % id)

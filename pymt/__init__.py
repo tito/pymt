@@ -46,7 +46,7 @@ for option in options:
 # Include lib as new module.
 pymt_base_dir = os.path.dirname(sys.modules[__name__].__file__)
 pymt_libs_dir = os.path.join(pymt_base_dir, 'lib')
-pymt_modules_dir = os.path.join(pymt_base_dir, 'mods')
+pymt_modules_dir = os.path.join(pymt_base_dir, 'modules')
 pymt_data_dir = os.path.join(pymt_base_dir, 'data')
 pymt_providers_dir = os.path.join(pymt_base_dir, 'input', 'providers')
 sys.path = [pymt_libs_dir] + sys.path

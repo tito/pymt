@@ -16,7 +16,7 @@ import os
 from logger import pymt_logger, LOG_LEVELS
 
 # Version number of current configuration format
-PYMT_CONFIG_VERSION = 2
+PYMT_CONFIG_VERSION = 3
 
 # Global settings options for pymt
 options = {
@@ -153,6 +153,10 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
             # add retain postproc configuration
             pymt_config.setdefault('pymt', 'retain_time', '0')
             pymt_config.setdefault('pymt', 'retain_distance', '50')
+
+        elif pymt_config_version == 2:
+            # add show cursor
+            pymt_config.setdefault('graphics', 'show_cursor', '1')
 
         else:
             # for future.

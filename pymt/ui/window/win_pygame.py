@@ -4,6 +4,7 @@ Window Pygame: windowing provider based on Pygame
 
 __all__ = ('MTWindowPygame', )
 
+import pymt
 from . import BaseWindow
 from ...logger import pymt_logger
 from ...utils import curry
@@ -41,6 +42,10 @@ class MTWindowPygame(BaseWindow):
         self._pygame_set_mode()
 
         super(MTWindowPygame, self).create_window(params)
+
+        # set mouse visibility
+        pygame.mouse.set_visible(
+            pymt.pymt_config.getboolean('graphics', 'show_cursor'))
 
     def close(self):
         import sys

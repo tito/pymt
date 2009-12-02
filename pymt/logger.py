@@ -25,7 +25,7 @@ import logging
 import os
 import sys
 
-__all__ = ['pymt_logger', 'LOG_LEVELS', 'COLORS']
+__all__ = ('pymt_logger', 'LOG_LEVELS', 'COLORS', 'pymt_logger_history')
 
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 
@@ -61,6 +61,11 @@ use_color = True
 if os.name == 'nt':
     use_color = False
 
+class HistoryHandler(logging.Handler):
+    history = []
+    def emit(self, message):
+        HistoryHandler.history = [message] + HistoryHandler.history[:100]
+
 class ColoredFormatter(logging.Formatter):
     def __init__(self, msg, use_color = True):
         logging.Formatter.__init__(self, msg)
@@ -74,8 +79,7 @@ class ColoredFormatter(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 class ColoredLogger(logging.Logger):
-    FORMAT = "[%(levelname)-18s] %(message)s" # ($BOLD%(filename)s$RESET:%(lineno)d)"
-    #FORMAT = "[%(levelname)-18s]%(message)s ($BOLD%(filename)s$RESET:%(lineno)d)"
+    FORMAT = '[%(levelname)-18s] %(message)s'
     COLOR_FORMAT = formatter_message(FORMAT, use_color)
 
     def __init__(self, name):
@@ -90,8 +94,10 @@ class ColoredLogger(logging.Logger):
             self.addHandler(sys._pymt_logging_handler)
         else:
             self.addHandler(console)
+        self.addHandler(HistoryHandler())
         return
 
 logging.setLoggerClass(ColoredLogger)
 pymt_logger = logging.getLogger('PyMT')
+pymt_logger_history = HistoryHandler
 

@@ -180,6 +180,10 @@ class BaseWindow(EventDispatcher):
         # mark as initialized
         self.__initialized = True
 
+    def toggle_fullscreen(self):
+        '''Toggle fullscreen on window'''
+        pass
+
     def close(self):
         '''Close the window'''
         pass

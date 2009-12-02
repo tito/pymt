@@ -69,6 +69,12 @@ class MTWindowPygame(BaseWindow):
             if s > 0:
                 time.sleep(s)
 
+    def toggle_fullscreen(self):
+        if self.flags & pygame.FULLSCREEN:
+            self.flags &= ~pygame.FULLSCREEN
+        else:
+            self.flags |= pygame.FULLSCREEN
+        self._pygame_set_mode()
 
     def mainloop(self):
         # don't known why, but pygame required a resize event

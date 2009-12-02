@@ -23,12 +23,13 @@ class LabelBase(BaseObject):
         kwargs.setdefault('multiline', False)
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
+        kwargs.setdefault('color', (1, 1, 1, 1))
 
         super(LabelBase, self).__init__(**kwargs)
 
         self._label     = None
 
-        self.color      = (1, 1, 1, 1)
+        self.color      = kwargs.get('color')
         self.options    = kwargs
         self.texture    = None
         self.label      = label

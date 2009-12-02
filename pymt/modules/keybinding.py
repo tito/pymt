@@ -4,8 +4,10 @@ Use keyboard to do some action
 
 __all__ = ('start', 'stop')
 
+import logging
 from pymt.base import getWindow
 from pymt.graphx import drawRectangle, drawLabel, set_color, drawLine, drawCircle
+from pymt.logger import pymt_logger_history
 
 _toggle_state = ''
 
@@ -24,14 +26,25 @@ def _on_draw():
         return
 
     win = getWindow()
+
+    #
+    # Show HELP screen
+    #
     if _toggle_state == 'help':
+
+        # draw the usual window
         win.on_draw()
 
+        # make background more black
         set_color(0, 0, 0, .8)
         drawRectangle(size=win.size)
+
+        # prepare calculation
         w2 = win.width / 2.
         h2 = win.height / 2.
         k = {'font_size': 24}
+
+        # draw help
         drawLabel('PyMT Keybinding',
                   pos=(w2, win.height - 100), font_size=40)
         drawLabel('Press F1 to leave help',
@@ -46,36 +59,48 @@ def _on_draw():
                   pos=(w2, h2 - 105), **k)
         drawLabel('F5 - Toggle fullscreen',
                   pos=(w2, h2 - 140), **k)
+        drawLabel('F6 - Show log',
+                  pos=(w2, h2 - 175), **k)
 
         return True
 
+    # 
+    # Draw calibration screen
+    #
     elif _toggle_state == 'calibration':
-        ratio = win.height / float(win.width)
         step = 8
+        ratio = win.height / float(win.width)
         stepx = win.width / step
         stepy = win.height / int(step * ratio)
 
+        # draw black background
         set_color(0, 0, 0)
         drawRectangle(size=win.size)
 
+        # draw lines
         set_color(1, 1, 1)
         for x in xrange(0, win.width, stepx):
             drawLine((x, 0, x, win.height))
         for y in xrange(0, win.height, stepy):
             drawLine((0, y, win.width, y))
 
+        # draw circles
         drawCircle(pos=(win.width / 2., win.height / 2.),
                    radius=win.width / step, linewidth = 2.)
-
         drawCircle(pos=(win.width / 2., win.height / 2.),
                    radius=(win.width / step) * 2, linewidth = 2.)
-
         drawCircle(pos=(win.width / 2., win.height / 2.),
                    radius=(win.width / step) * 3, linewidth = 2.)
 
         return True
 
+
+    #
+    # Draw calibration screen 2 (colors)
+    #
     elif _toggle_state == 'calibration2':
+
+        # draw black background
         set_color(0, 0, 0)
         drawRectangle(size=win.size)
 
@@ -91,18 +116,67 @@ def _on_draw():
             x = w2 - sizew / 2. + _x * stepx
             drawLabel(chr(65+_x), pos=(x + stepx / 2., h2 + 190))
             c = _x / float(step)
+
             # grey
             set_color(c, c, c)
             drawRectangle(pos=(x, h2 + 100), size=(stepx, stepy))
+
             # red
             set_color(c, 0, 0)
             drawRectangle(pos=(x, h2 + 80 - stepy), size=(stepx, stepy))
+
             # green
             set_color(0, c, 0)
             drawRectangle(pos=(x, h2 + 60 - stepy * 2), size=(stepx, stepy))
+
             # blue
             set_color(0, 0, c)
             drawRectangle(pos=(x, h2 + 40 - stepy * 3), size=(stepx, stepy))
+        return True
+
+
+    #
+    # Draw log screen
+    #
+    elif _toggle_state == 'log':
+
+        # draw the usual window
+        win.on_draw()
+
+        # make background more black
+        set_color(0, 0, 0, .8)
+        drawRectangle(size=win.size)
+
+
+        # calculation
+        w2 = win.width / 2.
+        h2 = win.height / 2.
+        k = {'font_size': 11, 'center': False}
+        y = win.height - 20
+        y = h2
+        max = int((h2 / 20))
+        levels = {
+            logging.DEBUG:    ('DEBUG', (.4,.4,1)),
+            logging.INFO:     ('INFO', (.4,1,.4)),
+            logging.WARNING:  ('WARNING', (1,1,.4)),
+            logging.ERROR:    ('ERROR', (1,.4,.4)),
+            logging.CRITICAL: ('CRITICAL', (1,.4,.4)),
+        }
+
+        # draw title
+        drawLabel('PyMT logger',
+                  pos=(w2, win.height - 100), font_size=40)
+
+        # draw logs
+        for log in reversed(pymt_logger_history.history[:max]):
+            levelname, color = levels[log.levelno]
+            msg = log.message.split('\n')[0]
+            x = 10
+            x += drawLabel('[', pos=(x, y), **k)
+            x += drawLabel(levelname, pos=(x, y), color=color, **k)
+            x += drawLabel(']', pos=(x, y), **k)
+            drawLabel(msg, pos=(100, y), **k)
+            y -= 20
         return True
 
 
@@ -127,6 +201,8 @@ def _on_keyboard_handler(key, scancode, unicode):
             toggle('calibration')
     elif key == 286: # F5
         win.toggle_fullscreen()
+    elif key == 287: # F6
+        toggle('log')
 
 
 def start(win, ctx):

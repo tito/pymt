@@ -39,6 +39,7 @@ class MTContainer(MTWidget):
 
     def draw(self):
         super(MTContainer, self).draw()
+        self.child.pos = self.pos
         self.child.draw()
 
 class MTScatterContainer(MTContainer, MTScatterWidget):

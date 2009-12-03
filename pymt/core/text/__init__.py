@@ -20,7 +20,6 @@ class LabelBase(BaseObject):
         kwargs.setdefault('italic', False)
         kwargs.setdefault('width', None)
         kwargs.setdefault('height', None)
-        kwargs.setdefault('multiline', False)
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
         kwargs.setdefault('color', (1, 1, 1, 1))
@@ -34,7 +33,10 @@ class LabelBase(BaseObject):
         self.texture    = None
         self.label      = label
 
-    def update(self):
+    def get_extents(self, text):
+        return (0, 0)
+
+    def refresh(self):
         self.size = self.texture.size
 
     def draw(self):
@@ -71,7 +73,7 @@ class LabelBase(BaseObject):
         if label == self._label:
             return
         self._label = label
-        self.update()
+        self.refresh()
     label = property(_get_label, _set_label)
     text = property(_get_label, _set_label)
 

@@ -31,26 +31,43 @@ class LabelPIL(LabelBase):
 
         return self._cache[id]
 
-    def _get_extents(self):
+    def get_extents(self, text):
         font = self._select_font()
-        return font.getsize(self.label)
+        return font.getsize(text)
 
-    def update(self):
-        width, height = self._get_extents()
+    def refresh(self):
+        width, height = 1, 0
+        lines = self.label.split('\n')
+        for line in lines:
+            w, h = self.get_extents(line)
+            width = max(width, w)
+            height += int(h)
 
-        width = int(max(width, 1))
+        width = int(width)
         height = int(max(height, 1))
 
         # create a surface, context, font...
         im = PIL.Image.new('RGBA', (width, height))
         draw = ImageDraw.Draw(im)
-        draw.text((0, 0), self.label, font=self._select_font())
 
-        data = pymt.ImageData(im.size[0], im.size[1],
+        x, y = 0, 0
+        for line in lines:
+            w, h = self.get_extents(line)
+            draw.text((x, y), line, font=self._select_font())
+            y += int(h)
+
+        data = pymt.ImageData(width, height,
             im.mode, im.tostring())
 
-        self.texture = pymt.Texture.create_from_data(data)
-        self.texture.flip_vertical()
+        if self.texture is None:
+            self.texture = pymt.Texture.create(width, height)
+            self.texture.flip_vertical()
+        elif width > self.texture.width or height > self.texture.height:
+            self.texture = pymt.Texture.create(width, height)
+            self.texture.flip_vertical()
 
-        super(LabelPIL, self).update()
+        # update texture
+        self.texture.blit_data(data)
+
+        super(LabelPIL, self).refresh()
 

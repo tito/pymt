@@ -38,6 +38,15 @@ class LabelBase(BaseObject):
     def get_extents(self, text):
         return (0, 0)
 
+    def _render_begin(self):
+        pass
+
+    def _render_text(self, word, x, y):
+        pass
+
+    def _render_end(self):
+        pass
+
     def render(self, real=False):
         '''Return a tuple(width, height) to create the image
         with the user constraints.
@@ -50,49 +59,65 @@ class LabelBase(BaseObject):
 
         uw, uh = self.usersize
         w, h = 0, 0
+        x, y = 0, 0
+        if real:
+            self._render_begin()
 
         # no width specified, faster method
         if uw is None:
-            print 'FAST METHOD'
             for line in self.label.split('\n'):
                 lw, lh = self.get_extents(line)
-                w = max(w, int(lw))
-                h += int(lh)
+                if real:
+                    self._render_text(line, 0, y)
+                    y += int(lh)
+                else:
+                    w = max(w, int(lw))
+                    h += int(lh)
 
         # constraint
         else:
-            print 'SLOW METHOD'
             # precalculate id/name
             if not self.fontid in self._cache_glyphs:
                 self._cache_glyphs[self.fontid] = {}
             cache = self._cache_glyphs[self.fontid]
 
-            # verify that each glyph have size
-            glyphs = list(set(self.label))
-            for glyph in glyphs:
-                if not glyph in cache:
-                    cache[glyph] = self.get_extents(glyph)
+            if not real:
+                # verify that each glyph have size
+                glyphs = list(set(self.label))
+                for glyph in glyphs:
+                    if not glyph in cache:
+                        cache[glyph] = self.get_extents(glyph)
 
             # draw
-            x, y = 0, 0
             mh = 0
             for glyph in self.label:
                 lw, lh = cache[glyph]
                 mh = max(lh, mh)
-                if glyph == '\n' or x + lw > uw:
+                if glyph == '\n':
                     y += mh
-                    mh = 0
-                    x = 0
+                    mh = x = 0
                 else:
+                    if x + lw > uw:
+                        y += mh
+                        mh = x = 0
+                    if real:
+                        self._render_text(glyph, x, y)
                     x += lw
+
             w, h = uw, y + mh
 
-        return w, h
-
+        if real:
+            self._render_end()
+        else:
+            w = int(max(w, 1))
+            h = int(max(h, 1))
+            return w, h
 
     def refresh(self):
-        self.size = self.texture.size
-        print 'refresh', self.render()
+        # first pass, calculating width/height
+        self.size = self.render()
+        # second pass, render for real
+        self.render(real=True)
 
     def draw(self):
         if self.texture is None:

@@ -28,7 +28,6 @@ class LabelPIL(LabelBase):
             filename = os.path.join(pymt.pymt_data_dir, 'DejaVuSans.ttf')
             font = ImageFont.truetype(filename, fontsize)
             self._cache[id] = font
-            print 'LabelPIL add cache', id, font, fontsize
 
         return self._cache[id]
 
@@ -36,42 +35,24 @@ class LabelPIL(LabelBase):
         font = self._select_font()
         return font.getsize(text)
 
-    def refresh(self):
-        width, height = 1, 0
-        lines = self.label.split('\n')
-        for line in lines:
-            w, h = self.get_extents(line)
-            print 'line=', line, w, h
-            width = max(width, w)
-            height += int(h)
-
-        width = int(width)
-        height = int(max(height, 1))
-
+    def _render_begin(self):
         # create a surface, context, font...
-        print 'create surface', width, height
-        im = PIL.Image.new('RGBA', (width, height))
-        draw = ImageDraw.Draw(im)
+        self._pil_im = PIL.Image.new('RGBA', self.size)
+        self._pil_draw = ImageDraw.Draw(self._pil_im)
 
-        x, y = 0, 0
-        for line in lines:
-            w, h = self.get_extents(line)
-            print 'linB=', line, w, h
-            draw.text((x, y), line, font=self._select_font())
-            y += int(h)
+    def _render_text(self, text, x, y):
+        self._pil_draw.text((x, y), text, font=self._select_font())
 
-        data = pymt.ImageData(width, height,
-            im.mode, im.tostring())
+    def _render_end(self):
+        data = pymt.ImageData(self.width, self.height,
+            self._pil_im.mode, self._pil_im.tostring())
 
         if self.texture is None:
-            self.texture = pymt.Texture.create(width, height)
+            self.texture = pymt.Texture.create(*self.size)
             self.texture.flip_vertical()
-        elif width > self.texture.width or height > self.texture.height:
-            self.texture = pymt.Texture.create(width, height)
+        elif self.width > self.texture.width or self.height > self.texture.height:
+            self.texture = pymt.Texture.create(*self.size)
             self.texture.flip_vertical()
 
         # update texture
         self.texture.blit_data(data)
-
-        super(LabelPIL, self).refresh()
-

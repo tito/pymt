@@ -12,6 +12,9 @@ from pymt.graphx import DO, gx_color, gx_blending, drawTexturedRectangle, set_co
 from pymt.logger import pymt_logger
 from pymt.texture import Texture, TextureRegion
 
+RGB = 'RGB'
+RGBA = 'RGBA'
+
 class ImageData(object):
     '''Container for data image : width, height, mode and data.
     ..warning ::
@@ -21,7 +24,7 @@ class ImageData(object):
     __slots__ = ('width', 'height', 'mode', 'data')
 
     def __init__(self, width, height, mode, data):
-        assert mode in ('RGB', 'RGBA')
+        assert mode in (RGB, RGBA)
         self.width = int(width)
         self.height = int(height)
         self.mode = mode
@@ -98,7 +101,7 @@ class ImageLoader(object):
 
 class Image(pymt.BaseObject):
     '''Load an image, and store the size and texture.
-    
+
     :Parameters:
         `arg` : can be str or Texture or Image object
             Filename of the image
@@ -191,6 +194,27 @@ class Image(pymt.BaseObject):
         r, g, b = self.color[:3]
         with DO(gx_color(r, g, b, self.opacity), gx_blending):
             drawTexturedRectangle(texture=self.texture, pos=imgpos, size=(self.size[0] * self.scale, self.size[1] * self.scale))
+
+    def read_pixel(self, x, y):
+        '''For a given local x/y position, return the color at that position.
+
+        :Parameters:
+            `x` : int
+                Local x coordinate of the pixel in question.
+            `y` : int
+                Local y coordinate of the pixel in question.
+        '''
+        x, y = int(x), int(y)
+        data = self.image._data
+        if not (0 < x < data.width and 0 < y < data.height):
+            raise IndexError('Position (%d, %d) is out of range.' % (x, y))
+        assert data.mode in (RGB, RGBA)
+        size = 3 if data.mode == RGB else 4
+        index = y * data.width * size + x * size
+        raw = data.data[index:index+size]
+        color = map(lambda c: ord(c)/255.0, raw)
+        return color
+
 
 def load(filename):
     '''Load an image'''

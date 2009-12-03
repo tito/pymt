@@ -130,7 +130,11 @@ class TouchEventLoop(object):
         touch.grab_state = False
 
     def _dispatch_input(self, type, touch):
-        self.input_events.append((type, touch))
+        ev = (type, touch)
+        # remove the save event for the touch if exist
+        if ev in self.input_events:
+            self.input_events.remove(ev)
+        self.input_events.append(ev)
 
     def dispatch_input(self):
         global pymt_providers

@@ -13,13 +13,14 @@ DEFAULT_FONT = 'Liberation Sans,Bitstream Vera Sans,Free Sans,Arial, Sans'
 class LabelBase(BaseObject):
     __slots__ = ('options', 'texture', '_label', 'color')
 
+    _cache_glyphs = {}
+
     def __init__(self, label, **kwargs):
         kwargs.setdefault('font_size', 12)
         kwargs.setdefault('font_name', DEFAULT_FONT)
         kwargs.setdefault('bold', False)
         kwargs.setdefault('italic', False)
-        kwargs.setdefault('width', None)
-        kwargs.setdefault('height', None)
+        kwargs.setdefault('size', (None, None))
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
         kwargs.setdefault('color', (1, 1, 1, 1))
@@ -29,6 +30,7 @@ class LabelBase(BaseObject):
         self._label     = None
 
         self.color      = kwargs.get('color')
+        self.usersize   = kwargs.get('size')
         self.options    = kwargs
         self.texture    = None
         self.label      = label
@@ -36,8 +38,61 @@ class LabelBase(BaseObject):
     def get_extents(self, text):
         return (0, 0)
 
+    def render(self, real=False):
+        '''Return a tuple(width, height) to create the image
+        with the user constraints.
+
+        2 differents methods are used:
+          * if user don't set width, splitting line
+            and calculate max width + height
+          * if user set a width, blit per glyph
+        '''
+
+        uw, uh = self.usersize
+        w, h = 0, 0
+
+        # no width specified, faster method
+        if uw is None:
+            print 'FAST METHOD'
+            for line in self.label.split('\n'):
+                lw, lh = self.get_extents(line)
+                w = max(w, int(lw))
+                h += int(lh)
+
+        # constraint
+        else:
+            print 'SLOW METHOD'
+            # precalculate id/name
+            if not self.fontid in self._cache_glyphs:
+                self._cache_glyphs[self.fontid] = {}
+            cache = self._cache_glyphs[self.fontid]
+
+            # verify that each glyph have size
+            glyphs = list(set(self.label))
+            for glyph in glyphs:
+                if not glyph in cache:
+                    cache[glyph] = self.get_extents(glyph)
+
+            # draw
+            x, y = 0, 0
+            mh = 0
+            for glyph in self.label:
+                lw, lh = cache[glyph]
+                mh = max(lh, mh)
+                if glyph == '\n' or x + lw > uw:
+                    y += mh
+                    mh = 0
+                    x = 0
+                else:
+                    x += lw
+            w, h = uw, y + mh
+
+        return w, h
+
+
     def refresh(self):
         self.size = self.texture.size
+        print 'refresh', self.render()
 
     def draw(self):
         if self.texture is None:
@@ -89,6 +144,11 @@ class LabelBase(BaseObject):
             return 0
         return self.texture.height
 
+    @property
+    def fontid(self):
+        '''Return an uniq id for all font parameters'''
+        return str([self.options[x] for x in (
+            'font_size', 'font_name', 'bold', 'italic')])
 
 # Load the appropriate provider
 Label = core_select_lib('text', (

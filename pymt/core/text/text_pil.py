@@ -28,6 +28,7 @@ class LabelPIL(LabelBase):
             filename = os.path.join(pymt.pymt_data_dir, 'DejaVuSans.ttf')
             font = ImageFont.truetype(filename, fontsize)
             self._cache[id] = font
+            print 'LabelPIL add cache', id, font, fontsize
 
         return self._cache[id]
 
@@ -40,6 +41,7 @@ class LabelPIL(LabelBase):
         lines = self.label.split('\n')
         for line in lines:
             w, h = self.get_extents(line)
+            print 'line=', line, w, h
             width = max(width, w)
             height += int(h)
 
@@ -47,12 +49,14 @@ class LabelPIL(LabelBase):
         height = int(max(height, 1))
 
         # create a surface, context, font...
+        print 'create surface', width, height
         im = PIL.Image.new('RGBA', (width, height))
         draw = ImageDraw.Draw(im)
 
         x, y = 0, 0
         for line in lines:
             w, h = self.get_extents(line)
+            print 'linB=', line, w, h
             draw.text((x, y), line, font=self._select_font())
             y += int(h)
 

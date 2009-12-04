@@ -12,6 +12,19 @@ try:
 except:
     raise
 
+FONT_EXTENTS_ASCENT_IDX         = 0
+FONT_EXTENTS_DESCENT_IDX        = 1
+FONT_EXTENTS_HEIGHT_IDX         = 2
+FONT_EXTENTS_MAX_X_ADVANCE_IDX  = 3
+FONT_EXTENTS_MAX_Y_ADVANCE_IDX  = 4
+
+TEXT_EXTENTS_X_BEARING_IDX      = 0
+TEXT_EXTENTS_Y_BEARING_IDX      = 1
+TEXT_EXTENTS_WIDTH_IDX          = 2
+TEXT_EXTENTS_HEIGHT_IDX         = 3
+TEXT_EXTENTS_X_ADVANCE_IDX      = 4
+TEXT_EXTENTS_Y_ADVANCE_IDX      = 5
+
 # used for fetching extends before creature image surface
 cairo_default_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 1, 1)
 cairo_default_context = cairo.Context(cairo_default_surface)
@@ -35,12 +48,15 @@ class LabelCairo(LabelBase):
 
         # get maximum height for font
         font_extents = context.font_extents()
-        self._default_font_height = font_extents[2]
+        self._font_extents = font_extents
+        self._height = \
+            self._font_extents[FONT_EXTENTS_DESCENT_IDX] + \
+            self._font_extents[FONT_EXTENTS_ASCENT_IDX]
 
     def get_extents(self, text):
         self._select_font(cairo_default_context)
         extents = cairo_default_context.text_extents(text)
-        return (extents[4], self._default_font_height, extents)
+        return (extents[4], self._height, extents)
 
     def _render_begin(self):
         # create a surface, context, font...
@@ -52,8 +68,8 @@ class LabelCairo(LabelBase):
         self._cairo_context.set_source_rgb(1., 1., 1.)
 
     def _render_text(self, text, x, y, extra=None):
-        #x_bearing, y_bearing, width, height, x_advance, y_advance = extra
-        self._cairo_context.move_to(x, y + self._default_font_height)
+        self._cairo_context.move_to(x,
+            y + self._font_extents[FONT_EXTENTS_ASCENT_IDX])
         self._cairo_context.show_text(text)
 
     def _render_end(self):

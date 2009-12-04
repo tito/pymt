@@ -38,21 +38,33 @@ class LabelPygame(LabelBase):
 
         return pygame_cache[id]
 
-    def update(self):
+    def get_extents(self, text):
         font = self._get_font()
+        w, h = font.size(text)
+        return w, h, None
 
-        # don't change antialiased and no background
-        # with theses settings, font are always in 32 bits
-        surface = font.render(self.label, True, (255, 255, 255))
+    def _render_begin(self):
+        # XXX big/little endian ??
+        rgba_mask = 0xff000000, 0xff0000, 0xff00, 0xff
+        self._pygame_surface = pygame.Surface(self.size, 0, 32, rgba_mask)
 
-        data = pymt.ImageData(surface.get_width(), surface.get_height(),
-            'RGBA', buffer(surface.get_buffer())[:])
+    def _render_text(self, text, x, y, extra=None):
+        font = self._get_font()
+        text = font.render(text, True, (255, 255, 255))
+        self._pygame_surface.blit(text, (x, y), None, pygame.BLEND_RGBA_ADD)
 
-        # create a texture from this data
-        # and flip texture in vertical way
-        self.texture = pymt.Texture.create_from_data(data)
-        self.texture.flip_vertical()
+    def _render_end(self):
 
-        super(LabelPygame, self).update()
+        data = pymt.ImageData(self.width, self.height,
+            'RGBA', buffer(self._pygame_surface.get_buffer())[:])
 
+        if self.texture is None:
+            self.texture = pymt.Texture.create(*self.size)
+            self.texture.flip_vertical()
+        elif self.width > self.texture.width or self.height > self.texture.height:
+            self.texture = pymt.Texture.create(*self.size)
+            self.texture.flip_vertical()
+
+        # update texture
+        self.texture.blit_data(data)
 

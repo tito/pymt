@@ -33,35 +33,42 @@ class LabelCairo(LabelBase):
         font_options.set_hint_style(cairo.HINT_STYLE_FULL)
         context.set_font_options(font_options)
 
-    def _get_extents(self):
+    def get_extents(self, text):
         self._select_font(cairo_default_context)
-        return cairo_default_context.text_extents(self.label)
+        x_bearing, y_bearing, width, height, x_advance, y_advance = cairo_default_context.text_extents(text)
+        return width, height
 
-    def update(self):
-        x_bearing, y_bearing, width, height, x_advance, y_advance = self._get_extents()
-        width = int(max(width, 1))
-        height = int(max(height, 1))
-
+    def _render_begin(self):
         # create a surface, context, font...
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
-        context = cairo.Context(surface)
+        self._cairo_surface = cairo.ImageSurface(
+                cairo.FORMAT_ARGB32, *self.size)
+        self._cairo_context = cairo.Context(self._cairo_surface)
 
-        self._select_font(context)
+        self._select_font(self._cairo_context)
+        self._cairo_context.set_source_rgb(1., 1., 1.)
 
+    def _render_text(self, text, x, y):
+        '''
         context.move_to(0, height)
         context.move_to(-x_bearing, -y_bearing)
-
-        context.set_source_rgb(1., 1., 1.)
-
         context.show_text(self.label)
+        '''
+        self._cairo_context.move_to(x, y)
+        self._cairo_context.show_text(text)
 
-        data = pymt.ImageData(width, height,
-            'RGBA', buffer(surface.get_data())[:])
+    def _render_end(self):
+        data = pymt.ImageData(self.width, self.height,
+            'RGBA', buffer(self._cairo_surface.get_data())[:])
 
-        # create a texture from this data
-        # and flip texture in vertical way
-        self.texture = pymt.Texture.create_from_data(data)
-        self.texture.flip_vertical()
+        self._cairo_surface = None
+        self._cairo_context = None
 
-        super(LabelCairo, self).update()
+        if self.texture is None:
+            self.texture = pymt.Texture.create(*self.size)
+            self.texture.flip_vertical()
+        elif self.width > self.texture.width or self.height > self.texture.height:
+            self.texture = pymt.Texture.create(*self.size)
+            self.texture.flip_vertical()
 
+        # update texture
+        self.texture.blit_data(data)

@@ -41,7 +41,7 @@ class LabelBase(BaseObject):
     def _render_begin(self):
         pass
 
-    def _render_text(self, word, x, y):
+    def _render_text(self, text, x, y):
         pass
 
     def _render_end(self):

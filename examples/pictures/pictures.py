@@ -23,7 +23,7 @@ def handle_image_move(image, *largs):
 
 def pymt_plugin_activate(w, ctx):
     ctx.c = MTKinetic()
-    for i in range(7):
+    for i in range(6):
         img_src = '../pictures/images/pic'+str(i+1)+'.jpg'
         x = int(random.uniform(100, w.width-100))
         y = int(random.uniform(100, w.height-100))

@@ -79,12 +79,4 @@ class LabelCairo(LabelBase):
         self._cairo_surface = None
         self._cairo_context = None
 
-        if self.texture is None:
-            self.texture = pymt.Texture.create(*self.size)
-            self.texture.flip_vertical()
-        elif self.width > self.texture.width or self.height > self.texture.height:
-            self.texture = pymt.Texture.create(*self.size)
-            self.texture.flip_vertical()
-
-        # update texture
-        self.texture.blit_data(data)
+        return data

@@ -54,17 +54,5 @@ class LabelPygame(LabelBase):
         self._pygame_surface.blit(text, (x, y), None, pygame.BLEND_RGBA_ADD)
 
     def _render_end(self):
-
-        data = pymt.ImageData(self.width, self.height,
+        return pymt.ImageData(self.width, self.height,
             'RGBA', buffer(self._pygame_surface.get_buffer())[:])
-
-        if self.texture is None:
-            self.texture = pymt.Texture.create(*self.size)
-            self.texture.flip_vertical()
-        elif self.width > self.texture.width or self.height > self.texture.height:
-            self.texture = pymt.Texture.create(*self.size)
-            self.texture.flip_vertical()
-
-        # update texture
-        self.texture.blit_data(data)
-

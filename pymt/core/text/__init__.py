@@ -111,12 +111,28 @@ class LabelBase(BaseObject):
 
             w, h = uw, y + mh
 
-        if real:
-            self._render_end()
-        else:
+        if not real:
+            # was only the first pass
+            # return with/height
             w = int(max(w, 1))
             h = int(max(h, 1))
             return w, h
+
+        # get data from provider
+        data = self._render_end()
+        assert(data)
+
+        # create texture is necessary
+        if self.texture is None:
+            self.texture = pymt.Texture.create(*self.size)
+            self.texture.flip_vertical()
+        elif self.width > self.texture.width or self.height > self.texture.height:
+            self.texture = pymt.Texture.create(*self.size)
+            self.texture.flip_vertical()
+
+        # update texture
+        self.texture.blit_data(data)
+
 
     def refresh(self):
         # first pass, calculating width/height

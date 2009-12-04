@@ -76,7 +76,7 @@ class LabelCairo(LabelBase):
         data = pymt.ImageData(self.width, self.height,
             'RGBA', buffer(self._cairo_surface.get_data())[:])
 
-        self._cairo_surface = None
-        self._cairo_context = None
+        del self._cairo_surface
+        del self._cairo_context
 
         return data

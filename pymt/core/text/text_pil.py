@@ -45,5 +45,10 @@ class LabelPIL(LabelBase):
         self._pil_draw.text((x, y), text, font=self._select_font())
 
     def _render_end(self):
-        return pymt.ImageData(self.width, self.height,
+        data = pymt.ImageData(self.width, self.height,
             self._pil_im.mode, self._pil_im.tostring())
+
+        del self._pil_im
+        del self._pil_draw
+
+        return data

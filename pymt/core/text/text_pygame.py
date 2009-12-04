@@ -54,5 +54,9 @@ class LabelPygame(LabelBase):
         self._pygame_surface.blit(text, (x, y), None, pygame.BLEND_RGBA_ADD)
 
     def _render_end(self):
-        return pymt.ImageData(self.width, self.height,
+        data = pymt.ImageData(self.width, self.height,
             'RGBA', buffer(self._pygame_surface.get_buffer())[:])
+
+        del self._pygame_surface
+
+        return data

@@ -22,7 +22,7 @@ PYMT_CONFIG_VERSION = 3
 options = {
     'shadow_window': True,
     'window': ('pygame', 'glut'),
-    'text': ('pil', 'cairo', 'pyglet', 'pygame'),
+    'text': ('pil', 'cairo', 'pygame'),
     'video': ('gstreamer', 'pyglet' ),
     'audio': ('pygame', ),
     'image': ('pil', 'pygame'),

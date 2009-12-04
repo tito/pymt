@@ -201,6 +201,5 @@ Label = core_select_lib('text', (
     ('pil', 'text_pil', 'LabelPIL'),
     ('cairo', 'text_cairo', 'LabelCairo'),
     ('pygame', 'text_pygame', 'LabelPygame'),
-    ('pyglet', 'text_pyglet', 'LabelPyglet')
 ))
 

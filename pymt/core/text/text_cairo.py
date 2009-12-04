@@ -33,10 +33,14 @@ class LabelCairo(LabelBase):
         font_options.set_hint_style(cairo.HINT_STYLE_FULL)
         context.set_font_options(font_options)
 
+        # get maximum height for font
+        font_extents = context.font_extents()
+        self._default_font_height = font_extents[2]
+
     def get_extents(self, text):
         self._select_font(cairo_default_context)
-        x_bearing, y_bearing, width, height, x_advance, y_advance = cairo_default_context.text_extents(text)
-        return width, height
+        extents = cairo_default_context.text_extents(text)
+        return (extents[4], self._default_font_height, extents)
 
     def _render_begin(self):
         # create a surface, context, font...
@@ -47,13 +51,9 @@ class LabelCairo(LabelBase):
         self._select_font(self._cairo_context)
         self._cairo_context.set_source_rgb(1., 1., 1.)
 
-    def _render_text(self, text, x, y):
-        '''
-        context.move_to(0, height)
-        context.move_to(-x_bearing, -y_bearing)
-        context.show_text(self.label)
-        '''
-        self._cairo_context.move_to(x, y)
+    def _render_text(self, text, x, y, extra=None):
+        #x_bearing, y_bearing, width, height, x_advance, y_advance = extra
+        self._cairo_context.move_to(x, y + self._default_font_height)
         self._cairo_context.show_text(text)
 
     def _render_end(self):

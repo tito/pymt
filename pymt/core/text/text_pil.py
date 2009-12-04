@@ -33,14 +33,15 @@ class LabelPIL(LabelBase):
 
     def get_extents(self, text):
         font = self._select_font()
-        return font.getsize(text)
+        w, h = font.getsize(text)
+        return w, h, None
 
     def _render_begin(self):
         # create a surface, context, font...
         self._pil_im = PIL.Image.new('RGBA', self.size)
         self._pil_draw = ImageDraw.Draw(self._pil_im)
 
-    def _render_text(self, text, x, y):
+    def _render_text(self, text, x, y, extra=None):
         self._pil_draw.text((x, y), text, font=self._select_font())
 
     def _render_end(self):

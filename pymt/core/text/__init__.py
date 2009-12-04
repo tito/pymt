@@ -36,12 +36,17 @@ class LabelBase(BaseObject):
         self.label      = label
 
     def get_extents(self, text):
-        return (0, 0)
+        '''Return a tuple with (width, height, extra_info) for a text.
+        ..warning ::
+            extra_info is default to None. this is a stub to add
+            private information for the backend
+        '''
+        return (0, 0, None)
 
     def _render_begin(self):
         pass
 
-    def _render_text(self, text, x, y):
+    def _render_text(self, text, x, y, extra=None):
         pass
 
     def _render_end(self):
@@ -66,9 +71,9 @@ class LabelBase(BaseObject):
         # no width specified, faster method
         if uw is None:
             for line in self.label.split('\n'):
-                lw, lh = self.get_extents(line)
+                lw, lh, extra = self.get_extents(line)
                 if real:
-                    self._render_text(line, 0, y)
+                    self._render_text(line, 0, y, extra)
                     y += int(lh)
                 else:
                     w = max(w, int(lw))
@@ -91,7 +96,7 @@ class LabelBase(BaseObject):
             # draw
             mh = 0
             for glyph in self.label:
-                lw, lh = cache[glyph]
+                lw, lh, extra = cache[glyph]
                 mh = max(lh, mh)
                 if glyph == '\n':
                     y += mh
@@ -101,7 +106,7 @@ class LabelBase(BaseObject):
                         y += mh
                         mh = x = 0
                     if real:
-                        self._render_text(glyph, x, y)
+                        self._render_text(glyph, x, y, extra)
                     x += lw
 
             w, h = uw, y + mh

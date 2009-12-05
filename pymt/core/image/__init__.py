@@ -115,8 +115,8 @@ class Image(pymt.BaseObject):
             Y anchor
     '''
 
-    copy_attributes = ('opacity', 'scale', 'anchor_x', 'anchor_y', '_width',
-                       '_height', 'texture', '_filename', 'x', 'y', 'color')
+    copy_attributes = ('opacity', 'scale', 'anchor_x', 'anchor_y', '_pos',
+                       '_size', 'texture', '_filename', 'color', 'texture')
 
     def __init__(self, arg, **kwargs):
         super(Image, self).__init__(**kwargs)

@@ -67,9 +67,10 @@ This will execute all the animations on the properties togather. "&" operator is
 to run them parallel 
 '''
 
-__all__ = ['AnimationAlpha', 'Animation']
+__all__ = ['AnimationAlpha', 'Animation', 'Repeat']
 
 import math
+from copy import deepcopy, copy
 from ..clock import getClock
 
 class AnimationBase(object):
@@ -88,25 +89,7 @@ class AnimationBase(object):
         self._frame_pointer = 0.0
         self._progress = 0.0
         self.running = False
-
-        self._prop_list = {}
-        for item in self.params:
-            if item not in ("duration", "anim1", "anim2", "generate_event", "single_event"):
-                self._prop_list[item] = self.params[item]
-
-        for prop in self._prop_list:
-            cval = self._get_value_from(prop)
-            if type(cval) in (tuple, list):
-                self._prop_list[prop] = (cval, self._prop_list[prop])
-            elif isinstance(cval, dict):
-                #contruct a temp dict of only required keys
-                temp_dict = {}
-                for each_key in self._prop_list[prop]:
-                    temp_dict[each_key] = cval[each_key]
-                self._prop_list[prop] = (temp_dict, self._prop_list[prop])
-            else:
-                self._prop_list[prop] = (cval,self._prop_list[prop])
-
+    
     def _get_value_from(self, prop):
         if hasattr(self.widget, prop):
             return self.widget.__getattribute__(prop)
@@ -187,6 +170,77 @@ class AnimationBase(object):
     def is_running(self):
         return self.running
 
+class AbsoluteAnimationBase(AnimationBase):
+    def __init__(self,**kwargs):
+        super(AbsoluteAnimationBase, self).__init__(**kwargs)
+        self._prop_list = {}
+        for item in self.params:
+            if item not in ("duration", "anim1", "anim2", "generate_event", "single_event", "animation_type"):
+                self._prop_list[item] = self.params[item]
+
+        for prop in self._prop_list:
+            cval = self._get_value_from(prop)
+            if type(cval) in (tuple, list):
+                self._prop_list[prop] = (cval, self._prop_list[prop])
+            elif isinstance(cval, dict):
+                #contruct a temp dict of only required keys
+                temp_dict = {}
+                for each_key in self._prop_list[prop]:
+                    temp_dict[each_key] = cval[each_key]
+                self._prop_list[prop] = (temp_dict, self._prop_list[prop])
+            else:
+                self._prop_list[prop] = (cval,self._prop_list[prop])
+
+        #Store state values for repeating
+        self._initial_state = deepcopy(self._prop_list)
+    
+    def reset(self):
+        self._frame_pointer = 0.0
+        self._progress = 0.0
+        self.running = False
+        self._prop_list = self._initial_state
+
+class DeltaAnimationBase(AnimationBase):
+    def __init__(self,**kwargs):
+        super(DeltaAnimationBase, self).__init__(**kwargs)
+        self._prop_list = {}
+        for item in self.params:
+            if item not in ("duration", "anim1", "anim2", "generate_event", "single_event", "animation_type"):
+                self._prop_list[item] = self.params[item]
+
+        #save proplist for repeatation
+        self._saved_prop_list = {}
+        self._saved_prop_list = deepcopy(self._prop_list)
+
+        for prop in self._prop_list:
+            cval = self._get_value_from(prop)
+            if type(cval) in (tuple, list):
+                self._prop_list[prop] = (cval, self._prop_list[prop])
+            elif isinstance(cval, dict):
+                #contruct a temp dict of only required keys
+                temp_dict = {}
+                for each_key in self._prop_list[prop]:
+                    temp_dict[each_key] = cval[each_key]
+                self._prop_list[prop] = (temp_dict, self._prop_list[prop])
+            else:
+                self._prop_list[prop] = (cval,cval+self._prop_list[prop])
+
+    def reset(self):
+        self._frame_pointer = 0.0
+        self._progress = 0.0
+        self.running = False
+        for prop in self._saved_prop_list:
+            cval = self._get_value_from(prop)
+            if type(cval) in (tuple, list):
+                self._prop_list[prop] = (cval, self._saved_prop_list[prop])
+            elif isinstance(cval, dict):
+                #contruct a temp dict of only required keys
+                temp_dict = {}
+                for each_key in self._saved_prop_list[prop]:
+                    temp_dict[each_key] = cval[each_key]
+                self._prop_list[prop] = (temp_dict, self._saved_prop_list[prop])
+            else:
+                self._prop_list[prop] = (cval,cval+self._saved_prop_list[prop])
 
 class Animation(object):
     '''Animation Class is used to animate any widget. You pass duration of animation
@@ -205,28 +259,41 @@ class Animation(object):
     '''
     def __init__(self,**kwargs):
         kwargs.setdefault('duration', 1.0)
+        kwargs.setdefault('animation_type', "absolute")
         self.duration = kwargs.get('duration')
         self.children = {}
         self.params = kwargs
+        self._animation_type = kwargs.get('animation_type')
+        self._repeater =  None
 
-    def start(self,widget):
+    def start(self, widget, repeater=None):
+        self._repeater = repeater
         animobj = self.children[widget]
         animobj.start()
 
-    def stop(self,widget):
+    def stop(self, widget):
         if self.children[widget].generate_event:
             widget.dispatch_event('on_animation_complete', self)
-        self._del_child(widget)
+        if self._repeater is not None:
+            self._repeater.repeat(widget)
+        else:
+            self._del_child(widget)
 
     def pause(self):
         pass
 
-    def set_widget(self,widgetx):
+    def reset(self, widget):
+        self.children[widget].reset()
+
+    def set_widget(self, widgetx):
         if widgetx in self.children.keys():
             return False
         else:
-            new_animobj = AnimationBase(widget=widgetx, key_args=self.params, animator=self)
-            self.children[widgetx] = new_animobj
+            if self._animation_type == "absolute":
+                new_animobj = AbsoluteAnimationBase(widget=widgetx, key_args=self.params, animator=self) 
+            else:
+                new_animobj = DeltaAnimationBase(widget=widgetx, key_args=self.params, animator=self)
+            self.children[widgetx] = new_animobj    
             return True
 
     def animate(self, *largs):
@@ -269,6 +336,7 @@ class ComplexAnimation(Animation):
         else:
             self.animations.append(anim1)
         self.animations.append(anim2)
+        self._repeater = None
 
     def set_widget(self, widgetx):
         for animation in self.animations:
@@ -278,7 +346,10 @@ class ComplexAnimation(Animation):
             except:
                 continue
         for animation in self.animations:
-            new_animobj = AnimationBase(widget=widgetx, key_args=animation.params, animator=self)
+            if self._animation_type == "absolute'":
+                new_animobj = AbsoluteAnimationBase(widget=widgetx, key_args=animation.params, animator=self)
+            else:
+                new_animobj = DeltaAnimationBase(widget=widgetx, key_args=animation.params, animator=self)
             animation.children[widgetx] = new_animobj
         return True
 
@@ -291,11 +362,14 @@ class SequenceAnimation(ComplexAnimation):
         super(SequenceAnimation, self).__init__(**kwargs)
         self.anim_counter = 0
 
-    def start(self, widget):
+    def start(self, widget, repeater=None):
+        self._repeater = repeater
         if self.anim_counter >= len(self.animations):
-            if self.single_event:
-                widget.dispatch_event('on_animation_complete', self)
             self.anim_counter = 0
+            if self.single_event:                
+                widget.dispatch_event('on_animation_complete', self)
+                if self._repeater is not None:
+                    self._repeater.repeat(widget)            
             return
         current_anim = self.animations[self.anim_counter]
         current_anim.start(widget)
@@ -303,9 +377,15 @@ class SequenceAnimation(ComplexAnimation):
     def stop(self,widget):
         if self.animations[self.anim_counter].children[widget].generate_event and not self.single_event:
             widget.dispatch_event('on_animation_complete', self)
-        self.animations[self.anim_counter]._del_child(widget)
+        if self._repeater is None:
+            self.animations[self.anim_counter]._del_child(widget)
         self.anim_counter += 1
-        self.start(widget)
+        self.start(widget, repeater=self._repeater)
+
+    def reset(self, widget):
+        self.anim_counter = 0
+        for animation in self.animations:
+            animation.reset(widget)
 
     def __add__(self, animation):
         return SequenceAnimation(anim1=self.animations, anim2=animation)
@@ -317,7 +397,8 @@ class ParallelAnimation(ComplexAnimation):
         super(ParallelAnimation, self).__init__(**kwargs)
         self.dispatch_counter = 0
 
-    def start(self, widget):
+    def start(self, widget, repeater=None):
+        self._repeater = repeater
         for animation in self.animations:
             animation.start(widget)
 
@@ -326,12 +407,61 @@ class ParallelAnimation(ComplexAnimation):
         if self.dispatch_counter == len(self.animations) and self.single_event:
             widget.dispatch_event('on_animation_complete', self)
             self.dispatch_counter = 0
+            if self._repeater is not None:
+                self._repeater.repeat(widget)            
             return
         if animobj.generate_event and not self.single_event:
             widget.dispatch_event('on_animation_complete', self)
+    
+    def reset(self, widget):
+        self.dispatch_counter = 0
+        for animation in self.animations:
+            animation.reset(widget)
 
     def __and__(self, animation):
         return ParallelAnimation(anim1=self.animations, anim2=animation)
+
+
+#Controller Classes
+
+class Repeat(ComplexAnimation):
+    # Base class for complex animations like sequences and parallel animations
+    def __init__(self, animation, **kwargs):
+        super(Repeat, self).__init__(**kwargs)
+        kwargs.setdefault('times', -1)
+        self.animations = animation
+        self.single_event = True
+        self._repeat_counter = 0
+        self._times = kwargs.get('times')
+
+    def set_widget(self, widgetx):
+        self.animations.set_widget(widgetx)
+        if isinstance(self.animations, ParallelAnimation) or isinstance(self.animations, SequenceAnimation):
+            self.animations.generate_single_event(True)
+        return True
+
+    def start(self, widget):
+        print "start"
+        self.animations.start(widget, repeater=self)
+
+    def stop(self,widget):
+        print "stop"
+        widget.dispatch_event('on_animation_complete', self)
+        self._repeat_counter = 0
+        if not (isinstance(self.animations, ParallelAnimation) or isinstance(self.animations, SequenceAnimation)):
+            self.animations._del_child(widget)
+    
+    def repeat(self, widget):
+        print "repeat"
+        self._repeat_counter += 1
+        if self._times == -1:
+            self.animations.reset(widget)
+            self.start(widget)
+        elif self._repeat_counter < self._times:
+            self.animations.reset(widget)
+            self.start(widget)
+        else:
+            self.stop(widget)
 
 class Delay(Animation):
     def init(self,**kwargs):

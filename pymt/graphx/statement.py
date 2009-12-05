@@ -138,6 +138,7 @@ class GlMatrix:
             glLoadIdentity()
 
     def __exit__(self, type, value, traceback):
+        glMatrixMode(self.matrixmode)
         glPopMatrix()
 
 gx_matrix = GlMatrix()

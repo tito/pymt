@@ -104,7 +104,10 @@ class Image(pymt.BaseObject):
 
     :Parameters:
         `arg` : can be str or Texture or Image object
-            Filename of the image
+            A string is interpreted as a path to the image that should be loaded.
+            You can also provide a texture object or an already existing image object.
+            In the latter case, a real copy of the given image object will be
+            returned.
         `opacity` : float, default to 1.0
             Opacity of the image
         `scale` : float, default to 1.0

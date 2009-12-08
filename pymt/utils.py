@@ -131,6 +131,7 @@ class SafeList(list):
         .. warning::
             Iterate don't support recursive call.
         '''
+        self.clone = None
         self.in_iterate = True
         ref = self
         if reverse:
@@ -138,9 +139,9 @@ class SafeList(list):
         else:
             rng = xrange(0, len(ref))
         for x in rng:
-            yield ref[x]
             if self.clone:
                 ref = self.clone
+            yield ref[x]
         self.clone = None
         self.in_iterate = False
 

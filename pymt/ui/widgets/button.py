@@ -177,10 +177,10 @@ class MTToggleButton(MTButton):
     def on_touch_down(self, touch):
         if not self.collide_point(touch.x, touch.y):
             return False
-        if self._state[1] != 0:
-            return False
+        #if self._state[1] != 0:
+        #    return False
         if self.get_state() == 'down':
-            self._state = ('normal', touch.id)
+            self._state = ('normal', 0)
         else:
             self._state = ('down', touch.id)
         self.dispatch_event('on_press', touch)

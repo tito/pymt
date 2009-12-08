@@ -423,7 +423,7 @@ class BaseWindow(EventDispatcher):
         '''Event called when mouse is in action (press/release)'''
         pass
 
-    def on_mouse_move(self, x, y, button, modifiers):
+    def on_mouse_move(self, x, y, modifiers):
         '''Event called when mouse is moving, with buttons pressed'''
         pass
 

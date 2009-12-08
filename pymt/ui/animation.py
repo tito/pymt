@@ -79,7 +79,7 @@ class AnimationBase(object):
     def __init__(self,**kwargs):
         self.widget = kwargs.get('widget')
         self.params = kwargs.get('key_args')
-        self.duration =  self.params['duration']
+        self.duration =  float(self.params['duration'])
         self.animator = kwargs.get('animator')
         if "generate_event" in self.params.keys():
             self.generate_event = self.params['generate_event']
@@ -161,7 +161,7 @@ class AnimationBase(object):
             self._progress = self._frame_pointer/self.duration
             if self._progress > 1.0:
                 self._progress = 1.0
-            self.update(self._progress)
+            self.update(self.animator.alpha_function(self._progress, self))
             return True
         else:
             self.stop()
@@ -169,13 +169,19 @@ class AnimationBase(object):
 
     def is_running(self):
         return self.running
+    
+    def get_frame_pointer(self):
+        return self._frame_pointer
+    
+    def get_duration(self):
+        return self.duration
 
 class AbsoluteAnimationBase(AnimationBase):
     def __init__(self,**kwargs):
         super(AbsoluteAnimationBase, self).__init__(**kwargs)
         self._prop_list = {}
         for item in self.params:
-            if item not in ("duration", "anim1", "anim2", "generate_event", "single_event", "animation_type"):
+            if item not in ("duration", "anim1", "anim2", "generate_event", "single_event", "animation_type","alpha_function"):
                 self._prop_list[item] = self.params[item]
 
         for prop in self._prop_list:
@@ -193,7 +199,7 @@ class AbsoluteAnimationBase(AnimationBase):
 
         #Store state values for repeating
         self._initial_state = deepcopy(self._prop_list)
-    
+
     def reset(self):
         self._frame_pointer = 0.0
         self._progress = 0.0
@@ -205,7 +211,7 @@ class DeltaAnimationBase(AnimationBase):
         super(DeltaAnimationBase, self).__init__(**kwargs)
         self._prop_list = {}
         for item in self.params:
-            if item not in ("duration", "anim1", "anim2", "generate_event", "single_event", "animation_type"):
+            if item not in ("duration", "anim1", "anim2", "generate_event", "single_event", "animation_type", "alpha_function"):
                 self._prop_list[item] = self.params[item]
 
         #save proplist for repeatation
@@ -215,13 +221,13 @@ class DeltaAnimationBase(AnimationBase):
         for prop in self._prop_list:
             cval = self._get_value_from(prop)
             if type(cval) in (tuple, list):
-                self._prop_list[prop] = (cval, self._prop_list[prop])
+                self._prop_list[prop] = (cval, self._update_list(cval , self._prop_list[prop]))
             elif isinstance(cval, dict):
                 #contruct a temp dict of only required keys
                 temp_dict = {}
                 for each_key in self._prop_list[prop]:
                     temp_dict[each_key] = cval[each_key]
-                self._prop_list[prop] = (temp_dict, self._prop_list[prop])
+                self._prop_list[prop] = (temp_dict, self._update_dict(temp_dict, self._prop_list[prop]))
             else:
                 self._prop_list[prop] = (cval,cval+self._prop_list[prop])
 
@@ -232,15 +238,30 @@ class DeltaAnimationBase(AnimationBase):
         for prop in self._saved_prop_list:
             cval = self._get_value_from(prop)
             if type(cval) in (tuple, list):
-                self._prop_list[prop] = (cval, self._saved_prop_list[prop])
+                self._prop_list[prop] = (cval, self._update_list(cval, self._saved_prop_list[prop]))
             elif isinstance(cval, dict):
                 #contruct a temp dict of only required keys
                 temp_dict = {}
                 for each_key in self._saved_prop_list[prop]:
                     temp_dict[each_key] = cval[each_key]
-                self._prop_list[prop] = (temp_dict, self._saved_prop_list[prop])
+                self._prop_list[prop] = (temp_dict,  self._update_dict(temp_dict, self._saved_prop_list[prop]))
             else:
                 self._prop_list[prop] = (cval,cval+self._saved_prop_list[prop])
+    
+    def _update_list(self, ip_list, op_list):
+        temp_list = []
+        for i in range(0, len(ip_list)):
+            temp_list.append(ip_list[i]+op_list[i])
+        return  temp_list
+    
+    def _update_dict(self, ip_dict, op_dict):
+        temp_dict = {}
+        for key in ip_dict.keys():
+            if type(ip_dict[key]) in (tuple, list):
+                temp_dict[key] = self._update_list(ip_dict[key], op_dict[key])
+            else:
+                temp_dict[key] = ip_dict[key]+op_dict[key]
+        return  temp_dict
 
 class Animation(object):
     '''Animation Class is used to animate any widget. You pass duration of animation
@@ -261,10 +282,12 @@ class Animation(object):
         kwargs.setdefault('duration', 1.0)
         kwargs.setdefault('animation_type', "absolute")
         self.duration = kwargs.get('duration')
+        kwargs.setdefault('alpha_function', AnimationAlpha.linear) #linear function by default
         self.children = {}
         self.params = kwargs
         self._animation_type = kwargs.get('animation_type')
         self._repeater =  None
+        self.alpha_function = kwargs.get('alpha_function')
 
     def start(self, widget, repeater=None):
         self._repeater = repeater
@@ -346,7 +369,7 @@ class ComplexAnimation(Animation):
             except:
                 continue
         for animation in self.animations:
-            if self._animation_type == "absolute'":
+            if animation._animation_type == "absolute":
                 new_animobj = AbsoluteAnimationBase(widget=widgetx, key_args=animation.params, animator=self)
             else:
                 new_animobj = DeltaAnimationBase(widget=widgetx, key_args=animation.params, animator=self)
@@ -441,18 +464,15 @@ class Repeat(ComplexAnimation):
         return True
 
     def start(self, widget):
-        print "start"
         self.animations.start(widget, repeater=self)
 
     def stop(self,widget):
-        print "stop"
         widget.dispatch_event('on_animation_complete', self)
         self._repeat_counter = 0
         if not (isinstance(self.animations, ParallelAnimation) or isinstance(self.animations, SequenceAnimation)):
             self.animations._del_child(widget)
-    
+
     def repeat(self, widget):
-        print "repeat"
         self._repeat_counter += 1
         if self._times == -1:
             self.animations.reset(widget)
@@ -471,19 +491,260 @@ class Delay(Animation):
 
 class AnimationAlpha(object):
     """#Collection of animation function, to be used with Animation object.
+        Easing Functions ported into PyMT from Clutter Project
+        http://www.clutter-project.org/docs/clutter/stable/ClutterAlpha.html
     """
     @staticmethod
-    def ramp(value_from, value_to, length, frame):
-        return (1.0 - frame / length) * value_from  +  frame / length * value_to
+    def linear(progress, animation):
+        return progress
 
     @staticmethod
-    def sin(value_from, value_to, length, frame):
-        return math.sin(math.pi / 2 * (1.0 - frame / length)) * value_from  + \
-            math.sin(math.pi / 2  * (frame / length)) * value_to
+    def ease_in_quad(progress, animation):
+        return progress*progress
 
     @staticmethod
-    def bubble(value_from, value_to, length, frame):
-        s = -math.pi / 2
-        p = math.pi
-        return math.sin(s + p * (1.0 - frame / length)) * value_from  + \
-            math.sin(s + p  * (frame / length)) * value_to
+    def ease_out_quad(progress, animation):
+        return -1.0 * progress * (progress - 2.0)
+
+    @staticmethod
+    def ease_in_out_quad(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        p = t / (d / 2.0)
+        if p < 1 :
+           return 0.5 * p * p
+        p -= 1.0
+        return -0.5 * (p * (p - 2.0) - 1.0)
+
+    @staticmethod
+    def ease_in_cubic(progress, animation):
+        return progress * progress * progress
+
+    @staticmethod
+    def ease_out_cubic(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        p = t / d - 1.0
+        return p * p * p + 1.0
+
+    @staticmethod
+    def ease_in_out_cubic(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        p = t / (d / 2.0)
+        if p < 1 :
+            return 0.5 * p * p * p
+        p -= 2
+        return 0.5 * (p * p * p + 2.0)
+
+    @staticmethod
+    def ease_in_quart(progress, animation):
+        return progress * progress * progress * progress
+
+    @staticmethod
+    def ease_out_quart(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        p = t / d - 1.0
+        return -1.0 * (p * p * p * p - 1.0);
+
+    @staticmethod
+    def ease_in_out_quart(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        p = t / (d / 2.0)
+        if p < 1 :
+            return 0.5 * p * p * p * p
+        p -= 2
+        return -0.5 * (p * p * p * p - 2.0)
+
+    @staticmethod
+    def ease_in_quint(progress, animation):
+        return progress * progress * progress * progress * progress
+
+    @staticmethod
+    def ease_out_quint(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        p = t / d - 1.0
+        return p * p * p * p * p + 1.0;
+
+    @staticmethod
+    def ease_in_out_quint(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        p = t / (d / 2.0)
+        if p < 1 :
+            return 0.5 * p * p * p * p * p
+        p -= 2.0
+        return 0.5 * (p * p * p * p * p + 2.0)
+
+    @staticmethod
+    def ease_in_sine(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        return -1.0 * math.cos(t / d * (math.pi/2.0)) + 1.0
+
+    @staticmethod
+    def ease_out_sine(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        return math.sin(t / d * (math.pi/2.0))
+
+    @staticmethod
+    def ease_in_out_sine(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        return -0.5 * (math.cos(math.pi * t / d) - 1.0)
+
+    @staticmethod
+    def ease_in_expo(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        if t == 0:
+            return 0.0            
+        return math.pow(2, 10 * (t / d - 1.0))
+
+    @staticmethod
+    def ease_out_expo(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        if t == d:
+            return 1.0            
+        return  -math.pow(2, -10 * t / d) + 1.0
+
+    @staticmethod
+    def ease_in_out_expo(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        if t == 0:
+            return 0.0
+        if t == d:
+            return 1.0
+        p = t / (d / 2.0)
+        if p < 1:
+            return 0.5 * math.pow(2, 10 * (p - 1.0))
+        p -= 1.0
+        return 0.5 * (-math.pow(2, -10 * p) + 2.0)
+
+    @staticmethod
+    def ease_in_circ(progress, animation):
+        return -1.0 * (math.sqrt(1.0 - progress * progress) - 1.0)
+
+    @staticmethod
+    def ease_out_circ(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        p = t / d - 1.0
+        return math.sqrt(1.0 - p * p)
+
+    @staticmethod
+    def ease_in_out_circ(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        p = t / (d / 2)
+        if p < 1:
+            return -0.5 * (math.sqrt(1.0 - p * p) - 1.0)
+        p -= 2.0
+        return 0.5 * (math.sqrt(1.0 - p * p) + 1.0)
+
+    @staticmethod
+    def ease_in_elastic(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        p = d * .3
+        s = p / 4.0
+        q = t / d
+        if q == 1:
+            return 1.0
+        q -= 1.0
+        return -(math.pow(2, 10 * q) * math.sin((q * d - s) * (2 * math.pi) / p))
+
+    @staticmethod
+    def ease_out_elastic(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        p = d * .3
+        s = p / 4.0
+        q = t / d
+        if q == 1:
+            return 1.0
+        return math.pow(2, -10 * q) * math.sin ((q * d - s) * (2 * math.pi) / p) + 1.0
+
+    @staticmethod
+    def ease_in_out_elastic(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        p = d * (.3 * 1.5)
+        s = p / 4.0
+        q = t / (d / 2.0)
+        if q == 2:
+            return 1.0
+        if q < 1:
+            q -= 1.0;
+            return -.5 * (math.pow(2, 10 * q) * math.sin((q * d - s) * (2.0 *math.pi) / p));
+        else:
+            q -= 1.0;
+            return math.pow(2, -10 * q) * math.sin((q * d - s) * (2.0 * math.pi) / p) * .5 + 1.0;
+
+    @staticmethod
+    def ease_in_back(progress, animation):
+        return progress * progress * ((1.70158 + 1.0) * progress - 1.70158)
+
+    @staticmethod
+    def ease_out_back(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        p = t / d - 1.0
+        return p * p * ((1.70158 + 1) * p + 1.70158) + 1.0
+
+    @staticmethod
+    def ease_in_out_back(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        p = t / (d / 2.0)
+        s = 1.70158 * 1.525
+        if p < 1:
+            return 0.5 * (p * p * ((s + 1.0) * p - s))
+        p -= 2.0
+        return 0.5 * (p * p * ((s + 1.0) * p + s) + 2.0)
+
+    @staticmethod
+    def _ease_out_bounce_internal(t,d):
+        p = t / d
+        if p < (1.0 / 2.75):
+            return 7.5625 * p * p
+        elif p < (2.0 / 2.75):
+            p -= (1.5 / 2.75)
+            return 7.5625 * p * p + .75
+        elif p < (2.5 / 2.75):
+            p -= (2.25 / 2.75)
+            return 7.5625 * p * p + .9375
+        else:
+            p -= (2.625 / 2.75)
+            return 7.5625 * p * p + .984375
+
+    @staticmethod
+    def _ease_in_bounce_internal(t,d):
+        return 1.0 - AnimationAlpha._ease_out_bounce_internal (d - t, d)
+
+    @staticmethod
+    def ease_in_bounce(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        return AnimationAlpha._ease_in_bounce_internal(t, d)
+
+    @staticmethod
+    def ease_out_bounce(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        return AnimationAlpha._ease_out_bounce_internal (t, d)
+
+    @staticmethod
+    def ease_in_out_bounce(progress, animation):
+        t = animation.get_frame_pointer()
+        d = animation.get_duration()
+        if t < d / 2.0 :
+            return AnimationAlpha._ease_in_bounce_internal (t * 2.0, d) * 0.5
+        else:
+            return AnimationAlpha._ease_out_bounce_internal (t * 2.0 - d, d) * 0.5 + 1.0 * 0.5

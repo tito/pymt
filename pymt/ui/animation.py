@@ -177,6 +177,7 @@ class AnimationBase(object):
         return self.duration
 
 class AbsoluteAnimationBase(AnimationBase):
+    #Animation Objects of sort MoveTo, RotateTo etc depend on this class
     def __init__(self,**kwargs):
         super(AbsoluteAnimationBase, self).__init__(**kwargs)
         self._prop_list = {}
@@ -207,6 +208,7 @@ class AbsoluteAnimationBase(AnimationBase):
         self._prop_list = self._initial_state
 
 class DeltaAnimationBase(AnimationBase):
+    #Animation Objects of sort MoveBy, RotateBy etc depend on this class
     def __init__(self,**kwargs):
         super(DeltaAnimationBase, self).__init__(**kwargs)
         self._prop_list = {}
@@ -276,18 +278,23 @@ class Animation(object):
             Number of seconds you want the animation to execute.
         `generate_event` : bool, default to True
             Generate on_animation_complete event at the end of the animation
-
+        `animation_type` : str, default to absolute
+            Specifies what type of animation we are defining, Absolute or Delta
+        `alpha_function` : str, default to AnimationAlpha.linear
+            Specifies which kind of time variation function to use
     '''
     def __init__(self,**kwargs):
         kwargs.setdefault('duration', 1.0)
         kwargs.setdefault('animation_type', "absolute")
         self.duration = kwargs.get('duration')
-        kwargs.setdefault('alpha_function', AnimationAlpha.linear) #linear function by default
         self.children = {}
         self.params = kwargs
         self._animation_type = kwargs.get('animation_type')
         self._repeater =  None
-        self.alpha_function = kwargs.get('alpha_function')
+        if kwargs.get('alpha_function'):
+            self.alpha_function = getattr(AnimationAlpha, kwargs.get('alpha_function'))
+        else:
+            self.alpha_function = AnimationAlpha.linear
 
     def start(self, widget, repeater=None):
         self._repeater = repeater
@@ -448,7 +455,19 @@ class ParallelAnimation(ComplexAnimation):
 #Controller Classes
 
 class Repeat(ComplexAnimation):
-    # Base class for complex animations like sequences and parallel animations
+    '''Repeat Controller class is used to repeat a particular animations. It repeats
+      n times as specified or repeats indefinately if number of times to repeat is not 
+      specified. 
+      Usage:
+            widget = SomeWidget()
+            animobj = Animation(duration=5,x=100,style={'bg-color':(1.0,1.0,1.0,1.0)})
+            rept = Repeat(animobj, times=5) #Repeats 5 times
+            rept_n = Repeat(animobj) #Repeats indefinately            
+
+    :Parameters:
+        `times` : integer, default to infinity
+            Number of times to repeat the Animation
+    '''
     def __init__(self, animation, **kwargs):
         super(Repeat, self).__init__(**kwargs)
         kwargs.setdefault('times', -1)
@@ -490,7 +509,7 @@ class Delay(Animation):
 #Older animation class code
 
 class AnimationAlpha(object):
-    """#Collection of animation function, to be used with Animation object.
+    """Collection of animation function, to be used with Animation object.
         Easing Functions ported into PyMT from Clutter Project
         http://www.clutter-project.org/docs/clutter/stable/ClutterAlpha.html
     """

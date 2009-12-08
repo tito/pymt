@@ -22,8 +22,7 @@ class MTSprite(MTWidget):
             self.image.scale= self.scale
             self.size = self.image.size
             self.image.draw()           
-            
-    
+
     def reset(self):
         self.size = self.image.size
         self.scale = 1.0
@@ -68,7 +67,7 @@ def on_press(*largs):
     for i in range(64):
         x = int(random.uniform(100, w.width-100))
         y = int(random.uniform(100, w.height-100))
-        anim_list.append(Animation(duration=1, pos=(x,y), alpha_function=AnimationAlpha.ease_out_bounce))
+        anim_list.append(Animation(duration=1.5, pos=(x,y), alpha_function="ease_in_out_back"))
     
     i = 0
     for obj in objlist:
@@ -82,7 +81,7 @@ def on_press(*largs):
         for j in range(8):
             x = j*64+100
             y = i*64+40
-            anim_list.append(Animation(duration=1, pos=(x,y), alpha_function=AnimationAlpha.ease_out_bounce))
+            anim_list.append(Animation(duration=1.5, pos=(x,y), alpha_function="ease_in_out_back"))
     
     i = 0
     for obj in objlist:
@@ -96,7 +95,7 @@ def on_press(*largs):
         teta = math.radians(8*i)
         x = 200 * math.cos(teta)+w.width/2
         y = 200 * math.sin(teta)+w.height/2
-        anim_list.append(Animation(duration=1, pos=(x,y), alpha_function=AnimationAlpha.ease_out_bounce))
+        anim_list.append(Animation(duration=1.5, pos=(x,y), alpha_function="ease_in_out_back"))
     
     i = 0
     for obj in objlist:
@@ -110,8 +109,8 @@ def on_press(*largs):
         teta = math.radians(8*i)
         x = 200 * math.cos(teta)+w.width/2
         y = 200 * math.sin(teta*2)+w.height/2
-        anim_list.append(Animation(duration=1, pos=(x,y), alpha_function=AnimationAlpha.ease_out_bounce))
-    
+        anim_list.append(Animation(duration=1.5, pos=(x,y), alpha_function="ease_in_out_back"))
+
     i = 0
     for obj in objlist:
         obj.do(anim_list[i])

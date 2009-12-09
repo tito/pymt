@@ -10,7 +10,7 @@ from OpenGL.GL import *
 from ...graphx import drawRectangle, gx_matrix, gx_matrix_identity, set_color, \
     drawTexturedRectangle, gx_blending
 from ...vector import Vector, matrix_mult, matrix_inv_mult
-from ...utils import SafeList
+from ...utils import SafeList, deprecated
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
 from svg import MTSvg
@@ -94,7 +94,8 @@ class MTScatterWidget(MTWidget):
         self.children = SafeList()
 
         self.touches        = {}
-        self.scale          = 1
+        self._scale         = 1.
+        self._rotation      = 0.
         self.transform_mat  = (GLfloat * 16)()
         if kwargs.get('translation')[0] != 0 or kwargs.get('translation')[1] != 0:
             self.init_transform(kwargs.get('rotation'), kwargs.get('scale'), kwargs.get('translation'))
@@ -125,7 +126,8 @@ class MTScatterWidget(MTWidget):
             scale = self.scale_min
         if self.scale_max is not None and scale > self.scale_max:
             scale = self.scale_max
-        self.scale = scale
+        self._scale = scale
+        self._rotation = angle
         with gx_matrix_identity:
             glTranslatef(trans[0], trans[1], 0)
             glTranslatef(point[0], point[1], 0)
@@ -177,7 +179,6 @@ class MTScatterWidget(MTWidget):
                 return tID
         return None
 
-
     def apply_angle_scale_trans(self, angle, scale, trans, point=(0, 0)):
         '''Update matrix transformation by adding new angle, scale and translate.
         :Parameters:
@@ -191,12 +192,13 @@ class MTScatterWidget(MTWidget):
                 Point to apply transformation
         '''
         old_scale = self.scale
-        self.scale *= scale
-        if self.scale < self.scale_min or \
-           self.scale_max is not None and self.scale > self.scale_max:
+        self._scale *= scale
+        if self._scale < self.scale_min or \
+           self.scale_max is not None and self._scale > self.scale_max:
             scale = self.scale_max
-            self.scale = old_scale
+            self._scale = old_scale
             scale = 1
+        self._rotation = (self._rotation + angle) % 360
         with gx_matrix_identity:
             if self.do_translation:
                 glTranslatef(trans.x * self.do_translation_x, trans.y * self.do_translation_y, 0)
@@ -289,6 +291,7 @@ class MTScatterWidget(MTWidget):
         return self.center[1]
     y = property(_get_y)
 
+    @deprecated
     def get_scale_factor(self, use_gl=False):
         '''Return the current scale factor.
         By default, the calculated scale is returned. You can set use_gl to
@@ -364,8 +367,8 @@ class MTScatterWidget(MTWidget):
             self.rotate_zoom_move(touch.uid, x, y)
 
             # precalculate size of container
-            container_width = int(self.width * self.get_scale_factor())
-            container_height = int(self.height * self.get_scale_factor())
+            container_width = int(self.width * self.scale)
+            container_height = int(self.height * self.scale)
 
             # dispatch event only if it change
             if container_width != self.__width or container_height != self.__height:
@@ -409,6 +412,25 @@ class MTScatterWidget(MTWidget):
         # stop porpagating if its within our bounds
         if self.collide_point(x, y):
             return True
+
+    def _get_rotation(self):
+        return self._rotation
+    def _set_rotation(self, rotation):
+        rotation = (rotation - self._rotation) % 360
+        self.apply_angle_scale_trans(rotation, 1., Vector(0, 0), Vector(*self.size) / 2.)
+    rotation = property(_get_rotation, _set_rotation,
+                        doc='''Get/set the rotation of the object (in degree)''')
+
+    def _get_scale(self):
+        return self._scale
+    def _set_scale(self, scale):
+        if self._scale == 0:
+            self._scale = 1
+        scale = scale / self._scale
+        self.apply_angle_scale_trans(0, scale, Vector(0, 0), Vector(*self.size) / 2.)
+    scale = property(_get_scale, _set_scale,
+                     doc='''Get/set the scaling of the object''')
+
 
 class MTScatterPlane(MTScatterWidget):
     '''A Plane that transforms for zoom/rotate/pan.

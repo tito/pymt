@@ -104,7 +104,7 @@ class Texture(object):
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
 
         glTexImage2D(target, 0, format, texture_width, texture_height, 0,
-                     GL_RGBA, GL_UNSIGNED_BYTE, None)
+                     GL_RGBA, GL_UNSIGNED_BYTE, 0)
 
         texture = Texture(texture_width, texture_height, target, id)
         if rectangle:

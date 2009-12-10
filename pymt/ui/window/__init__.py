@@ -77,6 +77,7 @@ class BaseWindow(EventDispatcher):
         self.gradient = kwargs.get('gradient')
 
         # event subsystem
+        self.register_event_type('on_flip')
         self.register_event_type('on_draw')
         self.register_event_type('on_update')
         self.register_event_type('on_resize')
@@ -161,12 +162,6 @@ class BaseWindow(EventDispatcher):
         if pymt.pymt_config.getboolean('pymt', 'show_fps'):
             self.show_fps = True
 
-        # initialize dump image
-        self.dump_frame     = pymt.pymt_config.getboolean('dump', 'enabled')
-        self.dump_prefix    = pymt.pymt_config.get('dump', 'prefix')
-        self.dump_format    = pymt.pymt_config.get('dump', 'format')
-        self.dump_idx       = 0
-
         # configure the window
         self.create_window(params)
 
@@ -191,6 +186,10 @@ class BaseWindow(EventDispatcher):
     def create_window(self, params):
         '''Will create the main window and configure it'''
         pass
+
+    def on_flip(self):
+        '''Flip between buffers (event)'''
+        self.flip()
 
     def flip(self):
         '''Flip between buffers'''
@@ -370,15 +369,6 @@ class BaseWindow(EventDispatcher):
             drawLabel(label='FPS: %.2f' % float(fps),
                 center=False, pos=(0, 0),
                 font_size=10, bold=False)
-
-        '''
-        if self.dump_frame:
-            self.dump_idx = self.dump_idx + 1
-            filename = '%s%05d.%s' % (self.dump_prefix, self.dump_idx,
-                                       self.dump_format)
-            #print pyglet.image.get_buffer_manager().get_color_buffer().get_texture()
-            pyglet.image.get_buffer_manager().get_color_buffer().save(filename=filename)
-        '''
 
         self.draw_mouse_touch()
 

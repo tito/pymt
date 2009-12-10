@@ -417,7 +417,7 @@ class MTScatterWidget(MTWidget):
         return self._rotation
     def _set_rotation(self, rotation):
         rotation = (rotation - self._rotation) % 360
-        self.apply_angle_scale_trans(rotation, 1., Vector(0, 0), Vector(*self.size) / 2.)
+        self.apply_angle_scale_trans(rotation, 1., Vector(0, 0), Vector(*self.pos))
     rotation = property(_get_rotation, _set_rotation,
                         doc='''Get/set the rotation of the object (in degree)''')
 
@@ -427,7 +427,7 @@ class MTScatterWidget(MTWidget):
         if self._scale == 0:
             self._scale = 1
         scale = scale / self._scale
-        self.apply_angle_scale_trans(0, scale, Vector(0, 0), Vector(*self.size) / 2.)
+        self.apply_angle_scale_trans(0, scale, Vector(0, 0), Vector(*self.pos))
     scale = property(_get_scale, _set_scale,
                      doc='''Get/set the scaling of the object''')
 

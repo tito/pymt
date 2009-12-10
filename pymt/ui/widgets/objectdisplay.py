@@ -29,7 +29,7 @@ class MTObjectDisplay(MTWidget):
 
     def on_touch_up(self, touch):
         if touch.id in self.objects:
-           del self.objects[object.id]
+           del self.objects[touch.id]
 
     def draw(self):
         if not self.visible:

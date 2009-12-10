@@ -165,7 +165,7 @@ class TouchEventLoop(object):
             pymt_window.dispatch_events()
             pymt_window.dispatch_event('on_update')
             pymt_window.dispatch_event('on_draw')
-            pymt_window.flip()
+            pymt_window.dispatch_event('on_flip')
 
         # don't loop if we don't have listeners !
         if len(touch_event_listeners) == 0:

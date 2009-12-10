@@ -311,8 +311,8 @@ class MTVKeyboard(MTScatterWidget):
     #
 
     def _lazy_update(self):
-        self.container_width = int(self.width * self.get_scale_factor())
-        self.container_height = int(self.height * self.get_scale_factor())
+        self.container_width = int(self.width * self.scale)
+        self.container_height = int(self.height * self.scale)
         self._need_update = 'lazy'
         self._last_update = getClock().get_time()
 
@@ -334,7 +334,7 @@ class MTVKeyboard(MTScatterWidget):
 
             # don't update too fast next time (if it's lazy)
             self._last_update = getClock().get_time()
-            self._last_update_scale = self.get_scale_factor()
+            self._last_update_scale = self.scale
             self._need_update = None
 
     def _do_update(self, mode=None):
@@ -347,7 +347,7 @@ class MTVKeyboard(MTScatterWidget):
             return
 
         # calculate margin
-        s = self.get_scale_factor()
+        s = self.scale
         w, h = self.container_width, self.container_height
         if mode == 'background':
             s = 1.
@@ -437,8 +437,8 @@ class MTVKeyboard(MTScatterWidget):
                     radius=self.style['key-border-radius'])
 
             # search the good scale for current precalculated keys layer
-            if self._last_update_scale == self.get_scale_factor():
-                s = 1. / self.get_scale_factor()# / self._last_update_scale
+            if self._last_update_scale == self.scale:
+                s = 1. / self.scale# / self._last_update_scale
                 glScalef(s, s, s)
             else:
                 s = 1. / self._last_update_scale

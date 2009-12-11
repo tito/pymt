@@ -81,6 +81,15 @@ class AnimationBase(object):
         self.params = kwargs.get('key_args')
         self.duration =  float(self.params['duration'])
         self.animator = kwargs.get('animator')
+
+        if 'f' in self.params.keys():
+            f = getattr(AnimationAlpha, self.params['f'])
+        elif 'alpha_function' in self.params.keys(): 
+            f = getattr(AnimationAlpha, self.params['alpha_function'])
+        else:
+            f = AnimationAlpha.linear
+        self.alpha_function = f
+
         if "generate_event" in self.params.keys():
             self.generate_event = self.params['generate_event']
         else:
@@ -161,7 +170,7 @@ class AnimationBase(object):
             self._progress = self._frame_pointer/self.duration
             if self._progress > 1.0:
                 self._progress = 1.0
-            self.update(self.animator.alpha_function(self._progress, self))
+            self.update(self.alpha_function(self._progress, self))
             return True
         else:
             self.stop()
@@ -205,7 +214,7 @@ class AbsoluteAnimationBase(AnimationBase):
         super(AbsoluteAnimationBase, self).__init__(**kwargs)
         self._prop_list = {}
         for item in self.params:
-            if item not in ("duration", "anim1", "anim2", "generate_event", "single_event", "animation_type","alpha_function"):
+            if item not in ("duration", "anim1", "anim2", "generate_event", "single_event", "animation_type", "alpha_function", "d", "f"):
                 self._prop_list[item] = self.params[item]
 
         for prop in self._prop_list:
@@ -236,7 +245,7 @@ class DeltaAnimationBase(AnimationBase):
         super(DeltaAnimationBase, self).__init__(**kwargs)
         self._prop_list = {}
         for item in self.params:
-            if item not in ("duration", "anim1", "anim2", "generate_event", "single_event", "animation_type", "alpha_function"):
+            if item not in ("duration", "anim1", "anim2", "generate_event", "single_event", "animation_type", "alpha_function", "d", "f"):
                 self._prop_list[item] = self.params[item]
 
         #save proplist for repeatation
@@ -310,16 +319,16 @@ class Animation(object):
     '''
     def __init__(self,**kwargs):
         kwargs.setdefault('duration', 1.0)
+        kwargs.setdefault('d', 1.0)
         kwargs.setdefault('animation_type', "absolute")
-        self.duration = kwargs.get('duration')
+        if kwargs.get('d'):
+            self.duration = kwargs.get('d')
+        else:
+            self.duration = kwargs.get('duration')
         self.children = {}
         self.params = kwargs
         self._animation_type = kwargs.get('animation_type')
-        self._repeater =  None
-        if kwargs.get('alpha_function'):
-            self.alpha_function = getattr(AnimationAlpha, kwargs.get('alpha_function'))
-        else:
-            self.alpha_function = AnimationAlpha.linear
+        self._repeater =  None        
 
     def start(self, widget, repeater=None):
         self._repeater = repeater

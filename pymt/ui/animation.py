@@ -176,6 +176,29 @@ class AnimationBase(object):
     def get_duration(self):
         return self.duration
 
+    def _repopulate_attrib(self, widget):
+        self.widget = widget
+        prop_keys = {}
+        for prop in self._prop_list:
+            prop_keys[prop] = self._prop_list[prop][1]
+        self._prop_list = {}
+        for prop in prop_keys:
+            cval = self._get_value_from(prop)        
+            if type(cval) in (tuple, list):
+                self._prop_list[prop] = (cval, prop_keys[prop])
+        for prop in prop_keys:
+            cval = self._get_value_from(prop)
+            if type(cval) in (tuple, list):
+                self._prop_list[prop] = (cval, prop_keys[prop])
+            elif isinstance(cval, dict):
+                #contruct a temp dict of only required keys
+                temp_dict = {}
+                for each_key in prop_keys[prop]:
+                    temp_dict[each_key] = cval[each_key]
+                self._prop_list[prop] = (temp_dict, prop_keys[prop])
+            else:
+                self._prop_list[prop] = (cval,prop_keys[prop])
+
 class AbsoluteAnimationBase(AnimationBase):
     #Animation Objects of sort MoveTo, RotateTo etc depend on this class
     def __init__(self,**kwargs):
@@ -206,30 +229,6 @@ class AbsoluteAnimationBase(AnimationBase):
         self._progress = 0.0
         self.running = False
         self._prop_list = self._initial_state
-
-    def _repopulate_attrib(self, widget):
-        self.widget = widget
-        prop_keys = {}
-        for prop in self._prop_list:
-            prop_keys[prop] = self._prop_list[prop][1]
-        self._prop_list = {}
-        for prop in prop_keys:
-            cval = self._get_value_from(prop)        
-            if type(cval) in (tuple, list):
-                self._prop_list[prop] = (cval, prop_keys[prop])
-        for prop in prop_keys:
-            cval = self._get_value_from(prop)
-            if type(cval) in (tuple, list):
-                self._prop_list[prop] = (cval, prop_keys[prop])
-            elif isinstance(cval, dict):
-                #contruct a temp dict of only required keys
-                temp_dict = {}
-                for each_key in prop_keys[prop]:
-                    temp_dict[each_key] = cval[each_key]
-                self._prop_list[prop] = (temp_dict, prop_keys[prop])
-            else:
-                self._prop_list[prop] = (cval,prop_keys[prop])
-
 
 class DeltaAnimationBase(AnimationBase):
     #Animation Objects of sort MoveBy, RotateBy etc depend on this class
@@ -288,6 +287,8 @@ class DeltaAnimationBase(AnimationBase):
             else:
                 temp_dict[key] = ip_dict[key]+op_dict[key]
         return  temp_dict
+
+
 
 class Animation(object):
     '''Animation Class is used to animate any widget. You pass duration of animation

@@ -25,7 +25,7 @@ class LabelPIL(LabelBase):
         fontname = self.options['font_name'].split(',')[0]
         id = '%s.%s' % (unicode(fontname), unicode(fontsize))
         if not id in self._cache:
-            filename = os.path.join(pymt.pymt_data_dir, 'DejaVuSans.ttf')
+            filename = os.path.join(pymt.pymt_data_dir, 'LiberationSans-Regular.ttf')
             font = ImageFont.truetype(filename, fontsize)
             self._cache[id] = font
 
@@ -34,14 +34,14 @@ class LabelPIL(LabelBase):
     def get_extents(self, text):
         font = self._select_font()
         w, h = font.getsize(text)
-        return w, h, None
+        return w, h
 
     def _render_begin(self):
         # create a surface, context, font...
         self._pil_im = PIL.Image.new('RGBA', self.size)
         self._pil_draw = ImageDraw.Draw(self._pil_im)
 
-    def _render_text(self, text, x, y, extra=None):
+    def _render_text(self, text, x, y):
         self._pil_draw.text((x, y), text, font=self._select_font())
 
     def _render_end(self):

@@ -18,7 +18,7 @@ from OpenGL.GL import glScalef, glTranslatef
 
 __all__ = ['MTVKeyboard']
 
-kbdlayout_default_font = os.path.join(pymt.pymt_data_dir, 'DejaVuSans.ttf')
+kbdlayout_default_font = os.path.join(pymt.pymt_data_dir, 'LiberationSans-Regular.ttf')
 
 class KeyboardLayout(object):
     '''Base for all Keyboard Layout'''

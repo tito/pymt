@@ -56,7 +56,7 @@ class LabelCairo(LabelBase):
     def get_extents(self, text):
         self._select_font(cairo_default_context)
         extents = cairo_default_context.text_extents(text)
-        return (extents[4], self._height, extents)
+        return (extents[4], self._height)
 
     def _render_begin(self):
         # create a surface, context, font...
@@ -67,7 +67,7 @@ class LabelCairo(LabelBase):
         self._select_font(self._cairo_context)
         self._cairo_context.set_source_rgb(1., 1., 1.)
 
-    def _render_text(self, text, x, y, extra=None):
+    def _render_text(self, text, x, y):
         self._cairo_context.move_to(x,
             y + self._font_extents[FONT_EXTENTS_ASCENT_IDX])
         self._cairo_context.show_text(text)

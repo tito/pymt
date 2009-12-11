@@ -23,6 +23,8 @@ class LabelBase(BaseObject):
         kwargs.setdefault('size', (None, None))
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
+        kwargs.setdefault('halign', 'left')
+        kwargs.setdefault('valign', 'bottom')
         kwargs.setdefault('color', (1, 1, 1, 1))
 
         super(LabelBase, self).__init__(**kwargs)
@@ -36,17 +38,13 @@ class LabelBase(BaseObject):
         self.label      = label
 
     def get_extents(self, text):
-        '''Return a tuple with (width, height, extra_info) for a text.
-        ..warning ::
-            extra_info is default to None. this is a stub to add
-            private information for the backend
-        '''
-        return (0, 0, None)
+        '''Return a tuple with (width, height) for a text.'''
+        return (0, 0)
 
     def _render_begin(self):
         pass
 
-    def _render_text(self, text, x, y, extra=None):
+    def _render_text(self, text, x, y):
         pass
 
     def _render_end(self):
@@ -71,9 +69,14 @@ class LabelBase(BaseObject):
         # no width specified, faster method
         if uw is None:
             for line in self.label.split('\n'):
-                lw, lh, extra = self.get_extents(line)
+                lw, lh = self.get_extents(line)
                 if real:
-                    self._render_text(line, 0, y, extra)
+                    x = 0
+                    if self.options['halign'] == 'center':
+                        x = int((self.width - lw) / 2.)
+                    elif self.options['halign'] == 'right':
+                        x = int(self.width - lw)
+                    self._render_text(line, x, y)
                     y += int(lh)
                 else:
                     w = max(w, int(lw))
@@ -93,23 +96,56 @@ class LabelBase(BaseObject):
                     if not glyph in cache:
                         cache[glyph] = self.get_extents(glyph)
 
-            # draw
-            mh = 0
+            # first, split lines
+            glyphs = []
+            lines = []
+            mw = mh = 0
             for glyph in self.label:
-                lw, lh, extra = cache[glyph]
-                mh = max(lh, mh)
-                if glyph == '\n':
-                    y += mh
-                    mh = x = 0
-                else:
-                    if x + lw > uw:
-                        y += mh
-                        mh = x = 0
-                    if real:
-                        self._render_text(glyph, x, y, extra)
-                    x += lw
+                lw, lh = cache[glyph]
 
-            w, h = uw, y + mh
+                # get the maximum height for this line
+                mh = max(lh, mh)
+
+                # get new line char ?
+                # or is the char can fit in the current line ?
+                if glyph == '\n' or x + lw > uw:
+
+                    # push a new line with dimensions + glyphs
+                    lines.append(((mw, mh), glyphs))
+                    glyphs = []
+
+                    # reset size
+                    mw = mh = 0
+
+                    # new line ? don't render !
+                    if glyph == '\n':
+                        continue
+
+                # advance the width
+                mw += lw
+                glyphs.append(glyph)
+
+            # got some char left ?
+            if mw != 0:
+                lines.append(((mw, mh), glyphs))
+
+            if not real:
+                h = sum([size[1] for size, glyphs in lines])
+                w = uw
+            else:
+                # really render now.
+                y = 0
+                for size, glyphs in lines:
+                    x = 0
+                    if self.options['halign'] == 'center':
+                        x = int((self.width - size[0]) / 2.)
+                    elif self.options['halign'] == 'right':
+                        x = int(self.width - size[0])
+                    for glyph in glyphs:
+                        lw, lh = cache[glyph]
+                        self._render_text(glyph, x, y)
+                        x += lw
+                    y += size[1]
 
         if not real:
             # was only the first pass

@@ -41,14 +41,14 @@ class LabelPygame(LabelBase):
     def get_extents(self, text):
         font = self._get_font()
         w, h = font.size(text)
-        return w, h, None
+        return w, h
 
     def _render_begin(self):
         # XXX big/little endian ??
         rgba_mask = 0xff000000, 0xff0000, 0xff00, 0xff
         self._pygame_surface = pygame.Surface(self.size, 0, 32, rgba_mask)
 
-    def _render_text(self, text, x, y, extra=None):
+    def _render_text(self, text, x, y):
         font = self._get_font()
         text = font.render(text, True, (255, 255, 255))
         self._pygame_surface.blit(text, (x, y), None, pygame.BLEND_RGBA_ADD)

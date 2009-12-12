@@ -16,7 +16,7 @@ import os
 from logger import pymt_logger, LOG_LEVELS
 
 # Version number of current configuration format
-PYMT_CONFIG_VERSION = 3
+PYMT_CONFIG_VERSION = 4
 
 # Global settings options for pymt
 options = {
@@ -157,6 +157,10 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
         elif pymt_config_version == 2:
             # add show cursor
             pymt_config.setdefault('graphics', 'show_cursor', '1')
+
+        elif pymt_config_version == 3:
+            # add multisamples
+            pymt_config.setdefault('graphics', 'multisamples', '2')
 
         else:
             # for future.

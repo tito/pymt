@@ -9,6 +9,8 @@ from . import BaseWindow
 from ...logger import pymt_logger
 from ...utils import curry
 from ...base import stopTouchApp, getEventLoop
+from OpenGL.GL import glEnable
+from OpenGL.GL.ARB.multisample import *
 
 try:
     import pygame
@@ -21,10 +23,11 @@ class MTWindowPygame(BaseWindow):
         # init some opengl, same as before.
         self.flags = pygame.HWSURFACE | pygame.OPENGL | pygame.DOUBLEBUF
         pygame.display.init()
-        # FIXME found a general way to check samplebuffers
-        # (is it really needed ??)
-        #pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 1)
-        #pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 4)
+
+        multisamples = pymt.pymt_config.getint('graphics', 'multisamples')
+
+        pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 1)
+        pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, multisamples)
         pygame.display.gl_set_attribute(pygame.GL_DEPTH_SIZE, 16)
         pygame.display.gl_set_attribute(pygame.GL_STENCIL_SIZE, 1)
         pygame.display.gl_set_attribute(pygame.GL_ALPHA_SIZE, 8)
@@ -39,7 +42,26 @@ class MTWindowPygame(BaseWindow):
         # before calling on_resize
         self._size = params['width'], params['height']
         self._vsync = params['vsync']
-        self._pygame_set_mode()
+
+        # try to use mode with multisamples
+        try:
+            self._pygame_set_mode()
+        except pygame.error:
+            if multisamples:
+                pymt_logger.warning('Video setup failed, trying without antialiasing')
+                pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 0)
+                pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 0)
+                multisamples = 0
+                self._pygame_set_mode()
+            else:
+                pymt_logger.warning('Video setup failed :-(')
+                raise
+
+        if multisamples:
+            try:
+                glEnable(GL_MULTISAMPLE_ARB)
+            except:
+                pass
 
         super(MTWindowPygame, self).create_window(params)
 

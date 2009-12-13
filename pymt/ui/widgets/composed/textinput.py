@@ -135,12 +135,12 @@ class MTTextInput(MTButton):
             return True
         elif key == 8: # backspace
             key = (None, None, 'backspace', 1)
-            self.keyboard.on_key_down(key)
-            self.keyboard.on_key_up(key)
+            self.keyboard.dispatch_event('on_key_down', key)
+            self.keyboard.dispatch_event('on_key_up', key)
         elif key in (13, 271): # enter or numenter
             key = (None, None, 'enter', 1)
-            self.keyboard.on_key_down(key)
-            self.keyboard.on_key_up(key)
+            self.keyboard.dispatch_event('on_key_down', key)
+            self.keyboard.dispatch_event('on_key_up', key)
         else:
             if unicode is not None:
                 self.keyboard.text = self.keyboard.text + unicode

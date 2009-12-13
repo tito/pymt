@@ -48,7 +48,9 @@ class MTWindowPygame(BaseWindow):
             self._pygame_set_mode()
         except pygame.error:
             if multisamples:
-                pymt_logger.warning('Video setup failed, trying without antialiasing')
+                pymt_logger.warning('Video: failed (multisamples=%d)' %
+                                    multisamples)
+                pymt_logger.warning('Video: trying without antialiasing')
                 pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 0)
                 pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 0)
                 multisamples = 0

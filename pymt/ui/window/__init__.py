@@ -94,7 +94,7 @@ class BaseWindow(EventDispatcher):
         setWindow(self)
 
         # apply styles for window
-        self.cssstyle = {}
+        self.style = {}
         style = css_get_style(widget=self)
         self.apply_css(style)
 
@@ -200,7 +200,7 @@ class BaseWindow(EventDispatcher):
         pass
 
     def apply_css(self, styles):
-        self.cssstyle.update(styles)
+        self.style.update(styles)
 
     def _get_modifiers(self):
         return self._modifiers
@@ -283,7 +283,7 @@ class BaseWindow(EventDispatcher):
 
     def clear(self):
         '''Clear the window with background color'''
-        glClearColor(*self.cssstyle.get('bg-color'))
+        glClearColor(*self.style.get('bg-color'))
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
     def draw(self):
@@ -295,8 +295,8 @@ class BaseWindow(EventDispatcher):
             self.draw_gradient()
 
     def draw_gradient(self):
-        set_color(*self.cssstyle.get('bg-color'))
-        drawCSSRectangle(size=self.size, style=self.cssstyle)
+        set_color(*self.style.get('bg-color'))
+        drawCSSRectangle(size=self.size, style=self.style)
 
     def draw_wallpaper(self):
         if self.wallpaper_position == 'center':

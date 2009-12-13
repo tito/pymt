@@ -44,9 +44,7 @@ class LabelPygame(LabelBase):
         return w, h
 
     def _render_begin(self):
-        # XXX big/little endian ??
-        rgba_mask = 0xff000000, 0xff0000, 0xff00, 0xff
-        self._pygame_surface = pygame.Surface(self.size, 0, 32, rgba_mask)
+        self._pygame_surface = pygame.Surface(self.size, pygame.SRCALPHA, 32)
 
     def _render_text(self, text, x, y):
         font = self._get_font()

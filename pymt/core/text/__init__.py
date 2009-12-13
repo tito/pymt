@@ -165,6 +165,8 @@ class LabelBase(BaseObject):
         elif self.width > self.texture.width or self.height > self.texture.height:
             self.texture = pymt.Texture.create(*self.size)
             self.texture.flip_vertical()
+        else:
+            self.texture = self.texture.get_region(0, 0, self.width, self.height)
 
         # update texture
         self.texture.blit_data(data)

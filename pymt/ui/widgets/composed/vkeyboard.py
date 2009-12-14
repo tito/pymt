@@ -115,10 +115,10 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
     FONT_FILENAME   = kbdlayout_default_font
     FONT_NAME       = 'DejaVu Sans'
     NORMAL_1 = [
-        ('@', '@', None, 1),    ('&', '&', None, 1),    ('\xc3\xa9', '\xc3\xa9', None, 1),
+        ('@', '@', None, 1),    ('&', '&', None, 1),    (u'\xe9', u'\xe9', None, 1),
         ('"', '"', None, 1),    ('\'', '\'', None, 1),  ('(', '(', None, 1),
-        ('-', '-', None, 1),    ('\xc3\xa8', '\xc3\xa8', None, 1),    ('_', '_', None, 1),
-        ('\xc3\xa7', '\xc3\xa7', None, 1),    ('\xc3\xa0', '\xc3\xa0', None, 1),    (')', ')', None, 1),
+        ('-', '-', None, 1),    (u'\xe8', u'\xe8', None, 1),    ('_', '_', None, 1),
+        (u'\xe7', u'\xe7', None, 1),    (u'\xe0', u'\xe0', None, 1),    (')', ')', None, 1),
         ('=', '=', None, 1),    (u'\u232b', None, 'backspace', 2),
     ]
     NORMAL_2 = [
@@ -132,7 +132,7 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
         (u'\u21ea', None, 'capslock', 1.8),  ('q', 'q', None, 1),    ('s', 's', None, 1),
         ('d', 'd', None, 1),    ('f', 'f', None, 1),    ('g', 'g', None, 1),
         ('h', 'h', None, 1),    ('j', 'j', None, 1),    ('k', 'k', None, 1),
-        ('l', 'l', None, 1),    ('m', 'm', None, 1),    ('\xc3\xb9', '\xc3\xb9', None, 1),
+        ('l', 'l', None, 1),    ('m', 'm', None, 1),    (u'\xf9', u'\xf9', None, 1),
         ('*', '*', None, 1),    (u'\u23ce', None, 'enter', 1.2),
     ]
     NORMAL_4 = [
@@ -164,13 +164,13 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
         ('D', 'D', None, 1),    ('F', 'F', None, 1),    ('G', 'G', None, 1),
         ('H', 'H', None, 1),    ('J', 'J', None, 1),    ('K', 'K', None, 1),
         ('L', 'L', None, 1),    ('M', 'M', None, 1),    ('%', '%', None, 1),
-        ('\xc2\xb5', '\xc2\xb5', None, 1),    (u'\u23ce', None, 'enter', 1.2),
+        (u'\xb5', u'\xb5', None, 1),    (u'\u23ce', None, 'enter', 1.2),
     ]
     SHIFT_4 = [
         (u'\u21e7', None, 'shift_L', 1.5),  ('>', '>', None, 1),    ('W', 'W', None, 1),
         ('X', 'X', None, 1),    ('C', 'C', None, 1),    ('V', 'V', None, 1),
         ('B', 'B', None, 1),    ('N', 'N', None, 1),    ('?', '?', None, 1),
-        ('.', '.', None, 1),    ('/', '/', None, 1),    ('\xc2\xa7', '\xc2\xa7', None, 1),
+        ('.', '.', None, 1),    ('/', '/', None, 1),    (u'\xa7', u'\xa7', None, 1),
         (u'\u21e7', None, 'shift_R', 2.5),
     ]
     SHIFT_5 = [

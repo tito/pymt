@@ -66,6 +66,10 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
             if style['draw-alpha-background']:
                 drawRectangleAlpha(alpha=style['alpha-background'], **k)
 
-    Cache.append('css_rect', cache_id, new_cache)
-    new_cache.draw()
+    # if the drawCSSRectangle is already inside a display list
+    # compilation will not happen, but drawing yes.
+    # so, store only if a cache is created !
+    if new_cache.is_compiled():
+        Cache.append('css_rect', cache_id, new_cache)
+        new_cache.draw()
 

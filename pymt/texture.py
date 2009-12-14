@@ -106,7 +106,7 @@ class Texture(object):
         data = (GLubyte * texture_width * texture_height *
                 Texture.gl_format_size(format))()
         glTexImage2D(target, 0, format, texture_width, texture_height, 0,
-                     GL_RGBA, GL_UNSIGNED_BYTE, data)
+                     format, GL_UNSIGNED_BYTE, data)
 
         texture = Texture(texture_width, texture_height, target, id)
         if rectangle:

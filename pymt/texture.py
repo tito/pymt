@@ -103,8 +103,10 @@ class Texture(object):
         glBindTexture(target, id)
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
 
+        data = (GLubyte * texture_width * texture_height *
+                Texture.gl_format_size(format))()
         glTexImage2D(target, 0, format, texture_width, texture_height, 0,
-                     GL_RGBA, GL_UNSIGNED_BYTE, 0)
+                     GL_RGBA, GL_UNSIGNED_BYTE, data)
 
         texture = Texture(texture_width, texture_height, target, id)
         if rectangle:
@@ -183,6 +185,14 @@ class Texture(object):
             return GL_BGR
         else:
             return GL_RGB
+
+    @staticmethod
+    def gl_format_size(format):
+        if format in (GL_RGB, GL_BGR):
+            return 3
+        elif format in (GL_RGBA, GL_BGRA):
+            return 3
+        raise Exception('Unsupported format size <%s>' % str(format))
 
     def __str__(self):
         return '<Texture size=(%d, %d)>' % self.size

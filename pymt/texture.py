@@ -169,6 +169,8 @@ class Texture(object):
         glTexSubImage2D(self.target, 0, pos[0], pos[1],
                         size[0], size[1], format,
                         buffertype, buffer)
+
+        glFlush()
         glDisable(self.target)
 
     @property
@@ -191,7 +193,7 @@ class Texture(object):
         if format in (GL_RGB, GL_BGR):
             return 3
         elif format in (GL_RGBA, GL_BGRA):
-            return 3
+            return 4
         raise Exception('Unsupported format size <%s>' % str(format))
 
     def __str__(self):

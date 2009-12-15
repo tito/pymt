@@ -13,19 +13,24 @@ Simple Animation
 
 ::
     widget = SomeWidget()
-    animobj = Animation(duration=5,x=100,style={'bg-color':(1.0,1.0,1.0,1.0)})
+    animobj = Animation(duration=5,x=100,
+                                style={'bg-color':(1.0,1.0,1.0,1.0)}
+                               )
     widget.do (animobj)
  
 You create a animation class object and pass the object into the widget
-that you would like to animate, the object will be animated from its current state
-to the state specified in the animation object.
+that you would like to animate, the object will be animated from its 
+current state to the state specified in the animation object.
 
-You can also use animate() method of the Animation class to animate the widget ::
-    
+You can also use animate() method of the Animation class to animate 
+the widget ::
+
+::
     animobj.animate(widget)
   
 You can also pass multiple widgets, to animate the same way ::
 
+::
      # solution 1
      animobj.animate(widget1, widget2)
      
@@ -48,9 +53,9 @@ You can sequence several animations together ::
     
     widget.do(anim_xyrot)
     
-This is execute the animations sequentially, "+" is used to execute them sequentially.
-First the widget will move to x=100 in 1 sec then it will move to y=200 in secs and
-finally rotate clockwise 60 Degress in 1 sec.
+This is execute the animations sequentially, "+" is used to execute them
+sequentially. First the widget will move to x=100 in 1 sec then it will 
+move to y=200 in secs and finally rotate clockwise 60 Degress in 1 sec.
 
 You can also run several animations parallel ::
 
@@ -63,8 +68,8 @@ You can also run several animations parallel ::
     
     widget.do(anim_xyrot)
     
-This will execute all the animations on the properties togather. "&" operator is used
-to run them parallel 
+This will execute all the animations on the properties togather. 
+"&" operator is used to run them parallel 
 '''
 
 __all__ = ['AnimationAlpha', 'Animation', 'Repeat', 'Delay']
@@ -75,12 +80,12 @@ from ..clock import getClock
 from ..event import EventDispatcher
 
 class AnimationBase(object):
-    # This is the base animation object class. Everytime a do or animate method is called 
-    # a new animobject is created.
+    # This is the base animation object class. Everytime a do or animate
+    #  method is called a new animobject is created.
     def __init__(self,**kwargs):
         self.widget = kwargs.get('widget')
         self.params = kwargs.get('key_args')
-        self.duration =  float(self.params['duration'])
+        self._duration =  float(self.params['duration'])
         self.animator = kwargs.get('animator')
 
         if 'f' in self.params.keys():
@@ -98,7 +103,7 @@ class AnimationBase(object):
 
         self._frame_pointer = 0.0
         self._progress = 0.0
-        self.running = False
+        self._running = False
     
     def _get_value_from(self, prop):
         if hasattr(self.widget, prop):
@@ -116,7 +121,9 @@ class AnimationBase(object):
             self.widget.__dict__[prop] = value
 
     def update(self, t):
-        '''Updates the properties of the widget based on the progress pointer t'''
+        '''Updates the properties of the widget based on the progress 
+          pointer t
+        '''
         for prop in self._prop_list:
             vstart, vend =  self._prop_list[prop]
             value = self._calculate_attribute_value(vstart, vend, t)
@@ -152,14 +159,14 @@ class AnimationBase(object):
 
     def start(self):
         '''Starts animating the AnimationBase Object'''
-        if not self.running:
-            self.running = True
+        if not self._running:
+            self._running = True
             getClock().schedule_interval(self._next_frame, 1/60.0)
 
     def stop(self):
         '''Stops animating the AnimationBase Object'''
-        if self.running:
-            self.running = False
+        if self._running:
+            self._running = False
             if isinstance(self.animator, ParallelAnimation):
                 self.animator.stop(self.widget, animobj=self)
             else:
@@ -171,10 +178,12 @@ class AnimationBase(object):
         pass
 
     def _next_frame(self,dt):
-        '''Calculate the progress of animation and the frame location pointers. This function also decides when to stop the animation.'''
-        if self._frame_pointer <= self.duration and self.running:
+        '''Calculate the progress of animation and the frame location 
+          pointers. This function also decides when to stop the animation.
+        '''
+        if self._frame_pointer <= self._duration and self._running:
             self._frame_pointer += dt
-            self._progress = self._frame_pointer/self.duration
+            self._progress = self._frame_pointer/self._duration
             if self._progress > 1.0:
                 self._progress = 1.0
             self.update(self.alpha_function(self._progress, self))
@@ -183,23 +192,25 @@ class AnimationBase(object):
             self.stop()
             return False
 
-    def is_running(self):
-        '''Returns the status of the animation. '''
-        return self.running
-    
-    def get_frame_pointer(self):
+    @property
+    def running(self):
+        return self._running
+
+    @property
+    def frame_pointer(self):
         '''Returns the current progress of the animation.
           Ranges from (0.0 to duration)
         '''
         return self._frame_pointer
     
-    def get_duration(self):
+    @property
+    def duration(self):
         '''Returns the animation duration'''
-        return self.duration
+        return self._duration
 
     def _repopulate_attrib(self, widget):
-        '''This function is used by Sequencer to repopluate the properties list based on 
-          current status of the widget.
+        '''This function is used by Sequencer to repopluate the properties 
+           list based on current status of the widget.
         '''
         self.widget = widget
         prop_keys = {}
@@ -282,7 +293,7 @@ class DeltaAnimationBase(AnimationBase):
         '''used by Repeater to reset the property list'''
         self._frame_pointer = 0.0
         self._progress = 0.0
-        self.running = False
+        self._running = False
         for prop in self._saved_prop_list:
             cval = self._get_value_from(prop)
             if type(cval) in (tuple, list):
@@ -314,20 +325,25 @@ class DeltaAnimationBase(AnimationBase):
         return  temp_dict
 
 class Animation(EventDispatcher):
-    '''Animation Class is used to animate any widget. You pass duration of animation
-      and the property that has to be animated in that duration. 
+    '''Animation Class is used to animate any widget. You pass duration of 
+      animation and the property that has to be animated in that duration. 
       Usage:
             widget = SomeWidget()
-            animobj = Animation(duration=5,x=100,style={'bg-color':(1.0,1.0,1.0,1.0)})
+            animobj = Animation(duration=5,
+                                        x=100,
+                                        style={'bg-color':(1.0,1.0,1.0,1.0)}
+                                       )
             widget.do(animobj)     
 
     :Parameters:
         `duration` : float, default to 1
             Number of seconds you want the animation to execute.
         `generate_event` : bool, default to True
-            Generate on_animation_complete event at the end of the animation
+            Generate on_animation_complete event at the end of the 
+            animation
         `type` : str, default to absolute
-            Specifies what type of animation we are defining, Absolute or Delta
+            Specifies what type of animation we are defining, Absolute 
+            or Delta
         `alpha_function` : str, default to AnimationAlpha.linear
             Specifies which kind of time variation function to use
 
@@ -343,9 +359,9 @@ class Animation(EventDispatcher):
         kwargs.setdefault('d', 1.0)
         kwargs.setdefault('type', "absolute")
         if kwargs.get('d'):
-            self.duration = kwargs.get('d')
+            self._duration = kwargs.get('d')
         else:
-            self.duration = kwargs.get('duration')
+            self._duration = kwargs.get('duration')
         self.children = {}
         self.params = kwargs
         self._animation_type = kwargs.get('type')
@@ -354,8 +370,9 @@ class Animation(EventDispatcher):
         self.register_event_type('on_complete')
 
     def start(self, widget):
-        '''Starts animating the widget. This function should not be used by the user directly.
-          Users have to use do() method of the widget to animate.
+        '''Starts animating the widget. This function should not be used 
+          by the user directly. Users have to use do() method of the 
+          widget to animate.
         '''
         animobj = self.children[widget]
         animobj.start()
@@ -377,8 +394,9 @@ class Animation(EventDispatcher):
         self.children[widget].reset()
 
     def set_widget(self, widgetx):
-        '''Creates a new animationBase object and sets the widget to it for animation.
-          This is a internal function and should not be used by user.
+        '''Creates a new animationBase object and sets the widget to it for
+          animation. This is a internal function and should not be used by 
+          user.
         :Parameters:
             `widget` : MTWidget, default is None
                 Indicates which widget is to be set.
@@ -432,7 +450,8 @@ class Animation(EventDispatcher):
         pass
 
 class ComplexAnimation(Animation):
-    # Base class for complex animations like sequences and parallel animations
+    # Base class for complex animations like sequences and parallel 
+    # animations
     def __init__(self, **kwargs):
         super(ComplexAnimation, self).__init__(**kwargs)
         kwargs.setdefault('single_event', False)
@@ -448,10 +467,12 @@ class ComplexAnimation(Animation):
         self.animations.append(anim2)
 
     def set_widget(self, widgetx):
-        '''Used by complex animations like Parallel and Sequential to set widgets to its child animations'''
+        '''Used by complex animations like Parallel and Sequential to set 
+          widgets to its child animations
+        '''
         for animation in self.animations:
             try:
-                if animation.children[widgetx].is_running():
+                if animation.children[widgetx].running():
                     return False
             except:
                 continue
@@ -464,7 +485,8 @@ class ComplexAnimation(Animation):
         return True
 
     def generate_single_event(self, value):
-        '''If a user wants to generate only one event for the entire complex animation he can use this function.
+        '''If a user wants to generate only one event for the entire complex
+          animation he can use this function.
         :Parameters:
             `value` : bool
                 True or False value
@@ -550,12 +572,16 @@ class ParallelAnimation(ComplexAnimation):
 #Controller Classes
 
 class Repeat(EventDispatcher):
-    '''Repeat Controller class is used to repeat a particular animations. It repeats
-      n times as specified or repeats indefinately if number of times to repeat is not 
-      specified. Repeat class is useful only for delta animations.
+    '''Repeat Controller class is used to repeat a particular animations. It 
+      repeats n times as specified or repeats indefinately if number of times 
+      to repeat is not specified. Repeat class is useful only for delta 
+      animations.
       Usage:
             widget = SomeWidget()
-            animobj = Animation(duration=5,x=100,style={'bg-color':(1.0,1.0,1.0,1.0)})
+            animobj = Animation(duration=5,
+                                        x=100,
+                                        style={'bg-color':(1.0,1.0,1.0,1.0)}
+                                       )
             rept = Repeat(animobj, times=5) #Repeats 5 times
             rept_n = Repeat(animobj) #Repeats indefinately            
 
@@ -569,7 +595,8 @@ class Repeat(EventDispatcher):
         `on_complete`
             Fired when animation completes
         `on_repeat`
-            Fired on every repetition. It also returns what is the current repetition count.
+            Fired on every repetition. It also returns what is the current 
+            repetition count.
     '''
     def __init__(self, animation, **kwargs):
         super(Repeat, self).__init__()
@@ -605,7 +632,9 @@ class Repeat(EventDispatcher):
             self.animations._del_child(widget)
 
     def repeat(self, widget):
-        '''Internal function used by the Repeat controller to check for repetitions'''
+        '''Internal function used by the Repeat controller to check for 
+          repetitions
+        '''
         self._repeat_counter += 1
         self.dispatch_event('on_repeat', widget , self._repeat_counter)
         if self._times == -1:
@@ -631,9 +660,13 @@ class Delay(Animation):
       You can provide the duration in your animation class creation
       Usage:
             widget = SomeWidget()
-            moveX = Animation(duration=5,x=100,style={'bg-color':(1.0,1.0,1.0,1.0)})
+            moveX = Animation(duration=5,
+                                       x=100,
+                                       style={'bg-color':(1.0,1.0,1.0,1.0)}
+                                      )
             delay5 = Delay(duration=5)
-            animobj = delay5 + moveX #This will wait for 5 secs and then start animating moveX
+            animobj = delay5 + moveX 
+            #This will wait for 5 secs and then start animating moveX
 
     :Parameters:
         `duration` : float, default to 1
@@ -641,30 +674,34 @@ class Delay(Animation):
 
     '''
     def init(self,**kwargs):
-        self.duration = kwargs.get('duration')
+        self._duration = kwargs.get('duration')
 
 
 class AnimationAlpha(object):
-    """Collection of animation function, to be used with Animation object.
+    '''Collection of animation function, to be used with Animation object.
         Easing Functions ported into PyMT from Clutter Project
         http://www.clutter-project.org/docs/clutter/stable/ClutterAlpha.html
-    """
+    '''
     @staticmethod
     def linear(progress, animation):
+        '''linear'''
         return progress
 
     @staticmethod
     def ease_in_quad(progress, animation):
+        '''ease_in_quad'''
         return progress*progress
 
     @staticmethod
     def ease_out_quad(progress, animation):
+        '''ease_out_quad'''
         return -1.0 * progress * (progress - 2.0)
 
     @staticmethod
     def ease_in_out_quad(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_in_out_quad'''
+        t = animation.frame_pointer
+        d = animation.duration
         p = t / (d / 2.0)
         if p < 1 :
            return 0.5 * p * p
@@ -673,19 +710,22 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_cubic(progress, animation):
+        '''ease_in_cubic'''
         return progress * progress * progress
 
     @staticmethod
     def ease_out_cubic(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_out_cubic'''
+        t = animation.frame_pointer
+        d = animation.duration
         p = t / d - 1.0
         return p * p * p + 1.0
 
     @staticmethod
     def ease_in_out_cubic(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_in_out_cubic'''
+        t = animation.frame_pointer
+        d = animation.duration
         p = t / (d / 2.0)
         if p < 1 :
             return 0.5 * p * p * p
@@ -694,19 +734,22 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_quart(progress, animation):
+        '''ease_in_quart'''
         return progress * progress * progress * progress
 
     @staticmethod
     def ease_out_quart(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_out_quart'''
+        t = animation.frame_pointer
+        d = animation.duration
         p = t / d - 1.0
         return -1.0 * (p * p * p * p - 1.0);
 
     @staticmethod
     def ease_in_out_quart(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_in_out_quart'''
+        t = animation.frame_pointer
+        d = animation.duration
         p = t / (d / 2.0)
         if p < 1 :
             return 0.5 * p * p * p * p
@@ -715,19 +758,22 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_quint(progress, animation):
+        '''ease_in_quint'''
         return progress * progress * progress * progress * progress
 
     @staticmethod
     def ease_out_quint(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_out_quint'''
+        t = animation.frame_pointer
+        d = animation.duration
         p = t / d - 1.0
         return p * p * p * p * p + 1.0;
 
     @staticmethod
     def ease_in_out_quint(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_in_out_quint'''
+        t = animation.frame_pointer
+        d = animation.duration
         p = t / (d / 2.0)
         if p < 1 :
             return 0.5 * p * p * p * p * p
@@ -736,42 +782,48 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_sine(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_in_sine'''
+        t = animation.frame_pointer
+        d = animation.duration
         return -1.0 * math.cos(t / d * (math.pi/2.0)) + 1.0
 
     @staticmethod
     def ease_out_sine(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_out_sine'''
+        t = animation.frame_pointer
+        d = animation.duration
         return math.sin(t / d * (math.pi/2.0))
 
     @staticmethod
     def ease_in_out_sine(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_in_out_sine'''
+        t = animation.frame_pointer
+        d = animation.duration
         return -0.5 * (math.cos(math.pi * t / d) - 1.0)
 
     @staticmethod
     def ease_in_expo(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_in_expo'''
+        t = animation.frame_pointer
+        d = animation.duration
         if t == 0:
             return 0.0            
         return math.pow(2, 10 * (t / d - 1.0))
 
     @staticmethod
     def ease_out_expo(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_out_expo'''
+        t = animation.frame_pointer
+        d = animation.duration
         if t == d:
             return 1.0            
         return  -math.pow(2, -10 * t / d) + 1.0
 
     @staticmethod
     def ease_in_out_expo(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_in_out_expo'''
+        t = animation.frame_pointer
+        d = animation.duration
         if t == 0:
             return 0.0
         if t == d:
@@ -784,19 +836,22 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_circ(progress, animation):
+        '''ease_in_circ'''
         return -1.0 * (math.sqrt(1.0 - progress * progress) - 1.0)
 
     @staticmethod
     def ease_out_circ(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_out_circ'''
+        t = animation.frame_pointer
+        d = animation.duration
         p = t / d - 1.0
         return math.sqrt(1.0 - p * p)
 
     @staticmethod
     def ease_in_out_circ(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_in_out_circ'''
+        t = animation.frame_pointer
+        d = animation.duration
         p = t / (d / 2)
         if p < 1:
             return -0.5 * (math.sqrt(1.0 - p * p) - 1.0)
@@ -805,8 +860,9 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_elastic(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_in_elastic'''
+        t = animation.frame_pointer
+        d = animation.duration
         p = d * .3
         s = p / 4.0
         q = t / d
@@ -817,8 +873,9 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_out_elastic(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_out_elastic'''
+        t = animation.frame_pointer
+        d = animation.duration
         p = d * .3
         s = p / 4.0
         q = t / d
@@ -828,8 +885,9 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_out_elastic(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_in_out_elastic'''
+        t = animation.frame_pointer
+        d = animation.duration
         p = d * (.3 * 1.5)
         s = p / 4.0
         q = t / (d / 2.0)
@@ -844,19 +902,22 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_back(progress, animation):
+        '''ease_in_back'''
         return progress * progress * ((1.70158 + 1.0) * progress - 1.70158)
 
     @staticmethod
     def ease_out_back(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_out_back'''
+        t = animation.frame_pointer
+        d = animation.duration
         p = t / d - 1.0
         return p * p * ((1.70158 + 1) * p + 1.70158) + 1.0
 
     @staticmethod
     def ease_in_out_back(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_in_out_back'''
+        t = animation.frame_pointer
+        d = animation.duration
         p = t / (d / 2.0)
         s = 1.70158 * 1.525
         if p < 1:
@@ -885,20 +946,23 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_bounce(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_in_bounce'''
+        t = animation.frame_pointer
+        d = animation.duration
         return AnimationAlpha._ease_in_bounce_internal(t, d)
 
     @staticmethod
     def ease_out_bounce(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_out_bounce'''
+        t = animation.frame_pointer
+        d = animation.duration
         return AnimationAlpha._ease_out_bounce_internal (t, d)
 
     @staticmethod
     def ease_in_out_bounce(progress, animation):
-        t = animation.get_frame_pointer()
-        d = animation.get_duration()
+        '''ease_in_out_bounce'''
+        t = animation.frame_pointer
+        d = animation.duration
         if t < d / 2.0 :
             return AnimationAlpha._ease_in_bounce_internal (t * 2.0, d) * 0.5
         else:

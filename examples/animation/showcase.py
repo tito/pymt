@@ -51,7 +51,7 @@ class MTGraph(MTKineticItem):
 
             # curve
             set_color(.2, .2, 1)
-            glScalef(w - m * 2, h - m * 2, 0, 1)
+            glScalef(w - m * 2, h - m * 2, 0)
             drawLine(self.points, width=2)
 
             set_color(1, 0, 0, .6)

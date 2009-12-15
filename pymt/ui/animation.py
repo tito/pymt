@@ -921,5 +921,5 @@ class AnimationAlpha(object):
         '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_out_bounce'''
         p = progress * 2
         if p < 1.:
-            return AnimationAlpha._ease_in_bounce_internal (t * 2.0, 1.) * 0.5
-        return AnimationAlpha._ease_out_bounce_internal (t * 2.0 - 1., 1.) * 0.5 + 1.0 * 0.5
+            return AnimationAlpha._ease_in_bounce_internal(progress * 2.0, 1.) * 0.5
+        return AnimationAlpha._ease_out_bounce_internal(progress * 2.0 - 1., 1.) * 0.5 + 1.0 * 0.5

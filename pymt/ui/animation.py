@@ -296,8 +296,6 @@ class DeltaAnimationBase(AnimationBase):
                 temp_dict[key] = ip_dict[key]+op_dict[key]
         return  temp_dict
 
-
-
 class Animation(EventDispatcher):
     '''Animation Class is used to animate any widget. You pass duration of animation
       and the property that has to be animated in that duration. 
@@ -388,13 +386,13 @@ class Animation(EventDispatcher):
 
     def __and__(self, animation):
         return ParallelAnimation(anim1=self, anim2=animation)
-    
+
     def on_start(self, widget):
         pass
-    
+
     def on_complete(self, widget):
         pass
-        
+
 class ComplexAnimation(Animation):
     # Base class for complex animations like sequences and parallel animations
     def __init__(self, **kwargs):

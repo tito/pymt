@@ -116,12 +116,14 @@ class AnimationBase(object):
             self.widget.__dict__[prop] = value
 
     def update(self, t):
+        '''Updates the properties of the widget based on the progress pointer t'''
         for prop in self._prop_list:
             vstart, vend =  self._prop_list[prop]
             value = self._calculate_attribute_value(vstart, vend, t)
             self._set_value_from(value, prop)
 
     def _calculate_attribute_value(self, vstart, vend, t):
+        '''A recursive function to calculate the resultant value of property.'''
         value = None
         # we handle recursively tuple and list
         if type(vstart) in (tuple, list):
@@ -149,11 +151,13 @@ class AnimationBase(object):
         return value
 
     def start(self):
-         if not self.running:
+        '''Starts animating the AnimationBase Object'''
+        if not self.running:
             self.running = True
             getClock().schedule_interval(self._next_frame, 1/60.0)
 
     def stop(self):
+        '''Stops animating the AnimationBase Object'''
         if self.running:
             self.running = False
             if isinstance(self.animator, ParallelAnimation):
@@ -163,9 +167,11 @@ class AnimationBase(object):
             return False
 
     def pause(self):
+        #not yet implemented
         pass
 
     def _next_frame(self,dt):
+        '''Calculate the progress of animation and the frame location pointers. This function also decides when to stop the animation.'''
         if self._frame_pointer <= self.duration and self.running:
             self._frame_pointer += dt
             self._progress = self._frame_pointer/self.duration
@@ -178,15 +184,23 @@ class AnimationBase(object):
             return False
 
     def is_running(self):
+        '''Returns the status of the animation. '''
         return self.running
     
     def get_frame_pointer(self):
+        '''Returns the current progress of the animation.
+          Ranges from (0.0 to duration)
+        '''
         return self._frame_pointer
     
     def get_duration(self):
+        '''Returns the animation duration'''
         return self.duration
 
     def _repopulate_attrib(self, widget):
+        '''This function is used by Sequencer to repopluate the properties list based on 
+          current status of the widget.
+        '''
         self.widget = widget
         prop_keys = {}
         for prop in self._prop_list:
@@ -265,6 +279,7 @@ class DeltaAnimationBase(AnimationBase):
                 self._prop_list[prop] = (cval,cval+self._prop_list[prop])
 
     def reset(self):
+        '''used by Repeater to reset the property list'''
         self._frame_pointer = 0.0
         self._progress = 0.0
         self.running = False
@@ -282,12 +297,14 @@ class DeltaAnimationBase(AnimationBase):
                 self._prop_list[prop] = (cval,cval+self._saved_prop_list[prop])
     
     def _update_list(self, ip_list, op_list):
+        '''Used by reset function to update a list type data'''
         temp_list = []
         for i in range(0, len(ip_list)):
             temp_list.append(ip_list[i]+op_list[i])
         return  temp_list
     
     def _update_dict(self, ip_dict, op_dict):
+        '''Used by reset function to update a dict type data'''
         temp_dict = {}
         for key in ip_dict.keys():
             if type(ip_dict[key]) in (tuple, list):
@@ -313,6 +330,12 @@ class Animation(EventDispatcher):
             Specifies what type of animation we are defining, Absolute or Delta
         `alpha_function` : str, default to AnimationAlpha.linear
             Specifies which kind of time variation function to use
+
+    :Events:
+        `on_start`
+            Fired when animation starts
+        `on_complete`
+            Fired when animation completes
     '''
     def __init__(self,**kwargs):
         super(Animation, self).__init__()
@@ -331,11 +354,15 @@ class Animation(EventDispatcher):
         self.register_event_type('on_complete')
 
     def start(self, widget):
+        '''Starts animating the widget. This function should not be used by the user directly.
+          Users have to use do() method of the widget to animate.
+        '''
         animobj = self.children[widget]
         animobj.start()
         self.dispatch_event('on_start', widget)
 
     def stop(self, widget):
+        '''Stops animating the widget and raises a event.'''
         if self.children[widget].generate_event:
             widget.dispatch_event('on_animation_complete', self)
             self.dispatch_event('on_complete', widget)
@@ -346,9 +373,16 @@ class Animation(EventDispatcher):
         pass
 
     def reset(self, widget):
+        '''Calls AnimationBase objects reset function.'''
         self.children[widget].reset()
 
     def set_widget(self, widgetx):
+        '''Creates a new animationBase object and sets the widget to it for animation.
+          This is a internal function and should not be used by user.
+        :Parameters:
+            `widget` : MTWidget, default is None
+                Indicates which widget is to be set.
+        '''
         if widgetx in self.children.keys():
             return False
         else:
@@ -370,15 +404,19 @@ class Animation(EventDispatcher):
             self.start(widget)
 
     def _del_child(self,child):
+        '''Deletes a child from the list'''
         del self.children[child]
 
     def _return_params(self):
+        '''Returns the animation parameters.'''
         return self.params
 
     def _repopulate_attrib(self, widget):
+        '''Calls calls repopulate function of the animationBase object'''
         self.children[widget]._repopulate_attrib(widget)
 
     def _set_params(self, key, value):
+        '''reset the value for the params list'''
         self.params[key] = value
 
     def __add__(self, animation):
@@ -410,6 +448,7 @@ class ComplexAnimation(Animation):
         self.animations.append(anim2)
 
     def set_widget(self, widgetx):
+        '''Used by complex animations like Parallel and Sequential to set widgets to its child animations'''
         for animation in self.animations:
             try:
                 if animation.children[widgetx].is_running():
@@ -425,6 +464,11 @@ class ComplexAnimation(Animation):
         return True
 
     def generate_single_event(self, value):
+        '''If a user wants to generate only one event for the entire complex animation he can use this function.
+        :Parameters:
+            `value` : bool
+                True or False value
+        '''
         self.single_event = value
 
 class SequenceAnimation(ComplexAnimation):
@@ -434,18 +478,20 @@ class SequenceAnimation(ComplexAnimation):
         self.anim_counter = 0
 
     def start(self, widget):
+        '''Starts the sequential animation'''
         if self.anim_counter == 0:
             self.dispatch_event('on_start', widget)
         if self.anim_counter >= len(self.animations):
             self.anim_counter = 0
             self.dispatch_event('on_complete', widget)
-            if self.single_event:                
+            if self.single_event:
                 widget.dispatch_event('on_animation_complete', self)
             return
         current_anim = self.animations[self.anim_counter]
         current_anim.start(widget)
 
     def stop(self,widget):
+        '''Sops the sequential animation'''
         if self.animations[self.anim_counter].children[widget].generate_event and not self.single_event:
             widget.dispatch_event('on_animation_complete', self)
         #self.animations[self.anim_counter]._del_child(widget)
@@ -455,11 +501,13 @@ class SequenceAnimation(ComplexAnimation):
         self.start(widget)
 
     def reset(self, widget):
+        '''Resets the sequential animation'''
         self.anim_counter = 0
         for animation in self.animations:
             animation.reset(widget)
 
     def __add__(self, animation):
+        '''Operator overloading + symbol is overloaded'''
         return SequenceAnimation(anim1=self.animations, anim2=animation)
 
 
@@ -470,12 +518,14 @@ class ParallelAnimation(ComplexAnimation):
         self.dispatch_counter = 0
 
     def start(self, widget):
+        '''Starts the parallel animation'''
         if self.dispatch_counter == 0:
             self.dispatch_event('on_start', widget)
         for animation in self.animations:
             animation.start(widget)
 
     def stop(self,widget, animobj = None):
+        '''Stops the parallel animation'''
         self.dispatch_counter += 1
         if self.dispatch_counter == len(self.animations):
             self.dispatch_event('on_complete', widget)
@@ -487,11 +537,13 @@ class ParallelAnimation(ComplexAnimation):
             widget.dispatch_event('on_animation_complete', self)
     
     def reset(self, widget):
+        '''Resets the parallel animation'''
         self.dispatch_counter = 0
         for animation in self.animations:
             animation.reset(widget)
 
     def __and__(self, animation):
+        '''Operator overloading & symbol is overloaded'''
         return ParallelAnimation(anim1=self.animations, anim2=animation)
 
 
@@ -500,7 +552,7 @@ class ParallelAnimation(ComplexAnimation):
 class Repeat(EventDispatcher):
     '''Repeat Controller class is used to repeat a particular animations. It repeats
       n times as specified or repeats indefinately if number of times to repeat is not 
-      specified. 
+      specified. Repeat class is useful only for delta animations.
       Usage:
             widget = SomeWidget()
             animobj = Animation(duration=5,x=100,style={'bg-color':(1.0,1.0,1.0,1.0)})
@@ -510,6 +562,14 @@ class Repeat(EventDispatcher):
     :Parameters:
         `times` : integer, default to infinity
             Number of times to repeat the Animation
+
+    :Events:
+        `on_start`
+            Fired when animation starts
+        `on_complete`
+            Fired when animation completes
+        `on_repeat`
+            Fired on every repetition. It also returns what is the current repetition count.
     '''
     def __init__(self, animation, **kwargs):
         super(Repeat, self).__init__()
@@ -526,15 +586,18 @@ class Repeat(EventDispatcher):
             self.repeat(widget)
 
     def set_widget(self, widgetx):
+        '''Called by the widget to set the widget which has to be animated'''
         self.animations.set_widget(widgetx)
         return True
 
     def start(self, widget):
+        '''Starts the animation'''
         if self._repeat_counter == 0:
             self.dispatch_event('on_start', widget)
         self.animations.start(widget)
 
     def stop(self,widget):
+        '''Stops the animation'''
         widget.dispatch_event('on_animation_complete', self)
         self.dispatch_event('on_complete', widget)
         self._repeat_counter = 0
@@ -542,6 +605,7 @@ class Repeat(EventDispatcher):
             self.animations._del_child(widget)
 
     def repeat(self, widget):
+        '''Internal function used by the Repeat controller to check for repetitions'''
         self._repeat_counter += 1
         self.dispatch_event('on_repeat', widget , self._repeat_counter)
         if self._times == -1:
@@ -563,10 +627,22 @@ class Repeat(EventDispatcher):
         pass
 
 class Delay(Animation):
+    '''Delay class is used to introduce delay in your animations. 
+      You can provide the duration in your animation class creation
+      Usage:
+            widget = SomeWidget()
+            moveX = Animation(duration=5,x=100,style={'bg-color':(1.0,1.0,1.0,1.0)})
+            delay5 = Delay(duration=5)
+            animobj = delay5 + moveX #This will wait for 5 secs and then start animating moveX
+
+    :Parameters:
+        `duration` : float, default to 1
+            Number of seconds you want delay.
+
+    '''
     def init(self,**kwargs):
         self.duration = kwargs.get('duration')
 
-#Older animation class code
 
 class AnimationAlpha(object):
     """Collection of animation function, to be used with Animation object.

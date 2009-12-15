@@ -254,18 +254,17 @@ def drawLine(points, width=None, colors=[]):
             Turned off by default.
     '''
     style = GL_LINES
-    # XXX Where does the default of 5.0 for width come from? pyglet? opengl?
-    #     Should perhaps be set here explicitly instead.
-    if width is not None:
-        glPushAttrib(GL_LINE_BIT)
-        glLineWidth(width)
-
     points = list(points)[:]
     l = len(points)
     if l < 4:
         return
     elif l > 4:
         style = GL_LINE_STRIP
+
+    if width is not None:
+        glPushAttrib(GL_LINE_BIT)
+        glLineWidth(width)
+
     with DO(gx_attrib(GL_COLOR_BUFFER_BIT), gx_begin(style)):
         # We don't want to do the if statement in every iteration of the while
         # loop because that'd be expensive...

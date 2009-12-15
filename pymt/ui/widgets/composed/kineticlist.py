@@ -415,7 +415,10 @@ class MTKineticList(MTStencilContainer):
         # will not work if children grab the touch in down state :/
         for child in self.children:
             child.dispatch_event('on_touch_down', touch)
+            old_grab_current = touch.grab_current
+            touch.grab_current = child
             child.dispatch_event('on_touch_up', touch)
+            touch.grab_current = old_grab_current
         return True
 
     def ensure_bounding(self):
@@ -474,6 +477,8 @@ class MTKineticList(MTStencilContainer):
         if self.titletext is not None:
             set_color(*self.style.get('title-color'))
             drawCSSRectangle(pos=(self.x, self.height + self.y - 40), size=(self.width, 40), prefix='title')
+            self.title.x = self.width/2 + self.x
+            self.title.y = self.height - 20 + self.y
             self.title.draw()
 
         # draw widgets

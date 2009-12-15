@@ -10,7 +10,7 @@ __all__ = [
     'drawTriangle', 'drawRectangle',
     'drawTexturedRectangle', 'drawLine',
     'drawRectangleAlpha', 'drawRoundedRectangleAlpha',
-    'drawSemiCircle',
+    'drawSemiCircle', 'drawStippledCircle',
 ]
 
 import math
@@ -433,3 +433,30 @@ def drawSemiCircle(pos=(0,0), inner_radius=100, outer_radius=120, slices=32, loo
     with gx_matrix:
         glTranslatef(pos[0], pos[1], 0)
         gluPartialDisk(gluNewQuadric(), inner_radius, outer_radius, slices, loops, start_angle, sweep_angle)
+
+def drawStippledCircle(pos=(0,0), inner_radius=200, outer_radius=400, segments=10):
+    '''
+    Draw a stippled circle. A stippled circle consists of several equally-sized
+    segments, with a gap between every two segments. The gap is the size of a
+    segment. The circle's position and thickness can be specified.
+
+    :Parameters:
+        `pos` : tuple, default to (0, 0)
+            Center position of the circle
+        `inner_radius` : int, default to 100
+            Radius of the inner circle
+        `outer_radius` : int, default to 120
+            Radius of the outer circle
+        `segments` : int, defaults to 10
+            Number of visible segments
+    '''
+    angle_delta = (360/segments)/2
+    current_angle = 0
+    quadric = gluNewQuadric()
+    with gx_matrix:
+        glTranslatef(pos[0], pos[1], 0)
+        for i in range(segments):
+            next_angle = current_angle + angle_delta
+            gluPartialDisk(quadric, inner_radius, outer_radius, 32, 1, current_angle, angle_delta)
+            # For the stipple effect, leave a part of the Disk out
+            current_angle = next_angle + angle_delta

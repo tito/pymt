@@ -72,6 +72,7 @@ __all__ = ['AnimationAlpha', 'Animation', 'Repeat', 'Delay']
 import math
 from copy import deepcopy, copy
 from ..clock import getClock
+from ..event import EventDispatcher
 
 class AnimationBase(object):
     # This is the base animation object class. Everytime a do or animate method is called 
@@ -299,7 +300,7 @@ class DeltaAnimationBase(AnimationBase):
 
 
 
-class Animation(object):
+class Animation(EventDispatcher):
     '''Animation Class is used to animate any widget. You pass duration of animation
       and the property that has to be animated in that duration. 
       Usage:
@@ -318,6 +319,7 @@ class Animation(object):
             Specifies which kind of time variation function to use
     '''
     def __init__(self,**kwargs):
+        super(Animation, self).__init__()
         kwargs.setdefault('duration', 1.0)
         kwargs.setdefault('d', 1.0)
         kwargs.setdefault('animation_type', "absolute")
@@ -328,16 +330,21 @@ class Animation(object):
         self.children = {}
         self.params = kwargs
         self._animation_type = kwargs.get('animation_type')
-        self._repeater =  None        
+        self._repeater =  None
+
+        self.register_event_type('on_start')
+        self.register_event_type('on_complete')
 
     def start(self, widget, repeater=None):
         self._repeater = repeater
         animobj = self.children[widget]
         animobj.start()
+        self.dispatch_event('on_start', widget)
 
     def stop(self, widget):
         if self.children[widget].generate_event:
             widget.dispatch_event('on_animation_complete', self)
+            self.dispatch_event('on_complete', widget)
         if self._repeater is not None:
             self._repeater.repeat(widget)
         else:
@@ -387,7 +394,13 @@ class Animation(object):
 
     def __and__(self, animation):
         return ParallelAnimation(anim1=self, anim2=animation)
-
+    
+    def on_start(self, widget):
+        pass
+    
+    def on_complete(self, widget):
+        pass
+        
 class ComplexAnimation(Animation):
     # Base class for complex animations like sequences and parallel animations
     def __init__(self, **kwargs):
@@ -430,9 +443,12 @@ class SequenceAnimation(ComplexAnimation):
         self.anim_counter = 0
 
     def start(self, widget, repeater=None):
+        if self.anim_counter == 0:
+            self.dispatch_event('on_start', widget)
         self._repeater = repeater
         if self.anim_counter >= len(self.animations):
             self.anim_counter = 0
+            self.dispatch_event('on_complete', widget)
             if self.single_event:                
                 widget.dispatch_event('on_animation_complete', self)
                 if self._repeater is not None:
@@ -468,13 +484,17 @@ class ParallelAnimation(ComplexAnimation):
 
     def start(self, widget, repeater=None):
         self._repeater = repeater
+        if self.dispatch_counter == 0:
+            self.dispatch_event('on_start', widget)
         for animation in self.animations:
             animation.start(widget)
 
     def stop(self,widget, animobj = None):
         self.dispatch_counter += 1
-        if self.dispatch_counter == len(self.animations) and self.single_event:
-            widget.dispatch_event('on_animation_complete', self)
+        if self.dispatch_counter == len(self.animations):
+            self.dispatch_event('on_complete', widget)
+            if self.single_event:
+                widget.dispatch_event('on_animation_complete', self)
             self.dispatch_counter = 0
             if self._repeater is not None:
                 self._repeater.repeat(widget)            

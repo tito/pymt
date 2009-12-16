@@ -118,10 +118,6 @@ class HardwareFbo(AbstractFbo):
         self.depthbuffer    = None
 
         set_texture(self.texture)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.realsize[0], self.realsize[1],
-                0, GL_RGB, GL_UNSIGNED_BYTE, 0)
 
         self.framebuffer = glGenFramebuffersEXT(1)
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)

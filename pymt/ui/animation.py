@@ -379,14 +379,14 @@ class Animation(EventDispatcher):
         animobj = self.children[widget]
         animobj.start()
         self.dispatch_event('on_start', widget)
+        return animobj
 
     def stop(self, widget):
         '''Stops animating the widget and raises a event.'''
         if self.children[widget].generate_event:
             widget.dispatch_event('on_animation_complete', self)
             self.dispatch_event('on_complete', widget)
-        else:
-            self._del_child(widget)
+        self._del_child(widget)
 
     def pause(self):
         pass

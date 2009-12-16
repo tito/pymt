@@ -448,7 +448,7 @@ class MTWidget(EventDispatcher):
         '''
         for arg in largs:
             if arg.set_widget(self):
-                arg.start(self)
+                return arg.start(self)
 
 # Register all base widgets
 MTWidgetFactory.register('MTWidget', MTWidget)

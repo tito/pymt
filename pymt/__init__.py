@@ -212,11 +212,11 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
 
     # after dependices
     from gesture import *
+    from obj import OBJ
 
     # widgets
     from ui import *
 
-    #from obj import OBJ
     #from plugin import *
     #from loader import *
 

@@ -199,25 +199,19 @@ class SoftwareFbo(AbstractFbo):
     '''
     def __init__(self, **kwargs):
         super(SoftwareFbo, self).__init__(**kwargs)
-        self.oldtexture = pyglet.image.get_buffer_manager().get_color_buffer().get_texture()
-
-        # Hack to initialize a empty buffer.
-        self.bind()
-        self.release()
-
+        self.pixels = None
 
     def bind(self):
-
         # Save current buffer
-        buffer = pyglet.image.get_buffer_manager().get_color_buffer()
-        set_texture(self.oldtexture, target=GL_TEXTURE_2D)
-        buffer.blit_to_texture(GL_TEXTURE_2D, 0, 0, 0, 0)
+        w = pymt.getWindow()
+        glReadBuffer(GL_BACK)
+        self.pixels = glReadPixels(0, 0, w.width, w.height, GL_RGBA, GL_UNSIGNED_BYTE)
 
         # Push current attrib
         glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_TEST | GL_STENCIL_BUFFER_BIT)
+        glDisable(GL_STENCIL_TEST)
         glClearColor(0,0,0,0)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        glDisable(GL_STENCIL_TEST)
 
         # Save viewport if asked
         if self.push_viewport:
@@ -225,8 +219,13 @@ class SoftwareFbo(AbstractFbo):
             glViewport(0, 0, self.size[0], self.size[1])
 
         # Draw old Framebuffer
-        set_color(1,1,1)
+        set_color(1, 1, 1)
         drawTexturedRectangle(self.texture, size=self.size)
+
+        # Slower solution, but no alpha problem
+        #set_texture(self.texture)
+        #pixels = glGetTexImage(self.texture.target, 0, GL_RGBA, GL_UNSIGNED_BYTE)
+        #glDrawPixels(self.realsize[0], self.realsize[1], GL_RGBA, GL_UNSIGNED_BYTE, pixels)
 
     def release(self):
         # Restore viewport
@@ -235,17 +234,12 @@ class SoftwareFbo(AbstractFbo):
 
         # Copy current buffer into fbo texture
         set_texture(self.texture, target=GL_TEXTURE_2D);
-        buffer = pyglet.image.get_buffer_manager().get_color_buffer()
-        glReadBuffer(buffer.gl_buffer)
+        glReadBuffer(GL_BACK)
         glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, self.size[0], self.size[1])
 
         # Restore old buffer
-        glPushMatrix()
-        glLoadIdentity()
-        set_color(1,1,1)
-        drawTexturedRectangle(self.oldtexture, size=(self.oldtexture.width,
-                                                     self.oldtexture.height))
-        glPopMatrix()
+        w = pymt.getWindow()
+        glDrawPixels(w.width, w.height, GL_RGBA, GL_UNSIGNED_BYTE, self.pixels)
 
         glPopAttrib()
 

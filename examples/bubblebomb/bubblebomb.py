@@ -6,7 +6,6 @@ PLUGIN_DESCRIPTION = 'Secure Bubble Bomb before explosion !'
 
 from pymt import *
 from OpenGL.GL import *
-from pyglet import media
 from random import random, randint
 
 
@@ -121,9 +120,9 @@ class World(MTWidget):
     def __init__(self, **kwargs):
         super(World, self).__init__(**kwargs)
         self.reset()
-        self.s_gameover = media.load('../bubblebomb/gameover.wav', streaming=False)
-        self.s_touch = media.load('../bubblebomb/touch.wav', streaming=False)
-        self.s_nextlevel = media.load('../bubblebomb/level.wav', streaming=False)
+        self.s_gameover = SoundLoader.load('../bubblebomb/gameover.wav')
+        self.s_touch = SoundLoader.load('../bubblebomb/touch.wav')
+        self.s_nextlevel = SoundLoader.load('../bubblebomb/level.wav')
 
     def sound(self, name):
         if name == 'gameover':

@@ -160,3 +160,6 @@ class SafeList(list):
             self.clone = self[:]
         super(SafeList, self).insert(index, value)
 
+    def clear(self):
+        for v in self.iterate():
+            self.remove(v)

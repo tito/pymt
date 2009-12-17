@@ -1,5 +1,4 @@
 from pymt import *
-from pyglet.text import Label
 from random import randint
 
 # PYMT Plugin integration
@@ -23,7 +22,7 @@ class FridgeLetterAtomic(MTDragable):
             multiline = False,
             halign = 'top',
             color = map(lambda x: int(x * 255), kwargs.get('color')),
-            text = kwargs.get('letter')
+            label = kwargs.get('letter')
         )
         self.size = self.letter.content_width, self.letter.content_height
 
@@ -62,7 +61,7 @@ class FridgeLetter(MTWidget):
                 self.add_widget(l)
 
     def clear(self, *largs):
-        self.children = []
+        self.children.clear()
         self.add_widget(self.buttons)
         self.createletters()
 

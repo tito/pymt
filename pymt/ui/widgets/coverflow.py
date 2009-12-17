@@ -8,6 +8,7 @@ from OpenGL.GL import glRotatef, glTranslatef
 from ...graphx import set_color, drawRectangle, drawTexturedRectangle, \
         Fbo, drawLabel
 from ...utils import boundary
+from ...vector import Vector
 from ..animation import Animation
 from ..factory import MTWidgetFactory
 from widget import MTWidget

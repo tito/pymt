@@ -67,7 +67,7 @@ void main()
 
 
 from pymt import *
-from pyglet.graphics import *
+from OpenGL.GL import *
 
 
 
@@ -85,12 +85,8 @@ class MandelbrotViewer(MTScatterWidget):
         self.shader.use()
         self.shader['zoom'] = self.zoom
         self.shader['maxIterations'] = self.iterations
-        vertcoords = (0.0,0.0, w,0.0, w,h, 0.0,h)
-        texcoords  = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
-        draw(4, GL_QUADS, ('v2f', vertcoords), ('t2f', texcoords))
+        drawTexturedRectangle(None, size=(w,h))
         self.shader.stop()
-
-
 
 
 def update_iterations(viewer, label, value):

@@ -205,8 +205,10 @@ def drawRectangle(pos=(0,0), size=(1.0,1.0), style=GL_QUADS):
         glVertex2f(pos[0] + size[0], pos[1] + size[1])
         glVertex2f(pos[0], pos[1] + size[1])
 
-def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0), tex_coords=None):
-    '''Draw a rectangle with a texture
+def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0),
+                          tex_coords=None, color_coords=None):
+    '''Draw a rectangle with a texture.
+    The rectangle is drawed from bottom-left, bottom-right, top-right, top-left.
 
     :Parameters:
         `texture` : int
@@ -215,6 +217,12 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0), tex_coords=None):
             Position of rectangle
         `size` : tuple, default to (1.0, 1.0)
             Size of rectangle
+        `tex_coords` : list, default to None
+            Contain a list of UV coords to use. If None, texture UV coordinates
+            will be used.
+        `color_coords` : list, default to None
+            Specify a color for each vertex. The format is 4 colors tuples in a
+            list.
     '''
     with gx_texture(texture):
         if type(texture) in (pymt.Texture, pymt.TextureRegion):
@@ -227,15 +235,30 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0), tex_coords=None):
                 pos[0] + size[0], pos[1],
                 pos[0] + size[0], pos[1] + size[1],
                 pos[0], pos[1] + size[1])
-        with gx_begin(GL_QUADS):
-            glTexCoord2f(texcoords[0], texcoords[1])
-            glVertex2f(pos[0], pos[1])
-            glTexCoord2f(texcoords[2], texcoords[3])
-            glVertex2f(pos[2], pos[3])
-            glTexCoord2f(texcoords[4], texcoords[5])
-            glVertex2f(pos[4], pos[5])
-            glTexCoord2f(texcoords[6], texcoords[7])
-            glVertex2f(pos[6], pos[7])
+        if color_coords:
+            with gx_begin(GL_QUADS):
+                glColor4f(*color_coords[0])
+                glTexCoord2f(texcoords[0], texcoords[1])
+                glVertex2f(pos[0], pos[1])
+                glColor4f(*color_coords[1])
+                glTexCoord2f(texcoords[2], texcoords[3])
+                glVertex2f(pos[2], pos[3])
+                glColor4f(*color_coords[2])
+                glTexCoord2f(texcoords[4], texcoords[5])
+                glVertex2f(pos[4], pos[5])
+                glColor4f(*color_coords[3])
+                glTexCoord2f(texcoords[6], texcoords[7])
+                glVertex2f(pos[6], pos[7])
+        else:
+            with gx_begin(GL_QUADS):
+                glTexCoord2f(texcoords[0], texcoords[1])
+                glVertex2f(pos[0], pos[1])
+                glTexCoord2f(texcoords[2], texcoords[3])
+                glVertex2f(pos[2], pos[3])
+                glTexCoord2f(texcoords[4], texcoords[5])
+                glVertex2f(pos[4], pos[5])
+                glTexCoord2f(texcoords[6], texcoords[7])
+                glVertex2f(pos[6], pos[7])
 
 def drawLine(points, width=None, colors=[]):
     '''Draw a line

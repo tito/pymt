@@ -14,13 +14,13 @@ import math
 
 
 
-loader = Loader(loading_image='fitts.png')
+#loader = Loader(loading_image='fitts.png')
 
 class MTScatteredObj(MTScatterWidget):
     """MTScatteredObj is a zoomable Image widget with a possibility of providing rotation during spawning"""
     def __init__(self, img_src, pos=(0,0), size=(100,100), rotation=45):
         global loader
-        self.image  = loader.sprite(img_src)
+        self.image  = Image.load(img_src)#loader.sprite(img_src)
         self.aspectRatio = float(self.image.height)/float(self.image.width)
         MTScatterWidget.__init__(self, pos=pos, size=(size[0],size[0]*self.aspectRatio), rotation=rotation)
         self.pos = self.x - int(self.x/4), self.y - int(self.y/4)
@@ -46,7 +46,7 @@ class ShadowSurface(MTWidget):
     def __init__(self, pos=(0,0), size=(100,100), bg_image='../pictures/back.jpg', **kargs):
         MTWidget.__init__(self, pos=pos, size=size)
 
-        self.bg_image = pyglet.sprite.Sprite(pyglet.image.load(bg_image))
+        self.bg_image = Image.load(bg_image)
         self.bg_image.scale = float(self.width)/self.bg_image.width
 
 
@@ -173,7 +173,6 @@ def pymt_plugin_deactivate(w, ctx):
 if __name__ == '__main__':
     w = MTWindow()
     ctx = MTContext()
-    print gl_info.get_extensions()
     pymt_plugin_activate(w, ctx)
     runTouchApp()
     pymt_plugin_deactivate(w, ctx)

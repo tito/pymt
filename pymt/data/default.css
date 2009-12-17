@@ -100,8 +100,8 @@ kineticlist {
 
 basewindow,
 window {
-    bg-color: rgb(150, 150, 150);
-    draw-alpha-background: 1;
+    bg-color: rgb(5, 5, 5);
+    draw-alpha-background: 0;
     alpha-background: 0.8 0.8 0.0 0.0;
 }
 

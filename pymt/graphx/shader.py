@@ -5,7 +5,6 @@ Shader: abstract compilation and usage
 __all__ = ['ShaderException', 'Shader']
 
 import pymt
-import ctypes as c
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
@@ -26,11 +25,11 @@ class Shader(object):
         self.program = glCreateProgram()
 
         if vertex_source:
-            self.vertex_shader = self.create_shader(vertex_source,GL_VERTEX_SHADER)
+            self.vertex_shader = self.create_shader(vertex_source, GL_VERTEX_SHADER)
             glAttachShader(self.program, self.vertex_shader)
 
         if fragment_source:
-            self.fragment_shader = self.create_shader(fragment_source,GL_FRAGMENT_SHADER)
+            self.fragment_shader = self.create_shader(fragment_source, GL_FRAGMENT_SHADER)
             glAttachShader(self.program, self.fragment_shader)
 
         glLinkProgram(self.program)
@@ -39,12 +38,8 @@ class Shader(object):
             pymt.pymt_logger.debug('shader message: %s' % message)
 
     def create_shader(self, source, shadertype):
-        sbuffer = c.create_string_buffer(source)
-        pointer = c.cast(c.pointer(c.pointer(sbuffer)),
-                         c.POINTER(c.POINTER(c.c_char)))
-        nulll = c.POINTER(c.c_long)()
         shader = glCreateShader(shadertype)
-        glShaderSource(shader, 1, pointer, None)
+        glShaderSource(shader, source)
         glCompileShader(shader)
         message = self.get_shader_log(shader)
         if message:
@@ -85,9 +80,6 @@ class Shader(object):
         return self.get_log(shader, glGetProgramInfoLog)
 
     def get_log(self, obj, func):
-        log_buffer = c.create_string_buffer(4096)
-        buffer_pointer = c.cast(c.pointer(log_buffer), c.POINTER(c.c_char))
-        written = c.c_int()
-        func(obj, 4096, c.pointer(written), buffer_pointer)
-        return log_buffer.value
+        value = func(obj)
+        return value
 

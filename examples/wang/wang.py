@@ -8,7 +8,6 @@ after some hours of arithemic.
 '''
 
 from pymt import *
-import pyglet
 from copy import copy
 import random
 import math
@@ -139,8 +138,7 @@ class Ball(MTWidget):
         self.game = kwargs.get('game')
         self.debugline = []
         self.debug = False
-        img = pyglet.image.load('../wang/ball.png')
-        self.sprite = pyglet.sprite.Sprite(img)
+        self.sprite = Image.load('../wang/ball.png')
         self.reset()
 
     def reset(self):

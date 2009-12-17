@@ -225,12 +225,18 @@ class GlTexture:
         self.texture = texture
 
     def __enter__(self):
+        self.bind()
+
+    def __exit__(self, type, value, traceback):
+        self.release()
+
+    def bind(self):
         target = self.get_target()
         glPushAttrib(GL_ENABLE_BIT)
         glEnable(target)
         glBindTexture(target, self.get_id())
 
-    def __exit__(self, type, value, traceback):
+    def release(self):
         glPopAttrib()
 
     def get_id(self):

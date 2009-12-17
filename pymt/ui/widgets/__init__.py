@@ -3,6 +3,7 @@ Widgets: all the pymt widgets
 '''
 
 from button import *
+from coverflow import *
 from container import *
 from buttonmatrix import *
 from dragable import *

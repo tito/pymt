@@ -30,17 +30,19 @@ class ImageData(object):
         self.mode = mode
         self.data = data
 
+    def release_data(self):
+        self.data = None
+
 
 class ImageLoaderBase(object):
     '''Base to implement an image loader.'''
 
-    __slots__ = ('_texture', '_data', 'filename')
+    __slots__ = ('_texture', '_data', 'filename', 'keep_data')
 
-    _texture = None
-    _data = None
-    filename = ''
-
-    def __init__(self, filename):
+    def __init__(self, filename, keep_data=False):
+        self.keep_data = False
+        self.filename = filename
+        self._texture = None
         self._data = self.load(filename)
 
     def load(self, filename):
@@ -65,6 +67,8 @@ class ImageLoaderBase(object):
             if self._data is None:
                 return None
             self._texture = Texture.create_from_data(self._data)
+            if not self.keep_data:
+                self._data.release_data()
         return self._texture
     texture = property(_get_texture,
                       doc='Get the image texture (created on the first call)')
@@ -85,14 +89,14 @@ class ImageLoader(object):
         ImageLoader.loaders.append(cls)
 
     @staticmethod
-    def load(filename):
+    def load(filename, **kwargs):
         # extract extensions
         ext = filename.split('.')[-1].lower()
         im = None
         for loader in ImageLoader.loaders:
             if ext not in loader.extensions():
                 continue
-            im = loader(filename)
+            im = loader(filename, **kwargs)
             break
         if im is None:
             raise Exception('Unsupported extension <%s>, no loader found.' % ext)
@@ -165,9 +169,17 @@ class Image(pymt.BaseObject):
             self.y = kwargs.get('y')
 
     @staticmethod
-    def load(filename):
-        '''Load an image'''
-        return Image(filename)
+    def load(filename, **kwargs):
+        '''Load an image
+
+        :Parameters:
+            `filename` : str
+                Filename of the image
+            `keep_data` : bool, default to False
+                Keep the image data when texture is created
+        '''
+        kwargs.setdefault('keep_data', False)
+        return Image(filename, **kwargs)
 
     def _get_filename(self):
         return self._filename

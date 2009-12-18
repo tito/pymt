@@ -15,9 +15,8 @@ import threading
 import gobject
 import pymt
 from . import VideoBase
-from pymt.baseobject import BaseObject
-from pymt.graphx import get_texture_target, set_texture, drawTexturedRectangle, set_color, drawRectangle
-from OpenGL.GL import glTexSubImage2D, GL_UNSIGNED_BYTE, GL_RGB
+from pymt.graphx import drawTexturedRectangle, set_color, drawRectangle
+from OpenGL.GL import GL_RGB
 
 # ensure that gobject have threads initialized.
 gobject.threads_init()

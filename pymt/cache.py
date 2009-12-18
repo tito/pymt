@@ -56,11 +56,12 @@ class Cache:
         Cache._objects[category][key] = {
             'object': obj,
             'timeout': timeout,
-            'lastaccess': getClock().get_time()
+            'lastaccess': getClock().get_time(),
+            'timestamp': getClock().get_time()
         }
 
     @staticmethod
-    def get(category, key):
+    def get(category, key, default=None):
         '''Get a object in cache.
 
         :Parameters:
@@ -68,12 +69,48 @@ class Cache:
                 Identifier of the category
             `key` : str
                 Uniq identifier of the object to store
+            `default` : anything, default to None
+                Default value to be returned if key is not found
         '''
         try:
             Cache._objects[category][key]['lastaccess'] = getClock().get_time()
             return Cache._objects[category][key]['object']
         except:
-            return None
+            return default
+
+    @staticmethod
+    def get_timestamp(category, key, default=None):
+        '''Get the object timestamp in cache.
+        
+        :Parameters:
+            `category` : str
+                Identifier of the category
+            `key` : str
+                Uniq identifier of the object to store
+            `default` : anything, default to None
+                Default value to be returned if key is not found
+        '''
+        try:
+            return Cache._objects[category][key]['timestamp']
+        except:
+            return default
+
+    @staticmethod
+    def get_lastaccess(category, key, default=None):
+        '''Get the object last access time in cache.
+        
+        :Parameters:
+            `category` : str
+                Identifier of the category
+            `key` : str
+                Uniq identifier of the object to store
+            `default` : anything, default to None
+                Default value to be returned if key is not found
+        '''
+        try:
+            return Cache._objects[category][key]['lastaccess']
+        except:
+            return default
 
     @staticmethod
     def remove(category, key=None):

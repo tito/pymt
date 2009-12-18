@@ -40,14 +40,18 @@ class Texture(object):
     '''Handle a OpenGL texture. This class can be used to create simple texture
     or complex texture based on ImageData.'''
 
-    __slots__ = ('tex_coords', 'width', 'height', 'target', 'id')
+    __slots__ = ('tex_coords', 'width', 'height', 'target', 'id',
+                '_gl_wrap', '_gl_min_filter', '_gl_mag_filter')
 
     def __init__(self, width, height, target, id):
         self.tex_coords = (0., 0., 1., 0., 1., 1., 0., 1.)
-        self.width = width
-        self.height = height
-        self.target = target
-        self.id = id
+        self.width          = width
+        self.height         = height
+        self.target         = target
+        self.id             = id
+        self._gl_wrap       = None
+        self._gl_min_filter = None
+        self._gl_mag_filter = None
 
     def __del__(self):
         # try/except are here to prevent an error like this :
@@ -76,6 +80,43 @@ class Texture(object):
         dimensions'''
         return TextureRegion(x, y, width, height, self)
 
+    def bind(self):
+        '''Bind the texture to current opengl state'''
+        glBindTexture(self.target, self.id)
+
+    def _get_min_filter(self):
+        return self._gl_min_filter
+    def _set_min_filter(self, filter):
+        if filter == self._gl_min_filter:
+            return
+        self.bind()
+        glTexParameteri(self.target, GL_TEXTURE_MIN_FILTER, filter)
+        self._gl_min_filter = filter
+    min_filter = property(_get_min_filter, _set_min_filter,
+                          doc='''Get/set the GL_TEXTURE_MIN_FILTER property''')
+
+    def _get_mag_filter(self):
+        return self._gl_mag_filter
+    def _set_mag_filter(self, filter):
+        if filter == self._gl_mag_filter:
+            return
+        self.bind()
+        glTexParameteri(self.target, GL_TEXTURE_MAG_FILTER, filter)
+        self._gl_mag_filter = filter
+    mag_filter = property(_get_mag_filter, _set_mag_filter,
+                          doc='''Get/set the GL_TEXTURE_MAG_FILTER property''')
+
+    def _get_wrap(self):
+        return self._gl_wrap
+    def _set_wrap(self, wrap):
+        if wrap == self._gl_wrap:
+            return
+        self.bind()
+        glTexParameteri(self.target, GL_TEXTURE_WRAP_S, wrap)
+        glTexParameteri(self.target, GL_TEXTURE_WRAP_T, wrap)
+    wrap = property(_get_wrap, _set_wrap,
+                    doc='''Get/set the GL_TEXTURE_WRAP_S,T property''')
+
     @staticmethod
     def create(width, height, format=GL_RGBA, rectangle=False):
         '''Create a texture based on size.'''
@@ -100,15 +141,18 @@ class Texture(object):
             texture_height = _nearest_pow2(height)
 
         id = glGenTextures(1)
-        glBindTexture(target, id)
-        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        texture = Texture(texture_width, texture_height, target, id)
+
+        texture.bind()
+        texture.min_filter  = GL_LINEAR
+        texture.mag_filter  = GL_LINEAR
+        texture.wrap        = GL_CLAMP_TO_EDGE
 
         data = (GLubyte * texture_width * texture_height *
                 Texture.gl_format_size(format))()
         glTexImage2D(target, 0, format, texture_width, texture_height, 0,
                      format, GL_UNSIGNED_BYTE, data)
 
-        texture = Texture(texture_width, texture_height, target, id)
         if rectangle:
             texture.tex_coords = \
                 (0., 0., width, 0., width, height, 0., height)

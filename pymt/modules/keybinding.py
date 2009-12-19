@@ -7,7 +7,7 @@ __all__ = ('start', 'stop')
 import logging
 from pymt.base import getWindow
 from pymt.graphx import drawRectangle, drawLabel, set_color, drawLine, drawCircle
-from pymt.logger import pymt_logger_history
+from pymt.logger import pymt_logger_history, pymt_logger
 
 _toggle_state = ''
 
@@ -19,6 +19,29 @@ def toggle(id):
         _toggle_state = id
     if _toggle_state == '':
         return
+
+def _screenshot():
+    import os
+    import pygame
+    from OpenGL.GL import glReadBuffer, glReadPixels, GL_RGB, GL_UNSIGNED_BYTE, GL_FRONT
+    win = getWindow()
+    glReadBuffer(GL_FRONT)
+    data = glReadPixels(0, 0, win.width, win.height, GL_RGB, GL_UNSIGNED_BYTE)
+    surface = pygame.image.fromstring(str(buffer(data)), win.size, 'RGB', True)
+    filename = None
+    for i in xrange(9999):
+        path = os.path.join(os.getcwd(), 'screenshot%04d.tga' % i)
+        if not os.path.exists(path):
+            filename = path
+            break
+    if filename:
+        try:
+            pygame.image.save(surface, filename)
+            pymt_logger.info('Screenshot saved at %s' % filename)
+        except:
+            pymt_logger.exception('Unable to take a screenshot')
+    else:
+        pymt_logger.warning('Unable to take screenshot, no more slot available')
 
 def _on_draw():
     global _toggle_state
@@ -61,6 +84,8 @@ def _on_draw():
                   pos=(w2, h2 - 140), **k)
         drawLabel('F6 - Show log',
                   pos=(w2, h2 - 175), **k)
+        drawLabel('F12 - Screenshot',
+                  pos=(w2, h2 - 210), **k)
 
         return True
 
@@ -203,6 +228,8 @@ def _on_keyboard_handler(key, scancode, unicode):
         win.toggle_fullscreen()
     elif key == 287: # F6
         toggle('log')
+    elif key == 293:
+        _screenshot()
 
 
 def start(win, ctx):

@@ -210,6 +210,11 @@ class Texture(object):
             format = self.mode_to_gl_format(mode)
         glBindTexture(self.target, self.id)
         glEnable(self.target)
+
+        # activate 1 alignement, of window failed on updating weird size
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+
+        # transfer the new part of texture
         glTexSubImage2D(self.target, 0, pos[0], pos[1],
                         size[0], size[1], format,
                         buffertype, buffer)

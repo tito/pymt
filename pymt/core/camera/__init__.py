@@ -112,5 +112,5 @@ class CameraBase(BaseObject):
 Camera = core_select_lib('camera', (
     ('gstreamer', 'camera_gstreamer', 'CameraGStreamer'),
     ('opencv', 'camera_opencv', 'CameraOpenCV'),
-    #('videocapture', 'camera_videocapture', 'CameraVideoCapture'),
+    ('videocapture', 'camera_videocapture', 'CameraVideoCapture'),
 ))

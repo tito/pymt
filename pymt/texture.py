@@ -264,12 +264,12 @@ class Texture(object):
                 ret_format = GL_RGB
                 a = array('b', buffer)
                 a[0::3], a[2::3] = a[2::3], a[0::3]
-                ret_buffer = a
+                ret_buffer = a.tostring()
             elif format == GL_BGRA:
                 ret_format = GL_RGBA
                 a = array('b', buffer)
                 a[0::4], a[2::4] = a[2::4], a[0::4]
-                ret_buffer = a
+                ret_buffer = a.tostring()
             else:
                 pymt_logger.critical('Texture: non implemented %s texture conversion',
                                      str(format))

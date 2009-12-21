@@ -12,9 +12,6 @@ from pymt.graphx import DO, gx_color, gx_blending, drawTexturedRectangle, set_co
 from pymt.logger import pymt_logger
 from pymt.texture import Texture, TextureRegion
 
-RGB = 'RGB'
-RGBA = 'RGBA'
-
 class ImageData(object):
     '''Container for data image : width, height, mode and data.
     ..warning ::
@@ -22,9 +19,10 @@ class ImageData(object):
     '''
 
     __slots__ = ('width', 'height', 'mode', 'data')
+    _supported_modes = ('RGB', 'RGBA', 'BGR', 'BGRA')
 
     def __init__(self, width, height, mode, data):
-        assert mode in (RGB, RGBA)
+        assert mode in ImageData._supported_modes
         self.width = int(width)
         self.height = int(height)
         self.mode = mode
@@ -223,8 +221,9 @@ class Image(pymt.BaseObject):
         data = self.image._data
         if not (0 < x < data.width and 0 < y < data.height):
             raise IndexError('Position (%d, %d) is out of range.' % (x, y))
-        assert data.mode in (RGB, RGBA)
-        size = 3 if data.mode == RGB else 4
+        assert mode in ImageData._supported_modes
+        size = 3 if data.mode in ('RGB', 'BGR') else 4
+        # FIXME BGR cases
         index = y * data.width * size + x * size
         raw = data.data[index:index+size]
         color = map(lambda c: ord(c)/255.0, raw)

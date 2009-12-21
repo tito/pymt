@@ -43,6 +43,12 @@ class Texture(object):
     __slots__ = ('tex_coords', 'width', 'height', 'target', 'id',
                 '_gl_wrap', '_gl_min_filter', '_gl_mag_filter')
 
+    _swap3_pattern = re.compile('(.)(.)(.)', re.DOTALL)
+    _swap4_pattern = re.compile('(.)(.)(.)(.)', re.DOTALL)
+
+    _has_bgr = None
+    _has_bgr_tested = False
+
     def __init__(self, width, height, target, id):
         self.tex_coords = (0., 0., 1., 0., 1., 1., 0., 1.)
         self.width          = width
@@ -214,6 +220,9 @@ class Texture(object):
         # activate 1 alignement, of window failed on updating weird size
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
 
+        # need conversion ?
+        buffer, format = self._convert_buffer(buffer, format)
+
         # transfer the new part of texture
         glTexSubImage2D(self.target, 0, pos[0], pos[1],
                         size[0], size[1], format,
@@ -221,6 +230,31 @@ class Texture(object):
 
         glFlush()
         glDisable(self.target)
+
+    def has_bgr(self):
+        if not self._has_bgr_tested:
+            self._has_bgr = extensions.hasGLExtension('GL_EXT_bgra')
+            self._has_bgr_tested = True
+        return self._has_bgr
+
+    def _convert_buffer(self, buffer, format):
+        # check if format is supported by user
+        ret_format = format
+        ret_buffer = buffer
+
+        # BGR / BGRA conversion not supported by hardware ?
+        if format in (GL_BGR, GL_BGRA) and self.has_bgr:
+            if format == GL_BGR:
+                swap_pattern = self._swap3_pattern
+                sub_pattern = r'\3\2\1'
+                ret_format = GL_RGB
+            elif format == GL_BGRA:
+                swap_pattern = self._swap4_pattern
+                sub_pattern = r'\3\2\1\4'
+                ret_format = GL_RGBA
+            ret_buffer = swap_pattern.sub(sub_pattern, buffer)
+
+        return ret_buffer, ret_format
 
     @property
     def size(self):

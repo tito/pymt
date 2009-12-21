@@ -155,6 +155,9 @@ class Texture(object):
         texture.mag_filter  = GL_LINEAR
         texture.wrap        = GL_CLAMP_TO_EDGE
 
+        if not Texture.is_gl_format_supported(format):
+            format = Texture.convert_gl_format(format)
+
         data = (GLubyte * texture_width * texture_height *
                 Texture.gl_format_size(format))()
         glTexImage2D(target, 0, format, texture_width, texture_height, 0,
@@ -236,6 +239,20 @@ class Texture(object):
             self._has_bgr = extensions.hasGLExtension('GL_EXT_bgra')
             self._has_bgr_tested = True
         return self._has_bgr
+
+    @staticmethod
+    def is_gl_format_supported(format):
+        if format in (GL_BGR, GL_BGRA):
+            return not self.has_bgr()
+        return True
+
+    @staticmethod
+    def convert_gl_format(format):
+        if format == GL_BGR:
+            return GL_RGB
+        elif format == GL_BGRA:
+            return GL_RGBA
+        return format
 
     def _convert_buffer(self, buffer, format):
         # check if format is supported by user

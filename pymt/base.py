@@ -70,6 +70,7 @@ class TouchEventLoop(object):
 
     def close(self):
         global pymt_providers
+        self.quit = True
         for provider in pymt_providers:
             provider.stop()
 
@@ -178,9 +179,6 @@ class TouchEventLoop(object):
         while not self.quit:
             self.idle()
         self.exit()
-
-    def close(self):
-        self.quit = True
 
     def exit(self):
         self.close()
@@ -312,10 +310,13 @@ def runTouchApp(widget=None, slave=False):
     # 2. if no window is created, we are dispatching event lopp
     #    ourself (previous behavior.)
     #
-    if pymt_window is None:
-        _run_mainloop()
-    else:
-        pymt_window.mainloop()
+    try:
+        if pymt_window is None:
+            _run_mainloop()
+        else:
+            pymt_window.mainloop()
+    finally:
+        stopTouchApp()
 
     # Show event stats
     if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):

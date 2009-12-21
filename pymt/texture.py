@@ -5,6 +5,7 @@ Texture: abstraction to handle GL texture, and region
 __all__ = ('Texture', 'TextureRegion')
 
 import re
+from array import array
 from pymt import pymt_logger
 from OpenGL.GL import *
 from OpenGL.GL.NV.texture_rectangle import *
@@ -43,9 +44,6 @@ class Texture(object):
 
     __slots__ = ('tex_coords', 'width', 'height', 'target', 'id',
                 '_gl_wrap', '_gl_min_filter', '_gl_mag_filter')
-
-    _swap3_pattern = re.compile('(.)(.)(.)', re.DOTALL)
-    _swap4_pattern = re.compile('(.)(.)(.)(.)', re.DOTALL)
 
     _has_bgr = None
     _has_bgr_tested = False
@@ -263,20 +261,20 @@ class Texture(object):
         # BGR / BGRA conversion not supported by hardware ?
         if not Texture.is_gl_format_supported(format):
             if format == GL_BGR:
-                swap_pattern = self._swap3_pattern
-                sub_pattern = r'\3\2\1'
                 ret_format = GL_RGB
+                a = array('b', buffer)
+                a[0::3], a[2::3] = a[2::3], a[0::3]
+                ret_buffer = a
             elif format == GL_BGRA:
-                swap_pattern = self._swap4_pattern
-                sub_pattern = r'\3\2\1\4'
                 ret_format = GL_RGBA
+                a = array('b', buffer)
+                a[0::4], a[2::4] = a[2::4], a[0::4]
+                ret_buffer = a
             else:
                 pymt_logger.critical('Texture: non implemented %s texture conversion',
                                      str(format))
                 raise Exception('Unimplemented texture conversion for %s' %
                                 str(format))
-            ret_buffer = swap_pattern.sub(sub_pattern, buffer)
-
         return ret_buffer, ret_format
 
     @property

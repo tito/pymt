@@ -20,7 +20,7 @@ class SoundPygame(Sound):
 
     @staticmethod
     def extensions():
-        return ('wav', )
+        return ('wav', 'ogg', )
 
     def __init__(self, **kwargs):
         self._data = None

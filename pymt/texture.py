@@ -5,6 +5,7 @@ Texture: abstraction to handle GL texture, and region
 __all__ = ('Texture', 'TextureRegion')
 
 import re
+from pymt import pymt_logger
 from OpenGL.GL import *
 from OpenGL.GL.NV.texture_rectangle import *
 from OpenGL.GL.ARB.texture_rectangle import *
@@ -173,9 +174,6 @@ class Texture(object):
     @staticmethod
     def create_from_data(im):
         '''Create a texture from an ImageData class'''
-        if im.mode not in ('RGBA', 'RGB'):
-            pymt_logger.error('Unsupported format for texture (%s)' % im.mode)
-            return None
 
         format = Texture.mode_to_gl_format(im.mode)
 
@@ -233,6 +231,8 @@ class Texture(object):
 
     def has_bgr(self):
         if not self._has_bgr_tested:
+            pymt_logger.warning('Texture: BGR/BGRA format is not supported by your graphic card')
+            pymt_logger.warning('Texture: Software conversion will be done to RGB/RGBA')
             self._has_bgr = extensions.hasGLExtension('GL_EXT_bgra')
             self._has_bgr_tested = True
         return self._has_bgr
@@ -243,7 +243,7 @@ class Texture(object):
         ret_buffer = buffer
 
         # BGR / BGRA conversion not supported by hardware ?
-        if format in (GL_BGR, GL_BGRA) and self.has_bgr:
+        if format in (GL_BGR, GL_BGRA) and not self.has_bgr:
             if format == GL_BGR:
                 swap_pattern = self._swap3_pattern
                 sub_pattern = r'\3\2\1'

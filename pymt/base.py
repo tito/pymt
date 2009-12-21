@@ -324,7 +324,7 @@ def runTouchApp(widget=None, slave=False):
 
 def stopTouchApp():
     global pymt_evloop
-    if pymt_evloop is None:
+    if pymt_evloop is None or pymt_evloop.quit:
         return
     pymt_logger.info('Leaving application in progress...')
     pymt_evloop.close()

@@ -233,7 +233,7 @@ class Texture(object):
         glDisable(self.target)
 
     @staticmethod
-    def _has_bgr():
+    def has_bgr():
         if not Texture._has_bgr_tested:
             pymt_logger.warning('Texture: BGR/BGRA format is not supported by your graphic card')
             pymt_logger.warning('Texture: Software conversion will be done to RGB/RGBA')

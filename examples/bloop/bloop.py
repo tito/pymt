@@ -75,15 +75,15 @@ class bloop(MTButton):
         if(self.highlightgreen > 1):
             self.highlightgreen = 1
 
-        anim = self.add_animation('fadein','alpha', 1.00, 1.0/60, 0.5)
-        self.start_animations('fadein')
+        #anim = self.add_animation('fadein','alpha', 1.00, 1.0/60, 0.5)
+        self.fadein = Animation(d=1.0, alpha=1.0)
+        self.do(self.fadein)
         self.showing = True
         self.highlight = False
 
-        getClock().schedule_once(self.BloopHide, 2)
-
-        anim = self.add_animation('fadeout','radius', self.width+10, 1.0/60, 1.0)
-        anim = self.add_animation('fadeout','alpha', 0.00, 1.0/60, 0.5)
+        getClock().schedule_once(self.BloopHide, 2)        
+        
+        self.fadeout = Animation(d=1.0, radius=self.width+10, alpha=0.0)
 
     def on_touch_down(self, touch):
         if self.collide_point(touch.x, touch.y):
@@ -97,7 +97,7 @@ class bloop(MTButton):
                 self.blue = self.highlightblue
             self.touched = True
             self.showing = False
-            self.start_animations('fadeout')
+            self.do(self.fadeout)
 
     def draw(self):
         with DO(gx_matrix, gx_blending):
@@ -111,7 +111,7 @@ class bloop(MTButton):
             drawCircle(pos=(self.x + self.width/2,self.y + self.height/2),radius=self.radius)
 
     def BloopHide(self,dt):
-        self.start_animations('fadeout')
+        self.do(self.fadeout)
         self.showing = False
 
     def on_animation_complete(self, anim):

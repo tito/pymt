@@ -451,6 +451,8 @@ class MTScatterImage(MTScatterWidget):
     :Parameters:
         `filename` : str
             Filename of image
+        `opacity` : float, default to 1.0
+            Used to set the opacity of the image.
         `loader` : Loader instance
             Use the loader to load image
     '''
@@ -458,6 +460,7 @@ class MTScatterImage(MTScatterWidget):
         # Preserve this way to do
         # Later, we'll give another possibility, like using a loader...
         kwargs.setdefault('filename', None)
+        kwargs.setdefault('opacity', 1.0)
         if kwargs.get('filename') is None:
             raise Exception('No filename given to MTScatterImage')
         kwargs.setdefault('loader', None)
@@ -471,10 +474,13 @@ class MTScatterImage(MTScatterWidget):
         else:
             self.image  = pymt.Image(kwargs.get('filename'))
 
+        self.opacity = kwargs.get('opacity')
+
     def draw(self):
         if type(self.image) == pymt.Image:
             # fast part
             self.image.size = self.size
+            self.image.opacity = self.opacity
             self.image.draw()
         else:
             # loader part

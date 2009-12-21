@@ -232,18 +232,19 @@ class Texture(object):
         glFlush()
         glDisable(self.target)
 
-    def has_bgr(self):
-        if not self._has_bgr_tested:
+    @staticmethod
+    def _has_bgr():
+        if not Texture._has_bgr_tested:
             pymt_logger.warning('Texture: BGR/BGRA format is not supported by your graphic card')
             pymt_logger.warning('Texture: Software conversion will be done to RGB/RGBA')
-            self._has_bgr = extensions.hasGLExtension('GL_EXT_bgra')
-            self._has_bgr_tested = True
-        return self._has_bgr
+            Texture._has_bgr = extensions.hasGLExtension('GL_EXT_bgra')
+            Texture._has_bgr_tested = True
+        return Texture._has_bgr
 
     @staticmethod
     def is_gl_format_supported(format):
         if format in (GL_BGR, GL_BGRA):
-            return not self.has_bgr()
+            return not Texture.has_bgr()
         return True
 
     @staticmethod
@@ -260,7 +261,7 @@ class Texture(object):
         ret_buffer = buffer
 
         # BGR / BGRA conversion not supported by hardware ?
-        if format in (GL_BGR, GL_BGRA) and not self.has_bgr:
+        if not Texture.is_gl_format_supported(format):
             if format == GL_BGR:
                 swap_pattern = self._swap3_pattern
                 sub_pattern = r'\3\2\1'
@@ -269,6 +270,11 @@ class Texture(object):
                 swap_pattern = self._swap4_pattern
                 sub_pattern = r'\3\2\1\4'
                 ret_format = GL_RGBA
+            else:
+                pymt_logger.critical('Texture: non implemented %s texture conversion',
+                                     str(format))
+                raise Exception('Unimplemented texture conversion for %s' %
+                                str(format))
             ret_buffer = swap_pattern.sub(sub_pattern, buffer)
 
         return ret_buffer, ret_format

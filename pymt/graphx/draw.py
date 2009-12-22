@@ -15,6 +15,7 @@ __all__ = [
 
 import math
 import pymt
+from array import array
 from OpenGL.GL import *
 from OpenGL.GLU import gluNewQuadric, gluDisk, gluPartialDisk
 from paint import *
@@ -289,7 +290,7 @@ def drawLine(points, width=None, colors=[]):
             Turned off by default.
     '''
     style = GL_LINES
-    points = list(points)[:]
+    points = array('f', points)
     l = len(points)
     if l < 4:
         return
@@ -301,17 +302,15 @@ def drawLine(points, width=None, colors=[]):
         glLineWidth(width)
 
     with DO(gx_attrib(GL_COLOR_BUFFER_BIT), gx_begin(style)):
-        # We don't want to do the if statement in every iteration of the while
-        # loop because that'd be expensive...
-        put_vertex = lambda: glVertex2f(points.pop(0), points.pop(0))
         if colors:
             colors = colors[:]
-            while points:
-                glColor3f(*colors.pop(0))
-                put_vertex()
+            for x, y, r, g, b in zip(points[::2], points[1::2],
+                                     colors[::3], colors[1::3], colors[2::3]):
+                glColor3f(r, g, b)
+                glVertex2f(x, y)
         else:
-            while points:
-                put_vertex()
+            for x, y in zip(points[::2], points[1::2]):
+                glVertex2f(x, y)
 
     if width is not None:
         glPopAttrib()

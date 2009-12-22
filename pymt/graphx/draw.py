@@ -15,7 +15,6 @@ __all__ = [
 
 import math
 import pymt
-from array import array
 from OpenGL.GL import *
 from OpenGL.GLU import gluNewQuadric, gluDisk, gluPartialDisk
 from paint import *
@@ -171,8 +170,7 @@ def drawPolygon(points, style=GL_POLYGON):
     '''
     points = list(points)
     with gx_begin(style):
-        while len(points):
-            y, x = points.pop(), points.pop()
+        for x, y in zip(points[::2], points[1::2]):
             glVertex2f(x, y)
 
 def drawTriangle(pos, w, h, style=GL_TRIANGLES):
@@ -290,7 +288,7 @@ def drawLine(points, width=None, colors=[]):
             Turned off by default.
     '''
     style = GL_LINES
-    points = array('f', points)
+    points = list(points)
     l = len(points)
     if l < 4:
         return

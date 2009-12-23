@@ -61,7 +61,7 @@ class BaseWindow(EventDispatcher):
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
         kwargs.setdefault('style', {})
-        kwargs.setdefault('gradient', True)
+        kwargs.setdefault('gradient', False)
 
         # don't init window 2 times,
         # except if force is specified

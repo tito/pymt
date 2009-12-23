@@ -36,7 +36,7 @@ FriendListScatter.add_widget(friendList)
 twitFriends = api.GetFriends()
 for f in twitFriends:
 	un = f.name.encode('ASCII', 'replace')
-	friendList.add(MTKineticItem(label=un, size=(350, 50)), f)
+	friendList.add_widget(MTKineticItem(label=un, size=(350, 50)))
 
 #Load Firends Timeline Based on Selection From Friend List
 @friendList.event
@@ -53,7 +53,7 @@ def on_press(item, callback):
 	FriendTimelineItems = api.GetUserTimeline(callback.id)
 	for s in FriendTimelineItems:
 		us = s.text.encode('ASCII', 'replace')
-		FriendTimelineList.add(MTKineticItem(label=us, size=(390, 50), multiline=True, width=300), s.id)
+		FriendTimelineList.add_widget(MTKineticItem(label=us, size=(390, 50), multiline=True, width=300))
 	
 
 	@TimelineExitButton.event

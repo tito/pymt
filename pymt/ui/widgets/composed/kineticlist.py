@@ -11,7 +11,7 @@ from ....graphx import drawCSSRectangle
 from ...factory import MTWidgetFactory
 from ....vector import Vector
 from ....base import getFrameDt
-from ....utils import boundary
+from ....utils import boundary, SafeList
 from ..stencilcontainer import MTStencilContainer
 from ..widget import MTWidget
 from ..button import MTButton, MTToggleButton, MTImageButton
@@ -110,11 +110,11 @@ class MTKineticList(MTStencilContainer):
         self.vx = 0
         self.vy = 0
         # List of all children, whatever will be the search
-        self.pchildren = []
+        self.pchildren = SafeList()
         # For extra blob stats
         self.touch = {}
         # Holds widgets not a part of the scrolling(search button, etc)
-        self.widgets = []
+        self.widgets = SafeList()
         self._last_content_size = 0
         self._scrollbar_index = 0
         self._scrollbar_size = 0
@@ -171,8 +171,8 @@ class MTKineticList(MTStencilContainer):
         pass
 
     def clear(self):
-        self.children = []
-        self.pchildren = []
+        self.children = SafeList()
+        self.pchildren = SafeList()
         self.xoffset = self.yoffset = 0
 
     def add_widget(self, widget, **kwargs):

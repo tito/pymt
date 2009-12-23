@@ -64,12 +64,12 @@ class MTPopup(MTScatterWidget):
         # Buttons
         self.w_submit = MTButton(label=kwargs.get('label_submit'), size=(100, 40),
                 cls=['popup-button', 'popup-button-submit'])
-        self.w_submit.push_handlers(on_press=curry(self._dispatch_event, 'on_submit'))
+        self.w_submit.push_handlers(on_release=curry(self._dispatch_event, 'on_submit'))
         self.l_buttons.add_widget(self.w_submit)
         if kwargs.get('show_cancel'):
             self.w_cancel = MTButton(label=kwargs.get('label_cancel'), size=(100, 40),
                 cls=['popup-button', 'popup-button-cancel'])
-            self.w_cancel.push_handlers(on_press=curry(self._dispatch_event, 'on_cancel'))
+            self.w_cancel.push_handlers(on_release=curry(self._dispatch_event, 'on_cancel'))
             self.l_buttons.add_widget(self.w_cancel)
 
         # Connect

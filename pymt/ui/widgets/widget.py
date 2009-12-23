@@ -353,8 +353,8 @@ class MTWidget(EventDispatcher):
     def bring_to_front(self):
         '''Remove it from wherever it is and add it back at the top'''
         if self.parent:
-            self.parent.children.remove(self)
-            self.parent.children.append(self)
+            self.parent.remove_widget(self)
+            self.parent.add_widget(self)
 
     def hide(self):
         '''Hide the widget'''

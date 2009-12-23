@@ -26,6 +26,9 @@ class ParticleObject(MTWidget):
     def _get_type(self):
         return self._type
     type = property(_get_type, _set_type)
+    
+    def ramp(self, value_from, value_to, length, frame):
+        return (1.0 - frame / length) * value_from  +  frame / length * value_to
 
     def animate(self):
         self.show()
@@ -39,11 +42,11 @@ class ParticleObject(MTWidget):
 
     def advance_frame(self, dt):
         self.frame += self.timestep
-        self.x = AnimationAlpha.ramp(self.from_x, self.to_x, self.length, self.frame)
-        self.y = AnimationAlpha.ramp(self.from_y, self.to_y, self.length, self.frame)
-        self.rotation = AnimationAlpha.ramp(0, 360, self.length, self.frame)
-        self.zoom = AnimationAlpha.ramp(1, 0, self.length, self.frame)
-        self.opacity = AnimationAlpha.ramp(1, 0, self.length, self.frame)
+        self.x = self.ramp(self.from_x, self.to_x, self.length, self.frame)
+        self.y = self.ramp(self.from_y, self.to_y, self.length, self.frame)
+        self.rotation = self.ramp(0, 360, self.length, self.frame)
+        self.zoom = self.ramp(1, 0, self.length, self.frame)
+        self.opacity = self.ramp(1, 0, self.length, self.frame)
         if self.frame >= self.length:
             self.hide()
 
@@ -67,9 +70,6 @@ class ParticleObject(MTWidget):
             glScalef(self.zoom, self.zoom, 1)
             #glTranslatef(-self.size[0]/2, -self.size[1]/2, 0)
             self.draw()
-
-    def on_animation_complete(self, anim):
-        self.hide()
 
 class ParticleEngine(MTWidget):
     def __init__(self, max=500, **kargs):

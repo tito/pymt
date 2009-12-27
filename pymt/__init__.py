@@ -184,6 +184,10 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
     level = LOG_LEVELS.get(pymt_config.get('pymt', 'log_level'))
     pymt_logger.setLevel(level=level)
 
+    # save sys argv, otherwize, gstreamer use it and display help..
+    sys_argv = sys.argv
+    sys.argv = sys.argv[:1]
+
     # Note: import are done after logger module initialization,
     # and configuration applied to logger.
 
@@ -223,7 +227,7 @@ if not os.path.basename(sys.argv[0]).startswith('sphinx'):
 
     # Can be overrided in command line
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hp:fwFem:s',
+        opts, args = getopt.getopt(sys_argv[1:], 'hp:fwFem:s',
             ['help', 'fullscreen', 'windowed', 'fps', 'event',
              'module=', 'save',
              'display=', 'size=', 'dump-frame', 'dump-format=', 'dump-prefix='])

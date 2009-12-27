@@ -15,6 +15,10 @@ class MTTextInput(MTButton):
     a virtual keyboard when touched any input of the virtual keyboard
     will then have effect on the TextInput widget.
 
+    :Parameters:
+        `keyboard` : MTVkeyboard object, default to None
+            Use another MTVKeyboard than the default one
+
     :Events:
         `on_text_change` (text)
             Fired when the content of text input is changed

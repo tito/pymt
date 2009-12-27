@@ -18,7 +18,7 @@ from OpenGL.GL import glScalef, glTranslatef
 
 __all__ = ['MTVKeyboard']
 
-kbdlayout_default_font = os.path.join(pymt.pymt_data_dir, 'LiberationSans-Regular.ttf')
+kbdlayout_default_font = os.path.join(pymt.pymt_data_dir, 'DejaVuSans.ttf')
 
 class KeyboardLayout(object):
     '''Base for all Keyboard Layout'''
@@ -26,7 +26,6 @@ class KeyboardLayout(object):
     TITLE           = 'nolayout'
     DESCRIPTION     = 'nodescription'
     FONT_FILENAME   = kbdlayout_default_font
-    FONT_NAME       = 'DejaVu Sans'
     NORMAL_1 = []
     NORMAL_2 = []
     NORMAL_3 = []
@@ -44,7 +43,6 @@ class KeyboardLayoutQWERTY(KeyboardLayout):
     TITLE           = 'Qwerty'
     DESCRIPTION     = 'A classical US Keyboard'
     FONT_FILENAME   = kbdlayout_default_font
-    FONT_NAME       = 'DejaVu Sans'
     NORMAL_1 = [
         ('~', '~', None, 1),    ('!', '!', None, 1),    ('@', '@', None, 1),
         ('#', '#', None, 1),    ('$', '$', None, 1),    ('%', '%', None, 1),
@@ -113,7 +111,6 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
     TITLE           = 'Azerty'
     DESCRIPTION     = 'A French keyboard without international keys'
     FONT_FILENAME   = kbdlayout_default_font
-    FONT_NAME       = 'DejaVu Sans'
     NORMAL_1 = [
         ('@', '@', None, 1),    ('&', '&', None, 1),    (u'\xe9', u'\xe9', None, 1),
         ('"', '"', None, 1),    ('\'', '\'', None, 1),  ('(', '(', None, 1),
@@ -183,7 +180,7 @@ class MTVKeyboard(MTScatterWidget):
 
     def __init__(self, **kwargs):
         '''
-        MTVKeyboard is a OnBoard keyboard, who support Multitouch.
+        MTVKeyboard is a OnBoard keyboard, with Multitouch support.
         Layout are entirely customizable, and you can switch from layout with
         little button in bottom-right of keyboard.
 
@@ -388,7 +385,7 @@ class MTVKeyboard(MTScatterWidget):
                             drawLabel(label=displayed_str,
                                     pos=(x + kw / 2., y + self.keysize.y / 2.),
                                     font_size=font_size, bold=False,
-                                    font_name='DejaVu Sans')
+                                    font_name=self.layout.FONT_FILENAME)
                     # advance X
                     x += kw
                 # advance Y

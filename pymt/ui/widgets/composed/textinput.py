@@ -30,8 +30,7 @@ class MTTextInput(MTButton):
         kwargs.setdefault('anchor_y', 'bottom')
         kwargs.setdefault('keyboard', None)
         super(MTTextInput, self).__init__(**kwargs)
-        self._keyboard = None
-        self.keyboard = kwargs.get('keyboard')
+        self._keyboard = kwargs.get('keyboard')
         self.original_width = self.width
         self.is_active_input = False
         self.padding = 20
@@ -41,7 +40,7 @@ class MTTextInput(MTButton):
 
     def _get_keyboard(self):
         if not self._keyboard:
-            self.keyboard = MTVKeyboard()
+            self._keyboard = MTVKeyboard()
         return self._keyboard
     def _set_keyboard(self, value):
         if self._keyboard is not None:

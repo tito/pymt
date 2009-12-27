@@ -25,15 +25,26 @@ class LabelPygame(LabelBase):
     def _get_font(self):
         id = self._get_font_id()
         if id not in pygame_cache:
-            # try to search the font
-            font = pygame.font.match_font(
-                self.options['font_name'].replace(' ', ''),
-                bold=self.options['bold'],
-                italic=self.options['italic'])
+            # try first the file if it's a filename
+            fontobject = None
+            fontname = self.options['font_name']
+            ext = fontname.split('.')[-1]
+            if ext.lower() == 'ttf':
+                # fontobject
+                fontobject = pygame.font.Font(fontname,
+                                int(self.options['font_size'] * 1.333))
 
-            # fontobject
-            fontobject = pygame.font.Font(font,
-                            int(self.options['font_size'] * 1.333))
+            # fallback to search a system font
+            if fontobject is None:
+                # try to search the font
+                font = pygame.font.match_font(
+                    self.options['font_name'].replace(' ', ''),
+                    bold=self.options['bold'],
+                    italic=self.options['italic'])
+
+                # fontobject
+                fontobject = pygame.font.Font(font,
+                                int(self.options['font_size'] * 1.333))
             pygame_cache[id] = fontobject
 
         return pygame_cache[id]

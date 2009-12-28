@@ -18,7 +18,7 @@ from OpenGL.GL import glScalef, glTranslatef
 
 __all__ = ['MTVKeyboard']
 
-kbdlayout_default_font = os.path.join(pymt.pymt_data_dir, 'LiberationSans-Regular.ttf')
+kbdlayout_default_font = os.path.join(pymt.pymt_data_dir, 'DejaVuSans.ttf')
 
 class KeyboardLayout(object):
     '''Base for all Keyboard Layout'''
@@ -26,7 +26,6 @@ class KeyboardLayout(object):
     TITLE           = 'nolayout'
     DESCRIPTION     = 'nodescription'
     FONT_FILENAME   = kbdlayout_default_font
-    FONT_NAME       = 'DejaVu Sans'
     NORMAL_1 = []
     NORMAL_2 = []
     NORMAL_3 = []
@@ -44,7 +43,6 @@ class KeyboardLayoutQWERTY(KeyboardLayout):
     TITLE           = 'Qwerty'
     DESCRIPTION     = 'A classical US Keyboard'
     FONT_FILENAME   = kbdlayout_default_font
-    FONT_NAME       = 'DejaVu Sans'
     NORMAL_1 = [
         ('~', '~', None, 1),    ('!', '!', None, 1),    ('@', '@', None, 1),
         ('#', '#', None, 1),    ('$', '$', None, 1),    ('%', '%', None, 1),
@@ -113,7 +111,6 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
     TITLE           = 'Azerty'
     DESCRIPTION     = 'A French keyboard without international keys'
     FONT_FILENAME   = kbdlayout_default_font
-    FONT_NAME       = 'DejaVu Sans'
     NORMAL_1 = [
         ('@', '@', None, 1),    ('&', '&', None, 1),    (u'\xe9', u'\xe9', None, 1),
         ('"', '"', None, 1),    ('\'', '\'', None, 1),  ('(', '(', None, 1),
@@ -183,9 +180,16 @@ class MTVKeyboard(MTScatterWidget):
 
     def __init__(self, **kwargs):
         '''
-        MTVKeyboard is a OnBoard keyboard, who support Multitouch.
+        MTVKeyboard is a OnBoard keyboard, with Multitouch support.
         Layout are entirely customizable, and you can switch from layout with
         little button in bottom-right of keyboard.
+
+        :Parameters:
+            `layout` : KeyboardLayout object, default to None
+                If none, keyboard layout will be created from configuration
+                property.
+            `time_lazy_update` : float, default to 0.2
+                Time in seconds of force a lazy update when keyboard size change
 
         :Events:
             `on_key_down` : key
@@ -211,12 +215,14 @@ class MTVKeyboard(MTScatterWidget):
         '''
         kwargs.setdefault('size', (700, 200))
         kwargs.setdefault('layout', None)
+        kwargs.setdefault('time_lazy_update', .2)
         super(MTVKeyboard, self).__init__(**kwargs)
 
         self.register_event_type('on_key_down')
         self.register_event_type('on_key_up')
         self.register_event_type('on_text_change')
 
+        self.time_lazy_update   = kwargs.get('time_lazy_update')
         self.layout             = kwargs.get('layout')
         self.container_width, self.container_height   = self.size
 
@@ -239,7 +245,7 @@ class MTVKeyboard(MTScatterWidget):
         self._last_update       = 0
         self._last_update_scale = 1.
         self._need_update       = 'now'
-        self._internal_text     = ''
+        self._internal_text     = u''
         self._show_layout       = False
         self._active_keys       = []
 
@@ -303,7 +309,7 @@ class MTVKeyboard(MTScatterWidget):
 
     def clear(self):
         '''Clear the text'''
-        self.text = ''
+        self.text = u''
 
 
     #
@@ -321,7 +327,8 @@ class MTVKeyboard(MTScatterWidget):
         if self._need_update is None:
             return
 
-        if self._need_update == 'now' or (self._need_update == 'lazy' and  dt > 0.9):
+        if self._need_update == 'now' or (self._need_update == 'lazy' and  dt >
+                                         self.time_lazy_update):
             # create layout mode if not in cache
             layoutmode = '%s:%s' % (self.layout.ID, self.mode)
             if not layoutmode in self._cache:
@@ -388,7 +395,7 @@ class MTVKeyboard(MTScatterWidget):
                             drawLabel(label=displayed_str,
                                     pos=(x + kw / 2., y + self.keysize.y / 2.),
                                     font_size=font_size, bold=False,
-                                    font_name='DejaVu Sans')
+                                    font_name=self.layout.FONT_FILENAME)
                     # advance X
                     x += kw
                 # advance Y

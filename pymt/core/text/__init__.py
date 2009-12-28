@@ -218,15 +218,24 @@ class LabelBase(BaseObject):
 
     @property
     def content_width(self):
+        '''Return the content width'''
         if self.texture is None:
             return 0
         return self.texture.width
 
     @property
     def content_height(self):
+        '''Return the content height'''
         if self.texture is None:
             return 0
         return self.texture.height
+
+    @property
+    def content_size(self):
+        '''Return the content size (width, height)'''
+        if self.texture is None:
+            return (0, 0)
+        return self.texture.size
 
     @property
     def fontid(self):

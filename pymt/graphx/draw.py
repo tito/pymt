@@ -13,8 +13,10 @@ __all__ = [
     'drawSemiCircle', 'drawStippledCircle',
 ]
 
+import os
 import math
 import pymt
+from pymt.cache import Cache
 from OpenGL.GL import *
 from OpenGL.GLU import gluNewQuadric, gluDisk, gluPartialDisk
 from paint import *
@@ -22,7 +24,8 @@ from statement import *
 from colors import *
 
 # create a cache for label
-pymt.Cache.register('drawlabel', timeout=1., limit=100)
+if not 'PYMT_DOC' in os.environ:
+    Cache.register('drawlabel', timeout=1., limit=100)
 def drawLabel(label, pos=(0,0), **kwargs):
     '''Draw a label on the window.
 

@@ -11,7 +11,7 @@ your system. Actually, theses libraries are handled :
 
 __all__ = ['BaseWindow', 'MTWindow', 'MTDisplay']
 
-import sys
+import os
 from OpenGL.GL import *
 import pymt
 from ...logger import pymt_logger
@@ -465,26 +465,27 @@ class MTDisplay(MTWidget):
 
 # Searching the best provider
 MTWindow = None
-if 'pygame' in pymt.options['window']:
-    try:
-        import win_pygame
-        MTWindow = win_pygame.MTWindowPygame
-        pymt_logger.info('Window: use Pygame as window provider.')
-    except ImportError:
-        pymt_logger.debug('Unable to use Pygame as window provider.')
+if not 'PYMT_DOC' in os.environ:
+    if 'pygame' in pymt.options['window']:
+        try:
+            import win_pygame
+            MTWindow = win_pygame.MTWindowPygame
+            pymt_logger.info('Window: use Pygame as window provider.')
+        except ImportError:
+            pymt_logger.debug('Unable to use Pygame as window provider.')
 
-if MTWindow is None and 'glut' in pymt.options['window']:
-    try:
-        import win_glut
-        MTWindow = win_glut.MTWindowGlut
-        pymt_logger.info('Window: use GLUT as window provider.')
-    except ImportError:
-        pymt_logger.debug('Unable to use GLUT as window provider.')
+    if MTWindow is None and 'glut' in pymt.options['window']:
+        try:
+            import win_glut
+            MTWindow = win_glut.MTWindowGlut
+            pymt_logger.info('Window: use GLUT as window provider.')
+        except ImportError:
+            pymt_logger.debug('Unable to use GLUT as window provider.')
 
-# No window provider ?
-if MTWindow is None:
-    pymt_logger.critical('No window provider found (configuration is %s)' %
-        str(pymt.options['window']))
+    # No window provider ?
+    if MTWindow is None:
+        pymt_logger.critical('No window provider found (configuration is %s)' %
+            str(pymt.options['window']))
 
 # Register all base widgets
 MTWidgetFactory.register('MTWindow', MTWindow)

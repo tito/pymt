@@ -4,13 +4,15 @@ CSS: Draw shapes with css attributes !
 
 __all__ = ['drawCSSRectangle']
 
+import os
 from draw import *
-from ..cache import Cache
+from pymt.cache import Cache
 from statement import GlDisplayList
 from OpenGL.GL import GL_LINE_LOOP
 
 
-Cache.register('css_rect', limit=100, timeout=5)
+if not 'PYMT_DOC' in os.environ:
+    Cache.register('css_rect', limit=100, timeout=5)
 def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
     '''Draw a rectangle with CSS
 

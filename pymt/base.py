@@ -19,6 +19,7 @@ from logger import pymt_logger
 from exceptions import pymt_exception_manager, ExceptionManager
 from clock import getClock
 from input import *
+from utils import deprecated
 
 # All event listeners will add themselves to this
 # list upon creation
@@ -38,7 +39,7 @@ def getCurrentTouches():
     global touch_list
     return touch_list
 
-@pymt.deprecated
+@deprecated
 def getAvailableTouchs():
     return getCurrentTouches()
 

@@ -13,11 +13,6 @@
 
 import sys, os
 
-# Pyglet issues
-sys.is_epydoc = True
-import pyglet
-from pyglet import app
-
 # If your extensions are in another directory, add it here. If the directory
 # is relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.

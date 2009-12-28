@@ -6,8 +6,9 @@ from __future__ import with_statement
 
 __all__ = ('Image', 'ImageLoader', 'ImageData')
 
-import pymt
 from .. import core_register_libs
+from pymt.baseobject import BaseObject
+from pymt.utils import deprecated
 from pymt.graphx import DO, gx_color, gx_blending, drawTexturedRectangle, set_color
 from pymt.logger import pymt_logger
 from pymt.texture import Texture, TextureRegion
@@ -71,7 +72,7 @@ class ImageLoaderBase(object):
     texture = property(_get_texture,
                       doc='Get the image texture (created on the first call)')
 
-    @pymt.deprecated
+    @deprecated
     def get_texture(self):
         '''Retreive the texture of image
         @deprecated: use self.texture instead.'''
@@ -101,7 +102,7 @@ class ImageLoader(object):
         return im
 
 
-class Image(pymt.BaseObject):
+class Image(BaseObject):
     '''Load an image, and store the size and texture.
 
     :Parameters:
@@ -201,7 +202,7 @@ class Image(pymt.BaseObject):
     filename = property(_get_filename, _set_filename,
             doc='Get/set the filename of image')
 
-    @pymt.deprecated
+    @deprecated
     def get_texture(self):
         '''Retreive the texture of image
         @deprecated: use self.texture instead.'''

@@ -4,7 +4,6 @@ VKeyboard: Virtual keyboard with custom layout support
 
 from __future__ import with_statement
 import os
-import sys
 import pymt
 from ....graphx import set_color, drawCSSRectangle, drawLabel, GlDisplayList, gx_matrix, drawRoundedRectangle
 from ....clock import getClock
@@ -536,7 +535,7 @@ class MTVKeyboard(MTScatterWidget):
 
 # Register layouts
 # Don't go further if we generate documentation
-if not os.path.basename(sys.argv[0]).startswith('sphinx'):
+if not 'PYMT_DOC' in os.environ:
     MTVKeyboard.add_custom_layout(KeyboardLayoutQWERTY)
     MTVKeyboard.add_custom_layout(KeyboardLayoutAZERTY)
 

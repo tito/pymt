@@ -1,6 +1,8 @@
 import os
 import sys
 import re
+
+os.environ['PYMT_SHADOW_WINDOW'] = '0'
 import pymt
 
 

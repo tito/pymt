@@ -52,7 +52,9 @@ pymt_providers_dir = os.path.join(pymt_base_dir, 'input', 'providers')
 sys.path = [pymt_libs_dir] + sys.path
 
 # Don't go further if we generate documentation
-if not os.path.basename(sys.argv[0]).startswith('sphinx'):
+if os.path.basename(sys.argv[0]) in ('sphinx-build', 'autobuild.py'):
+    os.environ['PYMT_DOC'] = '1'
+if not 'PYMT_DOC' in os.environ:
 
     # Configuration management
     pymt_home_dir = os.path.expanduser('~/.pymt/')

@@ -23,11 +23,11 @@ class MTSvg(MTWidget):
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('filename', None)
-	kwargs.setdefault('rawdata', None)
+        kwargs.setdefault('rawdata', None)
         if kwargs.get('filename') is None:
             raise Exception('No filename given to MTSvg')
         super(MTSvg, self).__init__(**kwargs)
-	self.rawdata = kwargs.get('rawdata')
+        self.rawdata = kwargs.get('rawdata')
         self.filename = kwargs.get('filename')
         self.size = (self.svg.width, self.svg.height)
 
@@ -37,14 +37,14 @@ class MTSvg(MTWidget):
     def _get_filename(self):
         return self._filename
     def _set_filename(self, filename):
-		# TODO remove this ugly code, improve loader for this
+        # TODO remove this ugly code, improve loader for this
         try:
             if self.rawdata is None:
-		pymt_logger.debug('loading %s' % filename)
-		self.svg = squirtle.SVG(filename)
-	    else:
-		pymt_logger.debug('loading %s from rawdata' % filename)
-		self.svg = squirtle.SVG(filename=filename, rawdata=self.rawdata)
+                pymt_logger.debug('loading %s' % filename)
+                self.svg = squirtle.SVG(filename)
+            else:
+                pymt_logger.debug('loading %s from rawdata' % filename)
+                self.svg = squirtle.SVG(filename=filename, rawdata=self.rawdata)
         except Exception, e:
             try:
                 svgpath = os.path.join(pymt_data_dir, 'icons/svg')
@@ -53,8 +53,8 @@ class MTSvg(MTWidget):
                 self.svg = squirtle.SVG(os.path.join(svgpath, filename))
             except Exception, e:
                 pymt_logger.exception('unable to load file %s' % filename)
-        self._filename = filename
-        self.size = (self.svg.width, self.svg.height)
+                self._filename = filename
+                self.size = (self.svg.width, self.svg.height)
     filename = property(_get_filename, _set_filename)
 
 class MTSvgButton(MTButton):

@@ -14,7 +14,6 @@ from OpenGL.GLU import *
 from xml.etree.cElementTree import parse
 import re
 import math
-from ctypes import CFUNCTYPE, POINTER, byref, cast
 import sys, os
 try:
     # get the faster one
@@ -23,26 +22,6 @@ except ImportError:
     # fallback to the default one
     from StringIO import StringIO
 from pymt.logger import pymt_logger
-
-
-if sys.platform == 'win32':
-    from ctypes import WINFUNCTYPE
-    c_functype = WINFUNCTYPE
-else:
-    c_functype = CFUNCTYPE
-
-callback_types = {GLU_TESS_VERTEX: c_functype(None, POINTER(GLvoid)),
-                  GLU_TESS_BEGIN: c_functype(None, GLenum),
-                  GLU_TESS_END: c_functype(None),
-                  GLU_TESS_ERROR: c_functype(None, GLenum),
-                  GLU_TESS_COMBINE: c_functype(None, POINTER(GLdouble), POINTER(POINTER(GLvoid)), POINTER(GLfloat), POINTER(POINTER(GLvoid)))}
-
-def set_tess_callback(which):
-    def set_call(func):
-        cb = callback_types[which](func)
-        gluTessCallback(SVG._tess, which, cast(cb, CFUNCTYPE(None)))
-        return cb
-    return set_call
 
 BEZIER_POINTS = 10
 CIRCLE_POINTS = 24
@@ -840,16 +819,12 @@ class SVG(object):
         self.curr_shape = []
         spareverts = []
 
-        @set_tess_callback(GLU_TESS_VERTEX)
         def vertexCallback(vertex):
-            vertex = cast(vertex, POINTER(GLdouble))
             self.curr_shape.append(list(vertex[0:2]))
 
-        @set_tess_callback(GLU_TESS_BEGIN)
         def beginCallback(which):
             self.tess_style = which
 
-        @set_tess_callback(GLU_TESS_END)
         def endCallback():
             if self.tess_style == GL_TRIANGLE_FAN:
                 c = self.curr_shape.pop(0)
@@ -869,11 +844,10 @@ class SVG(object):
             elif self.tess_style == GL_TRIANGLES:
                 tlist.extend(self.curr_shape)
             else:
-                self.warn("Unrecognised tesselation style: %d" % (self.tess_style,))
+                pymt_logger.warning('Squirtle: Unrecognised tesselation style: %d' % (self.tess_style,))
             self.tess_style = None
             self.curr_shape = []
 
-        @set_tess_callback(GLU_TESS_ERROR)
         def errorCallback(code):
             ptr = gluErrorString(code)
             err = ''
@@ -881,26 +855,31 @@ class SVG(object):
             while ptr[idx]:
                 err += chr(ptr[idx])
                 idx += 1
-            self.warn("GLU Tesselation Error: " + err)
+            pymt_logger.warning('Squirtle: GLU Tesselation Error: ' + err)
 
-        @set_tess_callback(GLU_TESS_COMBINE)
-        def combineCallback(coords, vertex_data, weights, dataOut):
+        def combineCallback(coords, vertex_data, weights):
             x, y, z = coords[0:3]
-            data = (GLdouble * 3)(x, y, z)
-            dataOut[0] = cast(pointer(data), POINTER(GLvoid))
+            data = (x, y, z)
             spareverts.append(data)
+            return data
+
+        gluTessCallback(self._tess, GLU_TESS_VERTEX, vertexCallback)
+        gluTessCallback(self._tess, GLU_TESS_BEGIN, beginCallback)
+        gluTessCallback(self._tess, GLU_TESS_END, endCallback)
+        gluTessCallback(self._tess, GLU_TESS_ERROR, errorCallback)
+        gluTessCallback(self._tess, GLU_TESS_COMBINE, combineCallback)
 
         data_lists = []
         for vlist in looplist:
             d_list = []
             for x, y in vlist:
-                v_data = (GLdouble * 3)(x, y, 0)
+                v_data = (x, y, 0)
                 d_list.append(v_data)
             data_lists.append(d_list)
         gluTessBeginPolygon(self._tess, None)
         for d_list in data_lists:
             gluTessBeginContour(self._tess)
-            for v_data in d_list:
+            for v_data in reversed(d_list):
                 gluTessVertex(self._tess, v_data, v_data)
             gluTessEndContour(self._tess)
         gluTessEndPolygon(self._tess)

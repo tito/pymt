@@ -38,10 +38,10 @@ class ImageLoaderBase(object):
     __slots__ = ('_texture', '_data', 'filename', 'keep_data')
 
     def __init__(self, filename, keep_data=False):
-        self.keep_data = False
-        self.filename = filename
-        self._texture = None
-        self._data = self.load(filename)
+        self.keep_data  = keep_data
+        self.filename   = filename
+        self._texture   = None
+        self._data      = self.load(filename)
 
     def load(self, filename):
         '''Load an image'''
@@ -110,6 +110,8 @@ class Image(pymt.BaseObject):
             You can also provide a texture object or an already existing image object.
             In the latter case, a real copy of the given image object will be
             returned.
+        `keep_data` : bool, default to False
+            Keep the image data when texture is created
         `opacity` : float, default to 1.0
             Opacity of the image
         `scale` : float, default to 1.0
@@ -124,7 +126,11 @@ class Image(pymt.BaseObject):
                        '_size', 'texture', '_filename', 'color', 'texture')
 
     def __init__(self, arg, **kwargs):
+        kwargs.setdefault('keep_data', False)
+
         super(Image, self).__init__(**kwargs)
+
+        self._keep_data = kwargs.get('keep_data')
         self._filename  = None
         self.texture    = None
         self.image      = None
@@ -187,7 +193,8 @@ class Image(pymt.BaseObject):
         if value == self._filename:
             return
         self._filename = value
-        self.image      = ImageLoader.load(self._filename)
+        self.image      = ImageLoader.load(self._filename,
+                                           keep_data=self._keep_data)
         self.texture    = self.image.texture
         self.width      = self.image.width
         self.height     = self.image.height
@@ -211,22 +218,39 @@ class Image(pymt.BaseObject):
     def read_pixel(self, x, y):
         '''For a given local x/y position, return the color at that position.
 
+        ..warning ::
+            This function can be used only with images loaded with
+            keep_data=True keyword. For examples ::
+                m = Image.load('
+
         :Parameters:
             `x` : int
                 Local x coordinate of the pixel in question.
             `y` : int
                 Local y coordinate of the pixel in question.
         '''
-        x, y = int(x), int(y)
         data = self.image._data
+
+        # can't use this fonction without ImageData
+        if data.data is None:
+            raise EOFError('Image data is missing, make sure that image is'
+                           'loaded with keep_data=True keyword.')
+
+        # check bounds
+        x, y = int(x), int(y)
         if not (0 < x < data.width and 0 < y < data.height):
             raise IndexError('Position (%d, %d) is out of range.' % (x, y))
-        assert mode in ImageData._supported_modes
+
+        assert data.mode in ImageData._supported_modes
         size = 3 if data.mode in ('RGB', 'BGR') else 4
-        # FIXME BGR cases
         index = y * data.width * size + x * size
         raw = data.data[index:index+size]
-        color = map(lambda c: ord(c)/255.0, raw)
+        color = map(lambda c: ord(c) / 255.0, raw)
+
+        # conversion for BGR->RGB, BGR->RGBA format
+        if data.mode in ('BGR', 'BGRA'):
+            color[0], color[2] = color[2], color[0]
+
         return color
 
 

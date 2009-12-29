@@ -2,6 +2,7 @@ from __future__ import with_statement
 from pymt import *
 from OpenGL.GL import *
 import random
+import math
 
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
@@ -25,8 +26,13 @@ class ParticleObject:
         self.random_color()
 
     def random_color(self):
-        self.color      = [random.uniform(0, 1), random.uniform(0, 1),
-                           random.uniform(0, 1), self.opacity]
+        r_min, r_max = map(lambda x: x/255., self.settings.color_r)
+        g_min, g_max = map(lambda x: x/255., self.settings.color_g)
+        b_min, b_max = map(lambda x: x/255., self.settings.color_b)
+        self.color      = [random.uniform(r_min, r_max),
+                           random.uniform(g_min, g_max),
+                           random.uniform(b_min, b_max),
+                           self.opacity]
 
     def alpha(self, a, b):
         alpha = self.alpha_func(self.frame / self.lifetime)
@@ -37,15 +43,18 @@ class ParticleObject:
 
     def animate(self, **kwargs):
         pos = kwargs.get('pos')
+        rs = random.random() * self.settings.dispersion_start
+        re = random.random() * self.settings.dispersion_end
+        d = random.random() * math.pi * 2
         self.x, self.y  = pos
-        self.from_x     = self.x
-        self.from_y     = self.y
-        r = self.settings.radius
-        self.to_x       = int(random.uniform(self.x-r, self.x+r))
-        self.to_y       = int(random.uniform(self.y-r, self.y+r))
+        self.from_x     = self.x + math.cos(d) * rs
+        self.from_y     = self.y + math.sin(d) * rs
+        self.to_x       = self.x + math.cos(d) * re
+        self.to_y       = self.y + math.sin(d) * re
         self.lifetime   = self.settings.lifetime
         self.alpha_func = self.settings.alpha
         self.frame      = 0
+        self.random_color()
 
     def update(self, dt):
         if self.frame > self.lifetime:
@@ -55,7 +64,12 @@ class ParticleObject:
         self.frame      += dt
         self.x          = self.alpha(self.from_x, self.to_x)
         self.y          = self.alpha(self.from_y, self.to_y)
-        self.opacity    = min(1, 3 - progress * 3)
+
+        alpha = self.settings.alpha_decrease / 100.
+        if progress < alpha:
+            self.opacity = 1
+        else:
+            self.opacity    = 1 - ((progress - alpha) * (1 / (1 - alpha)))
         self.visible    = True
         self.color[3]   = self.opacity
 
@@ -69,7 +83,12 @@ class ParticleEngine(MTWidget):
 
         # properties used by particles
         self.alpha      = AnimationAlpha.linear
-        self.radius     = 200
+        self.dispersion_start   = 10
+        self.dispersion_end     = 200
+        self.alpha_decrease = 10
+        self.color_r    = [0, 255]
+        self.color_g    = [0, 255]
+        self.color_b    = [0, 255]
         self.lifetime   = 1
         self.number     = 20
         self.pointsize  = 10
@@ -83,18 +102,34 @@ class ParticleEngine(MTWidget):
         xml = '''<?xml version="1.0" encoding="UTF-8"?>
         <MTBoxLayout id="'layout'" orientation="'vertical'" invert_y="True">
         <MTGridLayout cols="4">
-            <MTLabel label="'Lifetime'" size="(120, 30)"/>
+            <MTLabel label="'Lifetime'" size="(200, 30)"/>
             <MTSlider id="'sl_lifetime'" min="1" max="10" value="1"
                 orientation="'horizontal'" value_show="True" size="(200, 30)"/>
-            <MTLabel label="'Dispertion'" size="(120, 30)"/>
-            <MTSlider id="'sl_radius'" min="10" max="500" value="200"
+            <MTLabel label="'Alpha decrease'" size="(200, 30)"/>
+            <MTSlider id="'sl_alpha_decrease'" min="1" max="100" value="40"
                 orientation="'horizontal'" value_show="True" size="(200, 30)"/>
-            <MTLabel label="'Number'" size="(120, 30)"/>
+            <MTLabel label="'Start dispertion'" size="(200, 30)"/>
+            <MTSlider id="'sl_dispersion_start'" min="10" max="500" value="10"
+                orientation="'horizontal'" value_show="True" size="(200, 30)"/>
+            <MTLabel label="'End dispertion'" size="(200, 30)"/>
+            <MTSlider id="'sl_dispersion_end'" min="10" max="500" value="200"
+                orientation="'horizontal'" value_show="True" size="(200, 30)"/>
+            <MTLabel label="'Number'" size="(200, 30)"/>
             <MTSlider id="'sl_number'" min="5" max="100" value="20"
                 orientation="'horizontal'" value_show="True" size="(200, 30)"/>
-            <MTLabel label="'Size'" size="(120, 30)"/>
+            <MTLabel label="'Size'" size="(200, 30)"/>
             <MTSlider id="'sl_pointsize'" min="1" max="50" value="10"
                 orientation="'horizontal'" value_show="True" size="(200, 30)"/>
+            <MTLabel label="'Color range'" size="(200, 30)"/>
+            <MTBoundarySlider id="'sl_color_r'" min="0" max="255"
+                value_min="100" value_max="255"
+                orientation="'horizontal'" showtext="True" size="(200, 30)"/>
+            <MTBoundarySlider id="'sl_color_g'" min="0" max="255"
+                value_min="0" value_max="255"
+                orientation="'horizontal'" showtext="True" size="(200, 30)"/>
+            <MTBoundarySlider id="'sl_color_b'" min="0" max="255"
+                value_min="0" value_max="255"
+                orientation="'horizontal'" showtext="True" size="(200, 30)"/>
         </MTGridLayout>
         <MTGridLayout rows="1">
             <MTLabel label="'Animation'" size="(120, 30)"/>
@@ -116,9 +151,17 @@ class ParticleEngine(MTWidget):
         self.add_widget(corner)
 
         getWidgetById('sl_number').connect('on_value_change', self, 'number')
-        getWidgetById('sl_radius').connect('on_value_change', self, 'radius')
+        getWidgetById('sl_dispersion_start').connect(
+            'on_value_change', self, 'dispersion_start')
+        getWidgetById('sl_dispersion_end').connect(
+            'on_value_change', self, 'dispersion_end')
         getWidgetById('sl_lifetime').connect('on_value_change', self, 'lifetime')
         getWidgetById('sl_pointsize').connect('on_value_change', self, 'pointsize')
+        getWidgetById('sl_alpha_decrease').connect(
+            'on_value_change', self, 'alpha_decrease')
+        getWidgetById('sl_color_r').connect('on_value_change', self, 'color_r')
+        getWidgetById('sl_color_g').connect('on_value_change', self, 'color_g')
+        getWidgetById('sl_color_b').connect('on_value_change', self, 'color_b')
         for x in ('linear', 'ease_in_bounce', 'ease_out_bounce',
                   'ease_in_cubic', 'ease_out_cubic',
                   'ease_in_elastic', 'ease_out_elastic'):

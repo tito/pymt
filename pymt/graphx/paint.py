@@ -18,10 +18,10 @@ import pymt
 from OpenGL.GL import *
 from statement import *
 
-_brushs_cache = {}
+_brushs_cache   = {}
 _brush_filename = ''
-_brush_texture = None
-_brush_size = 10
+_brush_texture  = None
+_brush_size     = 10
 
 def set_brush(sprite, size=None):
     '''Define the brush to use for paint* functions
@@ -37,7 +37,7 @@ def set_brush(sprite, size=None):
         _brush_size = size
     if not sprite in _brushs_cache:
         point_sprite_img = pymt.Image.load(sprite)
-        _brush_texture = point_sprite_img.get_texture()
+        _brush_texture = point_sprite_img.texture
         _brushs_cache[sprite] = _brush_texture
     _brush_filename = sprite
     _brush_texture = _brushs_cache[sprite]

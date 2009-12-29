@@ -83,21 +83,21 @@ class ParticleEngine(MTWidget):
         xml = '''<?xml version="1.0" encoding="UTF-8"?>
         <MTBoxLayout id="'layout'" orientation="'vertical'" invert_y="True">
         <MTGridLayout cols="4">
-            <MTLabel label="'Lifetime'"/>
+            <MTLabel label="'Lifetime'" size="(120, 30)"/>
             <MTSlider id="'sl_lifetime'" min="1" max="10" value="1"
                 orientation="'horizontal'" value_show="True" size="(200, 30)"/>
-            <MTLabel label="'Dispertion'"/>
+            <MTLabel label="'Dispertion'" size="(120, 30)"/>
             <MTSlider id="'sl_radius'" min="10" max="500" value="200"
                 orientation="'horizontal'" value_show="True" size="(200, 30)"/>
-            <MTLabel label="'Number'"/>
+            <MTLabel label="'Number'" size="(120, 30)"/>
             <MTSlider id="'sl_number'" min="5" max="100" value="20"
                 orientation="'horizontal'" value_show="True" size="(200, 30)"/>
-            <MTLabel label="'Size'"/>
+            <MTLabel label="'Size'" size="(120, 30)"/>
             <MTSlider id="'sl_pointsize'" min="1" max="50" value="10"
                 orientation="'horizontal'" value_show="True" size="(200, 30)"/>
         </MTGridLayout>
         <MTGridLayout rows="1">
-            <MTLabel label="'Animation'"/>
+            <MTLabel label="'Animation'" size="(120, 30)"/>
             <MTButton id="'btn_linear'" label="'linear'" size="(100, 30)"/>
             <MTButton id="'btn_ease_in_bounce'" label="'in_bounce'" size="(80, 30)"/>
             <MTButton id="'btn_ease_out_bounce'" label="'out_bounce'" size="(80, 30)"/>

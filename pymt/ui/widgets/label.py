@@ -33,13 +33,13 @@ class MTLabel(MTWidget):
             Activate multiline
         `halign`: str, default is 'left'
             Horizontal alignment, can be 'left', 'center', 'right'.
-        `autoheight`: bool, default to False
+        `autoheight`: bool, default to True
             Update height information with the label content height
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('label', '')
         kwargs.setdefault('color', (1, 1, 1, 1))
-        kwargs.setdefault('autoheight', False)
+        kwargs.setdefault('autoheight', True)
 
         label = kwargs['label']
         del kwargs['label']

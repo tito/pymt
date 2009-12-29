@@ -99,12 +99,12 @@ class ParticleEngine(MTWidget):
         <MTGridLayout rows="1">
             <MTLabel label="'Animation'"/>
             <MTButton id="'btn_linear'" label="'linear'" size="(100, 30)"/>
-            <MTButton id="'btn_ease_in_bounce'" label="'in_bounce'" size="(100, 30)"/>
-            <MTButton id="'btn_ease_out_bounce'" label="'out_bounce'" size="(100, 30)"/>
-            <MTButton id="'btn_ease_in_cubic'" label="'in_cubic'" size="(100, 30)"/>
-            <MTButton id="'btn_ease_out_cubic'" label="'out_cubic'" size="(100, 30)"/>
-            <MTButton id="'btn_ease_in_elastic'" label="'in_elastic'" size="(100, 30)"/>
-            <MTButton id="'btn_ease_out_elastic'" label="'out_elastic'" size="(100, 30)"/>
+            <MTButton id="'btn_ease_in_bounce'" label="'in_bounce'" size="(80, 30)"/>
+            <MTButton id="'btn_ease_out_bounce'" label="'out_bounce'" size="(80, 30)"/>
+            <MTButton id="'btn_ease_in_cubic'" label="'in_cubic'" size="(80, 30)"/>
+            <MTButton id="'btn_ease_out_cubic'" label="'out_cubic'" size="(80, 30)"/>
+            <MTButton id="'btn_ease_in_elastic'" label="'in_elastic'" size="(80, 30)"/>
+            <MTButton id="'btn_ease_out_elastic'" label="'out_elastic'" size="(80, 30)"/>
         </MTGridLayout>
         </MTBoxLayout>
         '''
@@ -112,7 +112,8 @@ class ParticleEngine(MTWidget):
         w.loadString(xml)
 
         layout = getWidgetById('layout')
-        self.add_widget(layout)
+        corner = MTSidePanel(layout=layout)
+        self.add_widget(corner)
 
         getWidgetById('sl_number').connect('on_value_change', self, 'number')
         getWidgetById('sl_radius').connect('on_value_change', self, 'radius')

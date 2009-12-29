@@ -11,7 +11,6 @@ __all__ = [
 
 import os
 import re
-import sys
 import OpenGL
 import pymt
 from OpenGL.GL import *
@@ -244,7 +243,7 @@ class SoftwareFbo(AbstractFbo):
         glPopAttrib()
 
 
-if os.path.basename(sys.argv[0]) in ('sphinx-build', 'autostart.py'):
+if 'PYMT_DOC' in os.environ:
     # Bad hack for sphinx
     # He don't like when Fbo is announced in __all__,
     # and not defined in source
@@ -258,7 +257,7 @@ else:
         pymt_config.set('graphics', 'fbo', 'software')
     '''
 
-    if not os.path.basename(sys.argv[0]).startswith('sphinx'):
+    if 'PYMT_DOC' not in os.environ:
         # decide what to use
         if pymt_config.get('graphics', 'fbo') == 'hardware':
             pymt.pymt_logger.debug('Fbo will use hardware Framebuffer')

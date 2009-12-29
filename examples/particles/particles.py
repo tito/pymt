@@ -9,86 +9,145 @@ PLUGIN_TITLE = 'Particles Sandbox'
 PLUGIN_AUTHOR = 'Sharath Patali & Mathieu Virbel'
 PLUGIN_DESCRIPTION = 'All stars are coming under touches!'
 
-class ParticleObject(MTWidget):
-    def __init__(self, pos=(0,0), size=(20,20), color=(1,1,1),
-            rotation=45, type='Squares', **kargs):
-        MTWidget.__init__(self, pos=pos, size=size, color=color, **kargs)
-        self.opacity = 0.5
-        self.color = (random.uniform(0, 1), random.uniform(0, 1), random.uniform(0, 1), self.opacity)
-        self.rotation = 0
-        self.zoom = 1
-        self._type = type
-        self.dl = GlDisplayList()
+class ParticleObject:
+    def __init__(self, settings):
+        self.x, self.y  = 0, 0
+        self.opacity    = 1.
+        self.visible    = False
+        self.alpha_func = AnimationAlpha.linear
+        self.from_x     = 0
+        self.from_y     = 0
+        self.to_x       = 0
+        self.to_y       = 0
+        self.lifetime   = 1
+        self.frame      = 0
+        self.settings   = settings
+        self.random_color()
 
-    def _set_type(self, type):
-        self._type = type
-        self.dl.clear()
-    def _get_type(self):
-        return self._type
-    type = property(_get_type, _set_type)
-    
+    def random_color(self):
+        self.color      = [random.uniform(0, 1), random.uniform(0, 1),
+                           random.uniform(0, 1), self.opacity]
+
+    def alpha(self, a, b):
+        alpha = self.alpha_func(self.frame / self.lifetime)
+        return a * (1-alpha) + b * alpha
+
     def ramp(self, value_from, value_to, length, frame):
         return (1.0 - frame / length) * value_from  +  frame / length * value_to
 
-    def animate(self):
-        self.show()
-        self.from_x = self.x
-        self.from_y = self.y
-        self.to_x = int(random.uniform(self.x-100, self.x+100))
-        self.to_y = int(random.uniform(self.y-100, self.y+100))
-        self.length = random.uniform(0.2, 1.0)
-        self.timestep = 1.0/60
-        self.frame = 0
+    def animate(self, **kwargs):
+        pos = kwargs.get('pos')
+        self.x, self.y  = pos
+        self.from_x     = self.x
+        self.from_y     = self.y
+        r = self.settings.radius
+        self.to_x       = int(random.uniform(self.x-r, self.x+r))
+        self.to_y       = int(random.uniform(self.y-r, self.y+r))
+        self.lifetime   = self.settings.lifetime
+        self.alpha_func = self.settings.alpha
+        self.frame      = 0
 
-    def advance_frame(self, dt):
-        self.frame += self.timestep
-        self.x = self.ramp(self.from_x, self.to_x, self.length, self.frame)
-        self.y = self.ramp(self.from_y, self.to_y, self.length, self.frame)
-        self.rotation = self.ramp(0, 360, self.length, self.frame)
-        self.zoom = self.ramp(1, 0, self.length, self.frame)
-        self.opacity = self.ramp(1, 0, self.length, self.frame)
-        if self.frame >= self.length:
-            self.hide()
+    def update(self, dt):
+        if self.frame > self.lifetime:
+            self.visible = False
+            return True
+        progress = self.frame / self.lifetime
+        self.frame      += dt
+        self.x          = self.alpha(self.from_x, self.to_x)
+        self.y          = self.alpha(self.from_y, self.to_y)
+        self.opacity    = min(1, 3 - progress * 3)
+        self.visible    = True
+        self.color[3]   = self.opacity
 
-    def draw(self):
-        if not self.visible:
-            return
-        self.advance_frame(getFrameDt())
-        if not self.dl.is_compiled():
-            with self.dl:
-                glColor4f(*self.color)
-                if self.type == 'Squares':
-                    drawRectangle(size=self.size)
-                else:
-                    drawCircle(radius=10)
-        self.dl.draw()
-
-    def on_draw(self):
-        with gx_matrix:
-            glTranslatef(self.x, self.y, 0)
-            glRotated(self.rotation, 0,0,1)
-            glScalef(self.zoom, self.zoom, 1)
-            #glTranslatef(-self.size[0]/2, -self.size[1]/2, 0)
-            self.draw()
 
 class ParticleEngine(MTWidget):
-    def __init__(self, max=500, **kargs):
-        MTWidget.__init__(self, **kargs)
-        #print 'Particle Engine Initialized'
+    def __init__(self, max=5000, **kwargs):
+        super(ParticleEngine, self).__init__(**kwargs)
         self.max        = max
-        self.particles  = {}
-        for i in range(self.max):
-            self.particles[i] = ParticleObject()
-            self.particles[i].hide()
-            self.add_widget(self.particles[i])
+        self.particles  = []
+        self.image      = Image('../particles/dot.png')
 
-    def on_draw(self):
-        with gx_blending:
-            super(ParticleEngine, self).on_draw()
+        # properties used by particles
+        self.alpha      = AnimationAlpha.linear
+        self.radius     = 200
+        self.lifetime   = 1
+        self.number     = 20
+        self.pointsize  = 10
 
-    def set_type(self, type):
         for i in range(self.max):
-            self.particles[i].type = type
+            self.particles.append(ParticleObject(self))
+
+        self.create_ui()
+
+    def create_ui(self):
+        xml = '''<?xml version="1.0" encoding="UTF-8"?>
+        <MTBoxLayout id="'layout'" orientation="'vertical'" invert_y="True">
+        <MTGridLayout cols="4">
+            <MTLabel label="'Lifetime'"/>
+            <MTSlider id="'sl_lifetime'" min="1" max="10" value="1"
+                orientation="'horizontal'" value_show="True" size="(200, 30)"/>
+            <MTLabel label="'Dispertion'"/>
+            <MTSlider id="'sl_radius'" min="10" max="500" value="200"
+                orientation="'horizontal'" value_show="True" size="(200, 30)"/>
+            <MTLabel label="'Number'"/>
+            <MTSlider id="'sl_number'" min="5" max="100" value="20"
+                orientation="'horizontal'" value_show="True" size="(200, 30)"/>
+            <MTLabel label="'Size'"/>
+            <MTSlider id="'sl_pointsize'" min="1" max="50" value="10"
+                orientation="'horizontal'" value_show="True" size="(200, 30)"/>
+        </MTGridLayout>
+        <MTGridLayout rows="1">
+            <MTLabel label="'Animation'"/>
+            <MTButton id="'btn_linear'" label="'linear'" size="(100, 30)"/>
+            <MTButton id="'btn_ease_in_bounce'" label="'in_bounce'" size="(100, 30)"/>
+            <MTButton id="'btn_ease_out_bounce'" label="'out_bounce'" size="(100, 30)"/>
+            <MTButton id="'btn_ease_in_cubic'" label="'in_cubic'" size="(100, 30)"/>
+            <MTButton id="'btn_ease_out_cubic'" label="'out_cubic'" size="(100, 30)"/>
+            <MTButton id="'btn_ease_in_elastic'" label="'in_elastic'" size="(100, 30)"/>
+            <MTButton id="'btn_ease_out_elastic'" label="'out_elastic'" size="(100, 30)"/>
+        </MTGridLayout>
+        </MTBoxLayout>
+        '''
+        w = XMLWidget()
+        w.loadString(xml)
+
+        layout = getWidgetById('layout')
+        self.add_widget(layout)
+
+        getWidgetById('sl_number').connect('on_value_change', self, 'number')
+        getWidgetById('sl_radius').connect('on_value_change', self, 'radius')
+        getWidgetById('sl_lifetime').connect('on_value_change', self, 'lifetime')
+        getWidgetById('sl_pointsize').connect('on_value_change', self, 'pointsize')
+        for x in ('linear', 'ease_in_bounce', 'ease_out_bounce',
+                  'ease_in_cubic', 'ease_out_cubic',
+                  'ease_in_elastic', 'ease_out_elastic'):
+            getWidgetById('btn_%s' % x).connect('on_press',
+                   curry(self._btn_alpha_change, x))
+
+    def _btn_alpha_change(self, funcname, *largs):
+        self.alpha = getattr(AnimationAlpha, funcname)
+        return True
+
+    def draw(self):
+        dt = getFrameDt()
+        glTexEnvf(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE)
+        blend = GlBlending(sfactor=GL_SRC_ALPHA, dfactor=GL_ONE)
+        set_texture(self.image.texture)
+        glPointSize(self.pointsize)
+        with DO(blend,
+                gx_enable(self.image.texture.target),
+                gx_enable(GL_POINT_SPRITE_ARB),
+                gx_begin(GL_POINTS)):
+            for p in self.particles:
+                if p.update(dt):
+                    continue
+                glColor4f(*p.color)
+                glVertex2f(p.x, p.y)
+
+        count = len([x for x in self.particles if x.visible])
+        statusline = 'Particles: %4d/%4d' % (count, self.max)
+        w = getWindow()
+        drawLabel(statusline, pos=(10, w.height - 20), anchor_x='left')
 
     def generate(self, pos, count):
         for i in range(self.max):
@@ -97,57 +156,27 @@ class ParticleEngine(MTWidget):
             count = count - 1
             if count <= 0:
                 return
-            self.particles[i].x, self.particles[i].y = pos
-            self.particles[i].animate()
-
-class ParticleShow(MTWidget):
-    def __init__(self, pos=(0, 0), size=(100, 100), color=(0.6, 0.6, 0.6, 1.0),
-                 pe=None, **kargs):
-        MTWidget.__init__(self, pos=(0,0), size=(1440,900), color=(0,0,0,0), **kargs)
-        self.pe = pe
+            self.particles[i].animate(pos=pos)
 
     def on_touch_down(self, touch):
-        self.pe.generate((touch.x, touch.y), 30)
+        if super(ParticleEngine, self).on_touch_down(touch):
+            return True
+        self.generate((touch.x, touch.y), self.number)
         return True
 
     def on_touch_move(self, touch):
-        self.pe.generate((touch.x, touch.y), 30)
-        return True
-
-    def on_touch_up(self, touch):
-        return True
-
-class SetButton(MTButton):
-    def __init__(self, pos=(0, 0), size=(100, 100), label='Hello',
-            pe=None, **kargs):
-        MTButton.__init__(self, pos=pos, size=size, label=label, **kargs)
-        self.label = label
-        self.pe = pe
-
-    def on_touch_down(self, touch):
-        if self.collide_point(touch.x,touch.y):
-            self.state = ('down', touch.id)
-            if self.label == 'Squares':
-                self.pe.set_type('Squares')
-            else:
-                self.pe.set_type('Circles')
+        if super(ParticleEngine, self).on_touch_move(touch):
             return True
+        self.generate((touch.x, touch.y), self.number)
+        return True
+
 
 def pymt_plugin_activate(w, ctx):
     ctx.pe = ParticleEngine()
     w.add_widget(ctx.pe)
-    ctx.back = ParticleShow(pe=ctx.pe)
-    w.add_widget(ctx.back)
-    ctx.but1 = SetButton(pos=(20,40),size=(80,50),label='Squares', pe=ctx.pe)
-    w.add_widget(ctx.but1)
-    ctx.but2 = SetButton(pos=(20,100),size=(80,50),label='Circles', pe=ctx.pe)
-    w.add_widget(ctx.but2)
 
 def pymt_plugin_deactivate(w, ctx):
-    w.remove_widget(ctx.but2)
-    w.remove_widget(ctx.but1)
     w.remove_widget(ctx.pe)
-    w.remove_widget(ctx.back)
 
 #start the application (inits and shows all windows)
 if __name__ == '__main__':

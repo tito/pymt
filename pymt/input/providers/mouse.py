@@ -6,7 +6,6 @@ __all__ = ['MouseTouchProvider']
 
 import osc
 from collections import deque
-from ...base import getWindow
 from ..provider import TouchProvider
 from ..factory import TouchFactory
 from ..touch import Touch
@@ -82,6 +81,7 @@ class MouseTouchProvider(TouchProvider):
     def update(self, dispatch_fn):
         '''Update the mouse provider (pop event from the queue)'''
         if not self.window:
+            from ...base import getWindow
             self.window = getWindow()
             if self.window:
                 self.window.push_handlers(

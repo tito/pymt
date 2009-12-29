@@ -101,7 +101,7 @@ class Modules:
 
 pymt_modules = Modules()
 pymt_modules.add_path(pymt.pymt_modules_dir)
-if not os.path.basename(sys.argv[0]).startswith('sphinx'):
+if not 'PYMT_DOC' in os.environ:
     pymt_modules.add_path(pymt.pymt_usermodules_dir)
 
 if __name__ == '__main__':

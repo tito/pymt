@@ -24,6 +24,7 @@ from objectdisplay import *
 from widget import *
 from xmlwidget import *
 from speechbubble import *
+from sidepanel import *
 
 from form import *
 from composed import *

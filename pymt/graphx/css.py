@@ -56,13 +56,15 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
                 'radius': style['border-radius'],
                 'precision': style['border-radius-precision']
             })
-            drawRoundedRectangle(**k)
+            if style['draw-background']:
+                drawRoundedRectangle(**k)
             if style['draw-border']:
                 drawRoundedRectangle(style=GL_LINE_LOOP, **k)
             if style['draw-alpha-background']:
                 drawRoundedRectangleAlpha(alpha=style['alpha-background'], **k)
         else:
-            drawRectangle(**k)
+            if style['draw-background']:
+                drawRectangle(**k)
             if style['draw-border']:
                 drawRectangle(style=GL_LINE_LOOP, **k)
             if style['draw-alpha-background']:

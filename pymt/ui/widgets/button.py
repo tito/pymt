@@ -18,10 +18,10 @@ class MTButton(MTWidget):
     :Parameters:
         `label` : string, default is ''
             Label of button
-        `anchor_x` : string
-            X anchor of label (left, center, right)
-        `anchor_y` : string
-            Y anchor of label, (bottom, middle, top)
+        `halign` : string, default to 'center'
+            Horizontal alignment of label inside button (left, center, right)
+        `valign` : string, default to 'center'
+            Vertical alignment of label inside button (bottom, middle, top)
         `multiline` : bool, default is False
             Indicate if button is a multiline button
 
@@ -61,8 +61,9 @@ class MTButton(MTWidget):
         kwargs.setdefault('label', '')
         kwargs.setdefault('anchor_x', 'center')
         kwargs.setdefault('anchor_y', 'center')
+        kwargs.setdefault('halign', 'center')
+        kwargs.setdefault('valign', 'center')
         kwargs.setdefault('multiline', False)
-        kwargs.setdefault('width', 0)
 
         self.button_dl      = GlDisplayList()
         self._state         = ('normal', 0)
@@ -215,7 +216,7 @@ class MTImageButton(MTButton):
         super(MTImageButton, self).__init__(**kwargs)
         self.image          = kwargs.get('image')
         self.scale          = kwargs.get('scale')
-        self.filename		= kwargs.get('filename')
+        self.filename       = kwargs.get('filename')
         self.size           = self.image.size
 
     def _get_filename(self):

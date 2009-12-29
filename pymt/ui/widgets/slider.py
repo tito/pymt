@@ -24,6 +24,12 @@ class MTSlider(MTWidget):
             Type of orientation, can be 'horizontal' or 'vertical'
         `value` : int, default is `min`
             Default value of slider
+        `value_show` : bool, default to False
+            Show value on the slider
+        `value_format` : str, default to '%d'
+            If value is showed, this is the format used for drawing value
+        `value_config` : dict, default to {}
+            Settings to pass to drawLabel()
     :Styles:
         `slider-color` : color
             Color of the slider
@@ -40,6 +46,9 @@ class MTSlider(MTWidget):
         kwargs.setdefault('min', 0)
         kwargs.setdefault('max', 100)
         kwargs.setdefault('orientation', 'vertical')
+        kwargs.setdefault('value_show', False)
+        kwargs.setdefault('value_format', '%d')
+        kwargs.setdefault('value_config', {})
         if kwargs.get('orientation') == 'vertical':
             kwargs.setdefault('size', (30, 400))
         else:
@@ -52,6 +61,9 @@ class MTSlider(MTWidget):
         self.orientation    = kwargs.get('orientation')
         self.min            = kwargs.get('min')
         self.max            = kwargs.get('max')
+        self.value_show     = kwargs.get('value_show')
+        self.value_format   = kwargs.get('value_format')
+        self.value_config   = kwargs.get('value_config')
         self._value         = self.min
         if kwargs.get('value'):
             self._value = kwargs.get('value')
@@ -84,6 +96,13 @@ class MTSlider(MTWidget):
         # draw inner rectangle
         set_color(*self.style.get('slider-color'))
         drawCSSRectangle(pos=pos, size=size, style=self.style, prefix='slider')
+
+        if self.value_show:
+            self.draw_value()
+
+    def draw_value(self):
+        drawLabel(self.value_format % (self.value), pos=self.center,
+                  **self.value_config)
 
     def on_touch_down(self, touch):
         if self.collide_point(touch.x, touch.y):

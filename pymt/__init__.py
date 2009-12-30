@@ -134,7 +134,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             pymt_config.setdefault('pymt', 'ignore', '[]')
             pymt_config.setdefault('keyboard', 'layout', 'qwerty')
             pymt_config.setdefault('graphics', 'fbo', 'hardware')
-            pymt_config.setdefault('graphics', 'fullscreen', '1')
+            pymt_config.setdefault('graphics', 'fullscreen', '0')
             pymt_config.setdefault('graphics', 'width', '640')
             pymt_config.setdefault('graphics', 'height', '480')
             pymt_config.setdefault('graphics', 'vsync', '1')
@@ -244,7 +244,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
                 id, args = arg.split(':', 1)
                 pymt_config.set('input', id, args)
             elif opt in ['-f', '--fullscreen']:
-                pymt_config.set('graphics', 'fullscreen', '1')
+                pymt_config.set('graphics', 'fullscreen', 'auto')
             elif opt in ['-w', '--windowed']:
                 pymt_config.set('graphics', 'fullscreen', '0')
             elif opt in ['-F', '--fps']:
@@ -267,7 +267,10 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
                 if str(arg) == 'list':
                     pymt_modules.usage_list()
                     sys.exit(0)
-                pymt_config.set('modules', str(arg), '')
+                args = arg.split(':', 1)
+                if len(args) == 1:
+                    args += ['']
+                pymt_config.set('modules', args[0], args[1])
             elif opt in ['-s', '--save']:
                 need_save = True
 

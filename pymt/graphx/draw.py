@@ -34,7 +34,7 @@ def drawLabel(label, pos=(0,0), **kwargs):
             Text to be draw
         `pos` : tuple, default to (0, 0)
             Position of text
-        `font_size` : int, default to 16
+        `font_size` : int, default to 12
             Font size of label
         `center` : bool, default to True
             Indicate if pos is center or left-right of label
@@ -43,7 +43,7 @@ def drawLabel(label, pos=(0,0), **kwargs):
         Use only for debugging, it's a performance killer function.
         The label is recreated each time the function is called !
     '''
-    kwargs.setdefault('font_size', 16)
+    kwargs.setdefault('font_size', 12)
     kwargs.setdefault('center', True)
     if kwargs.get('center'):
         kwargs.setdefault('anchor_x', 'center')
@@ -64,7 +64,7 @@ def drawLabel(label, pos=(0,0), **kwargs):
     # draw
     temp_label.x, temp_label.y = pos
     temp_label.draw()
-    return temp_label.content_width
+    return temp_label.content_size
 
 
 def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,

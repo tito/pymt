@@ -290,9 +290,9 @@ class MTBoundarySlider(MTWidget):
     def set_value(self, name, value):
         if name in ('value_min', 'value_max'):
             if self.orientation == 'vertical':
-                x = self.height
+                x = self.height / self.ratio
             else:
-                x = self.width
+                x = self.width / self.ratio
             if value < 0:
                 return self.__setattr__(name, 0)
             if value > x:
@@ -316,19 +316,25 @@ class MTBoundarySlider(MTWidget):
     def on_value_change(self, min, max):
         pass
 
+    @property
+    def ratio(self):
+        if self.orientation == 'vertical':
+            return self.height / (self.max - self.min)
+        return self.width / (self.max - self.min)
+
     def draw(self):
         p = self.style['padding']
         p2 = p / 2
         if self.orientation == 'vertical':
-            pos = (self.x + p2, self.y + self.value_min + p2)
-            size = (self.width - p, self.value_max - self.value_min - p)
-            textposmin = (self.x + self.width / 2, self.y + self.value_min)# + 10)
-            textposmax = (self.x + self.width / 2, self.y + self.value_max)# - 10)
+            pos = (self.x + p2, self.y + self.value_min * self.ratio + p2)
+            size = (self.width - p, (self.value_max - self.value_min) * self.ratio - p)
+            textposmin = (self.x + self.width, self.y + self.value_min * self.ratio)
+            textposmax = (self.x + self.width, self.y + self.value_max * self.ratio)
         elif self.orientation == 'horizontal':
-            pos = (self.x + self.value_min + p2, self.y + p2)
-            size = (self.value_max - self.value_min - p, self.height - p)
-            textposmin = (self.x + self.value_min, self.y + self.height / 2)
-            textposmax = (self.x + self.value_max, self.y + self.height / 2)
+            pos = (self.x + self.value_min * self.ratio + p2, self.y + p2)
+            size = ((self.value_max - self.value_min) * self.ratio - p, self.height - p)
+            textposmin = (self.x + self.value_min * self.ratio, self.y + self.height)
+            textposmax = (self.x + self.value_max * self.ratio, self.y + self.height)
 
         # draw outer rectangle
         set_color(*self.style.get('bg-color'))
@@ -337,9 +343,9 @@ class MTBoundarySlider(MTWidget):
         # draw inner rectangle
         set_color(*self.style.get('slider-color'))
         drawCSSRectangle(pos=pos, size=size, style=self.style, prefix='slider')
-        if self.showtext:
-            drawLabel(unicode(self.value_min), pos=textposmin, font_size=self.style['font-size'])
-            drawLabel(unicode(self.value_max), pos=textposmax, font_size=self.style['font-size'])
+        if self.showtext and len(self.touchstarts):
+            drawLabel(u'%.1f' % (self.value_min), pos=textposmin, font_size=self.style['font-size'])
+            drawLabel(u'%.1f' % (self.value_max), pos=textposmax, font_size=self.style['font-size'])
 
     def on_touch_down(self, touch):
         # So the first on_touch_move in a
@@ -357,12 +363,14 @@ class MTBoundarySlider(MTWidget):
                     self.value_max = random.randrange(self.value_min, self.width)
             # Decide wether we will move the upper or lower bound
             if self.orientation == 'vertical':
-                if touch.y < (self.value_min + self.y*2 + self.value_max)/2:
+                if touch.y < (self.value_min * self.ratio + self.y*2 +
+                              self.value_max * self.ratio)/2:
                     touch.userdata['boundary.side'] = 'value_min'
                 else:
                     touch.userdata['boundary.side'] = 'value_max'
             elif self.orientation == 'horizontal':
-                if touch.x < (self.value_min + self.x*2 + self.value_max)/2:
+                if touch.x < (self.value_min * self.ratio + self.x*2 +
+                              self.value_max * self.ratio)/2:
                     touch.userdata['boundary.side'] = 'value_min'
                 else:
                     touch.userdata['boundary.side'] = 'value_max'
@@ -383,7 +391,8 @@ class MTBoundarySlider(MTWidget):
                     self.value_max += rel
                 else:
                     # Only one, just change one bound
-                    self.set_value(touch.userdata['boundary.side'], touch.y - self.y)
+                    self.set_value(touch.userdata['boundary.side'],
+                                   (touch.y - self.y) / self.ratio)
                     self.dispatch_event('on_value_change', *self.get_value())
             elif self.orientation == 'horizontal':
                 if len(self.touchstarts) >= 2:
@@ -393,7 +402,8 @@ class MTBoundarySlider(MTWidget):
                     self.value_max += rel
                 else:
                     # Only one, just change one bound
-                    self.set_value(touch.userdata['boundary.side'], touch.x - self.x)
+                    self.set_value(touch.userdata['boundary.side'],
+                                   (touch.x - self.x) / self.ratio)
                     self.dispatch_event('on_value_change', *self.get_value())
             touch.oypos = touch.y
             touch.oxpos = touch.x
@@ -404,7 +414,7 @@ class MTBoundarySlider(MTWidget):
         if touch.id in self.touchstarts:
             self.touchstarts.remove(touch.id)
         return super(MTBoundarySlider, self).on_touch_up(touch)
-        
+
 class MTMultiSlider(MTWidget):
     '''Multi slider widget look like an equalizer widget.
 

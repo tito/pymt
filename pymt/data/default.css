@@ -21,6 +21,7 @@
     draw-border: 0;
 
     /* background alpha layer */
+    draw-background: 1;
     draw-alpha-background: 0;
     alpha-background: 1 1 0.5 0.5;
 
@@ -59,6 +60,7 @@ slider, xyslider, vectorslider, multislider, boundaryslider {
     slider-border-radius-precision: 1;
     draw-slider-alpha-background: 0;
     slider-alpha-background: 1 1 .5 .5;
+    slider-draw-background: 1;
 }
 
 fileentryview {
@@ -73,6 +75,7 @@ kineticcontainer {
 }
 
 kineticlist {
+    title-draw-background: 1;
     title-color: rgb(127, 127, 127);
     draw-title-border: 0;
     title-border-radius: 0;
@@ -130,6 +133,7 @@ vkeyboard {
     margin: 10 50 10 50;
     border-radius: 15;
     border-radius-precision: 0.35;
+    key-draw-background: 1;
     key-border-radius: 5;
     key-border-radius-precision: 1;
     draw-key-border: 1;
@@ -182,4 +186,8 @@ video {
 
 coverflow {
 	bg-color: rgba(0, 0, 0, 255);
+}
+
+label {
+    draw-background: 0;
 }

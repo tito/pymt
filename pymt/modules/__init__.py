@@ -9,7 +9,8 @@ import os
 import sys
 
 class ModuleContext:
-    pass
+    def __init__(self):
+        self.config = {}
 
 class Modules:
     def __init__(self, **kwargs):
@@ -55,6 +56,24 @@ class Modules:
 
         module = self.mods[id]['module']
         if not self.mods[id]['activated']:
+
+            # convert configuration like:
+            # -m mjpegserver:port=8080,fps=8
+            # and pass it in context.config token
+            config = dict()
+
+            args = pymt.pymt_config.get('modules', id)
+            if args != '':
+                values = pymt.pymt_config.get('modules', id).split(',')
+                for value in values:
+                    x = value.split('=', 1)
+                    if len(x) == 1:
+                        config[x[0]] = True
+                    else:
+                        config[x[0]] = x[1]
+
+            pymt.pymt_logger.debug('Modules: Start <%s> with config %s' % (id, str(config)))
+            self.mods[id]['context'].config = config
             module.start(win, self.mods[id]['context'])
 
     def deactivate_module(self, id, win):

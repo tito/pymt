@@ -267,7 +267,10 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
                 if str(arg) == 'list':
                     pymt_modules.usage_list()
                     sys.exit(0)
-                pymt_config.set('modules', str(arg), '')
+                args = arg.split(':', 1)
+                if len(args) == 1:
+                    args += ['']
+                pymt_config.set('modules', args[0], args[1])
             elif opt in ['-s', '--save']:
                 need_save = True
 

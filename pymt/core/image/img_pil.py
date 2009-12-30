@@ -27,11 +27,11 @@ class ImageLoaderPIL(ImageLoaderBase):
                 'wal', 'wmf', 'xbm', 'xpm', 'xv')
 
     def load(self, filename):
-        pymt.pymt_logger.debug('Load <%s>' % filename)
+        pymt.pymt_logger.debug('Image: Load <%s>' % filename)
         try:
             im = PIL.Image.open(filename)
         except:
-            pymt.pymt_logger.warning('Unable to load image <%s>' % filename)
+            pymt.pymt_logger.warning('Image: Unable to load image <%s>' % filename)
             raise
 
         # image loader work only with rgb/rgba image
@@ -40,7 +40,7 @@ class ImageLoaderPIL(ImageLoaderBase):
                 imc = im.convert('RGBA')
             except:
                 pymt.pymt_logger.warning(
-                    'Unable to convert image <%s> to RGBA (was %s)' %
+                    'Image: Unable to convert image <%s> to RGBA (was %s)' %
                     filename, im.mode)
                 raise
             im = imc

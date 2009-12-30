@@ -138,22 +138,22 @@ class HardwareFbo(AbstractFbo):
         # check the fbo status
         status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
         if status != GL_FRAMEBUFFER_COMPLETE_EXT:
-            pymt.pymt_logger.error('Error in framebuffer activation')
-            pymt.pymt_logger.error('Details: HardwareFbo size=%s, realsize=%s, format=GL_RGBA' % (
+            pymt.pymt_logger.error('Fbo: Error in framebuffer activation')
+            pymt.pymt_logger.error('Fbo: Details: HardwareFbo size=%s, realsize=%s, format=GL_RGBA' % (
                 str(self.size), str(self.realsize)))
             if status in HardwareFbo.gl_fbo_errors:
-                pymt.pymt_logger.error('Details: %s (%d)' % (HardwareFbo.gl_fbo_errors[status], status))
+                pymt.pymt_logger.error('Fbo: Details: %s (%d)' % (HardwareFbo.gl_fbo_errors[status], status))
             else:
-                pymt.pymt_logger.error('Details: Unknown error (%d)' % status)
+                pymt.pymt_logger.error('Fbo: Details: Unknown error (%d)' % status)
 
-            pymt.pymt_logger.error('')
-            pymt.pymt_logger.error('You cannot use Hardware FBO.')
-            pymt.pymt_logger.error('Please change the configuration to use Software FBO.')
-            pymt.pymt_logger.error('You can use the pymt-config tools, or edit the configuration to set:')
-            pymt.pymt_logger.error('')
-            pymt.pymt_logger.error('[graphics]')
-            pymt.pymt_logger.error('fbo = software')
-            pymt.pymt_logger.error('')
+            pymt.pymt_logger.error('Fbo: ')
+            pymt.pymt_logger.error('Fbo: You cannot use Hardware FBO.')
+            pymt.pymt_logger.error('Fbo: Please change the configuration to use Software FBO.')
+            pymt.pymt_logger.error('Fbo: You can use the pymt-config tools, or edit the configuration to set:')
+            pymt.pymt_logger.error('Fbo: ')
+            pymt.pymt_logger.error('Fbo: [graphics]')
+            pymt.pymt_logger.error('Fbo: fbo = software')
+            pymt.pymt_logger.error('Fbo: ')
 
             raise UnsupportedFboException()
 
@@ -260,8 +260,8 @@ else:
     if 'PYMT_DOC' not in os.environ:
         # decide what to use
         if pymt_config.get('graphics', 'fbo') == 'hardware':
-            pymt.pymt_logger.debug('Fbo will use hardware Framebuffer')
+            pymt.pymt_logger.debug('Fbo: Use hardware Framebuffer')
             Fbo = HardwareFbo
         else:
-            pymt.pymt_logger.debug('Fbo will use software Framebuffer')
+            pymt.pymt_logger.debug('Fbo: Use software Framebuffer')
             Fbo = SoftwareFbo

@@ -16,5 +16,5 @@ if sys.platform == 'darwin':
     try:
         from mactouch import *
     except:
-        pymt.pymt_logger.exception('MacMultitouchSupport is not available for your version')
+        pymt.pymt_logger.exception('Input: MacMultitouchSupport is not available for your version')
 

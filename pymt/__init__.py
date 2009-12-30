@@ -40,7 +40,7 @@ for option in options:
                 options[option] = os.environ[key].lower() in \
                     ('true', '1', 'yes', 'yup')
         except:
-            pymt_logger.warning('Wrong value for %s environment key' % key)
+            pymt_logger.warning('Core: Wrong value for %s environment key' % key)
             pymt_logger.exception('')
 
 # Include lib as new module.
@@ -99,7 +99,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         try:
             pymt_config.read(pymt_config_fn)
         except Exception, e:
-            pymt_logger.exception('error while reading local configuration')
+            pymt_logger.exception('Core: error while reading local configuration')
 
     pymt_config_version = pymt_config.getdefault('pymt', 'config_version', 0)
 
@@ -181,7 +181,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             with open(pymt_config_fn, 'w') as fd:
                 pymt_config.write(fd)
         except Exception, e:
-            pymt_logger.exception('error while saving default configuration file')
+            pymt_logger.exception('Core: error while saving default configuration file')
 
 
     # Set level of logger
@@ -279,16 +279,16 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
                 with open(pymt_config_fn, 'w') as fd:
                     pymt_config.write(fd)
             except Exception, e:
-                pymt_logger.exception('error while saving default configuration file')
-            pymt_logger.info('PyMT configuration saved.')
+                pymt_logger.exception('Core: error while saving default configuration file')
+            pymt_logger.info('Core: PyMT configuration saved.')
             sys.exit(0)
 
         # last initialization
         if options['shadow_window']:
-            pymt_logger.debug('Creating PyMT Window')
+            pymt_logger.debug('Core: Creating PyMT Window')
             shadow_window = MTWindow()
 
     except getopt.GetoptError, err:
-        pymt_logger.error(err)
+        pymt_logger.error('Core: %s' % str(err))
         pymt_usage()
         sys.exit(2)

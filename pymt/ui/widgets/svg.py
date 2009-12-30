@@ -40,19 +40,19 @@ class MTSvg(MTWidget):
         # TODO remove this ugly code, improve loader for this
         try:
             if self.rawdata is None:
-                pymt_logger.debug('loading %s' % filename)
+                pymt_logger.debug('SVG: loading %s' % filename)
                 self.svg = squirtle.SVG(filename)
             else:
-                pymt_logger.debug('loading %s from rawdata' % filename)
+                pymt_logger.debug('SVG: loading %s from rawdata' % filename)
                 self.svg = squirtle.SVG(filename=filename, rawdata=self.rawdata)
         except Exception, e:
             try:
                 svgpath = os.path.join(pymt_data_dir, 'icons/svg')
-                pymt_logger.exception('unable to load %s' % filename)
-                pymt_logger.warning('trying %s' % (svgpath + filename))
+                pymt_logger.exception('SVG: unable to load %s' % filename)
+                pymt_logger.warning('SVG: trying %s' % (svgpath + filename))
                 self.svg = squirtle.SVG(os.path.join(svgpath, filename))
             except Exception, e:
-                pymt_logger.exception('unable to load file %s' % filename)
+                pymt_logger.exception('SVG: unable to load file %s' % filename)
                 self._filename = filename
                 self.size = (self.svg.width, self.svg.height)
     filename = property(_get_filename, _set_filename)
@@ -80,16 +80,16 @@ class MTSvgButton(MTButton):
     def _set_filename(self, filename):
 		# TODO remove this ugly code, improve loader for this
         try:
-            pymt_logger.debug('loading %s' % filename)
+            pymt_logger.debug('SVGButton: loading %s' % filename)
             self.svg = squirtle.SVG(filename)
         except Exception, e:
             try:
                 svgpath = os.path.join(pymt_data_dir, 'icons/svg')
-                pymt_logger.exception('unable to load %s' % filename)
-                pymt_logger.warning('trying %s' % (svgpath + filename))
+                pymt_logger.exception('SVGButton: unable to load %s' % filename)
+                pymt_logger.warning('SVGButton: trying %s' % (svgpath + filename))
                 self.svg = squirtle.SVG(os.path.join(svgpath, filename))
             except Exception, e:
-                pymt_logger.exception('unable to load file %s' % filename)
+                pymt_logger.exception('SVGButton: unable to load file %s' % filename)
         self._filename = filename
         self.size = (self.svg.width, self.svg.height)
     filename = property(_get_filename, _set_filename)

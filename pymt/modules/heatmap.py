@@ -26,9 +26,9 @@ class HeatMap(MTWidget):
                 )
             ''')
             self.db.commit()
-            pymt_logger.info('Create new database for heatmap in %s' % self.filename)
+            pymt_logger.info('Heatmap: Create new database for heatmap in %s' % self.filename)
         except sqlite3.OperationalError:
-            pymt_logger.info('Fill heatmap database in %s' % self.filename)
+            pymt_logger.info('Heatmap: Fill heatmap database in %s' % self.filename)
 
     def on_touch_down(self, touch):
         self.db.execute('''

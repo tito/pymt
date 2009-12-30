@@ -89,7 +89,7 @@ def paintLine(points, numsteps=None, **kwargs):
     '''
     global _brush_texture, _brush_size
     if not _brush_texture:
-        pymt.pymt_logger.warning('No brush set to paint line, abort')
+        pymt.pymt_logger.warning('Graphx: No brush set to paint line, abort')
         return
     if len(points) % 2 == 1:
         raise Exception('Points list must be a pair length number (not impair)')

@@ -265,7 +265,7 @@ def runTouchApp(widget=None, slave=False):
 
     # Instance all configured input
     for key, value in pymt.pymt_config.items('input'):
-        pymt_logger.debug('Create provider from %s' % (str(value)))
+        pymt_logger.debug('Base: Create provider from %s' % (str(value)))
 
         # split value
         args = str(value).split(',', 1)
@@ -274,7 +274,7 @@ def runTouchApp(widget=None, slave=False):
         provider_id, args = args
         provider = TouchFactory.get(provider_id)
         if provider is None:
-            pymt_logger.warning('Unknown <%s> provider' % str(provider_id))
+            pymt_logger.warning('Base: Unknown <%s> provider' % str(provider_id))
             continue
 
         # create provider
@@ -293,7 +293,7 @@ def runTouchApp(widget=None, slave=False):
         getWindow().add_widget(widget)
 
     # start event loop
-    pymt_logger.info('Start application main loop')
+    pymt_logger.info('Base: Start application main loop')
     pymt_evloop.start()
 
     # we are in a slave mode, don't do dispatching.
@@ -327,5 +327,5 @@ def stopTouchApp():
     global pymt_evloop
     if pymt_evloop is None or pymt_evloop.quit:
         return
-    pymt_logger.info('Leaving application in progress...')
+    pymt_logger.info('Base: Leaving application in progress...')
     pymt_evloop.close()

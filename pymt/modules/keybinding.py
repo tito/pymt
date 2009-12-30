@@ -37,11 +37,11 @@ def _screenshot():
     if filename:
         try:
             pygame.image.save(surface, filename)
-            pymt_logger.info('Screenshot saved at %s' % filename)
+            pymt_logger.info('KeyBinding: Screenshot saved at %s' % filename)
         except:
-            pymt_logger.exception('Unable to take a screenshot')
+            pymt_logger.exception('KeyBinding: Unable to take a screenshot')
     else:
-        pymt_logger.warning('Unable to take screenshot, no more slot available')
+        pymt_logger.warning('KeyBinding: Unable to take screenshot, no more slot available')
 
 def _on_draw():
     global _toggle_state

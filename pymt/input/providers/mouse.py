@@ -4,12 +4,10 @@ Mouse: Mouse provider implementation
 
 __all__ = ['MouseTouchProvider']
 
-import osc
 from collections import deque
 from ..provider import TouchProvider
 from ..factory import TouchFactory
 from ..touch import Touch
-from ...logger import pymt_logger
 
 class MouseTouch(Touch):
     def depack(self, args):

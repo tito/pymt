@@ -94,7 +94,7 @@ class CameraBase(BaseObject):
     def _copy_to_gpu(self):
         '''Copy the the buffer into the texture'''
         if self._texture is None:
-            pymt.pymt_logger.debug('Video: copy_to_gpu() failed, _texture is None !')
+            pymt.pymt_logger.debug('Camera: copy_to_gpu() failed, _texture is None !')
             return
         self._texture.blit_buffer(self._buffer, format=self._format)
         self._buffer = None

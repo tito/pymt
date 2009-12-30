@@ -18,7 +18,7 @@ class MTWindowGlut(BaseWindow):
     def create_window(self, params):
         if self.__glut_window is None:
             # init GLUT !
-            pymt_logger.debug('GLUT initialization')
+            pymt_logger.debug('WinGlut: GLUT initialization')
             glutInit('')
             glutInitDisplayMode(
                 GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH |
@@ -37,7 +37,7 @@ class MTWindowGlut(BaseWindow):
         glutShowWindow()
         self.size = params['width'], params['height']
         if params['fullscreen']:
-            pymt_logger.debug('Set window to fullscreen mode')
+            pymt_logger.debug('WinGlut: Set window to fullscreen mode')
             glutFullScreen()
 
         super(MTWindowGlut, self).create_window(params)

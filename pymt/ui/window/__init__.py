@@ -212,7 +212,7 @@ class BaseWindow(EventDispatcher):
         if self._size == size:
             return False
         self._size = size
-        pymt_logger.debug('Resize window to %s' % str(self.size))
+        pymt_logger.debug('Window: Resize window to %s' % str(self.size))
         self.dispatch_event('on_resize', *size)
         return True
     size = property(lambda self: self._get_size(),
@@ -472,7 +472,7 @@ if not 'PYMT_DOC' in os.environ:
             MTWindow = win_pygame.MTWindowPygame
             pymt_logger.info('Window: use Pygame as window provider.')
         except ImportError:
-            pymt_logger.debug('Unable to use Pygame as window provider.')
+            pymt_logger.debug('Window: Unable to use Pygame as provider.')
 
     if MTWindow is None and 'glut' in pymt.options['window']:
         try:
@@ -480,11 +480,11 @@ if not 'PYMT_DOC' in os.environ:
             MTWindow = win_glut.MTWindowGlut
             pymt_logger.info('Window: use GLUT as window provider.')
         except ImportError:
-            pymt_logger.debug('Unable to use GLUT as window provider.')
+            pymt_logger.debug('Window: Unable to use GLUT as provider.')
 
     # No window provider ?
     if MTWindow is None:
-        pymt_logger.critical('No window provider found (configuration is %s)' %
+        pymt_logger.critical('Window: No provider found (configuration is %s)' %
             str(pymt.options['window']))
 
 # Register all base widgets

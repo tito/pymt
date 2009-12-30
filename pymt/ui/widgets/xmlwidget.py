@@ -52,7 +52,7 @@ class XMLWidget(MTWidget):
             try:
                 nodeWidget  = MTWidgetFactory.get(class_name)(**k)
             except:
-                pymt_logger.exception('unable to create widget %s' % class_name)
+                pymt_logger.exception('XMLWidget: unable to create widget %s' % class_name)
                 raise
 
             #add child widgets

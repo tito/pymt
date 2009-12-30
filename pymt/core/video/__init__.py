@@ -6,7 +6,6 @@ __all__ = ('VideoBase', 'Video')
 
 from .. import core_select_lib
 from ...baseobject import BaseObject
-from ...logger import pymt_logger
 
 class VideoBase(BaseObject):
     '''VideoBase, a class to implement a video reader.

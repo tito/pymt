@@ -74,8 +74,8 @@ class ColoredFormatter(logging.Formatter):
     def format(self, record):
         msg = record.msg.split(':', 1)
         if len(msg) == 2:
-            if self.use_color:
-                msg[0] = COLOR_SEQ % (31 + sum(map(ord, msg[0])) % 8) + '%-8s' % msg[0] + RESET_SEQ
+            #if self.use_color:
+            #    msg[0] = COLOR_SEQ % (31 + sum(map(ord, msg[0])) % 8) + '%-8s' % msg[0] + RESET_SEQ
             record.msg = '[%s]%s' % (msg[0], msg[1])
         levelname = record.levelname
         if self.use_color and levelname in COLORS:

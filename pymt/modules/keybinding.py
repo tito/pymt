@@ -197,9 +197,12 @@ def _on_draw():
             levelname, color = levels[log.levelno]
             msg = log.message.split('\n')[0]
             x = 10
-            x += drawLabel('[', pos=(x, y), **k)
-            x += drawLabel(levelname, pos=(x, y), color=color, **k)
-            x += drawLabel(']', pos=(x, y), **k)
+            s = drawLabel('[', pos=(x, y), **k)
+            x += s[0]
+            s = drawLabel(levelname, pos=(x, y), color=color, **k)
+            x += s[0]
+            s = drawLabel(']', pos=(x, y), **k)
+            x += s[0]
             drawLabel(msg, pos=(100, y), **k)
             y -= 20
         return True

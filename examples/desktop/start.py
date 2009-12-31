@@ -61,7 +61,7 @@ class MTMenuItem(MTKineticItem):
     def __init__(self, path, label, icon, **kwargs):
         super(MTMenuItem, self).__init__(**kwargs)
         self._label = MTLabel(label=label, font_size=12, anchor_x='left',
-                           anchor_y='top', size=(self.width, self.height))
+                           anchor_y='center', size=(self.width, self.height))
         self._icon = None
         try:
             if icon != '':
@@ -80,7 +80,9 @@ class MTMenuItem(MTKineticItem):
             with self.button_dl:
                 set_color(.2, .2, .2, .5)
                 drawRectangle(size=self.size)
-                self._label.x, self._label.y = 32, self.height - 12 / 2.
+                self._label.x = -48
+                print self._label.x
+                self._label.y = (self.height - self._label.height) / 2.
                 self._label.draw()
                 if self._icon:
                     self._icon.x = (32 - self._icon.width) / 2.

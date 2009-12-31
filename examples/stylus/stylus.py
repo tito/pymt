@@ -1,15 +1,13 @@
 
 from pymt import *
-from pyglet.graphics import *
 from OpenGL.GL import *
-
 
 
 class PenCanvas(MTScatterPlane):
 
     def __init__(self, **kwargs):
         super(PenCanvas,self).__init__( **kwargs)
-        self.render_batch = Batch()
+        self.render_batch = []
         self.current_stroke = []
 
 
@@ -18,22 +16,21 @@ class PenCanvas(MTScatterPlane):
         self.current_stroke.append(int(y))
 
     def draw(self):
-        glLineWidth(3)
-        self.render_batch.draw()
+        set_color(1,1,1)
+        for i in self.render_batch:
+            drawLine(points=i, width=3)
         if len(self.current_stroke):
-            draw(len(self.current_stroke)/2, GL_LINES, ('v2i', self.current_stroke))
-
+           drawLine(points=self.current_stroke, width=3)
 
     def on_object_down(self, objects, objectID, oid, x, y, angle):
-        self.append_stroke(*self.to_local(x,y))
+        self.append_stroke(*self.to_local(x, y))
 
     def on_object_move(self, objects, objectID, oid, x, y, angle):
-        self.append_stroke(*self.to_local(x,y))
-        self.append_stroke(*self.to_local(x,y))
+        self.append_stroke(*self.to_local(x, y))
 
     def on_object_up(self, objects, objectID, oid, x, y, angle):
-        self.append_stroke(*self.to_local(x,y))
-        vertex_list = self.render_batch.add(len(self.current_stroke)/2, GL_LINES, None, ('v2i', self.current_stroke))
+        self.append_stroke(*self.to_local(x, y))
+        self.render_batch.append(self.current_stroke)
         self.current_stroke = []
 
 

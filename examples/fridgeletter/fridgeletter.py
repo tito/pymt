@@ -21,7 +21,7 @@ class FridgeLetterAtomic(MTDragable):
             anchor_y = 'bottom',
             multiline = False,
             halign = 'top',
-            color = map(lambda x: int(x * 255), kwargs.get('color')),
+            color = kwargs.get('color'),
             label = kwargs.get('letter')
         )
         self.size = self.letter.content_width, self.letter.content_height

@@ -38,17 +38,17 @@ class Modules:
         module = __import__(name=id, fromlist='.')
         # basic check on module
         if not hasattr(module, 'start'):
-            pymt.pymt_logger.warning('Module <%s> missing start() function' % id)
+            pymt.pymt_logger.warning('Modules: Module <%s> missing start() function' % id)
             return
         if not hasattr(module, 'stop'):
-            pymt.pymt_logger.warning('Module <%s> missing stop() function' % id)
+            pymt.pymt_logger.warning('Modules: Module <%s> missing stop() function' % id)
             return
         self.mods[id]['module'] = module
 
     def activate_module(self, id, win):
         '''Activate a module on a window'''
         if not id in self.mods:
-            pymt.pymt_logger.warning('Module <%s> not found' % id)
+            pymt.pymt_logger.warning('Modules: Module <%s> not found' % id)
             return
 
         if not 'module' in self.mods[id]:
@@ -79,7 +79,7 @@ class Modules:
     def deactivate_module(self, id, win):
         '''Deactivate a module from a window'''
         if not id in self.mods:
-            pymt.pymt_logger.warning('Module <%s> not found' % id)
+            pymt.pymt_logger.warning('Modules: Module <%s> not found' % id)
             return
         if not hasattr(self.mods[id], 'module'):
             return

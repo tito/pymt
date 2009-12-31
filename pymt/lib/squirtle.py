@@ -222,10 +222,10 @@ def parse_color(c, default=None):
             g = int(c[1], 16) * 17
             b = int(c[2], 16) * 17
         else:
-            pymt_logger.exception('incorrect length for colour %s' % str(c))
+            pymt_logger.exception('Squirtle: incorrect length for color %s' % str(c))
         return [r,g,b,255]
     except Exception, ex:
-        pymt_logger.exception('exception parsing color %s' % str(c))
+        pymt_logger.exception('Squirtle: exception parsing color %s' % str(c))
         return None
 
 class Matrix(object):
@@ -553,7 +553,7 @@ class SVG(object):
             try:
                 self.parse_element(e)
             except Exception, ex:
-                pymt_logger.exception('exception while parsing element %s' % e)
+                pymt_logger.exception('Squirtle: exception while parsing element %s' % e)
                 raise
 
     def parse_element(self, e):
@@ -715,7 +715,7 @@ class SVG(object):
             try:
                 self.parse_element(c)
             except Exception, ex:
-                pymt_logger.exception('exception while parsing element %s' % c)
+                pymt_logger.exception('Squirtle: exception while parsing element %s' % c)
                 raise
         self.transform = oldtransform
         self.opacity = oldopacity
@@ -849,25 +849,21 @@ class SVG(object):
             self.curr_shape = []
 
         def errorCallback(code):
-            ptr = gluErrorString(code)
-            err = ''
-            idx = 0
-            while ptr[idx]:
-                err += chr(ptr[idx])
-                idx += 1
+            err = gluErrorString(code)
             pymt_logger.warning('Squirtle: GLU Tesselation Error: ' + err)
 
         def combineCallback(coords, vertex_data, weights):
+            print 'COMBINE', coords, '#', vertex_data
             x, y, z = coords[0:3]
             data = (x, y, z)
             spareverts.append(data)
-            return data
+            return vertex_data
 
         gluTessCallback(self._tess, GLU_TESS_VERTEX, vertexCallback)
         gluTessCallback(self._tess, GLU_TESS_BEGIN, beginCallback)
         gluTessCallback(self._tess, GLU_TESS_END, endCallback)
         gluTessCallback(self._tess, GLU_TESS_ERROR, errorCallback)
-        gluTessCallback(self._tess, GLU_TESS_COMBINE, combineCallback)
+        #gluTessCallback(self._tess, GLU_TESS_COMBINE, combineCallback)
 
         data_lists = []
         for vlist in looplist:
@@ -886,4 +882,4 @@ class SVG(object):
         return tlist
 
     def warn(self, message):
-        pymt_logger.warning('svg parser on %s: %s' % (self.filename, message))
+        pymt_logger.warning('Squirtle: svg parser on %s: %s' % (self.filename, message))

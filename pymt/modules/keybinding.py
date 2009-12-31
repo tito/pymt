@@ -37,11 +37,11 @@ def _screenshot():
     if filename:
         try:
             pygame.image.save(surface, filename)
-            pymt_logger.info('Screenshot saved at %s' % filename)
+            pymt_logger.info('KeyBinding: Screenshot saved at %s' % filename)
         except:
-            pymt_logger.exception('Unable to take a screenshot')
+            pymt_logger.exception('KeyBinding: Unable to take a screenshot')
     else:
-        pymt_logger.warning('Unable to take screenshot, no more slot available')
+        pymt_logger.warning('KeyBinding: Unable to take screenshot, no more slot available')
 
 def _on_draw():
     global _toggle_state
@@ -197,9 +197,12 @@ def _on_draw():
             levelname, color = levels[log.levelno]
             msg = log.message.split('\n')[0]
             x = 10
-            x += drawLabel('[', pos=(x, y), **k)
-            x += drawLabel(levelname, pos=(x, y), color=color, **k)
-            x += drawLabel(']', pos=(x, y), **k)
+            s = drawLabel('[', pos=(x, y), **k)
+            x += s[0]
+            s = drawLabel(levelname, pos=(x, y), color=color, **k)
+            x += s[0]
+            s = drawLabel(']', pos=(x, y), **k)
+            x += s[0]
             drawLabel(msg, pos=(100, y), **k)
             y -= 20
         return True

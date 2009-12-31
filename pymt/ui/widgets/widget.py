@@ -39,10 +39,10 @@ def event_stats_activate(activate=True):
 
 def event_stats_print():
     '''Print actual event stats'''
-    pymt_logger.info('Event stats')
+    pymt_logger.info('Widget: Event stats')
     global _event_stats
     for k in _event_stats:
-        pymt_logger.info('%6d: %s' % (_event_stats[k], k))
+        pymt_logger.info('Widget: %6d: %s' % (_event_stats[k], k))
 
 class MTWidget(EventDispatcher):
     '''Global base for any multitouch widget.
@@ -256,7 +256,7 @@ class MTWidget(EventDispatcher):
         def lambda_connect(*largs):
             if type(p2) in (tuple, list):
                 if len(largs) != len(p2):
-                    pymt_logger.exception('cannot connect with different size')
+                    pymt_logger.exception('Widget: cannot connect with different size')
                     raise
                 for p in p2:
                     if p is None:
@@ -271,7 +271,7 @@ class MTWidget(EventDispatcher):
                     else:
                         w2.__setattr__(p2, dtype(func(largs)))
                 except Exception, e:
-                    pymt_logger.exception('cannot connect with different size')
+                    pymt_logger.exception('Widget: cannot connect with different size')
                     raise
         if p2 is None:
             self.push_handlers(**{p1: w2})

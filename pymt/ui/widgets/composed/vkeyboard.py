@@ -235,7 +235,7 @@ class MTVKeyboard(MTScatterWidget):
                     break
             # no layout found ?
             if self.layout is None:
-                pymt.pymt_logger.warning('Keyboard layout <%s> not found, fallback on QWERTY' % idlayout)
+                pymt.pymt_logger.warning('Vkeyboard: Keyboard layout <%s> not found, fallback on QWERTY' % idlayout)
                 self.layout = KeyboardLayoutQWERTY()
 
         self._mode              = 'NORMAL'
@@ -278,7 +278,7 @@ class MTVKeyboard(MTScatterWidget):
                 #font.add_file(layout_class.FONT_FILENAME)
                 pass
             except:
-                pymt.pymt_logger.exception('Unable to load custom font')
+                pymt.pymt_logger.exception('Vkeyboard: Unable to load custom font')
 
     #
     # Keyboard properties

@@ -142,7 +142,7 @@ class OSCServer(Thread) :
 
                 # special handle for EADDRINUSE
                 if error == errno.EADDRINUSE:
-                    pymt_logger.error('Address %s:%i already in use, retry in 2 second' % (self.ipAddr, self.port))
+                    pymt_logger.error('OSC: Address %s:%i already in use, retry in 2 second' % (self.ipAddr, self.port))
                 else:
                     pymt_logger.exception(e)
                 self.haveSocket = False
@@ -151,7 +151,7 @@ class OSCServer(Thread) :
                 time.sleep(2)
 
         oscLock.acquire()
-        pymt_logger.info('listening for Tuio on %s:%i' % (self.ipAddr, self.port))
+        pymt_logger.info('OSC: listening for Tuio on %s:%i' % (self.ipAddr, self.port))
         oscLock.release()
 
         while self.isRunning:
@@ -163,7 +163,7 @@ class OSCServer(Thread) :
             except Exception, e:
                 if type(e) == socket.timeout:
                     continue
-                pymt_logger.error('Error in Tuio recv()')
+                pymt_logger.error('OSC: Error in Tuio recv()')
                 pymt_logger.exception(e)
                 return 'no data arrived'
 

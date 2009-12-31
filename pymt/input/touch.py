@@ -41,7 +41,6 @@ testing the profile ::
 
 __all__ = ['Touch']
 
-from ..logger import pymt_logger
 from ..clock import getClock
 
 class Touch(object):

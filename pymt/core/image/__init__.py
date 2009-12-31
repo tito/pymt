@@ -10,7 +10,6 @@ from .. import core_register_libs
 from pymt.baseobject import BaseObject
 from pymt.utils import deprecated
 from pymt.graphx import DO, gx_color, gx_blending, drawTexturedRectangle, set_color
-from pymt.logger import pymt_logger
 from pymt.texture import Texture, TextureRegion
 
 class ImageData(object):

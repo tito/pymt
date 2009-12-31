@@ -97,7 +97,7 @@ try:
     default_css = fd.read()
 except:
     pymt_logger.exception('')
-    pymt_logger.critical('Unable to open the default CSS')
+    pymt_logger.critical('Colors: Unable to open the default CSS')
 
 
 def get_truncated_classname(name):

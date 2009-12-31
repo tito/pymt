@@ -134,7 +134,7 @@ class Texture(object):
             elif GL_NV_texture_rectangle:
                 target = GL_TEXTURE_RECTANGLE_NV
             else:
-                pymt_logger.warning('Unable to create a rectangular texture, ' +
+                pymt_logger.warning('Texture: Unable to create a rectangular texture, ' +
                                     'no GL support found.')
                 rectangle = False
 

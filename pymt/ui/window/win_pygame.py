@@ -15,7 +15,7 @@ from OpenGL.GL.ARB.multisample import *
 try:
     import pygame
 except:
-    pymt_logger.warning('Pygame is not installed !')
+    pymt_logger.warning('WinPygame: Pygame is not installed !')
     raise
 
 class MTWindowPygame(BaseWindow):
@@ -34,7 +34,7 @@ class MTWindowPygame(BaseWindow):
         pygame.display.set_caption('pymt')
 
         if params['fullscreen']:
-            pymt_logger.debug('Set window to fullscreen mode')
+            pymt_logger.debug('WinPygame: Set window to fullscreen mode')
             self.flags |= pygame.FULLSCREEN
         self._fullscreenmode = params['fullscreen']
 
@@ -48,7 +48,7 @@ class MTWindowPygame(BaseWindow):
             self._pygame_set_mode()
         except pygame.error:
             if multisamples:
-                pymt_logger.warning('Video: failed (multisamples=%d)' %
+                pymt_logger.warning('WinPygame: Video: failed (multisamples=%d)' %
                                     multisamples)
                 pymt_logger.warning('Video: trying without antialiasing')
                 pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 0)
@@ -56,7 +56,7 @@ class MTWindowPygame(BaseWindow):
                 multisamples = 0
                 self._pygame_set_mode()
             else:
-                pymt_logger.warning('Video setup failed :-(')
+                pymt_logger.warning('WinPygame: Video setup failed :-(')
                 raise
 
         if multisamples:
@@ -164,7 +164,7 @@ class MTWindowPygame(BaseWindow):
 
                 # unhandled event !
                 else:
-                    pymt_logger.debug('Unhandled event %s' % str(event))
+                    pymt_logger.debug('WinPygame: Unhandled event %s' % str(event))
 
         # force deletion of window
         pygame.display.quit()

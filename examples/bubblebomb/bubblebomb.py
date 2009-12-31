@@ -42,7 +42,7 @@ class Bomb(MTWidget):
         drawCircle(pos=self.pos, radius=self.r)
         # text
         self.label.label = str(int(self.lifetime+1))
-        self.label.pos = self.pos
+        self.label.pos = (self.pos[0]-self.label.width/2,self.pos[1]-self.label.height/2)
         self.label.draw()
 
     def animate(self, world):

@@ -1,8 +1,6 @@
 from pymt import *
 
-win = MTWindow()
 scat = MTScatterWidget()
-win.add_widget(scat)
 
 s = MTWidget()
 c = Camera()
@@ -13,5 +11,5 @@ def on_draw():
 
 scat.add_widget(s)
 scat.size = (c.width, c.height)
-  
-runTouchApp()
+
+runTouchApp(scat)

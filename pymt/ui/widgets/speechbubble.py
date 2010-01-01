@@ -56,8 +56,6 @@ class MTSpeechBubble(MTLabel):
         self.trirelpos      = kwargs.get('trirelpos')
 
     def draw(self):
-        if self.autoheight:
-            self.height = self.label_obj.content_height
 
         # extract relative position
         rx, ry = self.relpos

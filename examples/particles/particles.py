@@ -54,6 +54,7 @@ class ParticleObject:
         self.lifetime   = self.settings.lifetime
         self.alpha_func = self.settings.alpha
         self.frame      = 0
+        self.visible    = True
         self.random_color()
 
     def update(self, dt):

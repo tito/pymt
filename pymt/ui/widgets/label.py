@@ -37,6 +37,8 @@ class MTLabel(MTWidget):
 
         if 'size' in kwargs:
             del kwargs['size']
+        if 'pos' in kwargs:
+            del kwargs['pos']
         self.kwargs = kwargs
 
     def draw(self):

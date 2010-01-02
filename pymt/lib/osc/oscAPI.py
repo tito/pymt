@@ -156,7 +156,7 @@ class OSCServer(Thread) :
 
         while self.isRunning:
             try:
-                message = self.socket.recv(1024)
+                message = self.socket.recv(65535)
                 oscLock.acquire()
                 addressManager.handle(message)
                 oscLock.release()

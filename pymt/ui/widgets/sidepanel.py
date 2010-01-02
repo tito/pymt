@@ -185,5 +185,22 @@ class MTSidePanel(MTWidget):
         set_color(*self.style.get('bg-color'))
         drawCSSRectangle(pos=self.layout.pos, size=self.layout.size, style=self.style)
 
+    # optimization
+
+    def on_touch_down(self, touch):
+        if self.corner.dispatch_event('on_touch_down', touch):
+            return True
+        return super(MTSidePanel, self).on_touch_down(touch)
+
+    def on_touch_move(self, touch):
+        if self.corner.dispatch_event('on_touch_move', touch):
+            return True
+        return super(MTSidePanel, self).on_touch_move(touch)
+
+    def on_touch_up(self, touch):
+        if self.corner.dispatch_event('on_touch_up', touch):
+            return True
+        return super(MTSidePanel, self).on_touch_up(touch)
+
 # Register all base widgets
 MTWidgetFactory.register('MTSidePanel', MTSidePanel)

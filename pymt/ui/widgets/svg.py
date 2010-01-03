@@ -4,13 +4,14 @@ SVG widget: widget that display an svg image
 __all__ = ['MTSvg', 'MTSvgButton']
 
 import os
-import squirtle
 
 from pymt import pymt_data_dir
 from ...logger import pymt_logger
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 from button import MTButton
+
+squirtle = None
 
 class MTSvg(MTWidget):
     '''Render an svg image
@@ -37,6 +38,9 @@ class MTSvg(MTWidget):
     def _get_filename(self):
         return self._filename
     def _set_filename(self, filename):
+        global squirtle
+        if squirtle is None:
+            import squirtle
         # TODO remove this ugly code, improve loader for this
         try:
             if self.rawdata is None:
@@ -78,6 +82,9 @@ class MTSvgButton(MTButton):
     def _get_filename(self):
         return self._filename
     def _set_filename(self, filename):
+        global squirtle
+        if squirtle is None:
+            import squirtle
 		# TODO remove this ugly code, improve loader for this
         try:
             pymt_logger.debug('SVGButton: loading %s' % filename)

@@ -4,6 +4,7 @@ Texture: abstraction to handle GL texture, and region
 
 __all__ = ('Texture', 'TextureRegion')
 
+import os
 import re
 from array import array
 from pymt import pymt_logger
@@ -38,6 +39,34 @@ def _is_pow2(v):
     # http://graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2
     return (v & (v - 1)) == 0
 
+#
+# Releasing texture through GC is problematic
+# GC can happen in a middle of glBegin/glEnd
+# So, to prevent that, call the _texture_release
+# at flip time.
+_texture_release_list = []
+def _texture_release(*largs):
+    global _texture_release_list
+    for texture_id in _texture_release_list:
+        # try/except are here to prevent an error like this :
+        # Exception TypeError: "'NoneType' object is not callable"
+        # in <bound method Texture.__del__ of <pymt.texture.Texture
+        # object at 0x3a1acb0>> ignored
+        #
+        # It occured only when leaving the application.
+        # So, maybe numpy or pyopengl is unloaded, and have weird things happen.
+        #
+        try:
+            if OpenGLversion < (3, 0, 1) and have_numpy:
+                glDeleteTextures(numpy.array(texture_id))
+            else:
+                glDeleteTextures(texture_id)
+        except:
+            pass
+
+    # let the list to 0
+    _texture_release_list = []
+
 class Texture(object):
     '''Handle a OpenGL texture. This class can be used to create simple texture
     or complex texture based on ImageData.'''
@@ -59,21 +88,12 @@ class Texture(object):
         self._gl_mag_filter = None
 
     def __del__(self):
-        # try/except are here to prevent an error like this :
-        # Exception TypeError: "'NoneType' object is not callable"
-        # in <bound method Texture.__del__ of <pymt.texture.Texture
-        # object at 0x3a1acb0>> ignored
-        #
-        # It occured only when leaving the application.
-        # So, maybe numpy or pyopengl is unloaded, and have weird things happen.
-        #
-        try:
-            if OpenGLversion < (3, 0, 1) and have_numpy:
-                glDeleteTextures(numpy.array(self.id))
-            else:
-                glDeleteTextures(self.id)
-        except:
-            pass
+        # add texture deletion outside GC call
+        global _texture_release_list
+        # XXX None case happen if some texture have been not deleted
+        # before application exit...
+        if _texture_release_list is not None:
+            _texture_release_list.append(self.id)
 
     def flip_vertical(self):
         '''Flip tex_coords for vertical displaying'''
@@ -333,3 +353,10 @@ class TextureRegion(Texture):
     def __del__(self):
         # don't use self of owner !
         pass
+
+if 'PYMT_DOC' not in os.environ:
+    from pymt.clock import getClock
+
+    # install tick to release texture every 200ms
+    getClock().schedule_interval(_texture_release, 0.2)
+

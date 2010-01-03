@@ -4,10 +4,11 @@ XML widget: parse xml and create his children
 
 __all__ = ['XMLWidget']
 
-from xml.dom import minidom, Node
 from ...logger import pymt_logger
 from ..factory import MTWidgetFactory
 from widget import MTWidget
+minidom = None
+Node = None
 
 class XMLWidget(MTWidget):
     '''XML widget create all his children by parsing and execute xml ::
@@ -64,6 +65,9 @@ class XMLWidget(MTWidget):
             return nodeWidget
 
     def loadString(self, xml):
+        global minidom, Node
+        if minidom is None:
+            from xml.dom import minidom, Node
         doc = minidom.parseString(xml)
         root = doc.documentElement
         self.add_widget(self.createNode(root))

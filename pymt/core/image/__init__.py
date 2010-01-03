@@ -238,7 +238,7 @@ class Image(BaseObject):
 
         # check bounds
         x, y = int(x), int(y)
-        if not (0 < x < data.width and 0 < y < data.height):
+        if not (0 <= x < data.width and 0 <= y < data.height):
             raise IndexError('Position (%d, %d) is out of range.' % (x, y))
 
         assert data.mode in ImageData._supported_modes

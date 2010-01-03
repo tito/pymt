@@ -2,6 +2,8 @@
 Slider package: provide multiple slider implementation (simple, xy, boundary...)
 '''
 
+from __future__ import division
+
 import random
 __all__ = ['MTSlider', 'MTXYSlider', 'MTBoundarySlider', 'MTMultiSlider']
 

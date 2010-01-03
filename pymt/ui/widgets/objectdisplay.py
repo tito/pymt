@@ -2,7 +2,7 @@
 ObjectDisplay: widget that handle fiducial object, and draw them
 '''
 
-from __future__ import with_statement
+
 __all__ = ['MTObjectDisplay']
 
 from OpenGL.GL import *

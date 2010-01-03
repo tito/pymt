@@ -2,7 +2,7 @@
 VKeyboard: Virtual keyboard with custom layout support
 '''
 
-from __future__ import with_statement
+
 import os
 import pymt
 from ....graphx import set_color, drawCSSRectangle, drawLabel, GlDisplayList, gx_matrix, drawRoundedRectangle

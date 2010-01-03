@@ -2,7 +2,7 @@
 Image: handle loading of images
 '''
 
-from __future__ import with_statement
+
 
 __all__ = ('Image', 'ImageLoader', 'ImageData')
 

@@ -2,7 +2,7 @@
 Stencil: use stencil for mask drawing
 '''
 
-from __future__ import with_statement
+
 
 __all__ = [
     # stencil

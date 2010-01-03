@@ -2,7 +2,7 @@
 Button matrix: a lightweight and optimized grid of buttons
 '''
 
-from __future__ import with_statement
+
 __all__ = ['MTButtonMatrix']
 
 from OpenGL.GL import *

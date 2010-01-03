@@ -2,7 +2,7 @@
 Button package: implement different type of button
 '''
 
-from __future__ import with_statement
+
 __all__ = ['MTButton', 'MTToggleButton', 'MTImageButton']
 
 import pymt

@@ -2,7 +2,7 @@
 Rectangle widget: draw a rectangle of his pos/size
 '''
 
-from __future__ import with_statement
+
 __all__ = ['MTRectangularWidget']
 
 from ...graphx import set_color

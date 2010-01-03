@@ -2,7 +2,7 @@
 Scatter package: provide lot of widgets based on scatter (base, svg, plane, image...)
 '''
 
-from __future__ import with_statement
+
 __all__ = ['MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane', 'MTScatterImage']
 
 import pymt

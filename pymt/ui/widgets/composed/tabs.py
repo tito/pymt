@@ -1,7 +1,7 @@
 '''
 Tabs widget: widget that provide tabs (like tabbed notebook)
 '''
-from __future__ import with_statement
+
 __all__ = ['MTTabs']
 
 from ...factory import MTWidgetFactory

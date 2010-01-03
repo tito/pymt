@@ -1,7 +1,7 @@
 '''
 File browser: a filebrowser view + a popup file browser
 '''
-from __future__ import with_statement
+
 import os
 import re
 import pymt

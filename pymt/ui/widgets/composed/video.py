@@ -6,7 +6,7 @@ Video widget: provide a video container
     Check http://code.google.com/p/avbin/ for more information.
 '''
 
-from __future__ import with_statement
+
 __all__ = ('MTVideo', 'MTSimpleVideo')
 
 import os

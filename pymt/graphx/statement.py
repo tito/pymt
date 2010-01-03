@@ -2,7 +2,7 @@
 Statements: OpenGL statement for the "with" keyword
 '''
 
-from __future__ import with_statement
+
 
 __all__ = [
     # class for with statement

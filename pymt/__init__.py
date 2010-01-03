@@ -8,7 +8,7 @@ Currently the aim is to allow for quick and easy interaction design and rapid pr
 You can visit http://pymt.txzone.net/ for more informations !
 '''
 
-from __future__ import with_statement
+
 from ConfigParser import ConfigParser
 import sys
 import getopt

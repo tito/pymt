@@ -2,7 +2,7 @@
 Speech Bubble: a little speech bubble !
 '''
 
-from __future__ import with_statement
+
 from label import MTLabel
 from ...graphx import drawPolygon, drawRoundedRectangle, gx_matrix
 from ...vector import Vector

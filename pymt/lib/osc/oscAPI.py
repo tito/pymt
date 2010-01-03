@@ -30,7 +30,8 @@
 
 import OSC
 import socket, os, time, errno
-from threading import Thread, Lock
+from threading import Lock
+from multiprocessing import Process, Queue, Value
 from pymt.logger import pymt_logger
 
 # globals
@@ -84,9 +85,7 @@ def createBundle():
 def appendToBundle(bundle, oscAddress, dataArray):
     '''create OSC mesage and append it to a given bundle
     '''
-    oscLock.acquire()
     bundle.append( createBinaryMsg(oscAddress, dataArray),  'b')
-    oscLock.release()
 
 
 def sendBundle(bundle, ipAddr='127.0.0.1', port=9000) :
@@ -108,19 +107,40 @@ def createBinaryMsg(oscAddress, dataArray):
 
     return m.getBinary()
 
+def readQueue(thread_id=None):
+    '''Read queues from all threads, and dispatch message.
+    This must be call in the main thread.
+    
+    You can pass the thread id to deque message from a specific thread.
+    This id is returned from the listen() function'''
+    global addressManager, oscThreads
+    for id in oscThreads:
+        if thread_id is not None:
+            if id != thread_id:
+                continue
+        thread = oscThreads[id]
+        try:
+            while True:
+                message = thread.queue.get_nowait()
+                addressManager.handle(message)
+        except:
+            pass
 
 
 ################################ receive osc from The Other.
 
-class OSCServer(Thread) :
+class OSCServer(Process):
     def __init__(self, ipAddr='127.0.0.1', port = 9001) :
-        Thread.__init__(self)
-        self.ipAddr = ipAddr
-        self.port = port
-        self.isRunning = True
+        self.queue = Queue()
+        Process.__init__(self, args=(self.queue,))
+        self.daemon     = True
+        self.ipAddr     = ipAddr
+        self.port       = port
+        self.isRunning  = Value('b', True)
+        self.haveSocket = Value('b', False)
 
     def run(self):
-        self.haveSocket = False
+        self.haveSocket.value = False
         # create socket
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -131,11 +151,11 @@ class OSCServer(Thread) :
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
         # try to bind the socket, retry if necessary
-        while not self.haveSocket and self.isRunning:
+        while not self.haveSocket.value and self.isRunning.value:
             try :
                 self.socket.bind((self.ipAddr, self.port))
                 self.socket.settimeout(0.5)
-                self.haveSocket = True
+                self.haveSocket.value = True
 
             except socket.error, e:
                 error, message = e.args
@@ -145,21 +165,17 @@ class OSCServer(Thread) :
                     pymt_logger.error('OSC: Address %s:%i already in use, retry in 2 second' % (self.ipAddr, self.port))
                 else:
                     pymt_logger.exception(e)
-                self.haveSocket = False
+                self.haveSocket.value = False
 
                 # sleep 2 second before retry
                 time.sleep(2)
 
-        oscLock.acquire()
         pymt_logger.info('OSC: listening for Tuio on %s:%i' % (self.ipAddr, self.port))
-        oscLock.release()
 
-        while self.isRunning:
+        while self.isRunning.value:
             try:
                 message = self.socket.recv(65535)
-                oscLock.acquire()
-                addressManager.handle(message)
-                oscLock.release()
+                self.queue.put(message)
             except Exception, e:
                 if type(e) == socket.timeout:
                     continue
@@ -167,7 +183,7 @@ class OSCServer(Thread) :
                 pymt_logger.exception(e)
                 return 'no data arrived'
 
-def listen(ipAddr='127.0.0.1', port = 9001):
+def listen(ipAddr='127.0.0.1', port=9001):
     '''Creates a new thread listening to that port
     defaults to ipAddr='127.0.0.1', port 9001
     '''
@@ -175,6 +191,7 @@ def listen(ipAddr='127.0.0.1', port = 9001):
     id = '%s:%d' % (ipAddr, port)
     if id in oscThreads:
         return
+    pymt_logger.debug('OSC: Start thread <%s>' % id)
     oscThreads[id] = OSCServer(ipAddr, port)
     oscThreads[id].start()
     return id
@@ -189,8 +206,11 @@ def dontListen(id = None):
     else:
         ids = oscThreads.keys()
     for id in ids:
-        oscThreads[id].socket.close()
-        oscThreads[id].isRunning = 0
+        #oscThreads[id].socket.close()
+        pymt_logger.debug('OSC: Stop thread <%s>' % id)
+        oscThreads[id].isRunning.value = False
+        oscThreads[id].join()
+        pymt_logger.debug('OSC: Stop thread <%s> finished' % id)
         del oscThreads[id]
 
 if __name__ == '__main__':

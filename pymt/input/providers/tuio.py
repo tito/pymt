@@ -99,6 +99,10 @@ class TuioTouchProvider(TouchProvider):
 
     def update(self, dispatch_fn):
         '''Update the tuio provider (pop event from the queue)'''
+
+        # deque osc queue
+        osc.readQueue(self.oscid)
+
         # read the Queue with event
         try:
             while True:

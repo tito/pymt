@@ -47,7 +47,6 @@ class InputPostprocRetainTouch(object):
             elif type == 'move':
                 if touch.uid in self._links:
                     selection = self._links[touch.uid]
-                    selection.userdata = touch.userdata
                     selection.x = touch.x
                     selection.y = touch.y
                     selection.sx = touch.sx

@@ -5,7 +5,8 @@ VKeyboard: Virtual keyboard with custom layout support
 
 import os
 import pymt
-from ....graphx import set_color, drawCSSRectangle, drawLabel, GlDisplayList, gx_matrix, drawRoundedRectangle
+from ....graphx import set_color, drawCSSRectangle, drawLabel, GlDisplayList, \
+                       gx_matrix, drawRoundedRectangle, getLastLabel
 from ....clock import getClock
 from ....utils import curry
 from ....vector import Vector
@@ -13,7 +14,7 @@ from ...factory import MTWidgetFactory
 from ..scatter import MTScatterWidget
 from kineticlist import MTKineticList, MTKineticItem
 from ....clock import getClock
-from OpenGL.GL import glScalef, glTranslatef
+from OpenGL.GL import *#glScalef, glTranslatef
 
 __all__ = ['MTVKeyboard']
 
@@ -247,6 +248,8 @@ class MTVKeyboard(MTScatterWidget):
         self._internal_text     = u''
         self._show_layout       = False
         self._active_keys       = []
+        self._old_scale         = self.scale
+        self._used_label        = []
 
         # prepare layout widget
         mtop, mright, mbottom, mleft = self.style['margin']
@@ -331,7 +334,9 @@ class MTVKeyboard(MTScatterWidget):
             # create layout mode if not in cache
             layoutmode = '%s:%s' % (self.layout.ID, self.mode)
             if not layoutmode in self._cache:
-                self._cache[layoutmode] = {'background': GlDisplayList(), 'keys': GlDisplayList()}
+                self._cache[layoutmode] = {'background': GlDisplayList(),
+                                           'keys': GlDisplayList(),
+                                           'usedlabel': []}
             self._current_cache = self._cache[layoutmode]
 
             # do real update
@@ -366,6 +371,7 @@ class MTVKeyboard(MTScatterWidget):
         x, y = 0, self.texsize.y - self.keysize.y
 
         # update display list
+        self._current_cache['usedlabel'] = []
         with self._current_cache[mode]:
 
             # draw lines
@@ -395,6 +401,7 @@ class MTVKeyboard(MTScatterWidget):
                                     pos=(x + kw / 2., y + self.keysize.y / 2.),
                                     font_size=font_size, bold=False,
                                     font_name=self.layout.FONT_FILENAME)
+                            self._current_cache['usedlabel'].append(getLastLabel())
                     # advance X
                     x += kw
                 # advance Y
@@ -412,7 +419,10 @@ class MTVKeyboard(MTScatterWidget):
         self._lazy_update()
 
     def on_transform(self, *largs):
-        self._lazy_update()
+        # to lazy update only if scale change
+        if self._old_scale != self.scale:
+            self._old_scale = self.scale
+            self._lazy_update()
 
     def on_layout_change(self, layout, *largs):
         self._layout_widget.visible = False

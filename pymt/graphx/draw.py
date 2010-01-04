@@ -4,14 +4,15 @@ Draw: primitive drawing
 
 
 
-__all__ = [
+__all__ = (
     'drawLabel', 'drawRoundedRectangle',
     'drawCircle', 'drawPolygon',
     'drawTriangle', 'drawRectangle',
     'drawTexturedRectangle', 'drawLine',
     'drawRectangleAlpha', 'drawRoundedRectangleAlpha',
     'drawSemiCircle', 'drawStippledCircle',
-]
+    'getLastLabel',
+)
 
 import os
 import math
@@ -24,6 +25,7 @@ from statement import *
 from colors import *
 
 # create a cache for label
+_temp_label = None
 if not 'PYMT_DOC' in os.environ:
     Cache.register('drawlabel', timeout=1., limit=100)
 def drawLabel(label, pos=(0,0), **kwargs):
@@ -39,10 +41,11 @@ def drawLabel(label, pos=(0,0), **kwargs):
         `center` : bool, default to True
             Indicate if pos is center or left-right of label
 
-    .. Warning:
-        Use only for debugging, it's a performance killer function.
-        The label is recreated each time the function is called !
+    If you want to get the label object, use getLastLabel() just after your
+    drawLabel().
     '''
+    global _temp_label
+
     kwargs.setdefault('font_size', 12)
     kwargs.setdefault('center', True)
     if kwargs.get('center'):
@@ -56,16 +59,19 @@ def drawLabel(label, pos=(0,0), **kwargs):
     id = '%s##%s' % (label, str(kwargs))
 
     # get or store
-    temp_label = pymt.Cache.get('drawlabel', id)
-    if not temp_label:
-        temp_label = pymt.Label(label, **kwargs)
-        pymt.Cache.append('drawlabel', id, temp_label)
+    _temp_label = pymt.Cache.get('drawlabel', id)
+    if not _temp_label:
+        _temp_label = pymt.Label(label, **kwargs)
+        pymt.Cache.append('drawlabel', id, _temp_label)
 
     # draw
-    temp_label.x, temp_label.y = pos
-    temp_label.draw()
-    return temp_label.content_size
+    _temp_label.x, _temp_label.y = pos
+    _temp_label.draw()
+    return _temp_label.content_size
 
+def getLastLabel():
+    global _temp_label
+    return _temp_label
 
 def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
                          linewidth=None, precision=0.5, style=GL_POLYGON):

@@ -211,7 +211,7 @@ class LabelBase(BaseObject):
     def _set_label(self, label):
         if label == self._label:
             return
-        self._label = label
+        self._label = unicode(label)
         self.refresh()
     label = property(_get_label, _set_label)
     text = property(_get_label, _set_label)

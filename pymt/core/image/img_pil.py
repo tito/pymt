@@ -29,7 +29,7 @@ class ImageLoaderPIL(ImageLoaderBase):
     def load(self, filename):
         pymt.pymt_logger.debug('Image: Load <%s>' % filename)
         try:
-            im = PIL.Image.open(filename)
+            im = Image.open(filename)
         except:
             pymt.pymt_logger.warning('Image: Unable to load image <%s>' % filename)
             raise
@@ -46,7 +46,7 @@ class ImageLoaderPIL(ImageLoaderBase):
             im = imc
 
         # image are not in the good direction, flip !
-        im = im.transpose(PIL.Image.FLIP_TOP_BOTTOM)
+        im = im.transpose(Image.FLIP_TOP_BOTTOM)
 
         # update internals
         self.filename = filename

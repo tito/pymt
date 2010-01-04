@@ -23,8 +23,8 @@ Stream the PyMT video inside MJPEG HTTP server
 #
 
 
+import Image
 import pymt
-import PIL.Image
 import threading
 import time
 import StringIO
@@ -97,7 +97,7 @@ class MjpegHttpRequestHandler(BaseHTTPRequestHandler):
             sem_current.acquire()
 
             with lock_current:
-                im = PIL.Image.fromstring('RGB', win.size, img_current)
+                im = Image.fromstring('RGB', win.size, img_current)
                 img_current = None
 
             sem_next.release()
@@ -106,7 +106,7 @@ class MjpegHttpRequestHandler(BaseHTTPRequestHandler):
             buf = StringIO.StringIO()
             if size:
                 im = im.resize(size)
-            im = im.transpose(PIL.Image.FLIP_TOP_BOTTOM)
+            im = im.transpose(Image.FLIP_TOP_BOTTOM)
             im.save(buf, format='JPEG')
             jpeg = buf.getvalue()
 

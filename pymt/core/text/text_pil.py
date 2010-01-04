@@ -4,16 +4,16 @@ Text PIL: Draw text with PIL
 
 __all__ = ('LabelPIL', )
 
-import pymt
-import os
-from . import LabelBase
-
 try:
-    import PIL
+    import Image
     import ImageFont
     import ImageDraw
 except:
     raise
+
+import pymt
+import os
+from . import LabelBase
 
 # used for fetching extends before creature image surface
 default_font = ImageFont.load_default()
@@ -38,7 +38,7 @@ class LabelPIL(LabelBase):
 
     def _render_begin(self):
         # create a surface, context, font...
-        self._pil_im = PIL.Image.new('RGBA', self.size)
+        self._pil_im = Image.new('RGBA', self.size)
         self._pil_draw = ImageDraw.Draw(self._pil_im)
 
     def _render_text(self, text, x, y):

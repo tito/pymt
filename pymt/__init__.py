@@ -54,7 +54,7 @@ sys.path = [pymt_libs_dir] + sys.path
 # Don't go further if we generate documentation
 if os.path.basename(sys.argv[0]) in ('sphinx-build', 'autobuild.py'):
     os.environ['PYMT_DOC'] = '1'
-if os.path.basename(sys.argv[0]) in ('sphinx-build'):
+if os.path.basename(sys.argv[0]) in ('sphinx-build', ):
     os.environ['PYMT_DOC_INCLUDE'] = '1'
 if not 'PYMT_DOC_INCLUDE' in os.environ:
 

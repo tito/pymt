@@ -8,7 +8,7 @@ import os
 from draw import *
 from pymt.cache import Cache
 from statement import GlDisplayList
-from OpenGL.GL import GL_LINE_LOOP
+from OpenGL.GL import *
 
 
 if not 'PYMT_DOC' in os.environ:
@@ -40,6 +40,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
                 newstyle[k.replace(prefix, '')] = style[k]
         style = newstyle
 
+    style.setdefault('border-width', 1.5)
     style.setdefault('border-radius', 0)
     style.setdefault('border-radius-precision', .1)
     style.setdefault('draw-border', 0)
@@ -51,6 +52,12 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
     new_cache = GlDisplayList()
     with new_cache:
 
+        linewidth = None
+        old_linewidth = glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE)[1]
+        if style.get('border-width') != old_linewidth:
+            linewidth = style.get('border-width')
+        del style['border-width']
+
         if style['border-radius'] > 0:
             k.update({
                 'radius': style['border-radius'],
@@ -59,14 +66,22 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
             if style['draw-background']:
                 drawRoundedRectangle(**k)
             if style['draw-border']:
+                if linewidth:
+                    glLineWidth(linewidth)
                 drawRoundedRectangle(style=GL_LINE_LOOP, **k)
+                if linewidth:
+                    glLineWidth(old_linewidth)
             if style['draw-alpha-background']:
                 drawRoundedRectangleAlpha(alpha=style['alpha-background'], **k)
         else:
             if style['draw-background']:
                 drawRectangle(**k)
             if style['draw-border']:
+                if linewidth:
+                    glLineWidth(linewidth)
                 drawRectangle(style=GL_LINE_LOOP, **k)
+                if linewidth:
+                    glLineWidth(old_linewidth)
             if style['draw-alpha-background']:
                 drawRectangleAlpha(alpha=style['alpha-background'], **k)
 

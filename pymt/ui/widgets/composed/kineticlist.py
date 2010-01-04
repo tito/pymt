@@ -171,8 +171,8 @@ class MTKineticList(MTStencilContainer):
         pass
 
     def clear(self):
-        self.children = SafeList()
-        self.pchildren = SafeList()
+        self.children.clear()
+        self.pchildren.clear()
         self.xoffset = self.yoffset = 0
 
     def add_widget(self, widget, **kwargs):
@@ -476,7 +476,9 @@ class MTKineticList(MTStencilContainer):
         # title bar
         if self.titletext is not None:
             set_color(*self.style.get('title-color'))
-            drawCSSRectangle(pos=(self.x, self.height + self.y - 40), size=(self.width, 40), prefix='title')
+            drawCSSRectangle(pos=(self.x, self.height + self.y - 40),
+                             size=(self.width, 40), prefix='title',
+                             style=self.style)
             self.title.x = self.width/2 + self.x
             self.title.y = self.height - 20 + self.y
             self.title.draw()

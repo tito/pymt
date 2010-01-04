@@ -53,7 +53,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
     with new_cache:
 
         linewidth = None
-        old_linewidth = glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE)[1]
+        old_linewidth = glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE)[1]
         if style.get('border-width') != old_linewidth:
             linewidth = style.get('border-width')
         del style['border-width']

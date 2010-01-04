@@ -4,13 +4,13 @@ PIL: PIL image loader
 
 __all__ = ('ImageLoaderPIL', )
 
-import pymt
-from . import ImageLoaderBase, ImageData, ImageLoader
-
 try:
-    import PIL.Image
+    import Image
 except:
     raise
+
+import pymt
+from . import ImageLoaderBase, ImageData, ImageLoader
 
 # Use PIL to load image.
 class ImageLoaderPIL(ImageLoaderBase):

@@ -41,10 +41,13 @@ copyright = '2009, pymt-dev'
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
-# The short X.Y version.
-version = '0.3.1'
-# The full version, including alpha/beta/rc tags.
-release = '0.3.1'
+import os
+os.environ['PYMT_DOC_INCLUDE'] = '1'
+import pymt
+print pymt.__file__
+
+version = pymt.__version__
+release = pymt.__version__
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:

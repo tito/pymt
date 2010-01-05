@@ -22,7 +22,7 @@ for root, subFolders, files in os.walk('examples'):
 # setup !
 setup(
     name='PyMT',
-    version=pymt.__version__
+    version=pymt.__version__,
     author='PyMT Crew',
     author_email='pymt-dev@googlegroups.com',
     url='http://pymt.txzone.net/',

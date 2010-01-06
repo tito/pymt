@@ -32,7 +32,8 @@ class MTPaintColorPicker(MTWidget):
             slider.value = 200
         self.update_color()
         self.touch_positions = {}
-        self.brush_size = 10
+        self.brush_size = (self.sliders[4].value/4) + 1
+        set_brush_size(self.brush_size)
 
     def draw(self):
         set_color(0.2,0.2,0.2,0.5)

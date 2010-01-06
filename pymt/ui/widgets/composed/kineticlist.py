@@ -227,11 +227,16 @@ class MTKineticList(MTStencilContainer):
 
     def search(self, pattern, attr):
         '''Apply a search pattern to the current set of children'''
-        self.children = self.filter(pattern, attr)
+        result = self.filter(pattern, attr)
+        self.children.clear()
+        for item in result:
+            self.children.append(item)
 
     def endsearch(self):
         '''Resets the children set to the full set'''
-        self.children = self.pchildren
+        self.children.clear()
+        for item in self.pchildren:
+            self.children.append(item)
 
     def _get_total_width(self, items, axis):
         '''Given a list of items and an axis, return the space

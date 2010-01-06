@@ -54,7 +54,7 @@ class MTVectorSlider(MTWidget):
 
         self.radius = kwargs.get('radius')
 
-        self.vector = Vector(0, 0)
+        self.vector = Vector(self.x+self.radius, self.y)
         self.amplitude = 0
         self.angle = 0
 

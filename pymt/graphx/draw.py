@@ -11,7 +11,7 @@ __all__ = (
     'drawTexturedRectangle', 'drawLine',
     'drawRectangleAlpha', 'drawRoundedRectangleAlpha',
     'drawSemiCircle', 'drawStippledCircle',
-    'getLastLabel',
+    'getLastLabel', 'getLabel',
 )
 
 import os
@@ -28,6 +28,41 @@ from colors import *
 _temp_label = None
 if not 'PYMT_DOC' in os.environ:
     Cache.register('drawlabel', timeout=1., limit=100)
+
+def getLabel(label, **kwargs):
+    '''Get a cached label object
+
+    :Parameters:
+        `label` : str
+            Text to be draw
+        `font_size` : int, default to 12
+            Font size of label
+        `center` : bool, default to True
+            Indicate if pos is center or left-right of label
+
+    Used by drawLabel()
+    '''
+    kwargs.setdefault('font_size', 12)
+    kwargs.setdefault('center', True)
+    if kwargs.get('center'):
+        kwargs.setdefault('anchor_x', 'center')
+        kwargs.setdefault('anchor_y', 'center')
+    else:
+        kwargs.setdefault('anchor_x', 'left')
+        kwargs.setdefault('anchor_y', 'bottom')
+    del kwargs['center']
+
+    # create an uniq id for this label
+    id = '%s##%s' % (label, str(kwargs))
+
+    # get or store
+    obj = pymt.Cache.get('drawlabel', id)
+    if not obj:
+        obj = pymt.Label(label, **kwargs)
+        pymt.Cache.append('drawlabel', id, obj)
+
+    return obj
+
 def drawLabel(label, pos=(0,0), **kwargs):
     '''Draw a label on the window.
 
@@ -45,26 +80,7 @@ def drawLabel(label, pos=(0,0), **kwargs):
     drawLabel().
     '''
     global _temp_label
-
-    kwargs.setdefault('font_size', 12)
-    kwargs.setdefault('center', True)
-    if kwargs.get('center'):
-        kwargs.setdefault('anchor_x', 'center')
-        kwargs.setdefault('anchor_y', 'center')
-    else:
-        kwargs.setdefault('anchor_x', 'left')
-        kwargs.setdefault('anchor_y', 'bottom')
-    del kwargs['center']
-    # create an uniq id for this label
-    id = '%s##%s' % (label, str(kwargs))
-
-    # get or store
-    _temp_label = pymt.Cache.get('drawlabel', id)
-    if not _temp_label:
-        _temp_label = pymt.Label(label, **kwargs)
-        pymt.Cache.append('drawlabel', id, _temp_label)
-
-    # draw
+    _temp_label = getLabel(label, **kwargs)
     _temp_label.x, _temp_label.y = pos
     _temp_label.draw()
     return _temp_label.content_size

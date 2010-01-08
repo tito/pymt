@@ -1,5 +1,5 @@
 '''
-InputPostproc Retain Touch: reuse touch to counter finger lost behavior
+Retain Touch: reuse touch to counter finger lost behavior
 '''
 
 __all__ = ['InputPostprocRetainTouch']

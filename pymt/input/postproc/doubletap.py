@@ -1,5 +1,5 @@
 '''
-InputPostproc Double Tap: search touch for a double tap
+Double Tap: search touch for a double tap
 '''
 
 __all__ = ['InputPostprocDoubleTap']

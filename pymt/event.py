@@ -1,3 +1,8 @@
+'''
+Event: event class from Pyglet project
+
+Lot of thanks to Pyglet !
+'''
 # ----------------------------------------------------------------------------
 # pyglet
 # Copyright (c) 2006-2008 Alex Holkner

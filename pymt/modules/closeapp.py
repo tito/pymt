@@ -1,5 +1,5 @@
 '''
-Close an application with one finger
+CloseApp: Close an application with one finger
 '''
 
 from pymt import MTWidget, getFrameDt, getCurrentTouches, Vector, set_color

@@ -1,3 +1,7 @@
+'''
+WM_TOUCH: Support of WM_TOUCH message (Window platform)
+'''
+
 __all__ = ['WM_TOUCHProvider']
 
 
@@ -9,20 +13,16 @@ from ..shape import TouchShapeRect
 from ...base import getWindow
 from ...utils import curry
 
-
-
-WM_TOUCH         = 0x0240
-TOUCHEVENTF_MOVE = 0x0001
-TOUCHEVENTF_DOWN = 0x0002
-TOUCHEVENTF_UP   = 0x0004
-WM_MOUSEMOVE = 512
-WM_LBUTTONDOWN = 513
-WM_LBUTTONUP = 514
-MI_WP_SIGNATURE = 0xFF515700
-SIGNATURE_MASK = 0xFFFFFF00
+WM_TOUCH             = 0x0240
+TOUCHEVENTF_MOVE     = 0x0001
+TOUCHEVENTF_DOWN     = 0x0002
+TOUCHEVENTF_UP       = 0x0004
+WM_MOUSEMOVE         = 512
+WM_LBUTTONDOWN       = 513
+WM_LBUTTONUP         = 514
+MI_WP_SIGNATURE      = 0xFF515700
+SIGNATURE_MASK       = 0xFFFFFF00
 PEN_EVENT_TOUCH_MASK = 0x80
-
-
 
 class TOUCHINPUT(Structure):
     _fields_= [

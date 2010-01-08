@@ -1,3 +1,7 @@
+'''
+WM_PEN: Support of WM_PEN message (Window platform)
+'''
+
 __all__ = ['WM_PenProvider']
 
 from ctypes import *
@@ -7,13 +11,12 @@ from ..touch import Touch
 from ...base import getWindow
 from ...utils import curry
 
-MI_WP_SIGNATURE = 0xFF515700
-SIGNATURE_MASK = 0xFFFFFF00
+MI_WP_SIGNATURE      = 0xFF515700
+SIGNATURE_MASK       = 0xFFFFFF00
 PEN_EVENT_TOUCH_MASK = 0x80
-WM_MOUSEMOVE = 512
-WM_LBUTTONDOWN = 513
-WM_LBUTTONUP = 514
-
+WM_MOUSEMOVE         = 512
+WM_LBUTTONDOWN       = 513
+WM_LBUTTONUP         = 514
 
 class WM_PenProvider(TouchProvider):
 
@@ -83,11 +86,6 @@ class WM_PenProvider(TouchProvider):
     def stop(self):
         pass
 
-
-
-
-
-
 class WM_Pen(Touch):
 
     def depack(self, args):
@@ -96,6 +94,5 @@ class WM_Pen(Touch):
 
     def __str__(self):
         return "WMpen, id:%d, pos:(%f,%f, device:%s )" % (self.id, self.sx, self.sy, self.device)
-
 
 TouchFactory.register('WM_PEN', WM_PenProvider)

@@ -8,6 +8,7 @@ from pymt.logger import pymt_logger
 from pymt.clock import getClock
 
 class Cache:
+    '''Cache, a manager to cache object'''
 
     _categories = {}
     _objects = {}

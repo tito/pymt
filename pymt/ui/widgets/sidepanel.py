@@ -1,5 +1,5 @@
 '''
-Side panel : a panel widget that attach to a side of the screen
+Side panel: a panel widget that attach to a side of the screen
 '''
 
 __all__ = ('MTSidePanel', )

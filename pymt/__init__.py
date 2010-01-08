@@ -1,5 +1,5 @@
 '''
-PyMT: a multi touch UI toolkit, designed for programming on novel interfaces.
+PyMT: multitouch toolkit
 
 PyMT is a python module for developing multi-touch enabled media rich applications.
 
@@ -8,7 +8,7 @@ Currently the aim is to allow for quick and easy interaction design and rapid pr
 You can visit http://pymt.txzone.net/ for more informations !
 '''
 
-__version__ = '0.4.0a1'
+__version__ = '0.4.0a2'
 
 from ConfigParser import ConfigParser
 import sys

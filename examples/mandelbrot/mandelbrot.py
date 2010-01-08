@@ -1,3 +1,6 @@
+import OpenGL
+#OpenGL.FULL_LOGGING = True
+
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
 PLUGIN_TITLE = 'Mandelbrot Viewer'
@@ -104,7 +107,7 @@ def pymt_plugin_activate(w, ctx):
     root.add_widget(mbviewer)
 
     #create a label and a slider for setting the number of iterations
-    label = MTLabel(label="Number of iterations: 50", pos=(10,50))
+    label = MTLabel(label="Number of iterations: 50", pos=(10,50), autosize=True)
     slider = MTSlider(orientation='horizontal', min=25, max=250, value=100, size=(w.width-20, 30), pos=(10,10))
 
     # attach the event handler to the slider

@@ -22,8 +22,7 @@ Stream the PyMT video inside MJPEG HTTP server
 # Double-lock was just the faster solution to do right now :)
 #
 
-
-import Image
+import os
 import pymt
 import threading
 import time
@@ -32,6 +31,9 @@ import random
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from OpenGL.GL import glReadBuffer, glReadPixels, GL_RGB, GL_UNSIGNED_BYTE, GL_FRONT
 from pymt.utils import curry
+
+if 'PYMT_DOC' not in os.environ:
+	import Image
 
 lock_current    = threading.Lock()
 sem_current     = threading.Semaphore(0)

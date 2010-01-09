@@ -4,12 +4,15 @@ WM_PEN: Support of WM_PEN message (Window platform)
 
 __all__ = ['WM_PenProvider']
 
+import os
 from ctypes import *
 from ..provider import TouchProvider
 from ..factory import TouchFactory
 from ..touch import Touch
-from ...base import getWindow
 from ...utils import curry
+
+if 'PYMT_DOC' not in os.environ:
+    from ...base import getWindow
 
 MI_WP_SIGNATURE      = 0xFF515700
 SIGNATURE_MASK       = 0xFFFFFF00

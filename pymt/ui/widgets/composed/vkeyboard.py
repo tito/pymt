@@ -16,7 +16,7 @@ from kineticlist import MTKineticList, MTKineticItem
 from ....clock import getClock
 from OpenGL.GL import *#glScalef, glTranslatef
 
-__all__ = ['MTVKeyboard']
+__all__ = ('MTVKeyboard', 'KeyboardLayout', 'KeyboardLayoutQWERTY', 'KeyboardLayoutAZERTY')
 
 kbdlayout_default_font = os.path.join(pymt.pymt_data_dir, 'DejaVuSans.ttf')
 
@@ -175,44 +175,44 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
     ]
 
 class MTVKeyboard(MTScatterWidget):
+    '''
+    MTVKeyboard is a OnBoard keyboard, with Multitouch support.
+    Layout are entirely customizable, and you can switch from layout with
+    little button in bottom-right of keyboard.
+
+    :Parameters:
+        `layout` : KeyboardLayout object, default to None
+            If none, keyboard layout will be created from configuration
+            property.
+        `time_lazy_update` : float, default to 0.2
+            Time in seconds of force a lazy update when keyboard size change
+
+    :Events:
+        `on_key_down` : key
+            Fired when a key is down
+            The key contain: displayed_str, internal_str, internal_action, width
+        `on_key_up` : key
+            Fired when a key is up
+            The key contain: displayed_str, internal_str, internal_action, width
+        `on_text_change` : text
+            Fired when the internal text is changed
+
+    List of internal action availables :
+
+    * backspace
+    * capslock
+    * enter
+    * escape
+    * layout (to display layout list)
+    * shift
+    * shift_L
+    * shift_R
+
+    '''
 
     available_layout = []
 
     def __init__(self, **kwargs):
-        '''
-        MTVKeyboard is a OnBoard keyboard, with Multitouch support.
-        Layout are entirely customizable, and you can switch from layout with
-        little button in bottom-right of keyboard.
-
-        :Parameters:
-            `layout` : KeyboardLayout object, default to None
-                If none, keyboard layout will be created from configuration
-                property.
-            `time_lazy_update` : float, default to 0.2
-                Time in seconds of force a lazy update when keyboard size change
-
-        :Events:
-            `on_key_down` : key
-                Fired when a key is down
-                The key contain: displayed_str, internal_str, internal_action, width
-            `on_key_up` : key
-                Fired when a key is up
-                The key contain: displayed_str, internal_str, internal_action, width
-            `on_text_change` : text
-                Fired when the internal text is changed
-
-        List of internal action availables :
-
-        * backspace
-        * capslock
-        * enter
-        * escape
-        * layout (to display layout list)
-        * shift
-        * shift_L
-        * shift_R
-
-        '''
         kwargs.setdefault('size', (700, 200))
         kwargs.setdefault('layout', None)
         kwargs.setdefault('time_lazy_update', .2)

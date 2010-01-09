@@ -1,9 +1,5 @@
 '''
 Video widget: provide a video container
-
-.. warning::
-    Library avbin is needed for using MTVideoPlayer.
-    Check http://code.google.com/p/avbin/ for more information.
 '''
 
 

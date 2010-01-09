@@ -13,29 +13,29 @@ from ..layout import MTBoxLayout
 
 
 class MTPopup(MTScatterWidget):
+    '''Popup with customizable content.
+
+    :Parameters:
+        `show_cancel`: bool, default to True
+            Show/hide the cancel button
+        `label_cancel`: str, default to 'Cancel'
+            Change the label of cancel button
+        `label_submit`: str, default to 'Ok'
+            Change the label of submit button
+        `title`: str, default to 'PyMT popup'
+            Title of the popup (if None, no title will be added.)
+        `exit_on_submit`: bool, default to 'True'
+            Title of the popup (if None, no title will be added.)
+
+    :Events:
+        `on_submit`
+            Fired when the popup submit button is pressed.
+            In default behavior, the widget remove himself from parent.
+        `on_cancel`
+            Fired when the popup cancel button is pressed.
+            In default behavior, the widget remove himself from parent.
+    '''
     def __init__(self, **kwargs):
-        '''Popup with customizable content.
-
-        :Parameters:
-            `show_cancel`: bool, default to True
-                Show/hide the cancel button
-            `label_cancel`: str, default to 'Cancel'
-                Change the label of cancel button
-            `label_submit`: str, default to 'Ok'
-                Change the label of submit button
-            `title`: str, default to 'PyMT popup'
-                Title of the popup (if None, no title will be added.)
-            `exit_on_submit`: bool, default to 'True'
-                Title of the popup (if None, no title will be added.)
-
-        :Events:
-            `on_submit`
-                Fired when the popup submit button is pressed.
-                In default behavior, the widget remove himself from parent.
-            `on_cancel`
-                Fired when the popup cancel button is pressed.
-                In default behavior, the widget remove himself from parent.
-        '''
         kwargs.setdefault('do_scale', False)
         kwargs.setdefault('size', (400, 400))
         kwargs.setdefault('show_cancel', True)

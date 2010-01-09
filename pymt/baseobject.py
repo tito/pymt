@@ -5,6 +5,7 @@ Base object: object with position and size attributes, with helpers
 __all__ = ('BaseObject', )
 
 class BaseObject(object):
+    '''Represent a object with position and size information'''
 
     __slots__ = ('_size', '_pos')
 

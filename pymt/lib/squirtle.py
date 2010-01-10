@@ -817,7 +817,6 @@ class SVG(object):
     def triangulate(self, looplist):
         tlist = []
         self.curr_shape = []
-        spareverts = []
 
         def vertexCallback(vertex):
             self.curr_shape.append(list(vertex[0:2]))
@@ -853,23 +852,32 @@ class SVG(object):
             pymt_logger.warning('Squirtle: GLU Tesselation Error: ' + err)
 
         def combineCallback(coords, vertex_data, weights):
-            print 'COMBINE', coords, '#', vertex_data
-            x, y, z = coords[0:3]
-            data = (x, y, z)
-            spareverts.append(data)
-            return vertex_data
+            return (coords[0], coords[1], coords[2])
 
         gluTessCallback(self._tess, GLU_TESS_VERTEX, vertexCallback)
         gluTessCallback(self._tess, GLU_TESS_BEGIN, beginCallback)
         gluTessCallback(self._tess, GLU_TESS_END, endCallback)
         gluTessCallback(self._tess, GLU_TESS_ERROR, errorCallback)
-        #gluTessCallback(self._tess, GLU_TESS_COMBINE, combineCallback)
+        gluTessCallback(self._tess, GLU_TESS_COMBINE, combineCallback)
 
         data_lists = []
         for vlist in looplist:
             d_list = []
             for x, y in vlist:
                 v_data = (x, y, 0)
+                found = False
+                for x2, y2, z2 in d_list:
+                    d = math.sqrt((x - x2) ** 2 + (y - y2) ** 2)
+                    if d < 0.0000001:
+                        # XXX we've found a coordinate nearly the same as an other
+                        # coordinate. this is the "COMBINE" case of GLU tesslation
+                        # But on my PyOpenGL version, i got the "need combine
+                        # callback" error, and i'm unable to get ride of it until
+                        # the wrong vertex is removed.
+                        found = True
+                        break
+                if found:
+                    continue
                 d_list.append(v_data)
             data_lists.append(d_list)
         gluTessBeginPolygon(self._tess, None)

@@ -148,6 +148,13 @@ class MacTouchProvider(TouchProvider):
     def _mts_callback(device, data_ptr, n_fingers, timestamp, frame):
         global _instance
         devid = str(device)
+
+        # XXX create live touch, we get one case that
+        # the device announced by macosx don't match the device
+        # in _mts_callback....
+        if not devid in _instance.touches:
+            _instance.touches[devid] = {}
+
         touches = _instance.touches[devid]
         actives = []
 

@@ -6,7 +6,7 @@ Label: a simple text label
 __all__ = ['MTLabel']
 
 import pymt
-from ...graphx import drawLabel, set_color, drawCSSRectangle, getLabel
+from ...graphx import drawLabel, set_color, drawCSSRectangle, getLabel, getLastLabel
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 
@@ -50,11 +50,13 @@ class MTLabel(MTWidget):
         # update this label size
         label = getLabel(label=self.label, **self.kwargs)
         self._update_size(*label.size)
+        self._used_label = None
 
     def draw(self):
         set_color(*self.style.get('bg-color'))
         drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
         w, h = drawLabel(label=self.label, pos=self.center, **self.kwargs)
+        self._used_label = getLastLabel()
         self._update_size(w, h)
 
     def _update_size(self, w, h):

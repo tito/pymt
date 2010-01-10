@@ -130,19 +130,22 @@ objectdisplay {
 
 vkeyboard {
     /* onboard keyboard */
-    margin: 10 50 10 50;
+	border-color: rgb(100, 100, 100);
     border-radius: 15;
     border-radius-precision: 0.35;
-    key-draw-background: 1;
-    key-border-radius: 5;
-    key-border-radius-precision: 1;
+	border-width: 20;
+    color-down: rgba(200, 200, 200, 255);
+    draw-border: 1;
+    draw-key-alpha-background: 1;
     draw-key-border: 1;
     key-alpha-background: 1 1 .7 .7;
-    draw-key-alpha-background: 1;
-    draw-border: 1;
+	key-border-color: rgb(60, 60, 60);
+    key-border-radius: 5;
+    key-border-radius-precision: 0.35;
     key-color: rgba(20, 20, 20, 255);
+    key-draw-background: 1;
+    margin: 10 50 10 50;
     syskey-color: rgba(20, 20, 40, 255);
-    color-down: rgba(200, 200, 200, 127);
 }
 
 popup {

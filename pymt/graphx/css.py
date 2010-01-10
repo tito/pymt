@@ -7,7 +7,7 @@ __all__ = ['drawCSSRectangle']
 import os
 from draw import *
 from pymt.cache import Cache
-from statement import GlDisplayList
+from statement import GlDisplayList, gx_color
 from OpenGL.GL import *
 
 
@@ -58,6 +58,10 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
             linewidth = style.get('border-width')
         del style['border-width']
 
+        bordercolor = None
+        if 'border-color' in style:
+            bordercolor = style['border-color']
+
         if style['border-radius'] > 0:
             k.update({
                 'radius': style['border-radius'],
@@ -68,7 +72,11 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
             if style['draw-border']:
                 if linewidth:
                     glLineWidth(linewidth)
-                drawRoundedRectangle(style=GL_LINE_LOOP, **k)
+                if bordercolor:
+                    with gx_color(*bordercolor):
+                        drawRoundedRectangle(style=GL_LINE_LOOP, **k)
+                else:
+                    drawRoundedRectangle(style=GL_LINE_LOOP, **k)
                 if linewidth:
                     glLineWidth(old_linewidth)
             if style['draw-alpha-background']:
@@ -79,7 +87,11 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
             if style['draw-border']:
                 if linewidth:
                     glLineWidth(linewidth)
-                drawRectangle(style=GL_LINE_LOOP, **k)
+                if bordercolor:
+                    with gx_color(*bordercolor):
+                        drawRectangle(style=GL_LINE_LOOP, **k)
+                else:
+                    drawRectangle(style=GL_LINE_LOOP, **k)
                 if linewidth:
                     glLineWidth(old_linewidth)
             if style['draw-alpha-background']:

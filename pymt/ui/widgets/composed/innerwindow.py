@@ -138,14 +138,14 @@ class MTInnerWindow(MTScatterWidget):
         return self.container
 
     def get_scaled_border(self):
-        return self.style.get('border-width') * (1.0 / self.get_scale_factor())
+        return self.style.get('border-width') * (1.0 / self.scale)
 
     def update_controls(self):
         scaled_border = self.get_scaled_border()
         center_x = self.width / 2
         center_y = - scaled_border
         for button in self.controls.children:
-            button.scale = self.control_scale / self.get_scale_factor()
+            button.scale = self.control_scale / self.scale
         self.btn_fullscreen.pos = center_x - self.btn_fullscreen.width - 2, \
                                   center_y - self.btn_fullscreen.height / 2
         self.btn_close.pos = center_x + 2, center_y - self.btn_close.height / 2

@@ -8,7 +8,7 @@ Currently the aim is to allow for quick and easy interaction design and rapid pr
 You can visit http://pymt.txzone.net/ for more informations !
 '''
 
-__version__ = '0.4.0a2'
+__version__ = '0.4.0a3'
 
 from ConfigParser import ConfigParser
 import sys

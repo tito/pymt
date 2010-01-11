@@ -232,7 +232,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 
     # Can be overrided in command line
     try:
-        opts, args = getopt.getopt(sys_argv[1:], 'hp:fwFem:s',
+        opts, args = getopt.getopt(sys_argv[1:], 'hp:fwFem:sn',
             ['help', 'fullscreen', 'windowed', 'fps', 'event',
              'module=', 'save',
              'display=', 'size=', 'dump-frame', 'dump-format=', 'dump-prefix='])
@@ -274,6 +274,8 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
                 pymt_config.set('modules', args[0], args[1])
             elif opt in ['-s', '--save']:
                 need_save = True
+            elif opt in ['-n']:
+                options['shadow_window'] = False
 
         if need_save:
             try:

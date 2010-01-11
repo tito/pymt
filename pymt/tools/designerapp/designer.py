@@ -132,7 +132,7 @@ class MainWindow(QtGui.QMainWindow):
         self.editor.setFont(font)
         self.editor.setMinimumSize(500,600)
         self.highlighter = Highlighter(self.editor.document())
-        self.openFile('test.py')
+        self.openFile(os.path.join(os.path.dirname(__file__), 'test.py'))
 
 
     def newFile(self):
@@ -219,9 +219,7 @@ class MainWindow(QtGui.QMainWindow):
         self.act_stop.setEnabled(self.glWidget.is_running)
         self.act_pause.setVisible(not self.act_run.isVisible())
 
-
-if __name__ == '__main__':
-
+def run():
     import sys
 
     app = QtGui.QApplication(sys.argv)
@@ -230,3 +228,5 @@ if __name__ == '__main__':
     window.show()
     sys.exit(app.exec_())
 
+if __name__ == '__main__':
+    run()

@@ -17,7 +17,7 @@ import os
 from logger import pymt_logger, LOG_LEVELS
 
 # Version number of current configuration format
-PYMT_CONFIG_VERSION = 4
+PYMT_CONFIG_VERSION = 5
 
 # Global settings options for pymt
 options = {
@@ -166,6 +166,10 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         elif pymt_config_version == 3:
             # add multisamples
             pymt_config.setdefault('graphics', 'multisamples', '2')
+
+        elif pymt_config_version == 4:
+            # remove mouse simulator
+            pymt_config.remove_option('pymt', 'enable_simulator')
 
         else:
             # for future.

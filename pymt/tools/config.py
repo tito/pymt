@@ -86,11 +86,11 @@ def configuration_save():
     width, height = c_screen.get().split('x')
     pymt_config.set('graphics', 'width', width)
     pymt_config.set('graphics', 'height', height)
-    
-    #input
+
+    # input
     host, port = c_tuio_host.get(), c_tuio_port.get()
     pymt_config.set('input', 'default', "tuio,"+host+":"+port)
-    
+
     try:
         with open(pymt_config_fn, 'w') as fd:
             pymt_config.write(fd)
@@ -108,19 +108,16 @@ g_pymt.grid(row=0, column=0, sticky=W+E+N+S)
 
 Label(g_pymt, text='Show FPS').grid(row=0)
 Label(g_pymt, text='Show event stats').grid(row=1)
-Label(g_pymt, text='Enable mouse simulator').grid(row=2)
-Label(g_pymt, text='Log level').grid(row=3)
-Label(g_pymt, text='Double tap time').grid(row=4)
-Label(g_pymt, text='Double tap distance').grid(row=5)
-Label(g_pymt, text='Retain Time').grid(row=6)
-Label(g_pymt, text='Retain Distance').grid(row=7)
+Label(g_pymt, text='Log level').grid(row=2)
+Label(g_pymt, text='Double tap time').grid(row=3)
+Label(g_pymt, text='Double tap distance').grid(row=4)
+Label(g_pymt, text='Retain Time').grid(row=5)
+Label(g_pymt, text='Retain Distance').grid(row=6)
 
 e_pymt_fps = Checkbutton(g_pymt,
         variable=c['pymt.show_fps'], onvalue='1', offvalue='0')
 e_pymt_eventstats = Checkbutton(g_pymt,
         variable=c['pymt.show_eventstats'], onvalue='1', offvalue='0')
-e_pymt_enablesimulator = Checkbutton(g_pymt,
-        variable=c['pymt.enable_simulator'], onvalue='1', offvalue='0')
 e_pymt_loglevel = OptionMenu(g_pymt, c['pymt.log_level'], *opt_loglevel)
 e_pymt_doubletaptime = Scale(g_pymt, from_=0, to=1000, orient=HORIZONTAL,
         variable=c['pymt.double_tap_time'])
@@ -131,12 +128,11 @@ e_pymt_retaindistance = Entry(g_pymt, textvariable=c['pymt.retain_distance'])
 
 e_pymt_fps.grid(row=0, column=1)
 e_pymt_eventstats.grid(row=1, column=1)
-e_pymt_enablesimulator.grid(row=2, column=1)
-e_pymt_loglevel.grid(row=3, column=1)
-e_pymt_doubletaptime.grid(row=4, column=1, sticky=W+E+N+S)
-e_pymt_doubletapdistance.grid(row=5, column=1, sticky=W+E+N+S)
-e_pymt_retaintime.grid(row=6,column=1)
-e_pymt_retaindistance.grid(row=7,column=1)
+e_pymt_loglevel.grid(row=2, column=1)
+e_pymt_doubletaptime.grid(row=3, column=1, sticky=W+E+N+S)
+e_pymt_doubletapdistance.grid(row=4, column=1, sticky=W+E+N+S)
+e_pymt_retaintime.grid(row=5,column=1)
+e_pymt_retaindistance.grid(row=6,column=1)
 
 # ================================================================
 # Graphics

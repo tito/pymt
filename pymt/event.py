@@ -1,7 +1,105 @@
-'''
-Event: event class from Pyglet project
+'''Event: Event dispatch framework.
 
-Lot of thanks to Pyglet !
+All objects that produce events in pyglet implement `EventDispatcher`,
+providing a consistent interface for registering and manipulating event
+handlers.  A commonly used event dispatcher is `pyglet.window.Window`.
+
+Event types
+===========
+
+For each event dispatcher there is a set of events that it dispatches; these
+correspond with the type of event handlers you can attach.  Event types are
+identified by their name, for example, ''on_resize''.  If you are creating a
+new class which implements `EventDispatcher`, you must call
+`EventDispatcher.register_event_type` for each event type.
+
+Attaching event handlers
+========================
+
+An event handler is simply a function or method.  You can attach an event
+handler by setting the appropriate function on the instance::
+
+    def on_resize(width, height):
+        # ...
+    dispatcher.on_resize = on_resize
+
+There is also a convenience decorator that reduces typing::
+
+    @dispatcher.event
+    def on_resize(width, height):
+        # ...
+
+You may prefer to subclass and override the event handlers instead::
+
+    class MyDispatcher(DispatcherClass):
+        def on_resize(self, width, height):
+            # ...
+
+Event handler stack
+===================
+
+When attaching an event handler to a dispatcher using the above methods, it
+replaces any existing handler (causing the original handler to no longer be
+called).  Each dispatcher maintains a stack of event handlers, allowing you to
+insert an event handler "above" the existing one rather than replacing it.
+
+There are two main use cases for "pushing" event handlers:
+
+* Temporarily intercepting the events coming from the dispatcher by pushing a
+  custom set of handlers onto the dispatcher, then later "popping" them all
+  off at once.
+* Creating "chains" of event handlers, where the event propogates from the
+  top-most (most recently added) handler to the bottom, until a handler
+  takes care of it.
+
+Use `EventDispatcher.push_handlers` to create a new level in the stack and
+attach handlers to it.  You can push several handlers at once::
+
+    dispatcher.push_handlers(on_resize, on_key_press)
+
+If your function handlers have different names to the events they handle, use
+keyword arguments::
+
+    dispatcher.push_handlers(on_resize=my_resize,
+                             on_key_press=my_key_press)
+
+After an event handler has processed an event, it is passed on to the
+next-lowest event handler, unless the handler returns `EVENT_HANDLED`, which
+prevents further propogation.
+
+To remove all handlers on the top stack level, use
+`EventDispatcher.pop_handlers`.
+
+Note that any handlers pushed onto the stack have precedence over the
+handlers set directly on the instance (for example, using the methods
+described in the previous section), regardless of when they were set.
+For example, handler ``foo`` is called before handler ``bar`` in the following
+example::
+
+    dispatcher.push_handlers(on_resize=foo)
+    dispatcher.on_resize = bar
+
+Dispatching events
+==================
+
+pyglet uses a single-threaded model for all application code.  Event
+handlers are only ever invoked as a result of calling
+EventDispatcher.dispatch_events`.
+
+It is up to the specific event dispatcher to queue relevant events until they
+can be dispatched, at which point the handlers are called in the order the
+events were originally generated.
+
+This implies that your application runs with a main loop that continously
+updates the application state and checks for new events::
+
+    while True:
+        dispatcher.dispatch_events()
+        # ... additional per-frame processing
+
+Not all event dispatchers require the call to ``dispatch_events``; check with
+the particular class documentation.
+
 '''
 # ----------------------------------------------------------------------------
 # pyglet
@@ -47,6 +145,11 @@ __all__ = ('EventDispatcher', )
 import inspect
 
 class EventDispatcher(object):
+    '''Generic event dispatcher interface.
+
+    See the module docstring for usage.
+    '''
+
     _event_stack = ()
 
     def __init__(self):
@@ -58,10 +161,29 @@ class EventDispatcher(object):
             self._event_types.remove(event_type)
 
     def register_event_type(self, event_type):
+        '''Register an event type with the dispatcher.
+
+        Registering event types allows the dispatcher to validate event
+        handler names as they are attached, and to search attached objects for
+        suitable handlers.
+
+        :Parameters:
+            `name` : str
+                Name of the event to register.
+
+        '''
         if not event_type in self._event_types:
             self._event_types.append(event_type)
 
     def push_handlers(self, *args, **kwargs):
+        '''Push a level onto the top of the handler stack, then attach zero or
+        more event handlers.
+
+        If keyword arguments are given, they name the event type to attach.
+        Otherwise, a callable's `__name__` attribute will be used.  Any other
+        object may also be specified, in which case it will be searched for
+        callables with event names.
+        '''
         # Create event stack if necessary
         if type(self._event_stack) is tuple:
             self._event_stack = []
@@ -71,6 +193,21 @@ class EventDispatcher(object):
         self.set_handlers(*args, **kwargs)
 
     def remove_handler(self, name, handler):
+        '''Remove a single event handler.
+
+        The given event handler is removed from the first handler stack frame
+        it appears in.  The handler must be the exact same callable as passed
+        to `set_handler`, `set_handlers` or `push_handlers`; and the name
+        must match the event type it is bound to.
+
+        No error is raised if the event handler is not set.
+
+        :Parameters:
+            `name` : str
+                Name of the event type to remove.
+            `handler` : callable
+                Event handler to remove.
+        '''
         for frame in self._event_stack:
             try:
                 if frame[name] is handler:
@@ -80,6 +217,17 @@ class EventDispatcher(object):
                 pass
 
     def remove_handlers(self, *args, **kwargs):
+        '''Remove event handlers from the event stack.
+
+        See `push_handlers` for the accepted argument types.  All handlers
+        are removed from the first stack frame that contains any of the given
+        handlers.  No error is raised if any handler does not appear in that
+        frame, or if no stack frame contains any of the given handlers.
+
+        If the stack frame is empty after removing the handlers, it is 
+        removed from the stack.  Note that this interferes with the expected
+        symmetry of `push_handlers` and `pop_handlers`.
+        '''
         handlers = list(self._get_handlers(args, kwargs))
 
         # Find the first stack frame containing any of the handlers
@@ -110,6 +258,9 @@ class EventDispatcher(object):
             self._event_stack.remove(frame)
 
     def _get_handlers(self, args, kwargs):
+        '''Implement handler matching on arguments for set_handlers and
+        remove_handlers.
+        '''
         for object in args:
             if inspect.isroutine(object):
                 # Single magically named function
@@ -129,6 +280,11 @@ class EventDispatcher(object):
             yield name, handler
 
     def set_handlers(self, *args, **kwargs):
+        '''Attach one or more event handlers to the top level of the handler
+        stack.
+        
+        See `push_handlers` for the accepted argument types.
+        '''
         # Create event stack if necessary
         if type(self._event_stack) is tuple:
             self._event_stack = [{}]
@@ -137,12 +293,35 @@ class EventDispatcher(object):
             self.set_handler(name, handler)
 
     def set_handler(self, name, handler):
+        '''Attach a single event handler.
+
+        :Parameters:
+            `name` : str
+                Name of the event type to attach to.
+            `handler` : callable
+                Event handler to attach.
+
+        '''
         # Create event stack if necessary
         if type(self._event_stack) is tuple:
             self._event_stack = [{}]
         self._event_stack[0][name] = handler
 
     def dispatch_event(self, event_type, *args):
+        '''Dispatch a single event to the attached handlers.
+        
+        The event is propogated to all handlers from from the top of the stack
+        until one returns `EVENT_HANDLED`.  This method should be used only by
+        `EventDispatcher` implementors; applications should call
+        the ``dispatch_events`` method.
+
+        :Parameters:
+            `event_type` : str
+                Name of the event.
+            `args` : sequence
+                Arguments to pass to the event handler.
+
+        '''
         # unknown event type
         if event_type not in self._event_types:
             return

@@ -1,5 +1,20 @@
 '''
-Cache Manager: a way to cache things, and delete them automaticly
+Cache Manager: cache object and delete them automaticly
+
+How to use the cache ::
+    # register a new Cache
+    Cache.register('mycache', limit=10, timeout=5)
+
+    # create an object + id
+    label = 'objectid'
+    instance = MTLabel(label=label)
+    Cache.append('mycache', label, instance)
+
+    # retreive the object later
+    instance = Cache.get('mycache', label)
+
+If the instance is NULL, the cache may have trash it, because you've
+not used the label since 5 seconds, and you've reach the limit.
 '''
 
 __all__ = ('Cache', )

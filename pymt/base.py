@@ -198,9 +198,6 @@ def pymt_usage():
         -m mod, --module=mod        activate a module (use "list" to get available module)
         -s, --save                  save current PyMT configuration
         --size=640x480              size of window
-        --dump-frame                dump each frame in file
-        --dump-prefix               specify a prefix for each frame file
-        --dump-format               specify a format for dump
 
     '''
     print pymt_usage.__doc__ % (os.path.basename(sys.argv[0]))
@@ -225,8 +222,9 @@ def _run_mainloop():
 
 def runTouchApp(widget=None, slave=False):
     '''Static main function that starts the application loop.
-    You got some magic things, if you are using argument like this ::
+    You got some magic things, if you are using argument like this :
 
+    :Parameters:
         `<empty>`
             To make dispatching work, you need at least one
             input listener. If not, application will leave.

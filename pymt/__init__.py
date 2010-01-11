@@ -256,12 +256,6 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
                 pymt_config.set('pymt', 'show_fps', '1')
             elif opt in ['-e', '--eventstats']:
                 pymt_config.set('pymt', 'show_eventstats', '1')
-            elif opt in ['--dump-frame']:
-                pymt_config.set('dump', 'enabled', '1')
-            elif opt in ['--dump-prefix']:
-                pymt_config.set('dump', 'prefix', str(arg))
-            elif opt in ['--dump-format']:
-                pymt_config.set('dump', 'format', str(arg))
             elif opt in ['--size']:
                 w, h = str(arg).split('x')
                 pymt_config.set('graphics', 'width', w)

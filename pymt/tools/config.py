@@ -4,7 +4,7 @@ from __future__ import with_statement
 from Tkinter import *
 import tkMessageBox
 import sys
-from pymt import pymt_modules, pymt_config, pymt_config_fn, curry
+from pymt import pymt_modules, pymt_config, pymt_config_fn, curry, TouchFactory
 
 class AutoConfig(dict):
     def __getitem__(self, name):
@@ -23,6 +23,10 @@ c_tuio_host = StringVar()
 c_tuio_port = StringVar()
 c_modules = StringVar()
 c_screen = StringVar()
+c_input = StringVar()
+c_input_option = StringVar()
+c_input_provider = StringVar()
+c_input_devicename = StringVar()
 
 try:
     provider = pymt_config.get('input', 'default')
@@ -38,6 +42,7 @@ c_screen.set('%dx%d' % (pymt_config.getint('graphics', 'width'),
                         pymt_config.getint('graphics', 'height')))
 
 # Get infos
+opt_input = TouchFactory.list()
 opt_fbo = ('hardware', 'software')
 opt_loglevel = ('debug', 'info', 'warning', 'error')
 opt_screen = (
@@ -88,8 +93,13 @@ def configuration_save():
     pymt_config.set('graphics', 'height', height)
 
     # input
-    host, port = c_tuio_host.get(), c_tuio_port.get()
-    pymt_config.set('input', 'default', "tuio,"+host+":"+port)
+    if pymt_config.has_section('input'):
+        pymt_config.remove_section('input')
+    pymt_config.add_section('input')
+    inputlist = eval(c_input.get())
+    for index in map(int, e_input_list.curselection()):
+        device_id, option = inputlist[index].split('=', 1)
+        pymt_config.set('input', device_id, option)
 
     try:
         with open(pymt_config_fn, 'w') as fd:
@@ -142,8 +152,6 @@ g_graphics = LabelFrame(master, text='Graphics', padx=5, pady=5)
 g_graphics.grid(row=0, column=1, sticky=W+E+N+S)
 
 Label(g_graphics, text='Fullscreen').grid(row=0)
-#Label(g_graphics, text='Width').grid(row=1)
-#Label(g_graphics, text='Height').grid(row=2)
 Label(g_graphics, text='Screen').grid(row=1)
 Label(g_graphics, text='Display').grid(row=2)
 Label(g_graphics, text='Line smooth').grid(row=3)
@@ -154,8 +162,6 @@ Label(g_graphics, text='Show Cursor').grid(row=7)
 
 e_graphics_fullscreen = Checkbutton(g_graphics,
         variable=c['graphics.fullscreen'], onvalue='1', offvalue='0')
-#e_graphics_width = Entry(g_graphics, textvariable=c['graphics.width'])
-#e_graphics_height = Entry(g_graphics, textvariable=c['graphics.height'])
 e_graphics_screen = OptionMenu(g_graphics, c_screen, *opt_screen)
 e_graphics_display = Spinbox(g_graphics, from_=-1, to=100, textvariable=c['graphics.display'])
 e_graphics_line_smooth = Checkbutton(g_graphics,
@@ -168,8 +174,6 @@ e_graphics_showcursor = Checkbutton(g_graphics,
         variable=c['graphics.show_cursor'], onvalue='1', offvalue='0')
 
 e_graphics_fullscreen.grid(row=0, column=1)
-#e_graphics_width.grid(row=1, column=1)
-#e_graphics_height.grid(row=2, column=1)
 e_graphics_screen.grid(row=1, column=1)
 e_graphics_display.grid(row=2, column=1)
 e_graphics_line_smooth.grid(row=3, column=1)
@@ -200,14 +204,42 @@ e_modules_list.grid(row=0, column=1)
 g_input = LabelFrame(master, text='Input', padx=5, pady=5)
 g_input.grid(row=1, column=0, sticky=W+E+N+S)
 
-Label(g_input, text='IP').grid(row=0)
-Label(g_input, text='Port').grid(row=1)
+e_input_list = Listbox(g_input, selectmode=MULTIPLE,
+    exportselection=0, listvariable=c_input)
+e_input_list.grid(row=0, column=1)
 
-e_input_ip = Entry(g_input, textvariable=c_tuio_host)
-e_input_port = Entry(g_input, textvariable=c_tuio_port)
+Label(g_input, text='Device Name').grid(row=1)
+Label(g_input, text='Provider').grid(row=2)
+Label(g_input, text='Option').grid(row=3)
 
-e_input_ip.grid(row=0, column=1)
-e_input_port.grid(row=1, column=1)
+e_input_devicename = Entry(g_input, textvariable=c_input_devicename)
+e_input_devicename.grid(row=1, column=1)
+
+e_input_available = OptionMenu(g_input, c_input_provider, *opt_input)
+e_input_available.grid(row=2, column=1)
+
+e_input_option = Entry(g_input, textvariable=c_input_option)
+e_input_option.grid(row=3, column=1)
+
+def _input_add(*largs):
+    device_id = c_input_devicename.get()
+    if device_id == '':
+        tkMessageBox.showerror('PyMT', 'No device name setted')
+        return
+    provider_name = c_input_provider.get()
+    if provider_name == '':
+        tkMessageBox.showerror('PyMT', 'No provider selected')
+        return
+    options = c_input_option.get()
+    t = '%s=%s,%s' % (str(device_id), str(provider_name), str(options))
+    e_input_list.insert(END, t)
+    e_input_list.selection_set(eval(c_input.get()).index(t))
+
+    c_input_devicename.set('')
+    c_input_option.set('')
+
+e_input_add = Button(g_input, text='Add input', command=_input_add)
+e_input_add.grid(row=4, column=1)
 
 
 # ================================================================
@@ -227,6 +259,11 @@ for mod in pymt_modules.list():
 for opt in pymt_config.options('modules'):
     index = eval(c_modules.get()).index(opt)
     e_modules_list.selection_set(index)
+for device_id in pymt_config.options('input'):
+    line = pymt_config.get('input', device_id)
+    t = '%s=%s' % (str(device_id), str(line))
+    e_input_list.insert(END, t)
+    e_input_list.selection_set(eval(c_input.get()).index(t))
 
 # ================================================================
 # Load configuration

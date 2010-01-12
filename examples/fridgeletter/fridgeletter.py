@@ -1,5 +1,5 @@
 from pymt import *
-from random import randint
+from random import randint, random
 
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
@@ -14,7 +14,7 @@ class FridgeLetterAtomic(MTDragable):
         super(FridgeLetterAtomic, self).__init__(**kwargs)
 
         self.letter = Label(
-            font_name = 'AlphaFridgeMagnets.ttf',
+            font_name = '../fridgeletter/AlphaFridgeMagnets.ttf',
             font_size = 48,
             bold = True,
             anchor_x = 'left',
@@ -70,7 +70,8 @@ class FridgeLetter(MTWidget):
         for letter in self.children:
             if letter == self.buttons:
                 continue
-            letter.pos = randint(0, w.width), randint(0, w.height)
+            letter.do(Animation(pos=map(lambda x: x * random(), w.size),
+                                f='ease_out_cubic', duration=.5))
 
     def draw(self):
         if self.do_randomize:

@@ -25,8 +25,6 @@ __all__ = ['Gesture', 'GestureDatabase', 'GesturePoint', 'GestureStroke']
 
 import math
 from vector import *
-import pickle, base64, zlib
-from cStringIO import StringIO
 
 class GestureDatabase(object):
     '''Class to handle a gesture database.'''
@@ -56,6 +54,8 @@ class GestureDatabase(object):
 
     def gesture_to_str(self, gesture):
         '''Convert a gesture into a unique string'''
+        from cStringIO import StringIO
+        import pickle, base64, zlib
         io = StringIO()
         p = pickle.Pickler(io)
         p.dump(gesture)
@@ -64,6 +64,8 @@ class GestureDatabase(object):
 
     def str_to_gesture(self, data):
         '''Convert a unique string to a gesture'''
+        from cStringIO import StringIO
+        import pickle, base64, zlib
         io = StringIO(zlib.decompress(base64.b64decode(data)))
         p = pickle.Unpickler(io)
         gesture = p.load()

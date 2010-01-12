@@ -27,10 +27,12 @@ class SoundLoader:
 
     @staticmethod
     def register(classobj):
+        '''Register a new class to load sound'''
         SoundLoader._classes.append(classobj)
 
     @staticmethod
     def load(filename):
+        '''Load a sound, and return a Sound() instance'''
         ext = filename.split('.')[-1].lower()
         for classobj in SoundLoader._classes:
             if ext in classobj.extensions():

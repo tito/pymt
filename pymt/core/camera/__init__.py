@@ -79,16 +79,20 @@ class CameraBase(BaseObject):
 
     @abstractmethod
     def init_camera(self):
+        '''Initialise the camera (internal)'''
         pass
 
     @abstractmethod
     def update(self):
+        '''Update the camera (internal)'''
         pass
 
     def start(self):
+        '''Start the camera acquire'''
         self.stopped = False
 
     def stop(self):
+        '''Release the camera'''
         self.stopped = True
 
     def _copy_to_gpu(self):

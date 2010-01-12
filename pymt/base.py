@@ -68,24 +68,33 @@ class TouchEventLoop(object):
         self.postproc_modules = []
 
     def start(self):
+        '''Must be call only one time before run().
+        This start all configured input providers.'''
         global pymt_providers
         for provider in pymt_providers:
             provider.start()
 
     def close(self):
+        '''Exit from the main loop, and stop all configured
+        input providers.'''
         global pymt_providers
         self.quit = True
         for provider in pymt_providers:
             provider.stop()
 
     def add_postproc_module(self, mod):
+        '''Add a postproc input module (DoubleTap, RetainTouch are default)'''
         self.postproc_modules.append(mod)
 
     def remove_postproc_module(self, mod):
+        '''Remove a postproc module'''
         if mod in self.postproc_modules:
             self.postproc_modules.remove(mod)
 
     def post_dispatch_input(self, type, touch):
+        '''This function is called by dispatch_input() when we want to dispatch
+        a input event. The event is dispatched into all listeners, and if
+        grabbed, it's dispatched through grabbed widgets'''
         # update available list
         global touch_list
         if type == 'down':
@@ -142,6 +151,8 @@ class TouchEventLoop(object):
         self.input_events.append(ev)
 
     def dispatch_input(self):
+        '''Called by idle() to read events from input providers,
+        pass event to postproc, and dispatch final events'''
         global pymt_providers
 
         # first, aquire input events
@@ -159,6 +170,11 @@ class TouchEventLoop(object):
         self.input_events = []
 
     def idle(self):
+        '''This function is called every frames. By default :
+        * it "tick" the clock to the next frame
+        * read all input and dispatch event
+        * dispatch on_update + on_draw + on_flip on window
+        '''
         # update dt
         global frame_dt
         frame_dt = getClock().tick()
@@ -180,11 +196,13 @@ class TouchEventLoop(object):
         return self.quit
 
     def run(self):
+        '''Main loop'''
         while not self.quit:
             self.idle()
         self.exit()
 
     def exit(self):
+        '''Close the main loop, and close the window'''
         self.close()
         if pymt_window:
             pymt_window.close()

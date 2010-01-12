@@ -173,12 +173,14 @@ class LabelBase(BaseObject):
 
 
     def refresh(self):
+        '''Force re-rendering of the label'''
         # first pass, calculating width/height
         self.size = self.render()
         # second pass, render for real
         self.render(real=True)
 
     def draw(self):
+        '''Draw the label'''
         if self.texture is None:
             return
 
@@ -213,8 +215,8 @@ class LabelBase(BaseObject):
             return
         self._label = unicode(label)
         self.refresh()
-    label = property(_get_label, _set_label)
-    text = property(_get_label, _set_label)
+    label = property(_get_label, _set_label, doc='Get/Set the label text')
+    text = property(_get_label, _set_label, doc='Get/Set the label text')
 
     @property
     def content_width(self):

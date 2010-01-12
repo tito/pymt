@@ -44,13 +44,26 @@ for option in options:
             pymt_logger.warning('Core: Wrong value for %s environment key' % key)
             pymt_logger.exception('')
 
-# Include lib as new module.
-pymt_base_dir = os.path.dirname(sys.modules[__name__].__file__)
-pymt_libs_dir = os.path.join(pymt_base_dir, 'lib')
-pymt_modules_dir = os.path.join(pymt_base_dir, 'modules')
-pymt_data_dir = os.path.join(pymt_base_dir, 'data')
-pymt_providers_dir = os.path.join(pymt_base_dir, 'input', 'providers')
-sys.path = [pymt_libs_dir] + sys.path
+# Extract all needed path in pymt
+#: PyMT directory
+pymt_base_dir        = os.path.dirname(sys.modules[__name__].__file__)
+#: PyMT external libraries directory
+pymt_libs_dir        = os.path.join(pymt_base_dir, 'lib')
+#: PyMT modules directory
+pymt_modules_dir     = os.path.join(pymt_base_dir, 'modules')
+#: PyMT data directory
+pymt_data_dir        = os.path.join(pymt_base_dir, 'data')
+#: PyMT input provider directory
+pymt_providers_dir   = os.path.join(pymt_base_dir, 'input', 'providers')
+#: PyMT user-home storage directory
+pymt_home_dir        = None
+#: PyMT configuration filename
+pymt_config_fn       = None
+#: PyMT user modules directory
+pymt_usermodules_dir = None
+
+# Add lib in pythonpath
+sys.path           = [pymt_libs_dir] + sys.path
 
 # Don't go further if we generate documentation
 if os.path.basename(sys.argv[0]) in ('sphinx-build', 'autobuild.py'):
@@ -93,6 +106,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 
 
     # Create default configuration
+    #: PyMT configuration object
     pymt_config = PyMTConfigParser()
 
     # Read config file if exist

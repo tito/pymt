@@ -52,4 +52,5 @@ class ExceptionManager:
                 ret = r
         return ret
 
+#: PyMT Exception Manager instance
 pymt_exception_manager = ExceptionManager()

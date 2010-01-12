@@ -124,7 +124,7 @@ def paintLine(points, numsteps=None, **kwargs):
 
             # construct pointList
             pointList = [0,0] * steps
-            for i in range(steps):
+            for i in xrange(steps):
                 pointList[i * 2]   = p1[0] + dx* (float(i)/steps)
                 pointList[i * 2 + 1] = p1[1] + dy* (float(i)/steps)
 
@@ -135,5 +135,5 @@ def paintLine(points, numsteps=None, **kwargs):
         if len(outputList) < 2:
             return
         with gx_begin(GL_POINTS):
-            for i in xrange(0, len(outputList), 2):
-                glVertex2f(outputList[i], outputList[i+1])
+            for x, y in zip(outputList[::2], outputList[1::2]):
+                glVertex2f(x, y)

@@ -71,7 +71,6 @@ class BaseWindow(EventDispatcher):
         super(BaseWindow, self).__init__()
 
         # init privates
-        self._have_multisample = None
         self._modifiers = []
         self._size = (0, 0)
         self.gradient = kwargs.get('gradient')
@@ -248,18 +247,6 @@ class BaseWindow(EventDispatcher):
                 '"norepeat", "center", "repeat", "scale")')
 
     def init_gl(self):
-        # check if window have multisample
-        """
-        if MTWindow._have_multisample is None:
-            s = glGetIntegerv(GL_SAMPLES)
-            if s > 0:
-                pymt.pymt_logger.debug('Multisampling is available (%d)' % s.value)
-                MTWindow._have_multisample = True
-            else:
-                pymt.pymt_logger.debug('Multisampling is not available')
-                MTWindow._have_multisample = False
-        """
-
         line_smooth = pymt.pymt_config.getint('graphics', 'line_smooth')
         if line_smooth:
             if line_smooth == 1:

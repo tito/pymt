@@ -36,6 +36,7 @@ def getFrameDt():
     return frame_dt
 
 def getCurrentTouches():
+    '''Return the list of all current touches'''
     global touch_list
     return touch_list
 
@@ -44,6 +45,7 @@ def getAvailableTouchs():
     return getCurrentTouches()
 
 def getWindow():
+    '''Return the MTWindow'''
     global pymt_window
     return pymt_window
 
@@ -52,6 +54,7 @@ def setWindow(win):
     pymt_window = win
 
 def getEventLoop():
+    '''Return the default TouchEventLoop object'''
     global pymt_evloop
     return pymt_evloop
 
@@ -204,7 +207,7 @@ def pymt_usage():
 
 
 def _run_mainloop():
-    '''Main loop is done by us.'''
+    '''If user haven't create a window, this is the executed mainloop'''
     while True:
         try:
             pymt_evloop.run()
@@ -322,6 +325,7 @@ def runTouchApp(widget=None, slave=False):
         pymt.widget.event_stats_print()
 
 def stopTouchApp():
+    '''Stop the current application by leaving the main loop'''
     global pymt_evloop
     if pymt_evloop is None or pymt_evloop.quit:
         return

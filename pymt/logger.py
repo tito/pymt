@@ -104,6 +104,10 @@ class ColoredLogger(logging.Logger):
         return
 
 logging.setLoggerClass(ColoredLogger)
+
+#: PyMT default logger instance
 pymt_logger = logging.getLogger('PyMT')
+
+#: PyMT history handler
 pymt_logger_history = HistoryHandler
 

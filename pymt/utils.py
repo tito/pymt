@@ -65,7 +65,6 @@ def get_color_from_hex(s):
         value.append(1)
     return value
 
-
 def get_random_color(alpha=1.0):
     ''' Returns a random color (4 tuple)
 
@@ -146,20 +145,24 @@ class SafeList(list):
         self.in_iterate = False
 
     def append(self, value):
+        '''Append a value'''
         if self.in_iterate and not self.clone:
             self.clone = self[:]
         super(SafeList, self).append(value)
 
     def remove(self, value):
+        '''Remove the first matched value'''
         if self.in_iterate and not self.clone:
             self.clone = self[:]
         super(SafeList, self).remove(value)
 
     def insert(self, index, value):
+        '''Insert a value at index'''
         if self.in_iterate and not self.clone:
             self.clone = self[:]
         super(SafeList, self).insert(index, value)
 
     def clear(self):
+        '''Remove safely all elements in the list'''
         for v in self.iterate():
             self.remove(v)

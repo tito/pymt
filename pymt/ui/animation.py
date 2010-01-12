@@ -11,11 +11,11 @@ CSS property.
 Simple Animation
 ----------------
 
-::
+Example of a widget ::
+
     widget = SomeWidget()
     animobj = Animation(duration=5,x=100,
-                                style={'bg-color':(1.0,1.0,1.0,1.0)}
-                               )
+                        style={'bg-color':(1.0,1.0,1.0,1.0)})
     widget.do (animobj)
 
 You create a animation class object and pass the object into the widget
@@ -25,18 +25,16 @@ current state to the state specified in the animation object.
 You can also use animate() method of the Animation class to animate
 the widget ::
 
-::
     animobj.animate(widget)
 
 You can also pass multiple widgets, to animate the same way ::
 
-::
-     # solution 1
-     animobj.animate(widget1, widget2)
+    # solution 1
+    animobj.animate(widget1, widget2)
 
-     # solution 2
-     widget1.do(animobj)
-     widget2.do(animobj)
+    # solution 2
+    widget1.do(animobj)
+    widget2.do(animobj)
 
 
 Complex Animations
@@ -44,7 +42,6 @@ Complex Animations
 
 You can sequence several animations together ::
 
-::
     anim1 = Animation(duration=1, x=100)
     anim2 = Animation(duration=2, y = 200)
     anim3 = Animation(duration=1, rotation = 60)
@@ -59,7 +56,6 @@ move to y=200 in secs and finally rotate clockwise 60 Degress in 1 sec.
 
 You can also run several animations parallel ::
 
-::
     anim1 = Animation(duration=1, x=100)
     anim2 = Animation(duration=2, y = 200)
     anim3 = Animation(duration=1, rotation = 60)
@@ -328,14 +324,14 @@ class DeltaAnimationBase(AnimationBase):
 
 class Animation(EventDispatcher):
     '''Animation Class is used to animate any widget. You pass duration of
-      animation and the property that has to be animated in that duration.
-      Usage:
-            widget = SomeWidget()
-            animobj = Animation(duration=5,
-                                        x=100,
-                                        style={'bg-color':(1.0,1.0,1.0,1.0)}
-                                       )
-            widget.do(animobj)
+    animation and the property that has to be animated in that duration.
+
+    Usage ::
+
+        widget = SomeWidget()
+        animobj = Animation(duration=5, x=100,
+                            style={'bg-color':(1.0,1.0,1.0,1.0)})
+        widget.do(animobj)
 
     :Parameters:
         `duration` : float, default to 1
@@ -354,6 +350,7 @@ class Animation(EventDispatcher):
             Fired when animation starts
         `on_complete`
             Fired when animation completes
+
     '''
     def __init__(self,**kwargs):
         super(Animation, self).__init__()
@@ -397,11 +394,12 @@ class Animation(EventDispatcher):
 
     def set_widget(self, widgetx):
         '''Creates a new animationBase object and sets the widget to it for
-          animation. This is a internal function and should not be used by
-          user.
+        animation. This is a internal function and should not be used by user.
+
         :Parameters:
             `widget` : MTWidget, default is None
                 Indicates which widget is to be set.
+
         '''
         if widgetx in self.children.keys():
             return False
@@ -415,6 +413,7 @@ class Animation(EventDispatcher):
 
     def animate(self, *largs):
         '''Animate the widgets specified as parameters to this method.
+
         :Parameters:
             `widget` : Widget
                 A Widget or a group of widgets separated by comma ","
@@ -488,7 +487,8 @@ class ComplexAnimation(Animation):
 
     def generate_single_event(self, value):
         '''If a user wants to generate only one event for the entire complex
-          animation he can use this function.
+        animation he can use this function.
+
         :Parameters:
             `value` : bool
                 True or False value
@@ -575,17 +575,17 @@ class ParallelAnimation(ComplexAnimation):
 
 class Repeat(EventDispatcher):
     '''Repeat Controller class is used to repeat a particular animations. It
-      repeats n times as specified or repeats indefinately if number of times
-      to repeat is not specified. Repeat class is useful only for delta
-      animations.
-      Usage:
-            widget = SomeWidget()
-            animobj = Animation(duration=5,
-                                        x=100,
-                                        style={'bg-color':(1.0,1.0,1.0,1.0)}
-                                       )
-            rept = Repeat(animobj, times=5) #Repeats 5 times
-            rept_n = Repeat(animobj) #Repeats indefinately
+    repeats n times as specified or repeats indefinately if number of times
+    to repeat is not specified. Repeat class is useful only for delta
+    animations.
+
+    Usage ::
+
+        widget = SomeWidget()
+        animobj = Animation(duration=5, x=100,
+                            style={'bg-color':(1.0,1.0,1.0,1.0)})
+        rept = Repeat(animobj, times=5) #Repeats 5 times
+        rept_n = Repeat(animobj) #Repeats indefinately
 
     :Parameters:
         `times` : integer, default to infinity
@@ -599,6 +599,7 @@ class Repeat(EventDispatcher):
         `on_repeat`
             Fired on every repetition. It also returns what is the current
             repetition count.
+
     '''
     def __init__(self, animation, **kwargs):
         super(Repeat, self).__init__()
@@ -659,16 +660,16 @@ class Repeat(EventDispatcher):
 
 class Delay(Animation):
     '''Delay class is used to introduce delay in your animations.
-      You can provide the duration in your animation class creation
-      Usage:
-            widget = SomeWidget()
-            moveX = Animation(duration=5,
-                                       x=100,
-                                       style={'bg-color':(1.0,1.0,1.0,1.0)}
-                                      )
-            delay5 = Delay(duration=5)
-            animobj = delay5 + moveX
-            #This will wait for 5 secs and then start animating moveX
+    You can provide the duration in your animation class creation
+
+    Usage ::
+
+        widget = SomeWidget()
+        moveX = Animation(duration=5, x=100,
+                          style={'bg-color':(1.0,1.0,1.0,1.0)})
+        delay5 = Delay(duration=5)
+        animobj = delay5 + moveX
+        # This will wait for 5 secs and then start animating moveX
 
     :Parameters:
         `duration` : float, default to 1

@@ -8,6 +8,7 @@ import sys
 import os
 
 class MTContext(object):
+    '''Context storage of a plugin'''
     def __init__(self):
         pass
 

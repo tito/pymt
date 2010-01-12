@@ -92,15 +92,18 @@ auto_convert = {
     'scrollbar-color':              parse_color,
 }
 
+#: Instance of the CSS sheet
+pymt_sheet = None
+
 # Default CSS of PyMT
 default_css_filename = os.path.join(pymt.pymt_data_dir, 'default.css')
 try:
     fd = open(default_css_filename)
+    #: Default CSS of PyMT
     default_css = fd.read()
 except:
     pymt_logger.exception('')
     pymt_logger.critical('Colors: Unable to open the default CSS')
-
 
 def get_truncated_classname(name):
     '''Return the css-ized name of a class
@@ -126,6 +129,7 @@ def get_widget_parents(widget):
     return widgets_parents[widget.__class__]
 
 def css_get_widget_id(widget):
+    '''Return the css id of a widget'''
     if not hasattr(widget, 'cls'):
         widget.__setattr__('cls', '')
     if type(widget.cls) == str:
@@ -214,28 +218,27 @@ def css_get_style(widget, sheet=None):
     css_cache[idwidget] = styles
     return styles
 
-
-# Add default CSS
-parser = cssutils.CSSParser(loglevel=logging.ERROR)
-pymt_sheet = parser.parseString(default_css)
-
-# Add user css if exist
-pymt_home_dir = os.path.expanduser('~/.pymt/')
-css_filename = os.path.join(pymt_home_dir, 'user.css')
-if os.path.exists(css_filename):
-    user_sheet = parser.parseFile(css_filename)
-    for rule in user_sheet.cssRules:
-        pymt_sheet.add(rule)
-
 def css_add_sheet(text):
     '''Add a css text to use ::
-
         mycss = '#buttonA { bg-color: rgba(255, 127, 0, 127); }'
         css_add_sheet(mycss)
-
     '''
     global pymt_sheet
     pymt_sheet.cssText += text
+
+
+if 'PYMT_DOC' not in os.environ:
+    # Add default CSS
+    parser = cssutils.CSSParser(loglevel=logging.ERROR)
+    pymt_sheet = parser.parseString(default_css)
+
+    # Add user css if exist
+    css_filename = os.path.join(pymt.pymt_home_dir, 'user.css')
+    if os.path.exists(css_filename):
+        user_sheet = parser.parseFile(css_filename)
+        for rule in user_sheet.cssRules:
+            pymt_sheet.add(rule)
+
 
 if __name__ == '__main__':
     from pymt import *

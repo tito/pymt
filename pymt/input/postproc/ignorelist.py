@@ -7,15 +7,16 @@ import pymt
 from ...utils import strtotuple
 
 class InputPostprocIgnoreList(object):
-    def __init__(self):
-        '''
-        InputPostprocIgnoreList is a post-processor who remove touch in ignore list.
-        Ignore list can be configured in the PyMT config file ::
-            [tuio]
-            ignore = [(0.1, 0.1, 0.15, 0.15)]
+    '''
+    InputPostprocIgnoreList is a post-processor who remove touch in ignore list.
+    Ignore list can be configured in the PyMT config file ::
+        [tuio]
+        # Format: [(xmin, ymin, xmax, ymax), ...]
+        ignore = [(0.1, 0.1, 0.15, 0.15)]
 
-        Ignore list coordinate are in 0-1, not in the screen width/height.
-        '''
+    Ignore list coordinate are in 0-1, not in the screen width/height.
+    '''
+    def __init__(self):
         self.ignore_list = strtotuple(pymt.pymt_config.get('pymt', 'ignore'))
 
     def collide_ignore(self, touch):

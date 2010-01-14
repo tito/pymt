@@ -17,7 +17,7 @@ import os
 from logger import pymt_logger, LOG_LEVELS
 
 # Version number of current configuration format
-PYMT_CONFIG_VERSION = 5
+PYMT_CONFIG_VERSION = 6
 
 # Global settings options for pymt
 options = {
@@ -184,6 +184,10 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         elif pymt_config_version == 4:
             # remove mouse simulator
             pymt_config.remove_option('pymt', 'enable_simulator')
+
+        elif pymt_config_version == 5:
+            # add fixccv
+            pymt_config.setdefault('pymt', 'fixccv', '0')
 
         else:
             # for future.

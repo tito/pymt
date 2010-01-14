@@ -19,13 +19,29 @@ Examples of usage ::
     except Exception, e
         pymt_logger.exception(e)
 
+
+By default, logger log also in a file, with the according configuration token ::
+
+    [pymt]
+    # will be stored in a "logs" directory in pymt home
+    log_dir = logs
+    # name of the log, according to time.strftime format
+    # the %_ will be incremented from 0 to 10000 if the first
+    # part of name already exist
+    log_name = pymt_%y-%m-%d_%_.txt
+    # activate or deactivate logs
+    log_enable = 1
+
 '''
 
 import logging
 import os
 import sys
 
-__all__ = ('pymt_logger', 'LOG_LEVELS', 'COLORS', 'pymt_logger_history')
+__all__ = ('pymt_logger', 'LOG_LEVELS', 'COLORS', 'pymt_logger_history',
+           'pymt_logfile_activated')
+
+pymt_logfile_activated = False
 
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 
@@ -60,6 +76,65 @@ LOG_LEVELS = {
 use_color = True
 if os.name == 'nt':
     use_color = False
+
+class FileHandler(logging.Handler):
+    history = []
+    filename = 'log.txt'
+    fd = None
+
+    def _configure(self):
+        global pymt_logfile_activated
+        import pymt, time
+        log_dir = pymt.pymt_config.get('pymt', 'log_dir')
+        log_name = pymt.pymt_config.get('pymt', 'log_name')
+
+        _dir = pymt.pymt_home_dir
+        if len(log_dir) and log_dir[0] == '/':
+            _dir = log_dir
+        else:
+            _dir = os.path.join(_dir, log_dir)
+            if not os.path.exists(_dir):
+                os.mkdir(_dir)
+        pattern = os.path.join(_dir, time.strftime(log_name))
+        n = 0
+        while True:
+            filename = pattern.replace('%_', str(n))
+            if not os.path.exists(filename):
+                break
+            n += 1
+            if n > 10000: # prevent maybe flooding ?
+                raise Exception('Too many logfile, remove them')
+
+        FileHandler.filename = filename
+        FileHandler.fd = open(filename, 'w')
+
+        pymt.pymt_logger.info('Logger: Record log in %s' % filename)
+
+    def _write_message(self, record):
+        if FileHandler.fd in (None, False):
+            return
+
+        FileHandler.fd.write('[%-18s] %s\n' % (record.levelname, record.msg))
+        FileHandler.fd.flush()
+
+    def emit(self, message):
+        if not pymt_logfile_activated:
+            FileHandler.history += [message]
+            return
+
+        if FileHandler.fd is None:
+            try:
+                self._configure()
+            except:
+                # deactivate filehandler...
+                FileHandler.fd = False
+                pymt_logger.exception('Error while activating FileHandler logger')
+                return
+            for _message in FileHandler.history:
+                self._write_message(_message)
+
+        self._write_message(message)
+
 
 class HistoryHandler(logging.Handler):
     history = []
@@ -101,6 +176,7 @@ class ColoredLogger(logging.Logger):
         else:
             self.addHandler(console)
         self.addHandler(HistoryHandler())
+        self.addHandler(FileHandler())
         return
 
 logging.setLoggerClass(ColoredLogger)

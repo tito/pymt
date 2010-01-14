@@ -15,9 +15,13 @@ import sys
 import getopt
 import os
 from logger import pymt_logger, LOG_LEVELS
+import logger
 
 # Version number of current configuration format
-PYMT_CONFIG_VERSION = 6
+PYMT_CONFIG_VERSION = 7
+
+# Start !
+pymt_logger.info('PyMT v%s' % (__version__))
 
 # Global settings options for pymt
 options = {
@@ -189,6 +193,12 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             # add fixccv
             pymt_config.setdefault('pymt', 'fixccv', '0')
 
+        elif pymt_config_version == 6:
+            # add log_file format
+            pymt_config.setdefault('pymt', 'log_enable', '1')
+            pymt_config.setdefault('pymt', 'log_dir', 'logs')
+            pymt_config.setdefault('pymt', 'log_name', 'pymt_%y-%m-%d_%_.txt')
+
         else:
             # for future.
             pass
@@ -198,6 +208,10 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 
     # Said to pymt_config that we've upgrade to latest version.
     pymt_config.set('pymt', 'config_version', PYMT_CONFIG_VERSION)
+
+    # Now, activate log file
+    if pymt_config.getint('pymt', 'log_enable'):
+        logger.pymt_logfile_activated = True
 
     if not os.path.exists(pymt_config_fn) or need_save:
         try:

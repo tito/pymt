@@ -8,6 +8,7 @@ import os
 import doubletap
 import ignorelist
 import retaintouch
+import fixccv
 
 pymt_postproc_modules = []
 
@@ -16,3 +17,4 @@ if 'PYMT_DOC' not in os.environ:
     pymt_postproc_modules.append(retaintouch.InputPostprocRetainTouch())
     pymt_postproc_modules.append(ignorelist.InputPostprocIgnoreList())
     pymt_postproc_modules.append(doubletap.InputPostprocDoubleTap())
+    pymt_postproc_modules.append(fixccv.InputPostprocFixCCV())

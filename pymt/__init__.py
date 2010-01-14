@@ -29,7 +29,7 @@ options = {
     'window': ('pygame', 'glut'),
     'text': ('pil', 'cairo', 'pygame'),
     'video': ('gstreamer', 'pyglet' ),
-    'audio': ('pygame', ),
+    'audio': ('pygame', 'gstreamer', ),
     'image': ('pil', 'pygame'),
     'camera': ('opencv', 'gstreamer', 'videocapture'),
 }

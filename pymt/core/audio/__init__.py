@@ -28,6 +28,7 @@ class SoundLoader:
     @staticmethod
     def register(classobj):
         '''Register a new class to load sound'''
+        pymt.pymt_logger.debug('Audio: register %s' % classobj.__name__)
         SoundLoader._classes.append(classobj)
 
     @staticmethod
@@ -108,7 +109,13 @@ class Sound(object):
         '''Stop playback'''
         pass
 
+    @abstractmethod
+    def seek(self, position):
+        '''Seek to the <position> (in seconds)'''
+        pass
+
 
 core_register_libs('audio', (
+    ('gstreamer', 'audio_gstreamer'),
     ('pygame', 'audio_pygame'),
 ))

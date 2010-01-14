@@ -5,7 +5,7 @@ PIL: PIL image loader
 __all__ = ('ImageLoaderPIL', )
 
 try:
-    import Image
+    from PIL import Image
 except:
     raise
 

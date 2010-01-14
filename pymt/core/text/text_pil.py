@@ -5,9 +5,7 @@ Text PIL: Draw text with PIL
 __all__ = ('LabelPIL', )
 
 try:
-    import Image
-    import ImageFont
-    import ImageDraw
+    from PIL import Image, ImageFont, ImageDraw
 except:
     raise
 

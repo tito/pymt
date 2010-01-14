@@ -33,7 +33,7 @@ from OpenGL.GL import glReadBuffer, glReadPixels, GL_RGB, GL_UNSIGNED_BYTE, GL_F
 from pymt.utils import curry
 
 if 'PYMT_DOC' not in os.environ:
-	import Image
+	from PIL import Image
 
 lock_current    = threading.Lock()
 sem_current     = threading.Semaphore(0)

@@ -65,6 +65,7 @@ class SoundGstreamer(Sound):
         bus.connect('message', self._on_gst_message)
 
         self._data.set_property('uri', filepath)
+        self._data.set_state(gst.STATE_READY)
 
     def unload(self):
         self.stop()

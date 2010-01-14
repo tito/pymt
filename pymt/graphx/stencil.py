@@ -1,8 +1,13 @@
 '''
 Stencil: use stencil for mask drawing
+
+Usage ::
+
+    with gx_stencil:
+        # change viewport
+        # draw stuff
+
 '''
-
-
 
 __all__ = [
     # stencil
@@ -14,9 +19,9 @@ from OpenGL.GL import *
 from statement import *
 
 ### Stencil usage
-stencil_stack = 0
-stencil_stack_dl = []
-stencil_stack_view = []
+stencil_stack       = 0
+stencil_stack_dl    = []
+stencil_stack_view  = []
 def stencilGetStackLevel():
     global stencil_stack
     return stencil_stack
@@ -49,7 +54,6 @@ def stencilPush():
     stencil_stack_dl.append(dl)
 
     stencil_stack += 1
-
 
 def stencilPop():
     '''Pop out the last stack from stencil stack'''
@@ -88,7 +92,6 @@ def stencilPop():
     glStencilFunc(GL_EQUAL, stencil_stack, stencil_stack)
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
 
-
 def stencilUse():
     '''Switch from stencil draw to color draw.
     Now, all drawing will be done on color buffer,
@@ -105,7 +108,6 @@ def stencilUse():
     glStencilFunc(GL_EQUAL, stencil_stack, stencil_stack)
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
 
-
 class GlStencil:
     '''Statement of stencilPush/stencilPop, designed to be use with "with" keyword
 
@@ -120,4 +122,5 @@ class GlStencil:
     def __exit__(self, type, value, traceback):
         stencilPop()
 
+#: Alias to GlStencil()
 gx_stencil = GlStencil()

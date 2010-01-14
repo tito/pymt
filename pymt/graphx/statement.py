@@ -1,8 +1,34 @@
 '''
 Statements: OpenGL statement for the "with" keyword
+
+Save and restore the matrix ::
+
+    with gx_matrix:
+        glTranslatef(55, 34, 0)
+        # draw stuff
+    # here, the matrix will be restored as previous state
+
+Modify a display list (compiled OpenGL operations) ::
+
+    dl = GlDisplayList()
+    with dl:
+        # draw stuff
+    # here you can call the display list
+    dl.draw()
+
+Bind a texture and draw with OpenGL :
+
+    with DO(gx_texture(my_texture), gx_begin(GL_TRIANGLE_FAN)):
+        # call multiple time glVertex2f()
+
+Save and restore the color after drawing :
+
+    set_color(1, 0, 0) # color is red.
+    with gx_color(0, 1, 0):
+        # here the color is green
+        # draw stuff
+    # here the color is restored back to red
 '''
-
-
 
 __all__ = [
     # class for with statement
@@ -112,10 +138,6 @@ class GlBlending:
     def __exit__(self, type, value, traceback):
         glDisable(GL_BLEND)
 
-gx_blending = GlBlending()
-gx_alphablending = GlBlending(sfactor=GL_DST_COLOR, dfactor=GL_ONE_MINUS_SRC_ALPHA)
-
-
 class GlMatrix:
     '''Statement of glPushMatrix/glPopMatrix, designed to be use with "with" keyword.
 
@@ -140,9 +162,6 @@ class GlMatrix:
     def __exit__(self, type, value, traceback):
         glMatrixMode(self.matrixmode)
         glPopMatrix()
-
-gx_matrix = GlMatrix()
-gx_matrix_identity = GlMatrix(do_loadidentity=True)
 
 class GlEnable:
     '''Statement of glEnable/glDisable, designed to be use with "with" keyword.
@@ -174,8 +193,6 @@ class GlBegin:
     def __exit__(self, type, value, traceback):
         glEnd()
 
-gx_begin = GlBegin
-
 class GlAttrib:
     '''Statement of glPushAttrib/glPopAttrib, designed to be use with "with" keyword
 
@@ -189,8 +206,6 @@ class GlAttrib:
 
     def __exit__(self, type, value, traceback):
         glPopAttrib()
-
-gx_attrib = GlAttrib
 
 class GlColor:
     '''Statement of glPushAttrib/glPopAttrib on COLOR BUFFER + color,
@@ -213,8 +228,6 @@ class GlColor:
 
     def __exit__(self, type, value, traceback):
         glPopAttrib()
-
-gx_color = GlColor
 
 class GlTexture:
     '''Statement of setting a texture
@@ -256,4 +269,24 @@ class GlTexture:
         else:
             return GL_TEXTURE_2D
 
+#
+# Aliases
+#
+
+#: Alias to GlBlending(sfactor=GL_DST_COLOR, dfactor=GL_ONE_MINUS_SRC_ALPHA)
+gx_alphablending = GlBlending(sfactor=GL_DST_COLOR, dfactor=GL_ONE_MINUS_SRC_ALPHA)
+#: Alias to GlAttrib
+gx_attrib = GlAttrib
+#: Alias to GlBegin
+gx_begin = GlBegin
+#: Alias to GlBlending()
+gx_blending = GlBlending()
+#: Alias to GlColor
+gx_color = GlColor
+#: Alias to GlMatrix()
+gx_matrix = GlMatrix()
+#: Alias to GlMatrix(do_loadidentity=True)
+gx_matrix_identity = GlMatrix(do_loadidentity=True)
+#: Alias to GlTexture
 gx_texture = GlTexture
+

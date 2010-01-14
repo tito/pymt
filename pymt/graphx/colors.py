@@ -24,6 +24,9 @@ def set_color(*colors, **kwargs):
             Default source factor to be used if blending is activated
         `dfactor` : opengl factor, default to GL_ONE_MINUS_SRC_ALPHA
             Default destination factor to be used if blending is activated
+        `blend` : boolean, default to None
+            Set True if you really want to activate blending, even
+            if the alpha color is 1 (mean no blending in theory)
     '''
 
     kwargs.setdefault('sfactor', GL_SRC_ALPHA)

@@ -17,11 +17,13 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
     '''Draw a rectangle with CSS
 
     :Styles:
-        * border-radius
-        * border-radius-precision
-        * draw-border
-        * draw-alpha-background
-        * alpha-background
+        * alpha-background (color)
+        * border-radius (float)
+        * border-radius-precision (float)
+        * border-width (float)
+        * draw-alpha-background (bool)
+        * draw-background (bool)
+        * draw-border (bool)
 
     '''
     # Check if we have a cached version

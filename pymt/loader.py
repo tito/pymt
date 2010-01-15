@@ -6,272 +6,266 @@ and use it, even if data are not yet available. You must specify a default
 loading image for using a such loader ::
 
     from pymt import *
-    loader = Loader(loading_image='load.png')
-    sprite = loader.sprite('mysprite.png')
+    image = Loader.image('mysprite.png')
 
 You can also load image from url ::
 
-    sprite = loader.sprite('http://mysite.com/test.png')
+    image = Loader.image('http://mysite.com/test.png')
+
+If you want to change the default loading image, you can do ::
+
+    Loader.loading_image = Image('another_loading.png')
 
 '''
 
-__all__ = ['ProxySprite', 'ProxyImage', 'Loader']
+__all__ = ('Loader', 'LoaderBase', 'ProxyImage')
 
-import threading
-import pyglet.image
-import pyglet.sprite
+from pymt import pymt_data_dir
+from pymt.logger import pymt_logger
+from pymt.clock import getClock
+from pymt.cache import Cache
+from pymt.utils import SafeList
+from pymt.core.image import ImageLoader, Image
+from pymt.event import EventDispatcher
+from abc import ABCMeta, abstractmethod
+
 import time
-import urllib
-from logger import pymt_logger
-from clock import getClock
+import collections
+import os
 
-try:
-    # Used for gdk thread lock access.
-    import gtk
-except:
-    pass
+# Register a cache for loader
+Cache.register('loader', limit=500)
 
-class ProxyImage(pyglet.image.AbstractImage):
-    '''ProxyImage is a derivation of AbstractImage of pyglet.
-    You have the same abstraction, except that he use loading_image when
-    the final image are not yet available.
-
-    Don't instanciate directly, use the loader ::
-
-        from pymt import *
-        loader = Loader(loading_image='load.png')
-        image = loader.image('myimage.png')
-
-    You can use the loader to get image in a synchronous way ::
-
-        image2 = loader.image('test.png', async=False)
-    '''
-    def __init__(self, name, loader, image=None, loading_image=None):
-        self.name = name
-        self.loader = loader
-        self.image = image
-        self.loading_image = loading_image
-        self._width = self.loading_image.width
-        self._height = self.loading_image.height
-        self._sprite = None
-        super(ProxyImage, self).__init__(self.width, self.height)
-
-    def get_image_data(self):
-        if self.image:
-            return self.image.get_image_data()
-        return self.loading_image.get_image_data()
-
-    def get_texture(self, rectangle=False):
-        if self.image:
-            return self.image.get_texture(rectangle=rectangle)
-        return self.loading_image.get_texture(rectangle=rectangle)
-
-    def get_region(self, x, y, width, height):
-        if self.image:
-            return self.image.get_region(x, y, width, height)
-        return self.loading_image.get_region(x, y, width, height)
-
-    def save(self, filename=None, file=None, encoder=None):
-        if self.image:
-            return self.image.save(filename, file, encoder)
-        return self.loading_image.save(filename, file, encoder)
-
-    def blit(self, x, y, z=0):
-        if self.image:
-            return self.image.blit(x, y, z)
-        return self.loading_image.blit(x, y, z)
-
-    def blit_into(self, source, x, y, z=0):
-        if self.image:
-            return self.image.blit_into(source, x, y, z)
-        return self.loading_image.blit_into(source, x, y, z)
-
-    def blit_to_texture(self, target, level, x, y, z=0):
-        if self.image:
-            return self.image.blit_to_texture(target, level, x, y, z)
-        return self.loading_image.blit_to_texture(target, level, x, y, z)
-
-    def _get_image(self):
-        if not self.image:
-            self.image = self.loader.get_image(self.name)
-            if self.image:
-                self._update_dimensions()
-                if self._sprite:
-                    self._sprite._update_image()
-        if self.image:
-            return self.image
-        return self.loading_image
-
-    def _update_dimensions(self):
-        if self.image:
-            self.width = self.image.width
-            self.height = self.image.height
-
-    def _set_width(self, w):
-        self._width = w
-    def _get_width(self):
-        if self.image:
-            return self.image.width
-        return self._width
-    width = property(_get_width, _set_width)
-
-    def _set_height(self, h):
-        self._height = h
-    def _get_height(self):
-        if self.image:
-            return self.image.height
-        return self._height
-    height = property(_get_height, _set_height)
-
-    def _get_image_data(self):
-        if self.image:
-            return self.image.image_data
-        return self.loading_image.image_data
-    image_data = property(_get_image_data)
-
-    def _get_texture(self):
-        if self.image:
-            return self.image.texture
-        return self.loading_image.texture
-    texture = property(_get_texture)
-
-    def _get_mipmapped_texture(self):
-        if self.image:
-            return self.image.mipmapped_texture
-        return self.loading_image.mipmapped_texture
-    mipmapped_texture = property(_get_mipmapped_texture)
-
-
-class ProxySprite(pyglet.sprite.Sprite):
-    '''ProxySprite is a derivation of Sprite of pyglet.
-    You have the same abstraction, except that he use loading_image when
-    the final image are not yet available.
-
-    Don't instanciate directly, use the loader ::
-
-        from pymt import *
-        loader = Loader(loading_image='load.png')
-        image = loader.sprite('myimage.png')
-    '''
-    def __init__(self, img, x=0, y=0, blend_src=770, blend_dest=771, batch=None, group=None, usage='dynamic'):
-        self._internal_image = img
-        if isinstance(self._internal_image, ProxyImage):
-            self._internal_image._sprite = self
-        super(ProxySprite, self).__init__(img, x, y, blend_src, blend_dest, batch, group, usage)
-
-    def _update_image(self):
-        self.image = self._internal_image
-
-class Loader(object):
-    '''Base for loading image in an asynchronous way.
-    Current loader is based on pyglet.image.load method, and can
-    create only Sprite and Image pyglet object.
+class ProxyImage(Image, EventDispatcher):
+    '''Image returned by the Loader.image() function.
     
-    .. note::
-        It'll be reworked in the next version to support loading
-        of other object.
-
+    :Events:
+        `on_load`
+            Fired when the image is loaded and changed
     '''
-    def __init__(self, loading_image, async=True):
-        self.cache = {}
-        self.loadlist = {}
-        self.updatelist = []
-        self.thread = None
-        self.loading_image = self.image(loading_image, async=False)
-        self.default_async=async
-        getClock().schedule_interval(self._run_update, .5)
+    def __init__(self, arg, **kwargs):
+        Image.__init__(self, arg, **kwargs)
+        EventDispatcher.__init__(self)
 
-    def image(self, name, async=None):
-        '''Load an image, and return a ProxyImage'''
-        # get data cache
-        data = self.get_image(name)
-        if data:
-            return ProxyImage(name=name, loader=self, image=data,
-                              loading_image=self.loading_image)
+        self.register_event_type('on_load')
 
-        # no data ? user want data async or not ?
-        if async is None:
-            async = self.default_async
-        if not async:
-            return pyglet.image.load(name)
+    def on_load(self):
+        pass
 
-        # prepare proxy image
-        obj = ProxyImage(name=name, loader=self, image=None,
-                          loading_image=self.loading_image)
 
-        # add name into loadlist
-        if not name in self.loadlist:
-            self.loadlist[name] = []
-        self.loadlist[name].append(obj)
+class LoaderBase(object):
+    '''Common base for Loader and specific implementation.
+    By default, Loader will be the best available loader implementation.
 
-        # start loading
-        self._start_load()
+    The _update() function is called every 1 / 25.s or each frame if we have
+    less than 25 FPS.
+    '''
 
-        return obj
+    __metaclass__ = ABCMeta
 
-    def sprite(self, name, async=None):
-        '''Load an sprite, and return a ProxySprite'''
-        img = self.image(name, async)
-        return ProxySprite(img)
+    def __init__(self):
+        loading_png_fn = os.path.join(pymt_data_dir, 'loader.png')
+        error_png_fn = os.path.join(pymt_data_dir, 'error.png')
 
-    def get_image(self, name):
-        if name in self.cache:
-            return self.cache[name]
-        return None
+        self.loading_image = Image(loading_png_fn)
+        self.error_image = ImageLoader.load(error_png_fn)
 
-    def _run_update(self, dt):
-        while len(self.updatelist):
-            obj = self.updatelist.pop()
-            obj._get_image()
+        self._q_load  = collections.deque()
+        self._q_done  = collections.deque()
+        self._client  = SafeList()
+        self._running = False
+        self._start_wanted = False
 
-    def _start_load(self):
-        if self.thread:
-            if self.thread.isAlive():
-                return
-            del self.thread
-        self.thread = threading.Thread(target=self._run_load)
-        self.thread.setDaemon(True)
-        self.thread.start()
+        getClock().schedule_interval(self._update, 1 / 25.)
 
-    def _run_load(self):
-        while len(self.loadlist):
-            name, objs = self.loadlist.popitem()
+    def __del__(self):
+        try:
+            getClock().unschedule_intervale(self._update)
+        except:
+            pass
+
+    @abstractmethod
+    def start(self):
+        '''Start the loader thread/process'''
+        self._running = True
+
+    @abstractmethod
+    def run(self, *largs):
+        '''Main loop for the loader.'''
+        pass
+
+    @abstractmethod
+    def stop(self):
+        '''Stop the loader thread/process'''
+        self._running = False
+
+    def _load(self, filename):
+        '''(internal) Loading function, called by the thread.
+        Will call _load_local() if the file is local,
+        or _load_urllib() if the file is on Internet'''
+
+        proto = filename.split(':', 1)[0]
+        if proto in ('http', 'https', 'ftp'):
+            data = self._load_urllib(filename)
+        else:
+            data = self._load_local(filename)
+        self._q_done.append((filename, data))
+
+    def _load_local(self, filename):
+        '''(internal) Loading a local file'''
+        return ImageLoader.load(filename)
+
+    def _load_urllib(self, filename):
+        '''(internal) Loading a network file. First download it, save it to a
+        temporary file, and pass it to _load_local()'''
+        import urllib2, tempfile
+        data = None
+        try:
+            suffix = '.%s'  % (filename.split('.')[-1])
+            _out_osfd, _out_filename = tempfile.mkstemp(
+                    prefix='pymtloader', suffix=suffix)
+
+            # read from internet
+            fd = urllib2.urlopen(filename)
+            idata = fd.read()
+            fd.close()
+
+            # write to local filename
+            fd = open(_out_filename, 'wb')
+            fd.write(idata)
+            fd.close()
+
+            # load data
+            data = self._load_local(_out_filename)
+        except:
+            pymt_logger.exception('Failed to load image <%s>' % filename)
+            return self.error_image
+        finally:
+            os.unlink(_out_filename)
+
+        return data
+
+    def _update(self, *largs):
+        '''(internal) Check if a data is loaded, and pass to the client'''
+        # want to start it ?
+        if self._start_wanted:
+            if not self._running:
+                self.start()
+            self._start_wanted = False
+
+        while True:
             try:
-                fd = urllib.urlopen(name)
-                if fd.getcode() < 200 or fd.getcode() >= 300:
-                    pymt_logger.error('unable to load image %s (errorcode=%d)' % \
-                        (name, fd.getcode()))
-                    fd.close()
+                filename, data = self._q_done.pop()
+            except:
+                return
+
+            # create the image
+            image = ProxyImage(data)
+            Cache.append('loader', 'filename', image)
+
+            # update client
+            for c_filename, client in self._client.iterate():
+                if filename != c_filename:
                     continue
+                # got one client to update
+                client.image = image
+                client.dispatch_event('on_load')
+                self._client.remove((c_filename, client))
 
+    def image(self, filename):
+        '''Load a image using loader. A Proxy image is returned
+        with a loading image ::
+        
+            img = Loader.image(filename)
+            # img will be a ProxyImage.
+            # You'll use it the same as an Image class.
+            # Later, when the image is really loaded,
+            # the loader will change the img.image property
+            # to the new loaded image
 
-                # Special case for gdk loader
-                # We experienced random crash while using pyglet.image.load
-                # in gdk_pixbuf_loader_write().
-                # Since we don't known what pyglet will use to load image
-                # we lock the loading each time
+        '''
+        data = Cache.get('loader', filename)
+        if data not in (None, False):
+            return ProxyImage(data,
+                    loading_image=self.loading_image)
+
+        client = ProxyImage(self.loading_image,
+                    loading_image=self.loading_image)
+        self._client.append((filename, client))
+
+        if data is None:
+            # if data is None, this is really the first time
+            self._q_load.append(filename)
+            Cache.append('loader', filename, False)
+            self._start_wanted = True
+        else:
+            # already queued for loading
+            pass
+
+        return client
+
+#
+# Loader implementation
+#
+
+if 'PYMT_DOC' in os.environ:
+
+    Loader = None
+
+else:
+
+    #
+    # Try to use pygame as our first choice for loader
+    #
+
+    try:
+        import pygame
+
+        class LoaderPygame(LoaderBase):
+            def start(self):
+                super(LoaderPygame, self).start()
+                self.worker = pygame.threads.WorkerQueue()
+                self.worker.do(self.run)
+
+            def stop(self):
+                super(LoaderPygame, self).stop()
+                self.worker.stop()
+
+            def run(self, *largs):
+                while self._running:
+                    try:
+                        filename = self._q_load.pop()
+                    except:
+                        time.sleep(0.1)
+                        continue
+                    self.worker.do(self._load, filename)
+
+        Loader = LoaderPygame()
+        pymt_logger.info('Loader: using <pygame> as thread loader')
+
+    except:
+
+        #
+        # Default to the clock loader
+        #
+
+        class LoaderClock(LoaderBase):
+            '''Loader implementation using a simple Clock()'''
+            def start(self):
+                super(LoaderClock, self).start()
+                getClock().schedule_interval(self.run, 0.0001)
+
+            def stop(self):
+                super(LoaderClock, self).stop()
+                getClock().unschedule_interval(self.run)
+
+            def run(self, *largs):
                 try:
-                    gtk.gdk.threads_enter()
+                    filename = self._q_load.pop()
                 except:
-                    pass
+                    return
+                self._load(filename)
 
-                # Load image
-                try:
-                    self.cache[name] = pyglet.image.load(name, file=fd)
-                except Exception, e:
-                    pymt_logger.error('unable to load image %s : %s' % (name, e))
+        Loader = LoaderClock()
+        pymt_logger.info('Loader: using <clock> as thread loader')
 
-                try:
-                    gtk.gdk.threads_leave()
-                except:
-                    pass
-
-                # Close fd
-                fd.close()
-
-                # Notify object for new data
-                for obj in objs:
-                    self.updatelist.append(obj)
-
-            except Exception, e:
-                pymt_logger.error('unable to load image %s : %s' % (name, e))

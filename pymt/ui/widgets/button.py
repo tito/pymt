@@ -203,6 +203,8 @@ class MTImageButton(MTButton):
     :Parameters:
         `filename` : str
             Filename of image
+        `image` : Image
+            Instead of giving a filename, give a Image object
         `scale` : float, default is 1.0
             Scaling of image, default is 100%, ie 1.0
     '''
@@ -223,8 +225,8 @@ class MTImageButton(MTButton):
         return self._filename
     def _set_filename(self, filename):
         self._filename = filename
-        if filename: #dont set it if e.g. its None 
-            self.image     = pymt.Image(self.filename)
+        if filename:
+            self.image = pymt.Image(self.filename)
     filename = property(_get_filename, _set_filename)
 
     def draw(self):

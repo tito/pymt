@@ -451,42 +451,38 @@ class MTScatterImage(MTScatterWidget):
     :Parameters:
         `filename` : str
             Filename of image
+        `image` : Image
+            Instead of using filename, use a Image object
         `opacity` : float, default to 1.0
             Used to set the opacity of the image.
-        `loader` : Loader instance
-            Use the loader to load image
+        `scale` : float, default is 1.0
+            Scaling of image, default is 100%, ie 1.0
     '''
     def __init__(self, **kwargs):
-        # Preserve this way to do
-        # Later, we'll give another possibility, like using a loader...
         kwargs.setdefault('filename', None)
         kwargs.setdefault('opacity', 1.0)
-        if kwargs.get('filename') is None:
-            raise Exception('No filename given to MTScatterImage')
-        kwargs.setdefault('loader', None)
+        kwargs.setdefault('scale', 1.0)
+        kwargs.setdefault('image', None)
+        if kwargs.get('filename') is None and kwargs.get('image') is None:
+            raise Exception('No filename or image given to MTScatterImage')
 
         super(MTScatterImage, self).__init__(**kwargs)
+        self.image          = kwargs.get('image')
+        self.scale          = kwargs.get('scale')
+        self.filename       = kwargs.get('filename')
+        self.size           = self.image.size
 
-        # Use loader if available
-        loader = kwargs.get('loader')
-        if loader:
-            self.image  = loader.image(kwargs.get('filename'))
-        else:
-            self.image  = pymt.Image(kwargs.get('filename'))
-
-        self.opacity = kwargs.get('opacity')
+    def _get_filename(self):
+        return self._filename
+    def _set_filename(self, filename):
+        self._filename = filename
+        if filename:
+            self.image = pymt.Image(self.filename)
+    filename = property(_get_filename, _set_filename)
 
     def draw(self):
-        if type(self.image) == pymt.Image:
-            # fast part
-            self.image.size = self.size
-            self.image.opacity = self.opacity
-            self.image.draw()
-        else:
-            # loader part
-            set_color(1, 1, 1)
-            with gx_blending:
-                drawTexturedRectangle(texture=self.image.get_texture(), size=self.size)
+        self.size       = self.image.size
+        self.image.draw()
 
 class MTScatterSvg(MTScatterWidget):
     '''Render an svg image into a scatter widget

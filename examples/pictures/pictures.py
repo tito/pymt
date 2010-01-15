@@ -27,18 +27,24 @@ def draw_border(image, *largs):
     with gx_matrix:
         glTranslatef(image.center[0], image.center[1], 0)
         glRotated(image.rotation,0,0,1)
-        glScalef(image._scale,image._scale,1)
-        drawRectangle(pos=(-image.width/2-5,-image.height/2-5), size=(image.width+10, image.height+10))
+        glScalef(image._scale, image._scale, 1)
+        b = 5 * (1 / image._scale)
+        drawRectangle(pos=(-image.width/2-b,-image.height/2-b),
+                      size=(image.width+b*2, image.height+b*2))
+
+def image_on_load(scatter):
+    scatter.scale = 1 / random.uniform(3, 10)
 
 def pymt_plugin_activate(w, ctx):
     ctx.c = MTKinetic()
     for i in range(6):
-        img_src = '../pictures/images/pic'+str(i+1)+'.jpg'
+        img = Loader.image('../pictures/images/pic'+str(i+1)+'.jpg')
         x = int(random.uniform(100, w.width-100))
         y = int(random.uniform(100, w.height-100))
         rot = random.uniform(0, 360)
         scale = random.uniform(3, 10)
-        b = MTScatterImage(filename=img_src, pos=(x,y), rotation=rot)
+        b = MTScatterImage(image=img, pos=(x,y), rotation=rot)
+        img.connect('on_load', curry(image_on_load, b))
         b.size = b.image.width / scale, b.image.height / scale
         b.push_handlers(on_move=curry(handle_image_move, b))
         b.push_handlers(on_draw=curry(draw_border, b))

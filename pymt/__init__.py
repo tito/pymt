@@ -258,12 +258,12 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     # after dependices
     from gesture import *
     from obj import OBJ
+    from loader import *
 
     # widgets
     from ui import *
 
     #from plugin import *
-    #from loader import *
 
 
     # Can be overrided in command line

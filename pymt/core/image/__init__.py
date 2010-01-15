@@ -131,23 +131,25 @@ class Image(BaseObject):
         super(Image, self).__init__(**kwargs)
 
         self._keep_data = kwargs.get('keep_data')
+        self._image     = None
         self._filename  = None
         self.texture    = None
-        self.image      = None
         self.opacity    = 1.
         self.scale      = 1.
         self.anchor_x   = 0
         self.anchor_y   = 0
         self.color      = [1, 1, 1, 1]
 
-        if type(arg) == Image:
+        if isinstance(arg, Image):
             for attr in Image.copy_attributes:
                 self.__setattr__(attr, arg.__getattribute__(attr))
         elif type(arg) in (Texture, TextureRegion):
             self.texture    = arg.texture
             self.width      = self.texture.width
             self.height     = self.texture.height
-        elif type(arg) == str:
+        elif isinstance(arg, ImageLoaderBase):
+            self.image      = arg
+        elif type(arg) in (str, unicode):
             self.filename   = arg
         else:
             raise Exception('Unable to load image with type %s' % str(type(arg)))
@@ -185,6 +187,17 @@ class Image(BaseObject):
         kwargs.setdefault('keep_data', False)
         return Image(filename, **kwargs)
 
+    def _get_image(self):
+        return self._image
+    def _set_image(self, image):
+        self._image = image
+        if image:
+            self.texture    = self.image.texture
+            self.width      = self.image.width
+            self.height     = self.image.height
+    image = property(_get_image, _set_image,
+            doc='Get/set the data image object')
+
     def _get_filename(self):
         return self._filename
     def _set_filename(self, value):
@@ -193,11 +206,8 @@ class Image(BaseObject):
         if value == self._filename:
             return
         self._filename = value
-        self.image      = ImageLoader.load(self._filename,
-                                           keep_data=self._keep_data)
-        self.texture    = self.image.texture
-        self.width      = self.image.width
-        self.height     = self.image.height
+        self.image     = ImageLoader.load(
+                self._filename, keep_data=self._keep_data)
     filename = property(_get_filename, _set_filename,
             doc='Get/set the filename of image')
 

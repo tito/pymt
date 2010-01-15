@@ -95,10 +95,11 @@ class FileHandler(logging.Handler):
             _dir = os.path.join(_dir, log_dir)
             if not os.path.exists(_dir):
                 os.mkdir(_dir)
-        pattern = os.path.join(_dir, time.strftime(log_name))
+        pattern = log_name.replace('%_', '@@NUMBER@@')
+        pattern = os.path.join(_dir, time.strftime(pattern))
         n = 0
         while True:
-            filename = pattern.replace('%_', str(n))
+            filename = pattern.replace('@@NUMBER@@', str(n))
             if not os.path.exists(filename):
                 break
             n += 1

@@ -13,6 +13,7 @@ except:
 
 from . import Sound, SoundLoader
 import os
+import sys
 from pymt.logger import pymt_logger
 
 class SoundGstreamer(Sound):
@@ -54,10 +55,15 @@ class SoundGstreamer(Sound):
         self.unload()
         if self.filename is None:
             return
+
+        slash = ''
+        if sys.platform in ('win32', 'cygwin'):
+            slash = '/'
+
         if self.filename[0] == '/':
-            filepath = 'file://' + self.filename
+            filepath = 'file://' + slash + self.filename
         else:
-            filepath = 'file://' + os.path.join(os.getcwd(), self.filename)
+            filepath = 'file://' + slash + os.path.join(os.getcwd(), self.filename)
 
         self._data = gst.element_factory_make('playbin2', 'player')
         bus = self._data.get_bus()

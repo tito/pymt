@@ -251,33 +251,6 @@ class MTWidget(EventDispatcher):
         '''
         self.style.update(styles)
 
-    def connect(self, p1, w2, p2=None, func=lambda x: x):
-        '''Connect events to a widget property'''
-        def lambda_connect(*largs):
-            if type(p2) in (tuple, list):
-                if len(largs) != len(p2):
-                    pymt_logger.exception('Widget: cannot connect with different size')
-                    raise
-                for p in p2:
-                    if p is None:
-                        continue
-                    w2.__setattr__(p, type(w2.__getattribute__(p))(
-                        func(largs[p2.index(p)])))
-            else:
-                dtype = type(w2.__getattribute__(p2))
-                try:
-                    if len(largs) == 1:
-                        w2.__setattr__(p2, dtype(func(*largs)))
-                    else:
-                        w2.__setattr__(p2, dtype(func(largs)))
-                except Exception, e:
-                    pymt_logger.exception('Widget: cannot connect with different size')
-                    raise
-        if p2 is None:
-            self.push_handlers(**{p1: w2})
-        else:
-            self.push_handlers(**{p1: lambda_connect})
-
     def to_widget(self, x, y):
         '''Return the coordinate from window to local widget'''
         x, y = self.parent.to_widget(x, y)

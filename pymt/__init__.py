@@ -272,6 +272,10 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             ['help', 'fullscreen', 'windowed', 'fps', 'event',
              'module=', 'save',
              'display=', 'size=', 'dump-frame', 'dump-format=', 'dump-prefix='])
+
+        # set argv to the non-read args
+        sys.argv = args
+
         need_save = False
         for opt, arg in opts:
             if opt in ['-h', '--help']:

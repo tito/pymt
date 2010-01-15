@@ -67,7 +67,7 @@ class LoaderBase(object):
         loading_png_fn = os.path.join(pymt_data_dir, 'loader.png')
         error_png_fn = os.path.join(pymt_data_dir, 'error.png')
 
-        self.loading_image = Image(loading_png_fn)
+        self.loading_image = ImageLoader.load(loading_png_fn)
         self.error_image = ImageLoader.load(error_png_fn)
 
         self._q_load  = collections.deque()
@@ -99,16 +99,21 @@ class LoaderBase(object):
         '''Stop the loader thread/process'''
         self._running = False
 
-    def _load(self, filename):
+    def _load(self, parameters):
         '''(internal) Loading function, called by the thread.
         Will call _load_local() if the file is local,
         or _load_urllib() if the file is on Internet'''
 
+        filename, tcallback = parameters
         proto = filename.split(':', 1)[0]
         if proto in ('http', 'https', 'ftp'):
             data = self._load_urllib(filename)
         else:
             data = self._load_local(filename)
+
+        if tcallback:
+            data = tcallback(data)
+
         self._q_done.append((filename, data))
 
     def _load_local(self, filename):
@@ -172,7 +177,7 @@ class LoaderBase(object):
                 client.dispatch_event('on_load')
                 self._client.remove((c_filename, client))
 
-    def image(self, filename):
+    def image(self, filename, tcallback=None):
         '''Load a image using loader. A Proxy image is returned
         with a loading image ::
         
@@ -195,7 +200,7 @@ class LoaderBase(object):
 
         if data is None:
             # if data is None, this is really the first time
-            self._q_load.append(filename)
+            self._q_load.append((filename, tcallback))
             Cache.append('loader', filename, False)
             self._start_wanted = True
         else:
@@ -234,11 +239,11 @@ else:
             def run(self, *largs):
                 while self._running:
                     try:
-                        filename = self._q_load.pop()
+                        parameters = self._q_load.pop()
                     except:
                         time.sleep(0.1)
                         continue
-                    self.worker.do(self._load, filename)
+                    self.worker.do(self._load, parameters)
 
         Loader = LoaderPygame()
         pymt_logger.info('Loader: using <pygame> as thread loader')
@@ -261,10 +266,10 @@ else:
 
             def run(self, *largs):
                 try:
-                    filename = self._q_load.pop()
+                    parameters = self._q_load.pop()
                 except:
                     return
-                self._load(filename)
+                self._load(parameters)
 
         Loader = LoaderClock()
         pymt_logger.info('Loader: using <clock> as thread loader')

@@ -166,7 +166,7 @@ class LoaderBase(object):
 
             # create the image
             image = ProxyImage(data)
-            Cache.append('loader', 'filename', image)
+            Cache.append('loader', filename, image)
 
             # update client
             for c_filename, client in self._client.iterate():
@@ -191,6 +191,7 @@ class LoaderBase(object):
         '''
         data = Cache.get('loader', filename)
         if data not in (None, False):
+            # found image
             return ProxyImage(data,
                     loading_image=self.loading_image)
 

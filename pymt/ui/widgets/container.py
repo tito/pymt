@@ -44,4 +44,7 @@ class MTContainer(MTWidget):
 
 class MTScatterContainer(MTContainer, MTScatterWidget):
     '''Convert a BaseObject like into a MTScatterWidget.'''
-    pass
+    def draw(self):
+        # just subclass this function, don't move the object :)
+        super(MTContainer, self).draw()
+        self.child.draw()

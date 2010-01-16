@@ -102,14 +102,6 @@ class MTScatterWidget(MTWidget):
         else:
             self.init_transform(kwargs.get('rotation'), kwargs.get('scale'), super(MTScatterWidget, self).pos)
 
-    def add_widget(self, w):
-        '''Add a widget to a side of scatter.'''
-        self.children.append(w)
-        try:
-            w.parent = self
-        except:
-            pass
-
     def init_transform(self, angle, scale, trans, point=(0, 0)):
         '''Initialize transformation matrix with new parameters.
         :Parameters:

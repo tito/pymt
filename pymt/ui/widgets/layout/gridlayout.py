@@ -54,7 +54,7 @@ class MTGridLayout(MTAbstractLayout):
     def add_widget(self, widget, do_layout=None):
         max = self.get_max_widgets()
         if max and len(self.children) > max:
-            raise Exception('Too much children in MTGridLayout. Increase your matrix_size!')
+            raise Exception('Too much children in MTGridLayout. Increase your rows/cols!')
         super(MTGridLayout, self).add_widget(widget, do_layout=do_layout)
 
     def reposition_child(self, child, pos=None, size=None):

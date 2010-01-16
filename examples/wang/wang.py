@@ -11,6 +11,7 @@ from pymt import *
 from copy import copy
 import random
 import math
+import os
 
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
@@ -18,6 +19,7 @@ PLUGIN_TITLE = 'Wang game'
 PLUGIN_AUTHOR = 'Mathieu Virbel'
 PLUGIN_DESCRIPTION = 'Play on Pong with multitouch !'
 
+current_dir = os.path.dirname(__file__)
 
 def in_between(val, b1, b2):
     return ((b1 >= val and val >= b2) or (b1 <= val and val <= b2))
@@ -138,7 +140,7 @@ class Ball(MTWidget):
         self.game = kwargs.get('game')
         self.debugline = []
         self.debug = False
-        self.sprite = Image.load('../wang/ball.png')
+        self.sprite = Image.load(os.path.join(current_dir, 'ball.png'))
         self.reset()
 
     def reset(self):

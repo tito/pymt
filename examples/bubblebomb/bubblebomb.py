@@ -4,10 +4,12 @@ PLUGIN_TITLE = 'Bubble-o-Bomb !'
 PLUGIN_AUTHOR = 'Mathieu Virbel'
 PLUGIN_DESCRIPTION = 'Secure Bubble Bomb before explosion !'
 
+import os
 from pymt import *
 from OpenGL.GL import *
 from random import random, randint
 
+current_dir = os.path.dirname(__file__)
 
 class Bomb(MTWidget):
     def __init__(self, **kwargs):
@@ -120,16 +122,22 @@ class World(MTWidget):
     def __init__(self, **kwargs):
         super(World, self).__init__(**kwargs)
         self.reset()
-        self.s_gameover = SoundLoader.load('../bubblebomb/gameover.wav')
-        self.s_touch = SoundLoader.load('../bubblebomb/touch.wav')
-        self.s_nextlevel = SoundLoader.load('../bubblebomb/level.wav')
+        self.s_gameover = SoundLoader.load(os.path.join(current_dir, 'gameover.wav'))
+        self.s_touch = SoundLoader.load(os.path.join(current_dir, 'touch.wav'))
+        self.s_nextlevel = SoundLoader.load(os.path.join(current_dir, 'level.wav'))
 
     def sound(self, name):
         if name == 'gameover':
+            self.s_gameover.stop()
+            self.s_gameover.seek(0)
             self.s_gameover.play()
         elif name == 'touch':
+            self.s_touch.stop()
+            self.s_touch.seek(0)
             self.s_touch.play()
         elif name == 'nextlevel':
+            self.s_nextlevel.stop()
+            self.s_nextlevel.seek(0)
             self.s_nextlevel.play()
 
     def reset(self):

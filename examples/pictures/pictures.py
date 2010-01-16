@@ -9,6 +9,8 @@ import os
 import random
 from OpenGL.GL import *
 
+current_dir = os.path.dirname(__file__)
+
 def handle_image_move(image, *largs):
     w = image.get_parent_window()
     if not w:
@@ -38,7 +40,7 @@ def image_on_load(scatter):
 def pymt_plugin_activate(w, ctx):
     ctx.c = MTKinetic()
     for i in range(6):
-        img = Loader.image('../pictures/images/pic'+str(i+1)+'.jpg')
+        img = Loader.image(os.path.join(current_dir, 'images', 'pic%d.jpg' % (i+1)))
         x = int(random.uniform(100, w.width-100))
         y = int(random.uniform(100, w.height-100))
         rot = random.uniform(0, 360)

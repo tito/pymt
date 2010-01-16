@@ -9,7 +9,7 @@ if __name__ == '__main__':
     w = getWindow()
     coverflow = MTCoverFlow(size=w.size)
     for filename in glob(os.path.join(base_image, '*.jpg')):
-        button = MTImageButton(filename=filename)
+        button = MTImageButton(image=Loader.image(filename))
         button.title = os.path.basename(filename)
         coverflow.add_widget(button)
 

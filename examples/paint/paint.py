@@ -1,4 +1,5 @@
 import collections
+import os
 from pymt import *
 from OpenGL.GL import *
 from glob import glob
@@ -9,6 +10,8 @@ PLUGIN_TITLE = 'Paint Sandbox'
 PLUGIN_AUTHOR = 'Thomas Hansen'
 PLUGIN_EMAIL = 'thomas.hansen@gmail.com'
 PLUGIN_DESCRIPTION = 'This is a simple paint canvas.'
+
+current_dir = os.path.dirname(__file__)
 
 class PaintBrushLayout(MTBoxLayout):
     def draw(self):
@@ -37,7 +40,9 @@ class MTPaintColorPicker(MTWidget):
 
     def draw(self):
         set_color(0.2,0.2,0.2,0.5)
-        drawRectangle(pos=(self.x, self.y), size=(self.width,self.height))
+        drawRoundedRectangle(pos=(self.x, self.y),
+                             size=(self.width, self.height),
+                             radius=15)
 
         set_color(*self.current_color)
         drawRectangle(pos=(self.x+10, self.y+220), size=(110,60))
@@ -48,7 +53,7 @@ class MTPaintColorPicker(MTWidget):
 
 
         for i in range(len(self.sliders)):
-            self.sliders[i].x = 10 + self.x + i*40
+            self.sliders[i].x = 10 + self.x + i*42
             self.sliders[i].y = 10 + self.y
             self.sliders[i].draw()
 
@@ -101,7 +106,7 @@ class Canvas(MTWidget):
         self.fbo = Fbo(size=(self.width, self.height), with_depthbuffer=False)
         self.bgcolor = (0,0,0,1)
         self.color = (0,1,0,1.0)
-        set_brush('../paint/brushes/brush_particle.png')
+        set_brush(os.path.join(current_dir, 'brushes', 'brush_particle.png'))
         self.paint_queue = collections.deque()
         self.do_paint_queue = False
         self.clear()
@@ -175,7 +180,7 @@ def pymt_plugin_activate(root, ctx):
     root.add_widget(ctx.btnclear)
 
     ctx.brushes = PaintBrushLayout(pos=(300, 0))
-    for brush in glob('../paint/brushes/*.png'):
+    for brush in glob(os.path.join(current_dir, 'brushes', '*.png')):
         button = MTImageButton(filename=brush)
         button.push_handlers(on_press=curry(update_brush, brush,
                                             ctx.slider.brush_size))

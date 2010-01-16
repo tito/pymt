@@ -1,3 +1,4 @@
+import os
 from pymt import *
 from random import randint, random
 
@@ -7,6 +8,8 @@ PLUGIN_TITLE = 'Fridge letter'
 PLUGIN_AUTHOR = 'Mathieu Virbel'
 PLUGIN_DESCRIPTION = 'Original idea from leijou (see README for more info.)'
 
+current_dir = os.path.dirname(__file__)
+
 class FridgeLetterAtomic(MTDragable):
     def __init__(self, **kwargs):
         kwargs.setdefault('letter', 'A')
@@ -14,7 +17,7 @@ class FridgeLetterAtomic(MTDragable):
         super(FridgeLetterAtomic, self).__init__(**kwargs)
 
         self.letter = Label(
-            font_name = '../fridgeletter/AlphaFridgeMagnets.ttf',
+            font_name = os.path.join(current_dir, 'AlphaFridgeMagnets.ttf'),
             font_size = 48,
             bold = True,
             anchor_x = 'left',

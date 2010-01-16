@@ -3,12 +3,15 @@ from pymt import *
 from OpenGL.GL import *
 import random
 import math
+import os
 
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
 PLUGIN_TITLE = 'Particles Sandbox'
 PLUGIN_AUTHOR = 'Sharath Patali & Mathieu Virbel'
 PLUGIN_DESCRIPTION = 'All stars are coming under touches!'
+
+current_dir = os.path.dirname(__file__)
 
 class ParticleObject:
     def __init__(self, settings):
@@ -80,7 +83,7 @@ class ParticleEngine(MTWidget):
         super(ParticleEngine, self).__init__(**kwargs)
         self.max        = max
         self.particles  = []
-        self.image      = Image('../particles/dot.png')
+        self.image      = Image(os.path.join(current_dir, 'dot.png'))
 
         # properties used by particles
         self.alpha      = AnimationAlpha.linear

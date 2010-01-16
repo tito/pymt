@@ -6,12 +6,14 @@ PLUGIN_TITLE = '3D Painting'
 PLUGIN_AUTHOR = 'Thomas Hansen'
 PLUGIN_EMAIL = 'thomas.hansen@gmail.com'
 
-
+import os
 from pymt import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-set_brush('../3Ddrawing/particle.png', 20)
+current_dir = os.path.dirname(__file__)
+particle_fn = os.path.join(current_dir, 'particle.png')
+set_brush(particle_fn, 10)
 
 class GL3DPerspective:
     """
@@ -63,10 +65,10 @@ class ModelPainter(MTWidget):
         self.perspective = GL3DPerspective()
 
         #load the obj model file
-        self.model = OBJ('../3Ddrawing/cow.obj')
+        self.model = OBJ(os.path.join(current_dir, 'cow.obj'))
 
         #texture and FBO used for picking
-        self.picking_image = image.load('../3Ddrawing/picking.png')
+        self.picking_image = image.load(os.path.join(current_dir, 'picking.png'))
         self.picking_texture = self.picking_image.get_texture()
         self.fbo = Fbo(size=self.size)
         self.painting_fbo = Fbo(size=(512,512))

@@ -6,8 +6,11 @@ PLUGIN_DESCRIPTION = ''
 
 from OpenGL.GL import *
 from pymt import *
+import os
+from os.path import join
 
-crosshair = Image.load('../touchtracer/crosshair.png')
+current_dir = os.path.dirname(__file__)
+crosshair = Image.load(join(current_dir, 'crosshair.png'))
 crosshair.scale = 0.6
 
 
@@ -47,7 +50,7 @@ class TouchTracer(MTWidget):
 
 
     def draw(self):
-        set_brush('../touchtracer/particle.png', 10)
+        set_brush(join(current_dir, 'particle.png'), 10)
         w = self.get_parent_window()
         set_color(.1, .1, .1)
         drawRectangle(size=w.size)

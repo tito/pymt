@@ -65,9 +65,13 @@ class MTMenuItem(MTKineticItem):
         self._icon = None
         try:
             if icon != '':
-                self._icon = Image(os.path.join(path, icon))
+                self._icon = Loader.image(os.path.join(path, icon))
+                self._icon.connect('on_load', self._reset_cache)
         except:
             pass
+
+    def _reset_cache(self, *largs):
+        self.button_dl.clear()
 
     def on_move(self, x, y):
         # don't invalidate cache when moving position

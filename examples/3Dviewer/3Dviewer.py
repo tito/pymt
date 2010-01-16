@@ -6,11 +6,12 @@ PLUGIN_TITLE = '3D Viewer'
 PLUGIN_AUTHOR = 'Thomas Hansen'
 PLUGIN_EMAIL = 'thomas.hansen@gmail.com'
 
-
+import os
 from pymt import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
+current_dir = os.path.dirname(__file__)
 
 class GLPerspectiveWidget(MTWidget):
     """Sets up 3d projection in on_draw function and then calls seld.draw, origin in the center"""
@@ -69,7 +70,7 @@ class ModelViewer(GLPerspectiveWidget):
     def __init__(self, **kargs):
         GLPerspectiveWidget.__init__(self, **kargs)
         self.touch_position = {}
-        self.model = bunny = OBJ('../3Dviewer/monkey.obj')
+        self.model = bunny = OBJ(os.path.join(current_dir, 'monkey.obj'))
         self.rotation_matrix = None
         self.reset_rotation()
         self.touch1, self.touch2 = None, None

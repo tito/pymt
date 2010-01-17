@@ -46,6 +46,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
     style.setdefault('border-radius', 0)
     style.setdefault('border-radius-precision', .1)
     style.setdefault('draw-border', 0)
+    style.setdefault('draw-background', 1)
     style.setdefault('draw-alpha-background', 0)
     style.setdefault('alpha-background', (1, 1, .5, .5))
 

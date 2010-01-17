@@ -5,6 +5,7 @@ Text: Handle drawing of text
 __all__ = ('LabelBase', 'Label')
 
 import pymt
+import re
 from .. import core_select_lib
 from ...baseobject import BaseObject
 
@@ -99,35 +100,49 @@ class LabelBase(BaseObject):
             # first, split lines
             glyphs = []
             lines = []
-            mw = mh = 0
-            for glyph in self.label:
-                lw, lh = cache[glyph]
+            lw = lh = 0
+            for word in re.split(r'( |\n)', self.label):
+
+                # calculate the word width
+                ww, wh = 0, 0
+                for glyph in word:
+                    gw, gh = cache[glyph]
+                    ww += gw
+                    wh = max(gh, wh)
+
+                # is the word fit on the uw ?
+                if ww > uw:
+                    lines.append(((ww, wh), word))
+                    lw = lh = x = 0
+                    continue
 
                 # get the maximum height for this line
-                mh = max(lh, mh)
+                lh = max(wh, lh)
 
-                # get new line char ?
-                # or is the char can fit in the current line ?
-                if glyph == '\n' or x + lw > uw:
+                # is the word fit on the line ?
+                if (word == '\n' or x + ww > uw) and lw != 0:
 
-                    # push a new line with dimensions + glyphs
-                    lines.append(((mw, mh), glyphs))
+                    # no, push actuals glyph
+                    lines.append(((lw, lh), glyphs))
                     glyphs = []
 
                     # reset size
-                    mw = mh = 0
+                    lw = lh = x = 0
 
-                    # new line ? don't render !
-                    if glyph == '\n':
+                    # new line ? don't render
+                    if word == '\n':
                         continue
 
                 # advance the width
-                mw += lw
-                glyphs.append(glyph)
+                if word != ' ' or x != 0:
+                    lw += ww
+                    x  += ww
+                    lh = max(wh, lh)
+                    glyphs += list(word)
 
             # got some char left ?
-            if mw != 0:
-                lines.append(((mw, mh), glyphs))
+            if lw != 0:
+                lines.append(((lw, lh), glyphs))
 
             if not real:
                 h = sum([size[1] for size, glyphs in lines])

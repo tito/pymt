@@ -96,7 +96,7 @@ def update_iterations(viewer, label, value):
     # simple callback function for the slider on_value_changed event.
     # sets iterations on mandelbrot viewer and uopates text label
     viewer.iterations = int(value)
-    label.text = "Number of iterations: "+str(int(value))
+    label.label = "Number of iterations: "+str(int(value))
 
 
 def pymt_plugin_activate(w, ctx):

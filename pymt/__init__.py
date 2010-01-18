@@ -8,7 +8,7 @@ Currently the aim is to allow for quick and easy interaction design and rapid pr
 You can visit http://pymt.txzone.net/ for more informations !
 '''
 
-__version__ = '0.4.0a3'
+__version__ = '0.4.0b1'
 
 from ConfigParser import ConfigParser
 import sys
@@ -271,10 +271,10 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         opts, args = getopt.getopt(sys_argv[1:], 'hp:fwFem:sn',
             ['help', 'fullscreen', 'windowed', 'fps', 'event',
              'module=', 'save',
-             'display=', 'size=', 'dump-frame', 'dump-format=', 'dump-prefix='])
+             'display=', 'size='])
 
         # set argv to the non-read args
-        sys.argv = args
+        sys.argv = sys_argv[0:1] + args
 
         need_save = False
         for opt, arg in opts:

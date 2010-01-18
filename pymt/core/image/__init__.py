@@ -144,7 +144,7 @@ class Image(BaseObject):
             for attr in Image.copy_attributes:
                 self.__setattr__(attr, arg.__getattribute__(attr))
         elif type(arg) in (Texture, TextureRegion):
-            self.texture    = arg.texture
+            self.texture    = arg
             self.width      = self.texture.width
             self.height     = self.texture.height
         elif isinstance(arg, ImageLoaderBase):

@@ -462,6 +462,7 @@ class MTScatterImage(MTScatterWidget):
         self.image          = kwargs.get('image')
         self.scale          = kwargs.get('scale')
         self.filename       = kwargs.get('filename')
+        self.opacity        = kwargs.get('opacity')
         self.size           = self.image.size
 
     def _get_filename(self):
@@ -473,7 +474,8 @@ class MTScatterImage(MTScatterWidget):
     filename = property(_get_filename, _set_filename)
 
     def draw(self):
-        self.size       = self.image.size
+        self.size           = self.image.size
+        self.image.opacity  = self.opacity
         self.image.draw()
 
 class MTScatterSvg(MTScatterWidget):

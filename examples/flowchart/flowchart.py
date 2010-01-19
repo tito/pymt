@@ -21,6 +21,8 @@ class FlowText(MTTextInput):
     def __init__(self, **kwargs):
         super(FlowText, self).__init__(**kwargs)
         self.orig = (0, 0)
+        self.label_obj.options['font_size'] = self.height / 2.
+        self.label_obj.refresh()
 
     def on_press(self, touch):
         self.orig = Vector(self.to_window(*touch.pos))
@@ -87,7 +89,7 @@ class FlowLink(MTWidget):
         else: # touch case
             bx, by = self.parent.to_local(*self.node2.pos)
         set_color(.094, .572, .858)
-        drawLine((ax, ay, bx, by), width=8. * self.parent.get_scale_factor())
+        drawLine((ax, ay, bx, by), width=8. * self.parent.scale)
 
 
 class FlowChart(MTScatterPlane):
@@ -124,6 +126,7 @@ class FlowChart(MTScatterPlane):
             if node:
                 touch.grab(self)
                 link = self.create_link(node, touch)
+                self.disable_all()
                 touch.userdata['flow.link'] = link
             else:
                 node = self.create_node(x - 50, y - 50)
@@ -160,7 +163,7 @@ class FlowChart(MTScatterPlane):
         drawRoundedRectangle(pos=(w.width - 40, 40), size=(30, 175))
         set_color(0, 0, 0, .1)
         drawRoundedRectangle(pos=(w.width - 40, 40),
-             size=(30, 175 * self.get_scale_factor()))
+             size=(30, 175 * self.scale))
 
         self.inactivity_timer += getFrameDt()
         if self.inactivity_timer > 10:
@@ -192,15 +195,15 @@ class FlowChart(MTScatterPlane):
         w = self.get_parent_window()
         a = self.to_local(0, 0)
         b = self.to_local(w.width, w.height)
-        scale = int(1 / self.get_scale_factor())
+        scale = int(1 / self.scale)
         step = 200 * scale
         a = int(a[0] / step - 1) * step, int(a[1] / step - 1) * step
         b = int(b[0] / step + 1) * step, int(b[1] / step + 1) * step
         for x in xrange(a[0], b[0], step):
             for y in xrange(a[1], b[1], step):
                 set_color(.9, .9, .9)
-                drawLine((a[0], y, b[0], y))
-                drawLine((x, a[1], x, b[1]))
+                drawLine((a[0], y, b[0], y), width=1)
+                drawLine((x, a[1], x, b[1]), width=1)
 
 def pymt_plugin_activate(root, ctx):
     ctx.flowchart = FlowChart()

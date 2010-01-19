@@ -23,6 +23,9 @@ class MTLabel(MTWidget):
         `autoheight`: bool, default to True
             Update height information with the label content height
     '''
+    __slots__ = ('autowidth', 'autoheight', 'autosize', 'label',
+        '_used_label', 'kwargs')
+
     def __init__(self, **kwargs):
         kwargs.setdefault('autowidth', False)
         kwargs.setdefault('autoheight', False)
@@ -66,5 +69,24 @@ class MTLabel(MTWidget):
             self.height = h
         elif self.autowidth:
             self.width = w
+
+    def __getattribute__(self, name):
+        try:
+            return super(MTLabel, self).__getattribute__(name)
+        except:
+            kw = self.kwargs
+            if name in kw:
+                return kw[name]
+            raise
+
+    def __setattr__(self, name, value):
+        try:
+            kw = super(MTLabel, self).__getattribute__('kwargs')
+            if name in kw:
+                kw[name] = value
+                return None
+        except:
+            pass
+        return super(MTLabel, self).__setattr__(name, value)
 
 MTWidgetFactory.register('MTLabel', MTLabel)

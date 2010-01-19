@@ -24,6 +24,7 @@ class MTForm(MTAbstractFormWidget):
         kwargs.setdefault('layout', None)
         super(MTForm, self).__init__(**kwargs)
         self.layout = kwargs.get('layout')
+        self._need_layout = True
 
     def _set_layout(self, layout):
         if hasattr(self, '_layout') and self._layout:
@@ -38,6 +39,12 @@ class MTForm(MTAbstractFormWidget):
     def add_widget(self, widget):
         self.layout.add_widget(widget)
 
+    def on_update(self):
+        if self._need_layout:
+            self._need_layout = False
+            self.relayout()
+        return super(MTForm, self).on_update()
+
     def draw(self):
         set_color(*self.style.get('bg-color'))
         if int(self.style.get('border-radius')) > 0:
@@ -51,11 +58,13 @@ class MTForm(MTAbstractFormWidget):
     def do_layout(self):
         self.size = self.layout.content_width, self.layout.content_height
 
-    def on_move(self, x, y):
-        super(MTForm, self).on_move(x, y)
+    def relayout(self):
         self.layout.pos = self.pos
         self.layout.do_layout()
 
+    def on_move(self, x, y):
+        super(MTForm, self).on_move(x, y)
+        self._need_layout = True
 
 # Register all base widgets
 MTWidgetFactory.register('MTForm', MTForm)

@@ -6,7 +6,8 @@ import os
 import re
 import pymt
 from ....utils import is_color_transparent, curry
-from ....graphx import drawCSSRectangle, set_color
+from ....loader import Loader
+from ....graphx import drawCSSRectangle, set_color, drawLabel
 from ...factory import MTWidgetFactory
 from ..label import MTLabel
 from ..button import MTToggleButton
@@ -88,16 +89,15 @@ class MTFileListEntryView(MTFileEntryView):
     def __init__(self, **kwargs):
         super(MTFileListEntryView, self).__init__(**kwargs)
         self.height         = 25
-        self.image          = pymt.Image(self.type_image, scale=0.5)
-        self.labelWX        = MTLabel(label=self.striptext(self.label_txt, 50),
-                anchor_x='left', anchor_y='center', halign='center')
-        self.add_widget(self.labelWX)
+        self.image          = Loader.image(self.type_image)
+        self.image.scale    = 0.5
         self.selected       = False
         self.browser.w_limit    = 1
 
     def draw(self):
-        self.labelWX.pos    = self.x + self.image.width + 3, self.y + int(self.height / 2.)
-        super(MTFileListEntryView, self).draw()
+        pos    = self.image.width, self.y + int(self.height / 2.)
+        drawLabel(label=self.striptext(self.label_txt, 50), pos=pos, anchor_x='left')
+
         self.image.pos = self.pos
         self.image.draw()
 
@@ -107,19 +107,16 @@ class MTFileIconEntryView(MTFileEntryView):
     def __init__(self, **kwargs):
         super(MTFileIconEntryView, self).__init__(**kwargs)
         self.size           = (80, 80)
-        self.image          = pymt.Image(self.type_image)
-        self.labelWX        = MTLabel(label=self.striptext(self.label_txt, 10),
-                anchor_x='center', anchor_y='center', halign='center')
-        self.add_widget(self.labelWX)
+        self.image          = Loader.image(self.type_image)
         self.selected       = False
         self.browser.w_limit= 4
 
     def draw(self):
-        self.labelWX.pos    = int(self.x + self.width / 2.), int(self.y + 10)
+        pos    = int(self.x + self.width / 2.), int(self.y + 10)
+        drawLabel(label=self.striptext(self.label_txt, 10), pos=pos)
+
         self.image.x        = self.x + int(self.image.width / 2) - 5
         self.image.y        = self.y + int(self.image.height / 2) - 5
-
-        super(MTFileIconEntryView, self).draw()
         self.image.draw()
 
 
@@ -304,8 +301,6 @@ class MTFileBrowser(MTPopup):
     :Parameters:
         `title` : str, default to 'Open a file'
             The title for what reason the filebrowser will be used
-        `submit_label` : str, default to 'Open'
-            Label for the Submit button, Default set to Open
         `size` : list, default to (350, 300)
             Window size of the browser and its container
         `filters` : list, default to []
@@ -313,8 +308,6 @@ class MTFileBrowser(MTPopup):
             Directories are not affected by filters.
         `multipleselection` : bool, default to False
             Allow multiple selection of files
-        `exit_on_submit` : bool, default to True
-            Allows to decide whether to close the window or just hide it, on pressing submit button
 
     :Events:
         `on_select`
@@ -323,18 +316,14 @@ class MTFileBrowser(MTPopup):
     '''
 
     def __init__(self, **kwargs):
-        kwargs.setdefault('submit_label', 'Open')
         kwargs.setdefault('title', 'Open a file')
         kwargs.setdefault('size', (350, 300))
         kwargs.setdefault('filters', [])
         kwargs.setdefault('multipleselection', False)
-        kwargs.setdefault('exit_on_submit', True)
 
         super(MTFileBrowser, self).__init__(**kwargs)
 
         self.register_event_type('on_select')
-        
-        self.exit_on_submit = kwargs.get('exit_on_submit')
 
         # save size before resizing of Popup Layout
         self.kbsize = self.width, self.height

@@ -58,7 +58,7 @@ class MTPopup(MTScatterWidget):
 
         # Titles
         if kwargs.get('title') is not None:
-            self.w_title = MTLabel(label=kwargs.get('title'), font_size=10, bold=False, autoheight=True)
+            self.w_title = MTLabel(label=kwargs.get('title'), font_size=10, bold=False, autosize=True)
             self.l_title.add_widget(self.w_title)
 
         # Buttons

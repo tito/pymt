@@ -430,6 +430,10 @@ class MTScatterPlane(MTScatterWidget):
     (the background is touched), all of them are transformed
     together
     '''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('auto_bring_to_front', False)
+        super(MTScatterPlane, self).__init__(**kwargs)
+
     def draw(self):
         pass
 

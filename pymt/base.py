@@ -114,7 +114,7 @@ class TouchEventLoop(object):
 
         # dispatch grabbed touch
         touch.grab_state = True
-        for wid in touch.grab_list:
+        for wid in touch.grab_list[:]:
             root_window = wid.get_root_window()
             if wid != root_window and root_window is not None:
                 touch.push()

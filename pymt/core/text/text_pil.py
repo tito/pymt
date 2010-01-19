@@ -4,16 +4,14 @@ Text PIL: Draw text with PIL
 
 __all__ = ('LabelPIL', )
 
+try:
+    from PIL import Image, ImageFont, ImageDraw
+except:
+    raise
+
 import pymt
 import os
 from . import LabelBase
-
-try:
-    import PIL
-    import ImageFont
-    import ImageDraw
-except:
-    raise
 
 # used for fetching extends before creature image surface
 default_font = ImageFont.load_default()
@@ -25,32 +23,30 @@ class LabelPIL(LabelBase):
         fontname = self.options['font_name'].split(',')[0]
         id = '%s.%s' % (unicode(fontname), unicode(fontsize))
         if not id in self._cache:
-            filename = os.path.join(pymt.pymt_data_dir, 'DejaVuSans.ttf')
+            filename = os.path.join(pymt.pymt_data_dir, 'LiberationSans-Regular.ttf')
             font = ImageFont.truetype(filename, fontsize)
             self._cache[id] = font
 
         return self._cache[id]
 
-    def _get_extents(self):
+    def get_extents(self, text):
         font = self._select_font()
-        return font.getsize(self.label)
+        w, h = font.getsize(text)
+        return w, h
 
-    def update(self):
-        width, height = self._get_extents()
-
-        width = int(max(width, 1))
-        height = int(max(height, 1))
-
+    def _render_begin(self):
         # create a surface, context, font...
-        im = PIL.Image.new('RGBA', (width, height))
-        draw = ImageDraw.Draw(im)
-        draw.text((0, 0), self.label, font=self._select_font())
+        self._pil_im = Image.new('RGBA', self.size)
+        self._pil_draw = ImageDraw.Draw(self._pil_im)
 
-        data = pymt.ImageData(im.size[0], im.size[1],
-            im.mode, im.tostring())
+    def _render_text(self, text, x, y):
+        self._pil_draw.text((x, y), text, font=self._select_font())
 
-        self.texture = pymt.Texture.create_from_data(data)
-        self.texture.flip_vertical()
+    def _render_end(self):
+        data = pymt.ImageData(self.width, self.height,
+            self._pil_im.mode, self._pil_im.tostring())
 
-        super(LabelPIL, self).update()
+        del self._pil_im
+        del self._pil_draw
 
+        return data

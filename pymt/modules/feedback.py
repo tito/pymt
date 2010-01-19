@@ -1,15 +1,16 @@
 '''
-A global feedback effect (aka Surface)
+FeedBack: A global feedback effect (aka Surface)
 '''
 
 from pymt import *
 import os
 
-particle_fn = os.path.join(pymt_data_dir, 'particle2.png')
-ring_fn = os.path.join(pymt_data_dir, 'ring.png')
-ring_img = Image(ring_fn)
-ring_img.anchor_x = ring_img.width / 2
-ring_img.anchor_y = ring_img.height / 2
+if not 'PYMT_DOC' in os.environ:
+    particle_fn = os.path.join(pymt_data_dir, 'particle2.png')
+    ring_fn = os.path.join(pymt_data_dir, 'ring.png')
+    ring_img = Image(ring_fn)
+    ring_img.anchor_x = ring_img.width / 2
+    ring_img.anchor_y = ring_img.height / 2
 
 class GlobalFeedbackTouch(MTWidget):
     def __init__(self, **kwargs):
@@ -120,7 +121,7 @@ class GlobalFeedback(MTWidget):
             del self.touches[id]
 
         # Uncomment the line below to always see feedback.
-        #self.bring_to_front()
+        self.bring_to_front()
         super(GlobalFeedback, self).on_draw()
 
     def draw(self):

@@ -6,12 +6,14 @@ PLUGIN_TITLE = '3D Painting'
 PLUGIN_AUTHOR = 'Thomas Hansen'
 PLUGIN_EMAIL = 'thomas.hansen@gmail.com'
 
-
+import os
 from pymt import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-set_brush('../3Ddrawing/particle.png', 20)
+current_dir = os.path.dirname(__file__)
+particle_fn = os.path.join(current_dir, 'particle.png')
+set_brush(particle_fn, 10)
 
 class GL3DPerspective:
     """
@@ -63,13 +65,13 @@ class ModelPainter(MTWidget):
         self.perspective = GL3DPerspective()
 
         #load the obj model file
-        self.model = bunny = OBJ('../3Ddrawing/cow.obj')
+        self.model = OBJ(os.path.join(current_dir, 'cow.obj'))
 
         #texture and FBO used for picking
-        self.picking_image = image.load('../3Ddrawing/picking.png')
+        self.picking_image = image.load(os.path.join(current_dir, 'picking.png'))
         self.picking_texture = self.picking_image.get_texture()
         self.fbo = Fbo(size=self.size)
-        self.painting_fbo = Fbo(size=(1024,1024))
+        self.painting_fbo = Fbo(size=(512,512))
 
         #initialize the painting buffer as white
         with self.painting_fbo:
@@ -152,15 +154,18 @@ class ModelPainter(MTWidget):
                 with self.perspective:
                     self.draw_picking()
                 self.has_moved = False
-            pick = (GLubyte * 3)()
-            glReadPixels(int(x), int(y), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pick)
+            pick = glReadPixels(int(x), int(y), 1, 1, GL_RGB, GL_UNSIGNED_BYTE)
+            pick = map(ord, pick)
         return pick[0]*4, 1024 - pick[1]*4
 
     def paint(self, x, y):
         x,y =  self.pick(x,y)
+        s = self.painting_fbo.size
+        x /= 1024 / s[0]
+        y /= 1024 / s[1]
 
         with self.painting_fbo:
-            glColor3f(0.1,0.1,0)
+            glColor3f(.1, .1, 0)
             drawCircle(pos=(x,y), radius=8)
             #paintLine([x,y,x,y])
 

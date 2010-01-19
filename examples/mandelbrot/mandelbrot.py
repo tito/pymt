@@ -1,3 +1,6 @@
+import OpenGL
+#OpenGL.FULL_LOGGING = True
+
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
 PLUGIN_TITLE = 'Mandelbrot Viewer'
@@ -67,7 +70,7 @@ void main()
 
 
 from pymt import *
-from pyglet.graphics import *
+from OpenGL.GL import *
 
 
 
@@ -85,19 +88,15 @@ class MandelbrotViewer(MTScatterWidget):
         self.shader.use()
         self.shader['zoom'] = self.zoom
         self.shader['maxIterations'] = self.iterations
-        vertcoords = (0.0,0.0, w,0.0, w,h, 0.0,h)
-        texcoords  = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
-        draw(4, GL_QUADS, ('v2f', vertcoords), ('t2f', texcoords))
+        drawTexturedRectangle(None, size=(w,h))
         self.shader.stop()
-
-
 
 
 def update_iterations(viewer, label, value):
     # simple callback function for the slider on_value_changed event.
     # sets iterations on mandelbrot viewer and uopates text label
     viewer.iterations = int(value)
-    label.text = "Number of iterations: "+str(int(value))
+    label.label = "Number of iterations: "+str(int(value))
 
 
 def pymt_plugin_activate(w, ctx):
@@ -108,7 +107,7 @@ def pymt_plugin_activate(w, ctx):
     root.add_widget(mbviewer)
 
     #create a label and a slider for setting the number of iterations
-    label = MTLabel(label="Number of iterations: 50", pos=(10,50))
+    label = MTLabel(label="Number of iterations: 50", pos=(10,50), autosize=True)
     slider = MTSlider(orientation='horizontal', min=25, max=250, value=100, size=(w.width-20, 30), pos=(10,10))
 
     # attach the event handler to the slider

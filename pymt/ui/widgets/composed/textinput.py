@@ -15,6 +15,10 @@ class MTTextInput(MTButton):
     a virtual keyboard when touched any input of the virtual keyboard
     will then have effect on the TextInput widget.
 
+    :Parameters:
+        `keyboard` : MTVkeyboard object, default to None
+            Use another MTVKeyboard than the default one
+
     :Events:
         `on_text_change` (text)
             Fired when the content of text input is changed
@@ -26,8 +30,7 @@ class MTTextInput(MTButton):
         kwargs.setdefault('anchor_y', 'bottom')
         kwargs.setdefault('keyboard', None)
         super(MTTextInput, self).__init__(**kwargs)
-        self._keyboard = None
-        self.keyboard = kwargs.get('keyboard')
+        self._keyboard = kwargs.get('keyboard')
         self.original_width = self.width
         self.is_active_input = False
         self.padding = 20
@@ -37,7 +40,7 @@ class MTTextInput(MTButton):
 
     def _get_keyboard(self):
         if not self._keyboard:
-            self.keyboard = MTVKeyboard()
+            self._keyboard = MTVKeyboard()
         return self._keyboard
     def _set_keyboard(self, value):
         if self._keyboard is not None:
@@ -135,12 +138,12 @@ class MTTextInput(MTButton):
             return True
         elif key == 8: # backspace
             key = (None, None, 'backspace', 1)
-            self.keyboard.on_key_down(key)
-            self.keyboard.on_key_up(key)
+            self.keyboard.dispatch_event('on_key_down', key)
+            self.keyboard.dispatch_event('on_key_up', key)
         elif key in (13, 271): # enter or numenter
             key = (None, None, 'enter', 1)
-            self.keyboard.on_key_down(key)
-            self.keyboard.on_key_up(key)
+            self.keyboard.dispatch_event('on_key_down', key)
+            self.keyboard.dispatch_event('on_key_up', key)
         else:
             if unicode is not None:
                 self.keyboard.text = self.keyboard.text + unicode

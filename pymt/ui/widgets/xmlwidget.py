@@ -4,10 +4,11 @@ XML widget: parse xml and create his children
 
 __all__ = ['XMLWidget']
 
-from xml.dom import minidom, Node
 from ...logger import pymt_logger
 from ..factory import MTWidgetFactory
 from widget import MTWidget
+minidom = None
+Node = None
 
 class XMLWidget(MTWidget):
     '''XML widget create all his children by parsing and execute xml ::
@@ -43,26 +44,17 @@ class XMLWidget(MTWidget):
         if node.nodeType == Node.ELEMENT_NODE:
             class_name = node.nodeName
 
-            #create widget
-            try:
-                nodeWidget  = MTWidgetFactory.get(class_name)()
-            except:
-                pymt_logger.exception('unable to create widget %s' % class_name)
-                raise
-
-            #set attributes
+            # parameters
+            k = {}
             for (name, value) in node.attributes.items():
-                try:
-                    nodeWidget.__setattr__(name, eval(value))
-                except NameError:
-                    #if it is a NameError its probably a regular string property like e.g. id
-                    #if xml is e.g. <... name="myval" ...> it breaks (had to be: name="'myval'")\
-                    #so lets try with just the string value itself
-                    nodeWidget.__setattr__(name, value)
-                    pymt_logger.warning('NameError when setting %s on %s.  Defaulting to string value!'  % (name, class_name))
-                except:
-                    pymt_logger.exception('unable to set %s on %s' % (name, class_name))
-                    raise
+                k[str(name)] = eval(value)
+
+            # create widget
+            try:
+                nodeWidget  = MTWidgetFactory.get(class_name)(**k)
+            except:
+                pymt_logger.exception('XMLWidget: unable to create widget %s' % class_name)
+                raise
 
             #add child widgets
             for c in node.childNodes:
@@ -73,6 +65,9 @@ class XMLWidget(MTWidget):
             return nodeWidget
 
     def loadString(self, xml):
+        global minidom, Node
+        if minidom is None:
+            from xml.dom import minidom, Node
         doc = minidom.parseString(xml)
         root = doc.documentElement
         self.add_widget(self.createNode(root))

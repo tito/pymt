@@ -11,7 +11,7 @@ your system. Actually, theses libraries are handled :
 
 __all__ = ['BaseWindow', 'MTWindow', 'MTDisplay']
 
-import sys
+import os
 from OpenGL.GL import *
 import pymt
 from ...logger import pymt_logger
@@ -20,6 +20,7 @@ from ...clock import getClock
 from ...graphx import set_color, drawCircle, drawLabel, drawRectangle, drawCSSRectangle
 from ...modules import pymt_modules
 from ...event import EventDispatcher
+from ...utils import SafeList
 from ..colors import css_get_style
 from ..factory import MTWidgetFactory
 from ..widgets import MTWidget
@@ -46,6 +47,8 @@ class BaseWindow(EventDispatcher):
 
     __instance = None
     __initialized = False
+    _wallpaper = None
+    _wallpaper_position = 'norepeat'
 
     def __new__(type, **kwargs):
         if type.__instance is None:
@@ -58,6 +61,7 @@ class BaseWindow(EventDispatcher):
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
         kwargs.setdefault('style', {})
+        kwargs.setdefault('gradient', False)
 
         # don't init window 2 times,
         # except if force is specified
@@ -67,11 +71,12 @@ class BaseWindow(EventDispatcher):
         super(BaseWindow, self).__init__()
 
         # init privates
-        self._have_multisample = None
         self._modifiers = []
         self._size = (0, 0)
+        self.gradient = kwargs.get('gradient')
 
         # event subsystem
+        self.register_event_type('on_flip')
         self.register_event_type('on_draw')
         self.register_event_type('on_update')
         self.register_event_type('on_resize')
@@ -88,7 +93,7 @@ class BaseWindow(EventDispatcher):
         setWindow(self)
 
         # apply styles for window
-        self.cssstyle = {}
+        self.style = {}
         style = css_get_style(widget=self)
         self.apply_css(style)
 
@@ -96,7 +101,7 @@ class BaseWindow(EventDispatcher):
         if len(kwargs.get('style')):
             self.apply_css(kwargs.get('style'))
 
-        self.children = []
+        self.children = SafeList()
         self.parent = self
         self.visible = True
 
@@ -110,7 +115,10 @@ class BaseWindow(EventDispatcher):
         if 'fullscreen' in kwargs:
             params['fullscreen'] = kwargs.get('fullscreen')
         else:
-            params['fullscreen'] = pymt.pymt_config.getboolean('graphics', 'fullscreen')
+            params['fullscreen'] = pymt.pymt_config.get('graphics', 'fullscreen')
+            if params['fullscreen'] != 'auto':
+                params['fullscreen'] = params['fullscreen'].lower() in \
+                    ('true', '1', 'yes', 'yup')
 
         if 'width' in kwargs:
             params['width'] = kwargs.get('width')
@@ -153,12 +161,6 @@ class BaseWindow(EventDispatcher):
         if pymt.pymt_config.getboolean('pymt', 'show_fps'):
             self.show_fps = True
 
-        # initialize dump image
-        self.dump_frame     = pymt.pymt_config.getboolean('dump', 'enabled')
-        self.dump_prefix    = pymt.pymt_config.get('dump', 'prefix')
-        self.dump_format    = pymt.pymt_config.get('dump', 'format')
-        self.dump_idx       = 0
-
         # configure the window
         self.create_window(params)
 
@@ -172,6 +174,10 @@ class BaseWindow(EventDispatcher):
         # mark as initialized
         self.__initialized = True
 
+    def toggle_fullscreen(self):
+        '''Toggle fullscreen on window'''
+        pass
+
     def close(self):
         '''Close the window'''
         pass
@@ -179,6 +185,10 @@ class BaseWindow(EventDispatcher):
     def create_window(self, params):
         '''Will create the main window and configure it'''
         pass
+
+    def on_flip(self):
+        '''Flip between buffers (event)'''
+        self.flip()
 
     def flip(self):
         '''Flip between buffers'''
@@ -189,7 +199,7 @@ class BaseWindow(EventDispatcher):
         pass
 
     def apply_css(self, styles):
-        self.cssstyle.update(styles)
+        self.style.update(styles)
 
     def _get_modifiers(self):
         return self._modifiers
@@ -201,7 +211,7 @@ class BaseWindow(EventDispatcher):
         if self._size == size:
             return False
         self._size = size
-        pymt_logger.debug('Resize window to %s' % str(self.size))
+        pymt_logger.debug('Window: Resize window to %s' % str(self.size))
         self.dispatch_event('on_resize', *size)
         return True
     size = property(lambda self: self._get_size(),
@@ -214,24 +224,29 @@ class BaseWindow(EventDispatcher):
     def _get_height(self):
         return self._size[1]
     height = property(_get_height)
-    
+
     def _get_center(self):
         return (self.width/2, self.height/2)
     center = property(_get_center)
 
-    def init_gl(self):
-        # check if window have multisample
-        """
-        if MTWindow._have_multisample is None:
-            s = glGetIntegerv(GL_SAMPLES)
-            if s > 0:
-                pymt.pymt_logger.debug('Multisampling is available (%d)' % s.value)
-                MTWindow._have_multisample = True
-            else:
-                pymt.pymt_logger.debug('Multisampling is not available')
-                MTWindow._have_multisample = False
-        """
 
+    def _get_wallpaper(self):
+        return self._wallpaper
+    def _set_wallpaper(self, filename):
+        self._wallpaper = pymt.Image(filename)
+    wallpaper = property(_get_wallpaper, _set_wallpaper,
+            doc='Get/set the wallpaper (must be a valid filename)')
+
+    def _get_wallpaper_position(self):
+        return self._wallpaper_position
+    def _set_wallpaper_position(self, position):
+        self._wallpaper_position = position
+    wallpaper_position = property(
+            _get_wallpaper_position, _set_wallpaper_position,
+            doc='Get/set the wallpaper position (can be one of' +
+                '"norepeat", "center", "repeat", "scale")')
+
+    def init_gl(self):
         line_smooth = pymt.pymt_config.getint('graphics', 'line_smooth')
         if line_smooth:
             if line_smooth == 1:
@@ -255,15 +270,45 @@ class BaseWindow(EventDispatcher):
 
     def clear(self):
         '''Clear the window with background color'''
-        glClearColor(*self.cssstyle.get('bg-color'))
+        glClearColor(*self.style.get('bg-color'))
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
     def draw(self):
         '''Draw the window background'''
         self.clear()
-        #draw a nice gradient
-        set_color(*self.cssstyle.get('bg-color'))
-        drawCSSRectangle(size=self.size, style=self.cssstyle)
+        if self.wallpaper is not None:
+            self.draw_wallpaper()
+        elif self.gradient:
+            self.draw_gradient()
+
+    def draw_gradient(self):
+        set_color(*self.style.get('bg-color'))
+        drawCSSRectangle(size=self.size, style=self.style)
+
+    def draw_wallpaper(self):
+        if self.wallpaper_position == 'center':
+            self.wallpaper.x = (self.width - self.wallpaper.width) / 2
+            self.wallpaper.y = (self.height - self.wallpaper.height) / 2
+            self.wallpaper.draw()
+        elif self.wallpaper_position == 'repeat':
+            r_x = float(self.width) / self.wallpaper.width
+            r_y = float(self.height) / self.wallpaper.height
+            if int(r_x) != r_x:
+                r_x = int(r_x) + 1
+            if int(r_y) != r_y:
+                r_y = int(r_y) + 1
+            for x in xrange(int(r_x)):
+                for y in xrange(int(r_y)):
+                    self.wallpaper.x = x * self.wallpaper.width
+                    self.wallpaper.y = y * self.wallpaper.height
+                    self.wallpaper.draw()
+        elif self.wallpaper_position == 'scale':
+            self.wallpaper.size = self.size
+            self.wallpaper.draw()
+        else:
+            # no-repeat or any other options
+            self.wallpaper.draw()
+
 
     def draw_mouse_touch(self):
         '''Compatibility for MouseTouch, drawing a little red circle around
@@ -291,7 +336,7 @@ class BaseWindow(EventDispatcher):
         '''Event called when window are update the widget tree.
         (Usually before on_draw call.)
         '''
-        for w in self.children:
+        for w in self.children.iterate():
             w.dispatch_event('on_update')
 
     def on_draw(self):
@@ -303,7 +348,7 @@ class BaseWindow(EventDispatcher):
         self.draw()
 
         # then, draw childrens
-        for w in self.children:
+        for w in self.children.iterate():
             w.dispatch_event('on_draw')
 
         if self.show_fps:
@@ -312,35 +357,26 @@ class BaseWindow(EventDispatcher):
                 center=False, pos=(0, 0),
                 font_size=10, bold=False)
 
-        '''
-        if self.dump_frame:
-            self.dump_idx = self.dump_idx + 1
-            filename = '%s%05d.%s' % (self.dump_prefix, self.dump_idx,
-                                       self.dump_format)
-            #print pyglet.image.get_buffer_manager().get_color_buffer().get_texture()
-            pyglet.image.get_buffer_manager().get_color_buffer().save(filename=filename)
-        '''
-
         self.draw_mouse_touch()
 
     def on_touch_down(self, touch):
         '''Event called when a touch is down'''
         touch.scale_for_screen(*self.size)
-        for w in reversed(self.children):
+        for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_down', touch):
                 return True
 
     def on_touch_move(self, touch):
         '''Event called when a touch move'''
         touch.scale_for_screen(*self.size)
-        for w in reversed(self.children):
+        for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_move', touch):
                 return True
 
     def on_touch_up(self, touch):
         '''Event called when a touch up'''
         touch.scale_for_screen(*self.size)
-        for w in reversed(self.children):
+        for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_up', touch):
                 return True
 
@@ -357,14 +393,14 @@ class BaseWindow(EventDispatcher):
     def on_close(self, *largs):
         '''Event called when the window is closed'''
         pymt_modules.unregister_window(self)
-        if self in touch_event_listeners:
+        if self in touch_event_listeners[:]:
             touch_event_listeners.remove(self)
 
     def on_mouse_down(self, x, y, button, modifiers):
         '''Event called when mouse is in action (press/release)'''
         pass
 
-    def on_mouse_move(self, x, y, button, modifiers):
+    def on_mouse_move(self, x, y, modifiers):
         '''Event called when mouse is moving, with buttons pressed'''
         pass
 
@@ -416,26 +452,27 @@ class MTDisplay(MTWidget):
 
 # Searching the best provider
 MTWindow = None
-if 'pygame' in pymt.options['window']:
-    try:
-        import win_pygame
-        MTWindow = win_pygame.MTWindowPygame
-        pymt_logger.info('Window: use Pygame as window provider.')
-    except ImportError:
-        pymt_logger.debug('Unable to use Pygame as window provider.')
+if not 'PYMT_DOC' in os.environ:
+    if 'pygame' in pymt.options['window']:
+        try:
+            import win_pygame
+            MTWindow = win_pygame.MTWindowPygame
+            pymt_logger.info('Window: use Pygame as window provider.')
+        except ImportError:
+            pymt_logger.debug('Window: Unable to use Pygame as provider.')
 
-if MTWindow is None and 'glut' in pymt.options['window']:
-    try:
-        import win_glut
-        MTWindow = win_glut.MTWindowGlut
-        pymt_logger.info('Window: use GLUT as window provider.')
-    except ImportError:
-        pymt_logger.debug('Unable to use GLUT as window provider.')
+    if MTWindow is None and 'glut' in pymt.options['window']:
+        try:
+            import win_glut
+            MTWindow = win_glut.MTWindowGlut
+            pymt_logger.info('Window: use GLUT as window provider.')
+        except ImportError:
+            pymt_logger.debug('Window: Unable to use GLUT as provider.')
 
-# No window provider ?
-if MTWindow is None:
-    pymt_logger.critical('No window provider found (configuration is %s)' %
-        str(pymt.options['window']))
+    # No window provider ?
+    if MTWindow is None:
+        pymt_logger.critical('Window: No provider found (configuration is %s)' %
+            str(pymt.options['window']))
 
 # Register all base widgets
 MTWidgetFactory.register('MTWindow', MTWindow)

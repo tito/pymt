@@ -2,7 +2,7 @@
 Fbo: abstraction to use hardware/software FrameBuffer object
 '''
 
-from __future__ import with_statement
+
 
 __all__ = [
     'Fbo', 'HardwareFbo', 'SoftwareFbo',
@@ -11,7 +11,6 @@ __all__ = [
 
 import os
 import re
-import sys
 import OpenGL
 import pymt
 from OpenGL.GL import *
@@ -118,10 +117,6 @@ class HardwareFbo(AbstractFbo):
         self.depthbuffer    = None
 
         set_texture(self.texture)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self.realsize[0], self.realsize[1],
-                0, GL_RGB, GL_UNSIGNED_BYTE, 0)
 
         self.framebuffer = glGenFramebuffersEXT(1)
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
@@ -143,22 +138,22 @@ class HardwareFbo(AbstractFbo):
         # check the fbo status
         status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
         if status != GL_FRAMEBUFFER_COMPLETE_EXT:
-            pymt.pymt_logger.error('Error in framebuffer activation')
-            pymt.pymt_logger.error('Details: HardwareFbo size=%s, realsize=%s, format=GL_RGBA' % (
+            pymt.pymt_logger.error('Fbo: Error in framebuffer activation')
+            pymt.pymt_logger.error('Fbo: Details: HardwareFbo size=%s, realsize=%s, format=GL_RGBA' % (
                 str(self.size), str(self.realsize)))
             if status in HardwareFbo.gl_fbo_errors:
-                pymt.pymt_logger.error('Details: %s (%d)' % (HardwareFbo.gl_fbo_errors[status], status))
+                pymt.pymt_logger.error('Fbo: Details: %s (%d)' % (HardwareFbo.gl_fbo_errors[status], status))
             else:
-                pymt.pymt_logger.error('Details: Unknown error (%d)' % status)
+                pymt.pymt_logger.error('Fbo: Details: Unknown error (%d)' % status)
 
-            pymt.pymt_logger.error('')
-            pymt.pymt_logger.error('You cannot use Hardware FBO.')
-            pymt.pymt_logger.error('Please change the configuration to use Software FBO.')
-            pymt.pymt_logger.error('You can use the pymt-config tools, or edit the configuration to set:')
-            pymt.pymt_logger.error('')
-            pymt.pymt_logger.error('[graphics]')
-            pymt.pymt_logger.error('fbo = software')
-            pymt.pymt_logger.error('')
+            pymt.pymt_logger.error('Fbo: ')
+            pymt.pymt_logger.error('Fbo: You cannot use Hardware FBO.')
+            pymt.pymt_logger.error('Fbo: Please change the configuration to use Software FBO.')
+            pymt.pymt_logger.error('Fbo: You can use the pymt-config tools, or edit the configuration to set:')
+            pymt.pymt_logger.error('Fbo: ')
+            pymt.pymt_logger.error('Fbo: [graphics]')
+            pymt.pymt_logger.error('Fbo: fbo = software')
+            pymt.pymt_logger.error('Fbo: ')
 
             raise UnsupportedFboException()
 
@@ -203,25 +198,19 @@ class SoftwareFbo(AbstractFbo):
     '''
     def __init__(self, **kwargs):
         super(SoftwareFbo, self).__init__(**kwargs)
-        self.oldtexture = pyglet.image.get_buffer_manager().get_color_buffer().get_texture()
-
-        # Hack to initialize a empty buffer.
-        self.bind()
-        self.release()
-
+        self.pixels = None
 
     def bind(self):
-
         # Save current buffer
-        buffer = pyglet.image.get_buffer_manager().get_color_buffer()
-        set_texture(self.oldtexture, target=GL_TEXTURE_2D)
-        buffer.blit_to_texture(GL_TEXTURE_2D, 0, 0, 0, 0)
+        w = pymt.getWindow()
+        glReadBuffer(GL_BACK)
+        self.pixels = glReadPixels(0, 0, w.width, w.height, GL_RGBA, GL_UNSIGNED_BYTE)
 
         # Push current attrib
         glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_TEST | GL_STENCIL_BUFFER_BIT)
+        glDisable(GL_STENCIL_TEST)
         glClearColor(0,0,0,0)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        glDisable(GL_STENCIL_TEST)
 
         # Save viewport if asked
         if self.push_viewport:
@@ -229,8 +218,13 @@ class SoftwareFbo(AbstractFbo):
             glViewport(0, 0, self.size[0], self.size[1])
 
         # Draw old Framebuffer
-        set_color(1,1,1)
+        set_color(1, 1, 1)
         drawTexturedRectangle(self.texture, size=self.size)
+
+        # Slower solution, but no alpha problem
+        #set_texture(self.texture)
+        #pixels = glGetTexImage(self.texture.target, 0, GL_RGBA, GL_UNSIGNED_BYTE)
+        #glDrawPixels(self.realsize[0], self.realsize[1], GL_RGBA, GL_UNSIGNED_BYTE, pixels)
 
     def release(self):
         # Restore viewport
@@ -239,22 +233,17 @@ class SoftwareFbo(AbstractFbo):
 
         # Copy current buffer into fbo texture
         set_texture(self.texture, target=GL_TEXTURE_2D);
-        buffer = pyglet.image.get_buffer_manager().get_color_buffer()
-        glReadBuffer(buffer.gl_buffer)
+        glReadBuffer(GL_BACK)
         glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, self.size[0], self.size[1])
 
         # Restore old buffer
-        glPushMatrix()
-        glLoadIdentity()
-        set_color(1,1,1)
-        drawTexturedRectangle(self.oldtexture, size=(self.oldtexture.width,
-                                                     self.oldtexture.height))
-        glPopMatrix()
+        w = pymt.getWindow()
+        glDrawPixels(w.width, w.height, GL_RGBA, GL_UNSIGNED_BYTE, self.pixels)
 
         glPopAttrib()
 
 
-if os.path.basename(sys.argv[0]) in ('sphinx-build', 'autostart.py'):
+if 'PYMT_DOC' in os.environ:
     # Bad hack for sphinx
     # He don't like when Fbo is announced in __all__,
     # and not defined in source
@@ -268,11 +257,11 @@ else:
         pymt_config.set('graphics', 'fbo', 'software')
     '''
 
-    if not os.path.basename(sys.argv[0]).startswith('sphinx'):
+    if 'PYMT_DOC' not in os.environ:
         # decide what to use
         if pymt_config.get('graphics', 'fbo') == 'hardware':
-            pymt.pymt_logger.debug('Fbo will use hardware Framebuffer')
+            pymt.pymt_logger.debug('Fbo: Use hardware Framebuffer')
             Fbo = HardwareFbo
         else:
-            pymt.pymt_logger.debug('Fbo will use software Framebuffer')
+            pymt.pymt_logger.debug('Fbo: Use software Framebuffer')
             Fbo = SoftwareFbo

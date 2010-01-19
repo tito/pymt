@@ -13,6 +13,7 @@ from ...event import EventDispatcher
 from ...logger import pymt_logger
 from ...base import getCurrentTouches
 from ...input import Touch
+from ...utils import SafeList
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
 from ..colors import css_get_style
@@ -38,10 +39,10 @@ def event_stats_activate(activate=True):
 
 def event_stats_print():
     '''Print actual event stats'''
-    pymt_logger.info('Event stats')
+    pymt_logger.info('Widget: Event stats')
     global _event_stats
     for k in _event_stats:
-        pymt_logger.info('%6d: %s' % (_event_stats[k], k))
+        pymt_logger.info('Widget: %6d: %s' % (_event_stats[k], k))
 
 class MTWidget(EventDispatcher):
     '''Global base for any multitouch widget.
@@ -72,21 +73,12 @@ class MTWidget(EventDispatcher):
 			Add inline CSS
 		`cls` : str, default is ''
 			CSS class of this widget
-        `inner_animation` : custom, default is ()
-            You can activate default inner animation with this keyword
-            Format is: ('pos', ('size': {func=AnimationAlpha.sin}), )
 
     :Events:
         `on_update` ()
             Used to update the widget and his children.
         `on_draw` ()
             Used to draw the widget and his children.
-        `on_mouse_press` (int x, int y, int button, int modifiers)
-            Fired when mouse is pressed
-        `on_mouse_release` (int x, int y, int button, int modifiers)
-            Fired when mouse is release
-        `on_mouse_drag` (int x, int y, int dx, int dy, int button, int modifiers)
-            Fired when mouse is draw
         `on_touch_down` (Touch touch)
             Fired when a blob appear
         `on_touch_move` (Touch touch)
@@ -101,15 +93,9 @@ class MTWidget(EventDispatcher):
     visible_events = [
         'on_update',
         'on_draw',
-        'on_mouse_press',
-        'on_mouse_drag',
-        'on_mouse_release',
         'on_touch_up',
         'on_touch_move',
-        'on_touch_down',
-        'on_animation_complete',
-        'on_animation_reset',
-        'on_animation_start'
+        'on_touch_down'
     ]
     def __init__(self, **kwargs):
         kwargs.setdefault('pos', (0, 0))
@@ -123,7 +109,6 @@ class MTWidget(EventDispatcher):
         kwargs.setdefault('no_css', False)
         kwargs.setdefault('cls', '')
         kwargs.setdefault('style', {})
-        kwargs.setdefault('inner_animation', ())
 
         self._id = None
         if 'id' in kwargs:
@@ -136,7 +121,7 @@ class MTWidget(EventDispatcher):
             self.register_event_type(ev)
 
         self.parent					= None
-        self.children				= []
+        self.children				= SafeList()
         self._visible				= False
         self._x, self._y			= kwargs.get('pos')
         self._width, self._height	= kwargs.get('size')
@@ -152,6 +137,7 @@ class MTWidget(EventDispatcher):
         self._root_window           = None
         self._root_window_source    = None
 
+        self.register_event_type('on_animation_complete')
         self.register_event_type('on_resize')
         self.register_event_type('on_parent_resize')
         self.register_event_type('on_move')
@@ -177,11 +163,6 @@ class MTWidget(EventDispatcher):
             self.apply_css(kwargs.get('style'))
 
         self.a_properties = {}
-        for prop in kwargs.get('inner_animation'):
-            kw = dict()
-            if type(prop) in (list, tuple):
-                prop, kw = prop
-            self.enable_inner_animation(prop, **kw)
 
         self.init()
 
@@ -270,33 +251,6 @@ class MTWidget(EventDispatcher):
         '''
         self.style.update(styles)
 
-    def connect(self, p1, w2, p2=None, func=lambda x: x):
-        '''Connect events to a widget property'''
-        def lambda_connect(*largs):
-            if type(p2) in (tuple, list):
-                if len(largs) != len(p2):
-                    pymt_logger.exception('cannot connect with different size')
-                    raise
-                for p in p2:
-                    if p is None:
-                        continue
-                    w2.__setattr__(p, type(w2.__getattribute__(p))(
-                        func(largs[p2.index(p)])))
-            else:
-                dtype = type(w2.__getattribute__(p2))
-                try:
-                    if len(largs) == 1:
-                        w2.__setattr__(p2, dtype(func(*largs)))
-                    else:
-                        w2.__setattr__(p2, dtype(func(largs)))
-                except Exception, e:
-                    pymt_logger.exception('cannot connect with different size')
-                    raise
-        if p2 is None:
-            self.push_handlers(**{p1: w2})
-        else:
-            self.push_handlers(**{p1: lambda_connect})
-
     def to_widget(self, x, y):
         '''Return the coordinate from window to local widget'''
         x, y = self.parent.to_widget(x, y)
@@ -372,19 +326,28 @@ class MTWidget(EventDispatcher):
     def bring_to_front(self):
         '''Remove it from wherever it is and add it back at the top'''
         if self.parent:
-            self.parent.children.remove(self)
-            self.parent.children.append(self)
+            parent = self.parent
+            parent.remove_widget(self)
+            parent.add_widget(self)
 
     def hide(self):
         '''Hide the widget'''
         self.visible = False
 
+        # unregister all event used for drawing / interaction
+        for ev in MTWidget.visible_events:
+            self.unregister_event_type(ev)
+
     def show(self):
         '''Show the widget'''
         self.visible = True
 
+        # register all event used for drawing / interaction
+        for ev in MTWidget.visible_events:
+            self.register_event_type(ev)
+
     def on_update(self):
-        for w in self.children:
+        for w in self.children.iterate():
             w.dispatch_event('on_update')
 
     def on_draw(self):
@@ -393,7 +356,7 @@ class MTWidget(EventDispatcher):
 
         self.draw()
         if self.draw_children:
-            for w in self.children:
+            for w in self.children.iterate():
                 w.dispatch_event('on_draw')
 
     def draw(self):
@@ -422,120 +385,44 @@ class MTWidget(EventDispatcher):
         if w in self.children:
             self.children.remove(w)
 
-    def add_animation(self, *largs, **kwargs):
-        '''Add an animation in widget.'''
-        anim = Animation(self, *largs, **kwargs)
-        self.animations.append(anim)
-        return anim
-
-    def start_animations(self, label='all'):
-        '''Start all widget animation that match the label'''
-        for anim in self.animations:
-            if anim.label == label or label == 'all':
-                anim.reset()
-                anim.start()
-
-    def stop_animations(self, label='all'):
-        '''Stop all widget animation that match the label'''
-        for anim in self.animations:
-            if anim.label == label or label == 'all':
-                anim.stop()
-
-    def remove_animation(self, label):
-        '''Remove widget animation that match the label'''
-        for anim in self.animations:
-            if anim.label == label:
-                self.animations.remove(anim)
-
-    def enable_inner_animation(self, props, **kwargs):
-        '''Activate inner animation for listed properties'''
-        if type(props) == tuple:
-            props = list(props)
-        elif type(props) == str:
-            props = [props, ]
-        accepted_kw = ['timestep', 'length', 'func']
-        for k in kwargs:
-            if k not in accepted_kw:
-                raise Exception('Invalid keyword %s' % k)
-        for prop in props:
-            self.a_properties[prop] = kwargs
-
-    def disable_inner_animation(self, props):
-        '''Deactivate inner animation for listed properties'''
-        props = list(props)
-        for prop in props:
-            if prop in self.a_properties:
-                del self.a_properties[prop]
-
-    def update_inner_animation(self):
-        if not hasattr(self, 'a_properties'):
-            return
-        if len(self.a_properties):
-            self.__setattr__ = self.__setattr_inner_animation__
-        else:
-            self.__setattr__ = super(MTWidget, self).__setattr__
-
-    def __setattr__(self, name, value, inner=False):
-        if hasattr(self, 'a_properties') and len(self.a_properties) \
-            and name in self.a_properties and not inner:
-            label = '__%s' % name
-            kw = self.a_properties[name]
-            kw.setdefault('timestep', 1./60)
-            kw.setdefault('length', 1.)
-            kw['inner'] = True
-            kw['prop']  = name
-            kw['to']    = value
-
-            # remove old animation
-            self.stop_animations(label=label)
-            self.remove_animation(label=label)
-
-            # add new
-            self.add_animation(label=label, **kw)
-            self.start_animations(label=label)
-        else:
-            super(MTWidget, self).__setattr__(name, value)
+    def __setattr__(self, name, value):
+        super(MTWidget, self).__setattr__(name, value)
 
     def on_parent_resize(self, w, h):
         pass
 
     def on_resize(self, w, h):
-        for c in self.children:
+        for c in self.children.iterate():
             c.dispatch_event('on_parent_resize', w, h)
 
     def on_move(self, x, y):
-        for c in self.children:
+        for c in self.children.iterate():
             c.dispatch_event('on_move', x, y)
 
     def on_touch_down(self, touch):
-        for w in reversed(self.children):
+        for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_down', touch):
                 return True
 
     def on_touch_move(self, touch):
-        for w in reversed(self.children):
+        for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_move', touch):
                 return True
 
     def on_touch_up(self, touch):
-        for w in reversed(self.children):
+        for w in self.children.iterate(reverse=True):
             if w.dispatch_event('on_touch_up', touch):
                 return True
 
-    def on_mouse_press(self, x, y, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_press',x, y, button, modifiers):
-                return True
-
-    def on_mouse_drag(self, x, y, dx, dy, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_drag',x, y, dx, dy, button, modifiers):
-                return True
-
-    def on_mouse_release(self, x, y, button, modifiers):
-        for w in reversed(self.children):
-            if w.dispatch_event('on_mouse_release', x, y, button, modifiers):
-                return True
+    def do(self,*largs):
+        '''Apply/Start animations on the widgets.
+        :Parameters:
+            `animation` : Animation Object
+                Animation object with properties to be animateds ","
+        '''
+        for arg in largs:
+            if arg.set_widget(self):
+                return arg.start(self)
 
 # Register all base widgets
 MTWidgetFactory.register('MTWidget', MTWidget)

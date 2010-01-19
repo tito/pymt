@@ -2,7 +2,15 @@
 Show a circle under all touchs
 '''
 
-from pymt import MTWidget, set_color, drawCircle, getCurrentTouches
+import os
+from pymt import MTWidget, set_color, getCurrentTouches, pymt_data_dir, Image
+
+if not 'PYMT_DOC' in os.environ:
+    ring_fn = os.path.join(pymt_data_dir, 'ring.png')
+    ring_img = Image(ring_fn)
+    ring_img.scale = .30
+    ring_img.anchor_x = ring_img.width / 2
+    ring_img.anchor_y = ring_img.height / 2
 
 class TouchRing(MTWidget):
     def __init__(self, **kwargs):
@@ -17,7 +25,10 @@ class TouchRing(MTWidget):
                 set_color(1, 1, 1, .2)
             else:
                 set_color(1, 1, 1, .7)
-            drawCircle(pos=touch.pos, radius=25., linewidth=3.)
+
+            # draw touch
+            ring_img.pos = touch.pos
+            ring_img.draw()
 
 def start(win, ctx):
     ctx.w = TouchRing()

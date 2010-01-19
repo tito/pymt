@@ -19,6 +19,7 @@ from logger import pymt_logger
 from exceptions import pymt_exception_manager, ExceptionManager
 from clock import getClock
 from input import *
+from utils import deprecated
 
 # All event listeners will add themselves to this
 # list upon creation
@@ -35,14 +36,16 @@ def getFrameDt():
     return frame_dt
 
 def getCurrentTouches():
+    '''Return the list of all current touches'''
     global touch_list
     return touch_list
 
-@pymt.deprecated
+@deprecated
 def getAvailableTouchs():
     return getCurrentTouches()
 
 def getWindow():
+    '''Return the MTWindow'''
     global pymt_window
     return pymt_window
 
@@ -51,6 +54,7 @@ def setWindow(win):
     pymt_window = win
 
 def getEventLoop():
+    '''Return the default TouchEventLoop object'''
     global pymt_evloop
     return pymt_evloop
 
@@ -64,23 +68,33 @@ class TouchEventLoop(object):
         self.postproc_modules = []
 
     def start(self):
+        '''Must be call only one time before run().
+        This start all configured input providers.'''
         global pymt_providers
         for provider in pymt_providers:
             provider.start()
 
     def close(self):
+        '''Exit from the main loop, and stop all configured
+        input providers.'''
         global pymt_providers
+        self.quit = True
         for provider in pymt_providers:
             provider.stop()
 
     def add_postproc_module(self, mod):
+        '''Add a postproc input module (DoubleTap, RetainTouch are default)'''
         self.postproc_modules.append(mod)
 
     def remove_postproc_module(self, mod):
+        '''Remove a postproc module'''
         if mod in self.postproc_modules:
             self.postproc_modules.remove(mod)
 
     def post_dispatch_input(self, type, touch):
+        '''This function is called by dispatch_input() when we want to dispatch
+        a input event. The event is dispatched into all listeners, and if
+        grabbed, it's dispatched through grabbed widgets'''
         # update available list
         global touch_list
         if type == 'down':
@@ -100,7 +114,7 @@ class TouchEventLoop(object):
 
         # dispatch grabbed touch
         touch.grab_state = True
-        for wid in touch.grab_list:
+        for wid in touch.grab_list[:]:
             root_window = wid.get_root_window()
             if wid != root_window and root_window is not None:
                 touch.push()
@@ -130,9 +144,15 @@ class TouchEventLoop(object):
         touch.grab_state = False
 
     def _dispatch_input(self, type, touch):
-        self.input_events.append((type, touch))
+        ev = (type, touch)
+        # remove the save event for the touch if exist
+        if ev in self.input_events:
+            self.input_events.remove(ev)
+        self.input_events.append(ev)
 
     def dispatch_input(self):
+        '''Called by idle() to read events from input providers,
+        pass event to postproc, and dispatch final events'''
         global pymt_providers
 
         # first, aquire input events
@@ -150,6 +170,11 @@ class TouchEventLoop(object):
         self.input_events = []
 
     def idle(self):
+        '''This function is called every frames. By default :
+        * it "tick" the clock to the next frame
+        * read all input and dispatch event
+        * dispatch on_update + on_draw + on_flip on window
+        '''
         # update dt
         global frame_dt
         frame_dt = getClock().tick()
@@ -161,7 +186,7 @@ class TouchEventLoop(object):
             pymt_window.dispatch_events()
             pymt_window.dispatch_event('on_update')
             pymt_window.dispatch_event('on_draw')
-            pymt_window.flip()
+            pymt_window.dispatch_event('on_flip')
 
         # don't loop if we don't have listeners !
         if len(touch_event_listeners) == 0:
@@ -171,14 +196,13 @@ class TouchEventLoop(object):
         return self.quit
 
     def run(self):
+        '''Main loop'''
         while not self.quit:
             self.idle()
         self.exit()
 
-    def close(self):
-        self.quit = True
-
     def exit(self):
+        '''Close the main loop, and close the window'''
         self.close()
         if pymt_window:
             pymt_window.close()
@@ -195,16 +219,13 @@ def pymt_usage():
         -m mod, --module=mod        activate a module (use "list" to get available module)
         -s, --save                  save current PyMT configuration
         --size=640x480              size of window
-        --dump-frame                dump each frame in file
-        --dump-prefix               specify a prefix for each frame file
-        --dump-format               specify a format for dump
 
     '''
     print pymt_usage.__doc__ % (os.path.basename(sys.argv[0]))
 
 
 def _run_mainloop():
-    '''Main loop is done by us.'''
+    '''If user haven't create a window, this is the executed mainloop'''
     while True:
         try:
             pymt_evloop.run()
@@ -222,8 +243,9 @@ def _run_mainloop():
 
 def runTouchApp(widget=None, slave=False):
     '''Static main function that starts the application loop.
-    You got some magic things, if you are using argument like this ::
+    You got some magic things, if you are using argument like this :
 
+    :Parameters:
         `<empty>`
             To make dispatching work, you need at least one
             input listener. If not, application will leave.
@@ -262,7 +284,7 @@ def runTouchApp(widget=None, slave=False):
 
     # Instance all configured input
     for key, value in pymt.pymt_config.items('input'):
-        pymt_logger.debug('Create provider from %s' % (str(value)))
+        pymt_logger.debug('Base: Create provider from %s' % (str(value)))
 
         # split value
         args = str(value).split(',', 1)
@@ -271,7 +293,7 @@ def runTouchApp(widget=None, slave=False):
         provider_id, args = args
         provider = TouchFactory.get(provider_id)
         if provider is None:
-            pymt_logger.warning('Unknown <%s> provider' % str(provider_id))
+            pymt_logger.warning('Base: Unknown <%s> provider' % str(provider_id))
             continue
 
         # create provider
@@ -290,7 +312,7 @@ def runTouchApp(widget=None, slave=False):
         getWindow().add_widget(widget)
 
     # start event loop
-    pymt_logger.info('Start application main loop')
+    pymt_logger.info('Base: Start application main loop')
     pymt_evloop.start()
 
     # we are in a slave mode, don't do dispatching.
@@ -308,18 +330,22 @@ def runTouchApp(widget=None, slave=False):
     # 2. if no window is created, we are dispatching event lopp
     #    ourself (previous behavior.)
     #
-    if pymt_window is None:
-        _run_mainloop()
-    else:
-        pymt_window.mainloop()
+    try:
+        if pymt_window is None:
+            _run_mainloop()
+        else:
+            pymt_window.mainloop()
+    finally:
+        stopTouchApp()
 
     # Show event stats
     if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
         pymt.widget.event_stats_print()
 
 def stopTouchApp():
+    '''Stop the current application by leaving the main loop'''
     global pymt_evloop
-    if pymt_evloop is None:
+    if pymt_evloop is None or pymt_evloop.quit:
         return
-    pymt_logger.info('Leaving application in progress...')
+    pymt_logger.info('Base: Leaving application in progress...')
     pymt_evloop.close()

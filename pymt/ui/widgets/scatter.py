@@ -2,7 +2,7 @@
 Scatter package: provide lot of widgets based on scatter (base, svg, plane, image...)
 '''
 
-from __future__ import with_statement
+
 __all__ = ['MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane', 'MTScatterImage']
 
 import pymt
@@ -10,6 +10,7 @@ from OpenGL.GL import *
 from ...graphx import drawRectangle, gx_matrix, gx_matrix_identity, set_color, \
     drawTexturedRectangle, gx_blending
 from ...vector import Vector, matrix_mult, matrix_inv_mult
+from ...utils import SafeList, deprecated
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
 from svg import MTSvg
@@ -60,9 +61,9 @@ class MTScatterWidget(MTWidget):
         kwargs.setdefault('scale_min', 0.01)
         kwargs.setdefault('scale_max', None)
 
-        self.register_event_type('on_transform')
-
         super(MTScatterWidget, self).__init__(**kwargs)
+
+        self.register_event_type('on_transform')
 
         self.auto_bring_to_front = kwargs.get('auto_bring_to_front')
         self.scale_min      = kwargs.get('scale_min')
@@ -90,53 +91,16 @@ class MTScatterWidget(MTWidget):
         self.__width = 0
         self.__height = 0
 
-        # For flipping animations
-        self.zangle = 0
-        self.side = 'front'
-
-        # Holds children for both sides
-        self.children_front = []
-        self.children_back = []
-        self.children = self.children_front
-
-        self.anim = Animation(self, 'flip', 'zangle', 180, 1, 10, func=AnimationAlpha.ramp)
+        self.children = SafeList()
 
         self.touches        = {}
-        self.scale          = 1
+        self._scale         = 1.
+        self._rotation      = 0.
         self.transform_mat  = (GLfloat * 16)()
         if kwargs.get('translation')[0] != 0 or kwargs.get('translation')[1] != 0:
             self.init_transform(kwargs.get('rotation'), kwargs.get('scale'), kwargs.get('translation'))
         else:
             self.init_transform(kwargs.get('rotation'), kwargs.get('scale'), super(MTScatterWidget, self).pos)
-
-    def add_widget(self, w, side='front', front=True):
-        '''Add a widget to a side of scatter.
-
-        :Parameters:
-            `side` : str, default is 'front'
-                Side to be added. Can be one of 'front', 'back' or '' (mean both.)
-            `front` : bool, default is True
-                Indicate if the widget must be pulled in the front of the screen
-        '''
-        if side == 'front':
-            if front:
-                self.children_front.append(w)
-            else:
-                self.children_front.insert(0, w)
-        elif side == 'back':
-            if front:
-                self.children_back.append(w)
-            else:
-                self.children_back.insert(0, w)
-        else:
-            # add to both side
-            self.add_widget(w, side='front', front=front)
-            self.add_widget(w, side='back', front=front)
-
-        try:
-            w.parent = self
-        except:
-            pass
 
     def init_transform(self, angle, scale, trans, point=(0, 0)):
         '''Initialize transformation matrix with new parameters.
@@ -154,7 +118,8 @@ class MTScatterWidget(MTWidget):
             scale = self.scale_min
         if self.scale_max is not None and scale > self.scale_max:
             scale = self.scale_max
-        self.scale = scale
+        self._scale = scale
+        self._rotation = angle
         with gx_matrix_identity:
             glTranslatef(trans[0], trans[1], 0)
             glTranslatef(point[0], point[1], 0)
@@ -167,63 +132,17 @@ class MTScatterWidget(MTWidget):
         set_color(*self.style.get('bg-color'))
         drawRectangle((0,0), (self.width, self.height))
 
-    def flip_children(self):
-        '''Flips the children.
-        This has to be called exactly half way through the animation
-        so it looks like there are actually two sides'''
-        if self.side == 'front':
-            self.side = 'back'
-            self.children = self.children_back
-        else:
-            self.side = 'front'
-            self.children = self.children_front
-
-    def flip_to(self, to):
-        '''Flip to a specified side
-        :Parameters:
-            `to` : string
-                Side to switch on, can be 'back' or 'front'.
-        '''
-        if to == 'back' and self.side == 'front':
-            self.flip_children()
-        elif to == 'front' and self.side == 'back':
-            self.flip_children()
-
-    def flip(self):
-       '''Triggers a flipping animation'''
-       if self.side == 'front':
-           self.anim.value_to = 180
-       else:
-           self.anim.value_to = 0
-       self.anim.reset()
-       self.anim.start()
-
     def on_draw(self):
         if not self.visible:
             return
-        if self.zangle < 90:
-            self.flip_to('front')
-        else:
-            self.flip_to('back')
         with gx_matrix:
             glMultMatrixf(self.transform_mat)
-
-            # in animation state, do rotation at the center
-            # to make it more nice too look :)
-            if (self.side == 'front' and self.zangle != 0) or \
-               (self.side == 'back' and self.zangle != 180):
-                glTranslatef(self.width / 2, 0, 0)
-                if self.side == 'front':
-                    glRotatef(self.zangle, 0, 1, 0)
-                else:
-                    glRotatef(self.zangle + 180, 0, 1, 0)
-                glTranslatef(-self.width / 2, 0, 0)
             super(MTScatterWidget, self).on_draw()
 
     def to_parent(self, x, y):
         if self.__to_parent == (x, y):
             return (self.__to_parent_x, self.__to_parent_y)
-        
+
         self.__to_parent = (x, y)
         self.new_point = matrix_mult(self.transform_mat, (x, y, 0, 1))
         self.__to_parent_x, self.__to_parent_y = self.new_point.x, self.new_point.y
@@ -252,7 +171,6 @@ class MTScatterWidget(MTWidget):
                 return tID
         return None
 
-
     def apply_angle_scale_trans(self, angle, scale, trans, point=(0, 0)):
         '''Update matrix transformation by adding new angle, scale and translate.
         :Parameters:
@@ -266,12 +184,13 @@ class MTScatterWidget(MTWidget):
                 Point to apply transformation
         '''
         old_scale = self.scale
-        self.scale *= scale
-        if self.scale < self.scale_min or \
-           self.scale_max is not None and self.scale > self.scale_max:
+        self._scale *= scale
+        if self._scale < self.scale_min or \
+           self.scale_max is not None and self._scale > self.scale_max:
             scale = self.scale_max
-            self.scale = old_scale
+            self._scale = old_scale
             scale = 1
+        self._rotation = (self._rotation + angle) % 360
         with gx_matrix_identity:
             if self.do_translation:
                 glTranslatef(trans.x * self.do_translation_x, trans.y * self.do_translation_y, 0)
@@ -364,6 +283,7 @@ class MTScatterWidget(MTWidget):
         return self.center[1]
     y = property(_get_y)
 
+    @deprecated
     def get_scale_factor(self, use_gl=False):
         '''Return the current scale factor.
         By default, the calculated scale is returned. You can set use_gl to
@@ -439,8 +359,8 @@ class MTScatterWidget(MTWidget):
             self.rotate_zoom_move(touch.uid, x, y)
 
             # precalculate size of container
-            container_width = int(self.width * self.get_scale_factor())
-            container_height = int(self.height * self.get_scale_factor())
+            container_width = int(self.width * self.scale)
+            container_height = int(self.height * self.scale)
 
             # dispatch event only if it change
             if container_width != self.__width or container_height != self.__height:
@@ -485,12 +405,35 @@ class MTScatterWidget(MTWidget):
         if self.collide_point(x, y):
             return True
 
+    def _get_rotation(self):
+        return self._rotation
+    def _set_rotation(self, rotation):
+        rotation = (rotation - self._rotation) % 360
+        self.apply_angle_scale_trans(rotation, 1., Vector(0, 0), Vector(*self.pos))
+    rotation = property(_get_rotation, _set_rotation,
+                        doc='''Get/set the rotation of the object (in degree)''')
+
+    def _get_scale(self):
+        return self._scale
+    def _set_scale(self, scale):
+        if self._scale == 0:
+            self._scale = 1
+        scale = scale / self._scale
+        self.apply_angle_scale_trans(0, scale, Vector(0, 0), Vector(*self.pos))
+    scale = property(_get_scale, _set_scale,
+                     doc='''Get/set the scaling of the object''')
+
+
 class MTScatterPlane(MTScatterWidget):
     '''A Plane that transforms for zoom/rotate/pan.
     if none of the childwidgets handles the input
     (the background is touched), all of them are transformed
     together
     '''
+    def __init__(self, **kwargs):
+        kwargs.setdefault('auto_bring_to_front', False)
+        super(MTScatterPlane, self).__init__(**kwargs)
+
     def draw(self):
         pass
 
@@ -504,36 +447,40 @@ class MTScatterImage(MTScatterWidget):
     :Parameters:
         `filename` : str
             Filename of image
-        `loader` : Loader instance
-            Use the loader to load image
+        `image` : Image
+            Instead of using filename, use a Image object
+        `opacity` : float, default to 1.0
+            Used to set the opacity of the image.
+        `scale` : float, default is 1.0
+            Scaling of image, default is 100%, ie 1.0
     '''
     def __init__(self, **kwargs):
-        # Preserve this way to do
-        # Later, we'll give another possibility, like using a loader...
         kwargs.setdefault('filename', None)
-        if kwargs.get('filename') is None:
-            raise Exception('No filename given to MTScatterImage')
-        kwargs.setdefault('loader', None)
+        kwargs.setdefault('opacity', 1.0)
+        kwargs.setdefault('scale', 1.0)
+        kwargs.setdefault('image', None)
+        if kwargs.get('filename') is None and kwargs.get('image') is None:
+            raise Exception('No filename or image given to MTScatterImage')
 
         super(MTScatterImage, self).__init__(**kwargs)
+        self.image          = kwargs.get('image')
+        self.scale          = kwargs.get('scale')
+        self.filename       = kwargs.get('filename')
+        self.opacity        = kwargs.get('opacity')
+        self.size           = self.image.size
 
-        # Use loader if available
-        loader = kwargs.get('loader')
-        if loader:
-            self.image  = loader.image(kwargs.get('filename'))
-        else:
-            self.image  = pymt.Image(kwargs.get('filename'))
+    def _get_filename(self):
+        return self._filename
+    def _set_filename(self, filename):
+        self._filename = filename
+        if filename:
+            self.image = pymt.Image(self.filename)
+    filename = property(_get_filename, _set_filename)
 
     def draw(self):
-        if type(self.image) == pymt.Image:
-            # fast part
-            self.image.size = self.size
-            self.image.draw()
-        else:
-            # loader part
-            set_color(1, 1, 1)
-            with gx_blending:
-                drawTexturedRectangle(texture=self.image.get_texture(), size=self.size)
+        self.size           = self.image.size
+        self.image.opacity  = self.opacity
+        self.image.draw()
 
 class MTScatterSvg(MTScatterWidget):
     '''Render an svg image into a scatter widget

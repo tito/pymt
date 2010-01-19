@@ -25,34 +25,47 @@ class LabelPygame(LabelBase):
     def _get_font(self):
         id = self._get_font_id()
         if id not in pygame_cache:
-            # try to search the font
-            font = pygame.font.match_font(
-                self.options['font_name'].replace(' ', ''),
-                bold=self.options['bold'],
-                italic=self.options['italic'])
+            # try first the file if it's a filename
+            fontobject = None
+            fontname = self.options['font_name']
+            ext = fontname.split('.')[-1]
+            if ext.lower() == 'ttf':
+                # fontobject
+                fontobject = pygame.font.Font(fontname,
+                                int(self.options['font_size'] * 1.333))
 
-            # fontobject
-            fontobject = pygame.font.Font(font,
-                            int(self.options['font_size'] * 1.333))
+            # fallback to search a system font
+            if fontobject is None:
+                # try to search the font
+                font = pygame.font.match_font(
+                    self.options['font_name'].replace(' ', ''),
+                    bold=self.options['bold'],
+                    italic=self.options['italic'])
+
+                # fontobject
+                fontobject = pygame.font.Font(font,
+                                int(self.options['font_size'] * 1.333))
             pygame_cache[id] = fontobject
 
         return pygame_cache[id]
 
-    def update(self):
+    def get_extents(self, text):
         font = self._get_font()
+        w, h = font.size(text)
+        return w, h
 
-        # don't change antialiased and no background
-        # with theses settings, font are always in 32 bits
-        surface = font.render(self.label, True, (255, 255, 255))
+    def _render_begin(self):
+        self._pygame_surface = pygame.Surface(self.size, pygame.SRCALPHA, 32)
 
-        data = pymt.ImageData(surface.get_width(), surface.get_height(),
-            'RGBA', buffer(surface.get_buffer())[:])
+    def _render_text(self, text, x, y):
+        font = self._get_font()
+        text = font.render(text, True, (255, 255, 255))
+        self._pygame_surface.blit(text, (x, y), None, pygame.BLEND_RGBA_ADD)
 
-        # create a texture from this data
-        # and flip texture in vertical way
-        self.texture = pymt.Texture.create_from_data(data)
-        self.texture.flip_vertical()
+    def _render_end(self):
+        data = pymt.ImageData(self.width, self.height,
+            'RGBA', buffer(self._pygame_surface.get_buffer())[:])
 
-        super(LabelPygame, self).update()
+        del self._pygame_surface
 
-
+        return data

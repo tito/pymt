@@ -2,7 +2,7 @@
 Flippable Widget: A widget with 2 sides who can flip between the sides.
 '''
 
-from __future__ import with_statement
+
 __all__ = ['MTFlippableWidget']
 
 from OpenGL.GL import *

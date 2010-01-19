@@ -2,19 +2,22 @@
 Draw: primitive drawing
 '''
 
-from __future__ import with_statement
 
-__all__ = [
+
+__all__ = (
     'drawLabel', 'drawRoundedRectangle',
     'drawCircle', 'drawPolygon',
     'drawTriangle', 'drawRectangle',
     'drawTexturedRectangle', 'drawLine',
     'drawRectangleAlpha', 'drawRoundedRectangleAlpha',
-    'drawSemiCircle',
-]
+    'drawSemiCircle', 'drawStippledCircle',
+    'getLastLabel', 'getLabel',
+)
 
+import os
 import math
 import pymt
+from pymt.cache import Cache
 from OpenGL.GL import *
 from OpenGL.GLU import gluNewQuadric, gluDisk, gluPartialDisk
 from paint import *
@@ -22,25 +25,24 @@ from statement import *
 from colors import *
 
 # create a cache for label
-pymt.Cache.register('drawlabel', timeout=1., limit=100)
-def drawLabel(label, pos=(0,0), **kwargs):
-    '''Draw a label on the window.
+_temp_label = None
+if not 'PYMT_DOC' in os.environ:
+    Cache.register('drawlabel', timeout=1., limit=100)
+
+def getLabel(label, **kwargs):
+    '''Get a cached label object
 
     :Parameters:
         `label` : str
             Text to be draw
-        `pos` : tuple, default to (0, 0)
-            Position of text
-        `font_size` : int, default to 16
+        `font_size` : int, default to 12
             Font size of label
         `center` : bool, default to True
             Indicate if pos is center or left-right of label
 
-    .. Warning:
-        Use only for debugging, it's a performance killer function.
-        The label is recreated each time the function is called !
+    Used by drawLabel()
     '''
-    kwargs.setdefault('font_size', 16)
+    kwargs.setdefault('font_size', 12)
     kwargs.setdefault('center', True)
     if kwargs.get('center'):
         kwargs.setdefault('anchor_x', 'center')
@@ -49,20 +51,43 @@ def drawLabel(label, pos=(0,0), **kwargs):
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
     del kwargs['center']
+
     # create an uniq id for this label
     id = '%s##%s' % (label, str(kwargs))
 
     # get or store
-    temp_label = pymt.Cache.get('drawlabel', id)
-    if not temp_label:
-        temp_label = pymt.Label(label, **kwargs)
-        pymt.Cache.append('drawlabel', id, temp_label)
+    obj = pymt.Cache.get('drawlabel', id)
+    if not obj:
+        obj = pymt.Label(label, **kwargs)
+        pymt.Cache.append('drawlabel', id, obj)
 
-    # draw
-    temp_label.x, temp_label.y = pos
-    temp_label.draw()
-    return temp_label.content_width
+    return obj
 
+def drawLabel(label, pos=(0,0), **kwargs):
+    '''Draw a label on the window.
+
+    :Parameters:
+        `label` : str
+            Text to be draw
+        `pos` : tuple, default to (0, 0)
+            Position of text
+        `font_size` : int, default to 12
+            Font size of label
+        `center` : bool, default to True
+            Indicate if pos is center or left-right of label
+
+    If you want to get the label object, use getLastLabel() just after your
+    drawLabel().
+    '''
+    global _temp_label
+    _temp_label = getLabel(label, **kwargs)
+    _temp_label.x, _temp_label.y = pos
+    _temp_label.draw()
+    return _temp_label.content_size
+
+def getLastLabel():
+    global _temp_label
+    return _temp_label
 
 def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
                          linewidth=None, precision=0.5, style=GL_POLYGON):
@@ -170,8 +195,7 @@ def drawPolygon(points, style=GL_POLYGON):
     '''
     points = list(points)
     with gx_begin(style):
-        while len(points):
-            y, x = points.pop(), points.pop()
+        for x, y in zip(points[::2], points[1::2]):
             glVertex2f(x, y)
 
 def drawTriangle(pos, w, h, style=GL_TRIANGLES):
@@ -205,28 +229,59 @@ def drawRectangle(pos=(0,0), size=(1.0,1.0), style=GL_QUADS):
         glVertex2f(pos[0] + size[0], pos[1] + size[1])
         glVertex2f(pos[0], pos[1] + size[1])
 
-def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0), tex_coords=None):
-    '''Draw a rectangle with a texture
+def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0),
+                          tex_coords=None, color_coords=None):
+    '''Draw a rectangle with a texture.
+    The rectangle is drawed from bottom-left, bottom-right, top-right, top-left.
 
     :Parameters:
-        `texture` : int
-            OpenGL id of texture
+        `texture` : Texture
+            Texture object, created with Texture().
         `pos` : tuple, default to (0, 0)
             Position of rectangle
         `size` : tuple, default to (1.0, 1.0)
             Size of rectangle
+        `tex_coords` : list, default to None
+            Contain a list of UV coords to use. If None, texture UV coordinates
+            will be used.
+        `color_coords` : list, default to None
+            Specify a color for each vertex. The format is 4 colors tuples in a
+            list.
     '''
-    with gx_texture(texture):
+    # initialize texcoords
+    texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
+
+    # if texture is provided, use it
+    if texture:
+        stmt = gx_texture(texture)
+        stmt.bind()
         if type(texture) in (pymt.Texture, pymt.TextureRegion):
             texcoords = texture.tex_coords
-        else:
-            texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
-        if tex_coords:
-            texcoords = tex_coords
-        pos = ( pos[0], pos[1],
-                pos[0] + size[0], pos[1],
-                pos[0] + size[0], pos[1] + size[1],
-                pos[0], pos[1] + size[1])
+
+    # if tex_coords is provided, use it
+    if tex_coords:
+        texcoords = tex_coords
+
+    pos = ( pos[0], pos[1],
+            pos[0] + size[0], pos[1],
+            pos[0] + size[0], pos[1] + size[1],
+            pos[0], pos[1] + size[1])
+
+    if color_coords:
+        with gx_begin(GL_QUADS):
+            glColor4f(*color_coords[0])
+            glTexCoord2f(texcoords[0], texcoords[1])
+            glVertex2f(pos[0], pos[1])
+            glColor4f(*color_coords[1])
+            glTexCoord2f(texcoords[2], texcoords[3])
+            glVertex2f(pos[2], pos[3])
+            glColor4f(*color_coords[2])
+            glTexCoord2f(texcoords[4], texcoords[5])
+            glVertex2f(pos[4], pos[5])
+            glColor4f(*color_coords[3])
+            glTexCoord2f(texcoords[6], texcoords[7])
+            glVertex2f(pos[6], pos[7])
+    else:
         with gx_begin(GL_QUADS):
             glTexCoord2f(texcoords[0], texcoords[1])
             glVertex2f(pos[0], pos[1])
@@ -236,6 +291,10 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0), tex_coords=None):
             glVertex2f(pos[4], pos[5])
             glTexCoord2f(texcoords[6], texcoords[7])
             glVertex2f(pos[6], pos[7])
+
+    # release texture
+    if texture:
+        stmt.release()
 
 def drawLine(points, width=None, colors=[]):
     '''Draw a line
@@ -254,35 +313,30 @@ def drawLine(points, width=None, colors=[]):
             Turned off by default.
     '''
     style = GL_LINES
-    # XXX Where does the default of 5.0 for width come from? pyglet? opengl?
-    #     Should perhaps be set here explicitly instead.
-    if width is not None:
-        #glPushAttrib(GL_LINE_BIT) 
-        old_width = glGetIntegerv(GL_LINE_WIDTH) #manual workaround to python bug related to with statement and exception? ..pushAttrib casues exception otherwise
-        glLineWidth(width)
-
-    points = list(points)[:]
+    points = list(points)
     l = len(points)
     if l < 4:
         return
     elif l > 4:
         style = GL_LINE_STRIP
-    with DO(gx_attrib(GL_COLOR_BUFFER_BIT), gx_begin(style)):
-        # We don't want to do the if statement in every iteration of the while
-        # loop because that'd be expensive...
-        put_vertex = lambda: glVertex2f(points.pop(0), points.pop(0))
-        if colors:
-            colors = colors[:]
-            while points:
-                glColor3f(*colors.pop(0))
-                put_vertex()
-        else:
-            while points:
-                put_vertex()
 
     if width is not None:
-        glLineWidth(old_width)
-        #glPopAttrib()
+        glPushAttrib(GL_LINE_BIT)
+        glLineWidth(width)
+
+    with DO(gx_attrib(GL_COLOR_BUFFER_BIT), gx_begin(style)):
+        if colors:
+            colors = colors[:]
+            for x, y, r, g, b in zip(points[::2], points[1::2],
+                                     colors[::3], colors[1::3], colors[2::3]):
+                glColor3f(r, g, b)
+                glVertex2f(x, y)
+        else:
+            for x, y in zip(points[::2], points[1::2]):
+                glVertex2f(x, y)
+
+    if width is not None:
+        glPopAttrib()
 
 def drawRoundedRectangleAlpha(pos=(0,0), size=(100,50), radius=5, alpha=(1,1,1,1),
                          linewidth=1.5, precision=0.5, style=GL_TRIANGLE_FAN):
@@ -413,3 +467,30 @@ def drawSemiCircle(pos=(0,0), inner_radius=100, outer_radius=120, slices=32, loo
     with gx_matrix:
         glTranslatef(pos[0], pos[1], 0)
         gluPartialDisk(gluNewQuadric(), inner_radius, outer_radius, slices, loops, start_angle, sweep_angle)
+
+def drawStippledCircle(pos=(0,0), inner_radius=200, outer_radius=400, segments=10):
+    '''
+    Draw a stippled circle. A stippled circle consists of several equally-sized
+    segments, with a gap between every two segments. The gap is the size of a
+    segment. The circle's position and thickness can be specified.
+
+    :Parameters:
+        `pos` : tuple, default to (0, 0)
+            Center position of the circle
+        `inner_radius` : int, default to 100
+            Radius of the inner circle
+        `outer_radius` : int, default to 120
+            Radius of the outer circle
+        `segments` : int, defaults to 10
+            Number of visible segments
+    '''
+    angle_delta = (360/segments)/2
+    current_angle = 0
+    quadric = gluNewQuadric()
+    with gx_matrix:
+        glTranslatef(pos[0], pos[1], 0)
+        for i in range(segments):
+            next_angle = current_angle + angle_delta
+            gluPartialDisk(quadric, inner_radius, outer_radius, 32, 1, current_angle, angle_delta)
+            # For the stipple effect, leave a part of the Disk out
+            current_angle = next_angle + angle_delta

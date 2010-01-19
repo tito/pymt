@@ -7,6 +7,9 @@ PLUGIN_DESCRIPTION = 'Demonstration of MTScatterImage object'
 from pymt import *
 import os
 import random
+from OpenGL.GL import *
+
+current_dir = os.path.dirname(__file__)
 
 def handle_image_move(image, *largs):
     w = image.get_parent_window()
@@ -21,17 +24,32 @@ def handle_image_move(image, *largs):
     if image.y > w.height:
         image.pos = (image.x, w.height)
 
+def draw_border(image, *largs):
+    set_color(1,1,1,1)
+    with gx_matrix:
+        glTranslatef(image.center[0], image.center[1], 0)
+        glRotated(image.rotation,0,0,1)
+        glScalef(image._scale, image._scale, 1)
+        b = 5 * (1 / image._scale)
+        drawRectangle(pos=(-image.width/2-b,-image.height/2-b),
+                      size=(image.width+b*2, image.height+b*2))
+
+def image_on_load(scatter):
+    scatter.scale = 1 / random.uniform(3, 10)
+
 def pymt_plugin_activate(w, ctx):
     ctx.c = MTKinetic()
-    for i in range(7):
-        img_src = '../pictures/images/pic'+str(i+1)+'.jpg'
+    for i in range(6):
+        img = Loader.image(os.path.join(current_dir, 'images', 'pic%d.jpg' % (i+1)))
         x = int(random.uniform(100, w.width-100))
         y = int(random.uniform(100, w.height-100))
         rot = random.uniform(0, 360)
         scale = random.uniform(3, 10)
-        b = MTScatterImage(filename=img_src, pos=(x,y), rotation=rot)
+        b = MTScatterImage(image=img, pos=(x,y), rotation=rot)
+        img.connect('on_load', curry(image_on_load, b))
         b.size = b.image.width / scale, b.image.height / scale
         b.push_handlers(on_move=curry(handle_image_move, b))
+        b.push_handlers(on_draw=curry(draw_border, b))
         ctx.c.add_widget(b)
     w.add_widget(ctx.c)
 

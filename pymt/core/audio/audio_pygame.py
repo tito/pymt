@@ -20,7 +20,7 @@ class SoundPygame(Sound):
 
     @staticmethod
     def extensions():
-        return ('wav', )
+        return ('wav', 'ogg', )
 
     def __init__(self, **kwargs):
         self._data = None
@@ -46,14 +46,18 @@ class SoundPygame(Sound):
         self.stop()
         self._data = None
 
+    def seek(self, position):
+        # Unable to seek in pygame...
+        pass
+
     def _get_volume(self):
         if self._data is not None:
-            self._volume = self._data_.get_volume()
+            self._volume = self._data.get_volume()
         return super(SoundPygame, self)._get_volume()
 
     def _set_volume(self, volume):
         if self._data is not None:
-            self._data_.set_volume(volume)
-        return super(SoundPygame, self)._get_volume()
+            self._data.set_volume(volume)
+        return super(SoundPygame, self)._set_volume(volume)
 
 SoundLoader.register(SoundPygame)

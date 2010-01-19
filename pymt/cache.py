@@ -1,5 +1,20 @@
 '''
-Cache Manager: a way to cache things, and delete them automaticly
+Cache Manager: cache object and delete them automaticly
+
+How to use the cache ::
+    # register a new Cache
+    Cache.register('mycache', limit=10, timeout=5)
+
+    # create an object + id
+    label = 'objectid'
+    instance = MTLabel(label=label)
+    Cache.append('mycache', label, instance)
+
+    # retreive the object later
+    instance = Cache.get('mycache', label)
+
+If the instance is NULL, the cache may have trash it, because you've
+not used the label since 5 seconds, and you've reach the limit.
 '''
 
 __all__ = ('Cache', )
@@ -8,6 +23,7 @@ from pymt.logger import pymt_logger
 from pymt.clock import getClock
 
 class Cache:
+    '''Cache, a manager to cache object'''
 
     _categories = {}
     _objects = {}
@@ -56,11 +72,12 @@ class Cache:
         Cache._objects[category][key] = {
             'object': obj,
             'timeout': timeout,
-            'lastaccess': getClock().get_time()
+            'lastaccess': getClock().get_time(),
+            'timestamp': getClock().get_time()
         }
 
     @staticmethod
-    def get(category, key):
+    def get(category, key, default=None):
         '''Get a object in cache.
 
         :Parameters:
@@ -68,12 +85,48 @@ class Cache:
                 Identifier of the category
             `key` : str
                 Uniq identifier of the object to store
+            `default` : anything, default to None
+                Default value to be returned if key is not found
         '''
         try:
             Cache._objects[category][key]['lastaccess'] = getClock().get_time()
             return Cache._objects[category][key]['object']
         except:
-            return None
+            return default
+
+    @staticmethod
+    def get_timestamp(category, key, default=None):
+        '''Get the object timestamp in cache.
+        
+        :Parameters:
+            `category` : str
+                Identifier of the category
+            `key` : str
+                Uniq identifier of the object to store
+            `default` : anything, default to None
+                Default value to be returned if key is not found
+        '''
+        try:
+            return Cache._objects[category][key]['timestamp']
+        except:
+            return default
+
+    @staticmethod
+    def get_lastaccess(category, key, default=None):
+        '''Get the object last access time in cache.
+        
+        :Parameters:
+            `category` : str
+                Identifier of the category
+            `key` : str
+                Uniq identifier of the object to store
+            `default` : anything, default to None
+                Default value to be returned if key is not found
+        '''
+        try:
+            return Cache._objects[category][key]['lastaccess']
+        except:
+            return default
 
     @staticmethod
     def remove(category, key=None):

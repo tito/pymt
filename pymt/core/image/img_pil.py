@@ -4,13 +4,13 @@ PIL: PIL image loader
 
 __all__ = ('ImageLoaderPIL', )
 
-import pymt
-from . import ImageLoaderBase, ImageData, ImageLoader
-
 try:
-    import PIL.Image
+    from PIL import Image
 except:
     raise
+
+import pymt
+from . import ImageLoaderBase, ImageData, ImageLoader
 
 # Use PIL to load image.
 class ImageLoaderPIL(ImageLoaderBase):
@@ -27,11 +27,11 @@ class ImageLoaderPIL(ImageLoaderBase):
                 'wal', 'wmf', 'xbm', 'xpm', 'xv')
 
     def load(self, filename):
-        pymt.pymt_logger.debug('Load <%s>' % filename)
+        pymt.pymt_logger.debug('Image: Load <%s>' % filename)
         try:
-            im = PIL.Image.open(filename)
+            im = Image.open(filename)
         except:
-            pymt.pymt_logger.warning('Unable to load image <%s>' % filename)
+            pymt.pymt_logger.warning('Image: Unable to load image <%s>' % filename)
             raise
 
         # image loader work only with rgb/rgba image
@@ -40,13 +40,13 @@ class ImageLoaderPIL(ImageLoaderBase):
                 imc = im.convert('RGBA')
             except:
                 pymt.pymt_logger.warning(
-                    'Unable to convert image <%s> to RGBA (was %s)' %
+                    'Image: Unable to convert image <%s> to RGBA (was %s)' %
                     filename, im.mode)
                 raise
             im = imc
 
         # image are not in the good direction, flip !
-        im = im.transpose(PIL.Image.FLIP_TOP_BOTTOM)
+        im = im.transpose(Image.FLIP_TOP_BOTTOM)
 
         # update internals
         self.filename = filename

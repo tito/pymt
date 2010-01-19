@@ -26,6 +26,10 @@
 # version 1.0.0 - January 23, 2007
 '''
 Matrix: matrix implementation, used for scatter
+
+.. note::
+    Theses classes and functions are not documented because they are used only
+    if numpy is not installed. Prefer to use numpy library !
 '''
 
 import random,math,operator

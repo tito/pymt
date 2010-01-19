@@ -13,29 +13,29 @@ from ..layout import MTBoxLayout
 
 
 class MTPopup(MTScatterWidget):
+    '''Popup with customizable content.
+
+    :Parameters:
+        `show_cancel`: bool, default to True
+            Show/hide the cancel button
+        `label_cancel`: str, default to 'Cancel'
+            Change the label of cancel button
+        `label_submit`: str, default to 'Ok'
+            Change the label of submit button
+        `title`: str, default to 'PyMT popup'
+            Title of the popup (if None, no title will be added.)
+        `exit_on_submit`: bool, default to 'True'
+            Title of the popup (if None, no title will be added.)
+
+    :Events:
+        `on_submit`
+            Fired when the popup submit button is pressed.
+            In default behavior, the widget remove himself from parent.
+        `on_cancel`
+            Fired when the popup cancel button is pressed.
+            In default behavior, the widget remove himself from parent.
+    '''
     def __init__(self, **kwargs):
-        '''Popup with customizable content.
-
-        :Parameters:
-            `show_cancel`: bool, default to True
-                Show/hide the cancel button
-            `label_cancel`: str, default to 'Cancel'
-                Change the label of cancel button
-            `label_submit`: str, default to 'Ok'
-                Change the label of submit button
-            `title`: str, default to 'PyMT popup'
-                Title of the popup (if None, no title will be added.)
-            `exit_on_submit`: bool, default to 'True'
-                Title of the popup (if None, no title will be added.)
-
-        :Events:
-            `on_submit`
-                Fired when the popup submit button is pressed.
-                In default behavior, the widget remove himself from parent.
-            `on_cancel`
-                Fired when the popup cancel button is pressed.
-                In default behavior, the widget remove himself from parent.
-        '''
         kwargs.setdefault('do_scale', False)
         kwargs.setdefault('size', (400, 400))
         kwargs.setdefault('show_cancel', True)
@@ -47,7 +47,7 @@ class MTPopup(MTScatterWidget):
 
         self.register_event_type('on_submit')
         self.register_event_type('on_cancel')
-        
+
         self.exit_on_submit = kwargs.get('exit_on_submit')
 
         # Create layouts
@@ -58,18 +58,18 @@ class MTPopup(MTScatterWidget):
 
         # Titles
         if kwargs.get('title') is not None:
-            self.w_title = MTLabel(label=kwargs.get('title'), font_size=10, bold=False, autoheight=True)
+            self.w_title = MTLabel(label=kwargs.get('title'), font_size=10, bold=False, autosize=True)
             self.l_title.add_widget(self.w_title)
 
         # Buttons
         self.w_submit = MTButton(label=kwargs.get('label_submit'), size=(100, 40),
                 cls=['popup-button', 'popup-button-submit'])
-        self.w_submit.push_handlers(on_press=curry(self._dispatch_event, 'on_submit'))
+        self.w_submit.push_handlers(on_release=curry(self._dispatch_event, 'on_submit'))
         self.l_buttons.add_widget(self.w_submit)
         if kwargs.get('show_cancel'):
             self.w_cancel = MTButton(label=kwargs.get('label_cancel'), size=(100, 40),
                 cls=['popup-button', 'popup-button-cancel'])
-            self.w_cancel.push_handlers(on_press=curry(self._dispatch_event, 'on_cancel'))
+            self.w_cancel.push_handlers(on_release=curry(self._dispatch_event, 'on_cancel'))
             self.l_buttons.add_widget(self.w_cancel)
 
         # Connect

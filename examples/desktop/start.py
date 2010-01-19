@@ -61,13 +61,17 @@ class MTMenuItem(MTKineticItem):
     def __init__(self, path, label, icon, **kwargs):
         super(MTMenuItem, self).__init__(**kwargs)
         self._label = MTLabel(label=label, font_size=12, anchor_x='left',
-                           anchor_y='top', size=(self.width, self.height))
+                           anchor_y='center', size=(self.width, self.height))
         self._icon = None
         try:
             if icon != '':
-                self._icon = Image(os.path.join(path, icon))
+                self._icon = Loader.image(os.path.join(path, icon))
+                self._icon.connect('on_load', self._reset_cache)
         except:
             pass
+
+    def _reset_cache(self, *largs):
+        self.button_dl.clear()
 
     def on_move(self, x, y):
         # don't invalidate cache when moving position
@@ -80,7 +84,8 @@ class MTMenuItem(MTKineticItem):
             with self.button_dl:
                 set_color(.2, .2, .2, .5)
                 drawRectangle(size=self.size)
-                self._label.x, self._label.y = 32, self.height - 12 / 2.
+                self._label.x = -60
+                self._label.y = (self.height - self._label.height) / 2.
                 self._label.draw()
                 if self._icon:
                     self._icon.x = (32 - self._icon.width) / 2.
@@ -110,8 +115,6 @@ class MTMenu(MTKineticList):
         self.alpha = 0
         self.dragpos = 0, 0
         self.dragid = 0
-
-        self.label = MTLabel(label='Menu', font_size=16)
 
         w = MTKineticItem(label='Close Menu', size=(190, 32),
                           style={'font-size': 12, 'bg-color': (.2, .2, .2, .9)})
@@ -179,8 +182,8 @@ class MTMenu(MTKineticList):
         drawRoundedRectangle(pos=pos, size=size)
 
         # title
-        self.label.pos = self.x + 5, self.y + self.height + 4
-        self.label.draw()
+        drawLabel(label='Menu', pos=(self.x + 5, self.y + self.height + 4),
+                  font_size=16, center=False)
 
         super(MTMenu, self).draw()
 
@@ -189,13 +192,27 @@ class MTGestureDetector(MTGestureWidget):
     def __init__(self, gdb, **kwargs):
         super(MTGestureDetector, self).__init__(**kwargs)
         self.gdb = gdb
-        self.label = MTLabel(label='Draw a circle to make the menu appear',
-                             font_size=24, bold=True, anchor_x='center')
         self.dt = 0
         self.inactivity = 0
         self.inactivity_timeout = 5
 
+    def on_touch_down(self, touch):
+        touch.userdata['desktop.gesture'] = list(touch.pos)
+        return super(MTGestureDetector, self).on_touch_down(touch)
+
+    def on_touch_move(self, touch):
+        if 'desktop.gesture' in touch.userdata:
+            touch.userdata['desktop.gesture'] += list(touch.pos)
+        return super(MTGestureDetector, self).on_touch_move(touch)
+
     def draw(self):
+        # draw gestures
+        set_color(1, 1, 1, .6)
+        for touch in getCurrentTouches():
+            if not 'desktop.gesture' in touch.userdata:
+                continue
+            drawLine(touch.userdata['desktop.gesture'], width=5.)
+
         if len(getCurrentTouches()):
             self.inactivity = 0
             return
@@ -225,13 +242,12 @@ class MTGestureDetector(MTGestureWidget):
             drawCircle(pos=(x + s2.x, y + s2.y - 70), radius=4)
             drawCircle(pos=(x + s2.x, y + s2.y - 70), radius=20, linewidth=2)
 
-        self.label.pos = Vector(w.size) / 2.
-        self.label.color = (.5, .5, .5, min(alpha, .5))
-        self.label.draw()
-        self.label.y += 1
-        self.label.x -= 1
-        self.label.color = (1, 1, 1, alpha)
-        self.label.draw()
+        label='Draw a circle to make the menu appear'
+        k = {'font_size': 24, 'bold':True}
+        pos = Vector(w.size) / 2. + Vector(0, 10)
+        drawLabel(label=label, pos=pos, color=(.5, .5, .5, min(alpha, .5)), **k)
+        pos += Vector(1, -1)
+        drawLabel(label=label, pos=pos, color=(1, 1, 2, alpha), **k)
 
     def on_gesture(self, gesture, touch):
         #print self.gdb.gesture_to_str(gesture)
@@ -256,8 +272,10 @@ if __name__ == '__main__':
     gesture_add_default(gdb)
 
     # Create background window
-    w = MTWallpaperWindow(wallpaper='wallpaper.jpg',
-                          position=MTWallpaperWindow.SCALE)
+    w = getWindow()
+    w.wallpaper = 'wallpaper.jpg'
+    w.wallpaper_position = 'scale'
+
     g = MTGestureDetector(gdb)
     w.add_widget(g)
 

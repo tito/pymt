@@ -2,7 +2,7 @@
 Stencil container: clip drawing of children to his container
 '''
 
-from __future__ import with_statement
+
 
 __all__ = ['MTStencilContainer']
 
@@ -41,7 +41,7 @@ class MTStencilContainer(MTWidget):
     def on_draw(self):
         self.stencil_push()
         # draw childrens
-        for w in self.children:
+        for w in self.children.iterate():
             w.dispatch_event('on_draw')
         self.stencil_pop()
 

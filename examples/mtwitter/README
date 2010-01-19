@@ -8,3 +8,6 @@ simplejson
 How To Use:
 
 python start.py [username] [password]
+
+=============
+simplejson for python 2.6 : http://bugs.python.org/file10185/simplejson-1.9.tar.gz

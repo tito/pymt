@@ -2,10 +2,13 @@
 Grid layout: arrange widget in a grid
 '''
 
-__all__ = ['MTGridLayout']
+__all__ = ('MTGridLayout', 'GridLayoutException')
 
 from abstractlayout import MTAbstractLayout
 from ...factory import MTWidgetFactory
+
+class GridLayoutException(Exception):
+    pass
 
 class MTGridLayout(MTAbstractLayout):
     '''Grid layout arrange item in a matrix.
@@ -38,6 +41,9 @@ class MTGridLayout(MTAbstractLayout):
         self.rows           = kwargs.get('rows')
         self.spacing        = kwargs.get('spacing')
 
+        if self.cols is None and self.rows is None:
+            raise GridLayoutException('Need at least cols or rows restriction.')
+
     def get_max_widgets(self):
         if self.cols and not self.rows:
             return None
@@ -48,22 +54,39 @@ class MTGridLayout(MTAbstractLayout):
     def add_widget(self, widget, do_layout=None):
         max = self.get_max_widgets()
         if max and len(self.children) > max:
-            raise Exception('Too much children in MTGridLayout. Increase your matrix_size!')
+            raise Exception('Too much children in MTGridLayout. Increase your rows/cols!')
         super(MTGridLayout, self).add_widget(widget, do_layout=do_layout)
+
+    def reposition_child(self, child, pos=None, size=None):
+        if pos:
+            child.pos = pos
+        if size:
+            child.size = size
 
     def do_layout(self):
         super(MTGridLayout, self).do_layout()
 
+        # no children, no layout :)
+        if len(self.children) == 0:
+            return
+
         spacing = self.spacing
 
-        cols = dict(zip(range(self.cols), [0 for x in range(self.cols)]))
-        rows = dict(zip(range(self.rows), [0 for x in range(self.rows)]))
+        current_cols = self.cols
+        current_rows = self.rows
+        if current_cols is None:
+            current_cols = 1 + (len(self.children) / current_rows)
+        elif current_rows is None:
+            current_rows = 1 + (len(self.children) / current_cols)
+
+        cols = dict(zip(xrange(current_cols), [0] * current_cols))
+        rows = dict(zip(xrange(current_rows), [0] * current_rows))
 
         # calculate maximum size for each columns and rows
         i = 0
         max_width = max_height = 0
-        for row in range(self.rows):
-            for col in range(self.cols):
+        for row in range(current_rows):
+            for col in range(current_cols):
                 if i >= len(self.children):
                     break
                 c = self.children[i]
@@ -79,10 +102,10 @@ class MTGridLayout(MTAbstractLayout):
 
         # apply uniform
         if self.uniform_width:
-            for col in range(self.cols):
+            for col in range(current_cols):
                 cols[col] = max_width
         if self.uniform_height:
-            for row in range(self.rows):
+            for row in range(current_rows):
                 rows[row] = max_height
 
         # calculate width/height of content
@@ -96,20 +119,22 @@ class MTGridLayout(MTAbstractLayout):
         # reposition every children
         i = 0
         y = self.y + spacing
-        for row in range(self.rows):
+        for row in range(current_rows):
             x = self.x + spacing
-            for col in range(self.cols):
+            for col in range(current_cols):
                 if i >= len(self.children):
                     break
                 c = self.children[i]
                 # special y, we inverse order of children at reposition
-                c.pos = (x, self.y + current_height - rows[row] - (y - self.y))
+                c_pos = (x, self.y + current_height - rows[row] - (y - self.y))
+                c_size = list(self.children[i].size)
                 if self.uniform_width and self.uniform_height:
-                    c.size = (cols[col], rows[row])
+                    c_size = (cols[col], rows[row])
                 elif self.uniform_width:
-                    c.width = cols[col]
+                    c_size[0] = cols[col]
                 elif self.uniform_height:
-                    c.height = rows[row]
+                    c_size[1] = rows[row]
+                self.reposition_child(c, pos=c_pos, size=c_size)
                 i = i + 1
                 x = x + cols[col] + spacing
             y = y + rows[row] + spacing

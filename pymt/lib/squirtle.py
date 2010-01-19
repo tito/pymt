@@ -14,7 +14,6 @@ from OpenGL.GLU import *
 from xml.etree.cElementTree import parse
 import re
 import math
-from ctypes import CFUNCTYPE, POINTER, byref, cast
 import sys, os
 try:
     # get the faster one
@@ -23,26 +22,6 @@ except ImportError:
     # fallback to the default one
     from StringIO import StringIO
 from pymt.logger import pymt_logger
-
-
-if sys.platform == 'win32':
-    from ctypes import WINFUNCTYPE
-    c_functype = WINFUNCTYPE
-else:
-    c_functype = CFUNCTYPE
-
-callback_types = {GLU_TESS_VERTEX: c_functype(None, POINTER(GLvoid)),
-                  GLU_TESS_BEGIN: c_functype(None, GLenum),
-                  GLU_TESS_END: c_functype(None),
-                  GLU_TESS_ERROR: c_functype(None, GLenum),
-                  GLU_TESS_COMBINE: c_functype(None, POINTER(GLdouble), POINTER(POINTER(GLvoid)), POINTER(GLfloat), POINTER(POINTER(GLvoid)))}
-
-def set_tess_callback(which):
-    def set_call(func):
-        cb = callback_types[which](func)
-        gluTessCallback(SVG._tess, which, cast(cb, CFUNCTYPE(None)))
-        return cb
-    return set_call
 
 BEZIER_POINTS = 10
 CIRCLE_POINTS = 24
@@ -243,10 +222,10 @@ def parse_color(c, default=None):
             g = int(c[1], 16) * 17
             b = int(c[2], 16) * 17
         else:
-            pymt_logger.exception('incorrect length for colour %s' % str(c))
+            pymt_logger.exception('Squirtle: incorrect length for color %s' % str(c))
         return [r,g,b,255]
     except Exception, ex:
-        pymt_logger.exception('exception parsing color %s' % str(c))
+        pymt_logger.exception('Squirtle: exception parsing color %s' % str(c))
         return None
 
 class Matrix(object):
@@ -574,7 +553,7 @@ class SVG(object):
             try:
                 self.parse_element(e)
             except Exception, ex:
-                pymt_logger.exception('exception while parsing element %s' % e)
+                pymt_logger.exception('Squirtle: exception while parsing element %s' % e)
                 raise
 
     def parse_element(self, e):
@@ -736,7 +715,7 @@ class SVG(object):
             try:
                 self.parse_element(c)
             except Exception, ex:
-                pymt_logger.exception('exception while parsing element %s' % c)
+                pymt_logger.exception('Squirtle: exception while parsing element %s' % c)
                 raise
         self.transform = oldtransform
         self.opacity = oldopacity
@@ -838,18 +817,13 @@ class SVG(object):
     def triangulate(self, looplist):
         tlist = []
         self.curr_shape = []
-        spareverts = []
 
-        @set_tess_callback(GLU_TESS_VERTEX)
         def vertexCallback(vertex):
-            vertex = cast(vertex, POINTER(GLdouble))
             self.curr_shape.append(list(vertex[0:2]))
 
-        @set_tess_callback(GLU_TESS_BEGIN)
         def beginCallback(which):
             self.tess_style = which
 
-        @set_tess_callback(GLU_TESS_END)
         def endCallback():
             if self.tess_style == GL_TRIANGLE_FAN:
                 c = self.curr_shape.pop(0)
@@ -869,42 +843,51 @@ class SVG(object):
             elif self.tess_style == GL_TRIANGLES:
                 tlist.extend(self.curr_shape)
             else:
-                self.warn("Unrecognised tesselation style: %d" % (self.tess_style,))
+                pymt_logger.warning('Squirtle: Unrecognised tesselation style: %d' % (self.tess_style,))
             self.tess_style = None
             self.curr_shape = []
 
-        @set_tess_callback(GLU_TESS_ERROR)
         def errorCallback(code):
-            ptr = gluErrorString(code)
-            err = ''
-            idx = 0
-            while ptr[idx]:
-                err += chr(ptr[idx])
-                idx += 1
-            self.warn("GLU Tesselation Error: " + err)
+            err = gluErrorString(code)
+            pymt_logger.warning('Squirtle: GLU Tesselation Error: ' + err)
 
-        @set_tess_callback(GLU_TESS_COMBINE)
-        def combineCallback(coords, vertex_data, weights, dataOut):
-            x, y, z = coords[0:3]
-            data = (GLdouble * 3)(x, y, z)
-            dataOut[0] = cast(pointer(data), POINTER(GLvoid))
-            spareverts.append(data)
+        def combineCallback(coords, vertex_data, weights):
+            return (coords[0], coords[1], coords[2])
+
+        gluTessCallback(self._tess, GLU_TESS_VERTEX, vertexCallback)
+        gluTessCallback(self._tess, GLU_TESS_BEGIN, beginCallback)
+        gluTessCallback(self._tess, GLU_TESS_END, endCallback)
+        gluTessCallback(self._tess, GLU_TESS_ERROR, errorCallback)
+        gluTessCallback(self._tess, GLU_TESS_COMBINE, combineCallback)
 
         data_lists = []
         for vlist in looplist:
             d_list = []
             for x, y in vlist:
-                v_data = (GLdouble * 3)(x, y, 0)
+                v_data = (x, y, 0)
+                found = False
+                for x2, y2, z2 in d_list:
+                    d = math.sqrt((x - x2) ** 2 + (y - y2) ** 2)
+                    if d < 0.0000001:
+                        # XXX we've found a coordinate nearly the same as an other
+                        # coordinate. this is the "COMBINE" case of GLU tesslation
+                        # But on my PyOpenGL version, i got the "need combine
+                        # callback" error, and i'm unable to get ride of it until
+                        # the wrong vertex is removed.
+                        found = True
+                        break
+                if found:
+                    continue
                 d_list.append(v_data)
             data_lists.append(d_list)
         gluTessBeginPolygon(self._tess, None)
         for d_list in data_lists:
             gluTessBeginContour(self._tess)
-            for v_data in d_list:
+            for v_data in reversed(d_list):
                 gluTessVertex(self._tess, v_data, v_data)
             gluTessEndContour(self._tess)
         gluTessEndPolygon(self._tess)
         return tlist
 
     def warn(self, message):
-        pymt_logger.warning('svg parser on %s: %s' % (self.filename, message))
+        pymt_logger.warning('Squirtle: svg parser on %s: %s' % (self.filename, message))

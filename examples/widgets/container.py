@@ -1,5 +1,8 @@
 from pymt import *
+import os
 
-#c = MTContainer(Video(filename='/home/tito/NETASQ_FR3_GrippeA.avi', autoplay=False))
-c = MTScatterContainer(Image('image.jpg'))
+current_dir = os.path.dirname(__file__)
+
+c = MTScatterContainer(Image(os.path.join(current_dir, 'image.jpg')))
+
 runTouchApp(c)

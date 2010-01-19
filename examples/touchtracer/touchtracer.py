@@ -6,23 +6,21 @@ PLUGIN_DESCRIPTION = ''
 
 from OpenGL.GL import *
 from pymt import *
-from random import random
+import os
+from os.path import join
 
-label = Label('', font_size=12, anchor_x='left', anchor_y='bottom')
-label2 = Label('', font_size=10, anchor_x='left', anchor_y='top')
-crosshair = Image.load('../touchtracer/crosshair.png')
+current_dir = os.path.dirname(__file__)
+crosshair = Image.load(join(current_dir, 'crosshair.png'))
 crosshair.scale = 0.6
 
 
-def drawLabel(x,y, ID):
-    label.text = 'ID: %s' % str(ID)
-    label2.text = 'x:%d y:%d' % (int(x), int(y))
-    label.x = label2.x = x + 30
-    label.y = label2.y = y
-    label.draw()
-    label2.draw()
-    crosshair.x = x - crosshair.width / 2.
-    crosshair.y = y - crosshair.height / 2.
+def drawCrossLabel(x, y, ID):
+    drawLabel('ID: %s' % str(ID), pos=(x+30, y),
+              font_size=12, anchor_x='left', anchor_y='bottom')
+    drawLabel('x:%d y:%d' % (int(x), int(y)), pos=(x+30, y),
+              font_size=10, anchor_x='left', anchor_y='top')
+    crosshair.x = x - (crosshair.width / 2.) * crosshair.scale
+    crosshair.y = y - (crosshair.height / 2.) * crosshair.scale
     crosshair.draw()
 
 
@@ -32,7 +30,7 @@ class TouchTracer(MTWidget):
         self.touchPositions = {}
 
     def on_touch_down(self, touch):
-        color = (random(), random(), random())
+        color = get_random_color()
         self.touchPositions[touch.id] = [(touch.id,color,touch.x,touch.y)]
 
 
@@ -43,25 +41,30 @@ class TouchTracer(MTWidget):
 
     def on_touch_move(self, touch):
         if touch.id in self.touchPositions:
+            # don't append same position on the line
+            if len(self.touchPositions[touch.id]) > 1:
+                pos = self.touchPositions[touch.id][-1]
+                if int(pos[0]) == int(touch.x) and int(pos[1]) == int(touch.y):
+                    return
             self.touchPositions[touch.id].append((touch.x,touch.y))
 
 
     def draw(self):
-        set_brush('../touchtracer/particle.png', 10)
+        set_brush(join(current_dir, 'particle.png'), 10)
         w = self.get_parent_window()
-        set_color(.2, .2, .2)
+        set_color(.1, .1, .1)
         drawRectangle(size=w.size)
         for p in self.touchPositions:
             lines = []
             touchID,color,x,y = self.touchPositions[p][0]
-            glColor3d(*color)
+            set_color(*color)
             lines += [x, y]
             for pos in self.touchPositions[p][1:]:
                 lines += pos
             if len(lines) > 2:
                 paintLine(lines)
             x, y = lines[-2:]
-            drawLabel(x,y, touchID)
+            drawCrossLabel(x, y, touchID)
 
 def pymt_plugin_activate(w, ctx):
     ctx.c = TouchTracer()

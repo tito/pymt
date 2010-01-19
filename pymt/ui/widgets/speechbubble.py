@@ -2,7 +2,7 @@
 Speech Bubble: a little speech bubble !
 '''
 
-from __future__ import with_statement
+
 from label import MTLabel
 from ...graphx import drawPolygon, drawRoundedRectangle, gx_matrix
 from ...vector import Vector
@@ -56,8 +56,6 @@ class MTSpeechBubble(MTLabel):
         self.trirelpos      = kwargs.get('trirelpos')
 
     def draw(self):
-        if self.autoheight:
-            self.height = self.label_obj.content_height
 
         # extract relative position
         rx, ry = self.relpos

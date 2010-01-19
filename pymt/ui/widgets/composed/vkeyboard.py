@@ -2,11 +2,11 @@
 VKeyboard: Virtual keyboard with custom layout support
 '''
 
-from __future__ import with_statement
+
 import os
-import sys
 import pymt
-from ....graphx import set_color, drawCSSRectangle, drawLabel, GlDisplayList, gx_matrix, drawRoundedRectangle
+from ....graphx import set_color, drawCSSRectangle, drawLabel, GlDisplayList, \
+                       gx_matrix, drawRoundedRectangle, getLastLabel
 from ....clock import getClock
 from ....utils import curry
 from ....vector import Vector
@@ -14,9 +14,9 @@ from ...factory import MTWidgetFactory
 from ..scatter import MTScatterWidget
 from kineticlist import MTKineticList, MTKineticItem
 from ....clock import getClock
-from OpenGL.GL import glScalef, glTranslatef
+from OpenGL.GL import *#glScalef, glTranslatef
 
-__all__ = ['MTVKeyboard']
+__all__ = ('MTVKeyboard', 'KeyboardLayout', 'KeyboardLayoutQWERTY', 'KeyboardLayoutAZERTY')
 
 kbdlayout_default_font = os.path.join(pymt.pymt_data_dir, 'DejaVuSans.ttf')
 
@@ -26,7 +26,6 @@ class KeyboardLayout(object):
     TITLE           = 'nolayout'
     DESCRIPTION     = 'nodescription'
     FONT_FILENAME   = kbdlayout_default_font
-    FONT_NAME       = 'DejaVu Sans'
     NORMAL_1 = []
     NORMAL_2 = []
     NORMAL_3 = []
@@ -44,7 +43,6 @@ class KeyboardLayoutQWERTY(KeyboardLayout):
     TITLE           = 'Qwerty'
     DESCRIPTION     = 'A classical US Keyboard'
     FONT_FILENAME   = kbdlayout_default_font
-    FONT_NAME       = 'DejaVu Sans'
     NORMAL_1 = [
         ('~', '~', None, 1),    ('!', '!', None, 1),    ('@', '@', None, 1),
         ('#', '#', None, 1),    ('$', '$', None, 1),    ('%', '%', None, 1),
@@ -113,12 +111,11 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
     TITLE           = 'Azerty'
     DESCRIPTION     = 'A French keyboard without international keys'
     FONT_FILENAME   = kbdlayout_default_font
-    FONT_NAME       = 'DejaVu Sans'
     NORMAL_1 = [
-        ('@', '@', None, 1),    ('&', '&', None, 1),    ('\xc3\xa9', '\xc3\xa9', None, 1),
+        ('@', '@', None, 1),    ('&', '&', None, 1),    (u'\xe9', u'\xe9', None, 1),
         ('"', '"', None, 1),    ('\'', '\'', None, 1),  ('(', '(', None, 1),
-        ('-', '-', None, 1),    ('\xc3\xa8', '\xc3\xa8', None, 1),    ('_', '_', None, 1),
-        ('\xc3\xa7', '\xc3\xa7', None, 1),    ('\xc3\xa0', '\xc3\xa0', None, 1),    (')', ')', None, 1),
+        ('-', '-', None, 1),    (u'\xe8', u'\xe8', None, 1),    ('_', '_', None, 1),
+        (u'\xe7', u'\xe7', None, 1),    (u'\xe0', u'\xe0', None, 1),    (')', ')', None, 1),
         ('=', '=', None, 1),    (u'\u232b', None, 'backspace', 2),
     ]
     NORMAL_2 = [
@@ -132,7 +129,7 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
         (u'\u21ea', None, 'capslock', 1.8),  ('q', 'q', None, 1),    ('s', 's', None, 1),
         ('d', 'd', None, 1),    ('f', 'f', None, 1),    ('g', 'g', None, 1),
         ('h', 'h', None, 1),    ('j', 'j', None, 1),    ('k', 'k', None, 1),
-        ('l', 'l', None, 1),    ('m', 'm', None, 1),    ('\xc3\xb9', '\xc3\xb9', None, 1),
+        ('l', 'l', None, 1),    ('m', 'm', None, 1),    (u'\xf9', u'\xf9', None, 1),
         ('*', '*', None, 1),    (u'\u23ce', None, 'enter', 1.2),
     ]
     NORMAL_4 = [
@@ -164,13 +161,13 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
         ('D', 'D', None, 1),    ('F', 'F', None, 1),    ('G', 'G', None, 1),
         ('H', 'H', None, 1),    ('J', 'J', None, 1),    ('K', 'K', None, 1),
         ('L', 'L', None, 1),    ('M', 'M', None, 1),    ('%', '%', None, 1),
-        ('\xc2\xb5', '\xc2\xb5', None, 1),    (u'\u23ce', None, 'enter', 1.2),
+        (u'\xb5', u'\xb5', None, 1),    (u'\u23ce', None, 'enter', 1.2),
     ]
     SHIFT_4 = [
         (u'\u21e7', None, 'shift_L', 1.5),  ('>', '>', None, 1),    ('W', 'W', None, 1),
         ('X', 'X', None, 1),    ('C', 'C', None, 1),    ('V', 'V', None, 1),
         ('B', 'B', None, 1),    ('N', 'N', None, 1),    ('?', '?', None, 1),
-        ('.', '.', None, 1),    ('/', '/', None, 1),    ('\xc2\xa7', '\xc2\xa7', None, 1),
+        ('.', '.', None, 1),    ('/', '/', None, 1),    (u'\xa7', u'\xa7', None, 1),
         (u'\u21e7', None, 'shift_R', 2.5),
     ]
     SHIFT_5 = [
@@ -178,45 +175,54 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
     ]
 
 class MTVKeyboard(MTScatterWidget):
+    '''
+    MTVKeyboard is a OnBoard keyboard, with Multitouch support.
+    Layout are entirely customizable, and you can switch from layout with
+    little button in bottom-right of keyboard.
+
+    :Parameters:
+        `layout` : KeyboardLayout object, default to None
+            If none, keyboard layout will be created from configuration
+            property.
+        `time_lazy_update` : float, default to 0.2
+            Time in seconds of force a lazy update when keyboard size change
+
+    :Events:
+        `on_key_down` : key
+            Fired when a key is down
+            The key contain: displayed_str, internal_str, internal_action, width
+        `on_key_up` : key
+            Fired when a key is up
+            The key contain: displayed_str, internal_str, internal_action, width
+        `on_text_change` : text
+            Fired when the internal text is changed
+
+    List of internal action availables :
+
+    * backspace
+    * capslock
+    * enter
+    * escape
+    * layout (to display layout list)
+    * shift
+    * shift_L
+    * shift_R
+
+    '''
 
     available_layout = []
 
     def __init__(self, **kwargs):
-        '''
-        MTVKeyboard is a OnBoard keyboard, who support Multitouch.
-        Layout are entirely customizable, and you can switch from layout with
-        little button in bottom-right of keyboard.
-
-        :Events:
-            `on_key_down` : key
-                Fired when a key is down
-                The key contain: displayed_str, internal_str, internal_action, width
-            `on_key_up` : key
-                Fired when a key is up
-                The key contain: displayed_str, internal_str, internal_action, width
-            `on_text_change` : text
-                Fired when the internal text is changed
-
-        List of internal action availables :
-
-        * backspace
-        * capslock
-        * enter
-        * escape
-        * layout (to display layout list)
-        * shift
-        * shift_L
-        * shift_R
-
-        '''
         kwargs.setdefault('size', (700, 200))
         kwargs.setdefault('layout', None)
+        kwargs.setdefault('time_lazy_update', .2)
         super(MTVKeyboard, self).__init__(**kwargs)
 
         self.register_event_type('on_key_down')
         self.register_event_type('on_key_up')
         self.register_event_type('on_text_change')
 
+        self.time_lazy_update   = kwargs.get('time_lazy_update')
         self.layout             = kwargs.get('layout')
         self.container_width, self.container_height   = self.size
 
@@ -230,7 +236,7 @@ class MTVKeyboard(MTScatterWidget):
                     break
             # no layout found ?
             if self.layout is None:
-                pymt.pymt_logger.warning('Keyboard layout <%s> not found, fallback on QWERTY' % idlayout)
+                pymt.pymt_logger.warning('Vkeyboard: Keyboard layout <%s> not found, fallback on QWERTY' % idlayout)
                 self.layout = KeyboardLayoutQWERTY()
 
         self._mode              = 'NORMAL'
@@ -239,9 +245,11 @@ class MTVKeyboard(MTScatterWidget):
         self._last_update       = 0
         self._last_update_scale = 1.
         self._need_update       = 'now'
-        self._internal_text     = ''
+        self._internal_text     = u''
         self._show_layout       = False
         self._active_keys       = []
+        self._old_scale         = self.scale
+        self._used_label        = []
 
         # prepare layout widget
         mtop, mright, mbottom, mleft = self.style['margin']
@@ -273,7 +281,7 @@ class MTVKeyboard(MTScatterWidget):
                 #font.add_file(layout_class.FONT_FILENAME)
                 pass
             except:
-                pymt.pymt_logger.exception('Unable to load custom font')
+                pymt.pymt_logger.exception('Vkeyboard: Unable to load custom font')
 
     #
     # Keyboard properties
@@ -303,7 +311,7 @@ class MTVKeyboard(MTScatterWidget):
 
     def clear(self):
         '''Clear the text'''
-        self.text = ''
+        self.text = u''
 
 
     #
@@ -311,8 +319,8 @@ class MTVKeyboard(MTScatterWidget):
     #
 
     def _lazy_update(self):
-        self.container_width = int(self.width * self.get_scale_factor())
-        self.container_height = int(self.height * self.get_scale_factor())
+        self.container_width = int(self.width * self.scale)
+        self.container_height = int(self.height * self.scale)
         self._need_update = 'lazy'
         self._last_update = getClock().get_time()
 
@@ -321,11 +329,14 @@ class MTVKeyboard(MTScatterWidget):
         if self._need_update is None:
             return
 
-        if self._need_update == 'now' or (self._need_update == 'lazy' and  dt > 0.9):
+        if self._need_update == 'now' or (self._need_update == 'lazy' and  dt >
+                                         self.time_lazy_update):
             # create layout mode if not in cache
             layoutmode = '%s:%s' % (self.layout.ID, self.mode)
             if not layoutmode in self._cache:
-                self._cache[layoutmode] = {'background': GlDisplayList(), 'keys': GlDisplayList()}
+                self._cache[layoutmode] = {'background': GlDisplayList(),
+                                           'keys': GlDisplayList(),
+                                           'usedlabel': []}
             self._current_cache = self._cache[layoutmode]
 
             # do real update
@@ -334,7 +345,7 @@ class MTVKeyboard(MTScatterWidget):
 
             # don't update too fast next time (if it's lazy)
             self._last_update = getClock().get_time()
-            self._last_update_scale = self.get_scale_factor()
+            self._last_update_scale = self.scale
             self._need_update = None
 
     def _do_update(self, mode=None):
@@ -347,7 +358,7 @@ class MTVKeyboard(MTScatterWidget):
             return
 
         # calculate margin
-        s = self.get_scale_factor()
+        s = self.scale
         w, h = self.container_width, self.container_height
         if mode == 'background':
             s = 1.
@@ -360,6 +371,7 @@ class MTVKeyboard(MTScatterWidget):
         x, y = 0, self.texsize.y - self.keysize.y
 
         # update display list
+        self._current_cache['usedlabel'] = []
         with self._current_cache[mode]:
 
             # draw lines
@@ -388,7 +400,8 @@ class MTVKeyboard(MTScatterWidget):
                             drawLabel(label=displayed_str,
                                     pos=(x + kw / 2., y + self.keysize.y / 2.),
                                     font_size=font_size, bold=False,
-                                    font_name='DejaVu Sans')
+                                    font_name=self.layout.FONT_FILENAME)
+                            self._current_cache['usedlabel'].append(getLastLabel())
                     # advance X
                     x += kw
                 # advance Y
@@ -406,7 +419,10 @@ class MTVKeyboard(MTScatterWidget):
         self._lazy_update()
 
     def on_transform(self, *largs):
-        self._lazy_update()
+        # to lazy update only if scale change
+        if self._old_scale != self.scale:
+            self._old_scale = self.scale
+            self._lazy_update()
 
     def on_layout_change(self, layout, *largs):
         self._layout_widget.visible = False
@@ -437,8 +453,8 @@ class MTVKeyboard(MTScatterWidget):
                     radius=self.style['key-border-radius'])
 
             # search the good scale for current precalculated keys layer
-            if self._last_update_scale == self.get_scale_factor():
-                s = 1. / self.get_scale_factor()# / self._last_update_scale
+            if self._last_update_scale == self.scale:
+                s = 1. / self.scale# / self._last_update_scale
                 glScalef(s, s, s)
             else:
                 s = 1. / self._last_update_scale
@@ -529,7 +545,7 @@ class MTVKeyboard(MTScatterWidget):
 
 # Register layouts
 # Don't go further if we generate documentation
-if not os.path.basename(sys.argv[0]).startswith('sphinx'):
+if not 'PYMT_DOC' in os.environ:
     MTVKeyboard.add_custom_layout(KeyboardLayoutQWERTY)
     MTVKeyboard.add_custom_layout(KeyboardLayoutAZERTY)
 

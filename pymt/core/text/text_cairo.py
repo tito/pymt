@@ -12,6 +12,19 @@ try:
 except:
     raise
 
+FONT_EXTENTS_ASCENT_IDX         = 0
+FONT_EXTENTS_DESCENT_IDX        = 1
+FONT_EXTENTS_HEIGHT_IDX         = 2
+FONT_EXTENTS_MAX_X_ADVANCE_IDX  = 3
+FONT_EXTENTS_MAX_Y_ADVANCE_IDX  = 4
+
+TEXT_EXTENTS_X_BEARING_IDX      = 0
+TEXT_EXTENTS_Y_BEARING_IDX      = 1
+TEXT_EXTENTS_WIDTH_IDX          = 2
+TEXT_EXTENTS_HEIGHT_IDX         = 3
+TEXT_EXTENTS_X_ADVANCE_IDX      = 4
+TEXT_EXTENTS_Y_ADVANCE_IDX      = 5
+
 # used for fetching extends before creature image surface
 cairo_default_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 1, 1)
 cairo_default_context = cairo.Context(cairo_default_surface)
@@ -33,35 +46,37 @@ class LabelCairo(LabelBase):
         font_options.set_hint_style(cairo.HINT_STYLE_FULL)
         context.set_font_options(font_options)
 
-    def _get_extents(self):
+        # get maximum height for font
+        font_extents = context.font_extents()
+        self._font_extents = font_extents
+        self._height = \
+            self._font_extents[FONT_EXTENTS_DESCENT_IDX] + \
+            self._font_extents[FONT_EXTENTS_ASCENT_IDX]
+
+    def get_extents(self, text):
         self._select_font(cairo_default_context)
-        return cairo_default_context.text_extents(self.label)
+        extents = cairo_default_context.text_extents(text)
+        return (extents[4], self._height)
 
-    def update(self):
-        x_bearing, y_bearing, width, height, x_advance, y_advance = self._get_extents()
-        width = int(max(width, 1))
-        height = int(max(height, 1))
-
+    def _render_begin(self):
         # create a surface, context, font...
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
-        context = cairo.Context(surface)
+        self._cairo_surface = cairo.ImageSurface(
+                cairo.FORMAT_ARGB32, *self.size)
+        self._cairo_context = cairo.Context(self._cairo_surface)
 
-        self._select_font(context)
+        self._select_font(self._cairo_context)
+        self._cairo_context.set_source_rgb(1., 1., 1.)
 
-        context.move_to(0, height)
-        context.move_to(-x_bearing, -y_bearing)
+    def _render_text(self, text, x, y):
+        self._cairo_context.move_to(x,
+            y + self._font_extents[FONT_EXTENTS_ASCENT_IDX])
+        self._cairo_context.show_text(text)
 
-        context.set_source_rgb(1., 1., 1.)
+    def _render_end(self):
+        data = pymt.ImageData(self.width, self.height,
+            'RGBA', buffer(self._cairo_surface.get_data())[:])
 
-        context.show_text(self.label)
+        del self._cairo_surface
+        del self._cairo_context
 
-        data = pymt.ImageData(width, height,
-            'RGBA', buffer(surface.get_data())[:])
-
-        # create a texture from this data
-        # and flip texture in vertical way
-        self.texture = pymt.Texture.create_from_data(data)
-        self.texture.flip_vertical()
-
-        super(LabelCairo, self).update()
-
+        return data

@@ -4,11 +4,12 @@ PLUGIN_TITLE = 'Bubble-o-Bomb !'
 PLUGIN_AUTHOR = 'Mathieu Virbel'
 PLUGIN_DESCRIPTION = 'Secure Bubble Bomb before explosion !'
 
+import os
 from pymt import *
 from OpenGL.GL import *
-from pyglet import media
 from random import random, randint
 
+current_dir = os.path.dirname(__file__)
 
 class Bomb(MTWidget):
     def __init__(self, **kwargs):
@@ -43,7 +44,7 @@ class Bomb(MTWidget):
         drawCircle(pos=self.pos, radius=self.r)
         # text
         self.label.label = str(int(self.lifetime+1))
-        self.label.pos = self.pos
+        self.label.pos = (self.pos[0]-self.label.width/2,self.pos[1]-self.label.height/2)
         self.label.draw()
 
     def animate(self, world):
@@ -121,16 +122,22 @@ class World(MTWidget):
     def __init__(self, **kwargs):
         super(World, self).__init__(**kwargs)
         self.reset()
-        self.s_gameover = media.load('../bubblebomb/gameover.wav', streaming=False)
-        self.s_touch = media.load('../bubblebomb/touch.wav', streaming=False)
-        self.s_nextlevel = media.load('../bubblebomb/level.wav', streaming=False)
+        self.s_gameover = SoundLoader.load(os.path.join(current_dir, 'gameover.wav'))
+        self.s_touch = SoundLoader.load(os.path.join(current_dir, 'touch.wav'))
+        self.s_nextlevel = SoundLoader.load(os.path.join(current_dir, 'level.wav'))
 
     def sound(self, name):
         if name == 'gameover':
+            self.s_gameover.stop()
+            self.s_gameover.seek(0)
             self.s_gameover.play()
         elif name == 'touch':
+            self.s_touch.stop()
+            self.s_touch.seek(0)
             self.s_touch.play()
         elif name == 'nextlevel':
+            self.s_nextlevel.stop()
+            self.s_nextlevel.seek(0)
             self.s_nextlevel.play()
 
     def reset(self):

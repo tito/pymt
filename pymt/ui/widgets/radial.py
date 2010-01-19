@@ -2,7 +2,7 @@
 Vector slider: a radial slider that provide vector manipulation
 '''
 
-from __future__ import with_statement
+
 from __future__ import division
 
 from OpenGL.GL import *
@@ -54,7 +54,7 @@ class MTVectorSlider(MTWidget):
 
         self.radius = kwargs.get('radius')
 
-        self.vector = Vector(0, 0)
+        self.vector = Vector(self.x+self.radius, self.y)
         self.amplitude = 0
         self.angle = 0
 

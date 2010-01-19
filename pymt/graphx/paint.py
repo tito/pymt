@@ -2,7 +2,7 @@
 Paint: brush, texturing...
 '''
 
-from __future__ import with_statement
+
 
 __all__ = [
     # settings
@@ -18,10 +18,10 @@ import pymt
 from OpenGL.GL import *
 from statement import *
 
-_brushs_cache = {}
+_brushs_cache   = {}
 _brush_filename = ''
-_brush_texture = None
-_brush_size = 10
+_brush_texture  = None
+_brush_size     = 10
 
 def set_brush(sprite, size=None):
     '''Define the brush to use for paint* functions
@@ -37,7 +37,7 @@ def set_brush(sprite, size=None):
         _brush_size = size
     if not sprite in _brushs_cache:
         point_sprite_img = pymt.Image.load(sprite)
-        _brush_texture = point_sprite_img.get_texture()
+        _brush_texture = point_sprite_img.texture
         _brushs_cache[sprite] = _brush_texture
     _brush_filename = sprite
     _brush_texture = _brushs_cache[sprite]
@@ -89,7 +89,7 @@ def paintLine(points, numsteps=None, **kwargs):
     '''
     global _brush_texture, _brush_size
     if not _brush_texture:
-        pymt.pymt_logger.warning('No brush set to paint line, abort')
+        pymt.pymt_logger.warning('Graphx: No brush set to paint line, abort')
         return
     if len(points) % 2 == 1:
         raise Exception('Points list must be a pair length number (not impair)')
@@ -124,7 +124,7 @@ def paintLine(points, numsteps=None, **kwargs):
 
             # construct pointList
             pointList = [0,0] * steps
-            for i in range(steps):
+            for i in xrange(steps):
                 pointList[i * 2]   = p1[0] + dx* (float(i)/steps)
                 pointList[i * 2 + 1] = p1[1] + dy* (float(i)/steps)
 
@@ -135,5 +135,5 @@ def paintLine(points, numsteps=None, **kwargs):
         if len(outputList) < 2:
             return
         with gx_begin(GL_POINTS):
-            for i in xrange(0, len(outputList), 2):
-                glVertex2f(outputList[i], outputList[i+1])
+            for x, y in zip(outputList[::2], outputList[1::2]):
+                glVertex2f(x, y)

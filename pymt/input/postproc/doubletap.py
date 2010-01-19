@@ -1,5 +1,5 @@
 '''
-InputPostproc Double Tap: search touch for a double tap
+Double Tap: search touch for a double tap
 '''
 
 __all__ = ['InputPostprocDoubleTap']
@@ -7,18 +7,10 @@ __all__ = ['InputPostprocDoubleTap']
 import pymt
 from ...clock import getClock
 
-#
-# About attribute added in a touch:
-# __pp_do_event: next event we want
-# __pp_have_event_down: True if event down is already dispatched
-# __pp_no_event: don't generate event for him
-# __pp_is_timeout: double tap timeout ?
-# 
-
 class InputPostprocDoubleTap(object):
     '''
     InputPostProcDoubleTap is a post-processor to check if a touch is a double tap or not.
-    Double tap can be configurd in the PyMT config file ::
+    Double tap can be configured in the PyMT config file ::
 
         [pymt]
             double_tap_time = 250

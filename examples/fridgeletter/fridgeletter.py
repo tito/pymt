@@ -1,12 +1,14 @@
+import os
 from pymt import *
-from pyglet.text import Label
-from random import randint
+from random import randint, random
 
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
 PLUGIN_TITLE = 'Fridge letter'
 PLUGIN_AUTHOR = 'Mathieu Virbel'
 PLUGIN_DESCRIPTION = 'Original idea from leijou (see README for more info.)'
+
+current_dir = os.path.dirname(__file__)
 
 class FridgeLetterAtomic(MTDragable):
     def __init__(self, **kwargs):
@@ -15,15 +17,15 @@ class FridgeLetterAtomic(MTDragable):
         super(FridgeLetterAtomic, self).__init__(**kwargs)
 
         self.letter = Label(
-            font_name = 'AlphaFridgeMagnets.ttf',
+            font_name = os.path.join(current_dir, 'AlphaFridgeMagnets.ttf'),
             font_size = 48,
             bold = True,
             anchor_x = 'left',
             anchor_y = 'bottom',
             multiline = False,
             halign = 'top',
-            color = map(lambda x: int(x * 255), kwargs.get('color')),
-            text = kwargs.get('letter')
+            color = kwargs.get('color'),
+            label = kwargs.get('letter')
         )
         self.size = self.letter.content_width, self.letter.content_height
 
@@ -62,7 +64,7 @@ class FridgeLetter(MTWidget):
                 self.add_widget(l)
 
     def clear(self, *largs):
-        self.children = []
+        self.children.clear()
         self.add_widget(self.buttons)
         self.createletters()
 
@@ -71,7 +73,8 @@ class FridgeLetter(MTWidget):
         for letter in self.children:
             if letter == self.buttons:
                 continue
-            letter.pos = randint(0, w.width), randint(0, w.height)
+            letter.do(Animation(pos=map(lambda x: x * random(), w.size),
+                                f='ease_out_cubic', duration=.5))
 
     def draw(self):
         if self.do_randomize:

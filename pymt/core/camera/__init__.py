@@ -5,9 +5,7 @@ Camera: Backend for acquiring camera image
 __all__ = ('CameraBase', 'Camera')
 
 import pymt
-from OpenGL.GL import GL_RGB, glEnable, glBindTexture, glTexSubImage2D, \
-        glTexParameteri, GL_RGBA, GL_UNSIGNED_BYTE, GL_TEXTURE_MAG_FILTER, \
-        GL_TEXTURE_MIN_FILTER, GL_NEAREST
+from OpenGL.GL import GL_RGB
 from abc import ABCMeta, abstractmethod
 from .. import core_select_lib
 from ...baseobject import BaseObject
@@ -81,39 +79,28 @@ class CameraBase(BaseObject):
 
     @abstractmethod
     def init_camera(self):
+        '''Initialise the camera (internal)'''
         pass
 
     @abstractmethod
     def update(self):
+        '''Update the camera (internal)'''
         pass
 
     def start(self):
+        '''Start the camera acquire'''
         self.stopped = False
 
     def stop(self):
+        '''Release the camera'''
         self.stopped = True
 
     def _copy_to_gpu(self):
         '''Copy the the buffer into the texture'''
-        #FIXME: use a texture method for that
         if self._texture is None:
-            pymt.pymt_logger.debug('Video: copy_to_gpu() failed, _texture is None !')
+            pymt.pymt_logger.debug('Camera: copy_to_gpu() failed, _texture is None !')
             return
-        '''
-        target = pymt.get_texture_target(self._texture)
-        glEnable(target);
-        glBindTexture(target, pymt.get_texture_id(self._texture));
-        glTexImage2D(target, 0, GL_RGBA, self.resolution[0],self.resolution[1],
-                     0, self._format, GL_UNSIGNED_BYTE, self._buffer);
-        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glBindTexture(target, 0);
-        '''
-        target = pymt.get_texture_target(self._texture)
-        pymt.set_texture(self._texture)
-        glTexSubImage2D(target, 0, 0, 0,
-                        self._texture.width, self._texture.height, self._format,
-                        GL_UNSIGNED_BYTE, self._buffer)
+        self._texture.blit_buffer(self._buffer, format=self._format)
         self._buffer = None
 
     def draw(self):
@@ -129,5 +116,5 @@ class CameraBase(BaseObject):
 Camera = core_select_lib('camera', (
     ('gstreamer', 'camera_gstreamer', 'CameraGStreamer'),
     ('opencv', 'camera_opencv', 'CameraOpenCV'),
-    #('videocapture', 'camera_videocapture', 'CameraVideoCapture'),
+    ('videocapture', 'camera_videocapture', 'CameraVideoCapture'),
 ))

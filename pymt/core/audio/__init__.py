@@ -5,9 +5,9 @@ Audio: Load and play sound
 __all__ = ('Sound', 'SoundLoader')
 
 import pymt
+import sys
 from abc import ABCMeta, abstractmethod
 from .. import core_register_libs
-
 
 class SoundLoader:
     '''Load a sound, with usage of the best loader for a given filename.
@@ -27,10 +27,13 @@ class SoundLoader:
 
     @staticmethod
     def register(classobj):
+        '''Register a new class to load sound'''
+        pymt.pymt_logger.debug('Audio: register %s' % classobj.__name__)
         SoundLoader._classes.append(classobj)
 
     @staticmethod
     def load(filename):
+        '''Load a sound, and return a Sound() instance'''
         ext = filename.split('.')[-1].lower()
         for classobj in SoundLoader._classes:
             if ext in classobj.extensions():
@@ -106,7 +109,18 @@ class Sound(object):
         '''Stop playback'''
         pass
 
+    @abstractmethod
+    def seek(self, position):
+        '''Seek to the <position> (in seconds)'''
+        pass
 
-core_register_libs('audio', (
-    ('pygame', 'audio_pygame'),
-))
+
+# Little trick here, don't activate gstreamer on window
+# seem to have lot of crackle or something...
+# XXX test in macosx
+audio_libs = []
+if sys.platform not in ('win32', 'cygwin'):
+    audio_libs += [('gstreamer', 'audio_gstreamer')]
+audio_libs += [('pygame', 'audio_pygame')]
+
+core_register_libs('audio', audio_libs)

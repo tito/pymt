@@ -8,10 +8,10 @@ after some hours of arithemic.
 '''
 
 from pymt import *
-import pyglet
 from copy import copy
 import random
 import math
+import os
 
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
@@ -19,6 +19,7 @@ PLUGIN_TITLE = 'Wang game'
 PLUGIN_AUTHOR = 'Mathieu Virbel'
 PLUGIN_DESCRIPTION = 'Play on Pong with multitouch !'
 
+current_dir = os.path.dirname(__file__)
 
 def in_between(val, b1, b2):
     return ((b1 >= val and val >= b2) or (b1 <= val and val <= b2))
@@ -139,8 +140,7 @@ class Ball(MTWidget):
         self.game = kwargs.get('game')
         self.debugline = []
         self.debug = False
-        img = pyglet.image.load('../wang/ball.png')
-        self.sprite = pyglet.sprite.Sprite(img)
+        self.sprite = Image.load(os.path.join(current_dir, 'ball.png'))
         self.reset()
 
     def reset(self):
@@ -471,10 +471,10 @@ class Wang(MTWidget):
         drawLine([0, w.height, w.width, w.height], width=5)
 
         # draw scores
-        self.labelA.x = w2 - self.labelA.label_obj.content_width - 10
-        self.labelA.y = w.height - self.labelA.label_obj.content_height - 10
+        self.labelA.x = w2 - self.labelA.width - 10
+        self.labelA.y = w.height - self.labelA.height - 10
         self.labelB.x = w2 + 10
-        self.labelB.y = w.height - self.labelB.label_obj.content_height - 10
+        self.labelB.y = w.height - self.labelB.height - 10
         self.labelA.draw()
         self.labelB.draw()
 

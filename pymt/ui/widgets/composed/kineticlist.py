@@ -11,7 +11,7 @@ from ....graphx import drawCSSRectangle
 from ...factory import MTWidgetFactory
 from ....vector import Vector
 from ....base import getFrameDt
-from ....utils import boundary
+from ....utils import boundary, SafeList
 from ..stencilcontainer import MTStencilContainer
 from ..widget import MTWidget
 from ..button import MTButton, MTToggleButton, MTImageButton
@@ -83,6 +83,7 @@ class MTKineticList(MTStencilContainer):
         kwargs.setdefault('trigger_distance', 3)
 
         super(MTKineticList, self).__init__(**kwargs)
+
         self.register_event_type('on_delete')
 
         self.do_x       = kwargs.get('do_x')
@@ -109,11 +110,11 @@ class MTKineticList(MTStencilContainer):
         self.vx = 0
         self.vy = 0
         # List of all children, whatever will be the search
-        self.pchildren = []
+        self.pchildren = SafeList()
         # For extra blob stats
         self.touch = {}
         # Holds widgets not a part of the scrolling(search button, etc)
-        self.widgets = []
+        self.widgets = SafeList()
         self._last_content_size = 0
         self._scrollbar_index = 0
         self._scrollbar_size = 0
@@ -163,17 +164,15 @@ class MTKineticList(MTStencilContainer):
             self.widgets.append(self.sinput)
 
             # Animations to hide and show the search text input box
-            self.a_sinput_in = Animation(self.sinput, 'Move In',
-                'y', self.y + self.height - 40 - self.sinput.size[1], 1, 10)
-            self.a_sinput_out = Animation(self.sinput, 'Move Out',
-                'y', self.y + self.height - self.sinput.size[1], 1, 10)
+            self.a_sinput_in = Animation(y = self.y + self.height - 40 - self.sinput.size[1], duration = 0.5)
+            self.a_sinput_out = Animation(y = self.y + self.height - self.sinput.size[1], duration = 0.5)
 
     def on_delete(self, child):
         pass
 
     def clear(self):
-        self.children = []
-        self.pchildren = []
+        self.children.clear()
+        self.pchildren.clear()
         self.xoffset = self.yoffset = 0
 
     def add_widget(self, widget, **kwargs):
@@ -190,10 +189,11 @@ class MTKineticList(MTStencilContainer):
         '''Toggles the delete buttons on items
         Attached to the on_press handler of the delete button(self.db)
         '''
-        for child in self.children:
-            if self.db.get_state() == 'down':
+        if self.db.get_state() == 'down':
+            for child in self.children:
                 child.show_delete()
-            else:
+        else:
+            for child in self.children:
                 child.hide_delete()
 
     def toggle_search(self, touch):
@@ -201,8 +201,7 @@ class MTKineticList(MTStencilContainer):
         Attached to the on_press handler of self.sb(the green search button)
         '''
         if self.sb.get_state() == 'down':
-            self.a_sinput_in.reset()
-            self.a_sinput_in.start()
+            self.a_sinput_in.animate(self.sinput) 
         else:
             try:
                 self.sinput.hide_keyboard()
@@ -210,9 +209,8 @@ class MTKineticList(MTStencilContainer):
                 #There isn't a keyboard, so it throws a ValueError
                 pass
             self.sinput.label = ''
-            self.a_sinput_out.reset()
-            self.a_sinput_out.start()
-            self.endsearch()
+            self.a_sinput_out.animate(self.sinput) 
+            #self.endsearch()
 
     def apply_filter(self, text):
         '''Applies the filter to the current children set'''
@@ -229,11 +227,16 @@ class MTKineticList(MTStencilContainer):
 
     def search(self, pattern, attr):
         '''Apply a search pattern to the current set of children'''
-        self.children = self.filter(pattern, attr)
+        result = self.filter(pattern, attr)
+        self.children.clear()
+        for item in result:
+            self.children.append(item)
 
     def endsearch(self):
         '''Resets the children set to the full set'''
-        self.children = self.pchildren
+        self.children.clear()
+        for item in self.pchildren:
+            self.children.append(item)
 
     def _get_total_width(self, items, axis):
         '''Given a list of items and an axis, return the space
@@ -417,7 +420,10 @@ class MTKineticList(MTStencilContainer):
         # will not work if children grab the touch in down state :/
         for child in self.children:
             child.dispatch_event('on_touch_down', touch)
+            old_grab_current = touch.grab_current
+            touch.grab_current = child
             child.dispatch_event('on_touch_up', touch)
+            touch.grab_current = old_grab_current
         return True
 
     def ensure_bounding(self):
@@ -475,7 +481,11 @@ class MTKineticList(MTStencilContainer):
         # title bar
         if self.titletext is not None:
             set_color(*self.style.get('title-color'))
-            drawCSSRectangle(pos=(self.x, self.height + self.y - 40), size=(self.width, 40), prefix='title')
+            drawCSSRectangle(pos=(self.x, self.height + self.y - 40),
+                             size=(self.width, 40), prefix='title',
+                             style=self.style)
+            self.title.x = self.width/2 + self.x
+            self.title.y = self.height - 20 + self.y
             self.title.draw()
 
         # draw widgets
@@ -518,6 +528,8 @@ class MTKineticObject(MTWidget):
         kwargs.setdefault('deletable', True)
         super(MTKineticObject, self).__init__(**kwargs)
         self.deletable = kwargs.get('deletable')
+        self.register_event_type('on_animation_complete')
+        self.push_handlers(on_animation_complete=self.on_animation_complete)
 
         # List of attributes that can be searched
         self.attr_search = ['label']
@@ -530,27 +542,22 @@ class MTKineticObject(MTWidget):
         # We do this so we can break free and move ourself it necessary
         self.kx = self.ky = 0
 
-        self.db_alpha = 0
+        self.db_alpha = 0.0
 
         # Delete Button
         if self.deletable:
             self.db = MTButton(label='',
                 size=(40, 40),
                 pos=(self.x + self.width-40, self.y + self.height-40),
-                style={'bg-color':(1, 0, 0, 0)}, visible=False)
+                style={'bg-color':(1, 0, 0, 0)}, visible=True)
             self.db.push_handlers(on_press=self._delete_callback)
             self.add_widget(self.db)
 
-            self.a_delete_w = Animation(self, 'Deleting Self W', 'width', 0, 1, 10)
-            self.a_delete_h = Animation(self, 'Deleting Self H', 'height', 0, 1, 10)
-            self.a_delete_x = Animation(self, 'Deleting Self X', 'xoffset',
-                self.kx + self.width/2, 1, 10)
-            self.a_delete_y = Animation(self, 'Deleting Self Y', 'yoffset',
-                self.ky + self.height/2, 1, 10)
+            self.a_delete = Animation(width = 0, height = 0, xoffset = self.kx + self.width/2, yoffset = self.ky + self.height/2, duration = 0.5)
 
-        self.a_show = Animation(self, 'Show Button Alpha', 'db_alpha', .5, 1, 5)
-        self.a_hide = Animation(self, 'Hide Button Alpha', 'db_alpha', 0, 1, 5)
-
+        self.a_show = Animation(db_alpha = .5, duration = 0.25)
+        self.a_hide = Animation(db_alpha = 0.0, duration = 0.25)
+        
         # Set to true if you want to break free from
         # the grasp of a kinetic widget
         self.free = False
@@ -559,24 +566,21 @@ class MTKineticObject(MTWidget):
         if not self.deletable:
             return
         self.db.show()
-        self.a_show.reset()
-        self.a_show.start()
+        self.a_show.animate(self)
 
     def hide_delete(self):
         if not self.deletable:
             return
-        self.a_hide.reset()
-        self.a_hide.start()
+        self.a_hide.animate(self)
 
     def on_animation_complete(self, anim):
         if anim == self.a_hide:
             self.db.hide()
-        elif anim == self.a_delete_w:
-            '''We don't check Y because then it gets called
-            twice and throws an exception because its already
-            been deleted, and a try...except... isn't really worth it
-            '''
-            self.parent.remove_widget(self)
+        elif anim == self.a_delete:
+            try:
+                self.parent.remove_widget(self)
+            except:
+                pass
 
     def update(self):
         if not self.free:
@@ -591,14 +595,7 @@ class MTKineticObject(MTWidget):
     def _delete_callback(self, touch):
         # So it doesn't poke out at the end(we aren't scaling it)
         self.db.hide()
-        self.a_delete_x.reset()
-        self.a_delete_y.reset()
-        self.a_delete_w.reset()
-        self.a_delete_h.reset()
-        self.a_delete_x.start()
-        self.a_delete_y.start()
-        self.a_delete_w.start()
-        self.a_delete_h.start()
+        self.a_delete.animate(self)        
 
 
 class MTKineticItem(MTButton, MTKineticObject):

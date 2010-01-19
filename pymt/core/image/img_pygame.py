@@ -18,16 +18,22 @@ class ImageLoaderPygame(ImageLoaderBase):
     @staticmethod
     def extensions():
         '''Return accepted extension for this loader'''
+        # under macosx, i got with "pygame.error: File is not a Windows BMP
+        # file". documentation said: The image module is a required dependency
+        # of Pygame, but it only optionally supports any extended file formats.
+        # By default it can only load uncompressed BMP image
+        if pygame.image.get_extended() == 0:
+            return ('bmp', )
         # retrieve from http://www.pygame.org/docs/ref/image.html
         return ('jpg', 'png', 'gif', 'bmp', 'pcx', 'tga', 'tiff', 'tif', 'lbm',
                'pbm', 'ppm', 'xpm')
 
     def load(self, filename):
-        pymt.pymt_logger.debug('Load <%s>' % filename)
+        pymt.pymt_logger.debug('Image: Load <%s>' % filename)
         try:
             im = pygame.image.load(filename)
         except:
-            pymt.pymt_logger.warning('Unable to load image <%s>' % filename)
+            pymt.pymt_logger.warning('Image: Unable to load image <%s>' % filename)
             raise
 
         mode = ''
@@ -42,7 +48,7 @@ class ImageLoaderPygame(ImageLoaderBase):
                 imc = im.convert(32)
             except:
                 pymt.pymt_logger.warning(
-                    'Unable to convert image <%s> to RGBA (was %s)' %
+                    'Image: Unable to convert image <%s> to RGBA (was %s)' %
                     filename, im.mode)
                 raise
             im = imc

@@ -644,6 +644,7 @@ dl.class {
 	margin-top: 20px;
 }
 
+dl.data dt,
 dl.attribute dt,
 dl.exception dt,
 dl.function dt,

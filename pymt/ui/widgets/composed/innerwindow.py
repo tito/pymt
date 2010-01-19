@@ -2,7 +2,7 @@
 Inner window: a lightweight window with fullscreen and resize ability
 '''
 
-from __future__ import with_statement
+
 __all__ = ['MTInnerWindow']
 
 import os
@@ -11,6 +11,7 @@ from OpenGL.GL import *
 from ....graphx import gx_matrix, drawRectangle, set_color, gx_stencil, stencilUse
 from ....graphx import drawRoundedRectangle, drawTexturedRectangle
 from ....vector import matrix_inv_mult
+from ....utils import SafeList
 from ..rectangle import MTRectangularWidget
 from ..scatter import MTScatterWidget
 from ..button import MTImageButton, MTButton
@@ -102,7 +103,7 @@ class MTInnerWindow(MTScatterWidget):
         self.old_size = self.size
 
         # set new children
-        root_win.children = []
+        root_win.children = SafeList()
         root_win.add_widget(self.container)
 
         btn_unfullscreen = MTButton(pos=(root_win.width-50, root_win.height-50),
@@ -137,14 +138,14 @@ class MTInnerWindow(MTScatterWidget):
         return self.container
 
     def get_scaled_border(self):
-        return self.style.get('border-width') * (1.0 / self.get_scale_factor())
+        return self.style.get('border-width') * (1.0 / self.scale)
 
     def update_controls(self):
         scaled_border = self.get_scaled_border()
         center_x = self.width / 2
         center_y = - scaled_border
         for button in self.controls.children:
-            button.scale = self.control_scale / self.get_scale_factor()
+            button.scale = self.control_scale / self.scale
         self.btn_fullscreen.pos = center_x - self.btn_fullscreen.width - 2, \
                                   center_y - self.btn_fullscreen.height / 2
         self.btn_close.pos = center_x + 2, center_y - self.btn_close.height / 2

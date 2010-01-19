@@ -39,8 +39,12 @@ class MTContainer(MTWidget):
 
     def draw(self):
         super(MTContainer, self).draw()
+        self.child.pos = self.pos
         self.child.draw()
 
 class MTScatterContainer(MTContainer, MTScatterWidget):
     '''Convert a BaseObject like into a MTScatterWidget.'''
-    pass
+    def draw(self):
+        # just subclass this function, don't move the object :)
+        super(MTContainer, self).draw()
+        self.child.draw()

@@ -5,8 +5,22 @@ Shader: abstract compilation and usage
 __all__ = ['ShaderException', 'Shader']
 
 import pymt
+from ctypes import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
+
+# FIXME Remove that when the bug will be fixed on PyOpenGL
+# The default wrapper in PyOpenGL is bugged on ATI card
+# It's a open bug.
+# http://sourceforge.net/tracker/?func=detail&atid=105988&aid=2935298&group_id=5988
+
+glShaderSource = platform.createBaseFunction(
+	'glShaderSource', dll=platform.GL,
+	resultType=None,
+	argTypes=(constants.GLhandle, constants.GLsizei, ctypes.POINTER(ctypes.c_char_p), arrays.GLintArray,),
+	doc = 'glShaderSource( GLhandle(shaderObj), str( string) ) -> None',
+	argNames = ('shaderObj', 'count', 'string', 'length',),
+)
 
 class ShaderException(Exception):
     '''Exception launched by shader in error case'''
@@ -35,11 +49,16 @@ class Shader(object):
         glLinkProgram(self.program)
         message = self.get_program_log(self.program)
         if message:
-            pymt.pymt_logger.debug('Shader: shader message: %s' % message)
+            pymt.pymt_logger.debug('Shader: shader program message: %s' % message)
 
     def create_shader(self, source, shadertype):
         shader = glCreateShader(shadertype)
-        glShaderSource(shader, source)
+
+        # FIXME Use the generic wrapper of glShaderSource
+        source = c_char_p(source)
+        length = c_int(-1)
+        glShaderSource(shader, 1, byref(source), byref(length))
+
         glCompileShader(shader)
         message = self.get_shader_log(shader)
         if message:

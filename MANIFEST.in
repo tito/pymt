@@ -1,1 +1,2 @@
 recursive-include pymt/data *.png *.svg *.css *.ttf
+recursive-include pymt/tools *.png

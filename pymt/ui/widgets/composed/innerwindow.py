@@ -85,11 +85,15 @@ class MTInnerWindow(MTScatterWidget):
     def setup_controls(self):
         self.controls = MTWidget()
 
-        self.btn_fullscreen = MTImageButton(filename=iconPath+'fullscreen.png', scale=self.control_scale, cls='innerwindow-fullscreen')
+        self.btn_fullscreen = MTImageButton(filename=iconPath+'fullscreen.png',
+                                            scale=self.control_scale,
+                                            cls='innerwindow-fullscreen')
         self.btn_fullscreen.push_handlers(on_release=self.fullscreen)
         self.controls.add_widget(self.btn_fullscreen)
 
-        self.btn_close = MTImageButton(filename=iconPath+'stop.png', scale=self.control_scale, cls='innerwindow-close')
+        self.btn_close = MTImageButton(filename=iconPath+'stop.png',
+                                       scale=self.control_scale,
+                                       cls='innerwindow-close')
         self.btn_close.push_handlers(on_release=self.close)
         self.controls.add_widget(self.btn_close)
 
@@ -146,9 +150,12 @@ class MTInnerWindow(MTScatterWidget):
         center_y = - scaled_border
         for button in self.controls.children:
             button.scale = self.control_scale / self.scale
-        self.btn_fullscreen.pos = center_x - self.btn_fullscreen.width - 2, \
-                                  center_y - self.btn_fullscreen.height / 2
-        self.btn_close.pos = center_x + 2, center_y - self.btn_close.height / 2
+        self.btn_fullscreen.pos = \
+                center_x - (self.btn_fullscreen.width) - 2, \
+                center_y - (self.btn_fullscreen.height / 2)
+        self.btn_close.pos = \
+                center_x + 2, \
+                center_y - (self.btn_close.height / 2)
 
     def on_touch_down(self, touch):
         touch.push()

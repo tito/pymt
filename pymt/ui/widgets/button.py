@@ -230,9 +230,10 @@ class MTImageButton(MTButton):
     filename = property(_get_filename, _set_filename)
 
     def draw(self):
-        self.image.pos  = self.pos
-        self.image.scale= self.scale
-        self.size       = self.image.size
+        self.image.pos      = self.pos
+        self.image.scale    = self.scale
+        s                   = self.image.size
+        self.size           = s[0] * self.scale, s[1] * self.scale
         self.image.draw()
 
 

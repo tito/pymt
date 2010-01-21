@@ -214,13 +214,18 @@ class MTInnerWindow(MTScatterWidget):
         self.update_controls()
         drawRoundedRectangle(
             pos=(-scaled_border, -scaled_border),
-            size=(self.width+scaled_border*2, self.height+scaled_border*2))
+            size=(self.width+scaled_border*2, self.height+scaled_border*2),
+            radius=15. / self.scale
+        )
 
         # draw control background
         control_width = self.btn_fullscreen.width + self.btn_close.width
-        drawRectangle(
-            pos=((self.width/2)-(scaled_border + control_width / 2), -scaled_border),
-            size=(scaled_border*2 + control_width, -scaled_border))
+        drawRoundedRectangle(
+            pos=((self.width/2)-(scaled_border + control_width / 2), -scaled_border * 2),
+            size=(scaled_border*2 + control_width, scaled_border),
+            radius=15. / self.scale,
+            corners=(True, True, False, False)
+        )
 
     def on_draw(self):
         with gx_matrix:

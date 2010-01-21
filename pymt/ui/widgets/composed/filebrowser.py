@@ -225,7 +225,6 @@ class MTFileBrowserView(MTKineticList):
             browser=self, size=self.size
         ))
 
-
         # attach handlers
         for child in children:
             child.push_handlers(on_press=curry(self._on_file_selected, child))
@@ -308,6 +307,8 @@ class MTFileBrowser(MTPopup):
             Directories are not affected by filters.
         `multipleselection` : bool, default to False
             Allow multiple selection of files
+        `view` : reference to subclass of MTFileEntryView
+            Indicates the default view that is used to display icons and filenames
 
     :Events:
         `on_select`
@@ -320,6 +321,7 @@ class MTFileBrowser(MTPopup):
         kwargs.setdefault('size', (350, 300))
         kwargs.setdefault('filters', [])
         kwargs.setdefault('multipleselection', False)
+        kwargs.setdefault('view', MTFileIconEntryView)
 
         super(MTFileBrowser, self).__init__(**kwargs)
 
@@ -334,7 +336,7 @@ class MTFileBrowser(MTPopup):
 
         # File View
         self.view = MTFileBrowserView(size=self.kbsize, filters=kwargs.get('filters'),
-                multipleselection=kwargs.get('multipleselection'))
+                multipleselection=kwargs.get('multipleselection'), view=kwargs.get('view'))
         self.view.push_handlers(on_path_change=self._on_path_change)
         self.add_widget(self.view, True)
 
@@ -359,11 +361,11 @@ class MTFileBrowser(MTPopup):
         self.view.update()
 
     def _toggle_view(self, btn, *largs):
-        if btn.get_state() == 'down':
-            btn.icon = 'filebrowser-listview.png'
+        if self.view.view is MTFileIconEntryView:
+            btn.icon = 'filebrowser-iconview.png'
             self.view.view = MTFileListEntryView
         else:
-            btn.icon = 'filebrowser-iconview.png'
+            btn.icon = 'filebrowser-listview.png'
             self.view.view = MTFileIconEntryView
         self.view.update()
 

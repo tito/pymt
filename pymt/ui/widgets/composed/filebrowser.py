@@ -135,6 +135,8 @@ class MTFileBrowserView(MTKineticList):
             Directories are not affected by filters.
         `multipleselection` : bool, default to False
             Allow multiple selection of files
+        `invert_order` : bool, default to False
+            Indicates whether the order the files are displayed in should be reversed
 
     :Events:
         `on_path_change` : (str)
@@ -310,6 +312,8 @@ class MTFileBrowser(MTPopup):
             Allow multiple selection of files
         `view` : reference to subclass of MTFileEntryView
             Indicates the default view that is used to display icons and filenames
+        `invert_order` : bool, default to False
+            Indicates whether the order the files are displayed in should be reversed
 
     :Events:
         `on_select`

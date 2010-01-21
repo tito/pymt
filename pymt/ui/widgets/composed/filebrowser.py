@@ -254,7 +254,7 @@ class MTFileBrowserView(MTKineticList):
     def _on_file_selected(self, fileview, touch):
         # auto change for directory
         filename = fileview.filename
-        if os.path.isdir(filename):
+        if os.path.isdir(filename) and touch.is_double_tap:
             self.path = filename
             return
 

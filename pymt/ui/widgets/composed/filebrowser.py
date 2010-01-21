@@ -162,6 +162,7 @@ class MTFileBrowserView(MTKineticList):
         self.view           = kwargs.get('view')
         self.filters        = kwargs.get('filters')
         self.multipleselection = kwargs.get('multipleselection')
+        self.invert_order = kwargs.get('invert_order', False)
 
     def update(self):
         '''Update the content of view. You must call this function after
@@ -228,7 +229,7 @@ class MTFileBrowserView(MTKineticList):
         # attach handlers
         for child in children:
             child.push_handlers(on_press=curry(self._on_file_selected, child))
-            self.add_widget(child, front=False)
+            self.add_widget(child, front=self.invert_order)
 
     def _get_path(self):
         return self._path
@@ -322,6 +323,7 @@ class MTFileBrowser(MTPopup):
         kwargs.setdefault('filters', [])
         kwargs.setdefault('multipleselection', False)
         kwargs.setdefault('view', MTFileIconEntryView)
+        kwargs.setdefault('invert_order', False)
 
         super(MTFileBrowser, self).__init__(**kwargs)
 
@@ -336,7 +338,8 @@ class MTFileBrowser(MTPopup):
 
         # File View
         self.view = MTFileBrowserView(size=self.kbsize, filters=kwargs.get('filters'),
-                multipleselection=kwargs.get('multipleselection'), view=kwargs.get('view'))
+                multipleselection=kwargs.get('multipleselection'), view=kwargs.get('view'),
+                invert_order=kwargs.get('invert_order'))
         self.view.push_handlers(on_path_change=self._on_path_change)
         self.add_widget(self.view, True)
 

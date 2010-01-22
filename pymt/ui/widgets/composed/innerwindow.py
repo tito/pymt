@@ -64,6 +64,9 @@ class MTInnerWindow(MTScatterWidget):
 
     Checkout the `desktop` example to check how it work !
 
+    :Parameters:
+        `control_scale`: float, default to 1.0
+            Scale of controls widget. 1.0 mean 100%.
 
     :Styles:
         `bg-color`
@@ -75,11 +78,12 @@ class MTInnerWindow(MTScatterWidget):
         `border-width`
             Size of border
     '''
-    def __init__(self, **kargs):
-        super(MTInnerWindow, self).__init__(**kargs)
+    def __init__(self, **kwargs):
+        kwargs.setdefault('control_scale', 1.0)
+        super(MTInnerWindow, self).__init__(**kwargs)
         self.container = MTInnerWindowContainer(pos=(0,0), size=self.size)
         super(MTInnerWindow, self).add_widget(self.container)
-        self.control_scale = 0.75
+        self.control_scale = kwargs.get('control_scale')
         self.setup_controls()
 
     def setup_controls(self):

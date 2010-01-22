@@ -6,6 +6,8 @@ __all__ = ('pymt_config', 'pymt_config_version')
 
 from ConfigParser import ConfigParser
 import os
+import logger
+from logger import pymt_logger
 from . import pymt_config_fn, PYMT_CONFIG_VERSION, logger
 
 #

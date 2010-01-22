@@ -7,7 +7,8 @@ import re
 import pymt
 from ....utils import is_color_transparent, curry
 from ....loader import Loader
-from ....graphx import drawCSSRectangle, set_color, drawLabel
+from ....graphx import drawCSSRectangle, set_color, drawLabel, drawRoundedRectangle,\
+                       getLabel
 from ...factory import MTWidgetFactory
 from ..label import MTLabel
 from ..button import MTToggleButton
@@ -75,10 +76,6 @@ class MTFileEntryView(MTKineticItem):
         return str(text)[:number].strip("\t ")
 
     def draw(self):
-        if self.selected:
-            color = self.style['item-selected']
-        else:
-            color = self.style['bg-color']
         if not is_color_transparent(color):
             set_color(*color)
             drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
@@ -95,8 +92,17 @@ class MTFileListEntryView(MTFileEntryView):
         self.browser.w_limit    = 1
 
     def draw(self):
-        pos    = self.image.width, self.y + int(self.height / 2.)
-        drawLabel(label=self.striptext(self.label_txt, 50), pos=pos, anchor_x='left')
+        pos = self.image.width, self.y
+        # Max number of chars for this entry's label
+        max_chars = 20
+        # Simple trick to get the maximum label width for the current font size
+        max_width = getLabel('W'*max_chars).width
+        if self.selected:
+            selected_color = self.style.get('selected-color', (0.4,) * 4)
+            set_color(*selected_color)
+            drawRoundedRectangle(pos=pos, size=(max_width, self.height))
+        kwargs = {'pos': pos, 'anchor_x': 'left', 'anchor_y': 'bottom'}
+        drawLabel(label=self.striptext(self.label_txt, max_chars), **kwargs)
 
         self.image.pos = self.pos
         self.image.draw()
@@ -112,9 +118,12 @@ class MTFileIconEntryView(MTFileEntryView):
         self.browser.w_limit= 4
 
     def draw(self):
-        pos    = int(self.x + self.width / 2.), int(self.y + 10)
+        if self.selected:
+            selected_color = self.style.get('selected-color', (0.4,) * 4)
+            set_color(*selected_color)
+            drawRoundedRectangle(pos=self.pos, size=self.size)
+        pos = int(self.x + self.width / 2.), int(self.y + 10)
         drawLabel(label=self.striptext(self.label_txt, 10), pos=pos)
-
         self.image.x        = self.x + int(self.image.width / 2) - 5
         self.image.y        = self.y + int(self.image.height / 2) - 5
         self.image.draw()

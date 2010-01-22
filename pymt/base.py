@@ -120,10 +120,18 @@ class TouchEventLoop(object):
                 touch.push()
                 touch.scale_for_screen(*root_window.size)
                 # and do to_local until the widget
-                if wid.parent:
-                    touch.x, touch.y = wid.parent.to_widget(touch.x, touch.y)
-                else:
-                    touch.x, touch.y = wid.to_parent(wid.to_widget(touch.x, touch.y))
+                try:
+                    if wid.parent:
+                        touch.x, touch.y = wid.parent.to_widget(touch.x, touch.y)
+                    else:
+                        touch.x, touch.y = wid.to_parent(wid.to_widget(touch.x, touch.y))
+                except AttributeError:
+                    # when using innerwindow, an app have grab the touch
+                    # but app is removed. the touch can't access
+                    # to one of the parent. (ie, self.parent will be None)
+                    # and BAM the bug happen.
+                    touch.pop()
+                    continue
 
             touch.grab_current = wid
 

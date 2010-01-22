@@ -71,18 +71,19 @@ class Texture(object):
     '''Handle a OpenGL texture. This class can be used to create simple texture
     or complex texture based on ImageData.'''
 
-    __slots__ = ('tex_coords', 'width', 'height', 'target', 'id',
+    __slots__ = ('tex_coords', 'width', 'height', 'target', 'id', 'mipmap',
                 '_gl_wrap', '_gl_min_filter', '_gl_mag_filter')
 
     _has_bgr = None
     _has_bgr_tested = False
 
-    def __init__(self, width, height, target, id):
+    def __init__(self, width, height, target, id, mipmap=False):
         self.tex_coords = (0., 0., 1., 0., 1., 1., 0., 1.)
         self.width          = width
         self.height         = height
         self.target         = target
         self.id             = id
+        self.mipmap         = mipmap
         self._gl_wrap       = None
         self._gl_min_filter = None
         self._gl_mag_filter = None
@@ -143,7 +144,7 @@ class Texture(object):
                     doc='''Get/set the GL_TEXTURE_WRAP_S,T property''')
 
     @staticmethod
-    def create(width, height, format=GL_RGBA, rectangle=False):
+    def create(width, height, format=GL_RGBA, rectangle=False, mipmap=False):
         '''Create a texture based on size.'''
         target = GL_TEXTURE_2D
         if rectangle:
@@ -166,12 +167,17 @@ class Texture(object):
             texture_height = _nearest_pow2(height)
 
         id = glGenTextures(1)
-        texture = Texture(texture_width, texture_height, target, id)
+        texture = Texture(texture_width, texture_height, target, id, mipmap=mipmap)
 
         texture.bind()
-        texture.min_filter  = GL_LINEAR
-        texture.mag_filter  = GL_LINEAR
         texture.wrap        = GL_CLAMP_TO_EDGE
+        if mipmap:
+            texture.min_filter  = GL_LINEAR_MIPMAP_LINEAR
+            #texture.mag_filter  = GL_LINEAR_MIPMAP_LINEAR
+            glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE)
+        else:
+            texture.min_filter  = GL_LINEAR
+            texture.mag_filter  = GL_LINEAR
 
         if not Texture.is_gl_format_supported(format):
             format = Texture.convert_gl_format(format)

@@ -5,6 +5,7 @@ Config: base for PyMT configuration file
 __all__ = ('pymt_config', 'pymt_config_version')
 
 from ConfigParser import ConfigParser
+import sys
 import os
 import logger
 from logger import pymt_logger

@@ -52,9 +52,9 @@ class MTButton(MTWidget):
             Indicate if the alpha background must be drawed
 
     :Events:
-        `on_press`
+        `on_press` (touch object, )
             Fired when the button are pressed (not released)
-        `on_release`
+        `on_release` (touch object, )
             Fired when the button are released
     '''
     def __init__(self, **kwargs):

@@ -21,17 +21,12 @@ import time
 
 class _Event(object):
 
-    loop = False
-    callback = None
-    timeout = 0.
-    _last_dt = 0.
-    _dt = 0.
-
     def __init__(self, loop, callback, timeout, starttime):
         self.loop = loop
         self.callback = callback
         self.timeout = timeout
         self._last_dt = starttime
+        self._dt = 0.
 
     def do(self, dt):
         self.callback(dt)
@@ -114,7 +109,7 @@ class Clock(object):
         event = _Event(True, callback, timeout, self._last_tick)
         self._events.append(event)
 
-    def unschedule(callback):
+    def unschedule(self, callback):
         '''Remove a previous schedule event'''
         self._events = [x for x in self._events if x.callback != callback]
 

@@ -79,6 +79,10 @@ class TouchEventLoop(object):
         input providers.'''
         global pymt_providers
         self.quit = True
+        self.stop()
+
+    def stop(self):
+        '''Stop all input providers'''
         for provider in pymt_providers:
             provider.stop()
 

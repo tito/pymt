@@ -105,7 +105,6 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 
     # system dependices
     from utils import *
-    from time import *
     from event import *
     from clock import *
     from texture import *

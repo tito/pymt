@@ -104,15 +104,17 @@ class LoaderBase(object):
         Will call _load_local() if the file is local,
         or _load_urllib() if the file is on Internet'''
 
-        filename, tcallback = parameters
+        filename, load_callback, post_callback = parameters
         proto = filename.split(':', 1)[0]
-        if proto in ('http', 'https', 'ftp'):
+        if load_callback is not None:
+            data = load_callback(filename)
+        elif proto in ('http', 'https', 'ftp'):
             data = self._load_urllib(filename)
         else:
             data = self._load_local(filename)
 
-        if tcallback:
-            data = tcallback(data)
+        if post_callback:
+            data = post_callback(data)
 
         self._q_done.append((filename, data))
 
@@ -177,7 +179,7 @@ class LoaderBase(object):
                 client.dispatch_event('on_load')
                 self._client.remove((c_filename, client))
 
-    def image(self, filename, tcallback=None):
+    def image(self, filename, load_callback=None, post_callback=None):
         '''Load a image using loader. A Proxy image is returned
         with a loading image ::
         
@@ -201,7 +203,7 @@ class LoaderBase(object):
 
         if data is None:
             # if data is None, this is really the first time
-            self._q_load.append((filename, tcallback))
+            self._q_load.append((filename, load_callback, post_callback))
             Cache.append('loader', filename, False)
             self._start_wanted = True
         else:

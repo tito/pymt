@@ -104,15 +104,17 @@ class ModelViewer(GLPerspectiveWidget):
     def on_touch_down(self, touch):
         self.check_touches(getCurrentTouches())
         self.touch_position[touch.id] = (touch.x, touch.y)
+        touch.grab(self)
         if len(self.touch_position) == 1:
             self.touch1 = touch
-            touch.grab(self)
         elif len(self.touch_position) == 2:
             self.touch2 = touch
-            touch.grab(self)
-            v1 = Vector(*self.touch_position[self.touch1.id])
-            v2 = Vector(*self.touch_position[self.touch2.id])
-            self.scale_dist = v1.distance(v2)
+            if self.touch1 and self.touch2 and \
+               self.touch1.id in self.touch_position and \
+               self.touch2.id in self.touch_position:
+                v1 = Vector(*self.touch_position[self.touch1.id])
+                v2 = Vector(*self.touch_position[self.touch2.id])
+                self.scale_dist = v1.distance(v2)
 
     def on_touch_move(self, touch):
         if not touch.grab_current == self:
@@ -121,7 +123,9 @@ class ModelViewer(GLPerspectiveWidget):
         dx, dy = 0,0
         scale = 1.0
         angle = 0.0
-        if self.touch1 and self.touch2 and self.touch_position.has_key(self.touch1.id) and self.touch_position.has_key(self.touch2.id):
+        if self.touch1 and self.touch2 and \
+           self.touch1.id in self.touch_position and \
+           self.touch2.id in self.touch_position:
             v1 = Vector(*self.touch_position[self.touch1.id])
             v2 = Vector(*self.touch_position[self.touch2.id])
             new_dist = v1.distance(v2)
@@ -155,8 +159,9 @@ class ModelViewer(GLPerspectiveWidget):
         glMultMatrixf(self.rotation_matrix)
         self.rotation_matrix = glGetFloatv(GL_MODELVIEW_MATRIX)
         glPopMatrix()
-        self.touch_position[touch.id] = (touch.x, touch.y)
-        self.needs_redisplay = True
+        if touch.id in self.touch_position:
+            self.touch_position[touch.id] = (touch.x, touch.y)
+            self.needs_redisplay = True
 
     def on_touch_up(self, touch):
         if not touch.grab_current == self:

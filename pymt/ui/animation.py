@@ -366,6 +366,7 @@ class Animation(EventDispatcher):
             self._duration = kwargs.get('duration')
         else:
             self._duration = 1.0
+        kwargs['duration'] = self._duration
 
         if 'f' in kwargs:
             kwargs['alpha_function'] = kwargs['f']

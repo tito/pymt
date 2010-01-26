@@ -14,13 +14,14 @@ from OpenGL.GLU import *
 # It's a open bug.
 # http://sourceforge.net/tracker/?func=detail&atid=105988&aid=2935298&group_id=5988
 
-glShaderSource = platform.createBaseFunction(
+glShaderSourceFIX = platform.createBaseFunction(
 	'glShaderSource', dll=platform.GL,
 	resultType=None,
 	argTypes=(constants.GLhandle, constants.GLsizei, ctypes.POINTER(ctypes.c_char_p), arrays.GLintArray,),
 	doc = 'glShaderSource( GLhandle(shaderObj), str( string) ) -> None',
 	argNames = ('shaderObj', 'count', 'string', 'length',),
 )
+
 
 class ShaderException(Exception):
     '''Exception launched by shader in error case'''
@@ -55,10 +56,13 @@ class Shader(object):
         shader = glCreateShader(shadertype)
 
         # FIXME Use the generic wrapper of glShaderSource
-        source = c_char_p(source)
-        length = c_int(-1)
-        glShaderSource(shader, 1, byref(source), byref(length))
-
+	try: #use fixed version on ATI and anywhere it works
+	        char_source = c_char_p(source)
+	        length = c_int(-1)
+	        glShaderSourceFIX(shader, 1, byref(char_source), byref(length))
+	except: #the created function does not work on e.g. Intel GMA 4500MHD...so use built in there
+		 glShaderSource(shader,source)
+		 
         glCompileShader(shader)
         message = self.get_shader_log(shader)
         if message:

@@ -60,6 +60,8 @@ class Graph:
                             if  e1 != e2:
                                    p1,p2,p3,p4 = Vector(*e1[0]), Vector(*e1[1]), Vector(*e2[0]), Vector(*e2[1])
                                    intersection = Vector.line_intersection( p1,p2,p3,p4 )
+                                   if intersection is None:
+                                       continue
                                    if (Vector.distance(intersection, p1) > 0.2 and
                                        Vector.distance(intersection, p2) > 0.2 and
                                        Vector.distance(intersection, p3) > 0.2 and

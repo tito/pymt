@@ -51,7 +51,9 @@ setup(
         'pymt.ui.widgets.composed',
         'pymt.ui.widgets.form',
         'pymt.ui.widgets.layout',
-        'pymt.ui.window'
+        'pymt.ui.window',
+        'pymt.tools',
+        'pymt.tools.designerapp',
     ],
     package_dir={'pymt': 'pymt'},
     package_data={'pymt': [
@@ -60,7 +62,8 @@ setup(
         'data/icons/*.png',
         'data/*.css',
         'data/*.png',
-        'data/*.ttf']
+        'data/*.ttf',
+        'tools/designerapp/icons/*.png']
     },
     data_files=[('share/pymt-examples', examples)],
     classifiers=[

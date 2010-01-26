@@ -84,9 +84,7 @@ class AnimationBase(object):
         self._duration =  float(self.params['duration'])
         self.animator = kwargs.get('animator')
 
-        if 'f' in self.params.keys():
-            f = getattr(AnimationAlpha, self.params['f'])
-        elif 'alpha_function' in self.params.keys():
+        if 'alpha_function' in self.params:
             f = getattr(AnimationAlpha, self.params['alpha_function'])
         else:
             f = AnimationAlpha.linear
@@ -334,7 +332,7 @@ class Animation(EventDispatcher):
         widget.do(animobj)
 
     :Parameters:
-        `duration` : float, default to 1
+        `duration` or `d`: float, default to 1
             Number of seconds you want the animation to execute.
         `generate_event` : bool, default to True
             Generate on_animation_complete event at the end of the
@@ -342,7 +340,7 @@ class Animation(EventDispatcher):
         `type` : str, default to absolute
             Specifies what type of animation we are defining, Absolute
             or Delta
-        `alpha_function` : str, default to AnimationAlpha.linear
+        `alpha_function` or `f`: str, default to AnimationAlpha.linear
             Specifies which kind of time variation function to use
 
     :Events:
@@ -354,13 +352,26 @@ class Animation(EventDispatcher):
     '''
     def __init__(self,**kwargs):
         super(Animation, self).__init__()
-        kwargs.setdefault('duration', 1.0)
-        kwargs.setdefault('d', 1.0)
         kwargs.setdefault('type', 'absolute')
-        if kwargs.get('d'):
-            self._duration = kwargs.get('d')
-        else:
+
+        if 'd' in kwargs and 'duration' in kwargs:
+            raise Exception('d and duration are in Animation(), use only one.')
+        if 'f' in kwargs and 'alpha_function' in kwargs:
+            raise Exception('f and alpha_function are in Animation(), use only one.')
+
+        if 'd' in kwargs:
+            kwargs['duration'] = kwargs['d']
+            del kwargs['d']
+        if 'duration' in kwargs:
             self._duration = kwargs.get('duration')
+        else:
+            self._duration = 1.0
+        kwargs['duration'] = self._duration
+
+        if 'f' in kwargs:
+            kwargs['alpha_function'] = kwargs['f']
+            del kwargs['f']
+
         self.children = {}
         self.params = kwargs
         self._animation_type = kwargs.get('type')

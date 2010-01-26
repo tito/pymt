@@ -103,7 +103,8 @@ class GestureUI(MTWidget):
         self.gdb = gdb
         self.capture = CaptureGesture(gdb)
         self.add_widget(self.capture)
-        self.title = MTLabel(label='Gesture Recognition', font_size=32)
+        self.title = MTLabel(label='Gesture Recognition', autosize=True,
+                             font_size=42)
         self.add_widget(self.title)
 
     def on_draw(self):
@@ -112,8 +113,8 @@ class GestureUI(MTWidget):
         w, h = self.parent.size
         self.capture.pos = 0.1 * w, 0.1 * h
         self.capture.size = 0.8 * w, 0.5 * h
-        self.title.pos = w/2-self.title.width/2, 0.88 * h
-        self.title.font_size = h * 0.9
+        self.title.font_size = h * 0.07
+        self.title.pos = w/2-self.title.width/2, h - self.title.height - 20
         super(GestureUI, self).on_draw()
 
 def pymt_plugin_activate(root, ctx):

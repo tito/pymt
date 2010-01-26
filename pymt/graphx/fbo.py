@@ -250,12 +250,10 @@ if 'PYMT_DOC' in os.environ:
     Fbo = HardwareFbo
 else:
     from .. import pymt_config
+
     # Check if Fbo is supported by gl
-    # FIXME gl_info
-    '''
-    if not 'GL_EXT_framebuffer_object' in gl_info.get_extensions():
+    if not bool(glGenFramebuffersEXT):
         pymt_config.set('graphics', 'fbo', 'software')
-    '''
 
     if 'PYMT_DOC' not in os.environ:
         # decide what to use

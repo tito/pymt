@@ -95,6 +95,7 @@ class MTTextInput(MTButton):
             return
         w = self.get_parent_window()
         w.add_widget(self.keyboard)
+        w = self.get_root_window()
         w.push_handlers(on_keyboard=self._window_on_keyboard)
         self.is_active_input = True
         if self._keyboard is not None:
@@ -110,6 +111,7 @@ class MTTextInput(MTButton):
             return
         w = self.get_parent_window()
         w.remove_widget(self.keyboard)
+        w = self.get_root_window()
         w.remove_handlers(on_keyboard=self._window_on_keyboard)
         self.is_active_input = False
         if self._keyboard is not None:

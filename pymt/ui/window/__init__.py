@@ -247,6 +247,9 @@ class BaseWindow(EventDispatcher):
                 '"norepeat", "center", "repeat", "scale")')
 
     def init_gl(self):
+        version = glGetString(GL_VERSION)
+        pymt_logger.info('Window: OpenGL version <%s>' % str(version))
+
         line_smooth = pymt.pymt_config.getint('graphics', 'line_smooth')
         if line_smooth:
             if line_smooth == 1:

@@ -90,7 +90,8 @@ def getLastLabel():
     return _temp_label
 
 def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
-                         linewidth=None, precision=0.5, style=GL_POLYGON):
+                         linewidth=None, precision=0.5, style=GL_POLYGON,
+                         corners=(True, True, True, True)):
     '''Draw a rounded rectangle
 
     :Parameters:
@@ -108,6 +109,9 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
             Precision of corner angle
         `style` : opengl begin, default to GL_POLYGON
             Style of the rounded rectangle (try GL_LINE_LOOP)
+        `corners` : tuple of bool, default to (True, True, True, True)
+            Indicate if round must be draw for each corners
+            starting to bottom-left, bottom-right, top-right, top-left
     '''
     x, y = pos
     w, h = size
@@ -126,41 +130,53 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
 
     with gx_begin(style):
 
-        glVertex2f(x + radius, y)
-        glVertex2f(x + w-radius, y)
-        t = math.pi * 1.5
-        while t < math.pi * 2:
-            sx = x + w - radius + math.cos(t) * radius
-            sy = y + radius + math.sin(t) * radius
-            glVertex2f(sx, sy)
-            t += precision
+        if corners[1]:
+            glVertex2f(x + radius, y)
+            glVertex2f(x + w-radius, y)
+            t = math.pi * 1.5
+            while t < math.pi * 2:
+                sx = x + w - radius + math.cos(t) * radius
+                sy = y + radius + math.sin(t) * radius
+                glVertex2f(sx, sy)
+                t += precision
+        else:
+            glVertex2f(x + w, y)
 
-        glVertex2f(x + w, y + radius)
-        glVertex2f(x + w, y + h - radius)
-        t = 0
-        while t < math.pi * 0.5:
-            sx = x + w - radius + math.cos(t) * radius
-            sy = y + h -radius + math.sin(t) * radius
-            glVertex2f(sx, sy)
-            t += precision
+        if corners[2]:
+            glVertex2f(x + w, y + radius)
+            glVertex2f(x + w, y + h - radius)
+            t = 0
+            while t < math.pi * 0.5:
+                sx = x + w - radius + math.cos(t) * radius
+                sy = y + h -radius + math.sin(t) * radius
+                glVertex2f(sx, sy)
+                t += precision
+        else:
+            glVertex2f(x + w, y + h)
 
-        glVertex2f(x + w -radius, y + h)
-        glVertex2f(x + radius, y + h)
-        t = math.pi * 0.5
-        while t < math.pi:
-            sx = x  + radius + math.cos(t) * radius
-            sy = y + h - radius + math.sin(t) * radius
-            glVertex2f(sx, sy)
-            t += precision
+        if corners[3]:
+            glVertex2f(x + w -radius, y + h)
+            glVertex2f(x + radius, y + h)
+            t = math.pi * 0.5
+            while t < math.pi:
+                sx = x  + radius + math.cos(t) * radius
+                sy = y + h - radius + math.sin(t) * radius
+                glVertex2f(sx, sy)
+                t += precision
+        else:
+            glVertex2f(x, y + h)
 
-        glVertex2f(x, y + h - radius)
-        glVertex2f(x, y + radius)
-        t = math.pi
-        while t < math.pi * 1.5:
-            sx = x + radius + math.cos(t) * radius
-            sy = y + radius + math.sin(t) * radius
-            glVertex2f (sx, sy)
-            t += precision
+        if corners[0]:
+            glVertex2f(x, y + h - radius)
+            glVertex2f(x, y + radius)
+            t = math.pi
+            while t < math.pi * 1.5:
+                sx = x + radius + math.cos(t) * radius
+                sy = y + radius + math.sin(t) * radius
+                glVertex2f (sx, sy)
+                t += precision
+        else:
+            glVertex2f(x, y)
 
     if linewidth is not None:
         glPopAttrib()

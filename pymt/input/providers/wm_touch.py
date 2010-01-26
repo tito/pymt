@@ -110,8 +110,7 @@ class WM_TOUCHProvider(TouchProvider):
     def update(self, dispatch_fn):
         
         win_rect = RECT()
-        windll.user32.GetWindowRect(self.hwnd, byref(win_rect))
-
+        windll.user32.GetClientRect(self.hwnd, byref(win_rect))
 
         while len(self.touch_events):
             

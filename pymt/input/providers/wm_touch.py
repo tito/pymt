@@ -88,54 +88,6 @@ class RECT(Structure):
 
 class WM_TOUCHProvider(TouchProvider):
     
-    #this on pushes WM_TOUCH messages onto our event stack
-    def touch_handler(self, msg, wParam, lParam):
-        touches = (TOUCHINPUT * wParam)()
-        windll.user32.GetTouchInputInfo(wintypes.HANDLE(lParam),
-                                        wParam,
-                                        pointer(touches),
-                                        sizeof(TOUCHINPUT))
-        self.touch_events.extend(touches)
-        #for touch in touches:
-        #    print "WM_TOUCH", touch.event_type, touch.id
-        return True
-
-    #filter fake mouse events, because touch and stylus also make mouse events
-    def mouse_handler(self, msg, wparam, lParam):
-        info = windll.user32.GetMessageExtraInfo()
-        if (info & PEN_OR_TOUCH_MASK) == PEN_OR_TOUCH_SIGNATURE: #its a touch or a pen
-            if info & PEN_EVENT_TOUCH_MASK:
-                #print  "Touch (mouse ev)", msg
-                return True
-            else:
-                #it was a touch
-                pass #print "Pen Touch", msg
-
-        else:
-            pass #print "MOUSE:", msg
-        return False
-        
-        
-    #we inject this wndProc into our main window, to process
-    #WM_TOUCH and mouse messages before the window manager does
-    def touch_wndProc( self, hwnd, msg, wParam, lParam ):
-        done = False
-        
-        if msg == WM_TOUCH:
-            done = self.touch_handler(msg, wParam, lParam)
-            
-        if msg >= WM_MOUSEMOVE and msg <= WM_MOUSELAST:
-            done = self.mouse_handler(msg, wParam, lParam)
-            
-        if msg == 0x0100:
-            print "--------"
-            
-        if not done:
-            return windll.user32.CallWindowProcW( self.old_windProc, hwnd, msg, wParam, lParam)
-        else:
-            return 1
-
-
     def start(self):
         self.touch_events = []
         self.touches = {}
@@ -159,31 +111,28 @@ class WM_TOUCHProvider(TouchProvider):
         
         win_rect = RECT()
         windll.user32.GetWindowRect(self.hwnd, byref(win_rect))
-        
+
 
         while len(self.touch_events):
             
             t = self.touch_events.pop(0)
             
-                
             #adjust x,y to window coordinates (0.0 to 1.0)
             x = (t.screen_x()-win_rect.x)/float(win_rect.w)
             y = 1.0 - (t.screen_y()-win_rect.y)/float(win_rect.h)
 
-            
-            type = t.event_type
 
             #actually dispatch input
-            if type == 'down':
+            if t.event_type == 'down':
                 self.uid += 1
                 self.touches[t.id] = WM_Touch(self.device, self.uid, [x,y,t.size()])
                 dispatch_fn('down', self.touches[t.id] )
 
-            if type == 'move' and self.touches.has_key(t.id):
+            if t.event_type == 'move' and self.touches.has_key(t.id):
                 self.touches[t.id].move([x,y, t.size()])
                 dispatch_fn('move', self.touches[t.id] )
 
-            if type == 'up'  and self.touches.has_key(t.id):
+            if t.event_type == 'up'  and self.touches.has_key(t.id):
                 self.touches[t.id].move([x,y, t.size()])
                 dispatch_fn('up', self.touches[t.id] )
                 del self.touches[t.id]
@@ -201,6 +150,40 @@ class WM_TOUCHProvider(TouchProvider):
         
 
 
+    #we inject this wndProc into our main window, to process
+    #WM_TOUCH and mouse messages before the window manager does
+    def touch_wndProc( self, hwnd, msg, wParam, lParam ):
+        done = False
+        
+        if msg == WM_TOUCH:
+            done = self.touch_handler(msg, wParam, lParam)
+            
+        if msg >= WM_MOUSEMOVE and msg <= WM_MOUSELAST:
+            done = self.mouse_handler(msg, wParam, lParam)
+            
+        if not done:
+            return windll.user32.CallWindowProcW( self.old_windProc, hwnd, msg, wParam, lParam)
+        else:
+            return 1
+        
+
+    #this on pushes WM_TOUCH messages onto our event stack
+    def touch_handler(self, msg, wParam, lParam):
+        touches = (TOUCHINPUT * wParam)()
+        windll.user32.GetTouchInputInfo(wintypes.HANDLE(lParam),
+                                        wParam,
+                                        pointer(touches),
+                                        sizeof(TOUCHINPUT))
+        self.touch_events.extend(touches)
+        return True
+
+
+    #filter fake mouse events, because touch and stylus also make mouse events
+    def mouse_handler(self, msg, wparam, lParam):
+        info = windll.user32.GetMessageExtraInfo()
+        if (info & PEN_OR_TOUCH_MASK) == PEN_OR_TOUCH_SIGNATURE: #its a touch or a pen
+            if info & PEN_EVENT_TOUCH_MASK:
+                return True
 
 
 

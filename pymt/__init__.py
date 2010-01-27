@@ -130,9 +130,9 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 
     # Can be overrided in command line
     try:
-        opts, args = getopt.getopt(sys_argv[1:], 'hp:fwFem:sn',
+        opts, args = getopt.getopt(sys_argv[1:], 'hp:fkawFem:sn',
             ['help', 'fullscreen', 'windowed', 'fps', 'event',
-             'module=', 'save',
+             'module=', 'save', 'fake-fullscreen', 'auto-fullscreen',
              'display=', 'size='])
 
         # set argv to the non-read args
@@ -140,27 +140,31 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 
         need_save = False
         for opt, arg in opts:
-            if opt in ['-h', '--help']:
+            if opt in ('-h', '--help'):
                 pymt_usage()
                 sys.exit(0)
-            elif opt in ['-p', '--provider']:
+            elif opt in ('-p', '--provider'):
                 id, args = arg.split(':', 1)
                 pymt_config.set('input', id, args)
-            elif opt in ['-f', '--fullscreen']:
+            elif opt in ('-a', '--auto-fullscreen'):
                 pymt_config.set('graphics', 'fullscreen', 'auto')
-            elif opt in ['-w', '--windowed']:
+            elif opt in ('-k', '--fake-fullscreen'):
+                pymt_config.set('graphics', 'fullscreen', 'fake')
+            elif opt in ('-f', '--fullscreen'):
+                pymt_config.set('graphics', 'fullscreen', '1')
+            elif opt in ('-w', '--windowed'):
                 pymt_config.set('graphics', 'fullscreen', '0')
-            elif opt in ['-F', '--fps']:
+            elif opt in ('-F', '--fps'):
                 pymt_config.set('pymt', 'show_fps', '1')
-            elif opt in ['-e', '--eventstats']:
+            elif opt in ('-e', '--eventstats'):
                 pymt_config.set('pymt', 'show_eventstats', '1')
-            elif opt in ['--size']:
+            elif opt in ('--size', ):
                 w, h = str(arg).split('x')
                 pymt_config.set('graphics', 'width', w)
                 pymt_config.set('graphics', 'height', h)
-            elif opt in ['--display']:
+            elif opt in ('--display', ):
                 pymt_config.set('graphics', 'display', str(arg))
-            elif opt in ['-m', '--module']:
+            elif opt in ('-m', '--module'):
                 if str(arg) == 'list':
                     pymt_modules.usage_list()
                     sys.exit(0)
@@ -168,9 +172,9 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
                 if len(args) == 1:
                     args += ['']
                 pymt_config.set('modules', args[0], args[1])
-            elif opt in ['-s', '--save']:
+            elif opt in ('-s', '--save'):
                 need_save = True
-            elif opt in ['-n']:
+            elif opt in ('-n', ):
                 options['shadow_window'] = False
 
         if need_save:

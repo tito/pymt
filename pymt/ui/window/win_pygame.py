@@ -4,6 +4,7 @@ Window Pygame: windowing provider based on Pygame
 
 __all__ = ('MTWindowPygame', )
 
+import os
 import pymt
 from . import BaseWindow
 from ...logger import pymt_logger
@@ -22,6 +23,7 @@ class MTWindowPygame(BaseWindow):
     def create_window(self, params):
         # init some opengl, same as before.
         self.flags = pygame.HWSURFACE | pygame.OPENGL | pygame.DOUBLEBUF
+
         pygame.display.init()
 
         multisamples = pymt.pymt_config.getint('graphics', 'multisamples')
@@ -33,10 +35,16 @@ class MTWindowPygame(BaseWindow):
         pygame.display.gl_set_attribute(pygame.GL_ALPHA_SIZE, 8)
         pygame.display.set_caption('pymt')
 
-        if params['fullscreen']:
+        self._fullscreenmode = params['fullscreen']
+        if self._fullscreenmode == 'fake':
+            pymt_logger.debug('WinPygame: Set window to fake fullscreen mode')
+            self.flags |= pygame.NOFRAME
+            os.environ['SDL_VIDEO_WINDOW_POS'] = '0,0'
+
+        elif self._fullscreenmode:
             pymt_logger.debug('WinPygame: Set window to fullscreen mode')
             self.flags |= pygame.FULLSCREEN
-        self._fullscreenmode = params['fullscreen']
+
 
         # init ourself size + setmode
         # before calling on_resize

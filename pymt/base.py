@@ -226,6 +226,8 @@ def pymt_usage():
 
         -h, --help                  prints this mesage
         -f, --fullscreen            force run in fullscreen
+        -k, --fake-fullscreen       force run in 'fake' fullscreen (no border mode)
+        -a, --auto-fullscreen       force run in 'auto' fullscreen (no resolution change)
         -w, --windowed              force run in window
         -p, --provider id:provider[,options] add a provider (eg: ccvtable1:tuio,192.168.0.1:3333)
         -F, --fps                   show fps in window

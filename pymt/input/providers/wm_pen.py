@@ -108,7 +108,8 @@ class WM_PenProvider(TouchProvider):
                 
 
     def stop(self):
-        self.new_windProc = windll.user32.SetWindowLongW(
+        self.pen = None
+        windll.user32.SetWindowLongW(
             self.hwnd,
             GWL_WNDPROC,
             self.old_windProc

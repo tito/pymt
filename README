@@ -1,15 +1,15 @@
-PyMT - A Multitouch UI Toolkit for Pyglet
-=========================================
+PyMT - A Multitouch Framework for Python
+========================================
 
 Website: http://pymt.txzone.net/
 Planet: http://pymt.txzone.net/planet/
 
 
-About 0.3.1
------------
+About 0.4
+---------
 
 This is beta, so keep in mind that it might not work as intended at all times.
-You can post bug reports, feature requests on Google Project page :
+You can post bug reports and feature requests on our Google Project page :
 
   http://code.google.com/p/pymt/issues/list
 
@@ -18,7 +18,7 @@ If you need more help, you can discuss on mailing list :
   * Google Group : http://groups.google.com/group/pymt-dev
   * Email        : pymt-dev@googlegroups.com
 
-We have also an IRC channel :
+We also have an IRC channel :
 
   * Server  : irc.freenode.net
   * Channel : #pymt
@@ -31,13 +31,25 @@ PyMT is a python module for developing multi-touch enabled media rich
 applications. Currently the aim is to allow for quick and easy interaction
 design and rapid prototype development.
 
-PyMT is written in python, based on pyglet toolkit.
+PyMT is written in python, based on OpenGL and supports different input methods
+like Mouse, Dual Mouse, TUIO, WiiMote, WM_TOUCH, etc.
+
+PyMT is actively being developed by a community and free to use. It operates on
+all major platforms (Linux, OSX, Windows).
 
 
 Installation
 ------------
 
-Run the setup script as follows to install pymt systemwide for python:
+Depending on your operating system you can follow one of the following guides
+to install PyMT and the dependencies:
+
+ * http://pymt.txzone.net/wiki/index.php/DevGuide/InstallPymtUbuntu
+ * http://pymt.txzone.net/wiki/index.php/DevGuide/InstallPymtMacOSX
+ * http://pymt.txzone.net/wiki/index.php/DevGuide/InstallPymtWindows
+
+If you chose to install all the dependencies (see below) yourself, you can invoke
+the setup script as follows to install pymt systemwide for python:
 
   python setup.py install
 
@@ -45,11 +57,17 @@ Run the setup script as follows to install pymt systemwide for python:
 Dependencies
 ------------
 
-  * python (>= 2.5, < 3.0) - http://python.org
-  * pyglet (== 1.1.2) - http://www.pyglet.org
-  * csound (audio, optional) - http://www.csound.com
-  * ounk (audio, optional) - http://code.google.com/p/ounk/
-  * avbin (video, optional) - http://code.google.com/p/avbin/
+Since we abstract from the libraries that we use, some dependencies are
+optional and may be used instead of others. A list of dependencies and what
+we use them for is http://pymt.txzone.net/wiki/index.php/Devel/FeaturesByLibraries
+
+Here is what works best:
+
+  * python (>= 2.6, < 3.0) - http://python.org
+  * PyOpenGL
+  * Pygame
+  * PIL
+  * GST + PyGST
 
 
 Dcoumentation, Examples & Tutorials
@@ -57,7 +75,9 @@ Dcoumentation, Examples & Tutorials
 
 There is an API reference included in doc/build/html/.
 There is some simple example apps in the examples folder that should get
-you started for now.
+you started for now. Additionally you may want to take a look at our wiki
+at http://pymt.txzone.net/wiki/
+
 
 Configuration
 -------------
@@ -142,17 +162,9 @@ Configuration
 Other python/MT resources
 -------------------------
 
-pyglet.org
-^^^^^^^^^^
-
-PyMT is for use with pyglet only at the moment. It provides MT events in
-a way that is consistent to other pyglet events (the pyglet team has a
-great section about their event system in their documentaion)
-
 nuigroup.com
 ^^^^^^^^^^^^
 
 THE resource and research community for open source multi touch and other
 natural user interfaces.
-
 

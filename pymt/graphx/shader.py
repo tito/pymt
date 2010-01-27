@@ -56,13 +56,16 @@ class Shader(object):
         shader = glCreateShader(shadertype)
 
         # FIXME Use the generic wrapper of glShaderSource
-	try: #use fixed version on ATI and anywhere it works
-	        char_source = c_char_p(source)
-	        length = c_int(-1)
-	        glShaderSourceFIX(shader, 1, byref(char_source), byref(length))
-	except: #the created function does not work on e.g. Intel GMA 4500MHD...so use built in there
-		 glShaderSource(shader,source)
-		 
+        try:
+            # use fixed version on ATI and anywhere it works
+            char_source = c_char_p(source)
+            length = c_int(-1)
+            glShaderSourceFIX(shader, 1, byref(char_source), byref(length))
+        except:
+            # the created function does not work on e.g.
+            # Intel GMA 4500MHD...so use built in there
+            glShaderSource(shader,source)
+
         glCompileShader(shader)
         message = self.get_shader_log(shader)
         if message:

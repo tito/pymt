@@ -42,70 +42,64 @@ win_rect = RECT()
 
 class WM_PenProvider(TouchProvider):
 
-    def is_pen_message(self, msg):
+    def _is_pen_message(self, msg):
         info = windll.user32.GetMessageExtraInfo()
-        if (info & PEN_OR_TOUCH_MASK) == PEN_OR_TOUCH_SIGNATURE: #its a touch or a pen
+        if (info & PEN_OR_TOUCH_MASK) == PEN_OR_TOUCH_SIGNATURE: # its a touch or a pen
             if not info & PEN_EVENT_TOUCH_MASK:
                 return True
 
-
-    def pen_handler(self, msg, wParam, lParam):
+    def _pen_handler(self, msg, wParam, lParam):
         windll.user32.GetClientRect(self.hwnd, byref(win_rect))
         x = c_int16(lParam & 0xffff).value / float(win_rect.w)
         y = c_int16(lParam >> 16).value / float(win_rect.h)
         y = abs(1.0 - y)
-        
+
         if msg == WM_LBUTTONDOWN:
             self.pen_events.append(('down', x, y))
             self.pen_status = True
-            
+
         if msg == WM_MOUSEMOVE and self.pen_status:
             self.pen_events.append(('move', x, y))
-            
+
         if msg == WM_LBUTTONUP:
             self.pen_events.append(('up', x, y))
             self.pen_status = False
-    
 
-    def pen_wndProc( self, hwnd, msg, wParam, lParam ):
-        if self.is_pen_message(msg):
-            self.pen_handler(msg, wParam, lParam)
+    def _pen_wndProc( self, hwnd, msg, wParam, lParam ):
+        if self._is_pen_message(msg):
+            self._pen_handler(msg, wParam, lParam)
             return 1
         else:
             return windll.user32.CallWindowProcW(self.old_windProc, hwnd, msg, wParam, lParam)
-
-
 
     def start(self):
         self.uid = 0
         self.pen = None
         self.pen_status = None
         self.pen_events = []
-        
+
         self.hwnd = windll.user32.GetActiveWindow()
 
-        #inject our own wndProc to handle messages before window manager does
-        self.new_windProc = WNDPROC(self.pen_wndProc)
+        # inject our own wndProc to handle messages before window manager does
+        self.new_windProc = WNDPROC(self._pen_wndProc)
         self.old_windProc = windll.user32.SetWindowLongW(
             self.hwnd,
             GWL_WNDPROC,
             self.new_windProc
         )
-        
 
     def update(self, dispatch_fn):
         while len(self.pen_events):
-            
-            type,x,y = self.pen_events.pop(0)
-            
+
+            type, x, y = self.pen_events.pop(0)
+
             if  type == 'down':
                 self.uid += 1
                 self.pen = WM_Pen(self.device,self.uid, [x,y])
             if  type == 'move':
                 self.pen.move([x,y])
-                
+
             dispatch_fn(type, self.pen)
-                
 
     def stop(self):
         self.pen = None
@@ -115,9 +109,6 @@ class WM_PenProvider(TouchProvider):
             self.old_windProc
         )
 
-
-
-
 class WM_Pen(Touch):
 
     def depack(self, args):
@@ -125,6 +116,6 @@ class WM_Pen(Touch):
         super(WM_Pen, self).depack(args)
 
     def __str__(self):
-        return "Pen, id:%d, pos:(%f,%f, device:%s )" % (self.id, self.sx, self.sy, self.device)
+        return '<WMPen id:%d uid:%d pos:%s device:%s>' % (self.id, self.uid, str(self.spos), self.device)
 
 TouchFactory.register('wm_pen', WM_PenProvider)

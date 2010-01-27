@@ -1,3 +1,7 @@
+'''
+WM_TOUCH: Support of WM_TOUCH message (Window platform)
+'''
+
 __all__ = ['WM_TOUCHProvider']
 
 from pymt import pymt_logger
@@ -87,41 +91,39 @@ class RECT(Structure):
 
 
 class WM_TOUCHProvider(TouchProvider):
-    
+
     def start(self):
         self.touch_events = []
         self.touches = {}
         self.uid = 0
-        
-        #get window handle, and register to recive WM_TOUCH messages
+
+        # get window handle, and register to recive WM_TOUCH messages
         self.hwnd = windll.user32.GetActiveWindow()
         windll.user32.RegisterTouchWindow(self.hwnd, 0)
-        
-        #inject our own wndProc to handle messages before window manager does
-        self.new_windProc = WNDPROC(self.touch_wndProc)
+
+        # inject our own wndProc to handle messages before window manager does
+        self.new_windProc = WNDPROC(self._touch_wndProc)
         self.old_windProc = windll.user32.SetWindowLongW(
             self.hwnd,
             GWL_WNDPROC,
             self.new_windProc
         )
-        
-
 
     def update(self, dispatch_fn):
-        
+
         win_rect = RECT()
         windll.user32.GetClientRect(self.hwnd, byref(win_rect))
 
         while len(self.touch_events):
-            
+
             t = self.touch_events.pop(0)
-            
-            #adjust x,y to window coordinates (0.0 to 1.0)
+
+            # adjust x,y to window coordinates (0.0 to 1.0)
             x = (t.screen_x()-win_rect.x)/float(win_rect.w)
             y = 1.0 - (t.screen_y()-win_rect.y)/float(win_rect.h)
 
 
-            #actually dispatch input
+            # actually dispatch input
             if t.event_type == 'down':
                 self.uid += 1
                 self.touches[t.id] = WM_Touch(self.device, self.uid, [x,y,t.size()])
@@ -135,9 +137,6 @@ class WM_TOUCHProvider(TouchProvider):
                 self.touches[t.id].move([x,y, t.size()])
                 dispatch_fn('up', self.touches[t.id] )
                 del self.touches[t.id]
-                
-        
-
 
     def stop(self):
         windll.user32.UnregisterTouchWindow(self.hwnd)
@@ -146,28 +145,25 @@ class WM_TOUCHProvider(TouchProvider):
             GWL_WNDPROC,
             self.old_windProc
         )
-        
 
-
-    #we inject this wndProc into our main window, to process
-    #WM_TOUCH and mouse messages before the window manager does
-    def touch_wndProc( self, hwnd, msg, wParam, lParam ):
+    # we inject this wndProc into our main window, to process
+    # WM_TOUCH and mouse messages before the window manager does
+    def _touch_wndProc( self, hwnd, msg, wParam, lParam ):
         done = False
-        
+
         if msg == WM_TOUCH:
-            done = self.touch_handler(msg, wParam, lParam)
-            
+            done = self._touch_handler(msg, wParam, lParam)
+
         if msg >= WM_MOUSEMOVE and msg <= WM_MOUSELAST:
-            done = self.mouse_handler(msg, wParam, lParam)
-            
+            done = self._mouse_handler(msg, wParam, lParam)
+
         if not done:
             return windll.user32.CallWindowProcW( self.old_windProc, hwnd, msg, wParam, lParam)
-        else:
-            return 1
-        
+        return 1
 
-    #this on pushes WM_TOUCH messages onto our event stack
-    def touch_handler(self, msg, wParam, lParam):
+
+    # this on pushes WM_TOUCH messages onto our event stack
+    def _touch_handler(self, msg, wParam, lParam):
         touches = (TOUCHINPUT * wParam)()
         windll.user32.GetTouchInputInfo(wintypes.HANDLE(lParam),
                                         wParam,
@@ -177,15 +173,12 @@ class WM_TOUCHProvider(TouchProvider):
         return True
 
 
-    #filter fake mouse events, because touch and stylus also make mouse events
-    def mouse_handler(self, msg, wparam, lParam):
+    # filter fake mouse events, because touch and stylus also make mouse events
+    def _mouse_handler(self, msg, wparam, lParam):
         info = windll.user32.GetMessageExtraInfo()
-        if (info & PEN_OR_TOUCH_MASK) == PEN_OR_TOUCH_SIGNATURE: #its a touch or a pen
+        if (info & PEN_OR_TOUCH_MASK) == PEN_OR_TOUCH_SIGNATURE: # its a touch or a pen
             if info & PEN_EVENT_TOUCH_MASK:
                 return True
-
-
-
 
 class WM_Touch(Touch):
 
@@ -195,13 +188,12 @@ class WM_Touch(Touch):
         self.shape.width = args[2][0]
         self.shape.height = args[2][1]
         self.size = self.shape.width * self.shape.height
-        self.profile = ('pos','shape', 'size')
-
+        self.profile = ('pos', 'shape', 'size')
 
         super(WM_Touch, self).depack(args)
 
     def __str__(self):
-        return "WMTouch, id:%d, pos:(%f,%f, device:%s )" % (self.id, self.sx, self.sy, self.device)
+        return '<WMTouch id:%d uid:%d pos:%s device:%s>' % (self.id, self.uid, str(self.spos), self.device)
 
 
 TouchFactory.register('wm_touch', WM_TOUCHProvider)

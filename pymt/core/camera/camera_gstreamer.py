@@ -17,6 +17,10 @@ try:
 except:
     raise
 
+# install the gobject iteration
+from pymt.support import install_gobject_iteration
+install_gobject_iteration()
+
 class CameraGStreamer(CameraBase):
     '''Implementation of CameraBase using GStreamer
     

@@ -16,6 +16,10 @@ import os
 import sys
 from pymt.logger import pymt_logger
 
+# install the gobject iteration
+from pymt.support import install_gobject_iteration
+install_gobject_iteration()
+
 class SoundGstreamer(Sound):
     @staticmethod
     def extensions():
@@ -66,6 +70,8 @@ class SoundGstreamer(Sound):
             filepath = 'file://' + slash + os.path.join(os.getcwd(), self.filename)
 
         self._data = gst.element_factory_make('playbin2', 'player')
+        fakesink = gst.element_factory_make('fakesink', 'fakesink')
+        self._data.set_property('video-sink', fakesink)
         bus = self._data.get_bus()
         bus.add_signal_watch()
         bus.connect('message', self._on_gst_message)

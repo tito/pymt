@@ -18,8 +18,9 @@ from . import VideoBase
 from pymt.graphx import drawTexturedRectangle, set_color, drawRectangle
 from OpenGL.GL import GL_RGB
 
-# ensure that gobject have threads initialized.
-gobject.threads_init()
+# install the gobject iteration
+from pymt.support import install_gobject_iteration
+install_gobject_iteration()
 
 class VideoGStreamer(VideoBase):
     '''VideoBase implementation using GStreamer (http://gstreamer.freedesktop.org/)

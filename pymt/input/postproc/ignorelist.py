@@ -1,6 +1,7 @@
 '''
 Ignore list: ignore touch in some part on screen
 '''
+
 __all__ = ['InputPostprocIgnoreList']
 
 import pymt
@@ -10,7 +11,8 @@ class InputPostprocIgnoreList(object):
     '''
     InputPostprocIgnoreList is a post-processor who remove touch in ignore list.
     Ignore list can be configured in the PyMT config file ::
-        [tuio]
+
+        [pymt]
         # Format: [(xmin, ymin, xmax, ymax), ...]
         ignore = [(0.1, 0.1, 0.15, 0.15)]
 

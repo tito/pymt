@@ -16,17 +16,18 @@ Modify a display list (compiled OpenGL operations) ::
     # here you can call the display list
     dl.draw()
 
-Bind a texture and draw with OpenGL :
+Bind a texture and draw with OpenGL ::
 
     with DO(gx_texture(my_texture), gx_begin(GL_TRIANGLE_FAN)):
         # call multiple time glVertex2f()
 
-Save and restore the color after drawing :
+Save and restore the color after drawing ::
 
     set_color(1, 0, 0) # color is red.
     with gx_color(0, 1, 0):
         # here the color is green
         # draw stuff
+        pass
     # here the color is restored back to red
 '''
 

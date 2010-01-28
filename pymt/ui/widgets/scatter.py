@@ -104,6 +104,7 @@ class MTScatterWidget(MTWidget):
 
     def init_transform(self, angle, scale, trans, point=(0, 0)):
         '''Initialize transformation matrix with new parameters.
+
         :Parameters:
             `angle` : float
                 Initial rotation angle
@@ -173,6 +174,7 @@ class MTScatterWidget(MTWidget):
 
     def apply_angle_scale_trans(self, angle, scale, trans, point=(0, 0)):
         '''Update matrix transformation by adding new angle, scale and translate.
+
         :Parameters:
             `angle` : float
                 Rotation angle to add

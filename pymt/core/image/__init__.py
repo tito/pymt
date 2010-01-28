@@ -2,8 +2,6 @@
 Image: handle loading of images
 '''
 
-
-
 __all__ = ('Image', 'ImageLoader', 'ImageData')
 
 from .. import core_register_libs
@@ -14,6 +12,7 @@ from pymt.texture import Texture, TextureRegion
 
 class ImageData(object):
     '''Container for data image : width, height, mode and data.
+
     ..warning ::
         Only RGB and RGBA mode are allowed.
     '''

@@ -29,19 +29,19 @@ class BaseWindow(EventDispatcher):
     '''BaseWindow is a abstract window widget, for any window implementation.
 
     :Parameters:
-        `fullscreen` : bool
+        `fullscreen`: bool
             Make window as fullscreen
-        `width` : int
+        `width`: int
             Width of window
-        `height` : int
+        `height`: int
             Height of window
-        `vsync` : bool
+        `vsync`: bool
             Vsync window
-        `display` : int
+        `display`: int
             Display index to use
 
     :Styles:
-        `bg-color` : color
+        `bg-color`: color
             Background color of window
     '''
 
@@ -413,6 +413,7 @@ class BaseWindow(EventDispatcher):
 
     def on_keyboard(self, key, scancode=None, unicode=None):
         '''Event called when keyboard is in action
+
         ..warning ::
             Some providers can skip `scancode` or `unicode` !!
         '''
@@ -420,7 +421,7 @@ class BaseWindow(EventDispatcher):
 
 class MTDisplay(MTWidget):
     '''MTDisplay is a widget that draw a circle
-    under every touch on window
+    under every touch on window.
 
     :Parameters:
         `touch_color` : list

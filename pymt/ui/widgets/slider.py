@@ -110,6 +110,7 @@ class MTSlider(MTWidget):
             self.touchstarts.append(touch.id)
             self.on_touch_move(touch)
             return True
+        return super(MTSlider, self).on_touch_down(touch)
 
     def on_touch_move(self, touch):
         if touch.id in self.touchstarts:
@@ -125,10 +126,12 @@ class MTSlider(MTWidget):
             if not self._value == last_value:
                 self.dispatch_event('on_value_change', self._value)
             return True
+        return super(MTSlider, self).on_touch_move(touch)
 
     def on_touch_up(self, touch):
         if touch.id in self.touchstarts:
             self.touchstarts.remove(touch.id)
+        return super(MTSlider, self).on_touch_up(touch)
 
 class MTXYSlider(MTWidget):
     '''MTXYSlider is an implementation of a 2D slider using MTWidget.
@@ -213,6 +216,7 @@ class MTXYSlider(MTWidget):
         if self.collide_point(touch.x, touch.y):
             self.touchstarts.append(touch.id)
             return True
+        return super(MTXYSlider, self).on_touch_down(touch)
 
     def on_touch_move(self, touch):
         if touch.id in self.touchstarts:
@@ -230,10 +234,12 @@ class MTXYSlider(MTWidget):
             if not self._value_x == last_value_x or not self._value_y == last_value_y:
                 self.dispatch_event('on_value_change', self._value_x, self._value_y)
             return True
+        return super(MTXYSlider, self).on_touch_move(touch)
 
     def on_touch_up(self, touch):
         if touch.id in self.touchstarts:
             self.touchstarts.remove(touch.id)
+        return super(MTXYSlider, self).on_touch_up(touch)
 
 class MTBoundarySlider(MTWidget):
     '''MTBoundarySlider is a widget that allows you to select minimum and maximum values.
@@ -493,6 +499,7 @@ class MTMultiSlider(MTWidget):
             self.touchstarts.append(touch.id)
             self.on_touch_move(touch)
             return True
+        return super(MTMultiSlider, self).on_touch_down(touch)
 
     def on_touch_move(self, touch):
         if touch.id in self.touchstarts:
@@ -508,10 +515,12 @@ class MTMultiSlider(MTWidget):
                 if not self.slider_values[current_slider] == last_value:
                     self.dispatch_event('on_value_change', self.slider_values)
             return True
+        return super(MTMultiSlider, self).on_touch_move(touch)
 
     def on_touch_up(self, touch):
         if touch.id in self.touchstarts:
             self.touchstarts.remove(touch.id)
+        return super(MTMultiSlider, self).on_touch_up(touch)
 
     def return_slider(self, x):
         return int((x - self.x) / float(self.width)  * self._sliders)

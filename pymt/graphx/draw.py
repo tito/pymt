@@ -40,6 +40,9 @@ def getLabel(label, **kwargs):
         `center` : bool, default to True
             Indicate if pos is center or left-right of label
 
+    getLabel() support all parameters from the Core label. Check `LabelBase`
+    class to known all availables parameters.
+
     Used by drawLabel()
     '''
     kwargs.setdefault('font_size', 12)

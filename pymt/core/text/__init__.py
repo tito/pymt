@@ -12,6 +12,38 @@ from ...baseobject import BaseObject
 DEFAULT_FONT = 'Liberation Sans,Bitstream Vera Sans,Free Sans,Arial, Sans'
 
 class LabelBase(BaseObject):
+    '''Core text label.
+    This is the abstract class used for different backend to render text.
+
+    ..warning ::
+        The core text label can't be changed at runtime, you must recreate one.
+
+    :Parameters:
+        `font_size`: int, default to 12
+            Font size of the text
+        `font_name`: str, default to DEFAULT_FONT
+            Font name of the text
+        `bold`: bool, default to False
+            Activate "bold" text style
+        `italic`: bool, default to False
+            Activate "italic" text style
+        `size`: list, default to (None, None)
+            Add constraint to render the text (inside a bounding box)
+            If no size is given, the label size will be adapted from the text size.
+        `anchor_x`: str, default to "left"
+            Indicate what represent the X position inside the bounding box.
+            Can be one of "left", "center", "right".
+        `anchor_y`: str, default to "bottom"
+            Indicate what represent the Y position inside the bounding box.
+            Can be one of "top", "middle", "bottom".
+        `halign`: str, default to "left"
+            Horizontal text alignement inside bounding box
+        `valign`: str, default to "bottom"
+            Vertical text alignement inside bounding box
+        `color`: list, default to (1, 1, 1, 1)
+            Text color in (R, G, B, A)
+    '''
+
     __slots__ = ('options', 'texture', '_label', 'color')
 
     _cache_glyphs = {}

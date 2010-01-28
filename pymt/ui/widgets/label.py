@@ -22,11 +22,16 @@ class MTLabel(MTWidget):
             Update width information with the label content width
         `autoheight`: bool, default to True
             Update height information with the label content height
+
+    MTLabel support all parameters from the Core label. Check `LabelBase`
+    class to known all availables parameters.
     '''
     __slots__ = ('autowidth', 'autoheight', 'autosize', 'label',
-        '_used_label', 'kwargs')
+        '_used_label', 'kwargs', 'anchor_x', 'anchor_y')
 
     def __init__(self, **kwargs):
+        kwargs.setdefault('anchor_x', 'left')
+        kwargs.setdefault('anchor_y', 'bottom')
         kwargs.setdefault('autowidth', False)
         kwargs.setdefault('autoheight', False)
         kwargs.setdefault('autosize', False)
@@ -35,6 +40,8 @@ class MTLabel(MTWidget):
         self.autowidth  = kwargs.get('autowidth')
         self.autoheight = kwargs.get('autoheight')
         self.autosize   = kwargs.get('autosize')
+        self.anchor_x   = kwargs.get('anchor_x')
+        self.anchor_y   = kwargs.get('anchor_y')
         self.label = kwargs.get('label')
         del kwargs['autowidth']
         del kwargs['autoheight']
@@ -43,22 +50,33 @@ class MTLabel(MTWidget):
 
         super(MTLabel, self).__init__(**kwargs)
 
-        if 'size' in kwargs:
-            del kwargs['size']
-        if 'pos' in kwargs:
-            del kwargs['pos']
+        for item in ('size', 'pos'):
+            if item in kwargs:
+                del kwargs[item]
 
         self.kwargs = kwargs
 
         # update this label size
         label = getLabel(label=self.label, **self.kwargs)
         self._update_size(*label.size)
-        self._used_label = None
+        self._used_label = label
 
     def draw(self):
+        # because the anchor_x/anchor_y is propagated to the drawLabel,
+        # we don't care about the internal label size.
+        pos = list(self.center)
+        if self.anchor_x == 'left':
+            pos[0] = self.x
+        elif self.anchor_x == 'right':
+            pos[0] = self.x + self.width
+        if self.anchor_y == 'top':
+            pos[1] = self.y + self.height
+        elif self.anchor_y == 'bottom':
+            pos[1] = self.y
+
         set_color(*self.style.get('bg-color'))
         drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
-        w, h = drawLabel(label=self.label, pos=self.center, **self.kwargs)
+        w, h = drawLabel(label=self.label, pos=pos, **self.kwargs)
         self._used_label = getLastLabel()
         self._update_size(w, h)
 

@@ -4,6 +4,7 @@ Use keyboard to do some action
 
 __all__ = ('start', 'stop')
 
+import sys
 import logging
 from pymt.base import getWindow
 from pymt.graphx import drawRectangle, drawLabel, set_color, drawLine, drawCircle
@@ -19,6 +20,9 @@ def toggle(id):
         _toggle_state = id
     if _toggle_state == '':
         return
+
+def _can_fullscreen():
+    return sys.platform not in ('win32', 'darwin', 'cygwin', 'freebsd7')
 
 def _screenshot():
     import os
@@ -65,6 +69,7 @@ def _on_draw():
         # prepare calculation
         w2 = win.width / 2.
         h2 = win.height / 2.
+        y = 0
         k = {'font_size': 24}
 
         # draw help
@@ -74,18 +79,25 @@ def _on_draw():
                   pos=(w2, win.height - 160), font_size=12)
         drawLabel('F1 - Show Help',
                   pos=(w2, h2), **k)
+        y += 35
         drawLabel('F2 - Show FPS (%s)' % str(win.show_fps),
-                  pos=(w2, h2 - 35), **k)
+                  pos=(w2, h2 - y), **k)
+        y += 35
         drawLabel('F3 - Draw back gradient (%s)' % str(win.gradient),
-                  pos=(w2, h2 - 70), **k)
+                  pos=(w2, h2 - y), **k)
+        y += 35
         drawLabel('F4 - Show Calibration screen',
-                  pos=(w2, h2 - 105), **k)
-        drawLabel('F5 - Toggle fullscreen',
-                  pos=(w2, h2 - 140), **k)
+                  pos=(w2, h2 - y), **k)
+        if _can_fullscreen():
+            y += 35
+            drawLabel('F5 - Toggle fullscreen',
+                      pos=(w2, h2 - y), **k)
+        y += 35
         drawLabel('F6 - Show log',
-                  pos=(w2, h2 - 175), **k)
+                  pos=(w2, h2 - y), **k)
+        y += 35
         drawLabel('F12 - Screenshot',
-                  pos=(w2, h2 - 210), **k)
+                  pos=(w2, h2 - y), **k)
 
         return True
 
@@ -227,7 +239,7 @@ def _on_keyboard_handler(key, scancode, unicode):
             toggle('')
         else:
             toggle('calibration')
-    elif key == 286: # F5
+    elif key == 286 and _can_fullscreen(): # F5
         win.toggle_fullscreen()
     elif key == 287: # F6
         toggle('log')

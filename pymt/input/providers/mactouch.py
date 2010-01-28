@@ -84,6 +84,8 @@ else:
 
 
 class MacTouch(Touch):
+    '''Touch representing a contact point on touchpad. Support pos and shape
+    profile'''
 
     def depack(self, args):
         self.shape = TouchShapeRect()

@@ -36,6 +36,10 @@ else:
     from ...base import getWindow
     from ...utils import curry
 
+	# check availability of RegisterTouchWindow
+	if not hasattr(windll.user32, 'RegisterTouchWindow'):
+		raise Exception('Unsupported Window version')
+
     WNDPROC = WINFUNCTYPE(c_long, c_int, c_int, c_int, c_int)
 
     GWL_WNDPROC = -4

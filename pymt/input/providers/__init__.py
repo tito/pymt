@@ -10,8 +10,11 @@ from tuio import *
 from mouse import *
 
 if sys.platform == 'win32' or 'PYMT_DOC' in os.environ:
-    from wm_touch import *
-    from wm_pen import *
+    try:
+        from wm_touch import *
+        from wm_pen import *
+    except:
+        pymt.pymt_logger.warning('Input: WM_Touch/WM_Pen is not available for your window version')
 
 if sys.platform == 'darwin' or 'PYMT_DOC' in os.environ:
     try:

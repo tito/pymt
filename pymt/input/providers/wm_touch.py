@@ -37,8 +37,8 @@ else:
     from ...utils import curry
 
 	# check availability of RegisterTouchWindow
-	if not hasattr(windll.user32, 'RegisterTouchWindow'):
-		raise Exception('Unsupported Window version')
+    if not hasattr(windll.user32, 'RegisterTouchWindow'):
+        raise Exception('Unsupported Window version')
 
     WNDPROC = WINFUNCTYPE(c_long, c_int, c_int, c_int, c_int)
 
@@ -137,7 +137,7 @@ else:
         def update(self, dispatch_fn):
 
             win_rect = RECT()
-            windll.user32.GetClientRect(self.hwnd, byref(win_rect))
+            windll.user32.GetWindowRect(self.hwnd, byref(win_rect))
 
             while len(self.touch_events):
 
@@ -146,7 +146,6 @@ else:
                 # adjust x,y to window coordinates (0.0 to 1.0)
                 x = (t.screen_x()-win_rect.x)/float(win_rect.w)
                 y = 1.0 - (t.screen_y()-win_rect.y)/float(win_rect.h)
-
 
                 # actually dispatch input
                 if t.event_type == 'down':

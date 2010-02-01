@@ -2,7 +2,7 @@
 WM_TOUCH: Support of WM_TOUCH message (Window platform)
 '''
 
-__all__ = ('WM_TouchProvider', )
+__all__ = ('WM_TouchProvider', 'WM_Touch')
 
 import os
 from ..touch import Touch
@@ -36,7 +36,7 @@ else:
     from ...base import getWindow
     from ...utils import curry
 
-	# check availability of RegisterTouchWindow
+    # check availability of RegisterTouchWindow
     if not hasattr(windll.user32, 'RegisterTouchWindow'):
         raise Exception('Unsupported Window version')
 

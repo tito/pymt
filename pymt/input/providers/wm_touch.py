@@ -2,7 +2,7 @@
 WM_TOUCH: Support of WM_TOUCH message (Window platform)
 '''
 
-__all__ = ('WM_TouchProvider', )
+__all__ = ('WM_TouchProvider', 'WM_Touch')
 
 import os
 from ..touch import Touch
@@ -36,12 +36,9 @@ else:
     from ...base import getWindow
     from ...utils import curry
 
-	# check availability of RegisterTouchWindow
-
-
+    # check availability of RegisterTouchWindow
     if not hasattr(windll.user32, 'RegisterTouchWindow'):
-            raise Exception('Unsupported Window version')
-
+        raise Exception('Unsupported Window version')
 
     WNDPROC = WINFUNCTYPE(c_long, c_int, c_int, c_int, c_int)
 
@@ -69,7 +66,20 @@ else:
     PEN_OR_TOUCH_SIGNATURE = 0xFF515700
     PEN_OR_TOUCH_MASK      = 0xFFFFFF00
     PEN_EVENT_TOUCH_MASK   = 0x80
-
+    
+    #wndProc has to respond to WM_TABLET_QUERYSYSTEMGESTURE to swicth of tap and hold etc.
+    WM_TABLET_QUERYSYSTEMGESTURE = 0x02CC
+    TABLET_DISABLE_PRESSANDHOLD        = 0x00000001
+    TABLET_DISABLE_PENTAPFEEDBACK      = 0x00000008
+    TABLET_DISABLE_PENBARRELFEEDBACK   = 0x00000010
+    TABLET_DISABLE_TOUCHUIFORCEON      = 0x00000100
+    TABLET_DISABLE_TOUCHUIFORCEOFF     = 0x00000200
+    TABLET_DISABLE_TOUCHSWITCH         = 0x00008000
+    TABLET_DISABLE_FLICKS              = 0x00010000
+    TABLET_ENABLE_FLICKSONCONTEXT      = 0x00020000
+    TABLET_ENABLE_FLICKLEARNINGMODE    = 0x00040000
+    TABLET_DISABLE_SMOOTHSCROLLING     = 0x00080000
+    TABLET_DISABLE_FLICKFALLBACKKEYS   = 0x00100000
 
     class TOUCHINPUT(Structure):
         _fields_= [
@@ -127,7 +137,7 @@ else:
 
             # get window handle, and register to recive WM_TOUCH messages
             self.hwnd = windll.user32.GetActiveWindow()
-            windll.user32.RegisterTouchWindow(self.hwnd, 0)
+            windll.user32.RegisterTouchWindow(self.hwnd, 1)
 
             # inject our own wndProc to handle messages before window manager does
             self.new_windProc = WNDPROC(self._touch_wndProc)
@@ -137,11 +147,10 @@ else:
                 self.new_windProc
             )
 
-        def update(self, dispatch_fn):
 
+        def update(self, dispatch_fn):
             win_rect = RECT()
             windll.user32.GetWindowRect(self.hwnd, byref(win_rect))
-
 
             while len(self.touch_events):
 
@@ -150,8 +159,6 @@ else:
                 # adjust x,y to window coordinates (0.0 to 1.0)
                 x = (t.screen_x()-win_rect.x)/float(win_rect.w)
                 y = 1.0 - (t.screen_y()-win_rect.y)/float(win_rect.h)
-
-
 
                 # actually dispatch input
                 if t.event_type == 'down':
@@ -168,6 +175,7 @@ else:
                     dispatch_fn('up', self.touches[t.id] )
                     del self.touches[t.id]
 
+
         def stop(self):
             windll.user32.UnregisterTouchWindow(self.hwnd)
             self.new_windProc = windll.user32.SetWindowLongW(
@@ -176,11 +184,16 @@ else:
                 self.old_windProc
             )
 
+
         # we inject this wndProc into our main window, to process
         # WM_TOUCH and mouse messages before the window manager does
         def _touch_wndProc( self, hwnd, msg, wParam, lParam ):
             done = False
-
+            if msg == WM_TABLET_QUERYSYSTEMGESTURE:
+                return (TABLET_DISABLE_PRESSANDHOLD       | 
+                        TABLET_DISABLE_PENTAPFEEDBACK     |  
+                        TABLET_DISABLE_FLICKS             ) 
+                        
             if msg == WM_TOUCH:
                 done = self._touch_handler(msg, wParam, lParam)
 

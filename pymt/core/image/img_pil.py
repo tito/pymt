@@ -41,7 +41,7 @@ class ImageLoaderPIL(ImageLoaderBase):
             except:
                 pymt.pymt_logger.warning(
                     'Image: Unable to convert image <%s> to RGBA (was %s)' %
-                    filename, im.mode)
+                    (filename, im.mode))
                 raise
             im = imc
 

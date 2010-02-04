@@ -67,7 +67,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         pymt_logger.warning('Config: Upgrading configuration in progress.')
         need_save = True
 
-    while pymt_config_version <= PYMT_CONFIG_VERSION:
+    while pymt_config_version != PYMT_CONFIG_VERSION:
         pymt_logger.debug('Config: Upgrading from %d' % pymt_config_version)
 
         # Versionning introduced in version 0.4.

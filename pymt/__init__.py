@@ -17,7 +17,7 @@ from logger import pymt_logger, LOG_LEVELS
 import logger
 
 # Version number of current configuration format
-PYMT_CONFIG_VERSION = 7
+PYMT_CONFIG_VERSION = 8
 
 # Start !
 pymt_logger.info('PyMT v%s' % (__version__))

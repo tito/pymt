@@ -26,7 +26,7 @@ setup(
     author='PyMT Crew',
     author_email='pymt-dev@googlegroups.com',
     url='http://pymt.txzone.net/',
-    license='GPL',
+    license='LGPL',
     description='A framework for making accelerated multitouch UI',
     packages=[
         'pymt',
@@ -75,7 +75,6 @@ setup(
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Information Technology',
         'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: GNU General Public License (GPL)',
         'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
         'Natural Language :: English',
         'Operating System :: MacOS :: MacOS X',

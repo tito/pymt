@@ -2,7 +2,7 @@
 WM_PEN: Support of WM_PEN message (Window platform)
 '''
 
-__all__ = ('WM_PenProvider', )
+__all__ = ('WM_PenProvider', 'WM_Pen')
 
 import os
 from ..touch import Touch

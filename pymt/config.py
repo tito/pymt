@@ -67,7 +67,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         pymt_logger.warning('Config: Upgrading configuration in progress.')
         need_save = True
 
-    while pymt_config_version != PYMT_CONFIG_VERSION:
+    while pymt_config_version <= PYMT_CONFIG_VERSION:
         pymt_logger.debug('Config: Upgrading from %d' % pymt_config_version)
 
         # Versionning introduced in version 0.4.
@@ -127,6 +127,10 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             pymt_config.setdefault('pymt', 'log_enable', '1')
             pymt_config.setdefault('pymt', 'log_dir', 'logs')
             pymt_config.setdefault('pymt', 'log_name', 'pymt_%y-%m-%d_%_.txt')
+
+        elif pymt_config_version == 7:
+            # add option to turn off pyOpenGL Error Checking
+            pymt_config.setdefault('pymt', 'gl_error_check', '1')
 
         else:
             # for future.

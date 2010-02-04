@@ -251,15 +251,21 @@ if 'PYMT_DOC' in os.environ:
 else:
     from .. import pymt_config
 
-    # Check if Fbo is supported by gl
-    if not bool(glGenFramebuffersEXT):
-        pymt_config.set('graphics', 'fbo', 'software')
-
+        
     if 'PYMT_DOC' not in os.environ:
         # decide what to use
-        if pymt_config.get('graphics', 'fbo') == 'hardware':
+        fbo_config = pymt_config.get('graphics', 'fbo')
+        
+        if fbo_config == 'force-hardware':
+            pymt.pymt_logger.debug('Fbo: Forcing hardware Framebuffer')
+            Fbo = HardwareFbo
+        elif fbo_config == 'hardware' and bool(glGenFramebuffersEXT):
             pymt.pymt_logger.debug('Fbo: Use hardware Framebuffer')
             Fbo = HardwareFbo
-        else:
+        elif fbo_config == 'software':
             pymt.pymt_logger.debug('Fbo: Use software Framebuffer')
+            Fbo = SoftwareFbo
+        else:
+            pymt_config.set('graphics', 'fbo', 'software')
+            pymt.pymt_logger.debug('Fbo: Falling back to software Framebuffer!!')
             Fbo = SoftwareFbo

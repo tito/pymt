@@ -10,7 +10,7 @@ additional_css = '''
 }
 
 .colored {
-	bg-color: #ff5c00;
+	bg-color:  rgb(68, 170, 0);
 	border-radius: 20;
 	border-radius-precision: .1;
 	font-size: 16;
@@ -21,7 +21,7 @@ additional_css = '''
 boundaryslider.colored,
 xyslider.colored,
 slider.colored {
-	bg-color: #222222;
+	bg-color: rgba(200, 200, 200, 150);
 }
 '''
 

@@ -38,19 +38,19 @@ m = MTWindow()
 #Set up buttons
 but_layout = MTGridLayout(cols=5,rows=1)
 m.add_widget(but_layout)
-reset = MTButton(label="Reset",style={'bg-color':(0,0,0)},height=50)
+reset = MTButton(label="Reset",height=50)
 but_layout.add_widget(reset)
 
-simple = MTButton(label="Simple",style={'bg-color':(0,0,0)},height=50)
+simple = MTButton(label="Simple",height=50)
 but_layout.add_widget(simple)
 
-sequence = MTButton(label="Sequence",style={'bg-color':(0,0,0)},height=50)
+sequence = MTButton(label="Sequence",height=50)
 but_layout.add_widget(sequence)
 
-parallel = MTButton(label="Parallel",style={'bg-color':(0,0,0)},height=50)
+parallel = MTButton(label="Parallel",height=50)
 but_layout.add_widget(parallel)
 
-repeat_delta = MTButton(label="Repeat",style={'bg-color':(0,0,0)},height=50)
+repeat_delta = MTButton(label="Repeat",height=50)
 but_layout.add_widget(repeat_delta)
 
 but_layout.x = m.width/2-but_layout.width/2 #Align button at the bottom-center

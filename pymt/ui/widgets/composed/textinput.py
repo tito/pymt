@@ -37,6 +37,7 @@ class MTTextInput(MTButton):
 
         self.register_event_type('on_text_change')
         self.register_event_type('on_text_validate')
+        self.update_label()
 
     def _get_keyboard(self):
         if not self._keyboard:
@@ -64,6 +65,7 @@ class MTTextInput(MTButton):
         self.width =  self.label_obj.content_width + self.padding * 2
         if self.width < self.original_width:
             self.width = self.original_width
+        self.update_label()
 
     def on_move(self, w, h):
         self.reposition()

@@ -1,23 +1,23 @@
 * {
-    /* text color */
+    /* foreground/text color */
     color: rgba(0, 0, 0, 255);
 
     /* color when something is pushed */
-    color-down: rgba(150, 150, 150, 150);
+    color-down: rgba(50,50,50, 128);
 
     /* background color of widget */
-    bg-color: rgba(60, 60, 60, 100);
+    bg-color: rgba(100,100,100, 128);
 
     /* fonts */
-    font-size: 16;
-    font-name: "";
+    font-size: 12;
+    font-name: 'Liberation Sans,Bitstream Vera Sans,Free Sans,Arial, Sans';
     font-weight: normal; /* normal, bold, italic, bolditalic */
-    font-color:  rgba(0, 0, 0, 255);
+			   
 
     /* borders */
     border-width: 1.5;
     border-radius: 0;
-	border-radius-precision: 1;
+    border-radius-precision: 1;
     draw-border: 0;
 
     /* background alpha layer */
@@ -47,11 +47,24 @@ form,
 vkeyboard,
 flippablewidget,
 button {
+    color: rgb(0,0,0);
     bg-color: rgba(60, 60, 60, 100);
     draw-alpha-background: 1;
     draw-border: 1;
-
     draw-text-shadow: 1;
+}
+
+textinput {
+    color: rgb(0,0,0);
+    font-size:16;
+    font-weight:bold;
+    bg-color: rgba(200,200,200, 200);
+    draw-alpha-background: 1;
+    border-width: 1;
+    border-color: rgb(100,100,100);
+    border-radius-precision: 1;
+    draw-border: 1;
+
 }
 
 formslider,

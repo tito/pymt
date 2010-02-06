@@ -175,11 +175,13 @@ class ParticleEngine(MTWidget):
     def _btn_alpha_change(self, funcname, *largs):
         self.alpha = getattr(AnimationAlpha, funcname)
         return True
+    
+
 
     def draw(self):
         dt = getFrameDt()
         glTexEnvf(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE)
-        blend = GlBlending(sfactor=GL_SRC_ALPHA, dfactor=GL_ONE)
+        blend = GlBlending(sfactor=GL_SRC_ALPHA, dfactor=GL_ONE_MINUS_SRC_ALPHA)
         set_texture(self.image.texture)
         glPointSize(self.pointsize)
         with DO(blend,

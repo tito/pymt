@@ -29,7 +29,9 @@ class MTButton(MTWidget):
         `color-down` : color
             Background-color of the button when it is press
         `bg-color` : color
-            Background color of the slider
+            Background color of the button
+        `color` : color
+            color of the text/label on teh button            
         `font-name` : str
             Name of font to use
         `font-size` : int
@@ -75,7 +77,13 @@ class MTButton(MTWidget):
         self.register_event_type('on_press')
         self.register_event_type('on_release')
 
+        #set default CSS
         fw = self.style.get('font-weight')
+        kwargs.setdefault('color', self.style.get('color'))
+        kwargs.setdefault('font_name', self.style.get('font-name'))
+        kwargs.setdefault('font_size', self.style.get('font-size'))
+        kwargs.setdefault('bold', fw in ('bold', 'bolditalic'))
+        kwargs.setdefault('italic', fw in ('italic', 'bolditalic'))
         self.label_obj      = pymt.Label(**kwargs)
 
     def apply_css(self, styles):
@@ -85,10 +93,11 @@ class MTButton(MTWidget):
 
     def update_label(self):
         fw = self.style.get('font-weight')
-        self.label_obj.font_name = self.style.get('font-name')
-        self.label_obj.font_size = self.style.get('font-size')
-        self.label_obj.bold = (fw in ('bold', 'bolditalic'))
-        self.label_obj.italic = (fw in ('italic', 'bolditalic'))
+        self.label_obj.color = self.style['color']
+        self.label_obj.options['font_name'] = self.style.get('font-name')
+        self.label_obj.options['font_size'] = self.style.get('font-size')
+        self.label_obj.options['bold'] = (fw in ('bold', 'bolditalic'))
+        self.label_obj.options['italic'] = (fw in ('italic', 'bolditalic'))
         self.button_dl.clear()
 
     def get_label(self):
@@ -141,7 +150,9 @@ class MTButton(MTWidget):
                 self.label_obj.draw()
         self.label_obj.x, self.label_obj.y = \
             map(lambda x: self.pos[x] + self.size[x] / 2, xrange(2))
-        self.label_obj.color = self.style['font-color']
+        
+        self.label_obj.color = self.style['color']
+        self.label_obj.font_size = self.style['font-size']
         self.label_obj.draw()
 
     def on_touch_down(self, touch):

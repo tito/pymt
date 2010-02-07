@@ -84,7 +84,7 @@ class MTMenuItem(MTKineticItem):
             with self.button_dl:
                 set_color(.2, .2, .2, .5)
                 drawRectangle(size=self.size)
-                self._label.x = -60
+                self._label.x = 32
                 self._label.y = (self.height - self._label.height) / 2.
                 self._label.draw()
                 if self._icon:
@@ -243,7 +243,7 @@ class MTGestureDetector(MTGestureWidget):
             drawCircle(pos=(x + s2.x, y + s2.y - 70), radius=20, linewidth=2)
 
         label='Draw a circle to make the menu appear'
-        k = {'font_size': 24, 'bold':True}
+        k = {'font_size': 24, 'bold': True}
         pos = Vector(w.size) / 2. + Vector(0, 10)
         drawLabel(label=label, pos=pos, color=(.5, .5, .5, min(alpha, .5)), **k)
         pos += Vector(1, -1)

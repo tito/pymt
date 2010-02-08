@@ -73,10 +73,16 @@ Here is what works best:
 Dcoumentation, Examples & Tutorials
 -----------------------------------
 
-There is an API reference included in doc/build/html/.
+There is an API reference included in doc. Check the doc/README about how
+to build the documentation. It's also available online at :
+
+	http://pymt.txzone.net/docs/api/
+
 There is some simple example apps in the examples folder that should get
 you started for now. Additionally you may want to take a look at our wiki
-at http://pymt.txzone.net/wiki/
+at :
+
+	http://pymt.txzone.net/wiki/
 
 
 Configuration
@@ -93,11 +99,40 @@ Configuration
   # set log level
   log_level = (debug|info|warning|error|critical)
 
-  # detection time of double tap
+  # detection time of double tap (in milliseconds)
   double_tap_time = <integer>
 
   # max distance allowed for double tap
   double_tap_distance = <integer>
+
+  # detection time of retain touch (in milliseconds)
+  retain_time = <integer>
+
+  # max distance allowed for retain touch
+  retain_distance = <integer>
+
+  # log directory
+  log_dir = <string>
+
+  # log name (can use format string from strftime)
+  log_name = <string>
+
+  # activate logging on file
+  log_enable = (0|1)
+
+  # fix ccv bug when touch go outside 0-1 coordinates
+  fixccv = (0|1)
+
+  # GL error check (disable to have more speed)
+  gl_error_check = (0|1)
+
+  # INTERNAL, NEVER TOUCH TO config_version !!
+  config_version = <integer>
+
+  [keyboard]
+
+  # default layout of keyboard
+  layout = (azerty|qwerty)
 
   [graphics]
 
@@ -114,19 +149,16 @@ Configuration
   vsync = (0|1)
 
   # force fbo type
-  fbo = (hardware|software)
-
-  # display number (use -1 for current display)
-  display = <integer>
+  fbo = (hardware|software|force-hardware)
 
   # opengl line smooth
   line_smooth = (0|1)
 
-  # opengl polygon smooth (1 can lead to artifac)
-  polygon_smooth = (0|1)
-
   # ignore list
   ignore = [(xmin, ymin, xmax, ymax), ...]
+
+  # show cursor on fullscreen
+  show_cursor = (0|1)
 
   [input]
 
@@ -154,6 +186,7 @@ Configuration
   # you can have a list of module with :
   # python example.py -m list
   # example:
+  keybinding=
   closeapp=
   feedback=
 

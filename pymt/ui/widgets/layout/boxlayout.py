@@ -102,14 +102,17 @@ class MTBoxLayout(MTAbstractLayout):
         cur_y = self.y + self.padding
         for w in self.children:
             try:
+                new_x, new_y = 0,0
                 if self.invert_x:
-                    w.y = self.x + current_width - w.width - (cur_x - self.x)
+                    new_x = self.x + current_width - w.width - (cur_x - self.x)
                 else:
-                    w.x = cur_x
+                    new_x = cur_x
                 if self.invert_y:
-                    w.y = self.y + current_height - w.height - (cur_y - self.y)
+                    new_y = self.y + current_height - w.height - (cur_y - self.y)
                 else:
-                    w.y = cur_y
+                    new_y = cur_y
+                self.reposition_child(w, pos=(new_x, new_y))
+                   
                 if self.orientation == 'horizontal':
                     cur_x += w.width + self.spacing
                 elif self.orientation == 'vertical':

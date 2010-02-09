@@ -1,35 +1,32 @@
 import random
 from pymt import *
 
-
-
-
-class TestWidget(MTWidget):
-    _id = 0
-    def __init__(self, **kwargs):
-        super(TestWidget, self).__init__(**kwargs)
-        TestWidget._id += 1
-        self.label = str(TestWidget._id)
-        self.color = map(lambda x: random.random(), xrange(3))
-        self.size = map(lambda x: random.randint(50, 100), xrange(2))
-    def draw(self):
-        set_color(*self.color)
-        drawRectangle(pos=self.pos, size=self.size)
-        drawLabel(pos=self.pos, center=False, label=self.label)
-
 if __name__ == '__main__':
 
-    # create a layout with 20 children
-    grid = MTBoxLayout(animation_type='ease_in_out_cubic')
-    for i in xrange(20):
-        grid.add_widget(TestWidget())
+    #create a box layout with 5 buttons, and put it into a Anchor layout so its layed out in center
+    box = MTBoxLayout(animation_type='ease_in_out_elastic')
+    for i in range(6):
+        box.add_widget( MTButton(label="Button "+str(i)) )
+    anchor = MTAnchorLayout(animation_type='ease_in_out_elastic', animation_time=0.5)
+    anchor.add_widget(box)
+    
+    #add a label at the top center (with some padding)
+    label_anchor = MTAnchorLayout(anchor_y='top', padding=200)
+    label = MTLabel(label="Welcome to Layout FUN!", anchor_x='center', align='center', font_size=32) 
+    label_anchor.add_widget(label)
 
-    # Every second, bring the first children to front
-    def bring(*largs):
-        first = grid.children.pop()
-        grid.add_widget(first, front=False)
-    getClock().schedule_interval(bring, 1)
+    #put teh two layouts into a stretch layout, so they fill the whole window (since stretch is put as root)
+    stretch = MTStretchLayout()
+    stretch.add_widget(anchor)
+    stretch.add_widget(label_anchor)
 
-    # Run !
-    runTouchApp(grid)
+    #simple function to change the layout of teh box and its anchor layouts randomly every 5 seconds
+    def change(dt):
+        anchor.anchor_x = random.choice(['left', 'right', 'center'])
+        anchor.anchor_y = random.choice(['top', 'bottom', 'center'])
+        box.orientation = random.choice(['horizontal', 'vertical'])
+        label.label = "Anchor: '%s,%s'. | Box: '%s'" %(anchor.anchor_y, anchor.anchor_x, box.orientation)
+    getClock().schedule_interval(change, 5)
+    
+    runTouchApp(stretch)
 

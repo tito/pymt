@@ -12,6 +12,12 @@ class MTAbstractLayout(MTWidget):
     :Property:
         `auto_layout` : bool, default to True
             Do layout when appropriate
+        `animation_type` : str, default to None
+            Specifies the easing function for animating the layout when it changes.  
+            Default is 'None', in which case no animation is performed at all.  
+            Any name of a valid AnuimationAlpha function can be used to turn on animation.  
+        `animation_time` : int, default to 1
+            specifies the duration of the animations created when changing the layout (if any).
 
     :Events:
         `on_layout`
@@ -101,7 +107,6 @@ class MTAbstractLayout(MTWidget):
                 layout.do_layout()
                 
     def reposition_child(self, child, **kwargs):
-
         if self.animation_type and len(kwargs):
             kwargs['f'] = self.animation_type
             kwargs['d'] = self.animation_duration
@@ -110,14 +115,24 @@ class MTAbstractLayout(MTWidget):
             for prop in kwargs:
                 child.__setattr__(prop, kwargs[prop])
 
-                
+    
+    def require_layout(self, *args):
+        '''Will require the layout to be updated. i.e. sets need_layout and need_parent_layout, and then calls self.update(if autoupdate is on).
+            :Arguments:
+                `*args`,takes any number of arguments.  None of them are used, but this method can easily be attached as an event handler to require layout in response to certain events
+        ''' 
+        self.need_layout = True
+        self.need_parent_layout = True
+        if self.auto_layout:
+            self.update()
+
 
     def update(self):
         if self.need_layout:
             self.do_layout()
         if self.need_parent_layout:
             self.do_parent_layout()
-
+       
     def get_parent_layout(self):
         return self
 

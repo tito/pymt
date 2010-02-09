@@ -120,7 +120,7 @@ class MTWidget(EventDispatcher):
         for ev in MTWidget.visible_events:
             self.register_event_type(ev)
 
-        self.parent					= None
+        self._parent					= None
         self.children				= SafeList()
         self._visible				= False
         self._x, self._y			= kwargs.get('pos')
@@ -141,6 +141,7 @@ class MTWidget(EventDispatcher):
         self.register_event_type('on_resize')
         self.register_event_type('on_parent_resize')
         self.register_event_type('on_move')
+        self.register_event_type('on_parent')
 
         if kwargs.get('x'):
             self.x = kwargs.get('x')
@@ -165,6 +166,15 @@ class MTWidget(EventDispatcher):
         self.a_properties = {}
 
         self.init()
+        
+        
+    def _set_parent(self, parent):
+        self._parent = parent
+        self.dispatch_event('on_parent')
+    def _get_parent(self):
+        return self._parent
+    parent = property(_get_parent, _set_parent, doc="MTWidget: parent of widget.  fired on_parent event when set")
+        
 
     def _set_id(self, id):
         global _id_2_widget
@@ -387,6 +397,10 @@ class MTWidget(EventDispatcher):
 
     def __setattr__(self, name, value):
         super(MTWidget, self).__setattr__(name, value)
+
+    def on_parent(self):
+        pass
+
 
     def on_parent_resize(self, w, h):
         pass

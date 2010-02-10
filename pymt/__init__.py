@@ -14,10 +14,26 @@ import sys
 import getopt
 import os
 from logger import pymt_logger, LOG_LEVELS
-import logger
 
 # Version number of current configuration format
 PYMT_CONFIG_VERSION = 8
+
+# internals for post-configuration
+__pymt_post_configuration = []
+def pymt_configure():
+    '''Call post-configuration of PyMT.
+    This function must be called in case of you create yourself the window.
+    '''
+    for callback in __pymt_post_configuration:
+        callback()
+
+def pymt_register_post_configuration(callback):
+    '''Register a function to be call when pymt_configure() will be called.
+
+    ..warning ::
+        Internal use only.
+    '''
+    __pymt_post_configuration.append(callback)
 
 # Start !
 pymt_logger.info('PyMT v%s' % (__version__))
@@ -90,9 +106,9 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     # Set level of logger
     level = LOG_LEVELS.get(pymt_config.get('pymt', 'log_level'))
     pymt_logger.setLevel(level=level)
-    
-    #Disable pyOpenGL auto GL Error Check?
-    gl_check = pymt_config.get('pymt', 'gl_error_check') 
+
+    # Disable pyOpenGL auto GL Error Check?
+    gl_check = pymt_config.get('pymt', 'gl_error_check')
     if gl_check.lower() in ['0', 'false', 'no']:
         import OpenGL
         OpenGL.ERROR_CHECKING = False
@@ -196,6 +212,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         if options['shadow_window']:
             pymt_logger.debug('Core: Creating PyMT Window')
             shadow_window = MTWindow()
+            pymt_configure()
 
     except getopt.GetoptError, err:
         pymt_logger.error('Core: %s' % str(err))

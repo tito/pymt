@@ -230,11 +230,7 @@ class MTCoverFlow(MTWidget):
         # render the children on a fbo
         child = self.children[index]
         with self._fbo:
-            # clear the fbo
-            set_color(0, 0, 0)
-            with gx_blending_replace:
-                drawRectangle(size=self._fbo.realsize)
-            set_color(1, 1, 1)
+            self._fbo.clear()
             child.dispatch_event('on_draw')
 
         # pre-calculate 

@@ -42,7 +42,7 @@ __all__ = [
     'gx_matrix', 'gx_matrix_identity',
     'gx_enable', 'gx_begin',
     'gx_attrib', 'gx_color',
-    'gx_texture'
+    'gx_texture', 'gx_blending_replace'
 ]
 
 import pymt
@@ -276,6 +276,8 @@ class GlTexture:
 
 #: Alias to GlBlending(sfactor=GL_DST_COLOR, dfactor=GL_ONE_MINUS_SRC_ALPHA)
 gx_alphablending = GlBlending(sfactor=GL_DST_COLOR, dfactor=GL_ONE_MINUS_SRC_ALPHA)
+#: Repalce the content with the source content
+gx_blending_replace = GlBlending(sfactor=GL_ONE, dfactor=GL_ZERO)
 #: Alias to GlAttrib
 gx_attrib = GlAttrib
 #: Alias to GlBegin

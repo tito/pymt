@@ -251,11 +251,10 @@ if 'PYMT_DOC' in os.environ:
 else:
     from .. import pymt_config
 
-        
     if 'PYMT_DOC' not in os.environ:
         # decide what to use
         fbo_config = pymt_config.get('graphics', 'fbo')
-        
+
         if fbo_config == 'force-hardware':
             pymt.pymt_logger.debug('Fbo: Forcing hardware Framebuffer')
             Fbo = HardwareFbo

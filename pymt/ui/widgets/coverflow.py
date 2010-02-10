@@ -24,6 +24,15 @@ class MTCoverFlow(MTWidget):
             current displayed cover
         `cover_spacing` : int, default to 50
             Distance in pixels between covers
+        `cover_blend` : bool, default to False
+            Activate background blending for the cover. If you set a background
+            color, without blending, the blending will look wrong. Activate
+            blending if you want to use your background color for fading or if
+            you want to use a img with an alpha channel (i.e. png with transparent background)
+        `cover_blend_start` : float, default 1.0
+            Alpha value to use for the cover blending (0 means transparent)
+        `cover_blend_stop` : float, default to 1.0
+            Alpha value to use for the cover blending
         `reflection_blend` : bool, default to False
             Activate background blending for reflection. If you set a background
             color, without blending, the reflection will look wrong. Activate
@@ -60,6 +69,9 @@ class MTCoverFlow(MTWidget):
         kwargs.setdefault('cover_angle', 90)
         kwargs.setdefault('cover_distance', 400)
         kwargs.setdefault('cover_spacing', 50)
+        kwargs.setdefault('cover_blend', False)
+        kwargs.setdefault('cover_blend_start', 1.0)
+        kwargs.setdefault('cover_blend_stop', 1.0)
         kwargs.setdefault('reflection_blend', False)
         kwargs.setdefault('reflection_percent', .3)
         kwargs.setdefault('reflection_start', .4)
@@ -79,7 +91,10 @@ class MTCoverFlow(MTWidget):
         self.cover_angle            = kwargs.get('cover_angle')
         self.cover_distance         = kwargs.get('cover_distance')
         self.cover_spacing          = kwargs.get('cover_spacing')
-        self.reflection_blend       = kwargs.get('reflection_blend')
+        self.cover_blend            = kwargs.get('cover_blend')
+        self.cover_blend_start      = kwargs.get('cover_blend_start')
+        self.cover_blend_stop       = kwargs.get('cover_blend_stop')
+        self.reflection_blend    = kwargs.get('reflection_blend')
         self.reflection_percent     = kwargs.get('reflection_percent')
         self.reflection_start       = kwargs.get('reflection_start')
         self.reflection_stop        = kwargs.get('reflection_stop')
@@ -93,6 +108,7 @@ class MTCoverFlow(MTWidget):
         self._animation             = None
         self._fbo                   = Fbo(size=self.thumbnail_size)
         self._reflection_coords     = None
+        self._cover_blend_coords    = None
         self._selection             = 0
         self._touch                 = None
         self._transition            = 0
@@ -196,9 +212,13 @@ class MTCoverFlow(MTWidget):
     def _calculate_coords(self):
         # calculate reflection coordinate
         c1, c2 = self.reflection_start, self.reflection_stop
+        cb1, cb2 = self.cover_blend_start, self.cover_blend_stop
         self._reflection_coords = (
             (c2, c2, c2, c2), (c2, c2, c2, c2),
             (c1, c1, c1, c1), (c1, c1, c1, c1))
+        self._cover_blend_coords = (
+            (cb2, cb2, cb2, cb2), (cb2, cb2, cb2, cb2),
+            (cb1, cb1, cb1, cb1), (c1, cb1, cb1, cb1))
 
     def _draw_title(self, widget):
         if hasattr(widget, 'title'):
@@ -251,11 +271,18 @@ class MTCoverFlow(MTWidget):
         glRotatef(angle, 0, 1, 0)
 
         # draw the cover
-        set_color(1, 1, 1)
-        drawTexturedRectangle(
-            texture=self._fbo.texture,
-            size=self.thumbnail_size,
-            color_coords=alpha_coords)
+        if self.cover_blend:
+            set_color(1,1,1, blend=True)
+            drawTexturedRectangle(
+                texture=self._fbo.texture,
+                size=self.thumbnail_size,
+                color_coords=self._cover_blend_coords)
+        else:
+            set_color(1,1,1)
+            drawTexturedRectangle(
+                texture=self._fbo.texture,
+                size=self.thumbnail_size,
+                color_coords=alpha_coords)
 
         # now, for reflection, don't do matrix transformation
         # just invert texcoord + play with color

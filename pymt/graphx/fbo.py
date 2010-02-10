@@ -44,6 +44,8 @@ class AbstractFbo(object):
         Depend of implementation, texture can be a TextureRegion, or a long.
 
     :Parameters:
+        `clear_color` : tuple, default to (0, 0, 0, 0)
+            Color to apply when clearing the texture
         `size` : tuple, default to (1024, 1024)
             Size of FBO
         `push_viewport` : bool, default to False
@@ -52,12 +54,16 @@ class AbstractFbo(object):
             Indicate if depthbuffer must be applied
     '''
     def __init__(self, **kwargs):
+        kwargs.setdefault('clear_color', (0, 0, 0, 0))
         kwargs.setdefault('size', (1024, 1024))
         kwargs.setdefault('push_viewport', False)
         kwargs.setdefault('with_depthbuffer', True)
+
+        self.clear_color        = kwargs.get('clear_color')
         self.size               = kwargs.get('size')
         self.with_depthbuffer   = kwargs.get('with_depthbuffer')
         self.push_viewport      = kwargs.get('push_viewport')
+        self._is_bind           = False
 
         # create texture
         self.texture            = pymt.Texture.create(self.size[0], self.size[1])
@@ -71,10 +77,26 @@ class AbstractFbo(object):
             raise 'Unknown type(self.texture). Please send a bug report on pymt dev.'
 
     def bind(self):
-        pass
+        '''Activate writing on Framebuffer. All next call will be done on it.'''
+        self._is_bind = True
 
     def release(self):
-        pass
+        '''Deactivate writing on Framebuffer. Back to normal mode.'''
+        self._is_bind = False
+
+    def clear(self):
+        '''Clear framebuffer.
+
+        ..warning ::
+            Must be called inside bind()/release() of FBO !
+        '''
+        assert(self._is_bind == True)
+
+        glClearColor(*self.clear_color)
+        if self.with_depthbuffer:
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        else:
+            glClear(GL_COLOR_BUFFER_BIT)
 
     def __enter__(self):
         self.bind()
@@ -175,7 +197,8 @@ class HardwareFbo(AbstractFbo):
                 glDeleteRenderbuffersEXT(1, self.depthbuffer)
 
     def bind(self):
-        Fbo.fbo_stack.append(self.framebuffer)
+        super(HardwareFbo, self).bind()
+        HardwareFbo.fbo_stack.append(self.framebuffer)
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
         if self.push_viewport:
             glPushAttrib(GL_VIEWPORT_BIT)
@@ -184,8 +207,9 @@ class HardwareFbo(AbstractFbo):
     def release(self):
         if self.push_viewport:
             glPopAttrib()
-        Fbo.fbo_stack.pop()
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, Fbo.fbo_stack[-1])
+        HardwareFbo.fbo_stack.pop()
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, HardwareFbo.fbo_stack[-1])
+        super(HardwareFbo, self).release()
 
 
 class SoftwareFbo(AbstractFbo):
@@ -201,6 +225,8 @@ class SoftwareFbo(AbstractFbo):
         self.pixels = None
 
     def bind(self):
+        super(SoftwareFbo, self).bind()
+
         # Save current buffer
         w = pymt.getWindow()
         glReadBuffer(GL_BACK)
@@ -209,8 +235,6 @@ class SoftwareFbo(AbstractFbo):
         # Push current attrib
         glPushAttrib(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_TEST | GL_STENCIL_BUFFER_BIT)
         glDisable(GL_STENCIL_TEST)
-        glClearColor(0,0,0,0)
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         # Save viewport if asked
         if self.push_viewport:
@@ -242,29 +266,38 @@ class SoftwareFbo(AbstractFbo):
 
         glPopAttrib()
 
+        super(SoftwareFbo, self).release()
 
-if 'PYMT_DOC' in os.environ:
-    # Bad hack for sphinx
-    # He don't like when Fbo is announced in __all__,
-    # and not defined in source
-    Fbo = HardwareFbo
-else:
-    from .. import pymt_config
+class AutoselectFbo(object):
+    fbo_class = None
+    def __new__(self, *largs, **kwargs):
+        return AutoselectFbo.fbo_class(*largs, **kwargs)
 
-    if 'PYMT_DOC' not in os.environ:
+#: Fbo wrapper to the best FBO available on system
+Fbo = AutoselectFbo
+
+if 'PYMT_DOC' not in os.environ:
+
+    def __pymt_configure_fbo():
+
+        from .. import pymt_config
+
         # decide what to use
         fbo_config = pymt_config.get('graphics', 'fbo')
 
         if fbo_config == 'force-hardware':
             pymt.pymt_logger.debug('Fbo: Forcing hardware Framebuffer')
-            Fbo = HardwareFbo
+            AutoselectFbo.fbo_class = HardwareFbo
         elif fbo_config == 'hardware' and bool(glGenFramebuffersEXT):
             pymt.pymt_logger.debug('Fbo: Use hardware Framebuffer')
-            Fbo = HardwareFbo
+            AutoselectFbo.fbo_class = HardwareFbo
         elif fbo_config == 'software':
             pymt.pymt_logger.debug('Fbo: Use software Framebuffer')
-            Fbo = SoftwareFbo
+            AutoselectFbo.fbo_class = SoftwareFbo
         else:
             pymt_config.set('graphics', 'fbo', 'software')
             pymt.pymt_logger.debug('Fbo: Falling back to software Framebuffer!!')
-            Fbo = SoftwareFbo
+            AutoselectFbo.fbo_class = SoftwareFbo
+
+    from pymt import pymt_register_post_configuration
+    pymt_register_post_configuration(__pymt_configure_fbo)

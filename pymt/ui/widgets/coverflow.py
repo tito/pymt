@@ -4,9 +4,9 @@ Coverflow: a coverflow widget
 
 __all__ = ('MTCoverFlow', )
 
-from OpenGL.GL import glRotatef, glTranslatef
+from OpenGL.GL import glRotatef, glTranslatef, GL_ZERO, GL_ONE
 from ...graphx import set_color, drawRectangle, drawTexturedRectangle, \
-        Fbo, drawLabel
+        Fbo, drawLabel, gx_blending_replace
 from ...utils import boundary
 from ...vector import Vector
 from ..animation import Animation
@@ -230,6 +230,7 @@ class MTCoverFlow(MTWidget):
         # render the children on a fbo
         child = self.children[index]
         with self._fbo:
+            self._fbo.clear()
             child.dispatch_event('on_draw')
 
         # pre-calculate 

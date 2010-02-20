@@ -43,11 +43,22 @@ class MTBoxLayout(MTAbstractLayout):
 
         self.spacing        = kwargs.get('spacing')
         self.padding        = kwargs.get('padding')
-        self.orientation    = kwargs.get('orientation')
         self.uniform_width  = kwargs.get('uniform_width')
         self.uniform_height = kwargs.get('uniform_height')
         self.invert_x       = kwargs.get('invert_x')
         self.invert_y       = kwargs.get('invert_y')
+        self.orientation    = kwargs.get('orientation')
+        
+    def _get_orientation(self):
+        return self._orientation
+    def _set_orientation(self, orientation):
+        if orientation in ['horizontal', 'vertical']:
+            self._orientation = orientation
+            self.need_layout = True
+            self.do_layout()
+        else:
+            raise ValueError("'%s' is not a valid orientation for BoxLayout!  Allowed values are: 'horizontal' and 'vertical'." % anchor)
+    orientation = property(_get_orientation, _set_orientation, doc="Orientation of widget inside layout, can be `horizontal` or `vertical`")
 
     def do_layout(self):
         '''Recalculate position for every subwidget, fire
@@ -102,14 +113,17 @@ class MTBoxLayout(MTAbstractLayout):
         cur_y = self.y + self.padding
         for w in self.children:
             try:
+                new_x, new_y = 0,0
                 if self.invert_x:
-                    w.y = self.x + current_width - w.width - (cur_x - self.x)
+                    new_x = self.x + current_width - w.width - (cur_x - self.x)
                 else:
-                    w.x = cur_x
+                    new_x = cur_x
                 if self.invert_y:
-                    w.y = self.y + current_height - w.height - (cur_y - self.y)
+                    new_y = self.y + current_height - w.height - (cur_y - self.y)
                 else:
-                    w.y = cur_y
+                    new_y = cur_y
+                self.reposition_child(w, pos=(new_x, new_y))
+                   
                 if self.orientation == 'horizontal':
                     cur_x += w.width + self.spacing
                 elif self.orientation == 'vertical':
@@ -117,10 +131,9 @@ class MTBoxLayout(MTAbstractLayout):
             except:
                 pass
 
+        #set own size first.  content size change might trigger parent layout, which will need correct size info
+        self.size = (current_width, current_height)
         self.content_size = (current_width, current_height)
-
-        # XXX make it optionnal, in 0.2
-        self.size = (self.content_width, self.content_height)
 
         # we just do a layout, dispatch event
         self.dispatch_event('on_layout')

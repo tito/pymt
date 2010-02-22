@@ -112,11 +112,11 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
     DESCRIPTION     = 'A French keyboard without international keys'
     FONT_FILENAME   = kbdlayout_default_font
     NORMAL_1 = [
-        ('|', '|', None, 1),    ('1', '1', None, 1),    ('2', '2', None, 1),
-        ('3', '3', None, 1),    ('4', '4', None, 1),    ('5', '5', None, 1),
-        ('6', '6', None, 1),    ('7', '7', None, 1),    ('8', '8', None, 1),
-        ('9', '9', None, 1),    ('0', '0', None, 1),    ('#', '#', None, 1),
-        ('+', '+', None, 1),    (u'\u232b', None, 'backspace', 2),
+        ('@', '@', None, 1),    ('&', '&', None, 1),    (u'\xe9', u'\xe9', None, 1),
+        ('"', '"', None, 1),    ('\'', '\'', None, 1),  ('(', '(', None, 1),
+        ('-', '-', None, 1),    (u'\xe8', u'\xe8', None, 1),    ('_', '_', None, 1),
+        (u'\xe7', u'\xe7', None, 1),    (u'\xe0', u'\xe0', None, 1),    (')', ')', None, 1),
+        ('=', '=', None, 1),    (u'\u232b', None, 'backspace', 2),
     ]
     NORMAL_2 = [
         (u'\u21B9', chr(0x09), None, 1.5),  ('a', 'a', None, 1),    ('z', 'z', None, 1),
@@ -143,11 +143,11 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
         ('', ' ', None, 12), (u'\u2b12', None, 'layout', 1.5), (u'\u2a2f', None, 'escape', 1.5),
     ]
     SHIFT_1 = [
-        ('@', '@', None, 1),    ('&', '&', None, 1),    (u'\xe9', u'\xe9', None, 1),
-        ('"', '"', None, 1),    ('\'', '\'', None, 1),  ('(', '(', None, 1),
-        ('-', '-', None, 1),    (u'\xe8', u'\xe8', None, 1),    ('_', '_', None, 1),
-        (u'\xe7', u'\xe7', None, 1),    (u'\xe0', u'\xe0', None, 1),    (')', ')', None, 1),
-        ('=', '=', None, 1),    (u'\u232b', None, 'backspace', 2),
+        ('|', '|', None, 1),    ('1', '1', None, 1),    ('2', '2', None, 1),
+        ('3', '3', None, 1),    ('4', '4', None, 1),    ('5', '5', None, 1),
+        ('6', '6', None, 1),    ('7', '7', None, 1),    ('8', '8', None, 1),
+        ('9', '9', None, 1),    ('0', '0', None, 1),    ('#', '#', None, 1),
+        ('+', '+', None, 1),    (u'\u232b', None, 'backspace', 2),
     ]
     SHIFT_2 = [
         (u'\u21B9', chr(0x09), None, 1.5),  ('A', 'A', None, 1),    ('Z', 'Z', None, 1),

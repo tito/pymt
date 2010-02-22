@@ -2,21 +2,24 @@ __all__ = ('MTScreenLayout', )
 
 from abstractlayout import MTAbstractLayout
 from ...factory import MTWidgetFactory
-from ..widget import MTWidget
+from ....utils import SafeList
 
-class MTScreenLayout(MTWidget):
+
+class MTScreenLayout(MTAbstractLayout):
     '''Base class to handle a list of screen (widgets). One child widget is shown at a time.
     '''
 
     def __init__(self, **kwargs):
         super(MTScreenLayout, self).__init__(**kwargs)
-        self.screens = []
+        self.screens = SafeList()
         self.screen = None
         self.previous_screen = None
-        self.switch_t = 1.0
+        self.switch_t = 1.1
 
     def add_widget(self, widget):
         self.screens.append(widget)
+        if not self.screen:
+            self.select(widget)
 
     def remove_widget(self, widget):
         self.screens.remove(widget)
@@ -27,23 +30,28 @@ class MTScreenLayout(MTWidget):
         pass either a widget that has been added to this layout, or its id
         '''
         if self.screen is not None:
+            print "removing old one", self.screen
             super(MTScreenLayout, self).remove_widget(self.screen)
             self.previous_screen = self.screen
             self.switch_t = -1.0
         for screen in self.screens:
+            print "trying to add", id, screen.id
             if screen.id == id or screen == id:
+                print "adding", screen
                 self.screen = screen
-                super(CiviUI, self).add_widget(self.screen)
+                super(MTScreenLayout, self).add_widget(self.screen)
+                print "all done"
                 return
         pymt_logger.Warning('Invalid screen or screenname, doing nothing...')
 
     
-    def switch(self, t):
+    def draw_transition(self, t):
         '''
         is called each frame while switching screens and responsible for drawing transition state.
         t will go from -1.0 (previous screen), to 0 (rigth in middle),
         until 1.0 (last time called before giving new screen full controll)
         '''
+        print "drawing transition", t
         r,g,b,a = self.style['bg-color']
         if t > 0.5:
             if self.previous_screen is not None:
@@ -58,11 +66,14 @@ class MTScreenLayout(MTWidget):
 
 
     def on_draw(self):
-        if self.switch_t < 1:
+        self.draw()
+        if self.switch_t < 1.0:
             self.switch_t += getFrameDt()
-            self.switch(self.switch_t)
+            self.draw_transition(self.switch_t)
         else:
-            self.screen.dispatch_event('on_draw')
+            super(MTScreenLayout, self).on_draw()
+
+        
 
 
 # Register all base widgets

@@ -5,6 +5,7 @@ from pymt import *
 
 
 def set_screen(id, *ev_args):
+    print "selecting screen:", id
     getWidgetByID('screens').select(id)
 
 def anchor_test():
@@ -12,7 +13,7 @@ def anchor_test():
     box = MTBoxLayout(orientation='horizontal')
     for i in range(3):
         b =  MTButton(label="next screen")
-        b.push_handlers( on_press=curry(set_screen, 'size hint') )
+        b.push_handlers( on_press=curry(set_screen, 'sizehint') )
         box.add_widget(b)
     anchor = MTAnchorLayout(anchor_x="right", animation_type='ease_in_out_elastic', animation_time=0.5)
     anchor.add_widget(box)
@@ -29,7 +30,7 @@ def anchor_test():
     center_anchor.add_widget(button)
 
     #put teh two layouts into a stretch layout, so they fill the whole window (since stretch is put as root)
-    stretch = MTStretchLayout(id='anchor fun')
+    stretch = MTStretchLayout(id='anchorfun')
     stretch.add_widget(anchor)
     stretch.add_widget(center_anchor)
  
@@ -39,12 +40,12 @@ def anchor_test():
 def size_hint_test():
     box = MTBoxLayout()
     #box.add_widget( MTButton(label="size_hint=(None, None)") )
-    box.add_widget( MTButton(label="size_hint=(1.0,1.0)", size_hint=(0.5, None)) )
-    box.add_widget( MTButton(label="size_hint=(1.0,1.0)", size_hint=(0.25, 1.0)) )
-    box.add_widget( MTButton(label="size_hint=(1.0,1.0)", size_hint=(0.25, 0.5)) )
+    box.add_widget( MTButton(label="size_hint=(1.0,1.0)", size_hint=(1.0, None)) )
+    box.add_widget( MTButton(label="size_hint=(1.0,1.0)", size_hint=(0.2, 1.0)) )
+    box.add_widget( MTButton(label="size_hint=(1.0,1.0)", size_hint=(0.5, 0.5)) )
     for b in box.children:
-        b.push_handlers( on_press=curry(set_screen, 'anchor_fun') )
-    stretch = MTStretchLayout(id="size hint")
+        b.push_handlers( on_press=curry(set_screen, 'anchorfun') )
+    stretch = MTStretchLayout(id="sizehint")
     stretch.add_widget(box)
     return stretch
 
@@ -56,5 +57,5 @@ if __name__ == '__main__':
     screens.add_widget(anchor_test())
     
     root = MTStretchLayout()
-    root.add_widget(size_hint_test())
+    root.add_widget(screens)
     runTouchApp(root)

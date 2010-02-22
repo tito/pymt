@@ -2,7 +2,7 @@
 Widget: Base of every widget implementation.
 '''
 
-__all__ = ['getWidgetById',
+__all__ = ['getWidgetById','getWidgetByID',
     'event_stats_activate', 'event_stats_print',
     'MTWidget'
 ]

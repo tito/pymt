@@ -52,7 +52,6 @@ class MTAbstractLayout(MTWidget):
         pl = self.parent.get_parent_layout()
         if pl and pl != self:
             def update_me(*args):
-                print "updating ", self
                 self.do_layout()
             pl.push_handlers(on_layout=update_me)
 

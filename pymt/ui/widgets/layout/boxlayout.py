@@ -122,17 +122,15 @@ class MTBoxLayout(MTAbstractLayout):
         #use size_hints of widgets to resize them if they want
         normalized_stretch_x = 1.0 if (total_stretch_x< 1.0) else 1.0/max(total_stretch_x,0.00000001)
         normalized_stretch_y = 1.0 if (total_stretch_y< 1.0) else 1.0/max(total_stretch_y,0.00000001)
-        biggest_width   = self.width * total_stretch_x/normalized_stretch_x    #biggest we migth get
-        biggest_height   = self.height * total_stretch_y/normalized_stretch_y
+        biggest_width   = self.width * total_stretch_x*normalized_stretch_x    #biggest we migth get
+        biggest_height   = self.height * total_stretch_y*normalized_stretch_y
         available_width = max(0, biggest_width - current_width) #how much we dhave left, if we did that
         available_height = max(0, biggest_height - current_height)  
         for w in widgets_to_stretch:
             sx,sy = w.size_hint
-            print "before:", w.height, sy, available_height, normalized_stretch_y, biggest_height , current_height, total_stretch_y, self.height
             if sx:  w.width  = sx*available_width/float(total_stretch_x)
             if sy:  w.height = sy*available_height/float(total_stretch_y)
-            print "after", w.width, w.height
-        
+            
         
         # reposition
         cur_x = self.x + self.padding

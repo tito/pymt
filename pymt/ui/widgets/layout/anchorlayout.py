@@ -9,7 +9,8 @@ from ...factory import MTWidgetFactory
 from ....base import getWindow
 
 class MTAnchorLayout(MTAbstractLayout):
-    '''MTAnchorLayout layout: anchorts the Child Widgets to a certain place in the parent widget
+    '''MTAnchorLayout layout: anchorts the Child Widgets to a certain place in the parent widget.
+        AnchorLayout does not resize children (it ignores size_hint), us a box layout, or other layout inside anchor layout instead)
 
     :Parameters:
         `padding` : int, default to 0
@@ -20,8 +21,8 @@ class MTAnchorLayout(MTAbstractLayout):
             Vertical Anchor.  One of: 'top', 'bottom', or 'center'.  default is center "
     '''
     def __init__(self, **kwargs):
-        kwargs.setdefault('padding', 0)
-        kwargs.setdefault('anchor_x', 'center')
+        kwargs.setdefault('padding',  0)
+        kwargs.setdefault('anchor_x','center')
         kwargs.setdefault('anchor_y', 'center')
         super(MTAnchorLayout, self).__init__(**kwargs)
         
@@ -29,8 +30,6 @@ class MTAnchorLayout(MTAbstractLayout):
         self.anchor_x = kwargs.get('anchor_x')
         self.anchor_y = kwargs.get('anchor_y')
         
-        self.push_handlers(on_resize=self.require_layout)
-        self.push_handlers(on_move=self.require_layout)
         
         
     def _get_anchor_x(self):

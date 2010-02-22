@@ -44,6 +44,17 @@ class MTAbstractLayout(MTWidget):
         self._content_width     = 0
         self._animation_type    = kwargs.get('animation_type')
         self.animation_duration = kwargs.get('animation_duration')
+        
+        self.push_handlers(on_parent_resize=self.require_layout)
+        
+        
+    def on_parent(self):
+        pl = self.parent.get_parent_layout()
+        if pl and pl != self:
+            def update_me(*args):
+                print "updating ", self
+                self.do_layout()
+            pl.push_handlers(on_layout=update_me)
 
 
     def _set_animation_type(self, type):
@@ -117,21 +128,21 @@ class MTAbstractLayout(MTWidget):
 
     
     def require_layout(self, *args):
-        '''Will require the layout to be updated. i.e. sets need_layout and need_parent_layout, and then calls self.update(if autoupdate is on).
+        '''Will require the layout to be updated. i.e. sets need_layout , and then calls self.update(if autoupdate is on).
             :Arguments:
                 `*args`,takes any number of arguments.  None of them are used, but this method can easily be attached as an event handler to require layout in response to certain events
         ''' 
         self.need_layout = True
-        self.need_parent_layout = True
         if self.auto_layout:
             self.update()
 
 
     def update(self):
-        if self.need_layout:
-            self.do_layout()
         if self.need_parent_layout:
             self.do_parent_layout()
+        if self.need_layout:
+            self.do_layout()
+
        
     def get_parent_layout(self):
         return self

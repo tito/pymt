@@ -69,22 +69,33 @@ class MTBoxLayout(MTAbstractLayout):
         super(MTBoxLayout, self).do_layout()
         max_width = max_height = 0
         current_width = current_height = 0
-        for w in self.children:
-            try:
-                if w.height > max_height:
-                    max_height = w.height
-                if w.width > max_width:
-                    max_width = w.width
-                if self.orientation == 'horizontal':
-                    if current_width > 0:
-                        current_width += self.spacing
+        total_stretch_x = 0
+        total_stretch_y = 0
+        widgets_to_stretch = {}
+        
+        if self.orientation == 'horizontal':
+            for w in self.children:
+                sx,sy = w.size_hint
+                if sx or sy:
+                    widgets_to_stretch[w] = w
+                    total_stretch_x += sx or 0
+                    total_stretch_y = max(total_stretch_y, sy or 0)
+                else:
+                    max_width = max(w.width, max_width)
+                    if current_width > 0:  current_width += self.spacing
                     current_width += w.width
-                elif self.orientation == 'vertical':
-                    if current_height > 0:
-                        current_height += self.spacing
+        elif self.orientation == 'vertical':
+            for w in self.children:
+                sx,sy = w.size_hint
+                if sx or sy:
+                    widgets_to_stretch[w] = w
+                    total_stretch_x += max(total_stretch_x, sx or 0)
+                    total_stretch_y = sy or 0
+                else:
+                    max_height = max (w.height, max_height)
+                    if current_height > 0: current_height += self.spacing
                     current_height += w.height
-            except:
-                pass
+        
 
         # uniform
         if self.uniform_width:
@@ -108,6 +119,21 @@ class MTBoxLayout(MTAbstractLayout):
         current_width += self.padding * 2
         current_height += self.padding * 2
 
+        #use size_hints of widgets to resize them if they want
+        normalized_stretch_x = 1.0 if (total_stretch_x< 1.0) else 1.0/max(total_stretch_x,0.00000001)
+        normalized_stretch_y = 1.0 if (total_stretch_y< 1.0) else 1.0/max(total_stretch_y,0.00000001)
+        biggest_width   = self.width * total_stretch_x/normalized_stretch_x    #biggest we migth get
+        biggest_height   = self.height * total_stretch_y/normalized_stretch_y
+        available_width = max(0, biggest_width - current_width) #how much we dhave left, if we did that
+        available_height = max(0, biggest_height - current_height)  
+        for w in widgets_to_stretch:
+            sx,sy = w.size_hint
+            print "before:", w.height, sy, available_height, normalized_stretch_y, biggest_height , current_height, total_stretch_y, self.height
+            if sx:  w.width  = sx*available_width/float(total_stretch_x)
+            if sy:  w.height = sy*available_height/float(total_stretch_y)
+            print "after", w.width, w.height
+        
+        
         # reposition
         cur_x = self.x + self.padding
         cur_y = self.y + self.padding
@@ -132,9 +158,9 @@ class MTBoxLayout(MTAbstractLayout):
                 pass
 
         #set own size first.  content size change might trigger parent layout, which will need correct size info
-        self.size = (current_width, current_height)
-        self.content_size = (current_width, current_height)
-
+        self._w = (current_width+available_width, current_height+available_height)
+        self.content_size = (current_width+available_width, current_height+available_height)
+    
         # we just do a layout, dispatch event
         self.dispatch_event('on_layout')
 

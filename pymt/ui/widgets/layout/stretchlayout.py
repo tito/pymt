@@ -14,6 +14,7 @@ class MTStretchLayout(MTAbstractLayout):
     :Parameters:
         `padding` : int, default to 0
             Padding between the border and children (that much smaller than the parent on each side)
+            
     '''
 
     def __init__(self, **kwargs):
@@ -51,9 +52,10 @@ class MTStretchLayout(MTAbstractLayout):
             pos  = (self.x+self.padding, self.y-self.padding)
             size = (self.width-(2*self.padding), self.height-(2*self.padding))
             self.reposition_child(w, pos=pos, size=size)
-
+            print "moved", w, pos, size
         # we just do a layout, dispatch event
         self.dispatch_event('on_layout')
+        print "displatched on_layout"
 
 # Register all base widgets
 MTWidgetFactory.register('MTStretchLayout', MTStretchLayout)

@@ -3,6 +3,8 @@ __all__ = ('MTScreenLayout', )
 from abstractlayout import MTAbstractLayout
 from ...factory import MTWidgetFactory
 from ....utils import SafeList
+from ....base import getFrameDt
+from ....graphx import set_color, drawRectangle
 
 
 class MTScreenLayout(MTAbstractLayout):
@@ -30,17 +32,13 @@ class MTScreenLayout(MTAbstractLayout):
         pass either a widget that has been added to this layout, or its id
         '''
         if self.screen is not None:
-            print "removing old one", self.screen
             super(MTScreenLayout, self).remove_widget(self.screen)
             self.previous_screen = self.screen
             self.switch_t = -1.0
         for screen in self.screens:
-            print "trying to add", id, screen.id
             if screen.id == id or screen == id:
-                print "adding", screen
                 self.screen = screen
                 super(MTScreenLayout, self).add_widget(self.screen)
-                print "all done"
                 return
         pymt_logger.Warning('Invalid screen or screenname, doing nothing...')
 
@@ -51,9 +49,8 @@ class MTScreenLayout(MTAbstractLayout):
         t will go from -1.0 (previous screen), to 0 (rigth in middle),
         until 1.0 (last time called before giving new screen full controll)
         '''
-        print "drawing transition", t
         r,g,b,a = self.style['bg-color']
-        if t > 0.5:
+        if t < 0:
             if self.previous_screen is not None:
                 self.previous_screen.dispatch_event('on_draw')
             set_color(r,g,b,1+t) #from 1 to zero

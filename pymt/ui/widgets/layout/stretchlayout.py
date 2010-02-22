@@ -23,8 +23,7 @@ class MTStretchLayout(MTAbstractLayout):
         
         self.padding  = kwargs.get('padding')
 
-        self.push_handlers(on_parent_resize=self.require_layout)
-        self.push_handlers(on_parent=self.require_layout)
+
 
                
     def stretch_to_parent(self):

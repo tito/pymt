@@ -45,15 +45,15 @@ class MTAbstractLayout(MTWidget):
         self._animation_type    = kwargs.get('animation_type')
         self.animation_duration = kwargs.get('animation_duration')
         
-        self.push_handlers(on_parent_resize=self.require_layout)
+        #self.push_handlers(on_resize=self.update_me)
         
+    def update_me(self, *args):
+        self.do_layout()
         
     def on_parent(self):
         pl = self.parent.get_parent_layout()
-        if pl and pl != self:
-            def update_me(*args):
-                self.do_layout()
-            pl.push_handlers(on_layout=update_me)
+        if pl and pl != self:#
+            pl.push_handlers(on_layout=self.update_me)
 
 
     def _set_animation_type(self, type):

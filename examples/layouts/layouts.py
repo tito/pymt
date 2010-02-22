@@ -15,7 +15,7 @@ def anchor_test():
         b =  MTButton(label="next screen")
         b.push_handlers( on_press=curry(set_screen, 'sizehint') )
         box.add_widget(b)
-    anchor = MTAnchorLayout(anchor_x="right", animation_type='ease_in_out_elastic', animation_time=0.5)
+    anchor = MTAnchorLayout(anchor_x="right", animation_time=0.5)
     anchor.add_widget(box)
         
     #add a button at the top center (with some padding), to change the main AcnhorLayouts anchor
@@ -40,11 +40,18 @@ def anchor_test():
 def size_hint_test():
     box = MTBoxLayout()
     #box.add_widget( MTButton(label="size_hint=(None, None)") )
-    box.add_widget( MTButton(label="size_hint=(1.0,1.0)", size_hint=(1.0, None)) )
-    box.add_widget( MTButton(label="size_hint=(1.0,1.0)", size_hint=(0.2, 1.0)) )
-    box.add_widget( MTButton(label="size_hint=(1.0,1.0)", size_hint=(0.5, 0.5)) )
+    inner_box = MTBoxLayout(orientation='vertical', size_hint=(1.0, 1.0))
+    for i in range(2):
+        btn = MTButton(label="size_hint=(1.0,1.0)", size_hint=(1.0, 0.5))
+        btn.push_handlers( on_press=curry(set_screen, 'anchorfun') )
+        inner_box.add_widget(btn)
+    
+    box.add_widget( MTButton(label="size_hint=(1.0,None)--(press any button for next screen)", size_hint=(1.0, None)) )
+    box.add_widget( inner_box )
+    box.add_widget( MTButton(label="size_hint=(0.3,0.5)", size_hint=(0.3, 0.5)) )
     for b in box.children:
-        b.push_handlers( on_press=curry(set_screen, 'anchorfun') )
+        if isinstance(b, MTButton):
+            b.push_handlers( on_press=curry(set_screen, 'anchorfun') )
     stretch = MTStretchLayout(id="sizehint")
     stretch.add_widget(box)
     return stretch
@@ -58,4 +65,5 @@ if __name__ == '__main__':
     
     root = MTStretchLayout()
     root.add_widget(screens)
+    root.do_layout()
     runTouchApp(root)

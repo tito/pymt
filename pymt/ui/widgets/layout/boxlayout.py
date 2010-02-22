@@ -39,6 +39,7 @@ class MTBoxLayout(MTAbstractLayout):
         if kwargs.get('orientation') not in ['horizontal', 'vertical']:
             raise Exception('Invalid orientation, only horizontal/vertical are supported')
 
+        self.skip_update = False #needed to prevent update based on own resize
         super(MTBoxLayout, self).__init__(**kwargs)
 
         self.spacing        = kwargs.get('spacing')
@@ -48,6 +49,7 @@ class MTBoxLayout(MTAbstractLayout):
         self.invert_x       = kwargs.get('invert_x')
         self.invert_y       = kwargs.get('invert_y')
         self.orientation    = kwargs.get('orientation')
+        
         
     def _get_orientation(self):
         return self._orientation
@@ -66,6 +68,11 @@ class MTBoxLayout(MTAbstractLayout):
         fire on_content_resize too. Uniform width/height are handled
         after on_content_resize.
         '''
+        self.need_layout = False
+        if self.skip_update:
+            self.skip_update = False
+            return
+        
         super(MTBoxLayout, self).do_layout()
         max_width = max_height = 0
         current_width = current_height = 0
@@ -115,9 +122,6 @@ class MTBoxLayout(MTAbstractLayout):
         elif self.orientation == 'vertical':
             current_width = max_width
 
-        # apply double padding
-        current_width += self.padding * 2
-        current_height += self.padding * 2
 
         #use size_hints of widgets to resize them if they want
         normalized_stretch_x = 1.0 if (total_stretch_x< 1.0) else 1.0/max(total_stretch_x,0.00000001)
@@ -128,36 +132,41 @@ class MTBoxLayout(MTAbstractLayout):
         available_height = max(0, biggest_height - current_height)  
         for w in widgets_to_stretch:
             sx,sy = w.size_hint
-            if sx:  w.width  = sx*available_width/float(total_stretch_x)
-            if sy:  w.height = sy*available_height/float(total_stretch_y)
+            if self.orientation == 'horizontal':
+                if sx:  w.width  = sx*available_width/float(total_stretch_x)
+                if sy:  w.height = sy*available_height
+            elif self.orientation == 'vertical':
+                if sx:  w.width  = sy*available_width
+                if sy:  w.height = sy*available_height/float(total_stretch_y)
+
             
         
         # reposition
         cur_x = self.x + self.padding
         cur_y = self.y + self.padding
+        total_width = self.padding*2
+        total_height = self.padding*2
         for w in self.children:
-            try:
-                new_x, new_y = 0,0
-                if self.invert_x:
-                    new_x = self.x + current_width - w.width - (cur_x - self.x)
-                else:
-                    new_x = cur_x
-                if self.invert_y:
-                    new_y = self.y + current_height - w.height - (cur_y - self.y)
-                else:
-                    new_y = cur_y
-                self.reposition_child(w, pos=(new_x, new_y))
-                   
-                if self.orientation == 'horizontal':
-                    cur_x += w.width + self.spacing
-                elif self.orientation == 'vertical':
-                    cur_y += w.height + self.spacing
-            except:
-                pass
-
+            new_x = cur_x
+            new_y = cur_y
+            self.reposition_child(w, pos=(new_x, new_y))
+               
+            if self.orientation == 'horizontal':
+                cur_x += w.width + self.spacing
+                total_width += w.width + self.spacing
+                total_height = max(total_height,w.height)
+            elif self.orientation == 'vertical':
+                cur_y += w.height + self.spacing
+                total_height += w.height + self.spacing
+                total_width = max(total_width,w.width)
+        total_width  -= self.spacing
+        total_height -= self.spacing
+        
         #set own size first.  content size change might trigger parent layout, which will need correct size info
-        self._w = (current_width+available_width, current_height+available_height)
-        self.content_size = (current_width+available_width, current_height+available_height)
+        self.skip_update = True
+        self.size = (total_width, total_height)
+        self.skip_update = True
+        self.content_size = (total_width, total_height)
     
         # we just do a layout, dispatch event
         self.dispatch_event('on_layout')

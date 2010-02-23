@@ -172,7 +172,7 @@ class MTScatterWidget(MTWidget):
                 return tID
         return None
 
-    def apply_angle_scale_trans(self, angle, scale, trans, point=(0, 0)):
+    def apply_angle_scale_trans(self, angle, scale, trans, point=Vector(0, 0)):
         '''Update matrix transformation by adding new angle, scale and translate.
 
         :Parameters:

@@ -23,7 +23,7 @@ please look on the widget documentation.
 
 
 __all__ = ['default_css', 'css_get_style', 'get_truncated_classname',
-           'pymt_sheet', 'css_add_sheet', 'css_get_widget_id']
+           'pymt_sheet', 'css_add_sheet', 'css_add_file', 'css_get_widget_id']
 
 from ..logger import pymt_logger
 from parser import *
@@ -225,6 +225,19 @@ def css_add_sheet(text):
     '''
     global pymt_sheet
     pymt_sheet.cssText += text
+
+def css_add_file(cssfile):
+    '''Add a css file to use ::
+        adds all the css rules in teh given file to the pymt css rule set being used
+	css_add_sheet(cssfile)
+    '''
+    global pymt_sheet
+    f = open(cssfile,'r')
+    css_rules =f.read()
+    f.close()
+    print css_rules
+    pymt_sheet.cssText += css_rules
+    
 
 
 if 'PYMT_DOC' not in os.environ:

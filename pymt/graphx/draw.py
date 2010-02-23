@@ -29,6 +29,19 @@ _temp_label = None
 if not 'PYMT_DOC' in os.environ:
     Cache.register('drawlabel', timeout=1., limit=100)
 
+
+def _make_point_list(points):
+    t = type(points)
+    if not (t is tuple or t is list):
+        raise Exception("Point list must be tuple or list of coordinates or points(tuple/list of 2D coords)")
+    if len(points[0]):
+        #flatten the points
+        return [coord for point in points for coord in point]
+    else:
+        return list(points)
+
+
+
 def getLabel(label, **kwargs):
     '''Get a cached label object
 
@@ -203,7 +216,7 @@ def drawCircle(pos=(0,0), radius=1.0, linewidth=None):
         else:
             gluDisk(gluNewQuadric(), 0, 1, 32,1)
 
-def drawPolygon(points, style=GL_POLYGON):
+def drawPolygon(points, linewidth=None):
     '''Draw polygon from points list
 
     :Parameters:
@@ -212,12 +225,22 @@ def drawPolygon(points, style=GL_POLYGON):
         `style` : opengl begin, default to GL_POLYGON
             Default type to draw (will be passed to glBegin)
     '''
-    points = list(points)
+    style = GL_POLYGON if linewidth == None else GL_LINE_LOOP
+    points = _make_point_list(points)
+
+    if linewidth is not None:
+        glPushAttrib(GL_LINE_BIT)
+        glLineWidth(linewidth)
+
     with gx_begin(style):
         for x, y in zip(points[::2], points[1::2]):
             glVertex2f(x, y)
+            
+    if linewidth is not None:
+        glPopAttrib()
+        
 
-def drawTriangle(pos, w, h, style=GL_TRIANGLES):
+def drawTriangle(pos, w, h, linewidth=None):
     '''Draw one triangle
 
     :Parameters:
@@ -332,7 +355,7 @@ def drawLine(points, width=None, colors=[]):
             Turned off by default.
     '''
     style = GL_LINES
-    points = list(points)
+    points = _make_point_list(points)
     l = len(points)
     if l < 4:
         return

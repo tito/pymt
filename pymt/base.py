@@ -279,7 +279,7 @@ def runTouchApp(widget=None, slave=False):
             we are trying to get the window (must be created by you before),
             and add the widget on it. Very usefull for embedding PyMT
             in another toolkit. (like Qt, check pymt-designed)
-    
+
     '''
 
     global pymt_evloop

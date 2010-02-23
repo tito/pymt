@@ -126,7 +126,7 @@ class SafeList(list):
 
     def iterate(self, reverse=False):
         '''Safe iteration in items.
-        
+
         .. warning::
             Iterate don't support recursive call.
         '''

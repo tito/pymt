@@ -176,7 +176,7 @@ def createBinaryMsg(oscAddress, dataArray):
 def readQueue(thread_id=None):
     '''Read queues from all threads, and dispatch message.
     This must be call in the main thread.
-    
+
     You can pass the thread id to deque message from a specific thread.
     This id is returned from the listen() function'''
     return _readQueue(thread_id)

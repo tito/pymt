@@ -263,7 +263,7 @@ class CueSheetTrackIndex(tuple):
     index_number -- index point number
     index_offset -- offset in samples from track start
     """
-    
+
     def __new__(cls, index_number, index_offset):
         return super(cls, CueSheetTrackIndex).__new__(cls,
             (index_number, index_offset))
@@ -359,7 +359,7 @@ class CueSheet(MetadataBlock):
         self.lead_in_samples = lead_in_samples
         self.compact_disc = bool(flags & 0x80)
         self.tracks = []
-        for i in range(num_tracks): 
+        for i in range(num_tracks):
             track = data.read(self.__CUESHEET_TRACK_SIZE)
             start_offset, track_number, isrc_padded, flags, num_indexes = \
                 struct.unpack(self.__CUESHEET_TRACK_FORMAT, track)
@@ -375,7 +375,7 @@ class CueSheet(MetadataBlock):
                 val.indexes.append(
                     CueSheetTrackIndex(index_number, index_offset))
             self.tracks.append(val)
-            
+
     def write(self):
         f = StringIO()
         flags = 0
@@ -501,7 +501,7 @@ class Padding(MetadataBlock):
 
 class FLAC(FileType):
     """A FLAC audio file.
-    
+
     Attributes:
     info -- stream information (length, bitrate, sample rate)
     tags -- metadata tags, if any

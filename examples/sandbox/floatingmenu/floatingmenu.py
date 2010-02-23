@@ -14,11 +14,11 @@ def pymt_plugin_activate(root, ctx):
     ctx.PA = PlayArea(size=(root.width, root.height))
     getClock().schedule_interval(showfps, 5.0)
     root.add_widget(ctx.PA)
-    
+
 
 def pymt_plugin_deactivate(root, ctx):
    root.remove_widget(ctx.PA)
-    
+
 if __name__ == '__main__':
     w = MTWindow(color=(0,0,0,1))
     #w.set_fullscreen()

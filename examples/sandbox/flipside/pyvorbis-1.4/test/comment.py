@@ -9,7 +9,7 @@ def test():
     x['hEy'] = 'zoo'
     x['whee'] = 'them'
     x['Hey'] = 'boo'
-    
+
     del x['hey']
     try:
         print x['hey'] # should fail

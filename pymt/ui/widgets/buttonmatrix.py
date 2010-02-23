@@ -25,7 +25,7 @@ class MTButtonMatrix(MTWidget):
             Color of background
         `downcolor` : color, default to (0, .5, 1, 1)
             Color when the button is pushed
-    
+
     :Events:
         `on_value_change` (matrix)
             Returns the whole matrix and a button is touched

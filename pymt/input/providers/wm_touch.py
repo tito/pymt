@@ -66,7 +66,7 @@ else:
     PEN_OR_TOUCH_SIGNATURE = 0xFF515700
     PEN_OR_TOUCH_MASK      = 0xFFFFFF00
     PEN_EVENT_TOUCH_MASK   = 0x80
-    
+
     #wndProc has to respond to WM_TABLET_QUERYSYSTEMGESTURE to swicth of tap and hold etc.
     WM_TABLET_QUERYSYSTEMGESTURE = 0x02CC
     TABLET_DISABLE_PRESSANDHOLD        = 0x00000001
@@ -190,10 +190,10 @@ else:
         def _touch_wndProc( self, hwnd, msg, wParam, lParam ):
             done = False
             if msg == WM_TABLET_QUERYSYSTEMGESTURE:
-                return (TABLET_DISABLE_PRESSANDHOLD       | 
-                        TABLET_DISABLE_PENTAPFEEDBACK     |  
-                        TABLET_DISABLE_FLICKS             ) 
-                        
+                return (TABLET_DISABLE_PRESSANDHOLD       |
+                        TABLET_DISABLE_PENTAPFEEDBACK     |
+                        TABLET_DISABLE_FLICKS             )
+
             if msg == WM_TOUCH:
                 done = self._touch_handler(msg, wParam, lParam)
 

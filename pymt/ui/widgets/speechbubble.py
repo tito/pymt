@@ -12,7 +12,7 @@ __all__ = ['MTSpeechBubble']
 
 class MTSpeechBubble(MTLabel):
     '''A little speed bubble !
-    
+
     :Parameters:
         `multiline` : bool, default to True
             Make label multiline

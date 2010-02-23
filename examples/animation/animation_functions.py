@@ -11,17 +11,17 @@ class MTSprite(MTWidget):
         self.size           = self.image.size
         self.scale = 1.0
         self.intial_pos = self.pos
-        
+
     def draw(self):
-        with gx_matrix:            
+        with gx_matrix:
             glTranslated(self.x+self.width/2,self.y+self.height/2,0)
             glRotated(int(self.rotation),0,0,1)
-            glTranslated(-self.x-self.width/2,-self.y-self.height/2,0)            
+            glTranslated(-self.x-self.width/2,-self.y-self.height/2,0)
             set_color(*self.style.get('bg-color'))
             self.image.pos  = self.pos
             self.image.scale= self.scale
             self.size = self.image.size
-            self.image.draw()           
+            self.image.draw()
 
     def reset(self):
         self.size = self.image.size
@@ -68,7 +68,7 @@ def on_press(*largs):
         x = int(random.uniform(100, w.width-100))
         y = int(random.uniform(100, w.height-100))
         anim_list.append(Animation(duration=1.5, pos=(x,y), alpha_function="ease_in_out_back"))
-    
+
     i = 0
     for obj in objlist:
         obj.do(anim_list[i])
@@ -82,7 +82,7 @@ def on_press(*largs):
             x = j*64+100
             y = i*64+40
             anim_list.append(Animation(duration=1.5, pos=(x,y), alpha_function="ease_in_out_back"))
-    
+
     i = 0
     for obj in objlist:
         obj.do(anim_list[i])
@@ -96,11 +96,11 @@ def on_press(*largs):
         x = 200 * math.cos(teta)+w.width/2
         y = 200 * math.sin(teta)+w.height/2
         anim_list.append(Animation(duration=1.5, pos=(x,y), alpha_function="ease_in_out_back"))
-    
+
     i = 0
     for obj in objlist:
         obj.do(anim_list[i])
-        i += 1        
+        i += 1
 
 @bowtie.event
 def on_press(*largs):
@@ -114,6 +114,6 @@ def on_press(*largs):
     i = 0
     for obj in objlist:
         obj.do(anim_list[i])
-        i += 1        
+        i += 1
 
 runTouchApp()

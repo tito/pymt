@@ -944,4 +944,3 @@ class CSSSerializer(object):
                 out.append(val, None, space=False)
                 
             return out.value() 
-            

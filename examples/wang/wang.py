@@ -65,7 +65,7 @@ class Line(object):
         h = line.points[1].y - f
 
         dem = g * d - c * h
-        if dem == 0: # parallel 
+        if dem == 0: # parallel
             return False
 
         s = (a * d + f * c - b * c - e * d) / dem

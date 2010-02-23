@@ -69,7 +69,7 @@ class MTMenuItem:
         self.draw (self.pos, self.size)
 
     def draw(self, p, s, blendoverride = 1):
-        '''Renders the menu in its current state'''        
+        '''Renders the menu in its current state'''
         glPushAttrib (GL_ENABLE_BIT)
         glEnable(GL_BLEND)
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -85,11 +85,11 @@ class MTMenuItem:
         flashduration = 200000 # microseconds
         animduration = 200000  # microseconds
         hidingduration = 200000 # microseconds
-        
+
         bgcolor = bgcolor_normal
         textcolor = textcolor_normal
         bordercolor = bordercolor_normal
-        
+
         if self.isFlashing:
             td = datetime.datetime.now () - self.flashStartTime
             if td.microseconds < flashduration:
@@ -103,12 +103,12 @@ class MTMenuItem:
                 bordercolor = mix (bordercolor_normal, bordercolor_selected, bo)
             else:
                 self.isFlashing = False
-        
+
         if self.isExpanded and not self.isFlashing:
             bgcolor = bgcolor_selected
             textcolor = textcolor_selected
             bordercolor = bordercolor_selected
-        
+
         if self.isInMotion:
             td = datetime.datetime.now () - self.motionStartTime
             if td.microseconds < animduration:
@@ -116,7 +116,7 @@ class MTMenuItem:
                 bo = bo*bo*bo*bo
                 if not self.isExpanded:
                     bo = 1.0 - bo
-                    
+
                 self.drawChildren(p, s, self.direction, bo)
             else:
                 self.isInMotion = False
@@ -125,11 +125,11 @@ class MTMenuItem:
                 #
                 bo = [0.0, 1.0][self.isExpanded]
                 self.updateChildrenPositions(p, s, self.direction, bo)
-            
-        
+
+
         if self.isExpanded and not self.isInMotion:
             self.drawChildren(p, s, self.direction, blendoverride)
-        
+
         if self.isHiding:
             td = datetime.datetime.now () - self.hideStartTime
             if td.microseconds < hidingduration:
@@ -142,25 +142,25 @@ class MTMenuItem:
                 self.isHiding = False
                 self.animparent.removeDrawRequestor (self)
                 self.triggerLaunch = True
-                
+
                 self.animparent.addTrigger (self)
                 return # we don't want the cell drawn anymore
-                
+
         # finally draw ourselves
         #
         set_color(*bgcolor)
-        
+
         drawRoundedRectangle (pos=p, size=s)
 
         set_color(*bordercolor)
         drawRoundedRectangle (pos=p, size=s, linewidth=1, style=GL_LINE_LOOP)
-        self.label.color = (int(textcolor[0] * 255.0), int(textcolor[1] * 255.0), 
+        self.label.color = (int(textcolor[0] * 255.0), int(textcolor[1] * 255.0),
                             int(textcolor[2] * 255.0), int(textcolor[3] * 255.0))
         self.label.x, self.label.y = p[0] + s[0] / 2, p[1] + s[1] / 2
         self.label.draw()
-            
+
         glPopAttrib()
-            
+
     def updateChildrenPositions(self, p, s, d, bo):
         for i,c in enumerate (self.children):
             pos = (p[0] + 10 * d[0] + (s[0] + 5) * (i + 1) * d[0] * bo, p[1] + 10 * d[1] + (s[1] + 5) * (i + 1) * d[1] * bo)
@@ -169,8 +169,8 @@ class MTMenuItem:
             if d == (0, -1):
                 c.direction = (1, 0)
             else:
-                c.direction = (0, -1) 
-        
+                c.direction = (0, -1)
+
     def drawChildren(self, p, s, d, bo = 1):
         for i,c in enumerate (self.children):
             pos = (p[0] + 10 * d[0] + (s[0] + 5) * (i + 1) * d[0] * bo, p[1] + 10 * d[1] + (s[1] + 5) * (i + 1) * d[1] * bo)
@@ -186,11 +186,11 @@ class MTMenuItem:
                     return r
             return None
         return None
-        
+
     def toggle(self):
         if self.parent:
             self.parent.checkHideActive(self)
-                
+
         if self.children:
             self.isExpanded = not self.isExpanded
             self.isFlashing = True;
@@ -202,34 +202,34 @@ class MTMenuItem:
             self.hideStartTime = datetime.datetime.now()
             self.animparent.addDrawRequestor (self)
             self.dismissMenu ()
-            
+
     def checkHideActive(self, o):
         for c in self.children:
             if c.isExpanded and c != o:
                 c.isExpanded = not self.isExpanded
-                
-            
+
+
     def dismissMenu(self):
         if self.parent:
             self.parent.isExpanded = False
             self.parent.dismissMenu();
-            
+
     def setAnimParent (self, parent):
         self.animparent = parent
         for c in self.children:
             c.setAnimParent (parent)
-             
-            
-        
+
+
+
 class MTAnimatedMenu(MTWidget):
     '''MTAnimatedMenu encapsulates the entire menu hierarchy.  Users of this class will instantiate
     an object of this type and specify a position in screen coordinates.  The menu will appear at the
     specified location and the user can interact with it.  To instantiate a menu do something like::
 
-            menu = MTAnimatedMenu ( { 'Option' : 
-                                        { 'New' : curry(newCallback), 
-                                          'Old' : curry (oldCallback) 
-                                        } 
+            menu = MTAnimatedMenu ( { 'Option' :
+                                        { 'New' : curry(newCallback),
+                                          'Old' : curry (oldCallback)
+                                        }
                                     })
 
     '''
@@ -237,7 +237,7 @@ class MTAnimatedMenu(MTWidget):
         self.menu = self._parseMenu(menu)
         self.pos = pos
         self.size = size
-        
+
         # set size and dimensions for the top level menu item
         self.menu.pos = pos
         self.menu.size = size
@@ -250,7 +250,7 @@ class MTAnimatedMenu(MTWidget):
             return self._getAsMenuItem(menu)[0]
         else:
             return menu
-        
+
     def _getAsMenuItem (self, menu):
         mt = []
         for k, v in menu.items():
@@ -278,28 +278,28 @@ class MTAnimatedMenu(MTWidget):
         self.menu.draw(self.pos, self.size)
         for c in self.regchildren:
             c.drawKnown ();
-            
+
         self._performDispatches()
-        
+
     def handle(self, pos):
         '''Handle a notification event, we need to be able to determine which item was tapped'''
         item = self.hittest (pos)
         if item:
             item.toggle()
-        
+
     def hittest(self, pos):
-        return self.menu.hittest(pos); 
-    
+        return self.menu.hittest(pos);
+
     def addDrawRequestor(self,c):
         self.regchildren.append (c)
-        
+
     def removeDrawRequestor(self,c):
         self.regchildren.remove(c)
-        
+
     def addTrigger(self, c):
-        # 2 frame before we call this handler, 
+        # 2 frame before we call this handler,
         # this is done to make sure that our menu is not visible when dispatch happens
-        self.triggeredChildren.append ((c, 2))  
+        self.triggeredChildren.append ((c, 2))
 
 MTWidgetFactory.register ('MTAnimatedMenu', MTAnimatedMenu)
 

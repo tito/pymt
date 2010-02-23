@@ -38,7 +38,7 @@ Cache.register('loader', limit=500)
 
 class ProxyImage(Image, EventDispatcher):
     '''Image returned by the Loader.image() function.
-    
+
     :Events:
         `on_load`
             Fired when the image is loaded and changed
@@ -182,7 +182,7 @@ class LoaderBase(object):
     def image(self, filename, load_callback=None, post_callback=None):
         '''Load a image using loader. A Proxy image is returned
         with a loading image ::
-        
+
             img = Loader.image(filename)
             # img will be a ProxyImage.
             # You'll use it the same as an Image class.

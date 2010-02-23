@@ -97,7 +97,7 @@ class MTWindowPygame(BaseWindow):
         # do software vsync if asked
         # FIXME: vsync is surely not 60 for everyone
         # this is not a real vsync. this must be done by driver...
-        # but pygame can't do vsync on X11, and some people 
+        # but pygame can't do vsync on X11, and some people
         # use hack to make it work under darwin...
         if self._vsync:
             from pymt.clock import getClock
@@ -200,7 +200,7 @@ class MTWindowPygame(BaseWindow):
     def _pygame_update_modifiers(self, mods=None):
         # Available mod, from dir(pygame)
         # 'KMOD_ALT', 'KMOD_CAPS', 'KMOD_CTRL', 'KMOD_LALT',
-        # 'KMOD_LCTRL', 'KMOD_LMETA', 'KMOD_LSHIFT', 'KMOD_META', 
+        # 'KMOD_LCTRL', 'KMOD_LMETA', 'KMOD_LSHIFT', 'KMOD_META',
         # 'KMOD_MODE', 'KMOD_NONE'
         if mods is None:
             mods = pygame.key.get_mods()

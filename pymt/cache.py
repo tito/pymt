@@ -97,7 +97,7 @@ class Cache:
     @staticmethod
     def get_timestamp(category, key, default=None):
         '''Get the object timestamp in cache.
-        
+
         :Parameters:
             `category` : str
                 Identifier of the category
@@ -114,7 +114,7 @@ class Cache:
     @staticmethod
     def get_lastaccess(category, key, default=None):
         '''Get the object last access time in cache.
-        
+
         :Parameters:
             `category` : str
                 Identifier of the category

@@ -38,7 +38,7 @@ class MTLabel(MTWidget):
         kwargs.setdefault('label', '')
 
 
-        
+
         self.autowidth  = kwargs.get('autowidth')
         self.autoheight = kwargs.get('autoheight')
         self.autosize   = kwargs.get('autosize')
@@ -51,14 +51,14 @@ class MTLabel(MTWidget):
         del kwargs['label']
 
         super(MTLabel, self).__init__(**kwargs)
-        
+
         size_specified = 'size' in kwargs or 'width' in kwargs or 'height' in kwargs
         for item in ('size', 'pos'):
             if item in kwargs:
                 del kwargs[item]
 
         self.kwargs = kwargs
-        
+
         #apply default CSS if not already set in kwargs
         self.kwargs.setdefault('color', self.style.get('color'))
         self.kwargs.setdefault('font_name', self.style.get('font-name'))

@@ -21,7 +21,7 @@ import whrandom
 import time
 
 import ogg.vorbis
-    
+
 version = 'ogg123.py, version 0.0.1'
 verbose = 1
 
@@ -41,14 +41,14 @@ Usage: ogg123.py [options] files
 class Player:
     '''A simple wrapper around an Ao object which provides an interface
     to play a specified file.'''
-    
+
     def play(self, name):
         '''Play the given file on the current device.'''
         if os.path.isfile(name):
             vf = ogg.vorbis.VorbisFile(name)
         else:
             raise ValueError, "Play takes a filename."
-        
+
         self.start(vf)
 
     def start(self, vf):
@@ -58,7 +58,7 @@ class Player:
             vi = vf.info()
 
             print 'Bitstream is %s channel, %s rate' % (vi.channels, vi.rate)
-            
+
             # If any of these comments show up, print 'key: val' where
             recognized_comments = ('Artist', 'Album', 'Title', 'Version',
                                    'Organization', 'Genre', 'Description',
@@ -68,7 +68,7 @@ class Player:
             for com in recognized_comments:
                 comment_dict[string.upper(com)] = '%s: %%s' % com
             known_keys = comment_dict.keys()
-            
+
             for key, val in vc.items():
                 if key in known_keys:
                     print comment_dict[key] % val
@@ -82,12 +82,12 @@ class Player:
         # containing the buffer, the number of bytes read, and I have
         # no idea what the bit thing is for! Then write the buffer contents
         # to the device.
-        
+
         while 1:
             (buff, bytes, bit) = vf.read(4096)
             if verbose == 2:
                 print "Read %s bytes" % bytes
-                
+
             if bytes == 0:
                 break
             self.write(buff, bytes)
@@ -118,7 +118,7 @@ class LADPlayer(Player):
         '''The write function. I'm really guessing as to whether
         I'm using it correctly or not, but this seems to work, so until I
         hear otherwise I'll go with this. Please educate me!'''
-        
+
         while self.dev.obuffree() < bytes:
             time.sleep(0.2)
         self.dev.write(buff[:bytes])
@@ -133,7 +133,7 @@ def usage(msg=None):
 def main():
     global verbose
     import getopt
-    
+
     args = sys.argv[1:]
 
     opts = 'hVd:om:vqz'
@@ -147,19 +147,19 @@ def main():
         print
         usage()
         sys.exit(2)
-        
+
     driver_id = None
     device_options = None
 
     modchoice = 'ao'
     choices = {'ao': AOPlayer,
                'lad': LADPlayer}
-    
+
     for arg, val in optlist:
         if arg == '-h' or arg == '--help':
             usage()
             sys.exit(2)
-            
+
         elif arg == '-V' or arg == '--version':
             print version
             sys.exit(0)
@@ -170,7 +170,7 @@ def main():
             except aoError:
                 sys.stderr.write('No such device %s\n' % val)
                 sys.exit(1)
-                
+
         elif arg == '-o' or arg == '--device-option':
             raise NotImplementedError
 
@@ -180,7 +180,7 @@ def main():
             else:
                 usage("%s is not a valid module choice" % val)
                 sys.exit(2)
-                
+
         elif arg == '-v' or arg == '--verbose':
             verbose = 2
 
@@ -209,7 +209,7 @@ def main():
             print
 
         myplayer.play(file)
-        
+
 if __name__ == '__main__':
     main()
 

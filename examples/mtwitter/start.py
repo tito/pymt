@@ -43,23 +43,23 @@ for f in twitFriends:
 def on_press(item, callback):
 	FriendTimelineScatter = MTScatterWidget(size=(500, 500))
 	p.add_widget(FriendTimelineScatter)
-	
+
 	FriendTimelineList = MTKineticList(searchable=False, deletable=False, size=(400, 500), pos=(50, 0), title=callback.name)
 	FriendTimelineScatter.add_widget(FriendTimelineList)
-	
+
 	TimelineExitButton = MTButton(label='X', pos=(450, 450), size=(50, 50), font_size=20)
 	FriendTimelineScatter.add_widget(TimelineExitButton)
-	
+
 	FriendTimelineItems = api.GetUserTimeline(callback.id)
 	for s in FriendTimelineItems:
 		us = s.text.encode('ASCII', 'replace')
 		FriendTimelineList.add_widget(MTKineticItem(label=us, size=(390, 50), multiline=True, width=300))
-	
+
 
 	@TimelineExitButton.event
 	def on_press(*largs):
 		p.remove_widget(FriendTimelineScatter)
-		
+
 #Status Update Window
 statusInput = MTTextInput()
 w.add_widget(statusInput)

@@ -190,4 +190,3 @@ class CSSUnknownRule(cssrule.CSSRule):
                         "type constant.")
     
     wellformed = property(lambda self: bool(self.atkeyword))
-    

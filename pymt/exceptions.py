@@ -6,7 +6,7 @@ __all__ = ['pymt_exception_manager', 'ExceptionHandler', 'ExceptionManager']
 class ExceptionHandler:
     '''Base handler that catch exception in runTouchApp().
     You can derivate and use it like this ::
-        
+
         class E(ExceptionHandler):
             def handle_exception(self, inst):
                 pymt_logger.exception(inst)

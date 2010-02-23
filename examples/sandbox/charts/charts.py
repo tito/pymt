@@ -7,7 +7,7 @@ from pymt.graphxcss import *
 css_add_sheet('''
 .simple {
 	draw-alpha-background: 1;
-	draw-border: 1;  
+	draw-border: 1;
 }
 
 .colored {
@@ -43,18 +43,18 @@ class MTChart(MTWidget):
          with self.display_list:
             self.draw()
             self.needs_redraw = False
-   
-      if self.visible:   
-         self.display_list.draw()
-         
 
-      
+      if self.visible:
+         self.display_list.draw()
+
+
+
    def add_data(self, label, data):
       if self.data.has_key(label):
          self.data[label].extend(data)
       else:
          self.data[label] = data
-         
+
       self.needs_redraw = True
 
 
@@ -67,7 +67,7 @@ class MTLineChart(MTChart):
       #draw background
       set_color(*self.style['bg-color'])
       drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
-      
+
       #draw axis
       p = self.style['padding']
       #set_color(*self.style['axis-color'])
@@ -95,7 +95,7 @@ if __name__ == "__main__":
 
    data = {'line 1': {0:10, 1:15, 2:20, 3:13, 4:17, 5:22 }}
    c = MTLineChart(data=data, cls=('simple', 'colored'))
-   
+
    w = MTWindow()
    t = MTScatterWidget()
    t.add_widget(c)

@@ -28,7 +28,7 @@ def pymt_plugin_activate(root, ctx):
 
     #Set gravity. (0,0) would be no gravity (and is the default). (0, -800) seems to be fairly accurate for normal downward gravity.
     gravity = (0, 0)
-    
+
     ctx.world = PhysicsWorld(root=root, gravity=gravity, bordersize=bordersize, debugbox=debugbox)
     root.add_widget(ctx.world)
 
@@ -69,7 +69,7 @@ class Shape(MTDragable):
                 pointlist.append(self.y)
                 pyglet.graphics.draw(4, GL_POLYGON, ('v2f', pointlist))
 
-        
+
         glColor4f(self.color[0], self.color[1], self.color[2], self.color[3])
         if self.complete:
             pointlist = []
@@ -78,14 +78,14 @@ class Shape(MTDragable):
                 pointlist.append(point[1] + self.pos[1])
             pyglet.graphics.draw(len(self.points), GL_POLYGON, ('v2f', pointlist))
             #graphx.draw.drawPolygon(pointlist, style=5)
-        else: 
+        else:
              if len(self.points) > 1:
                     pointlist = []
                     for point in self.points:
                         pointlist.append(point[0])
-                        pointlist.append(point[1]) 
+                        pointlist.append(point[1])
                     pyglet.graphics.draw(len(self.points), GL_LINE_STRIP, ('v2f', pointlist))
-                    
+
 
     def finish(self, coords):
         #Check to see how far the final point is from the start point.
@@ -130,7 +130,7 @@ class Shape(MTDragable):
         if self.complete and not self.moving:
             self.pos = self.body.position.x - self.width/2, self.body.position.y - self.height/2 #Update our position based on the position of our physics body. Offset it accordingly, as well.
         self.draw()
-        
+
     def setup_physics(self, world):
         # create body
         self.bodyDef = b2BodyDef()
@@ -148,7 +148,7 @@ class Shape(MTDragable):
         #self.body.SetLinearVelocity(velocity)
         self.body.CreateShape(self.shapeDef)
         self.body.SetMassFromShapes()
-        
+
     def on_touch_down(self, touch):
         if self.collide_point(touch.x, touch.y) and not self.parent.jointmode:
             self.moving = True
@@ -160,7 +160,7 @@ class Shape(MTDragable):
         if self.collide_point(touch.x, touch.y) and not self.parent.jointmode:
             super(Shape, self).on_touch_move(touch)
             self.body.position = (self.pos[0] + self.width/2, self.pos[1] + self.height/2)
-           
+
 
     def on_touch_up(self, touch):
         if self.collide_point(touch.x, touch.y):
@@ -208,7 +208,7 @@ class StaticShape(MTWidget):
     def on_draw(self):
         self.pos = self.body.position.x - self.width/2, self.body.position.y - self.height/2 #Update our position based on the position of our physics body. Offset it accordingly, as well.
         self.draw()
-        
+
     def setup_physics(self, world):
         groundBodyDef = b2BodyDef()
         groundBodyDef.position = self.x + self.width/2, self.y + self.height/2
@@ -232,7 +232,7 @@ class StaticShape(MTWidget):
                 self.parent.jointmode = True
                 self.parent.firstjointobj = self
                 self.parent.firstjoint = (touch.x, touch.y)
-            
+
 class PhysicsWorld(MTWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('root', None)
@@ -340,7 +340,7 @@ class PhysicsWorld(MTWidget):
 
 class MyContactListener(b2ContactListener):
     def __init__(self):
-        super(MyContactListener, self).__init__() 
+        super(MyContactListener, self).__init__()
     def Add(self, points):
         print points
         body_pairs = [(p.shape1.GetBody(), p.shape2.GetBody()) for p in self.points]

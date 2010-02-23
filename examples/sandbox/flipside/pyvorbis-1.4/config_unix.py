@@ -36,10 +36,10 @@ def run_test(input, flags = ''):
         write_log("executing test: %s" % compile_cmd)
         if not execute(compile_cmd):
             execute('./_temp')
-                
+
     finally:
         execute('rm -f _temp.c _temp')
-    
+
 ogg_test_program = '''
 #include <stdio.h>
 #include <stdlib.h>
@@ -70,7 +70,7 @@ def find_ogg(ogg_prefix = '/usr/local', enable_oggtest = 1):
             if not os.path.isfile('conf.oggtest'):
                 raise RuntimeError, "Did not produce output"
             execute('rm conf.oggtest')
-            
+
         except:
             print "test program failed"
             return None
@@ -103,7 +103,7 @@ def find_vorbis(ogg_data,
     ogg_libs = ogg_data['ogg_libs']
     ogg_lib_dir = ogg_data['ogg_lib_dir']
     ogg_include_dir = ogg_data['ogg_include_dir']
-    
+
     vorbis_include_dir = vorbis_prefix + '/include'
     vorbis_lib_dir = vorbis_prefix + '/lib'
     vorbis_libs = 'vorbis vorbisfile vorbisenc'
@@ -120,7 +120,7 @@ def find_vorbis(ogg_data,
             if not os.path.isfile('conf.vorbistest'):
                 raise RuntimeError, "Did not produce output"
             execute('rm conf.vorbistest')
-            
+
         except:
             print "test program failed"
             return None
@@ -137,7 +137,7 @@ def write_data(data):
         f.write('%s = %s\n' % item)
     f.close()
     print "Wrote Setup file"
-            
+
 def print_help():
     print '''%s
     --prefix                  Give the prefix in which vorbis was installed.
@@ -153,7 +153,7 @@ def parse_args():
             print arg_type, "needs an argument"
             exit(1)
         data[key] = argv[pos]
-        
+
     data = {}
     argv = sys.argv
     for pos in range(len(argv)):
@@ -170,7 +170,7 @@ def parse_args():
             arg_check(data, argv, pos, "Prefix", 'prefix')
 
     return data
-    
+
 def main():
     args = parse_args()
     prefix = args.get('prefix', '/usr/local')
@@ -188,7 +188,7 @@ def main():
         print "Config failure"
         exit(1)
     data.update(vorbis_data)
-    
+
     write_data(data)
 
 if __name__ == '__main__':

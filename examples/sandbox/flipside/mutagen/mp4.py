@@ -42,7 +42,7 @@ __all__ = ['MP4', 'Open', 'delete', 'MP4Cover']
 
 class MP4Cover(str):
     """A cover artwork.
-    
+
     Attributes:
     format -- format of the image (either FORMAT_JPEG or FORMAT_PNG)
     """

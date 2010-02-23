@@ -50,7 +50,7 @@ __all__ = ['M4A', 'Open', 'delete', 'M4ACover']
 
 class M4ACover(str):
     """A cover artwork.
-    
+
     Attributes:
     format -- format of the image (either FORMAT_JPEG or FORMAT_PNG)
     """

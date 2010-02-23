@@ -1,5 +1,5 @@
 #! /usr/bin/python
-# Original Ibar from kaswy 
+# Original Ibar from kaswy
 # Website http://kaswy.free.fr
 
 from random import random

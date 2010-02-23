@@ -279,4 +279,3 @@ class CSSNamespaceRule(cssrule.CSSRule):
                         "type constant.")
     
     wellformed = property(lambda self: self.namespaceURI is not None)
-    

@@ -19,7 +19,7 @@ except:
 
 class CameraVideoCapture(CameraBase):
     '''Implementation of CameraBase using VideoCapture
-    
+
     :Parameters:
         `video_src` : int, default is 0
             Index of VideoCapture camera to use (0 mean default camera)

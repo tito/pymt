@@ -35,7 +35,7 @@ class MusepackInfo(object):
     channels -- number of audio channels
     length -- file length in seconds, as a float
     sample_rate -- audio sampling rate in Hz
-    bitrate -- audio bitrate, in bits per second 
+    bitrate -- audio bitrate, in bits per second
     version -- Musepack stream version
 
     Optional Attributes:

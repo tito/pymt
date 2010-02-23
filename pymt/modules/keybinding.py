@@ -101,7 +101,7 @@ def _on_draw():
 
         return True
 
-    # 
+    #
     # Draw calibration screen
     #
     elif _toggle_state == 'calibration':

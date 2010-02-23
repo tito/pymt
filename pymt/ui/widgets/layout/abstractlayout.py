@@ -14,9 +14,9 @@ class MTAbstractLayout(MTWidget):
         `auto_layout` : bool, default to True
             Do layout when appropriate
         `animation_type` : str, default to None
-            Specifies the easing function for animating the layout when it changes.  
-            Default is 'None', in which case no animation is performed at all.  
-            Any name of a valid AnuimationAlpha function can be used to turn on animation.  
+            Specifies the easing function for animating the layout when it changes.
+            Default is 'None', in which case no animation is performed at all.
+            Any name of a valid AnuimationAlpha function can be used to turn on animation.
         `animation_time` : int, default to 1
             specifies the duration of the animations created when changing the layout (if any).
 
@@ -28,7 +28,7 @@ class MTAbstractLayout(MTWidget):
     def __init__(self, **kwargs):
         if self.__class__ == MTAbstractLayout:
             raise NotImplementedError, 'class MTAbstractLayout is abstract'
-        
+
         kwargs.setdefault('auto_layout', True)
         kwargs.setdefault('animation_type', None)
         kwargs.setdefault('animation_duration', 1)
@@ -42,7 +42,7 @@ class MTAbstractLayout(MTWidget):
         self.need_update        = False
 
         self.register_event_type('on_layout')
-        
+
     def _set_animation_type(self, type):
         if type in AnimationAlpha.__dict__ :
             self._animation_type = type
@@ -62,7 +62,7 @@ class MTAbstractLayout(MTWidget):
         self.need_layout = True
         if do_layout or (not do_layout and self.auto_layout):
             self.need_update = True
-        
+
     def reposition_child(self, child, **kwargs):
         if self.animation_type and len(kwargs):
             kwargs['f'] = self.animation_type
@@ -74,18 +74,18 @@ class MTAbstractLayout(MTWidget):
 
     def get_parent_layout(self):
         return self
-    
+
     def on_parent(self):
         layout = self.parent.get_parent_layout()
         if layout:
             self.push_handlers(on_layout=layout.update)
-            
+
     def on_move(self, x, y):
         self.update()
-        
+
     def on_resize(self, w, h):
         self.update()
-        
+
     def on_update(self):
         if self.need_update:
             self.do_layout()
@@ -102,11 +102,10 @@ class MTAbstractLayout(MTWidget):
 
     def on_layout(self):
         pass
-    
+
     def do_layout(self):
         pass
-    
-    
 
-    
-    
+
+
+

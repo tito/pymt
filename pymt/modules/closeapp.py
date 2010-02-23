@@ -40,7 +40,7 @@ class CloseApp(MTWidget):
         for id in to_delete:
             del self.closetouches[id]
 
-        # search 
+        # search
         for touch in touches:
             if 'closeapp.invalid_for_close' in touch.userdata:
                 continue

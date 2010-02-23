@@ -155,7 +155,7 @@ class MTXYSlider(MTWidget):
         `slider-color` : color
             Color of the slider
         `bg-color` : color
-            Background color of the slider 
+            Background color of the slider
 
     :Events:
         `on_value_change`

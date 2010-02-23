@@ -29,7 +29,7 @@ class MTBoxLayout(MTAbstractLayout):
         self.spacing        = kwargs.get('spacing')
         self.padding        = kwargs.get('padding')
         self._orientation    = kwargs.get('orientation')
-        
+
     def _get_orientation(self):
         return self._orientation
     def _set_orientation(self, orientation):
@@ -45,10 +45,10 @@ class MTBoxLayout(MTAbstractLayout):
     def do_layout(self):
         # we just do a layout, dispatch event
         self.dispatch_event('on_layout')
-        
+
         width  = self.padding*2
         height = self.padding*2
-        
+
         if self.orientation == 'horizontal':
             total_width = 0
             hint_width = 0
@@ -71,7 +71,7 @@ class MTBoxLayout(MTAbstractLayout):
                 x += w+self.spacing
                 width += w+self.spacing
                 height = max(height, h+self.padding*2)
-                
+
         if self.orientation == 'vertical':
             total_height = 0
             hint_height = 0

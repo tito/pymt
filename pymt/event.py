@@ -105,14 +105,14 @@ the particular class documentation.
 # pyglet
 # Copyright (c) 2006-2008 Alex Holkner
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions 
+# modification, are permitted provided that the following conditions
 # are met:
 #
 #  * Redistributions of source code must retain the above copyright
 #    notice, this list of conditions and the following disclaimer.
-#  * Redistributions in binary form must reproduce the above copyright 
+#  * Redistributions in binary form must reproduce the above copyright
 #    notice, this list of conditions and the following disclaimer in
 #    the documentation and/or other materials provided with the
 #    distribution.
@@ -224,7 +224,7 @@ class EventDispatcher(object):
         handlers.  No error is raised if any handler does not appear in that
         frame, or if no stack frame contains any of the given handlers.
 
-        If the stack frame is empty after removing the handlers, it is 
+        If the stack frame is empty after removing the handlers, it is
         removed from the stack.  Note that this interferes with the expected
         symmetry of `push_handlers` and `pop_handlers`.
         '''
@@ -282,7 +282,7 @@ class EventDispatcher(object):
     def set_handlers(self, *args, **kwargs):
         '''Attach one or more event handlers to the top level of the handler
         stack.
-        
+
         See `push_handlers` for the accepted argument types.
         '''
         # Create event stack if necessary
@@ -309,7 +309,7 @@ class EventDispatcher(object):
 
     def dispatch_event(self, event_type, *args):
         '''Dispatch a single event to the attached handlers.
-        
+
         The event is propogated to all handlers from from the top of the stack
         until one returns `EVENT_HANDLED`.  This method should be used only by
         `EventDispatcher` implementors; applications should call
@@ -352,7 +352,7 @@ class EventDispatcher(object):
         # A common problem in applications is having the wrong number of
         # arguments in an event handler.  This is caught as a TypeError in
         # dispatch_event but the error message is obfuscated.
-        # 
+        #
         # Here we check if there is indeed a mismatch in argument count,
         # and construct a more useful exception message if so.  If this method
         # doesn't find a problem with the number of arguments, the error
@@ -390,7 +390,7 @@ class EventDispatcher(object):
 
             raise TypeError(
                 '%s event was dispatched with %d arguments, but '
-                'handler %s has an incompatible function signature' % 
+                'handler %s has an incompatible function signature' %
                 (event_type, len(args), descr))
         else:
             raise

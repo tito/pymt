@@ -10,7 +10,7 @@ import sys
 
 class ModuleContext:
     '''Context of a module
-    
+
     You can access to the config with self.config.
     '''
     def __init__(self):

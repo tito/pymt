@@ -46,6 +46,7 @@ class ImageLoaderPygame(ImageLoaderBase):
         if mode not in ('RGB', 'RGBA'):
             try:
                 imc = im.convert(32)
+                mode = 'RGBA'
             except:
                 pymt.pymt_logger.warning(
                     'Image: Unable to convert image <%s> to RGBA (was %s)' %

@@ -26,11 +26,11 @@ def anchor_test():
         button.label = "Anchor: '%s,%s'. Boxlayout:%s" %(anchor.anchor_y, anchor.anchor_x, box.orientation)
     button = MTButton(label="Set Random Anchor Position", width=500)
     button.push_handlers(on_press=curry(change_anchor,button))
-    center_anchor = MTAnchorLayout()
+    center_anchor = MTAnchorLayout(size_hint=(1.0,1.0))
     center_anchor.add_widget(button)
 
     #put teh two layouts into a stretch layout, so they fill the whole window (since stretch is put as root)
-    stretch = MTStretchLayout(id='anchorfun')
+    stretch = MTWidget(id='anchorfun', size_hint=(1.0,1.0) )
     stretch.add_widget(anchor)
     stretch.add_widget(center_anchor)
  
@@ -38,7 +38,7 @@ def anchor_test():
 
 
 def size_hint_test():
-    box = MTBoxLayout()
+    box = MTBoxLayout(size_hint=(1.0,1.0))
     #box.add_widget( MTButton(label="size_hint=(None, None)") )
     inner_box = MTBoxLayout(orientation='vertical', size_hint=(1.0, 1.0))
     for i in range(2):
@@ -46,24 +46,23 @@ def size_hint_test():
         btn.push_handlers( on_press=curry(set_screen, 'anchorfun') )
         inner_box.add_widget(btn)
     
-    box.add_widget( MTButton(label="size_hint=(1.0,None)--(press any button for next screen)", size_hint=(1.0, None)) )
+    box.add_widget( MTButton(label="size_hint=(1.0 ,None)--(press any button for next screen)", size_hint=(1.0, None)) )
     box.add_widget( inner_box )
     box.add_widget( MTButton(label="size_hint=(0.3,0.5)", size_hint=(0.3, 0.5)) )
     for b in box.children:
         if isinstance(b, MTButton):
             b.push_handlers( on_press=curry(set_screen, 'anchorfun') )
-    stretch = MTStretchLayout(id="sizehint")
+    stretch = MTWidget(id="sizehint")
     stretch.add_widget(box)
     return stretch
 
 
 if __name__ == '__main__':
     
-    screens = MTScreenLayout(id='screens')
+    screens = MTScreenLayout(id='screens', size_hint=(1.0,1.0) )
     screens.add_widget(size_hint_test())
     screens.add_widget(anchor_test())
     
-    root = MTStretchLayout()
+    root = MTBoxLayout(size=(800,800))
     root.add_widget(screens)
-    root.do_layout()
     runTouchApp(root)

@@ -56,9 +56,8 @@ class MTAnchorLayout(MTAbstractLayout):
    
    
     def do_layout(self):
-        super(MTAnchorLayout, self).do_layout()
         for w in self.children:
-            x,y = self.pos 
+            x,y = self.pos
             
             if self.anchor_x == 'left':
                 x = self.x + self.padding

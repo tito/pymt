@@ -43,7 +43,12 @@ class MTBoxLayout(MTAbstractLayout):
     orientation = property(_get_orientation, _set_orientation, doc="Orientation of widget inside layout, can be `horizontal` or `vertical`")
 
     def do_layout(self):
-     
+        # we just do a layout, dispatch event
+        self.dispatch_event('on_layout')
+        
+        width  = self.padding*2
+        height = self.padding*2
+        
         if self.orientation == 'horizontal':
             total_width = 0
             hint_width = 0
@@ -52,18 +57,21 @@ class MTBoxLayout(MTAbstractLayout):
                     hint_width += w.size_hint[0]
                 else:
                     total_width += w.width
+                total_width += self.spacing
             room_left = max(0,self.width - total_width)
             x = self.x + self.padding
             y = self.y + self.padding
             for c in self.children:
                 w,h = c.size
                 if c.size_hint[0]:
-                    w = room_left*c.size_hint[0]/min(1.0, float(hint_width))
-                w +=  self.spacing
+                    w = room_left*c.size_hint[0]/max(1.0, float(hint_width))
                 if c.size_hint[1]:
-                    h = max(1.0, c.size_hint[1])*self.height                
+                    h = max(1.0, c.size_hint[1])*self.height
                 self.reposition_child(c, pos=(x,y), size=(w,h))
-
+                x += w+self.spacing
+                width += w+self.spacing
+                height = max(height, h+self.padding*2)
+                
         if self.orientation == 'vertical':
             total_height = 0
             hint_height = 0
@@ -72,20 +80,24 @@ class MTBoxLayout(MTAbstractLayout):
                     hint_height += w.size_hint[1]
                 else:
                     total_height += w.height
+                total_height += self.spacing
             room_left = max(0,self.height - total_height)
             x = self.x + self.padding
             y = self.y + self.padding
             for c in self.children:
                 w,h = c.size
                 if c.size_hint[0]:
-                    w = min(1.0, c.size_hint[0]*self.width)
+                    w = max(1.0, c.size_hint[0])*self.width
                 if c.size_hint[1]:
-                    h = room_left*c.size_hint[1]/min(1.0, float(hint_height))
-                h +=  self.spacing
+                    h = room_left*c.size_hint[1]/max(1.0, float(hint_height))
                 self.reposition_child(c, pos=(x,y), size=(w,h))
+                y += h+self.spacing
+                height += h+self.spacing
+                width = max(width, w+self.padding*2)
 
-        # we just do a layout, dispatch event
-        self.dispatch_event('on_layout')
+        self.width  = max(width+self.padding, self.width)
+        self.height = max(height+self.padding, self.height)
+
 
 # Register all base widgets
 MTWidgetFactory.register('MTBoxLayout', MTBoxLayout)

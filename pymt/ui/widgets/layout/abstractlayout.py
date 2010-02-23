@@ -5,6 +5,7 @@ __all__ = ['MTAbstractLayout']
 
 from ..widget import MTWidget
 from ...animation import Animation, AnimationAlpha
+from ....graphx import set_color, drawRectangle
 
 class MTAbstractLayout(MTWidget):
     '''Abstract layout. Base class used to implement layout.
@@ -31,11 +32,14 @@ class MTAbstractLayout(MTWidget):
         kwargs.setdefault('auto_layout', True)
         kwargs.setdefault('animation_type', None)
         kwargs.setdefault('animation_duration', 1)
+        kwargs.setdefault('bg_color', (0,0,0,0)) #good for debugging layout
         super(MTAbstractLayout, self).__init__(**kwargs)
 
         self._animation_type    = kwargs.get('animation_type')
         self.animation_duration = kwargs.get('animation_duration')
         self.auto_layout        = kwargs.get('auto_layout')
+        self.bg_color           = kwargs.get('bg_color')
+        self.need_update        = False
 
         self.register_event_type('on_layout')
         
@@ -51,13 +55,13 @@ class MTAbstractLayout(MTWidget):
     def add_widget(self, widget, front=True, do_layout=None):
         super(MTAbstractLayout, self).add_widget(widget, front=front)
         if do_layout or (not do_layout and self.auto_layout):
-            self.do_layout()
+            self.need_update = True
 
     def remove_widget(self, widget, do_layout=None):
         super(MTAbstractLayout, self).remove_widget(widget)
         self.need_layout = True
         if do_layout or (not do_layout and self.auto_layout):
-            self.do_layout()
+            self.need_update = True
         
     def reposition_child(self, child, **kwargs):
         if self.animation_type and len(kwargs):
@@ -68,13 +72,41 @@ class MTAbstractLayout(MTWidget):
             for prop in kwargs:
                 child.__setattr__(prop, kwargs[prop])
 
-    def do_layout(self):
-        pass
-
     def get_parent_layout(self):
         return self
+    
+    def on_parent(self):
+        layout = self.parent.get_parent_layout()
+        if layout:
+            self.push_handlers(on_layout=layout.update)
+            
+    def on_move(self, x, y):
+        self.update()
+        
+    def on_resize(self, w, h):
+        self.update()
+        
+    def on_update(self):
+        if self.need_update:
+            self.do_layout()
+            self.need_update = False
+        super(MTAbstractLayout, self).on_update()
+
+    def update(self):
+        self.need_update = True
+
+    def draw(self):
+        if self.bg_color[3] > 0:
+            set_color(*self.bg_color)
+            drawRectangle(self.pos, self.size)
 
     def on_layout(self):
         pass
+    
+    def do_layout(self):
+        pass
+    
+    
+
     
     

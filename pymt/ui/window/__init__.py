@@ -392,6 +392,12 @@ class BaseWindow(EventDispatcher):
         glScalef(5000, 5000, 1)
         glTranslatef(-width / 2, -height / 2, -500)
         glMatrixMode(GL_MODELVIEW)
+        
+        for w in self.children:
+            if w.size_hint[0]:
+                w.width = w.size_hint[0]*width
+            if w.size_hint[1]:
+                w.height = w.size_hint[1]*height
 
     def on_close(self, *largs):
         '''Event called when the window is closed'''

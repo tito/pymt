@@ -134,11 +134,7 @@ class MTGridLayout(MTAbstractLayout):
                 x = x + cols[col] + spacing
             y = y + rows[row] + spacing
 
-        # dispatch new content size
-        self.content_size = (current_width, current_height)
-
-        # XXX make it optionnal, in 0.2
-        self.size = (self.content_width, self.content_height)
+        self.size = (current_width, current_height)
 
         # we just do a layout, dispatch event
         self.dispatch_event('on_layout')

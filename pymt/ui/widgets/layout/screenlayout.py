@@ -70,8 +70,10 @@ class MTScreenLayout(MTAbstractLayout):
         else:
             super(MTScreenLayout, self).on_draw()
 
-
-
+    def do_layout(self):
+        # a screen layout is always "fullscreen"
+        if self.screen is not None:
+            self.screen.size = self.size
 
 # Register all base widgets
 MTWidgetFactory.register('MTScreenLayout', MTScreenLayout)

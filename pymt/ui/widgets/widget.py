@@ -2,7 +2,7 @@
 Widget: Base of every widget implementation.
 '''
 
-__all__ = ['getWidgetById',
+__all__ = ['getWidgetById','getWidgetByID',
     'event_stats_activate', 'event_stats_print',
     'MTWidget'
 ]
@@ -102,6 +102,7 @@ class MTWidget(EventDispatcher):
         kwargs.setdefault('x', None)
         kwargs.setdefault('y', None)
         kwargs.setdefault('size', (100, 100))
+	kwargs.setdefault('size_hint', (None, None))
         kwargs.setdefault('width', None)
         kwargs.setdefault('height', None)
         kwargs.setdefault('visible', True)
@@ -120,14 +121,15 @@ class MTWidget(EventDispatcher):
         for ev in MTWidget.visible_events:
             self.register_event_type(ev)
 
-        self.parent					= None
-        self.children				= SafeList()
-        self._visible				= False
-        self._x, self._y			= kwargs.get('pos')
-        self._width, self._height	= kwargs.get('size')
-        self.animations				= []
-        self.visible				= kwargs.get('visible')
-        self.draw_children          = kwargs.get('draw_children')
+        self._parent              = None
+        self.children             = SafeList()
+        self._visible             = False
+        self._x, self._y          = kwargs.get('pos')
+        self._width, self._height = kwargs.get('size')
+	self._size_hint           = kwargs.get('size_hint')
+        self.animations	          = []
+        self.visible              = kwargs.get('visible')
+        self.draw_children        = kwargs.get('draw_children')
 
         # cache for get_parent_window()
         self._parent_window         = None
@@ -141,6 +143,7 @@ class MTWidget(EventDispatcher):
         self.register_event_type('on_resize')
         self.register_event_type('on_parent_resize')
         self.register_event_type('on_move')
+        self.register_event_type('on_parent')
 
         if kwargs.get('x'):
             self.x = kwargs.get('x')
@@ -165,6 +168,15 @@ class MTWidget(EventDispatcher):
         self.a_properties = {}
 
         self.init()
+        
+        
+    def _set_parent(self, parent):
+        self._parent = parent
+        self.dispatch_event('on_parent')
+    def _get_parent(self):
+        return self._parent
+    parent = property(_get_parent, _set_parent, doc="MTWidget: parent of widget.  fired on_parent event when set")
+        
 
     def _set_id(self, id):
         global _id_2_widget
@@ -193,6 +205,16 @@ class MTWidget(EventDispatcher):
     def _get_x(self):
         return self._x
     x = property(_get_x, _set_x, doc='int: X position of widget')
+    
+
+    def _set_size_hint(self, size_hint):
+        if self._size_hint == size_hint:
+            return
+        self._size_hint = size_hint
+    def _get_size_hint(self):
+        return self._size_hint
+    size_hint = property(_get_size_hint, _set_size_hint, doc='size_hint is used by layouts to determine size behaviour during layout')
+
 
     def _set_y(self, y):
         if self._y == y:
@@ -387,6 +409,10 @@ class MTWidget(EventDispatcher):
 
     def __setattr__(self, name, value):
         super(MTWidget, self).__setattr__(name, value)
+
+    def on_parent(self):
+        pass
+
 
     def on_parent_resize(self, w, h):
         pass

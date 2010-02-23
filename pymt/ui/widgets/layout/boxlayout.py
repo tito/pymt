@@ -9,7 +9,6 @@ from ...factory import MTWidgetFactory
 
 class MTBoxLayout(MTAbstractLayout):
     '''Box layout can arrange item in horizontal or vertical orientation.
-
     :Parameters:
         `padding` : int, default to 0
             Padding between the border and content
@@ -17,25 +16,11 @@ class MTBoxLayout(MTAbstractLayout):
             Spacing between widgets
         `orientation` : str, default is 'horizontal'
             Orientation of widget inside layout, can be `horizontal` or `vertical`
-        `uniform_width` : bool, default to False
-            Try to have same width for all children
-        `uniform_height` : bool, default to False
-            Try to have same height for all children
-        `invert_x` : bool, default to False
-            Invert X axis
-        `invert_y` : bool, default to False
-            Invert Y axis
     '''
-
     def __init__(self, **kwargs):
-        kwargs.setdefault('orientation', 'horizontal')
         kwargs.setdefault('spacing', 1)
         kwargs.setdefault('padding', 0)
-        kwargs.setdefault('uniform_width', False)
-        kwargs.setdefault('uniform_height', False)
-        kwargs.setdefault('invert_x', False)
-        kwargs.setdefault('invert_y', False)
-
+        kwargs.setdefault('orientation', 'horizontal')
         if kwargs.get('orientation') not in ['horizontal', 'vertical']:
             raise Exception('Invalid orientation, only horizontal/vertical are supported')
 
@@ -43,87 +28,76 @@ class MTBoxLayout(MTAbstractLayout):
 
         self.spacing        = kwargs.get('spacing')
         self.padding        = kwargs.get('padding')
-        self.orientation    = kwargs.get('orientation')
-        self.uniform_width  = kwargs.get('uniform_width')
-        self.uniform_height = kwargs.get('uniform_height')
-        self.invert_x       = kwargs.get('invert_x')
-        self.invert_y       = kwargs.get('invert_y')
+        self._orientation    = kwargs.get('orientation')
+        
+    def _get_orientation(self):
+        return self._orientation
+    def _set_orientation(self, orientation):
+        if self._orientation == orientation:
+            return
+        elif orientation in ['horizontal', 'vertical']:
+            self._orientation = orientation
+            self.do_layout()
+        else:
+            raise ValueError("'%s' is not a valid orientation for BoxLayout!  Allowed values are: 'horizontal' and 'vertical'." % orientation)
+    orientation = property(_get_orientation, _set_orientation, doc="Orientation of widget inside layout, can be `horizontal` or `vertical`")
 
     def do_layout(self):
-        '''Recalculate position for every subwidget, fire
-        on_layout when finished. If content size have changed,
-        fire on_content_resize too. Uniform width/height are handled
-        after on_content_resize.
-        '''
-        super(MTBoxLayout, self).do_layout()
-        max_width = max_height = 0
-        current_width = current_height = 0
-        for w in self.children:
-            try:
-                if w.height > max_height:
-                    max_height = w.height
-                if w.width > max_width:
-                    max_width = w.width
-                if self.orientation == 'horizontal':
-                    if current_width > 0:
-                        current_width += self.spacing
-                    current_width += w.width
-                elif self.orientation == 'vertical':
-                    if current_height > 0:
-                        current_height += self.spacing
-                    current_height += w.height
-            except:
-                pass
-
-        # uniform
-        if self.uniform_width:
-            for w in self.children:
-                w.width = max_width
-            if self.orientation == 'horizontal':
-                current_width = (len(self.children) - 1) * (max_width + self.spacing)
-        if self.uniform_height:
-            for w in self.children:
-                w.height = max_height
-            if self.orientation == 'vertical':
-                current_height = (len(self.children) - 1) * (max_height + self.spacing)
-
-        # adjust current width/height
-        if self.orientation == 'horizontal':
-            current_height = max_height
-        elif self.orientation == 'vertical':
-            current_width = max_width
-
-        # apply double padding
-        current_width += self.padding * 2
-        current_height += self.padding * 2
-
-        # reposition
-        cur_x = self.x + self.padding
-        cur_y = self.y + self.padding
-        for w in self.children:
-            try:
-                if self.invert_x:
-                    w.y = self.x + current_width - w.width - (cur_x - self.x)
-                else:
-                    w.x = cur_x
-                if self.invert_y:
-                    w.y = self.y + current_height - w.height - (cur_y - self.y)
-                else:
-                    w.y = cur_y
-                if self.orientation == 'horizontal':
-                    cur_x += w.width + self.spacing
-                elif self.orientation == 'vertical':
-                    cur_y += w.height + self.spacing
-            except:
-                pass
-
-        self.content_size = (current_width, current_height)
-
-        # XXX make it optionnal, in 0.2
-        self.size = (self.content_width, self.content_height)
-
         # we just do a layout, dispatch event
         self.dispatch_event('on_layout')
+        
+        width  = self.padding*2
+        height = self.padding*2
+        
+        if self.orientation == 'horizontal':
+            total_width = 0
+            hint_width = 0
+            for w in self.children:
+                if w.size_hint[0]:
+                    hint_width += w.size_hint[0]
+                else:
+                    total_width += w.width
+                total_width += self.spacing
+            room_left = max(0,self.width - total_width)
+            x = self.x + self.padding
+            y = self.y + self.padding
+            for c in self.children:
+                w,h = c.size
+                if c.size_hint[0]:
+                    w = room_left*c.size_hint[0]/max(1.0, float(hint_width))
+                if c.size_hint[1]:
+                    h = max(1.0, c.size_hint[1])*self.height
+                self.reposition_child(c, pos=(x,y), size=(w,h))
+                x += w+self.spacing
+                width += w+self.spacing
+                height = max(height, h+self.padding*2)
+                
+        if self.orientation == 'vertical':
+            total_height = 0
+            hint_height = 0
+            for w in self.children:
+                if w.size_hint[1]:
+                    hint_height += w.size_hint[1]
+                else:
+                    total_height += w.height
+                total_height += self.spacing
+            room_left = max(0,self.height - total_height)
+            x = self.x + self.padding
+            y = self.y + self.padding
+            for c in self.children:
+                w,h = c.size
+                if c.size_hint[0]:
+                    w = max(1.0, c.size_hint[0])*self.width
+                if c.size_hint[1]:
+                    h = room_left*c.size_hint[1]/max(1.0, float(hint_height))
+                self.reposition_child(c, pos=(x,y), size=(w,h))
+                y += h+self.spacing
+                height += h+self.spacing
+                width = max(width, w+self.padding*2)
+
+        self.width  = max(width+self.padding, self.width)
+        self.height = max(height+self.padding, self.height)
+
 
 # Register all base widgets
 MTWidgetFactory.register('MTBoxLayout', MTBoxLayout)

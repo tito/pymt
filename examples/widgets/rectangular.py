@@ -1,8 +1,11 @@
 from pymt import *
 
-m = MTWindow()
+
+
+
+a  = MTRectangularWidget(size=(200,200), pos=(200,200))
 
 o = MTRectangularWidget()
-m.add_widget(o)
+a.add_widget(o)
 
-runTouchApp()
+runTouchApp(a)

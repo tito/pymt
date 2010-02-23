@@ -24,6 +24,7 @@ class MouseTouchProvider(TouchProvider):
         self.touches		= {}
         self.counter		= 0
         self.current_drag	= None
+        self.alt_touch      = None
 
     def start(self):
         '''Start the mouse provider'''
@@ -40,6 +41,21 @@ class MouseTouchProvider(TouchProvider):
                 return t
         return False
 
+    def create_touch(self, rx, ry, is_double_tap):
+        self.counter += 1
+        id = 'mouse' + str(self.counter)
+        self.current_drag = cur = MouseTouch(self.device, id=id, args=[rx, ry])
+        cur.is_double_tap = is_double_tap
+        self.touches[id] = cur
+        self.waiting_event.append(('down', cur))
+        return cur
+
+    def remove_touch(self, cur):
+        if cur.id not in self.touches:
+            return
+        del self.touches[cur.id]
+        self.waiting_event.append(('up', cur))
+
     def on_mouse_motion(self, x, y, modifiers):
         rx = x / float(self.window.width)
         ry = 1. - y / float(self.window.height)
@@ -47,8 +63,11 @@ class MouseTouchProvider(TouchProvider):
             cur = self.current_drag
             cur.move([rx, ry])
             self.waiting_event.append(('move', cur))
+        elif self.alt_touch is not None and 'alt' not in modifiers:
+            # alt just released ?
+            is_double_tap = 'shift' in modifiers
+            self.create_touch(rx, ry, is_double_tap)
         return True
-
 
     def on_mouse_press(self, x, y, button, modifiers):
         rx = x / float(self.window.width)
@@ -57,13 +76,11 @@ class MouseTouchProvider(TouchProvider):
         if newTouch:
             self.current_drag = newTouch
         else:
-            self.counter += 1
-            id = 'mouse' + str(self.counter)
-            self.current_drag = cur = MouseTouch(self.device, id=id, args=[rx, ry])
-            if 'shift' in modifiers:
-                cur.is_double_tap = True
-            self.touches[id] = cur
-            self.waiting_event.append(('down', cur))
+            is_double_tap = 'shift' in modifiers
+            cur = self.create_touch(rx, ry, is_double_tap)
+            if 'alt' in modifiers:
+                self.alt_touch = cur
+                self.current_drag = None
         return True
 
     def on_mouse_release(self, x, y, button, modifiers):
@@ -71,9 +88,11 @@ class MouseTouchProvider(TouchProvider):
         ry = 1. - y / float(self.window.height)
         cur = self.find_touch(rx, ry)
         if button == 'left' and cur and not ('ctrl' in modifiers):
-            cur.move([rx, ry])
-            del self.touches[cur.id]
-            self.waiting_event.append(('up', cur))
+            self.remove_touch(cur)
+            self.current_drag = None
+        if self.alt_touch:
+            self.remove_touch(self.alt_touch)
+            self.alt_touch = None
         return True
 
     def update(self, dispatch_fn):

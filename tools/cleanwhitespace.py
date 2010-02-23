@@ -9,7 +9,7 @@ Usage:
 import re
 import os
 
-endspacestab = re.compile('([\t ]*)$')
+endspacestab = re.compile('([\t\ ]*)$')
 
 for root, dirs, files in os.walk('.'):
     files = [x for x in files if x[-3:] == '.py' and x[0] != '.']
@@ -17,14 +17,14 @@ for root, dirs, files in os.walk('.'):
         filename = os.path.join(root, file)
         with open(filename, 'r') as fd:
             content = fd.read()
-        lines = content.split('\n')
+        lines = content.split('\r\n')
         changes = 0
         for idx in xrange(len(lines)):
-            line = re.split(endspacestab, lines[idx], maxsplit=1)[0]
+            line = endspacestab.split(lines[idx], maxsplit=1)[0]
             if lines[idx] != line:
                 changes += 1
                 lines[idx] = line
-        modified = '\n'.join(lines)
+        modified = '\r\n'.join(lines)
         if changes:
             print filename, ',', changes, 'removals'
             with open(filename, 'w') as fd:

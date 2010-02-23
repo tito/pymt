@@ -24,8 +24,8 @@ class CSSCharsetRule(cssrule.CSSRule):
     character encoding information e.g. in an HTTP header, has priority
     (see CSS document representation) but this is not reflected in the
     CSSCharsetRule.
-    
-    This rule is not really needed anymore as setting 
+
+    This rule is not really needed anymore as setting
     :attr:`CSSStyleSheet.encoding` is much easier.
 
     Format::
@@ -34,10 +34,10 @@ class CSSCharsetRule(cssrule.CSSRule):
             CHARSET_SYM S* STRING S* ';'
 
     BUT: Only valid format is (single space, double quotes!)::
-    
+
         @charset "ENCODING";
     """
-    def __init__(self, encoding=None, parentRule=None, 
+    def __init__(self, encoding=None, parentRule=None,
                  parentStyleSheet=None, readonly=False):
         """
         :param encoding:
@@ -45,7 +45,7 @@ class CSSCharsetRule(cssrule.CSSRule):
         :param readonly:
             defaults to False, not used yet
         """
-        super(CSSCharsetRule, self).__init__(parentRule=parentRule, 
+        super(CSSCharsetRule, self).__init__(parentRule=parentRule,
                                              parentStyleSheet=parentStyleSheet)
         self._atkeyword = '@charset'
         self._encoding = None
@@ -87,30 +87,30 @@ class CSSCharsetRule(cssrule.CSSRule):
 
         wellformed = True
         tokenizer = self._tokenize2(cssText)
-        
-        if self._type(self._nexttoken(tokenizer)) != self._prods.CHARSET_SYM: 
+
+        if self._type(self._nexttoken(tokenizer)) != self._prods.CHARSET_SYM:
             wellformed = False
             self._log.error(u'CSSCharsetRule must start with "@charset "',
                             error=xml.dom.InvalidModificationErr)
-        
+
         encodingtoken = self._nexttoken(tokenizer)
         encodingtype = self._type(encodingtoken)
         encoding = self._stringtokenvalue(encodingtoken)
         if self._prods.STRING != encodingtype or not encoding:
             wellformed = False
-            self._log.error(u'CSSCharsetRule: no encoding found; %r.' % 
+            self._log.error(u'CSSCharsetRule: no encoding found; %r.' %
                             self._valuestr(cssText))
-            
+
         semicolon = self._tokenvalue(self._nexttoken(tokenizer))
         EOFtype = self._type(self._nexttoken(tokenizer))
         if u';' != semicolon or EOFtype not in ('EOF', None):
             wellformed = False
-            self._log.error(u'CSSCharsetRule: Syntax Error: %r.' % 
+            self._log.error(u'CSSCharsetRule: Syntax Error: %r.' %
                             self._valuestr(cssText))
-        
+
         if wellformed:
             self.encoding = encoding
-            
+
     cssText = property(fget=_getCssText, fset=_setCssText,
         doc="(DOM) The parsable textual representation.")
 
@@ -124,7 +124,7 @@ class CSSCharsetRule(cssrule.CSSRule):
               Raised if this encoding rule is readonly.
             - :exc:`~xml.dom.SyntaxErr`:
               Raised if the specified encoding value has a syntax error and
-              is unparsable.  
+              is unparsable.
         """
         self._checkReadonly()
         tokenizer = self._tokenize2(encoding)
@@ -151,7 +151,7 @@ class CSSCharsetRule(cssrule.CSSRule):
     encoding = property(lambda self: self._encoding, _setEncoding,
         doc="(DOM)The encoding information used in this @charset rule.")
 
-    type = property(lambda self: self.CHARSET_RULE, 
+    type = property(lambda self: self.CHARSET_RULE,
                     doc="The type of this rule, as defined by a CSSRule "
                         "type constant.")
 

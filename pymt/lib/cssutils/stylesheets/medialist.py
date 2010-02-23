@@ -18,7 +18,7 @@ class MediaList(cssutils.util.Base, cssutils.util.ListSeq):
     without defining or constraining how this collection is
     implemented.
 
-    A single media in the list is an instance of :class:`MediaQuery`. 
+    A single media in the list is an instance of :class:`MediaQuery`.
     An empty list is the same as a list that contains the medium "all".
 
     Format from CSS2.1::
@@ -134,9 +134,9 @@ class MediaList(cssutils.util.Base, cssutils.util.ListSeq):
         # TODO: remove duplicates?
 
     def appendMedium(self, newMedium):
-        """Add the `newMedium` to the end of the list. 
+        """Add the `newMedium` to the end of the list.
         If the `newMedium` is already used, it is first removed.
-        
+
         :param newMedium:
             a string or a :class:`~cssutils.stylesheets.MediaQuery`
         :returns: Wellformedness of `newMedium`.

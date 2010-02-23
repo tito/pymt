@@ -19,9 +19,9 @@ class CSSComment(cssrule.CSSRule):
 
         /*...*/
     """
-    def __init__(self, cssText=None, parentRule=None, 
+    def __init__(self, cssText=None, parentRule=None,
                  parentStyleSheet=None, readonly=False):
-        super(CSSComment, self).__init__(parentRule=parentRule, 
+        super(CSSComment, self).__init__(parentRule=parentRule,
                                          parentStyleSheet=parentStyleSheet)
 
         self._cssText = None
@@ -76,9 +76,9 @@ class CSSComment(cssrule.CSSRule):
     cssText = property(_getCssText, _setCssText,
         doc=u"The parsable textual representation of this rule.")
 
-    type = property(lambda self: self.COMMENT, 
+    type = property(lambda self: self.COMMENT,
                     doc="The type of this rule, as defined by a CSSRule "
                         "type constant.")
-    
+
     # constant but needed:
     wellformed = property(lambda self: True)

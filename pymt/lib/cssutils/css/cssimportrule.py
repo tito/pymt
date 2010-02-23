@@ -1,4 +1,4 @@
-"""CSSImportRule implements DOM Level 2 CSS CSSImportRule plus the 
+"""CSSImportRule implements DOM Level 2 CSS CSSImportRule plus the
 ``name`` property from http://www.w3.org/TR/css3-cascade/#cascading.
 
 """
@@ -56,7 +56,7 @@ class CSSImportRule(cssrule.CSSRule):
         seq = self._tempSeq()
         seq.append(self.href, 'href')
         seq.append(self.media, 'media')
-        seq.append(self.name, 'name')            
+        seq.append(self.name, 'name')
         self._setSeq(seq)
         self._readonly = readonly
 
@@ -86,7 +86,7 @@ class CSSImportRule(cssrule.CSSRule):
 
     def _setCssText(self, cssText):
         """
-        :exceptions:    
+        :exceptions:
             - :exc:`~xml.dom.HierarchyRequestErr`:
               Raised if the rule cannot be inserted at this point in the
               style sheet.
@@ -239,7 +239,7 @@ class CSSImportRule(cssrule.CSSRule):
                                            x.type, x.line, x.col)
                             break
                 else:
-                	# reset media 
+                	# reset media
                     self.media.mediaText = u'all'
                     newseq.append(self.media, 'media')
                 self.name = new['name']
@@ -311,7 +311,7 @@ class CSSImportRule(cssrule.CSSRule):
     def __setStyleSheet(self):
         """Read new CSSStyleSheet cssText from href using parentStyleSheet.href
 
-        Indirectly called if setting ``href``. In case of any error styleSheet 
+        Indirectly called if setting ``href``. In case of any error styleSheet
         is set to ``None``.
         """
         # should simply fail so all errors are catched!
@@ -342,8 +342,8 @@ class CSSImportRule(cssrule.CSSRule):
                     encodingOverride = usedEncoding
                 elif 5 > enctype > 0:
                     encoding = usedEncoding
-                
-                styleSheet._setCssTextWithEncodingOverride(cssText, 
+
+                styleSheet._setCssTextWithEncodingOverride(cssText,
                                                          encodingOverride=encodingOverride,
                                                          encoding=encoding)
 
@@ -356,7 +356,7 @@ class CSSImportRule(cssrule.CSSRule):
     styleSheet = property(lambda self: self._styleSheet,
                           doc="(readonly) The style sheet referred to by this rule.")
 
-    type = property(lambda self: self.IMPORT_RULE, 
+    type = property(lambda self: self.IMPORT_RULE,
                     doc="The type of this rule, as defined by a CSSRule "
                         "type constant.")
 

@@ -30,7 +30,7 @@ class Deprecated(object):
         return newFunc
 
 # simple escapes, all non unicodes
-_simpleescapes = re.compile(ur'(\\[^0-9a-fA-F])').sub    
+_simpleescapes = re.compile(ur'(\\[^0-9a-fA-F])').sub
 def normalize(x):
     """
     normalizes x, namely:
@@ -49,17 +49,17 @@ def normalize(x):
         return x
 
 def pushtoken(token, tokens):
-    """Return new generator starting with token followed by all tokens in 
+    """Return new generator starting with token followed by all tokens in
     ``tokens``"""
     # TODO: may use itertools.chain?
     yield token
     for x in tokens:
         yield x
-                  
+
 def string(value):
     """
     Serialize value with quotes e.g.::
-    
+
         ``a \'string`` => ``'a \'string'``
     """
     # \n = 0xa, \r = 0xd, \f = 0xc
@@ -67,14 +67,14 @@ def string(value):
                           u'\r', u'\\d ').replace(
                           u'\f', u'\\c ').replace(
                           u'"', u'\\"')
-    
+
     return u'"%s"' % value
 
 def stringvalue(string):
     """
-    Retrieve actual value of string without quotes. Escaped 
+    Retrieve actual value of string without quotes. Escaped
     quotes inside the value are resolved, e.g.::
-    
+
         ``'a \'string'`` => ``a 'string``
     """
     return string.replace('\\'+string[0], string[0])[1:-1]
@@ -83,8 +83,8 @@ _match_forbidden_in_uri = re.compile(ur'''.*?[\(\)\s\;,'"]''', re.U).match
 def uri(value):
     """
     Serialize value by adding ``url()`` and with quotes if needed e.g.::
-    
-        ``"`` => ``url("\"")`` 
+
+        ``"`` => ``url("\"")``
     """
     if _match_forbidden_in_uri(value):
         value = string(value)
@@ -93,9 +93,9 @@ def uri(value):
 def urivalue(uri):
     """
     Return actual content without surrounding "url(" and ")"
-    and removed surrounding quotes too including contained 
+    and removed surrounding quotes too including contained
     escapes of quotes, e.g.::
-    
+
          ``url("\"")`` => ``"``
     """
     uri = uri[uri.find('(')+1:-1].strip()
@@ -117,10 +117,10 @@ def normalnumber(num):
 
     if float(num) == 0.0:
         return '0'
-    else:        
+    else:
         if num.find('.') == -1:
-            return sign + str(int(num)) 
-        else: 
+            return sign + str(int(num))
+        else:
             a, b = num.split('.')
             if not a:
                 a = '0'

@@ -77,7 +77,7 @@ class CSS2Properties(object):
     def _getP(self, CSSname): pass
     def _setP(self, CSSname, value): pass
     def _delP(self, CSSname): pass
-    
+
 
 _reCSStoDOMname = re.compile('-[a-z]', re.I)
 def _toDOMname(CSSname):

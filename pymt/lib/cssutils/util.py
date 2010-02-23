@@ -830,8 +830,8 @@ def _readUrl(url, fetcher=None, overrideEncoding=None, parentEncoding=None):
         elif httpEncoding:
             enctype = 1 # 1. HTTP
             encoding = httpEncoding
-        else:  
-            if isinstance(content, unicode): 
+        else:
+            if isinstance(content, unicode):
                 # no need to check content as unicode so no BOM
                 explicit = False
             else:

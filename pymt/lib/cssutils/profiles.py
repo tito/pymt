@@ -1,4 +1,4 @@
-"""CSS profiles. 
+"""CSS profiles.
 
 css2 is based on cssvalues
     contributed by Kevin D. Smith, thanks!
@@ -224,7 +224,7 @@ class Profiles(object):
     All profiles used for validation. ``cssutils.profiles.profiles`` is a
     preset object of this class and used by all properties for validation.
 
-    Predefined profiles are (use 
+    Predefined profiles are (use
     :meth:`~cssutils.profiles.Profiles.propertiesByProfile` to
     get a list of defined properties):
 
@@ -239,7 +239,7 @@ class Profiles(object):
     CSS_LEVEL_2 = 'CSS Level 2.1'
     CSS_COLOR_LEVEL_3 = 'CSS Color Module Level 3'
     CSS_BOX_LEVEL_3 = 'CSS Box Module Level 3'
-    
+
     basicmacros = {
         'ident': r'[-]?{nmstart}{nmchar}*',
         'name': r'{nmchar}+',
@@ -279,11 +279,11 @@ class Profiles(object):
         self._log = cssutils.log
         self._profilenames = [] # to keep order, REFACTOR!
         self._profiles = {}
-        
+
         self.addProfile(self.CSS_LEVEL_2, properties['css2'], css2macros)
         self.addProfile(self.CSS_COLOR_LEVEL_3, properties['css3color'], css3colormacros)
         self.addProfile(self.CSS_BOX_LEVEL_3, properties['css3box'])
-        
+
         self.__update_knownnames()
 
     def _expand_macros(self, dictionary, macros):
@@ -311,7 +311,7 @@ class Profiles(object):
         self._knownnames = []
         for properties in self._profiles.values():
             self._knownnames.extend(properties.keys())
-        
+
     profiles = property(lambda self: sorted(self._profiles.keys()),
                                             doc=u'Names of all profiles.')
 
@@ -339,7 +339,7 @@ class Profiles(object):
             is False so the exceptions would be logged only.
         :param macros:
             may be used in the given properties definitions. There are some
-            predefined basic macros which may always be used in 
+            predefined basic macros which may always be used in
             :attr:`Profiles.basicmacros` and :attr:`Profiles.generalmacros`.
         """
         if not macros:
@@ -350,12 +350,12 @@ class Profiles(object):
         properties = self._expand_macros(properties, m)
         self._profilenames.append(profile)
         self._profiles[profile] = self._compile_regexes(properties)
-        
+
         self.__update_knownnames()
 
     def removeProfile(self, profile=None, all=False):
         """Remove `profile` or remove `all` profiles.
-        
+
         :param profile:
             profile name to remove
         :param all:
@@ -377,7 +377,7 @@ class Profiles(object):
     def propertiesByProfile(self, profiles=None):
         """Generator: Yield property names, if no `profiles` is given all
         profile's properties are used.
-        
+
         :param profiles:
             a single profile name or a list of names.
         """
@@ -393,14 +393,14 @@ class Profiles(object):
             raise NoSuchProfileException(e)
 
     def validate(self, name, value):
-        """Check if `value` is valid for given property `name` using **any** 
+        """Check if `value` is valid for given property `name` using **any**
         profile.
-        
+
         :param name:
             a property name
         :param value:
             a CSS value (string)
-        :returns: 
+        :returns:
             if the `value` is valid for the given property `name` in any
             profile
         """
@@ -424,9 +424,9 @@ class Profiles(object):
             a property name
         :param value:
             a CSS value (string)
-        :returns: 
+        :returns:
             ``valid, profiles`` where ``valid`` is if the `value` is valid for
-            the given property `name` in any profile of given `profiles` 
+            the given property `name` in any profile of given `profiles`
             and ``profiles`` the profile names for which the value is valid
             (or ``[]`` if not valid at all)
 
@@ -440,8 +440,8 @@ class Profiles(object):
             if not profiles:
                 profiles = self._profilenames
             elif isinstance(profiles, basestring):
-                profiles = (profiles, )  
-    
+                profiles = (profiles, )
+
             for profilename in profiles:
                 # check given profiles
                 if name in self._profiles[profilename]:
@@ -451,7 +451,7 @@ class Profiles(object):
                             return True, [profilename]
                     except Exception, e:
                         self._log.error(e, error=Exception)
-    
+
             for profilename in (p for p in self._profilenames if p not in profiles):
                 # check remaining profiles as well
                 if name in self._profiles[profilename]:
@@ -461,7 +461,7 @@ class Profiles(object):
                             return True, [profilename]
                     except Exception, e:
                         self._log.error(e, error=Exception)
-            
+
             names = []
             for profilename, properties in self._profiles.items():
                 # return profile to which name belongs
@@ -469,8 +469,8 @@ class Profiles(object):
                     names.append(profilename)
             names.sort()
             return False, names
-                    
-# used by 
+
+# used by
 profiles = Profiles()
 
 # set for validation to e.g.``Profiles.CSS_LEVEL_2``

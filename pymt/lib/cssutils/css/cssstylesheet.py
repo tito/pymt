@@ -20,7 +20,7 @@ class CSSStyleSheet(cssutils.stylesheets.StyleSheet):
     """CSSStyleSheet represents a CSS style sheet.
 
     Format::
-    
+
         stylesheet
           : [ CHARSET_SYM S* STRING S* ';' ]?
             [S|CDO|CDC]* [ import [S|CDO|CDC]* ]*
@@ -314,8 +314,8 @@ class CSSStyleSheet(cssutils.stylesheets.StyleSheet):
 
     def _setEncoding(self, encoding):
         """Set `encoding` of charset rule if present in sheet or insert a new
-        :class:`~cssutils.css.CSSCharsetRule` with given `encoding`. 
-        If `encoding` is None removes charsetrule if present resulting in 
+        :class:`~cssutils.css.CSSCharsetRule` with given `encoding`.
+        If `encoding` is None removes charsetrule if present resulting in
         default encoding of utf-8.
         """
         try:
@@ -356,8 +356,8 @@ class CSSStyleSheet(cssutils.stylesheets.StyleSheet):
 
         :param index:
             of the rule to remove in the StyleSheet's rule list. For an
-            `index` < 0 **no** :exc:`~xml.dom.IndexSizeErr` is raised but 
-            rules for normal Python lists are used. E.g. ``deleteRule(-1)`` 
+            `index` < 0 **no** :exc:`~xml.dom.IndexSizeErr` is raised but
+            rules for normal Python lists are used. E.g. ``deleteRule(-1)``
             removes the last rule in cssRules.
         :exceptions:
             - :exc:`~xml.dom.IndexSizeErr`:
@@ -396,7 +396,7 @@ class CSSStyleSheet(cssutils.stylesheets.StyleSheet):
         becomes part of the cascade.
 
         :param rule:
-            a parsable DOMString, in cssutils also a 
+            a parsable DOMString, in cssutils also a
             :class:`~cssutils.css.CSSRule` or :class:`~cssutils.css.CSSRuleList`
         :param index:
             of the rule before the new rule will be inserted.

@@ -30,7 +30,7 @@ MACROS = {
     'comment': r'\/\*[^*]*\*+([^/][^*]*\*+)*\/',
     'ident': r'[-]?{nmstart}{nmchar}*',
     'name': r'{nmchar}+',
-    'num': r'[0-9]*\.[0-9]+|[0-9]+', #r'[-]?\d+|[-]?\d*\.\d+',   
+    'num': r'[0-9]*\.[0-9]+|[0-9]+', #r'[-]?\d+|[-]?\d*\.\d+',
     'string': r'{string1}|{string2}',
     # from CSS2.1
     'invalid': r'{invalid1}|{invalid2}',
@@ -67,7 +67,7 @@ MACROS = {
 # The productions are **ordered**:
 PRODUCTIONS = [
     ('BOM', r'\xFEFF'), # will only be checked at beginning of CSS
-    
+
     ('S', r'{s}+'), # 1st in list of general productions
     ('URI', r'{U}{R}{L}\({w}({string}|{url}*){w}\)'),
     ('FUNCTION', r'{ident}\('),
@@ -99,9 +99,9 @@ class CSSProductions(object):
     most attributes are set later
     """
     EOF = True
-    # removed from productions as they simply are ATKEYWORD until 
+    # removed from productions as they simply are ATKEYWORD until
     # tokenizing
-    CHARSET_SYM = 'CHARSET_SYM' 
+    CHARSET_SYM = 'CHARSET_SYM'
     FONT_FACE_SYM = 'FONT_FACE_SYM'
     MEDIA_SYM = 'MEDIA_SYM'
     IMPORT_SYM = 'IMPORT_SYM'

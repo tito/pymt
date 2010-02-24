@@ -32,10 +32,9 @@ if not 'PYMT_DOC' in os.environ:
 
 def _make_point_list(points):
     t = type(points)
-    if not (t is tuple or t is list):
+    if not t in (tuple, list):
         raise Exception("Point list must be tuple or list of coordinates or points(tuple/list of 2D coords)")
-    if len(points[0]):
-        #flatten the points
+    if type(points[0]) in (tuple, list): #flatten the points
         return [coord for point in points for coord in point]
     else:
         return list(points)

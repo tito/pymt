@@ -29,6 +29,7 @@ class MTAbstractLayout(MTWidget):
         if self.__class__ == MTAbstractLayout:
             raise NotImplementedError, 'class MTAbstractLayout is abstract'
         
+        kwargs.setdefault('size_hint', (1,1)) #layouts automatically stretch themselves if inside another layout
         kwargs.setdefault('auto_layout', True)
         kwargs.setdefault('animation_type', None)
         kwargs.setdefault('animation_duration', 1)
@@ -104,7 +105,11 @@ class MTAbstractLayout(MTWidget):
         pass
     
     def do_layout(self):
-        pass
+        for w in self.children:
+            if w.size_hint[0]:
+                w.width = w.size_hint[0]*self.width
+            if w.size_hint[1]:
+                w.height = w.size_hint[1]*self.height
     
     
 

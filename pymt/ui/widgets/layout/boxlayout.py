@@ -16,19 +16,29 @@ class MTBoxLayout(MTAbstractLayout):
             Spacing between widgets
         `orientation` : str, default is 'horizontal'
             Orientation of widget inside layout, can be `horizontal` or `vertical`
+        'invert': bool, default to False
+            makes the layout do top to bottom on horizontal, or rigth to left on vertical 
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('spacing', 1)
         kwargs.setdefault('padding', 0)
         kwargs.setdefault('orientation', 'horizontal')
+        kwargs.setdefault('invert', False)
         if kwargs.get('orientation') not in ['horizontal', 'vertical']:
             raise Exception('Invalid orientation, only horizontal/vertical are supported')
 
         super(MTBoxLayout, self).__init__(**kwargs)
 
-        self.spacing        = kwargs.get('spacing')
-        self.padding        = kwargs.get('padding')
-        self._orientation    = kwargs.get('orientation')
+        self.spacing      = kwargs.get('spacing')
+        self.padding      = kwargs.get('padding')
+        self._orientation = kwargs.get('orientation')
+        self._invert      =  kwargs.get('invert')
+        
+    def add_widget(self, widget, front=True, do_layout=None):
+        if self._invert:
+            front = not front
+        super(MTBoxLayout, self).add_widget(widget, front, do_layout)
+
         
     def _get_orientation(self):
         return self._orientation

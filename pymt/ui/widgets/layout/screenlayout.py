@@ -21,15 +21,15 @@ class MTScreenLayout(MTAbstractLayout):
         self.screen = None
         self.previous_screen = None
         self.switch_t = 1.1
-        
+
         self.container = MTBoxLayout(orientation='vertical')
         super(MTScreenLayout, self).add_widget(self.container)
 
         self.tabs = MTBoxLayout(size_hint=(1.0,None), height=50)
         self._show_tabs = False
         self.show_tabs = kwargs.get('show_tabs')
-            
-            
+
+
     def _get_show_tabs(self):
         return self._tabbed
     def _set_show_tabs(self, set):
@@ -39,13 +39,13 @@ class MTScreenLayout(MTAbstractLayout):
             self.container.add_widget(self.tabs)
         self._show_tabs = set
     show_tabs = property(_get_show_tabs, _set_show_tabs)
-            
+
 
     def add_widget(self, widget):
         tab_btn = MTButton(label=widget.id, size_hint=(1,1), height=50)
         tab_btn.push_handlers(on_press=curry(self.select,widget.id))
         self.tabs.add_widget(tab_btn)
-        
+
         self.screens.append(widget)
         if not self.screen:
             self.select(widget)
@@ -58,7 +58,7 @@ class MTScreenLayout(MTAbstractLayout):
                 break
         if tab_btn:
             self.tabs.remove(tab_btn)
-        
+
         self.screens.remove(widget)
 
     def select(self, id, *args):
@@ -104,11 +104,6 @@ class MTScreenLayout(MTAbstractLayout):
             self.draw_transition(self.switch_t)
         else:
             super(MTScreenLayout, self).on_draw()
-
-    def do_layout(self):
-        # a screen layout is always "fullscreen"
-        if self.screen is not None:
-            self.screen.size = self.size
 
 # Register all base widgets
 MTWidgetFactory.register('MTScreenLayout', MTScreenLayout)

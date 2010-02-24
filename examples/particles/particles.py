@@ -175,7 +175,7 @@ class ParticleEngine(MTWidget):
     def _btn_alpha_change(self, funcname, *largs):
         self.alpha = getattr(AnimationAlpha, funcname)
         return True
-    
+
 
 
     def draw(self):

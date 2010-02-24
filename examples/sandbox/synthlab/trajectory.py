@@ -16,14 +16,14 @@ class MTTrajectory(MTWidget):
         self.trajectory_dict = {}
         self.trajectory_dict_compiled = {}
         self.close = True
-        
+
     def draw(self):
         for trajectory in self.trajectory_dict:
             if trajectory in self.trajectory_dict_compiled:
                 self.trajectory_dict_compiled[trajectory].draw()
             else:
-                self.draw_trajectory(self.trajectory_dict[trajectory])                        
-    
+                self.draw_trajectory(self.trajectory_dict[trajectory])
+
     def draw_trajectory(self, trajectory, close = False):
         for i in range(len(trajectory)):
             with gx_begin(GL_LINES):
@@ -33,19 +33,19 @@ class MTTrajectory(MTWidget):
                 if close:
                     glVertex2f(trajectory[0][0], trajectory[0][1])
                     glVertex2f(trajectory[len(trajectory)-1][0], trajectory[len(trajectory)-1][1])
-    
+
     def on_touch_down(self, touch):
         self.trajectory_dict[touch.id] = []
-            
+
     def on_touch_move(self, touch):
         self.trajectory_dict[touch.id].append((touch.x,touch.y))
-    
+
     def on_touch_up(self, touch):
         self.trajectory_dict_compiled[touch.id] = GlDisplayList()
         with self.trajectory_dict_compiled[touch.id]:
             self.draw_trajectory(self.trajectory_dict[touch.id], self.close)
 
-            
+
 MTWidgetFactory.register('MTTrajectory', MTTrajectory)
 
 if __name__ == '__main__':

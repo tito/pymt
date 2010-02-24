@@ -7,10 +7,10 @@ You can now add widgets by using the widgets dictionary :
     w.add_widget(widgets['mywidget'])
 Now you can interact with your widget :
     widgets['mywidget'].pos = (400,300)
-    
+
 There is also a quick way to add a widget, use the add function:
     add('slider', MTSlider())
-    
+
 Enjoy !
 
 '''
@@ -31,7 +31,7 @@ def on_key_press(symbol, modifiers):
         if count == len(history):
             count = len(history) - 1
         keyb.label = list(reversed(history))[count]
-        
+
     if symbol == 65364: #down arrow
         if not keyb.is_active_input:
            keyb.show_keyboard()
@@ -42,9 +42,9 @@ def on_key_press(symbol, modifiers):
             keyb.label = ''
             return
         keyb.label = list(reversed(history))[count]
-        
-        
-        
+
+
+
     if symbol == 65289: #tab
         if not keyb.is_active_input:
            keyb.show_keyboard()

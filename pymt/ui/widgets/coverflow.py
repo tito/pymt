@@ -233,7 +233,7 @@ class MTCoverFlow(MTWidget):
             self._fbo.clear()
             child.dispatch_event('on_draw')
 
-        # pre-calculate 
+        # pre-calculate
         y2 = self.center[1] - self.thumbnail_size[1] / 2.
         angle, x = self._get_cover_position(index, 0)
 

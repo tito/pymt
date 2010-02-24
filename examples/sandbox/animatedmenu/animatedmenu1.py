@@ -8,9 +8,9 @@ import time
 class MenuTestApp(MTWidget):
     def __init__(self):
         MTWidget.__init__(self)
-        
-        self.menu = MTAnimatedMenu ({'Options': 
-                                        {   'File' : 
+
+        self.menu = MTAnimatedMenu ({'Options':
+                                        {   'File' :
                                             {
                                                 'New': lambda: self.doStuff('Handle New'),
                                                 'Open': curry(self.doStuff, 'Handle Open'),
@@ -24,18 +24,18 @@ class MenuTestApp(MTWidget):
                                         }
                                     })
     def on_touch_down(self, touches, touchID, x,y):
-        self.menu.handle ((x,y)) 
-        
+        self.menu.handle ((x,y))
+
     def doStuff(self, x):
         time.sleep(1)
         print str(x)
-    
+
     def on_touch_up(self, touches, touchID,x,y):
         pass
 
     def on_touch_move(self, touches, touchID, x, y):
         pass
-    
+
     def drawBackground (self):
         pos =(0,0)
         size = self.get_parent_window().size

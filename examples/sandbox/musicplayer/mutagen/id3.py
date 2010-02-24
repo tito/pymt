@@ -78,7 +78,7 @@ class ID3(DictProxy, mutagen.Metadata):
             if size < 0:
                 raise ValueError('Requested bytes (%s) less than zero' % size)
             if size > self.__filesize:
-                raise EOFError('Requested %#x of %#x (%s)' % 
+                raise EOFError('Requested %#x of %#x (%s)' %
                         (long(size), long(self.__filesize), self.filename))
         except AttributeError: pass
         data = self.__fileobj.read(size)
@@ -276,7 +276,7 @@ class ID3(DictProxy, mutagen.Metadata):
                 data = data[10+size:]
                 if size == 0: continue # drop empty frames
                 try: tag = frames[name]
-                except KeyError: 
+                except KeyError:
                     if is_valid_frame_id(name): yield header + framedata
                 else:
                     try: yield self.__load_framedata(tag, flags, framedata)
@@ -303,7 +303,7 @@ class ID3(DictProxy, mutagen.Metadata):
 
     def __load_framedata(self, tag, flags, framedata):
         return tag.fromData(self, flags, framedata)
-            
+
     f_unsynch = property(lambda s: bool(s.__flags & 0x80))
     f_extended = property(lambda s: bool(s.__flags & 0x40))
     f_experimental = property(lambda s: bool(s.__flags & 0x20))
@@ -724,7 +724,7 @@ class MultiSpec(Spec):
             if len(self.specs) == 1:
                 return [self.specs[0].validate(frame, v) for v in value]
             else:
-                return [ 
+                return [
                     [s.validate(frame, v) for (v,s) in zip(val, self.specs)]
                     for val in value ]
         raise ValueError, 'Invalid MultiSpec data: %r' % value
@@ -903,7 +903,7 @@ class ASPIIndexSpec(Spec):
         else:
             warn("invalid bit count in ASPI (%d)" % frame.b, ID3Warning)
             return [], data
-        
+
         indexes = data[:frame.N * size]
         data = data[frame.N * size:]
         return list(struct.unpack(">" + format * frame.N, indexes)), data
@@ -1404,7 +1404,7 @@ class USLT(Frame):
     def __str__(self): return self.text.encode('utf-8')
     def __unicode__(self): return self.text
     def __eq__(self, other): return self.text == other
-    
+
 class SYLT(Frame):
     """Synchronised lyrics/text."""
 
@@ -1559,7 +1559,7 @@ class GEOB(Frame):
     data -- raw data, as a byte string
     """
     _framespec = [ EncodingSpec('encoding'), Latin1TextSpec('mime'),
-        EncodedTextSpec('filename'), EncodedTextSpec('desc'), 
+        EncodedTextSpec('filename'), EncodedTextSpec('desc'),
         BinaryDataSpec('data') ]
     HashKey = property(lambda s: '%s:%s' % (s.FrameID, s.desc))
 
@@ -1711,7 +1711,7 @@ class GRID(FrameOpt):
     def __str__(self): return self.owner.encode('utf-8')
     def __unicode__(self): return self.owner
     def __eq__(self, other): return self.owner == other or self.group == other
-    
+
 
 class PRIV(Frame):
     """Private frame."""
@@ -1914,7 +1914,7 @@ def MakeID3v1(id3):
     else: v1["year"] = "\x00\x00\x00\x00"
 
     return ("TAG%(title)s%(artist)s%(album)s%(year)s%(comment)s"
-            "%(track)s%(genre)s") % v1 
+            "%(track)s%(genre)s") % v1
 
 class ID3FileType(mutagen.FileType):
     """An unknown type of file with ID3 tags."""

@@ -18,25 +18,25 @@ class fileList(MTKineticScrollText):
         self.player.seek(0)
         source = pyglet.media.load(file,streaming=True)
         self.player.queue(source)
-        if self.player.playing == True:            
+        if self.player.playing == True:
             self.player.next()
         else:
             self.player.play()
-       
+
 class MusicPlayer(MTScatterWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('scale', 1.0)
         super(MusicPlayer, self).__init__(**kwargs)
         self.dir = kwargs.get('dir')
-        self.file_list = glob.glob(self.dir) 
+        self.file_list = glob.glob(self.dir)
         self.list = []
         for self.file in self.file_list:
             sublist = []
             self.f=ID3(self.file)
             sublist.append(self.f["TIT2"])
             sublist.append(self.file)
-            self.list.append(sublist)        
-            
+            self.list.append(sublist)
+
         mms = fileList(pos=(10,10),items=self.list)
         self.add_widget(mms,side='back')
         self.coverart = CoverArt(pos=(10,10),frame=self.f)
@@ -51,18 +51,18 @@ class MusicPlayer(MTScatterWidget):
         self.playpause = PlayPauseButton(player=mms.player)
         self.add_widget(self.playpause,side='back')
 
-        
+
 class FlipButton(MTButton):
     def __init__(self, **kwargs):
         kwargs.setdefault('label', '~')
         kwargs.setdefault('size', (25,25))
         kwargs.setdefault('pos', (0,0))
         kwargs.setdefault('color', (0.5,0.5,0.5,1))
-        super(FlipButton, self).__init__(**kwargs) 
-    
+        super(FlipButton, self).__init__(**kwargs)
+
     def on_press(self,touchID, x, y):
         self.parent.flip()
-        
+
 class CoverArt(MTWidget):
     def __init__(self, **kwargs):
         #kwargs.setdefault('scale', 0.5)
@@ -86,7 +86,7 @@ class CoverArt(MTWidget):
         self.image.y        = self.y
         self.image.scale    = self.scale
         self.size           = (self.img.width, self.img.height)
-        self.image.draw()        
+        self.image.draw()
 
 
 class PlayPauseButton(MTImageButton):
@@ -103,10 +103,10 @@ class PlayPauseButton(MTImageButton):
         self.images['Play']  = pyglet.sprite.Sprite(pyglet.image.load('play.png'))
         self.images['Pause'] = pyglet.sprite.Sprite(pyglet.image.load('pause.png'))
 
-        self.scale    = 0.75        
-        
+        self.scale    = 0.75
+
     def on_draw(self):
-        if self.vid.playing == True:            
+        if self.vid.playing == True:
             self.image = self.images['Pause']
         else:
             self.image = self.images['Play']
@@ -123,8 +123,8 @@ class PlayPauseButton(MTImageButton):
                 self.playState = 'Pause'
 
             #set the correct image
-            self.image = self.images[self.playState]  #playState is one of the two strings that are used as keys/lookups in the dictionary        
-        
+            self.image = self.images[self.playState]  #playState is one of the two strings that are used as keys/lookups in the dictionary
+
 if __name__ == '__main__':
     w = MTWindow(color=(0,0,0,1.0), fullscreen=True)
     w.add_widget(MusicPlayer(pos=(210,410),dir='F:\\Final Fantasy\\*.mp3')) #change directory here

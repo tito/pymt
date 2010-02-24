@@ -106,13 +106,13 @@ class SelectorList(cssutils.util.Base, cssutils.util.ListSeq):
 
     def appendSelector(self, newSelector):
         """
-        Append `newSelector` to this list (a string will be converted to a 
+        Append `newSelector` to this list (a string will be converted to a
         :class:`~cssutils.css.Selector`).
 
         :param newSelector:
             comma-separated list of selectors (as a single string) or a tuple of
             `(newSelector, dict-of-namespaces)`
-        :returns: New :class:`~cssutils.css.Selector` or ``None`` if 
+        :returns: New :class:`~cssutils.css.Selector` or ``None`` if
             `newSelector` is not wellformed.
         :exceptions:
             - :exc:`~xml.dom.NamespaceErr`:

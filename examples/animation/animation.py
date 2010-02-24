@@ -10,20 +10,20 @@ class MTSprite(MTWidget):
         self.size           = self.image.size
         self.scale = self.style.get('scale')
         self.intial_pos = self.pos
-        
+
     def draw(self):
-        with gx_matrix:            
+        with gx_matrix:
             glTranslated(self.x+self.width/2,self.y+self.height/2,0)
             glRotated(int(self.rotation),0,0,1)
-            glTranslated(-self.x-self.width/2,-self.y-self.height/2,0)            
+            glTranslated(-self.x-self.width/2,-self.y-self.height/2,0)
             set_color(*self.style.get('bg-color'))
             self.scale = self.style.get('scale')
             self.image.pos  = self.pos
             self.image.scale= self.scale
             self.size = self.image.size
-            self.image.draw()           
-            
-    
+            self.image.draw()
+
+
     def reset(self):
         self.size = self.image.size
         self.style['scale'] = 1.0
@@ -84,11 +84,11 @@ repeat_delta_anim = Repeat(mov_dx + rot_d, times=6)
 @reset.event
 def on_press(*largs):
     greeny.reset()
-    
+
 @simple.event
 def on_press(*largs):
     greeny.do(movXY)
-    
+
 @sequence.event
 def on_press(*largs):
     greeny.do(seq)

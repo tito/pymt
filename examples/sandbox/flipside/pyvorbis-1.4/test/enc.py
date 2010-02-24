@@ -55,7 +55,7 @@ class WaveReader:
         fact = 1/32768.0
         outbuf0 = array.array('f')
         outbuf1 = array.array('f')
-        
+
         for x in range(len(buff) / 2):
             val0, val1 = buff[2 * x : 2 * x + 2]
             outbuf0.append(val0 * fact)
@@ -65,11 +65,11 @@ class WaveReader:
 
 class NumericWaveReader(WaveReader):
     """This doesn't appear to be any faster, but I wrote it anyway"""
-    
+
     def _splitvalues(self, buff):
         import Numeric
         buff = Numeric.array(buff)
-        
+
         fact = 1/32768.0
         samples = len(buff) / 2
         outbuf0 = buff[::2]
@@ -88,13 +88,13 @@ def main():
     vd = vi.analysis_init()
     vb = vd.create_block()
     (header, header_com, header_code) = vd.headerout(vc)
-    
+
     os = ogg.OggStreamState(5)
-    
+
     os.packetin(header)
     os.packetin(header_com)
     os.packetin(header_code)
-    
+
     fout = open('out.ogg', 'wb')
     inwav = WaveReader('in.wav')
 
@@ -105,7 +105,7 @@ def main():
 
     packets = 0
     samples = 0
-    
+
     eos = 0
     while not eos:
         #returns a tuple of strings representing arrays of floats
@@ -114,7 +114,7 @@ def main():
             print "No data"
             vd.write(None) # didn't read any data
         else:
-            apply(vd.write, channel_data) 
+            apply(vd.write, channel_data)
 
             samples = samples + len(channel_data[0]) / 4
 
@@ -125,12 +125,12 @@ def main():
             # print percent of samples read;
             # note that this is currently wrong (off by factor of 2)
             # not sure why, but it shouldn't be too big a deal
-            if packets % 10 == 0: 
+            if packets % 10 == 0:
                 print "%0.2f" % (100.0 * samples / inwav.samples)
-            
+
             vb.analysis()
             vb.addblock()
-            
+
             op = vd.bitrate_flushpacket()
             while op:
                 os.packetin(op)
@@ -141,9 +141,9 @@ def main():
                     og.writeout(fout)
                     eos = og.eos()
                 op = vd.bitrate_flushpacket()
-            
+
             vb = vd.blockout()
-    
+
     vd.close()
     fout.close()
 

@@ -1,4 +1,4 @@
-import os 
+import os
 import sys
 from optparse import OptionParser
 
@@ -56,7 +56,7 @@ class PlayManager(MTScatterWidget):
         super(PlayManager, self).__init__(**kwargs)
         self.player = pyglet.media.Player()
 
-        self.btnplay = MTButton(label='Play!', 
+        self.btnplay = MTButton(label='Play!',
                              bold=True)
         self.btnplay.on_press = lambda x, y, z: self.player.play()
         self.children.append(self.btnplay)
@@ -90,7 +90,7 @@ class SQLSongMeta(object):
 
 
 class KineticSong(MTKineticItem):
-    '''This holds all the info about a song, and it is usually used within the 
+    '''This holds all the info about a song, and it is usually used within the
     KineticSong objects.  I just felt it would be nice to separate the kinetic
     code from the song metadata.  When the ORM is used this is where it all gets
     put
@@ -100,7 +100,7 @@ class KineticSong(MTKineticItem):
         kwargs['label'] = self.meta.title
         kwargs['size'] = (300, 40)
         super(KineticSong, self).__init__(**kwargs)
-        
+
 
 class SongList(MTKineticList):
     def __init__(self, **kwargs):
@@ -108,12 +108,12 @@ class SongList(MTKineticList):
         kwargs.setdefault('size', (310, 400))
         kwargs.setdefault('deletable', False)
         kwargs.setdefault('searchable', False)
-        
+
         super(SongList, self).__init__(**kwargs)
         self.player = kwargs.get('player')
 
-        self.pb = MTButton(label='Play', 
-                           bgcolor=(0, 1, 0, .5), 
+        self.pb = MTButton(label='Play',
+                           bgcolor=(0, 1, 0, .5),
                            bold=True, pos=(self.x, self.y+self.height-40),
                            size=(80, 40))
 
@@ -134,20 +134,20 @@ class AlbumFloater(MTScatterImage):
 
         self.album = kwargs.get('album')
         self.artist = kwargs.get('artist')
-        
+
         self.list = SongList(player=kwargs.get('player'), title=self.album)
         self.add_widget(self.list, 'back')
-  
+
         #TODO: Make this more efficient, it makes me drop from 25 FPS to 5
         '''if self.artist or self.album:
             self.album_lbl = MTLabel(text=self.album, font_size=12, pos=(5, 3))
             self.artist_lbl = MTLabel(text=self.artist, font_size=12, pos=(5, 16))
             self.rect = MTRectangularWidget(pos=(0, 0), size=(self.width, 40))
-        
+
             self.add_widget(self.rect, 'front')
             self.add_widget(self.album_lbl, 'front')
             self.add_widget(self.artist_lbl, 'front')'''
-        
+
     def on_touch_down(self, touches, touchID, x, y):
         if touches[touchID].is_double_tap:
             self.flip()
@@ -166,7 +166,7 @@ class AlbumFloater(MTScatterImage):
         self.bring_to_front()
         self.touches[touchID] = Vector(x,y)
         return True
-  
+
 def main():
     # Parse command line options
     parser = OptionParser()
@@ -200,7 +200,7 @@ def main():
 
     player = PlayManager()
     p.add_widget(player)
-            
+
     #SQL Stuff
     if not os.path.exists('library.sql'):
         #There is no library, lets generate one
@@ -246,7 +246,7 @@ def main():
                     session.add(song)
 
         session.commit()
-        
+
     #Create a list of every album in the database
     #We use list(set()) so each album only appears once
     #The list comprehension is to get it out of the list tuple and out of unicode
@@ -259,7 +259,7 @@ def main():
         for song in songs:
             #Add all the songs on the album to the floater
             f.list.add(KineticSong(meta=song))
-        
+
         p.add_widget(f)
 
     runTouchApp()

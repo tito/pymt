@@ -77,7 +77,7 @@ class MTScreenLayout(MTAbstractLayout):
                 return
         pymt_logger.Warning('Invalid screen or screenname, doing nothing...')
 
-    
+
     def draw_transition(self, t):
         '''
         is called each frame while switching screens and responsible for drawing transition state.
@@ -105,8 +105,10 @@ class MTScreenLayout(MTAbstractLayout):
         else:
             super(MTScreenLayout, self).on_draw()
 
-        
-
+    def do_layout(self):
+        # a screen layout is always "fullscreen"
+        if self.screen is not None:
+            self.screen.size = self.size
 
 # Register all base widgets
 MTWidgetFactory.register('MTScreenLayout', MTScreenLayout)

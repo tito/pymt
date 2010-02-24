@@ -34,7 +34,7 @@ class MTSidePanel(MTWidget):
             Layout to use inside corner widget. If None is provided,
             the default will be a MTBoxLayout() with default parameters
         `side` : str, default to 'left'
-            Side to attach the widget. Can be one of 
+            Side to attach the widget. Can be one of
             'left', 'right', 'top', 'bottom'.
     '''
     def __init__(self, **kwargs):

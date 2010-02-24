@@ -15,22 +15,22 @@ class CSSMediaRule(cssrule.CSSRule):
 
     Format::
 
-      : MEDIA_SYM S* medium [ COMMA S* medium ]* 
-      
+      : MEDIA_SYM S* medium [ COMMA S* medium ]*
+
           STRING? # the name
-      
+
       LBRACE S* ruleset* '}' S*;
-      
+
     ``cssRules``
         All Rules in this media rule, a :class:`~cssutils.css.CSSRuleList`.
     """
     def __init__(self, mediaText='all', name=None,
                  parentRule=None, parentStyleSheet=None, readonly=False):
         """constructor"""
-        super(CSSMediaRule, self).__init__(parentRule=parentRule, 
+        super(CSSMediaRule, self).__init__(parentRule=parentRule,
                                            parentStyleSheet=parentStyleSheet)
         self._atkeyword = u'@media'
-        self._media = cssutils.stylesheets.MediaList(mediaText, 
+        self._media = cssutils.stylesheets.MediaList(mediaText,
                                                      readonly=readonly)
         self.name = name
         self.cssRules = cssutils.css.cssrulelist.CSSRuleList()
@@ -44,11 +44,11 @@ class CSSMediaRule(cssrule.CSSRule):
         """Generator iterating over these rule's cssRules."""
         for rule in self.cssRules:
             yield rule
-            
+
     def __repr__(self):
         return "cssutils.css.%s(mediaText=%r)" % (
                 self.__class__.__name__, self.media.mediaText)
-        
+
     def __str__(self):
         return "<cssutils.css.%s object mediaText=%r at 0x%x>" % (
                 self.__class__.__name__, self.media.mediaText, id(self))
@@ -78,7 +78,7 @@ class CSSMediaRule(cssrule.CSSRule):
               Raised if the rule is readonly.
         """
         super(CSSMediaRule, self)._setCssText(cssText)
-        
+
         # might be (cssText, namespaces)
         cssText, namespaces = self._splitNamespacesOff(cssText)
         try:
@@ -86,7 +86,7 @@ class CSSMediaRule(cssrule.CSSRule):
             namespaces = self.parentStyleSheet.namespaces
         except AttributeError:
             pass
-        
+
         tokenizer = self._tokenize2(cssText)
         attoken = self._nexttoken(tokenizer, None)
         if self._type(attoken) != self._prods.MEDIA_SYM:
@@ -95,89 +95,89 @@ class CSSMediaRule(cssrule.CSSRule):
                 error=xml.dom.InvalidModificationErr)
         else:
             # media "name"? { cssRules }
-            
+
             # media
             wellformed = True
-            mediatokens, end = self._tokensupto2(tokenizer, 
+            mediatokens, end = self._tokensupto2(tokenizer,
                                             mediaqueryendonly=True,
-                                            separateEnd=True)        
+                                            separateEnd=True)
             if u'{' == self._tokenvalue(end) or self._prods.STRING == self._type(end):
                 newmedia = cssutils.stylesheets.MediaList()
                 newmedia.mediaText = mediatokens
-            
+
             # name (optional)
             name = None
             nameseq = self._tempSeq()
             if self._prods.STRING == self._type(end):
                 name = self._stringtokenvalue(end)
                 # TODO: for now comments are lost after name
-                nametokens, end = self._tokensupto2(tokenizer, 
+                nametokens, end = self._tokensupto2(tokenizer,
                                                 blockstartonly=True,
                                                 separateEnd=True)
                 wellformed, expected = self._parse(None, nameseq, nametokens, {})
                 if not wellformed:
-                    self._log.error(u'CSSMediaRule: Syntax Error: %s' % 
+                    self._log.error(u'CSSMediaRule: Syntax Error: %s' %
                                     self._valuestr(cssText))
-                    
+
 
             # check for {
             if u'{' != self._tokenvalue(end):
-                self._log.error(u'CSSMediaRule: No "{" found: %s' % 
+                self._log.error(u'CSSMediaRule: No "{" found: %s' %
                                 self._valuestr(cssText))
                 return
-            
+
             # cssRules
-            cssrulestokens, braceOrEOF = self._tokensupto2(tokenizer, 
+            cssrulestokens, braceOrEOF = self._tokensupto2(tokenizer,
                                                mediaendonly=True,
                                                separateEnd=True)
             nonetoken = self._nexttoken(tokenizer, None)
-            if (u'}' != self._tokenvalue(braceOrEOF) and 
+            if (u'}' != self._tokenvalue(braceOrEOF) and
                'EOF' != self._type(braceOrEOF)):
-                self._log.error(u'CSSMediaRule: No "}" found.', 
+                self._log.error(u'CSSMediaRule: No "}" found.',
                                 token=braceOrEOF)
             elif nonetoken:
                 self._log.error(u'CSSMediaRule: Trailing content found.',
                                 token=nonetoken)
-            else:                
+            else:
                 # for closures: must be a mutable
                 newcssrules = [] #cssutils.css.CSSRuleList()
                 new = {'wellformed': True }
-                
+
                 def ruleset(expected, seq, token, tokenizer):
                     rule = cssutils.css.CSSStyleRule(parentRule=self)
-                    rule.cssText = (self._tokensupto2(tokenizer, token), 
+                    rule.cssText = (self._tokensupto2(tokenizer, token),
                                     namespaces)
                     if rule.wellformed:
                         rule._parentStyleSheet=self.parentStyleSheet
                         seq.append(rule)
                     return expected
-        
+
                 def atrule(expected, seq, token, tokenizer):
                     # TODO: get complete rule!
                     tokens = self._tokensupto2(tokenizer, token)
                     atval = self._tokenvalue(token)
-                    if atval in ('@charset ', '@font-face', '@import', '@namespace', 
+                    if atval in ('@charset ', '@font-face', '@import', '@namespace',
                                  '@page', '@media'):
                         self._log.error(
                             u'CSSMediaRule: This rule is not allowed in CSSMediaRule - ignored: %s.'
                                 % self._valuestr(tokens),
-                                token = token, 
+                                token = token,
                                 error=xml.dom.HierarchyRequestErr)
                     else:
-                        rule = cssutils.css.CSSUnknownRule(parentRule=self, 
+                        rule = cssutils.css.CSSUnknownRule(parentRule=self,
                                            parentStyleSheet=self.parentStyleSheet)
                         rule.cssText = tokens
                         if rule.wellformed:
                             seq.append(rule)
                     return expected
-                
+
                 def COMMENT(expected, seq, token, tokenizer=None):
                     seq.append(cssutils.css.CSSComment([token]))
                     return expected
-                
+
                 tokenizer = (t for t in cssrulestokens) # TODO: not elegant!
-                wellformed, expected = self._parse(braceOrEOF, 
-                                                   newcssrules, 
+                wellformed, expected = self._parse(braceOrEOF,
+                                                   newcssrules,
                                                    tokenizer, {
                                                      'COMMENT': COMMENT,
                                                      'CHARSET_SYM': atrule,
@@ -187,20 +187,20 @@ class CSSMediaRule(cssrule.CSSRule):
                                                      'PAGE_SYM': atrule,
                                                      'MEDIA_SYM': atrule,
                                                      'ATKEYWORD': atrule
-                                                   }, 
+                                                   },
                                                    default=ruleset,
                                                    new=new)
-                
-                # no post condition                    
+
+                # no post condition
                 if newmedia.wellformed and wellformed:
                     # keep reference
-                    self._media.mediaText = newmedia.mediaText  
+                    self._media.mediaText = newmedia.mediaText
                     self.name = name
                     self._setSeq(nameseq)
                     del self.cssRules[:]
                     for r in newcssrules:
                         self.cssRules.append(r)
-        
+
     cssText = property(_getCssText, _setCssText,
         doc="(DOM) The parsable textual representation of this rule.")
 
@@ -216,7 +216,7 @@ class CSSMediaRule(cssrule.CSSRule):
 
     name = property(lambda self: self._name, _setName,
                     doc=u"An optional name for this media rule.")
-    
+
     media = property(lambda self: self._media,
         doc=u"(DOM readonly) A list of media types for this rule of type "
             u":class:`~cssutils.stylesheets.MediaList`.")
@@ -224,7 +224,7 @@ class CSSMediaRule(cssrule.CSSRule):
     def deleteRule(self, index):
         """
         Delete the rule at `index` from the media block.
-        
+
         :param index:
             of the rule to remove within the media block's rule collection
 
@@ -246,17 +246,17 @@ class CSSMediaRule(cssrule.CSSRule):
                 index, self.cssRules.length))
 
     def add(self, rule):
-        """Add `rule` to end of this mediarule. 
+        """Add `rule` to end of this mediarule.
         Same as :meth:`~cssutils.css.CSSMediaRule.insertRule`."""
         self.insertRule(rule, index=None)
-            
+
     def insertRule(self, rule, index=None):
         """
         Insert `rule` into the media block.
-        
+
         :param rule:
             the parsable text representing the `rule` to be inserted. For rule
-            sets this contains both the selector and the style declaration. 
+            sets this contains both the selector and the style declaration.
             For at-rules, this specifies both the at-identifier and the rule
             content.
 
@@ -264,7 +264,7 @@ class CSSMediaRule(cssrule.CSSRule):
             object.
 
         :param index:
-            before the specified `rule` will be inserted. 
+            before the specified `rule` will be inserted.
             If the specified `index` is
             equal to the length of the media blocks's rule collection, the
             rule will be added to the end of the media block.
@@ -330,7 +330,7 @@ class CSSMediaRule(cssrule.CSSRule):
         rule._parentStyleSheet = self.parentStyleSheet
         return index
 
-    type = property(lambda self: self.MEDIA_RULE, 
+    type = property(lambda self: self.MEDIA_RULE,
                     doc="The type of this rule, as defined by a CSSRule "
                         "type constant.")
 

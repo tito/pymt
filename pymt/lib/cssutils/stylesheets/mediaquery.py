@@ -1,4 +1,4 @@
-"""Implements a DOM for MediaQuery, see 
+"""Implements a DOM for MediaQuery, see
 http://www.w3.org/TR/css3-mediaqueries/.
 
 A cssutils implementation, not defined in official DOM.
@@ -17,7 +17,7 @@ class MediaQuery(cssutils.util.Base):
     and one or more expressions involving media features.
 
     Format::
-    
+
         media_query: [[only | not]? <media_type> [ and <expression> ]*]
           | <expression> [ and <expression> ]*
         expression: ( <media_feature> [: <value>]? )
@@ -33,7 +33,7 @@ class MediaQuery(cssutils.util.Base):
           | monochrome | min-monochrome | max-monochrome
           | resolution | min-resolution | max-resolution
           | scan | grid
-          
+
     """
     MEDIA_TYPES = [u'all', u'aural', u'braille', u'embossed', u'handheld',
         u'print', u'projection', u'screen', u'tty', u'tv']
@@ -74,7 +74,7 @@ class MediaQuery(cssutils.util.Base):
         :param mediaText:
             a single media query string, e.g. ``print and (min-width: 25cm)``
 
-        :exceptions:    
+        :exceptions:
             - :exc:`~xml.dom.SyntaxErr`:
               Raised if the specified string value has a syntax error and is
               unparsable.

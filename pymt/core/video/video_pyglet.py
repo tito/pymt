@@ -42,22 +42,22 @@ class VideoPyglet(VideoBase):
 
     def load(self):
         self.unload() #make sure we unload an resources
-        
+
         #load media file and set size of video
         self._source = source = pyglet.media.load(self._filename)
         self._format = self._source.video_format
         self.size = (self._format.width, self._format.height)
-        
+
         #load pyglet player and have it play teh video we loaded
         self._player = None
         self._player = pyglet.media.Player()
         self._player.queue(self._source)
         self.play()
         self.stop()
-        
+
         #we have to keep track of tie ourselves..at least its the only way i can get pyglet player to restart,
         #_player.time does not get reset when you do seek(0) for soe reason, and is read only
-        self.time = self._player.time 
+        self.time = self._player.time
 
     def update(self):
         if self._source.duration  - self.time < 0.1 : #we are at the end
@@ -65,7 +65,7 @@ class VideoPyglet(VideoBase):
         if self.state == 'playing':
             self.time += pymt.getFrameDt() #keep track of time into video
             self._player.dispatch_events(pymt.getFrameDt()) #required by pyglet video if not in pyglet window
-        
+
     def stop(self):
         self._player.pause()
         super(VideoPyglet,self).stop()
@@ -79,7 +79,7 @@ class VideoPyglet(VideoBase):
         self.time = t
         self._player.seek(t)
         self.stop()
-        
+
     def _get_position(self):
         if self._player:
             return self.time
@@ -87,19 +87,19 @@ class VideoPyglet(VideoBase):
     def _get_duration(self):
         if self._source:
             return self._source.duration
-        
+
     def _get_volume(self):
         if self._player:
             return self._player.volume
         return 0
-    
+
     def _set_volume(self, volume):
         if self._player:
             self._player.volume = volume
-        
+
     def draw(self):
         if self._player.get_texture():
             glDisable(GL_BLEND) #dont know why this is needed...but it gets very dark otherwise, even if i set color
             self._player.get_texture().blit(*self.pos)
-            
-        
+
+

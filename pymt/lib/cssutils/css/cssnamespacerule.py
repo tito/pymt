@@ -16,8 +16,8 @@ class CSSNamespaceRule(cssrule.CSSRule):
     it with a given namespace (a string). This namespace prefix can then be
     used in namespace-qualified names such as those described in the
     Selectors Module [SELECT] or the Values and Units module [CSS3VAL].
-    
-    Dealing with these rules directly is not needed anymore, easier is 
+
+    Dealing with these rules directly is not needed anymore, easier is
     the use of :attr:`cssutils.css.CSSStyleSheet.namespaces`.
 
     Format::
@@ -29,7 +29,7 @@ class CSSNamespaceRule(cssrule.CSSRule):
           : IDENT
           ;
     """
-    def __init__(self, namespaceURI=None, prefix=None, cssText=None, 
+    def __init__(self, namespaceURI=None, prefix=None, cssText=None,
                  parentRule=None, parentStyleSheet=None, readonly=False):
         """
         :Parameters:
@@ -60,12 +60,12 @@ class CSSNamespaceRule(cssrule.CSSRule):
               : IDENT
               ;
         """
-        super(CSSNamespaceRule, self).__init__(parentRule=parentRule, 
+        super(CSSNamespaceRule, self).__init__(parentRule=parentRule,
                                                parentStyleSheet=parentStyleSheet)
         self._atkeyword = u'@namespace'
         self._prefix = u''
         self._namespaceURI = None
-        
+
         if namespaceURI:
             self.namespaceURI = namespaceURI
             self.prefix = prefix
@@ -212,7 +212,7 @@ class CSSNamespaceRule(cssrule.CSSRule):
         :param namespaceURI: the initial value for this rules namespaceURI
         :exceptions:
             - :exc:`~xml.dom.NoModificationAllowedErr`:
-              (CSSRule) Raised if this rule is readonly or a namespaceURI is 
+              (CSSRule) Raised if this rule is readonly or a namespaceURI is
               already set in this rule.
         """
         self._checkReadonly()
@@ -231,7 +231,7 @@ class CSSNamespaceRule(cssrule.CSSRule):
 
     def _setPrefix(self, prefix=None):
         """
-        :param prefix: the new prefix 
+        :param prefix: the new prefix
         :exceptions:
             - :exc:`~xml.dom.SyntaxErr`:
               Raised if the specified CSS string value has a syntax error and
@@ -242,7 +242,7 @@ class CSSNamespaceRule(cssrule.CSSRule):
         self._checkReadonly()
         if not prefix:
             prefix = u''
-        else:        
+        else:
             tokenizer = self._tokenize2(prefix)
             prefixtoken = self._nexttoken(tokenizer, None)
             if not prefixtoken or self._type(prefixtoken) != self._prods.IDENT:
@@ -259,7 +259,7 @@ class CSSNamespaceRule(cssrule.CSSRule):
                 break
         else:
             # put prefix at the beginning!
-            self._seq[0] = (prefix, 'prefix', None, None) 
+            self._seq[0] = (prefix, 'prefix', None, None)
 
         # set new prefix
         self._prefix = prefix
@@ -270,13 +270,12 @@ class CSSNamespaceRule(cssrule.CSSRule):
 #    def _setParentStyleSheet(self, parentStyleSheet):
 #        self._parentStyleSheet = parentStyleSheet
 #
-#    parentStyleSheet = property(lambda self: self._parentStyleSheet, 
+#    parentStyleSheet = property(lambda self: self._parentStyleSheet,
 #                                _setParentStyleSheet,
 #                                doc=u"Containing CSSStyleSheet.")
 
-    type = property(lambda self: self.NAMESPACE_RULE, 
+    type = property(lambda self: self.NAMESPACE_RULE,
                     doc="The type of this rule, as defined by a CSSRule "
                         "type constant.")
-    
+
     wellformed = property(lambda self: self.namespaceURI is not None)
-    

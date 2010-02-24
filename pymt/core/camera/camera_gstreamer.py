@@ -23,7 +23,7 @@ install_gobject_iteration()
 
 class CameraGStreamer(CameraBase):
     '''Implementation of CameraBase using GStreamer
-    
+
     :Parameters:
         `video_src` : str, default is 'v4l2src'
             Other tested options are: 'dc1394src' for firewire

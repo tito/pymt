@@ -18,8 +18,8 @@ class FlickrPhoto(MTScatterImage):
         kwargs.setdefault('color', (0.9,0.9,0.9,1))
         super(FlickrPhoto, self).__init__(**kwargs)
         self.aspectRatio = 1.33
-        self.update_ratio()       
-        
+        self.update_ratio()
+
     def draw(self):
         self.update_ratio()
         glPushMatrix()

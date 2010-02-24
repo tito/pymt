@@ -20,7 +20,7 @@ except:
 
 class CameraOpenCV(CameraBase):
     '''Implementation of CameraBase using OpenCV
-    
+
     :Parameters:
         `video_src` : int, default is 0
             Index of OpenCV camera to use (0 mean default camera)

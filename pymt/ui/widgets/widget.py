@@ -168,15 +168,15 @@ class MTWidget(EventDispatcher):
         self.a_properties = {}
 
         self.init()
-        
-        
+
+
     def _set_parent(self, parent):
         self._parent = parent
         self.dispatch_event('on_parent')
     def _get_parent(self):
         return self._parent
     parent = property(_get_parent, _set_parent, doc="MTWidget: parent of widget.  fired on_parent event when set")
-        
+
 
     def _set_id(self, id):
         global _id_2_widget
@@ -205,7 +205,7 @@ class MTWidget(EventDispatcher):
     def _get_x(self):
         return self._x
     x = property(_get_x, _set_x, doc='int: X position of widget')
-    
+
 
     def _set_size_hint(self, size_hint):
         if self._size_hint == size_hint:

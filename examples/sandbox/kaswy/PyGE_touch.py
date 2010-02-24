@@ -1,14 +1,14 @@
-#PyGE_touch from kaswy 
+#PyGE_touch from kaswy
 #Website http://kaswy.free.fr
 #Depend of PyMT from  Thomas Hansen
 
-from pymt import * 
+from pymt import *
 import pyglet
 
 from math import sqrt
 import win32com.client
 import time
-	
+
 touchPositions = {}
 
 class GEcamera:
@@ -17,9 +17,9 @@ class GEcamera:
     		self.lat =1.0
 		self.lon =1.0
 		self.alt =10000000.0
-		self.altMode =1	
+		self.altMode =1
 		self.rnge =0
-		self.tilt =0	
+		self.tilt =0
 		self.azimuth =0.
 		self.speed =5
 		self.accx = 0.
@@ -39,7 +39,7 @@ class GEcamera:
 		if self.lat > 90:self.lat = 89.99999
 		if self.lat < -90:self.lat = -90
 		googleEarth.SetCameraParams(self.lat, self.lon, self.alt, self.altMode,self.rnge, self.tilt, self.azimuth, self.speed)
-		
+
 
 class Touch(TouchEventLoop):
     def __init__(self, config=None):
@@ -78,7 +78,7 @@ def on_touch_move(touches, touchID, x, y):
 		cam.accx = (cam.accx + (x-x0)*(cam.alt/30000000))/2	# acceleration pour inertie
 		cam.lon -= cam.accx
 		cam.accy = (cam.accy + (y-y0)*(cam.alt/30000000))/2	# acceleration pour inertie
-		cam.lat -= cam.accy	
+		cam.lat -= cam.accy
 	if doigts == 2:
 		#print "zoom"
 		i=0
@@ -93,7 +93,7 @@ def on_touch_move(touches, touchID, x, y):
 		#print "tilt"
 		for p in touchPositions:
 			x3,y3 = touchPositions[p][0]
-			if p == touchID:	
+			if p == touchID:
 				cam.tilt += (y3-y)/2
 	touchPositions[touchID] = [(x,y)]
 
@@ -116,4 +116,4 @@ print "Have fun !!!!!!!!!"
 getClock().schedule_interval(cam.set,0.01)
 runTouchApp()
 
-	
+

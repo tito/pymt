@@ -13,7 +13,7 @@ from ...graphx import set_color, drawRectangle, drawTexturedRectangle, drawLabel
 
 class CameraBase(BaseObject):
     '''Abstract Camera Widget class.
-    
+
     Concrete camera classes must implement initializaation and
     frame capturing to buffer that can be uploaded to gpu.
 

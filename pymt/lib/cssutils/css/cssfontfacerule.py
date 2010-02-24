@@ -12,7 +12,7 @@ import xml.dom
 class CSSFontFaceRule(cssrule.CSSRule):
     """
     The CSSFontFaceRule interface represents a @font-face rule in a CSS
-    style sheet. The @font-face rule is used to hold a set of font 
+    style sheet. The @font-face rule is used to hold a set of font
     descriptions.
 
     Format::
@@ -22,7 +22,7 @@ class CSSFontFaceRule(cssrule.CSSRule):
             '{' S* declaration [ ';' S* declaration ]* '}' S*
           ;
     """
-    def __init__(self, style=None, parentRule=None, 
+    def __init__(self, style=None, parentRule=None,
                  parentStyleSheet=None, readonly=False):
         """
         If readonly allows setting of properties in constructor only.
@@ -30,14 +30,14 @@ class CSSFontFaceRule(cssrule.CSSRule):
         :param style:
             CSSStyleDeclaration for this CSSStyleRule
         """
-        super(CSSFontFaceRule, self).__init__(parentRule=parentRule, 
+        super(CSSFontFaceRule, self).__init__(parentRule=parentRule,
                                               parentStyleSheet=parentStyleSheet)
         self._atkeyword = u'@font-face'
         if style:
             self.style = style
         else:
             self._style = CSSStyleDeclaration(parentRule=self)
-        
+
         self._readonly = readonly
 
     def __repr__(self):
@@ -68,7 +68,7 @@ class CSSFontFaceRule(cssrule.CSSRule):
               Raised if the rule is readonly.
         """
         super(CSSFontFaceRule, self)._setCssText(cssText)
-        
+
         tokenizer = self._tokenize2(cssText)
         attoken = self._nexttoken(tokenizer, None)
         if self._type(attoken) != self._prods.FONT_FACE_SYM:
@@ -77,25 +77,25 @@ class CSSFontFaceRule(cssrule.CSSRule):
                 error=xml.dom.InvalidModificationErr)
         else:
             wellformed = True
-            beforetokens, brace = self._tokensupto2(tokenizer, 
+            beforetokens, brace = self._tokensupto2(tokenizer,
                                                     blockstartonly=True,
-                                                    separateEnd=True)            
+                                                    separateEnd=True)
             if self._tokenvalue(brace) != u'{':
                 wellformed = False
                 self._log.error(
                     u'CSSFontFaceRule: No start { of style declaration found: %r' %
                     self._valuestr(cssText), brace)
-            
+
             # parse stuff before { which should be comments and S only
             new = {'wellformed': True}
             newseq = self._tempSeq()#[]
-            
+
             beforewellformed, expected = self._parse(expected=':',
                 seq=newseq, tokenizer=self._tokenize2(beforetokens),
                 productions={})
             wellformed = wellformed and beforewellformed and new['wellformed']
-    
-            styletokens, braceorEOFtoken = self._tokensupto2(tokenizer, 
+
+            styletokens, braceorEOFtoken = self._tokensupto2(tokenizer,
                                                              blockendonly=True,
                                                              separateEnd=True)
 
@@ -105,7 +105,7 @@ class CSSFontFaceRule(cssrule.CSSRule):
                 self._log.error(
                     u'CSSFontFaceRule: No "}" after style declaration found: %r' %
                     self._valuestr(cssText))
-                
+
             nonetoken = self._nexttoken(tokenizer)
             if nonetoken:
                 wellformed = False
@@ -140,7 +140,7 @@ class CSSFontFaceRule(cssrule.CSSRule):
                      doc="(DOM) The declaration-block of this rule set, "
                          "a :class:`~cssutils.css.CSSStyleDeclaration`.")
 
-    type = property(lambda self: self.FONT_FACE_RULE, 
+    type = property(lambda self: self.FONT_FACE_RULE,
                     doc="The type of this rule, as defined by a CSSRule "
                         "type constant.")
 

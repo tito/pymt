@@ -1,4 +1,4 @@
-#photoo from kaswy 
+#photoo from kaswy
 #Website http://kaswy.free.fr
 #Depend of PyMT from  Thomas Hansen
 
@@ -46,7 +46,7 @@ class GLWindow(MTWindow):
 	def on_touch_down(self, touches, touchID, x, y):
 		vertexImpact[touchID]=[(x,y)]
 		for xy in Data:
-			impact = ((sqrt(abs((xy[0]*dx-x)**2 + (xy[1]*dy-y)**2))/diag)**1.5)*60000 
+			impact = ((sqrt(abs((xy[0]*dx-x)**2 + (xy[1]*dy-y)**2))/diag)**1.5)*60000
 			vertexImpact[touchID].append(impact)
 
 	def on_touch_move(self, touches, touchID, x, y):
@@ -68,7 +68,7 @@ class GLWindow(MTWindow):
 
         def on_touch_up(self, touches, touchID, x, y):
             del vertexImpact[touchID]
-		
+
 
 def createMesh():
 	for y in range(res):

@@ -163,7 +163,7 @@ class GestureStroke:
         # If there is only one point or the length is 0, don't normalize
         if len(self.points) <= 1 or self.stroke_length(self.points) == 0.0:
             return False
-        
+
         # Calculate how long each point should be in the stroke
         target_stroke_size = self.stroke_length(self.points)/float(sample_points)
         new_points = list()
@@ -180,7 +180,7 @@ class GestureStroke:
                 prev = curr
                 src_distance = src_distance+d
 
-                # The new point need to be inserted into the 
+                # The new point need to be inserted into the
                 # segment [prev, curr]
                 while dst_distance < src_distance:
                      x_dir = curr.x - prev.x
@@ -232,7 +232,7 @@ class Gesture:
     def _scale_gesture(self):
         ''' Scales down the gesture to a unit of 1 '''
         # map() creates a list of min/max coordinates of the strokes
-        # in the gesture and min()/max() pulls the lowest/highest value 
+        # in the gesture and min()/max() pulls the lowest/highest value
         min_x = min(map(lambda stroke: stroke.min_x, self.strokes))
         max_x = max(map(lambda stroke: stroke.max_x, self.strokes))
         min_y = min(map(lambda stroke: stroke.min_y, self.strokes))
@@ -342,10 +342,10 @@ class Gesture:
         ''' Returns the matching score of the gesture against another gesture '''
         if isinstance(comparison_gesture, Gesture):
             if rotation_invariant:
-                # get orientation 
+                # get orientation
                 angle = self.get_rigid_rotation( comparison_gesture )
 
-                # rotate the gesture to be in the same frame. 
+                # rotate the gesture to be in the same frame.
                 comparison_gesture = comparison_gesture.rotate( angle )
 
             # this is the normal "orientation" code.

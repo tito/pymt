@@ -31,7 +31,7 @@ class MTButton(MTWidget):
         `bg-color` : color
             Background color of the button
         `color` : color
-            color of the text/label on teh button            
+            color of the text/label on teh button
         `font-name` : str
             Name of font to use
         `font-size` : int
@@ -150,7 +150,7 @@ class MTButton(MTWidget):
                 self.label_obj.draw()
         self.label_obj.x, self.label_obj.y = \
             map(lambda x: self.pos[x] + self.size[x] / 2, xrange(2))
-        
+
         self.label_obj.color = self.style['color']
         self.label_obj.font_size = self.style['font-size']
         self.label_obj.draw()

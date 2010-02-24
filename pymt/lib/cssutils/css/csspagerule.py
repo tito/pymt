@@ -26,7 +26,7 @@ class CSSPageRule(cssrule.CSSRule):
           : ':' IDENT # :first, :left, :right in CSS 2.1
           ;
     """
-    def __init__(self, selectorText=None, style=None, parentRule=None, 
+    def __init__(self, selectorText=None, style=None, parentRule=None,
                  parentStyleSheet=None, readonly=False):
         """
         If readonly allows setting of properties in constructor only.
@@ -36,7 +36,7 @@ class CSSPageRule(cssrule.CSSRule):
         :param style:
             CSSStyleDeclaration for this CSSStyleRule
         """
-        super(CSSPageRule, self).__init__(parentRule=parentRule, 
+        super(CSSPageRule, self).__init__(parentRule=parentRule,
                                           parentStyleSheet=parentStyleSheet)
         self._atkeyword = u'@page'
         tempseq = self._tempSeq()
@@ -51,7 +51,7 @@ class CSSPageRule(cssrule.CSSRule):
         else:
             self._style = CSSStyleDeclaration(parentRule=self)
         self._setSeq(tempseq)
-        
+
         self._readonly = readonly
 
     def __repr__(self):
@@ -86,7 +86,7 @@ class CSSPageRule(cssrule.CSSRule):
                     ival, ityp = self._tokenvalue(identtoken), self._type(identtoken)
                     if self._prods.IDENT != ityp:
                         self._log.error(
-                            u'CSSPageRule selectorText: Expected IDENT but found: %r' % 
+                            u'CSSPageRule selectorText: Expected IDENT but found: %r' %
                             ival, token)
                     else:
                         seq.append(val + ival, 'pseudo')
@@ -120,24 +120,24 @@ class CSSPageRule(cssrule.CSSRule):
         def COMMENT(expected, seq, token, tokenizer=None):
             "Does not raise if EOF is found."
             seq.append(cssutils.css.CSSComment([token]), 'COMMENT')
-            return expected 
+            return expected
 
         newseq = self._tempSeq()
         wellformed, expected = self._parse(expected='page',
             seq=newseq, tokenizer=self._tokenize2(selectorText),
             productions={'CHAR': _char,
                          'IDENT': IDENT,
-                         'COMMENT': COMMENT, 
-                         'S': S}, 
+                         'COMMENT': COMMENT,
+                         'S': S},
             new=new)
         wellformed = wellformed and new['wellformed']
-        
+
         # post conditions
         if expected == 'ident':
             self._log.error(
                 u'CSSPageRule selectorText: No valid selector: %r' %
                     self._valuestr(selectorText))
-            
+
 #        if not newselector in (None, u':first', u':left', u':right'):
 #            self._log.warn(u'CSSPageRule: Unknown CSS 2.1 @page selector: %r' %
 #                     newselector, neverraise=True)
@@ -150,7 +150,7 @@ class CSSPageRule(cssrule.CSSRule):
 
     def _setCssText(self, cssText):
         """
-        :exceptions:    
+        :exceptions:
             - :exc:`~xml.dom.SyntaxErr`:
               Raised if the specified CSS string value has a syntax error and
               is unparsable.
@@ -164,18 +164,18 @@ class CSSPageRule(cssrule.CSSRule):
               Raised if the rule is readonly.
         """
         super(CSSPageRule, self)._setCssText(cssText)
-        
+
         tokenizer = self._tokenize2(cssText)
         if self._type(self._nexttoken(tokenizer)) != self._prods.PAGE_SYM:
             self._log.error(u'CSSPageRule: No CSSPageRule found: %s' %
-                            self._valuestr(cssText), 
+                            self._valuestr(cssText),
                             error=xml.dom.InvalidModificationErr)
         else:
             wellformed = True
-            selectortokens, startbrace = self._tokensupto2(tokenizer, 
+            selectortokens, startbrace = self._tokensupto2(tokenizer,
                                                            blockstartonly=True,
                                                            separateEnd=True)
-            styletokens, braceorEOFtoken = self._tokensupto2(tokenizer, 
+            styletokens, braceorEOFtoken = self._tokensupto2(tokenizer,
                                                         blockendonly=True,
                                                         separateEnd=True)
             nonetoken = self._nexttoken(tokenizer)
@@ -188,8 +188,8 @@ class CSSPageRule(cssrule.CSSRule):
                 wellformed = False
                 self._log.error(
                     u'CSSPageRule: Trailing content found.', token=nonetoken)
-                
-                
+
+
             wellformed, newselectorseq = self.__parseSelectorText(selectortokens)
 
             newstyle = CSSStyleDeclaration()
@@ -220,9 +220,9 @@ class CSSPageRule(cssrule.CSSRule):
     def _setSelectorText(self, selectorText):
         """Wrapper for cssutils Selector object.
 
-        :param selectorText: 
+        :param selectorText:
             DOM String, in CSS 2.1 one of
-            
+
             - :first
             - :left
             - :right
@@ -251,22 +251,22 @@ class CSSPageRule(cssrule.CSSRule):
             a CSSStyleDeclaration or string
         """
         self._checkReadonly()
-        
+
         if isinstance(style, basestring):
             self._style.cssText = style
         else:
             # cssText would be serialized with optional preferences
             # so use seq!
-            self._style._seq = style.seq 
+            self._style._seq = style.seq
 
     style = property(lambda self: self._style, _setStyle,
                      doc="(DOM) The declaration-block of this rule set, "
                          "a :class:`~cssutils.css.CSSStyleDeclaration`.")
 
 
-    type = property(lambda self: self.PAGE_RULE, 
+    type = property(lambda self: self.PAGE_RULE,
                     doc="The type of this rule, as defined by a CSSRule "
                         "type constant.")
-    
+
     # constant but needed:
     wellformed = property(lambda self: True)

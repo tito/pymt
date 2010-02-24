@@ -9,7 +9,7 @@ from ...baseobject import BaseObject
 
 class VideoBase(BaseObject):
     '''VideoBase, a class to implement a video reader.
-    
+
     :Parameters:
         `filename` : str
             Filename of the video. Can be a file or an URI.

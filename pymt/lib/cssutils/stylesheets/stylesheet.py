@@ -68,16 +68,16 @@ class StyleSheet(cssutils.util.Base2):
         parentStyleSheet: of type StyleSheet, readonly
         """
         super(StyleSheet, self).__init__()
-        
+
         self._href = href
         self._ownerNode = ownerNode
-        self._parentStyleSheet = parentStyleSheet 
+        self._parentStyleSheet = parentStyleSheet
         self._type = type
 
         self.disabled = bool(disabled)
         self.media = media
         self.title = title
-    
+
     href = property(lambda self: self._href,
         doc="If the style sheet is a linked style sheet, the value "
             "of this attribute is its location. For inline style "
@@ -86,9 +86,9 @@ class StyleSheet(cssutils.util.Base2):
             "4.0, and the href pseudo-attribute for the XML style "
             "sheet processing instruction.")
 
-    ownerNode = property(lambda self: self._ownerNode, 
+    ownerNode = property(lambda self: self._ownerNode,
                          doc="Not used in cssutils yet.")
-    
+
     parentStyleSheet = property(lambda self: self._parentStyleSheet,
         doc="For style sheet languages that support the concept "
             "of style sheet inclusion, this attribute represents "
@@ -97,7 +97,7 @@ class StyleSheet(cssutils.util.Base2):
             "language does not support inclusion, the value of this "
             "attribute is None.")
 
-    type = property(lambda self: self._type, 
+    type = property(lambda self: self._type,
         doc="This specifies the style sheet language for this "
             "style sheet. The style sheet language is specified "
             "as a content type (e.g. ``text/css``). The content "

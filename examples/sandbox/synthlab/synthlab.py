@@ -17,8 +17,8 @@ class Workspace(MTScatterPlane):
                         Module(filename = 'sl-distort+.svg', category = 'effect', instance = 1),
                         Module(filename = 'sl-lfo+.svg', category = 'controller', instance = 1)]
         for m in self.modules:
-            self.add_widget(m)        
-        
+            self.add_widget(m)
+
 class Module(MTSvg):
     def __init__(self, **kwargs):
         super(Module,self).__init__(**kwargs)
@@ -31,7 +31,7 @@ class Module(MTSvg):
         self.drag_y = 0
         self.control_connections = []
         self.signal_connections = []
-        
+
     def draw(self):
         if self.mode == 'draw_connection':
             set_color(1,1,1,1)
@@ -40,16 +40,16 @@ class Module(MTSvg):
             x2 = self.drag_x
             y2 = self.drag_y
             drawLine([x1, y1, x2, y2], width = 1)
-        
+
         set_color(1,1,1,1)
         for module in self.control_connections:
             drawLine(self.return_connection_coordinates(module), width = 1)
-        
+
         for module in self.signal_connections:
             drawLine(self.return_connection_coordinates(module, 'signal'), width = 1)
-        
+
         super(Module, self).draw()
-    
+
     def return_connection_coordinates(self, m2, type='control'):
         x1 = self.x +self.width / 2
         y1 = self.y + 1
@@ -60,11 +60,11 @@ class Module(MTSvg):
             x2 = m2[0].x + m2[0].width - 4
             y2 = m2[0].y + m2[0].height - 20 - (m2[1] - 1) * 13
         if type == 'signal':
-            x2 = m2[0].x + self.width / 2. 
+            x2 = m2[0].x + self.width / 2.
             y2 = (m2[0].y + m2[0].height) - 1
-        
+
         return (x1, y1, x2, y2)
-        
+
     def line_collision_with_point(self, x1, y1, x2, y2, x, y):
         # If line is vertical
         if x1 == x2:
@@ -84,7 +84,7 @@ class Module(MTSvg):
             return True
         else:
             return False
-        
+
     def on_touch_down(self, touch):
         # Delete connections
         if touch.is_double_tap:
@@ -98,7 +98,7 @@ class Module(MTSvg):
                 if self.line_collision_with_point(x1, y1, x2, y2, touch.x, touch.y):
                     self.control_connections.remove([connection[0], connection[1]])
                     osc.sendMsg("/disconnect", [self.category, self.instance, connection[0].category, connection[0].instance, connection[1]], host, port)
-        
+
         if self.collide_point(touch.x,touch.y):
             self.touchstarts.append(touch.id)
             self.first_x = touch.x
@@ -111,11 +111,11 @@ class Module(MTSvg):
                     self.mode = 'draw_connection'
                     self.drag_x = touch.x
                     self.drag_y = touch.y
-                # Middle section        
+                # Middle section
                 else:
                     self.mode = 'move'
             return True
-        
+
     def on_touch_move(self, touch):
         if touch.id in self.touchstarts:
             delta_x = touch.x - self.first_x
@@ -127,10 +127,10 @@ class Module(MTSvg):
                 self.drag_x = touch.x
                 self.drag_y = touch.y
             return True
-            
+
     def on_touch_up(self, touch):
         if self.mode == 'draw_connection':
-            for m in self.parent.modules:                    
+            for m in self.parent.modules:
                 if m.collide_point(touch.x,touch.y) and m != self and m.category != 'controller':
                     # Control connections
                     if self.category == 'controller' and m.category != 'output':
@@ -155,8 +155,8 @@ class Module(MTSvg):
                             if [m, inlet] not in self.signal_connections:
                                 self.signal_connections.append([m, inlet])
                                 osc.sendMsg("/connect", [self.category, self.instance, m.category, m.instance], host, port)
-                        
-           
+
+
         if touch.id in self.touchstarts:
             self.touchstarts.remove(touch.id)
             self.mode = 'move'

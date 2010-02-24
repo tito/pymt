@@ -44,7 +44,7 @@ class Property(cssutils.util.Base):
           ;
 
     """
-    def __init__(self, name=None, value=None, priority=u'', 
+    def __init__(self, name=None, value=None, priority=u'',
                  _mediaQuery=False, _parent=None):
         """
         :param name:
@@ -57,7 +57,7 @@ class Property(cssutils.util.Base):
         :param _mediaQuery:
             if ``True`` value is optional (used by MediaQuery)
         :param _parent:
-            the parent object, normally a 
+            the parent object, normally a
             :class:`cssutils.css.CSSStyleDeclaration`
         """
         super(Property, self).__init__()
@@ -81,7 +81,7 @@ class Property(cssutils.util.Base):
         self._literalpriority = u''
         if priority:
             self.priority = priority
-            
+
     def __repr__(self):
         return "cssutils.css.%s(name=%r, value=%r, priority=%r)" % (
                 self.__class__.__name__,
@@ -144,12 +144,12 @@ class Property(cssutils.util.Base):
                 self._log.error(u'Property: No property value found: %r.' %
                                 self._valuestr(cssText), colontoken)
 
-            if wellformed:                
+            if wellformed:
                 self.wellformed = True
                 self.name = nametokens
                 self.cssValue = valuetokens
                 self.priority = prioritytokens
-                
+
                 # also invalid values are set!
                 self.validate()
 
@@ -162,7 +162,7 @@ class Property(cssutils.util.Base):
 
     def _setName(self, name):
         """
-        :exceptions:    
+        :exceptions:
             - :exc:`~xml.dom.SyntaxErr`:
               Raised if the specified name has a syntax error and is
               unparsable.
@@ -223,7 +223,7 @@ class Property(cssutils.util.Base):
 
     name = property(lambda self: self._name, _setName,
                     doc="Name of this property.")
-    
+
     literalname = property(lambda self: self._literalname,
                            doc="Readonly literal (not normalized) name "
                                "of this property")
@@ -251,7 +251,7 @@ class Property(cssutils.util.Base):
 
             cssvalue = self.seqs[1]
             cssvalue.cssText = cssText
-            if cssvalue.wellformed: #cssvalue._value and 
+            if cssvalue.wellformed: #cssvalue._value and
                 self.seqs[1] = cssvalue
             self.wellformed = self.wellformed and cssvalue.wellformed
 
@@ -364,19 +364,19 @@ class Property(cssutils.util.Base):
 
     def validate(self, profile=None):
         """Validate value against `profile`.
-        
+
         :param profile:
             A profile name used for validating. If no `profile` is given
             ``Property.profiles
         """
         valid = False
-        
+
         if self.name and self.value:
             if profile is None:
                 usedprofile = cssutils.profiles.defaultprofile
             else:
                 usedprofile = profile
-            
+
             if self.name in profiles.knownnames:
                 valid, validprofiles = profiles.validateWithProfile(self.name,
                                                                    self.value,
@@ -384,22 +384,22 @@ class Property(cssutils.util.Base):
 
                 if not valid:
                     self._log.error(u'Property: Invalid value for "%s" property: %s: %s'
-                                   % (u'/'.join(validprofiles), 
-                                      self.name, 
+                                   % (u'/'.join(validprofiles),
+                                      self.name,
                                       self.value),
                                    neverraise=True)
                 elif valid and (usedprofile and usedprofile not in validprofiles):
                     self._log.warn(u'Property: Not valid for profile "%s": %s: %s'
                                    % (usedprofile, self.name, self.value),
                                    neverraise=True)
-                                
+
                 if valid:
                     self._log.info(u'Property: Found valid "%s" property: %s: %s'
-                                   % (u'/'.join(validprofiles), 
-                                       self.name, 
+                                   % (u'/'.join(validprofiles),
+                                       self.name,
                                        self.value),
                                    neverraise=True)
-                    
+
         if self._priority not in (u'', u'important'):
             valid = False
 

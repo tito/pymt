@@ -307,8 +307,8 @@ class CSSCapture(object):
                 sf.write(sheet.cssText)
             sf.close()
 
-def csscombine(path=None, url=None, 
-               sourceencoding=None, targetencoding=None, 
+def csscombine(path=None, url=None,
+               sourceencoding=None, targetencoding=None,
                minify=True):
     """Combine sheets referred to by @import rules in given CSS proxy sheet
     into a single new sheet.
@@ -323,7 +323,7 @@ def csscombine(path=None, url=None,
         `minify`
             defines if the combined sheet should be minified, default True
     """
-    cssutils.log.info(u'Combining files from %r' % url, 
+    cssutils.log.info(u'Combining files from %r' % url,
                       neverraise=True)
     if sourceencoding is not None:
         cssutils.log.info(u'Using source encoding %r' % sourceencoding,

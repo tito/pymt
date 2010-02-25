@@ -34,7 +34,7 @@ def _screenshot():
     surface = pygame.image.fromstring(str(buffer(data)), win.size, 'RGB', True)
     filename = None
     for i in xrange(9999):
-        path = os.path.join(os.getcwd(), 'screenshot%04d.tga' % i)
+        path = os.path.join(os.getcwd(), 'screenshot%04d.jpg' % i)
         if not os.path.exists(path):
             filename = path
             break

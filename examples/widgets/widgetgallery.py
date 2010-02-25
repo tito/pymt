@@ -33,7 +33,7 @@ widget_names = [
     'MTXYSlider',
     'MTBoundarySlider',
     'MTMultiSlider',
-    
+
 
     'MTTextInput',
     'MTColorPicker',
@@ -61,7 +61,7 @@ widget_names = [
 
 
 if __name__ == '__main__':
-    
+
     root = MTGridLayout(cols=5, rows=5)
     for widget in widget_names:
         box = MTBoxLayout(orientation='vertical', padding=30)

@@ -81,8 +81,8 @@ class bloop(MTButton):
         self.showing = True
         self.highlight = False
 
-        getClock().schedule_once(self.BloopHide, 2)        
-        
+        getClock().schedule_once(self.BloopHide, 2)
+
         self.fadeout = Animation(d=1.0, radius=self.width+10, alpha=0.0)
 
     def on_touch_down(self, touch):

@@ -28,7 +28,7 @@ class Target(MTWidget):
 				font_size=24,
 				x=0, y=0,
 				anchor_x='center', anchor_y='center')
-                
+
 		def draw(self):
 				glPushMatrix()
 				glTranslatef(self.translation.x, self.translation.y, 0)
@@ -53,14 +53,14 @@ class MTSourceWidget(MTScatterWidget):
 			self.log_buffer = []
 			self.errors = []
 			self.start_time = time.clock()
-		
+
 		def draw(self):
 			with DO(gx_blending):
 				glColor4f(*self.color)
 				drawRectangle((0,0) ,(self.width, self.height))
 				glColor4f(0.3,0.8,0.3,0.5)
 				drawTriangle(pos=(self.width*0.5,self.height*0.2), w=self.width*0.6, h=self.height*0.6)
-		
+
 		def testStart(self,dt):
 			self.color = (1.0, 1.0, 1.0, 0.5)
 			self.x,self.y = randint(100,900), randint(100,900)
@@ -68,11 +68,11 @@ class MTSourceWidget(MTScatterWidget):
 			self.done = False
 			#self.rotation = randint(1,359)
 			#self.zoom = 1.0
-		
+
 			self.target.x, self.target.y = (randint(100,900), randint(100,900))
 			self.target.rotation = randint(1,359)
 			self.target.zoom = randint(1,3)
-		
+
 		def on_touch_move(self, touches, touchID, x, y):
 			MTScatterWidget.on_touch_move(self, touches, touchID, x, y)
 			self.translation =Vector(*self.center)

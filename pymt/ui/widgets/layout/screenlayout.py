@@ -45,7 +45,7 @@ class MTScreenLayout(MTAbstractLayout):
         tab_btn = MTButton(label=widget.id, size_hint=(1,1), height=50)
         tab_btn.push_handlers(on_press=curry(self.select,widget.id))
         self.tabs.add_widget(tab_btn)
-        
+
         self.screens.append(widget)
         if not self.screen:
             self.select(widget)
@@ -58,7 +58,7 @@ class MTScreenLayout(MTAbstractLayout):
                 break
         if tab_btn:
             self.tabs.remove(tab_btn)
-        
+
         self.screens.remove(widget)
 
     def select(self, id, *args):

@@ -215,7 +215,7 @@ def drawCircle(pos=(0,0), radius=1.0, linewidth=None):
         else:
             gluDisk(gluNewQuadric(), 0, 1, 32,1)
 
-def drawPolygon(points, linewidth=None):
+def drawPolygon(points, style=GL_POLYGON, linewidth=None):
     '''Draw polygon from points list
 
     :Parameters:
@@ -223,8 +223,19 @@ def drawPolygon(points, linewidth=None):
             List of points, length must be power of 2. (x,y,x,y...)
         `style` : opengl begin, default to GL_POLYGON
             Default type to draw (will be passed to glBegin)
+            can also be string:
+                'fill' == 'GL_POLYGON' == GL_POLYGON
+                'line' == 'GL_LINE_LOOP' == GL_LINE_LOOP
+        `linewidth` :  defaults to current OpenGL state.  sets the linewidth if drawign style is a line based one
     '''
-    style = GL_POLYGON if linewidth == None else GL_LINE_LOOP
+    if type(style) == type('string'):
+        if style in ('fill', 'GL_POLYGON'):
+            style = GL_POLYGON
+        if style in ('line', 'GL_LINE_LOOP'):
+            style = GL_LINE_LOOP
+        else:
+            raise Exception("Invalid style argument for drawPolygon method, try 'fill', 'GL_POLYGON', 'line', or 'GL_LINE_LOOP'")
+    
     points = _make_point_list(points)
 
     if linewidth is not None:
@@ -239,7 +250,7 @@ def drawPolygon(points, linewidth=None):
         glPopAttrib()
         
 
-def drawTriangle(pos, w, h, linewidth=None):
+def drawTriangle(pos, w, h, style=None, linewidth=None):
     '''Draw one triangle
 
     :Parameters:
@@ -249,9 +260,15 @@ def drawTriangle(pos, w, h, linewidth=None):
             Width of triangle
         `h` : int
             Height of triangle
+        `style` : opengl begin, default to GL_POLYGON
+            Default type to draw (will be passed to glBegin)
+            can also be string:
+                'fill' == 'GL_POLYGON' == GL_POLYGON
+                'line' == 'GL_LINE_LOOP' == GL_LINE_LOOP
+        `linewidth` : int, defaults to current OpenGL state. sets the linewidth if drawign style is a line based one
     '''
     points = [pos[0]-w/2, pos[1], pos[0]+w/2, pos[1], pos[0], pos[1]+h]
-    drawPolygon(points)
+    drawPolygon(points, style, linewidth)
 
 def drawRectangle(pos=(0,0), size=(1.0,1.0), style=GL_QUADS):
     '''Draw a simple rectangle

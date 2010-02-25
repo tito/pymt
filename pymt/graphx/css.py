@@ -55,11 +55,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
     new_cache = GlDisplayList()
     with new_cache:
 
-        linewidth = None
-        old_linewidth = glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE)[1]
-        if style.get('border-width') != old_linewidth:
-            linewidth = style.get('border-width')
-        del style['border-width']
+        linewidth = style.get('border-width')
 
         bordercolor = None
         if 'border-color' in style:
@@ -74,6 +70,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
                 drawRoundedRectangle(**k)
             if style['draw-border']:
                 if linewidth:
+                    glPushAttrib(GL_LINE_BIT)
                     glLineWidth(linewidth)
                 if bordercolor:
                     with gx_color(*bordercolor):
@@ -81,7 +78,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
                 else:
                     drawRoundedRectangle(style=GL_LINE_LOOP, **k)
                 if linewidth:
-                    glLineWidth(old_linewidth)
+                    glPopAttrib()
             if style['draw-alpha-background']:
                 drawRoundedRectangleAlpha(alpha=style['alpha-background'], **k)
         else:
@@ -89,6 +86,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
                 drawRectangle(**k)
             if style['draw-border']:
                 if linewidth:
+                    glPushAttrib(GL_LINE_BIT)
                     glLineWidth(linewidth)
                 if bordercolor:
                     with gx_color(*bordercolor):
@@ -96,7 +94,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
                 else:
                     drawRectangle(style=GL_LINE_LOOP, **k)
                 if linewidth:
-                    glLineWidth(old_linewidth)
+                    glPopAttrib()
             if style['draw-alpha-background']:
                 drawRectangleAlpha(alpha=style['alpha-background'], **k)
 

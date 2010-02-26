@@ -14,6 +14,7 @@ from pymt.core.svg import Svg
 
 def parse_image(filename):
     '''Parse a filename to load an image ro svg'''
+    filename = parse_string(filename)
     if filename in (None, 'None', u'None'):
         return None
     if filename.endswith('.svg'):

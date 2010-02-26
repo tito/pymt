@@ -10,9 +10,7 @@ from pymt.cache import Cache
 from pymt.graphx.statement import gx_matrix
 from OpenGL.GL import glTranslate, glScale
 
-
 Cache.register('_pymt_core_svg_cache', limit=500, timeout=None)
-
 
 class SvgBase(object):
     '''Base to implement an svg loader.'''
@@ -35,8 +33,6 @@ class SvgBase(object):
     def __getattr__ (self, name):
         return self.svg_data.__getattribute__(name)
 
-
-
 class SvgLoader(object):
     __slots__ = ('loaders')
     loaders = []
@@ -54,12 +50,10 @@ class SvgLoader(object):
             if ext not in loader.extensions():
                 continue
             im = loader(filename, **kwargs)
-            print im, im.width
             break
         if im is None:
             raise Exception('Unsupported extension <%s>, no loader found.' % ext)
         return im
-
 
 class Svg(BaseObject):
     '''Load and draw an SVG file.
@@ -84,7 +78,6 @@ class Svg(BaseObject):
                 Filename of the image
         '''
         return Svg(filename, **kwargs)
-
 
     def __init__(self, arg, **kwargs):
         kwargs.setdefault('keep_data', False)

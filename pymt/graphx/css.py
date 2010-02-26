@@ -29,11 +29,18 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
         * draw-border (bool)
 
     '''
+    
+    style.setdefault('bg-image', None)
+    
     # Check if we have a cached version
     cache_id = '%s:%s:%s:%s' % (pos, size, style, prefix)
     cache = Cache.get('css_rect', cache_id)
     if cache:
         cache.draw()
+        if style['bg-image']:
+            style['bg-image'].size = size
+            style['bg-image'].pos = pos
+            style['bg-image'].draw()
         return
 
     # hack to remove prefix in style
@@ -52,8 +59,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
     style.setdefault('draw-background', 1)
     style.setdefault('draw-alpha-background', 0)
     style.setdefault('alpha-background', (1, 1, .5, .5))
-    style.setdefault('bg-image', None)
-
+    
     k = { 'pos': pos, 'size': size }
 
     new_cache = GlDisplayList()

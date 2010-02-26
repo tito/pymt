@@ -36,8 +36,34 @@ class XMLWidget(MTWidget):
         kwargs.setdefault('xml', None)
         super(XMLWidget, self).__init__(**kwargs)
         xml = kwargs.get('xml')
+        self.allwidgets = []
         if xml is not None:
             self.loadString(xml)
+
+    @property
+    def root(self):
+        '''Return the root widget of the xml'''
+        if len(self.children):
+            return self.children[0]
+        return None
+
+    def autoconnect(self, obj):
+        '''Autoconnect event handler from widget in xml to obj.
+        For example, if you have a <MTButton id='plop'> in xml,
+        and you want to connect on on_press event, it will search
+        the obj.on_plop_press() function.
+        '''
+        for children in self.allwidgets:
+            if children.id is None:
+                continue
+            for event in children.event_types:
+                eventobj = event
+                if eventobj[:3] == 'on_':
+                    eventobj = eventobj[3:]
+                eventobj = 'on_%s_%s' % (children.id, eventobj)
+                if hasattr(obj, eventobj):
+                    children.connect(event, getattr(obj, eventobj))
+
 
     def createNode(self, node):
         factory = MTWidgetFactory
@@ -52,11 +78,12 @@ class XMLWidget(MTWidget):
             # create widget
             try:
                 nodeWidget  = MTWidgetFactory.get(class_name)(**k)
+                self.allwidgets.append(nodeWidget)
             except:
                 pymt_logger.exception('XMLWidget: unable to create widget %s' % class_name)
                 raise
 
-            #add child widgets
+            # add child widgets
             for c in node.childNodes:
                 w = self.createNode(c)
                 if w:

@@ -156,6 +156,10 @@ class EventDispatcher(object):
         super(EventDispatcher, self).__init__()
         self._event_types = []
 
+    @property
+    def event_types(self):
+        return self._event_types
+
     def unregister_event_type(self, event_type):
         if event_type in self._event_types:
             self._event_types.remove(event_type)

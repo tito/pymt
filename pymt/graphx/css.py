@@ -9,10 +9,13 @@ from draw import *
 from pymt.cache import Cache
 from statement import GlDisplayList, gx_color
 from OpenGL.GL import *
+from pymt.core.svg import Svg
 
 
 if not 'PYMT_DOC' in os.environ:
     Cache.register('css_rect', limit=100, timeout=5)
+    
+    
 def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
     '''Draw a rectangle with CSS
 
@@ -49,6 +52,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
     style.setdefault('draw-background', 1)
     style.setdefault('draw-alpha-background', 0)
     style.setdefault('alpha-background', (1, 1, .5, .5))
+    style.setdefault('bg-image', None)
 
     k = { 'pos': pos, 'size': size }
 
@@ -60,6 +64,9 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
         bordercolor = None
         if 'border-color' in style:
             bordercolor = style['border-color']
+
+
+
 
         if style['border-radius'] > 0:
             k.update({
@@ -97,6 +104,12 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
                     glPopAttrib()
             if style['draw-alpha-background']:
                 drawRectangleAlpha(alpha=style['alpha-background'], **k)
+                
+        if style['bg-image']:
+            if style['bg-image']:
+                style['bg-image'].size = k['size']
+                style['bg-image'].pos = k['pos']
+                style['bg-image'].draw()
 
     # if the drawCSSRectangle is already inside a display list
     # compilation will not happen, but drawing yes.

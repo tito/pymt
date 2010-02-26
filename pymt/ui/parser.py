@@ -4,11 +4,23 @@ Parser: default parser from string to special type
 Used specially for CSS
 '''
 
-__all__ = ['parse_color', 'parse_int', 'parse_float',
+__all__ = ['parse_image', 'parse_color', 'parse_int', 'parse_float',
            'parse_string', 'parse_bool', 'parse_int2',
            'parse_float4']
 
 import re
+from pymt.core.image import Image
+from pymt.core.svg import Svg
+
+def parse_image(filename):
+    '''Parse a filename to load an image ro svg'''
+    if filename in (None, 'None', u'None'):
+        return None
+    if filename.endswith('.svg'):
+        return Svg(filename)
+    else:
+        return Image(filename)
+    raise Exception('Error trying to load image specified in css: %s' % filename)
 
 def parse_color(text):
     '''Parse a text color to a pymt color. Format supported are :

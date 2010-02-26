@@ -7,7 +7,7 @@ __all__ = ['MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane', 'MTScatterImage'
 
 import pymt
 from OpenGL.GL import *
-from ...graphx import drawRectangle, gx_matrix, gx_matrix_identity, set_color, \
+from ...graphx import drawRectangle, drawCSSRectangle, gx_matrix, gx_matrix_identity, set_color, \
     drawTexturedRectangle, gx_blending
 from ...vector import Vector, matrix_mult, matrix_inv_mult
 from ...utils import SafeList, deprecated
@@ -130,8 +130,8 @@ class MTScatterWidget(MTWidget):
             self.transform_mat = glGetFloatv(GL_MODELVIEW_MATRIX)
 
     def draw(self):
-        set_color(*self.style.get('bg-color'))
-        drawRectangle((0,0), (self.width, self.height))
+        set_color(*self.style['bg-color'])
+        drawCSSRectangle((0,0), (self.width, self.height), style=self.style)
 
     def on_draw(self):
         if not self.visible:

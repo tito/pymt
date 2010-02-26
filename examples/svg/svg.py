@@ -15,9 +15,7 @@ def pymt_plugin_activate(w, ctx):
     ctx.c = MTKinetic()
     for svg_file in ['sun.svg', 'cloud.svg', 'ship.svg']:
         filename=join(current_dir, svg_file)
-        svg = Svg(filename)
-        scatter = MTScatterWidget(size=svg.size, style={'bg-color':(0,0,0,0)})        
-        scatter.add_widget(MTContainer(svg))
+        scatter = MTScatterWidget(style={'bg-image':Svg(filename), 'bg-color': (0,0,0,0)})        
         ctx.c.add_widget(scatter)
     w.add_widget(ctx.c)
 

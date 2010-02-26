@@ -61,7 +61,7 @@ auto_convert = {
     'alpha-background':         parse_float4,
     'item-color':               parse_color,
     'item-selected':            parse_color,
-	'padding':                  parse_int,
+    'padding':                  parse_int,
     'slider-border-radius':     parse_int,
     'slider-border-radius-precision': parse_float,
     'slider-alpha-background':  parse_float4,
@@ -86,10 +86,11 @@ auto_convert = {
     'draw-title-alpha-background': parse_bool,
     'margin':                   parse_float4,
     'key-color':                parse_color,
-    'syskey-color':                parse_color,
-    'scrollbar-size':               parse_float,
-    'scrollbar-margin':             parse_float4,
-    'scrollbar-color':              parse_color,
+    'syskey-color':             parse_color,
+    'scrollbar-size':           parse_float,
+    'scrollbar-margin':         parse_float4,
+    'scrollbar-color':          parse_color,
+    'bg-image':                 parse_image,
 }
 
 #: Instance of the CSS sheet

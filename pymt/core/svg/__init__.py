@@ -33,7 +33,6 @@ class SvgBase(object):
         raise NotimplementedError("abstract class SvgLoaderBase: subclass must be implemented by svg provider")
                 
     def __getattr__ (self, name):
-        print "TRYING SVG DATA ITEM", name
         return self.svg_data.__getattribute__(name)
 
 
@@ -51,11 +50,8 @@ class SvgLoader(object):
         # extract extensions
         ext = filename.split('.')[-1].lower()
         im = None
-        print "TRYING SVG LOADRS:", SvgLoader.loaders, SvgLoader
         for loader in SvgLoader.loaders:
-            print "LOADER:", loader
             if ext not in loader.extensions():
-                print "CHECKED", ext
                 continue
             im = loader(filename, **kwargs)
             print im, im.width
@@ -134,24 +130,25 @@ class Svg(BaseObject):
     original_height = property(_get_original_height)
     
     def _get_width(self):
-        return self.scale*self.original_width
+        return self._scale_x*self.original_width
     def _set_width(self, w):
         if self.width != w: #nothing to do
-            self._width = w
-            self._scale_x = self.width/float(self.original_width)  
-    width = property(_get_width)
+            self._scale_x = w/float(self.original_width)  
+    width = property(_get_width, _set_width)
     
     def _get_height(self):
-        return self.scale*self.original_height
-    def _set_height(self, w):
-        if self.width != w: #nothing to do
-            self._width = w
-            self._scale_x = self.width/float(self.original_width)
-    height = property(_get_height)
+        return self._scale_y*self.original_height
+    def _set_height(self, h):
+        if self.height != h: #nothing to do
+            self._scale_y = h/float(self.original_height)
+    height = property(_get_height, _set_height)
     
     def _get_size(self):
         return (self.width, self.height)
-    szie = property(_get_size)
+    def _set_size(self, size):
+        self.width = size[0]
+        self.height = size[1]
+    szie = property(_get_size, _set_size)
     
     def _get_filename(self):
         return self._filename
@@ -164,12 +161,19 @@ class Svg(BaseObject):
         self.svg_object = SvgLoader.load(self._filename)
     filename = property(_get_filename, _set_filename,
             doc='Get/set the filename of svg')
+    
+    def _get_scale(self):
+        return self._scale_x
+    def _set_scale(self, s):
+        self._scale_x = s
+        self._scale_y = s
+    scale = property(_get_scale, _set_scale)
 
     def draw(self):
         '''Draw the svg on screen'''
         with gx_matrix:
             glTranslate(self.x, self.y, 0)
-            glScale(self.scale, self.scale, 1)
+            glScale(self._scale_x, self._scale_y, 1)
             glTranslate(self.anchor_x, self.anchor_y, 0)
             self.svg_object.draw()
 

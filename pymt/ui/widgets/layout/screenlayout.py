@@ -2,44 +2,52 @@ __all__ = ('MTScreenLayout', )
 
 from abstractlayout import MTAbstractLayout
 from boxlayout import MTBoxLayout
-from ...factory import MTWidgetFactory
+from ....logger import pymt_logger
 from ....utils import SafeList, curry
 from ....base import getFrameDt
 from ....graphx import set_color, drawRectangle
+from ...factory import MTWidgetFactory
 from ..button import MTButton
 
 
 class MTScreenLayout(MTAbstractLayout):
-    '''Base class to handle a list of screen (widgets). One child widget is shown at a time.
-    '''
+    '''Base class to handle a list of screen (widgets).
+    One child widget is shown at a time.
 
+    :Parameters:
+        `show_tabs`: bool, default to False
+            If True, show tabs (useful for debugging)
+        `duration`: float, default to 1.
+            Duration to switch between screen
+
+    '''
 
     def __init__(self, **kwargs):
         kwargs.setdefault('show_tabs', False)
+        kwargs.setdefault('duration', 1.)
         super(MTScreenLayout, self).__init__(**kwargs)
         self.screens = SafeList()
         self.screen = None
         self.previous_screen = None
-        self.switch_t = 1.1
-        
+        self._switch_t = 1.1
+        self.duration = kwargs.get('duration')
+
         self.container = MTBoxLayout(orientation='vertical')
         super(MTScreenLayout, self).add_widget(self.container)
 
         self.tabs = MTBoxLayout(size_hint=(1.0,None), height=50)
         self._show_tabs = False
         self.show_tabs = kwargs.get('show_tabs')
-            
-            
+
     def _get_show_tabs(self):
-        return self._tabbed
+        return self._show_tabs
     def _set_show_tabs(self, set):
-        if self._show_tabs and set==False:
+        if self._show_tabs and set is False:
             self.container.remove_widget(self.tabs)
-        if set and self._show_tabs==False:
+        if set and self._show_tabs is False:
             self.container.add_widget(self.tabs)
         self._show_tabs = set
     show_tabs = property(_get_show_tabs, _set_show_tabs)
-            
 
     def add_widget(self, widget):
         tab_btn = MTButton(label=widget.id, size_hint=(1,1), height=50)
@@ -63,24 +71,25 @@ class MTScreenLayout(MTAbstractLayout):
 
     def select(self, id, *args):
         '''
-        select which screen is to be teh current one.
+        Select which screen is to be the current one.
         pass either a widget that has been added to this layout, or its id
         '''
         if self.screen is not None:
             self.container.remove_widget(self.screen)
             self.previous_screen = self.screen
-            self.switch_t = -1.0
+            self._switch_t = -1.0
         for screen in self.screens:
             if screen.id == id or screen == id:
                 self.screen = screen
                 self.container.add_widget(self.screen, do_layout=True)
                 return
-        pymt_logger.Warning('Invalid screen or screenname, doing nothing...')
+        pymt_logger.error('ScreenLayout: Invalid screen or screenname, doing nothing...')
 
 
     def draw_transition(self, t):
         '''
-        is called each frame while switching screens and responsible for drawing transition state.
+        Function is called each frame while switching screens and
+        responsible for drawing transition state.
         t will go from -1.0 (previous screen), to 0 (rigth in middle),
         until 1.0 (last time called before giving new screen full controll)
         '''
@@ -99,9 +108,12 @@ class MTScreenLayout(MTAbstractLayout):
 
     def on_draw(self):
         self.draw()
-        if self.switch_t < 1.0:
-            self.switch_t += getFrameDt()
-            self.draw_transition(self.switch_t)
+        if self._switch_t < 1.0:
+            if self.duration == 0:
+                self._switch_t = 1.
+            else:
+                self._switch_t += getFrameDt() / self.duration
+            self.draw_transition(self._switch_t)
         else:
             super(MTScreenLayout, self).on_draw()
 

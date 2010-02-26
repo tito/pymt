@@ -18,6 +18,8 @@ class MTTextInput(MTButton):
     :Parameters:
         `keyboard` : MTVkeyboard object, default to None
             Use another MTVKeyboard than the default one
+        `autowidth` : bool, default to False
+            If True, the width will be adapted to the text size
 
     :Events:
         `on_text_change` (text)
@@ -29,9 +31,11 @@ class MTTextInput(MTButton):
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
         kwargs.setdefault('keyboard', None)
+        kwargs.setdefault('autowidth', False)
         super(MTTextInput, self).__init__(**kwargs)
         self._keyboard = kwargs.get('keyboard')
-        self.original_width = self.width
+        self.autowidth = kwargs.get('autowidth')
+        self.original_width = None
         self.is_active_input = False
         self.padding = 20
 
@@ -62,9 +66,10 @@ class MTTextInput(MTButton):
         self.label_obj.text = self.label
         self.label_obj.x = self.x + self.padding
         self.label_obj.y = self.y
-        self.width =  self.label_obj.content_width + self.padding * 2
-        if self.width < self.original_width:
-            self.width = self.original_width
+        if self.autowidth:
+            self.width =  self.label_obj.content_width + self.padding * 2
+            if self.width < self.original_width:
+                self.width = self.original_width
         self.update_label()
 
     def on_move(self, w, h):

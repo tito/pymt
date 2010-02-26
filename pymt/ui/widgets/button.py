@@ -127,16 +127,13 @@ class MTButton(MTWidget):
         self.button_dl.clear()
 
     def draw(self):
-        if self.get_state() == 'down':
-            set_color(*self.style['color-down'])
-        else:
-            set_color(*self.style['bg-color'])
-
-        if not self.button_dl.is_compiled():
-            with self.button_dl:
-                drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
-                self.draw_label()
-        self.button_dl.draw()
+        #cant have this inside display list if state changes..but its in a dl inside drawCSSRect anyway
+        set_color(*self.style['bg-color'])
+        drawCSSRectangle(pos=self.pos, size=self.size, style=self.style, state=self.state)
+        #if not self.button_dl.is_compiled():
+        #    with self.button_dl:
+        self.draw_label()
+        #self.button_dl.draw()
 
     def draw_label(self):
         if len(self._label) <= 0:

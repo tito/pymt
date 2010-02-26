@@ -178,6 +178,11 @@ def css_get_style(widget, sheet=None):
             if s.element is not None:
                 if s.element[1] not in reversed(widget_classes):
                     continue
+            if s.specificity[2] > 1:
+                pymt_logger.error(
+                    'CSS: We don\'t support multiple rule in css selector. ' + \
+                    'Please rewrite this selector : <%s>' % s.selectorText)
+                continue
             if s.specificity[2] == 1:
                 cssclass = s.selectorText.split('.')[1:]
                 if type(widget.cls) == str:

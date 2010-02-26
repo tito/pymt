@@ -105,11 +105,6 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
             if style['draw-alpha-background']:
                 drawRectangleAlpha(alpha=style['alpha-background'], **k)
                 
-        if style['bg-image']:
-            if style['bg-image']:
-                style['bg-image'].size = k['size']
-                style['bg-image'].pos = k['pos']
-                style['bg-image'].draw()
 
     # if the drawCSSRectangle is already inside a display list
     # compilation will not happen, but drawing yes.
@@ -118,3 +113,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None):
         Cache.append('css_rect', cache_id, new_cache)
         new_cache.draw()
 
+    if style['bg-image']:
+        style['bg-image'].size = k['size']
+        style['bg-image'].pos = k['pos']
+        style['bg-image'].draw()

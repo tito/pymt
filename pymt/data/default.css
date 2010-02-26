@@ -2,8 +2,11 @@
     /* foreground/text color */
     color: rgba(0, 0, 0, 255);
 
-    /* color when something is pushed */
+    /* color when something is pushed TODO: change everywhere this is used, becsue it will be foregroudn color when state is down*/
     color-down: rgba(50,50,50, 128);
+    
+    /*new way of background color when somethign is pushed*/
+    bg-color-down: rgba(50,50,50, 128);
 
     /* background color of widget */
     bg-color: rgba(100,100,100, 128);

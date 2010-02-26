@@ -46,16 +46,16 @@ for i in range(64):
 #Set up buttons
 but_layout = MTGridLayout(cols=4,rows=2)
 w.add_widget(but_layout)
-randomize = MTButton(label="Randomize",style={'bg-color':(0,0,0)},height=50)
+randomize = MTButton(label="Randomize",height=50)
 but_layout.add_widget(randomize)
 
-grid = MTButton(label="Grid",style={'bg-color':(0,0,0)},height=50)
+grid = MTButton(label="Grid",height=50)
 but_layout.add_widget(grid)
 
-circular = MTButton(label="Circular",style={'bg-color':(0,0,0)},height=50)
+circular = MTButton(label="Circular",height=50)
 but_layout.add_widget(circular)
 
-bowtie = MTButton(label="Bow Tie",style={'bg-color':(0,0,0)},height=50)
+bowtie = MTButton(label="Bow Tie",height=50)
 but_layout.add_widget(bowtie)
 
 but_layout.x = w.width/2-but_layout.width/2 #Align button at the bottom-center

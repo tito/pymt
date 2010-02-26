@@ -40,6 +40,7 @@ auto_convert = {
     'color':                    parse_color,
     'color-down':               parse_color,
     'bg-color':                 parse_color,
+    'bg-color-down':            parse_color,
     'bg-color-move':            parse_color,
     'bg-color-full':            parse_color,
     'font-size':                parse_int,
@@ -91,6 +92,7 @@ auto_convert = {
     'scrollbar-margin':         parse_float4,
     'scrollbar-color':          parse_color,
     'bg-image':                 parse_image,
+    'bg-image-down':            parse_image,
 }
 
 #: Instance of the CSS sheet

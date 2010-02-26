@@ -30,6 +30,7 @@ def setup_gl():
     """Set various pieces of OpenGL state for better rendering of SVG.
 
     """
+    
     glEnable(GL_LINE_SMOOTH)
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)

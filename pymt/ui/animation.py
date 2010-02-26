@@ -71,6 +71,7 @@ This will execute all the animations on the properties togather.
 __all__ = ['AnimationAlpha', 'Animation', 'Repeat', 'Delay']
 
 import math
+import types
 from copy import deepcopy, copy
 from ..clock import getClock
 from ..event import EventDispatcher
@@ -85,7 +86,11 @@ class AnimationBase(object):
         self.animator = kwargs.get('animator')
 
         if 'alpha_function' in self.params:
-            f = getattr(AnimationAlpha, self.params['alpha_function'])
+            f = type(self.params['alpha_function'])
+            if f in (types.FunctionType, types.LambdaType):
+                f = self.params['alpha_function']
+            else:
+                f = getattr(AnimationAlpha, self.params['alpha_function'])
         else:
             f = AnimationAlpha.linear
         self.alpha_function = f

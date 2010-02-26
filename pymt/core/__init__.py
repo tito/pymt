@@ -70,3 +70,4 @@ from camera import *
 from image import *
 from text import *
 from video import *
+from svg import *

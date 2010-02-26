@@ -47,6 +47,7 @@ options = {
     'audio': ('pygame', 'gstreamer', ),
     'image': ('pil', 'pygame'),
     'camera': ('opencv', 'gstreamer', 'videocapture'),
+    'svg': ('squirtle',),
 }
 
 # Read environment

@@ -15,8 +15,8 @@ from pymt.core.svg import Svg
 
 if not 'PYMT_DOC' in os.environ:
     Cache.register('css_rect', limit=100, timeout=500)
-    
-    
+
+
 def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None, state=None):
     '''Draw a rectangle with CSS
     
@@ -35,11 +35,11 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None, state=Non
         * draw-border (bool)
 
     '''
-    
+
     bg_image = style.get('bg-image-'+str(state))
     if not bg_image:
         bg_image = style.get('bg-image')
-            
+
     # Check if we have a cached version
     cache_id = '%s:%s:%s:%s:%s' % (pos, size, style, prefix, state)
     cache = Cache.get('css_rect', cache_id)
@@ -52,7 +52,8 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None, state=Non
         return
 
 
-    #lets use teh ones for given state, and ignore th regualr ones if teh state ones are tehre
+    # lets use the ones for given state,
+    # and ignore the regular ones if the state ones are there
     if state:
         state = "-" + state
         newstyle = {}
@@ -66,7 +67,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None, state=Non
             if s not in overwrites:
                 newstyle[s] = style[s]
         style = newstyle
-        
+
     # hack to remove prefix in style
     if prefix is not None:
         prefix += '-'
@@ -83,7 +84,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None, state=Non
     style.setdefault('draw-background', 1)
     style.setdefault('draw-alpha-background', 0)
     style.setdefault('alpha-background', (1, 1, .5, .5))
-    
+
     k = { 'pos': pos, 'size': size }
 
     new_cache = GlDisplayList()
@@ -134,7 +135,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None, state=Non
                     glPopAttrib()
             if style['draw-alpha-background']:
                 drawRectangleAlpha(alpha=style['alpha-background'], **k)
-                
+
 
     # if the drawCSSRectangle is already inside a display list
     # compilation will not happen, but drawing yes.

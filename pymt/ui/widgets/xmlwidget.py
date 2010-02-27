@@ -36,7 +36,7 @@ class XMLWidget(MTWidget):
         kwargs.setdefault('xml', None)
         super(XMLWidget, self).__init__(**kwargs)
         xml = kwargs.get('xml')
-        self.allwidgets = []
+        self.registerdb = {}
         if xml is not None:
             self.loadString(xml)
 
@@ -47,20 +47,23 @@ class XMLWidget(MTWidget):
             return self.children[0]
         return None
 
+    def getById(self, id):
+        if id in self.registerdb:
+            return self.registerdb[id]
+        return None
+
     def autoconnect(self, obj):
         '''Autoconnect event handler from widget in xml to obj.
         For example, if you have a <MTButton id='plop'> in xml,
         and you want to connect on on_press event, it will search
         the obj.on_plop_press() function.
         '''
-        for children in self.allwidgets:
-            if children.id is None:
-                continue
+        for id, children in self.registerdb.items():
             for event in children.event_types:
                 eventobj = event
                 if eventobj[:3] == 'on_':
                     eventobj = eventobj[3:]
-                eventobj = 'on_%s_%s' % (children.id, eventobj)
+                eventobj = 'on_%s_%s' % (id, eventobj)
                 if hasattr(obj, eventobj):
                     children.connect(event, getattr(obj, eventobj))
 
@@ -72,13 +75,18 @@ class XMLWidget(MTWidget):
 
             # parameters
             k = {}
+            id = None
             for (name, value) in node.attributes.items():
-                k[str(name)] = eval(value)
+                if str(name) == 'id':
+                    id = eval(value)
+                else:
+                    k[str(name)] = eval(value)
 
             # create widget
             try:
-                nodeWidget  = MTWidgetFactory.get(class_name)(**k)
-                self.allwidgets.append(nodeWidget)
+                nodeWidget = MTWidgetFactory.get(class_name)(**k)
+                if id is not None:
+                    self.registerdb[id] = nodeWidget
             except:
                 pymt_logger.exception('XMLWidget: unable to create widget %s' % class_name)
                 raise

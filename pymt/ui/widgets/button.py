@@ -128,14 +128,11 @@ class MTButton(MTLabel):
 class MTToggleButton(MTButton):
     '''Toggle button implementation, based on MTButton'''
     def __init__(self, **kwargs):
-        kwargs.setdefault('label', 'ToggleButton')
         super(MTToggleButton, self).__init__(**kwargs)
 
     def on_touch_down(self, touch):
         if not self.collide_point(touch.x, touch.y):
             return False
-        #if self._state[1] != 0:
-        #    return False
         if self.get_state() == 'down':
             self._state = ('normal', 0)
         else:

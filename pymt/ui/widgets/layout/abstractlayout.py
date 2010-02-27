@@ -29,6 +29,7 @@ class MTAbstractLayout(MTWidget):
         if self.__class__ == MTAbstractLayout:
             raise NotImplementedError, 'class MTAbstractLayout is abstract'
 
+        kwargs.setdefault('size', (1,1)) #if standard size is bigger, tehn stretching does work, if other things are smaller tahn teh defautl(100,100)
         kwargs.setdefault('size_hint', (1,1)) #layouts automatically stretch themselves if inside another layout
         kwargs.setdefault('auto_layout', True)
         kwargs.setdefault('animation_type', None)

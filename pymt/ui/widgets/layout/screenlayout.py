@@ -49,25 +49,25 @@ class MTScreenLayout(MTAbstractLayout):
         self._show_tabs = set
     show_tabs = property(_get_show_tabs, _set_show_tabs)
 
-    def add_widget(self, widget):
-        tab_btn = MTButton(label=widget.id, size_hint=(1,1), height=50)
-        tab_btn.push_handlers(on_press=curry(self.select,widget.id))
+    def add_widget(self, widget, id=None):
+        if id is None:
+            id = widget.id
+        tab_btn = MTButton(label=id, size_hint=(1, 1), height=50)
+        tab_btn.push_handlers(on_press=curry(self.select, id))
         self.tabs.add_widget(tab_btn)
-
         self.screens.append(widget)
-        if not self.screen:
-            self.select(widget)
 
     def remove_widget(self, widget):
-        tab_btn = None
-        for btn in self.tabs:
-            if btn.label == widget.id:
-                tab_btn = btn
+        for btn in self.tabs.children.iterate():
+            if type(widget) in (str, unicode):
+                if btn.label == widget:
+                    self.tabs.remove_widget(btn)
+                    break
+            elif btn.label == widget.id:
+                self.tabs.remove_widget(btn)
                 break
-        if tab_btn:
-            self.tabs.remove(tab_btn)
-
-        self.screens.remove(widget)
+        if widget in self.screens:
+            self.screens.remove(widget)
 
     def select(self, id, *args):
         '''
@@ -105,6 +105,10 @@ class MTScreenLayout(MTAbstractLayout):
             set_color(r,g,b,1-t) #from 0 to one
             drawRectangle(pos=self.pos, size=self.size)
 
+    def on_update(self):
+        if not self.screen and len(self.screens):
+            self.select(self.screens[0])
+        super(MTScreenLayout, self).on_update()
 
     def on_draw(self):
         self.draw()

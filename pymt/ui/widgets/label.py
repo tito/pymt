@@ -82,6 +82,8 @@ class MTLabel(MTWidget):
         self.draw_label()
 
     def draw_label(self, dx=0, dy=0):
+        '''Method to draw the label. Accept dx/dy to be added on label position.
+        This can be used to draw shadow for example.'''
         # because the anchor_x/anchor_y is propagated to the drawLabel,
         # we don't care about the internal label size.
         pos = list(self.center)
@@ -102,6 +104,7 @@ class MTLabel(MTWidget):
         self._update_size(w, h)
 
     def draw_background(self):
+        '''Draw the background of the widget'''
         set_color(*self.style.get('bg-color'))
         drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
 

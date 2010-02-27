@@ -36,6 +36,12 @@ class LabelBase(BaseObject):
         `anchor_y`: str, default to "bottom"
             Indicate what represent the Y position inside the bounding box.
             Can be one of "top", "middle", "bottom".
+        `padding`: int, default to None
+            If it's a integer, it will set padding_x and padding_y
+        `padding_x`: int, default to 0
+            Left/right padding
+        `padding_y`: int, default to 0
+            Top/bottom padding
         `halign`: str, default to "left"
             Horizontal text alignement inside bounding box
         `valign`: str, default to "bottom"
@@ -58,11 +64,18 @@ class LabelBase(BaseObject):
         kwargs.setdefault('anchor_y', 'bottom')
         kwargs.setdefault('halign', 'left')
         kwargs.setdefault('valign', 'bottom')
+        kwargs.setdefault('padding', None)
+        kwargs.setdefault('padding_x', 0)
+        kwargs.setdefault('padding_y', 0)
         kwargs.setdefault('color', (1, 1, 1, 1))
 
         super(LabelBase, self).__init__(**kwargs)
 
         self._label     = None
+
+        if kwargs.get('padding') is not None:
+            kwargs['padding_x'] = kwargs['padding']
+            kwargs['padding_y'] = kwargs['padding']
 
         self.color      = kwargs.get('color')
         self.usersize   = kwargs.get('size')
@@ -235,20 +248,22 @@ class LabelBase(BaseObject):
         w, h = self.size
         anchor_x = self.options['anchor_x']
         anchor_y = self.options['anchor_y']
+        padding_x = self.options['padding_x']
+        padding_y = self.options['padding_y']
 
         if anchor_x == 'left':
-            pass
+            x += padding_x
         elif anchor_x in ('center', 'middle'):
             x -= w * 0.5
         elif anchor_x == 'right':
-            x -= w
+            x -= w + padding_x
 
         if anchor_y == 'bottom':
-            pass
+            y += padding_y
         elif anchor_y in ('center', 'middle'):
             y -= h * 0.5
         elif anchor_y == 'top':
-            y -= h
+            y -= h - padding_y
 
         pymt.set_color(*self.color, blend=True)
         pymt.drawTexturedRectangle(

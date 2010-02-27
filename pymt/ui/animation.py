@@ -112,8 +112,13 @@ class AnimationBase(object):
     def _set_value_from(self, value, prop):
         if hasattr(self.widget, prop):
             kwargs = {}
+            attr = getattr(self.widget, prop)
             try:
-                self.widget.__setattr__(prop, value, **kwargs)
+                if type(attr) == dict and type(value) == dict:
+                    for k, v in value.items():
+                        attr[k] = v
+                else:
+                    self.widget.__setattr__(prop, value, **kwargs)
             except:
                 self.widget.__setattr__(prop, value)
         else:

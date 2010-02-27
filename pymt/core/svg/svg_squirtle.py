@@ -31,4 +31,4 @@ class SvgSquirtle(SvgBase):
 
 # register
 SvgLoader.register(SvgSquirtle)
-print "ADDED", SvgLoader, SvgLoader.loaders
+

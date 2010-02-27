@@ -35,7 +35,7 @@ class MTScreenLayout(MTAbstractLayout):
         self.container = MTBoxLayout(orientation='vertical')
         super(MTScreenLayout, self).add_widget(self.container)
 
-        self.tabs = MTBoxLayout(size_hint=(1.0,None), height=50)
+        self.tabs = self.new_tab_layout()
         self._show_tabs = False
         self.show_tabs = kwargs.get('show_tabs')
 
@@ -49,10 +49,21 @@ class MTScreenLayout(MTAbstractLayout):
         self._show_tabs = set
     show_tabs = property(_get_show_tabs, _set_show_tabs)
 
+
+    def new_tab_layout(self):
+        '''called in init, to create teh layout in which all teh tabs are put.  overwrite to create custom tab layout
+        (default is box layout, vertical, height=50, with horizontal stretch.)'''
+        return MTBoxLayout(size_hint=(1.0,None), height=50)
+
+    def new_tab(self, label):
+        '''fucntion that returns a new tab.  return value must be of type MTButton or derive from it (must have on_press handler).
+        Screenlayuot subclasses can overwrite this to create tabs based ona tehir own look and feel or do otehr custom things when a new tab is created'''
+        return MTButton(label=label, size_hint=(1, 1), height=50)
+
     def add_widget(self, widget, id=None):
         if id is None:
             id = widget.id
-        tab_btn = MTButton(label=id, size_hint=(1, 1), height=50)
+        tab_btn = self.new_tab(id)
         tab_btn.push_handlers(on_press=curry(self.select, id))
         self.tabs.add_widget(tab_btn)
         self.screens.append(widget)

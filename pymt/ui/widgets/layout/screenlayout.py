@@ -104,12 +104,15 @@ class MTScreenLayout(MTAbstractLayout):
         t will go from -1.0 (previous screen), to 0 (rigth in middle),
         until 1.0 (last time called before giving new screen full controll)
         '''
+        set_color(*self.style['bg-color']) #from 1 to zero
+        drawRectangle(pos=self.container.pos, size=self.container.size)
         r,g,b,a = self.style['bg-color']
         if t < 0:
+
             if self.previous_screen is not None:
                 self.previous_screen.dispatch_event('on_draw')
             set_color(r,g,b,1+t) #from 1 to zero
-            drawRectangle(size=self.container.size)
+            drawRectangle(pos=self.container.pos,size=self.container.size)
         else:
             if self.previous_screen is not None:
                 self.screen.dispatch_event('on_draw')
@@ -123,14 +126,15 @@ class MTScreenLayout(MTAbstractLayout):
 
     def on_draw(self):
         self.draw()
+
+        super(MTScreenLayout, self).on_draw()
+
         if self._switch_t < 1.0:
             if self.duration == 0:
                 self._switch_t = 1.
             else:
                 self._switch_t += getFrameDt() / self.duration
             self.draw_transition(self._switch_t)
-        else:
-            super(MTScreenLayout, self).on_draw()
 
 
 # Register all base widgets

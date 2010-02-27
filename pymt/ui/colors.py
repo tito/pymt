@@ -172,6 +172,9 @@ def css_get_style(widget, sheet=None):
     for w in pymt_sheet.cssRules:
         rule_selected = False
         rule_score = 0
+        # don't use command
+        if type(w) == cssutils.css.CSSComment:
+            continue
         # get the appropriate selector
         for s in w.selectorList:
             rule_stop_processing = False
@@ -235,17 +238,16 @@ def css_add_sheet(text):
     pymt_sheet.cssText += text
 
 def css_add_file(cssfile):
-    '''Add a css file to use ::
-        adds all the css rules in teh given file to the pymt css rule set being used
-	css_add_sheet(cssfile)
+    '''Add a css file to use.
+    Adds all the css rules in the given file to the pymt css rule set being
+    used ::
+    	css_add_sheet(cssfile)
     '''
     global pymt_sheet
     f = open(cssfile,'r')
     css_rules =f.read()
     f.close()
-    print css_rules
     pymt_sheet.cssText += css_rules
-    
 
 
 if 'PYMT_DOC' not in os.environ:

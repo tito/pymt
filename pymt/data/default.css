@@ -157,7 +157,7 @@ vkeyboard {
 	border-color: rgb(100, 100, 100);
     border-radius: 15;
     border-radius-precision: 0.35;
-	border-width: 20;
+	border-width: 2;
     color-down: rgba(200, 200, 200, 255);
     draw-border: 1;
     draw-key-alpha-background: 1;

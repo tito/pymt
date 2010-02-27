@@ -11,17 +11,18 @@ from ...graphx import GlDisplayList, set_color, gx_blending
 from ...graphx import drawCSSRectangle
 from ..factory import MTWidgetFactory
 from widget import MTWidget
+from label import MTLabel
 
-class MTButton(MTWidget):
-    '''MTButton is a button implementation using MTWidget
+class MTButton(MTLabel):
+    '''MTButton is a button implementation using MTLabel
 
     :Parameters:
         `label` : string, default is ''
             Label of button
-        `halign` : string, default to 'center'
+        `anchor_x` : string, default to 'center'
             Horizontal alignment of label inside button (left, center, right)
-        `valign` : string, default to 'center'
-            Vertical alignment of label inside button (bottom, middle, top)
+        `anchor_y` : string, default to 'center'
+            Vertical alignment of label inside button (bottom, center, top)
         `multiline` : bool, default is False
             Indicate if button is a multiline button
 
@@ -60,97 +61,17 @@ class MTButton(MTWidget):
             Fired when the button are released
     '''
     def __init__(self, **kwargs):
-        kwargs.setdefault('label', '')
+        kwargs.setdefault('autosize', False)
+        kwargs.setdefault('autowidth', False)
+        kwargs.setdefault('autoheight', False)
         kwargs.setdefault('anchor_x', 'center')
         kwargs.setdefault('anchor_y', 'center')
-        kwargs.setdefault('halign', 'center')
-        kwargs.setdefault('valign', 'center')
-        kwargs.setdefault('multiline', False)
-
-        self.button_dl      = GlDisplayList()
+        # FIXME, would be nice to suppress it !
+        kwargs.setdefault('size', (100, 100))
         self._state         = ('normal', 0)
-        self._label         = unicode(kwargs.get('label'))
-        self.label_obj      = None
-
         super(MTButton, self).__init__(**kwargs)
-
         self.register_event_type('on_press')
         self.register_event_type('on_release')
-
-        #set default CSS
-        fw = self.style.get('font-weight')
-        kwargs.setdefault('color', self.style.get('color'))
-        kwargs.setdefault('font_name', self.style.get('font-name'))
-        kwargs.setdefault('font_size', self.style.get('font-size'))
-        kwargs.setdefault('bold', fw in ('bold', 'bolditalic'))
-        kwargs.setdefault('italic', fw in ('italic', 'bolditalic'))
-        self.label_obj      = pymt.Label(**kwargs)
-
-    def apply_css(self, styles):
-        super(MTButton, self).apply_css(styles)
-        if self.label_obj is not None:
-            self.update_label()
-
-    def update_label(self):
-        fw = self.style.get('font-weight')
-        self.label_obj.color = self.style['color']
-        self.label_obj.options['font_name'] = self.style.get('font-name')
-        self.label_obj.options['font_size'] = self.style.get('font-size')
-        self.label_obj.options['bold'] = (fw in ('bold', 'bolditalic'))
-        self.label_obj.options['italic'] = (fw in ('italic', 'bolditalic'))
-        self.button_dl.clear()
-
-    def get_label(self):
-        return self._label
-    def set_label(self, text):
-        self._label = unicode(text)
-        self.label_obj.text = self._label
-        self.button_dl.clear()
-    label = property(get_label, set_label)
-
-    def get_state(self):
-        return self._state[0]
-    def set_state(self, state):
-        self._state = (state, 0)
-    state = property(get_state, set_state, doc='Sets the state of the button, "normal" or "down"')
-
-    def on_press(self, touch):
-        pass
-
-    def on_release(self, touch):
-        pass
-
-    def on_move(self, x, y):
-        self.button_dl.clear()
-
-    def on_resize(self, w, h):
-        self.button_dl.clear()
-
-    def draw(self):
-        #cant have this inside display list if state changes..but its in a dl inside drawCSSRect anyway
-        set_color(*self.style['bg-color'])
-        drawCSSRectangle(pos=self.pos, size=self.size, style=self.style, state=self.state)
-        #if not self.button_dl.is_compiled():
-        #    with self.button_dl:
-        self.draw_label()
-        #self.button_dl.draw()
-
-    def draw_label(self):
-        if len(self._label) <= 0:
-            return
-        if self.style['draw-text-shadow']:
-            with gx_blending:
-                tsp = self.style['text-shadow-position']
-                self.label_obj.x, self.label_obj.y = \
-                    map(lambda x: self.pos[x] + self.size[x] / 2 + tsp[x], xrange(2))
-                self.label_obj.color = self.style['text-shadow-color']
-                self.label_obj.draw()
-        self.label_obj.x, self.label_obj.y = \
-            map(lambda x: self.pos[x] + self.size[x] / 2, xrange(2))
-
-        self.label_obj.color = self.style['color']
-        self.label_obj.font_size = self.style['font-size']
-        self.label_obj.draw()
 
     def on_touch_down(self, touch):
         if not self.collide_point(touch.x, touch.y):
@@ -175,6 +96,33 @@ class MTButton(MTWidget):
         self._state = ('normal', 0)
         self.dispatch_event('on_release', touch)
         return True
+
+    def get_state(self):
+        return self._state[0]
+    def set_state(self, state):
+        self._state = (state, 0)
+    state = property(get_state, set_state,
+                     doc='Sets the state of the button, "normal" or "down"')
+
+    def update_label(self):
+        pass
+
+    def draw_background(self):
+        set_color(*self.style.get('bg-color'))
+        drawCSSRectangle(pos=self.pos, size=self.size, style=self.style,
+                         state=self.state)
+
+    def draw_label(self, dx=0, dy=0):
+        if self.style['draw-text-shadow']:
+            tsp = self.style['text-shadow-position']
+            tsp[0] += dx
+            tsp[1] += dy
+            old_color = self.kwargs.get('color')
+            self.kwargs['color'] = self.style['text-shadow-color']
+
+            super(MTButton, self).draw_label(*tsp)
+            self.kwargs['color'] = old_color
+        super(MTButton, self).draw_label(dx, dy)
 
 
 class MTToggleButton(MTButton):
@@ -203,6 +151,7 @@ class MTToggleButton(MTButton):
         self._state = (self.state, 0)
         self.dispatch_event('on_release', touch)
         return True
+
 
 class MTImageButton(MTButton):
     '''MTImageButton is a enhanced MTButton

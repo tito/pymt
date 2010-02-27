@@ -37,14 +37,12 @@ class MTLabel(MTWidget):
         kwargs.setdefault('autosize', False)
         kwargs.setdefault('label', '')
 
-
-
         self.autowidth  = kwargs.get('autowidth')
         self.autoheight = kwargs.get('autoheight')
         self.autosize   = kwargs.get('autosize')
         self.anchor_x   = kwargs.get('anchor_x')
         self.anchor_y   = kwargs.get('anchor_y')
-        self.label = kwargs.get('label')
+        self.label      = kwargs.get('label')
         del kwargs['autowidth']
         del kwargs['autoheight']
         del kwargs['autosize']
@@ -75,7 +73,15 @@ class MTLabel(MTWidget):
         self._update_size(*label.size)
         self._used_label = label
 
+    @property
+    def label_obj(self):
+        return self._used_label
+
     def draw(self):
+        self.draw_background()
+        self.draw_label()
+
+    def draw_label(self, dx=0, dy=0):
         # because the anchor_x/anchor_y is propagated to the drawLabel,
         # we don't care about the internal label size.
         pos = list(self.center)
@@ -88,11 +94,16 @@ class MTLabel(MTWidget):
         elif self.anchor_y == 'bottom':
             pos[1] = self.y
 
-        set_color(*self.style.get('bg-color'))
-        drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
+        pos[0] += dx
+        pos[1] += dy
+
         w, h = drawLabel(label=self.label, pos=pos, **self.kwargs)
         self._used_label = getLastLabel()
         self._update_size(w, h)
+
+    def draw_background(self):
+        set_color(*self.style.get('bg-color'))
+        drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
 
     def _update_size(self, w, h):
         if (self.autoheight and self.autowidth) or self.autosize:

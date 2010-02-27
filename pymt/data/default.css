@@ -34,6 +34,10 @@
     text-shadow-position: -1 1;
 }
 
+label {
+    draw-background: 0;
+}
+
 vectorslider {
     slider-color: rgba(255, 71, 0, 255);
     bg-color: rgba(60, 60, 60, 100);
@@ -55,13 +59,15 @@ button {
     draw-alpha-background: 1;
     draw-border: 1;
     draw-text-shadow: 1;
+	draw-background: 1;
 }
 
 textinput {
     color: rgb(0,0,0);
-    font-size:16;
-    font-weight:bold;
-    bg-color: rgba(200,200,200, 200);
+    font-size: 16;
+    font-weight: bold;
+    bg-color: rgba(200, 200, 200, 200);
+    bg-color-active: rgb(250, 250, 250);
     draw-alpha-background: 1;
     border-width: 1;
     border-color: rgb(100,100,100);
@@ -207,8 +213,4 @@ video {
 
 coverflow {
 	bg-color: rgba(255,255,255,255);
-}
-
-label {
-    draw-background: 0;
 }

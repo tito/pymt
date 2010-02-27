@@ -18,8 +18,6 @@ class MTTextInput(MTButton):
     :Parameters:
         `keyboard` : MTVkeyboard object, default to None
             Use another MTVKeyboard than the default one
-        `autowidth` : bool, default to False
-            If True, the width will be adapted to the text size
 
     :Events:
         `on_text_change` (text)
@@ -29,19 +27,16 @@ class MTTextInput(MTButton):
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('anchor_x', 'left')
-        kwargs.setdefault('anchor_y', 'bottom')
+        kwargs.setdefault('anchor_y', 'center')
         kwargs.setdefault('keyboard', None)
-        kwargs.setdefault('autowidth', False)
+        kwargs.setdefault('padding', 20)
         super(MTTextInput, self).__init__(**kwargs)
         self._keyboard = kwargs.get('keyboard')
-        self.autowidth = kwargs.get('autowidth')
         self.original_width = None
         self.is_active_input = False
-        self.padding = 20
 
         self.register_event_type('on_text_change')
         self.register_event_type('on_text_validate')
-        self.update_label()
 
     def _get_keyboard(self):
         if not self._keyboard:
@@ -62,22 +57,8 @@ class MTTextInput(MTButton):
         else:
             self.show_keyboard()
 
-    def reposition(self):
-        self.label_obj.text = self.label
-        self.label_obj.x = self.x + self.padding
-        self.label_obj.y = self.y
-        if self.autowidth:
-            self.width =  self.label_obj.content_width + self.padding * 2
-            if self.width < self.original_width:
-                self.width = self.original_width
-        self.update_label()
-
-    def on_move(self, w, h):
-        self.reposition()
-
     def _kbd_on_text_change(self, value):
         self.label = value
-        self.reposition()
         self.dispatch_event('on_text_change', value)
 
     def _kbd_on_key_up(self, key):
@@ -133,13 +114,16 @@ class MTTextInput(MTButton):
             kx, ky = self.keyboard.to_window(*self.keyboard.center)
             kx, ky = self.to_widget(kx, ky)
             drawLine([self.center[0], self.center[1], kx, ky])
-        if self.state[0] == 'down':
-            set_color(0.5,0.5,0.5,0.5)
-            drawCSSRectangle((self.x,self.y) , (self.width, self.height), style=self.style)
+        super(MTTextInput, self).draw()
+
+    def draw_background(self):
+        if self.is_active_input:
+            set_color(*self.style.get('bg-color'))
+            drawCSSRectangle(pos=self.pos, size=self.size, style=self.style,
+                            state='active')
         else:
             set_color(*self.style.get('bg-color'))
-            drawCSSRectangle((self.x,self.y) , (self.width, self.height), style=self.style)
-        self.label_obj.draw()
+            drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
 
     def _window_on_keyboard(self, key, scancode=None, unicode=None):
         if key == 27: # escape

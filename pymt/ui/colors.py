@@ -43,6 +43,7 @@ auto_convert = {
     'bg-color-down':            parse_color,
     'bg-color-move':            parse_color,
     'bg-color-full':            parse_color,
+    'bg-color-active':          parse_color,
     'font-size':                parse_int,
     'font-name':                parse_string,
     'font-weight':              parse_string,

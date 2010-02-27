@@ -16,8 +16,10 @@ class MTTextInput(MTButton):
     will then have effect on the TextInput widget.
 
     :Parameters:
-        `keyboard` : MTVkeyboard object, default to None
+        `keyboard`: MTVkeyboard object, default to None
             Use another MTVKeyboard than the default one
+        `password`: bool, default to False
+            If True, the label will be showed with star
 
     :Events:
         `on_text_change` (text)
@@ -30,10 +32,12 @@ class MTTextInput(MTButton):
         kwargs.setdefault('anchor_y', 'center')
         kwargs.setdefault('keyboard', None)
         kwargs.setdefault('padding', 20)
+        kwargs.setdefault('password', False)
         super(MTTextInput, self).__init__(**kwargs)
         self._keyboard = kwargs.get('keyboard')
         self.original_width = None
         self.is_active_input = False
+        self.password = kwargs.get('password')
 
         self.register_event_type('on_text_change')
         self.register_event_type('on_text_validate')
@@ -114,7 +118,15 @@ class MTTextInput(MTButton):
             kx, ky = self.keyboard.to_window(*self.keyboard.center)
             kx, ky = self.to_widget(kx, ky)
             drawLine([self.center[0], self.center[1], kx, ky])
+
+        if self.password:
+            pw = '*' * len(self.label)
+            old_label = self.label
+            self.label = pw
         super(MTTextInput, self).draw()
+        if self.password:
+            self.label = old_label
+
 
     def draw_background(self):
         if self.is_active_input:

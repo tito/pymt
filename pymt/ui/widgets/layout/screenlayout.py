@@ -60,12 +60,11 @@ class MTScreenLayout(MTAbstractLayout):
         Screenlayuot subclasses can overwrite this to create tabs based ona tehir own look and feel or do otehr custom things when a new tab is created'''
         return MTButton(label=label, size_hint=(1, 1), height=50)
 
-    def add_widget(self, widget, id=None):
-        if id is None:
-            id = widget.id
-        tab_btn = self.new_tab(id)
-        tab_btn.push_handlers(on_press=curry(self.select, id))
-        self.tabs.add_widget(tab_btn)
+    def add_widget(self, widget, tab_name=None):
+        if tab_name:
+            tab_btn = self.new_tab(tab_name)
+            tab_btn.push_handlers(on_press=curry(self.select, widget))
+            self.tabs.add_widget(tab_btn)
         self.screens.append(widget)
 
     def remove_widget(self, widget):
@@ -93,6 +92,7 @@ class MTScreenLayout(MTAbstractLayout):
             if screen.id == id or screen == id:
                 self.screen = screen
                 self.container.add_widget(self.screen, do_layout=True)
+                self.screen.parent = self
                 return
         pymt_logger.error('ScreenLayout: Invalid screen or screenname, doing nothing...')
 
@@ -109,12 +109,12 @@ class MTScreenLayout(MTAbstractLayout):
             if self.previous_screen is not None:
                 self.previous_screen.dispatch_event('on_draw')
             set_color(r,g,b,1+t) #from 1 to zero
-            drawRectangle(size=self.size)
+            drawRectangle(size=self.container.size)
         else:
             if self.previous_screen is not None:
                 self.screen.dispatch_event('on_draw')
             set_color(r,g,b,1-t) #from 0 to one
-            drawRectangle(pos=self.pos, size=self.size)
+            drawRectangle(pos=self.container.pos, size=self.container.size)
 
     def on_update(self):
         if not self.screen and len(self.screens):

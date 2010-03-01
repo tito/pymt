@@ -35,7 +35,7 @@ class MTButtonMatrix(MTWidget):
     def __init__(self,**kwargs):
         kwargs.setdefault('matrix_size', (3,3))
         kwargs.setdefault('border', 5)
-        kwargs.setdefault('buttoncolor', (0.2,0.2,0.2,1))
+        kwargs.setdefault('buttoncolor', (0.5,0.5,0.5,1))
         kwargs.setdefault('downcolor', (0,0.5,1,1))
         super(MTButtonMatrix, self).__init__(**kwargs)
 

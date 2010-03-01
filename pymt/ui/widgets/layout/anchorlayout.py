@@ -76,8 +76,12 @@ class MTAnchorLayout(MTAbstractLayout):
             w,h = c.size
             if c.size_hint[0]:
                 w = c.size_hint[0]*self.width
+            elif not self.size_hint[0]:
+                self.width= max(self.width, c.width)
             if c.size_hint[1]:
                 h = c.size_hint[1]*self.height
+            elif not self.size_hint[1]:
+                self.height= max(self.height, c.height)
 
             self.reposition_child(c, pos=(x,y), size=(w,h))
 

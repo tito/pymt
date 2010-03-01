@@ -56,24 +56,30 @@ class MTAnchorLayout(MTAbstractLayout):
 
 
     def do_layout(self):
-        for w in self.children:
+        for c in self.children:
             x,y = self.pos
 
             if self.anchor_x == 'left':
                 x = self.x + self.padding
             if self.anchor_x == 'right':
-                x = self.x + self.width - (w.width+self.padding)
+                x = self.x + self.width - (c.width+self.padding)
             if self.anchor_x == 'center':
-                x = self.x + (self.width/2) - (w.width/2)
+                x = self.x + (self.width/2) - (c.width/2)
 
             if self.anchor_y == 'bottom':
                 y = self.y + self.padding
             if self.anchor_y == 'top':
-                y = self.y + self.height - (w.height+self.padding)
+                y = self.y + self.height - (c.height+self.padding)
             if self.anchor_y == 'center':
-                y = self.y + (self.height/2) - (w.height/2)
+                y = self.y + (self.height/2) - (c.height/2)
 
-            self.reposition_child(w, pos=(x,y))
+            w,h = c.size
+            if c.size_hint[0]:
+                w = c.size_hint[0]*self.width
+            if c.size_hint[1]:
+                h = c.size_hint[1]*self.height
+
+            self.reposition_child(c, pos=(x,y), size=(w,h))
 
         self.dispatch_event('on_layout')
 

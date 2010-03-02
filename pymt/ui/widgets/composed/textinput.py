@@ -230,8 +230,7 @@ class MTTextArea(MTTextInput):
     def __init__(self, **kwargs):
         super(MTTextArea, self).__init__(**kwargs)
         text = kwargs.get('label') or ""
-        
-        self.lines = ['this', 'is', 'a', 'test']#text.split('\n')
+        self.lines = text.split('\n')
         self.line_labels = map(self.create_line_label, self.lines)
         
         self.line_height = self.line_labels[0].content_height
@@ -250,7 +249,7 @@ class MTTextArea(MTTextInput):
 
     def create_line_label(self, text):
         return Label(text, anchor_x='left', anchor_y='top',
-                     font_size= 30,
+                     font_size= 20,
                      color= (0,0,0,1))
 
     def glyph_size(self, g):

@@ -37,6 +37,7 @@ setup(
         'pymt.core.image',
         'pymt.core.text',
         'pymt.core.video',
+        'pymt.core.svg',
         'pymt.input',
         'pymt.input.postproc',
         'pymt.input.providers',

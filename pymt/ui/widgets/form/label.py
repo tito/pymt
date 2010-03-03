@@ -28,7 +28,7 @@ class MTFormLabel(MTAbstractFormWidget):
             Font size
         `font-weight` : str
             Style of font, can be 'bold', 'italic', 'bolditalic'
-        `font-color` : list
+        `color` : list
             Font color
     '''
 
@@ -58,12 +58,11 @@ class MTFormLabel(MTAbstractFormWidget):
                 opts['italic'] = True
             if self.style.get('font-weight') in ['bold', 'bolditalic']:
                 opts['bold'] = True
-        opts['color'] = map(lambda x: int(x * 255), self.style.get('font-color'))
+        opts['color'] = map(lambda x: int(x * 255), self.style.get('color'))
         opts['text'] = label
         if self.multiline:
             opts['multiline'] = self.multiline
             opts['width'] = self.width
-            print opts
 
         self._label_obj = Label(label=label, **opts)
         self.size = self._label_obj.content_width, self._label_obj.content_height

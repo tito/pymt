@@ -173,12 +173,34 @@ vkeyboard {
     syskey-color: rgba(20, 20, 40, 255);
 }
 
+modalpopup,
 popup {
     /* popup widget */
+    bg-color-full: rgba(200, 200, 200, 100);
     border-radius: 5;
     alpha-background: 1 1 .7 .7;
     draw-alpha-background: 1;
     draw-border: 1;
+}
+
+popup {
+    bg-color: rgba(60, 60, 60, 100);
+}
+
+.modalpopup-submit,
+.modalpopup-title {
+	bg-color: rgba(200, 200, 200, 100);
+    alpha-background: .9 .9 .8 .8;
+	draw-alpha-background: 1;
+	draw-background: 1;
+	font-size: 12;
+	border-radius: 5;
+	border-precision: 1;
+	draw-text-shadow: 0;
+}
+
+.modalpopup-title {
+	font-size: 16;
 }
 
 .popup-button {

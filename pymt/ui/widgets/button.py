@@ -66,6 +66,8 @@ class MTButton(MTLabel):
         kwargs.setdefault('autoheight', False)
         kwargs.setdefault('anchor_x', 'center')
         kwargs.setdefault('anchor_y', 'center')
+        kwargs.setdefault('halign', 'center')
+        kwargs.setdefault('valign', 'center')
         # FIXME, would be nice to suppress it !
         kwargs.setdefault('size', (100, 100))
         self._state         = ('normal', 0)

@@ -66,12 +66,8 @@ class MTMenuItem(MTKineticItem):
         try:
             if icon != '':
                 self._icon = Loader.image(os.path.join(path, icon))
-                self._icon.connect('on_load', self._reset_cache)
         except:
             pass
-
-    def _reset_cache(self, *largs):
-        self.button_dl.clear()
 
     def on_move(self, x, y):
         # don't invalidate cache when moving position
@@ -79,22 +75,17 @@ class MTMenuItem(MTKineticItem):
         pass
 
     def draw(self):
-        if not self.button_dl.is_compiled():
-            # cache button in a display list
-            with self.button_dl:
-                set_color(.2, .2, .2, .5)
-                drawRectangle(size=self.size)
-                self._label.x = 32
-                self._label.y = (self.height - self._label.height) / 2.
-                self._label.draw()
-                if self._icon:
-                    self._icon.x = (32 - self._icon.width) / 2.
-                    self._icon.y = (self.height - self._icon.height) / 2.
-                    self._icon.draw()
-        # draw the display list at the good position
         with gx_matrix:
             glTranslatef(self.x, self.y, 0)
-            self.button_dl.draw()
+            set_color(.2, .2, .2, .5)
+            drawRectangle(size=self.size)
+            self._label.x = 32
+            self._label.y = (self.height - self._label.height) / 2.
+            self._label.draw()
+            if self._icon:
+                self._icon.x = (32 - self._icon.width) / 2.
+                self._icon.y = (self.height - self._icon.height) / 2.
+                self._icon.draw()
 
 class MTMenu(MTKineticList):
     def __init__(self, **kwargs):

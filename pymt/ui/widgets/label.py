@@ -130,7 +130,6 @@ class MTLabel(MTWidget):
             kw = super(MTLabel, self).__getattribute__('kwargs')
             if name in kw:
                 kw[name] = value
-                return None
         except:
             pass
         return super(MTLabel, self).__setattr__(name, value)

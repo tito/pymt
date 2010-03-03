@@ -615,12 +615,24 @@ class MTKineticObject(MTWidget):
 
 
 class MTKineticItem(MTButton, MTKineticObject):
+    '''The MTKineticItem is a MTKineticObject ready to be included in a MTKineticList.
+    MTKineticItem have the behavior of the MTButton.
+
+    By default, on_press event is not fired only if the button is deletable and
+    visible.
+    '''
     def on_press(self, touch):
         if self.deletable and self.db.visible and self.db.on_touch_down(touch):
             return True
 
 
 class MTKineticImage(MTImageButton, MTKineticObject):
+    '''The MTKineticImage is a MTKineticObject ready to be included in a MTKineticList.
+    MTKineticImage have the behavior of the MTImageButton.
+
+    By default, on_press event is not fired only if the button is deletable and
+    visible.
+    '''
     def on_press(self, touch):
         if self.deletable and self.db.visible and self.db.on_touch_down(touch):
             return True

@@ -235,7 +235,7 @@ class LabelBase(BaseObject):
     def refresh(self):
         '''Force re-rendering of the label'''
         # first pass, calculating width/height
-        self.size = self.render()
+        self._size = self.render()
         # second pass, render for real
         self.render(real=True)
 

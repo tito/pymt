@@ -128,7 +128,9 @@ class MTLabel(MTWidget):
     def __setattr__(self, name, value):
         try:
             kw = super(MTLabel, self).__getattribute__('kwargs')
-            if name in kw:
+            if name in ('font_size', 'font_name', 'bold', 'italic', 'size',
+                        'anchor_x', 'anchor_y', 'halign', 'valign', 'padding',
+                        'padding_x', 'padding_y', 'color'):
                 kw[name] = value
         except:
             pass

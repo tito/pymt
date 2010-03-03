@@ -69,10 +69,10 @@ class MTWidget(EventDispatcher):
             Indicate if children will be draw, or not
         `no_css` : bool, default is False
             Don't search/do CSS for this widget
-		`style` : dict, default to {}
-			Add inline CSS
-		`cls` : str, default is ''
-			CSS class of this widget
+        `style` : dict, default to {}
+            Add inline CSS
+        `cls` : str, default is ''
+            CSS class of this widget
 
     :Events:
         `on_update` ()
@@ -102,7 +102,7 @@ class MTWidget(EventDispatcher):
         kwargs.setdefault('x', None)
         kwargs.setdefault('y', None)
         kwargs.setdefault('size', (100, 100))
-	kwargs.setdefault('size_hint', (None, None))
+        kwargs.setdefault('size_hint', (None, None))
         kwargs.setdefault('width', None)
         kwargs.setdefault('height', None)
         kwargs.setdefault('visible', True)
@@ -126,8 +126,8 @@ class MTWidget(EventDispatcher):
         self._visible             = False
         self._x, self._y          = kwargs.get('pos')
         self._width, self._height = kwargs.get('size')
-	self._size_hint           = kwargs.get('size_hint')
-        self.animations	          = []
+        self._size_hint           = kwargs.get('size_hint')
+        self.animations           = []
         self.visible              = kwargs.get('visible')
         self.draw_children        = kwargs.get('draw_children')
 

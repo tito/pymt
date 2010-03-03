@@ -28,9 +28,15 @@ class MTFlippableWidget(MTWidget):
 
         runTouchApp(widget)
 
+    :Parameters:
+        `flipangle` : float, default to 90.
+            Angle to flip back/front
+
     '''
     def __init__(self, **kwargs):
+        kwargs.setdefault('flipangle', 90.)
         super(MTFlippableWidget, self).__init__(**kwargs)
+        self.flipangle      = kwargs.get('flipangle')
 
         # For flipping animations
         self.zangle         = 0
@@ -113,7 +119,7 @@ class MTFlippableWidget(MTWidget):
            self._anim_current = self.do(self._anim_front)
 
     def on_update(self):
-        if self.zangle < 90:
+        if self.zangle < self.flipangle:
             self.flip_to('front')
         else:
             self.flip_to('back')

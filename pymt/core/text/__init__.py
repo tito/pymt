@@ -235,9 +235,12 @@ class LabelBase(BaseObject):
     def refresh(self):
         '''Force re-rendering of the label'''
         # first pass, calculating width/height
-        self._size = self.render()
+        sz = self.render()
+        self._size = sz
         # second pass, render for real
         self.render(real=True)
+        self._size = sz[0] + self.options['padding_x'] * 2, \
+                     sz[1] + self.options['padding_y'] * 2
 
     def draw(self):
         '''Draw the label'''
@@ -285,21 +288,21 @@ class LabelBase(BaseObject):
         '''Return the content width'''
         if self.texture is None:
             return 0
-        return self.texture.width
+        return self.texture.width + 2 * self.options['padding_x']
 
     @property
     def content_height(self):
         '''Return the content height'''
         if self.texture is None:
             return 0
-        return self.texture.height
+        return self.texture.height + 2 * self.options['padding_y']
 
     @property
     def content_size(self):
         '''Return the content size (width, height)'''
         if self.texture is None:
             return (0, 0)
-        return self.texture.size
+        return (self.content_width, self.content_height)
 
     @property
     def fontid(self):

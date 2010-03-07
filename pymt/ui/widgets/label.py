@@ -16,11 +16,11 @@ class MTLabel(MTWidget):
         label = MTLabel(label='Plop world')
 
     :Parameters:
-        `autosize`: bool, default to True
+        `autosize`: bool, default to False
             Update size information with label size
-        `autowidth`: bool, default to True
+        `autowidth`: bool, default to False
             Update width information with the label content width
-        `autoheight`: bool, default to True
+        `autoheight`: bool, default to False
             Update height information with the label content height
 
     MTLabel support all parameters from the Core label. Check `LabelBase`
@@ -78,6 +78,8 @@ class MTLabel(MTWidget):
         return self._used_label
 
     def draw(self):
+        if not self.visible:
+            return
         self.draw_background()
         self.draw_label()
 
@@ -98,6 +100,11 @@ class MTLabel(MTWidget):
 
         pos[0] += dx
         pos[1] += dy
+
+        # force autosize
+        if self.autosize or self.autowidth or self.autoheight:
+            if 'size' in self.kwargs:
+                del self.kwargs['size']
 
         w, h = drawLabel(label=self.label, pos=pos, **self.kwargs)
         self._used_label = getLastLabel()

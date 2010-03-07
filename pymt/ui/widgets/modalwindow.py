@@ -34,8 +34,9 @@ class MTModalWindow(MTWidget):
         w = self.get_parent_window()
         if not w:
             return
+        self.size = w.size
         set_color(*self.style['bg-color'])
-        drawCSSRectangle(size=w.size, style=self.style)
+        drawCSSRectangle(size=self.size, style=self.style)
 
 
 # Register all base widgets

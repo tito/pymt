@@ -56,8 +56,6 @@ class MTAnchorLayout(MTAbstractLayout):
 
 
     def do_layout(self):
-        if self.parent:
-            self.size = self.parent.size
         for c in self.children:
             x,y = self.pos
 

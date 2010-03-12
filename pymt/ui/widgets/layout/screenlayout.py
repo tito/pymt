@@ -62,7 +62,6 @@ class MTScreenLayout(MTAbstractLayout):
 
     def add_widget(self, widget, tab_name=None):
         if tab_name:
-            widget.id = tab_name
             tab_btn = self.new_tab(tab_name)
             tab_btn.push_handlers(on_press=curry(self.select, widget))
             self.tabs.add_widget(tab_btn)

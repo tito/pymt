@@ -83,7 +83,11 @@ class TouchEventLoop(object):
 
     def stop(self):
         '''Stop all input providers'''
-        for provider in pymt_providers:
+        #stop in reverse order that we started them!! (liek push pop),
+        #very important becasue e.g. wm_touch and WM_PEN both store
+        #old window proc and teh restore, if order is messed big problem
+        #happens, crashing badly without error
+        for provider in reversed(pymt_providers):
             provider.stop()
 
     def add_postproc_module(self, mod):

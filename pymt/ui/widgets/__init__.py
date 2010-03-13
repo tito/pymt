@@ -2,6 +2,7 @@
 Widgets: all the pymt widgets
 '''
 
+'''
 from button import *
 from coverflow import *
 from container import *
@@ -28,3 +29,4 @@ from sidepanel import *
 
 from form import *
 from composed import *
+'''

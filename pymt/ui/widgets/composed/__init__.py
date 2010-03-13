@@ -2,6 +2,7 @@
 Composed: widgets composed by assembling core widgets
 '''
 
+'''
 from colorpick import *
 from kineticlist import *
 from innerwindow import *
@@ -13,3 +14,4 @@ from textinput import *
 from textarea import *
 from popup import *
 from filebrowser import *
+'''

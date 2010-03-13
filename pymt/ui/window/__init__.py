@@ -9,7 +9,7 @@ your system. Actually, theses libraries are handled :
 
 '''
 
-__all__ = ['BaseWindow', 'MTWindow', 'MTDisplay']
+__all__ = ('BaseWindow', 'MTWindow')
 
 import os
 from OpenGL.GL import *
@@ -22,8 +22,6 @@ from ...modules import pymt_modules
 from ...event import EventDispatcher
 from ...utils import SafeList
 from ..colors import css_get_style
-from ..factory import MTWidgetFactory
-from ..widgets import MTWidget
 
 class BaseWindow(EventDispatcher):
     '''BaseWindow is a abstract window widget, for any window implementation.
@@ -425,41 +423,6 @@ class BaseWindow(EventDispatcher):
         '''
         pass
 
-class MTDisplay(MTWidget):
-    '''MTDisplay is a widget that draw a circle
-    under every touch on window.
-
-    :Parameters:
-        `touch_color` : list
-            Color of circle under finger
-        `radius` : int
-            Radius of circle under finger in pixel
-
-    :Styles:
-        `touch-color` : color
-            Color of circle under finger
-    '''
-
-    def __init__(self, **kwargs):
-        kwargs.setdefault('touch_color', (1,1,0))
-        kwargs.setdefault('radius', 20)
-        super(MTDisplay, self).__init__(**kwargs)
-
-        self.radius = kwargs['radius']
-        self.touch_color = kwargs['touch_color']
-        self.touches    = {}
-
-
-    def apply_css(self, styles):
-        if 'touch-color' in styles:
-            self.touch_color = styles.get('touch-color')
-
-    def draw(self):
-        '''Draw a circle under every touches'''
-        set_color(*self.touch_color)
-        for touch in getCurrentTouches():
-            drawCircle(pos=(touch.x, touch.y), radius=self.radius)
-
 # Searching the best provider
 MTWindow = None
 if not 'PYMT_DOC' in os.environ:
@@ -484,6 +447,3 @@ if not 'PYMT_DOC' in os.environ:
         pymt_logger.critical('Window: No provider found (configuration is %s)' %
             str(pymt.options['window']))
 
-# Register all base widgets
-MTWidgetFactory.register('MTWindow', MTWindow)
-MTWidgetFactory.register('MTDisplay', MTDisplay)

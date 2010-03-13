@@ -62,10 +62,11 @@ class MTScreenLayout(MTAbstractLayout):
 
     def add_widget(self, widget, tab_name=None):
         if tab_name:
-            widget.id = tab_name
             tab_btn = self.new_tab(tab_name)
             tab_btn.push_handlers(on_press=curry(self.select, widget))
             self.tabs.add_widget(tab_btn)
+            if widget.id is None:
+                widget.id = tab_name
         self.screens.append(widget)
 
     def remove_widget(self, widget):
@@ -84,6 +85,9 @@ class MTScreenLayout(MTAbstractLayout):
         '''
         Select which screen is to be the current one.
         pass either a widget that has been added to this layout, or its id
+
+        This function return True if the screen is selected, of False if we
+        can't select the screen (non existant)
         '''
         if self.screen is not None:
             self.container.remove_widget(self.screen)
@@ -94,8 +98,8 @@ class MTScreenLayout(MTAbstractLayout):
                 self.screen = screen
                 self.container.add_widget(self.screen, do_layout=True)
                 self.screen.parent = self
-                return
-        pymt_logger.error('ScreenLayout: Invalid screen or screenname, doing nothing...')
+                return True
+        return False
 
 
     def draw_transition(self, t):

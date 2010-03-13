@@ -17,19 +17,19 @@ class SvgBase(object):
 
     __slots__ = ('filename')
 
-    def __init__(self, filename, **kwargs):        
+    def __init__(self, filename, **kwargs):
         self.filename = filename
-        
+
         self.svg_data = Cache.get('_pymt_core_svg_cache', filename)
         if not self.svg_data:
             new_svg = self.load(filename)
             Cache.append('_pymt_core_svg_cache', filename, new_svg)
             self.svg_data = new_svg
-            
+
     def load(self, filename):
         '''Load an svg'''
         raise NotimplementedError("abstract class SvgLoaderBase: subclass must be implemented by svg provider")
-                
+
     def __getattr__ (self, name):
         return self.svg_data.__getattribute__(name)
 
@@ -113,36 +113,36 @@ class Svg(BaseObject):
     def _get_original_width(self):
         return self.svg_object.width
     original_width = property(_get_original_width)
-    
+
     def _get_original_height(self):
         return self.svg_object.height
     original_height = property(_get_original_height)
-    
+
     def _get_original_size(self):
         return (self.original_width, self.original_width)
     original_height = property(_get_original_height)
-    
+
     def _get_width(self):
         return self._scale_x*self.original_width
     def _set_width(self, w):
         if self.width != w: #nothing to do
-            self._scale_x = w/float(self.original_width)  
+            self._scale_x = w/float(self.original_width)
     width = property(_get_width, _set_width)
-    
+
     def _get_height(self):
         return self._scale_y*self.original_height
     def _set_height(self, h):
         if self.height != h: #nothing to do
             self._scale_y = h/float(self.original_height)
     height = property(_get_height, _set_height)
-    
+
     def _get_size(self):
         return (self.width, self.height)
     def _set_size(self, size):
         self.width = size[0]
         self.height = size[1]
-    szie = property(_get_size, _set_size)
-    
+    size = property(_get_size, _set_size)
+
     def _get_filename(self):
         return self._filename
     def _set_filename(self, value):
@@ -154,7 +154,7 @@ class Svg(BaseObject):
         self.svg_object = SvgLoader.load(self._filename)
     filename = property(_get_filename, _set_filename,
             doc='Get/set the filename of svg')
-    
+
     def _get_scale(self):
         return self._scale_x
     def _set_scale(self, s):

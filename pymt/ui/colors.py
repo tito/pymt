@@ -38,15 +38,8 @@ import cssutils
 # Auto conversion from css to a special type.
 auto_convert = {
     'color':                    parse_color,
-    'color-down':               parse_color,
-    'color-validated':          parse_color,
     'bg-color':                 parse_color,
-    'bg-color-down':            parse_color,
-    'bg-color-move':            parse_color,
     'bg-color-full':            parse_color,
-    'bg-color-active':          parse_color,
-    'bg-color-error':           parse_color,
-    'bg-color-validated':       parse_color,
     'font-size':                parse_int,
     'font-name':                parse_string,
     'font-weight':              parse_string,
@@ -96,11 +89,11 @@ auto_convert = {
     'scrollbar-margin':         parse_float4,
     'scrollbar-color':          parse_color,
     'bg-image':                 parse_image,
-    'bg-image-down':            parse_image,
 }
 
 #: Instance of the CSS sheet
 pymt_sheet = None
+pymt_css_states = ['-down', '-move', '-dragging', '-active', '-error', '-validated']
 
 # Default CSS of PyMT
 default_css_filename = os.path.join(pymt.pymt_data_dir, 'default.css')
@@ -118,6 +111,9 @@ def get_truncated_classname(name):
     if name.startswith('MT'):
         name = name[2:]
     return name.lower()
+
+def css_register_state(name):
+    pymt_css_states.append('-%s' % name)
 
 widgets_parents = {}
 def get_widget_parents(widget):
@@ -221,9 +217,16 @@ def css_get_style(widget, sheet=None):
     for score, rule in rules:
         for prop in rule.style.getProperties():
             value = prop.value
-            if prop.name in auto_convert:
+            name = prop.name
+            if name not in auto_convert:
+                # searching for a state
+                for state in pymt_css_states:
+                    if name.endswith(state):
+                        name = name[:-len(state)]
+                        break
+            if name in auto_convert:
                 try:
-                    value = auto_convert[prop.name](prop.value)
+                    value = auto_convert[name](value)
                 except:
                     pymt_logger.exception(
                         'Error while convert %s: %s' % (prop.name, prop.value))

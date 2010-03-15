@@ -61,7 +61,6 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None, state=Non
         for s in style:
             if state in s:
                 overwrite  = s.replace(state, '')
-                print "replacing style:", s, 'with', overwrite
                 newstyle[overwrite] = style[s]
                 overwrites.append(overwrite)
             if s not in overwrites:

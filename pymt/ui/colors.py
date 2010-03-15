@@ -22,10 +22,12 @@ please look on the widget documentation.
 '''
 
 
-__all__ = ['default_css', 'css_get_style', 'get_truncated_classname',
-           'pymt_sheet', 'css_add_sheet', 'css_add_file', 'css_get_widget_id']
+__all__ = ['css_get_style', 'get_truncated_classname',
+           'pymt_sheet', 'css_add_sheet', 'css_add_file', 'css_get_widget_id',
+           'css_register_state', 'css_add_keyword']
 
 from ..logger import pymt_logger
+from .. import Cache
 from parser import *
 import pymt
 import os
@@ -33,10 +35,18 @@ import sys
 import shutil
 import logging
 import re
-import cssutils
+
+# Register CSS cache
+Cache.register('css')
+
+#: Instance of the CSS sheet
+pymt_sheet = None
+
+#: State allowed to CSS rules (bg-color[-state] for eg)
+pymt_css_states = ['-down', '-move', '-dragging', '-active', '-error', '-validated']
 
 # Auto conversion from css to a special type.
-auto_convert = {
+css_keyword_convert = {
     'color':                    parse_color,
     'bg-color':                 parse_color,
     'bg-color-full':            parse_color,
@@ -91,19 +101,102 @@ auto_convert = {
     'bg-image':                 parse_image,
 }
 
-#: Instance of the CSS sheet
-pymt_sheet = None
-pymt_css_states = ['-down', '-move', '-dragging', '-active', '-error', '-validated']
+class CSSSheet(object):
+    def __init__(self):
+        self._rule = ''
+        self._content = ''
+        self._state = 'rule'
+        self._css = {}
 
-# Default CSS of PyMT
-default_css_filename = os.path.join(pymt.pymt_data_dir, 'default.css')
-try:
-    fd = open(default_css_filename)
-    #: Default CSS of PyMT
-    default_css = fd.read()
-except:
-    pymt_logger.exception('')
-    pymt_logger.critical('Colors: Unable to open the default CSS')
+    def parse_text(self, text):
+        '''Parse a CSS text, and inject in the current sheet'''
+        # remove comment
+        def _comment_remover(text):
+            def replacer(match):
+                s = match.group(0)
+                if s.startswith('/'):
+                    return ""
+                else:
+                    return s
+            pattern = re.compile(
+                r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
+                re.DOTALL | re.MULTILINE
+            )
+            return re.sub(pattern, replacer, text)
+
+        text = _comment_remover(text)
+        self._rule = ''
+        for line in text.split('\n'):
+            self._parse_line(line)
+
+    def _parse_line(self, line):
+        '''Parse a line, and inject into rules or content, depend on current
+        parser state'''
+        if self._state == 'rule':
+            r = line.split('{', 1)
+            self._rule += ',' + r[0]
+            if len(r) != 1:
+                self._state = 'content'
+                self._parse_line(r[1])
+
+        elif self._state == 'content':
+            r = line.split('}', 1)
+            self._content += ';' + r[0]
+            if len(r) != 1:
+                self._push(self._rule, self._content)
+                self._rule = ''
+                self._content = ''
+                self._state = 'rule'
+                self._parse_line(r[1])
+
+    def _push(self, rulestr, contentstr):
+        '''Push a rules/contents into our sheet'''
+        def extract(v):
+            sname, svalue = v.split(':')
+            name = sname.strip()
+            value = svalue.strip()
+            if name not in css_keyword_convert:
+                # searching for a state
+                for state in pymt_css_states:
+                    if name.endswith(state):
+                        name = name[:-len(state)]
+                        break
+            if name in css_keyword_convert:
+                try:
+                    value = css_keyword_convert[name](value)
+                except:
+                    pymt_logger.exception(
+                        'Error while convert %s: %s' % (prop.name, prop.value))
+                    pass
+            return sname, value
+
+        rules = [x.strip() for x in rulestr.split(',') if x.strip() != '']
+        keys = [extract(x.strip()) for x in contentstr.split(';') if x.strip() != '']
+        for rule in rules:
+            if rule in self._css:
+                self._css[rule].update(dict(keys[:]))
+            else:
+                self._css[rule] = dict(keys[:])
+
+    def get_style(self, widget):
+        '''Return the style of a widget'''
+        widget_classes = get_widget_parents(widget)
+        widget_classes.append('*')
+        styles = {}
+        for cls in reversed(widget_classes):
+            for r, v in self._css.items():
+                if r == cls:
+                    styles.update(v)
+        if type(widget.cls) in (unicode, str):
+            cls = '.%s' % widget.cls
+            if cls in self._css:
+                styles.update(self._css[cls])
+        elif type(widget.cls) in (list, tuple):
+            for cls in widget.cls:
+                cls = '.%s' % widget.cls
+                if cls in self._css:
+                    styles.update(self._css[cls])
+        return styles
 
 def get_truncated_classname(name):
     '''Return the css-ized name of a class
@@ -111,9 +204,6 @@ def get_truncated_classname(name):
     if name.startswith('MT'):
         name = name[2:]
     return name.lower()
-
-def css_register_state(name):
-    pymt_css_states.append('-%s' % name)
 
 widgets_parents = {}
 def get_widget_parents(widget):
@@ -141,99 +231,22 @@ def css_get_widget_id(widget):
         idwidget = str(widget.__class__) + ':' + '.'.join(widget.cls)
     return idwidget
 
-css_cache = {}
-def css_get_style(widget, sheet=None):
+def css_get_style(widget):
     '''Return a dict() with all the style for the widget.
 
     :Parameters:
         `widget` : class
             Widget to search CSS
-        `sheet` : sheet
-            Custom style sheet to use (instead of pymt_sheet)
     '''
 
     global pymt_sheet
-    global css_cache
-
     idwidget = css_get_widget_id(widget)
-    if idwidget in css_cache:
-        return css_cache[idwidget]
+    styles = Cache.get('css', idwidget)
+    if styles is not None:
+        return styles
 
-    if not sheet:
-        sheet = pymt_sheet
-
-    widget_classes = get_widget_parents(widget)
-    widget_classes.append('*')
-
-    styles = dict()
-    rules = []
-
-    # first, select rules that match the widget
-    for w in pymt_sheet.cssRules:
-        rule_selected = False
-        rule_score = 0
-        # don't use command
-        if type(w) == cssutils.css.CSSComment:
-            continue
-        # get the appropriate selector
-        for s in w.selectorList:
-            rule_stop_processing = False
-            if s.element is not None:
-                if s.element[1] not in reversed(widget_classes):
-                    continue
-            if s.specificity[2] > 1:
-                pymt_logger.error(
-                    'CSS: We don\'t support multiple rule in css selector. ' + \
-                    'Please rewrite this selector : <%s>' % s.selectorText)
-                continue
-            if s.specificity[2] == 1:
-                cssclass = s.selectorText.split('.')[1:]
-                if type(widget.cls) == str:
-                    if widget.cls not in cssclass:
-                        rule_stop_processing = True
-                        continue
-                else:
-                    rule_stop_processing = True
-                    for c in widget.cls:
-                        if c in cssclass:
-                            rule_stop_processing = False
-            if rule_stop_processing:
-                continue
-            # selector match !
-            rule_selected = True
-            # get the better score
-            a, b, c, d = s.specificity
-            score = b * 100 + c * 10 + d
-            if score > rule_score:
-                rule_score = score
-        # rule ok :)
-        if rule_selected:
-            rules.append([rule_score, w])
-
-    # sort by score / parent
-    #TODO
-
-    # compiles rules
-    for score, rule in rules:
-        for prop in rule.style.getProperties():
-            value = prop.value
-            name = prop.name
-            if name not in auto_convert:
-                # searching for a state
-                for state in pymt_css_states:
-                    if name.endswith(state):
-                        name = name[:-len(state)]
-                        break
-            if name in auto_convert:
-                try:
-                    value = auto_convert[name](value)
-                except:
-                    pymt_logger.exception(
-                        'Error while convert %s: %s' % (prop.name, prop.value))
-                    pass
-            styles[prop.name] = value
-
-    css_cache[idwidget] = styles
+    styles = pymt_sheet.get_style(widget)
+    Cache.append('css', idwidget, styles)
     return styles
 
 def css_add_sheet(text):
@@ -241,8 +254,7 @@ def css_add_sheet(text):
         mycss = '#buttonA { bg-color: rgba(255, 127, 0, 127); }'
         css_add_sheet(mycss)
     '''
-    global pymt_sheet
-    pymt_sheet.cssText += text
+    pymt_sheet.parse_text(text)
 
 def css_add_file(cssfile):
     '''Add a css file to use.
@@ -250,24 +262,29 @@ def css_add_file(cssfile):
     used ::
     	css_add_sheet(cssfile)
     '''
-    global pymt_sheet
-    f = open(cssfile,'r')
-    css_rules =f.read()
-    f.close()
-    pymt_sheet.cssText += css_rules
+    with open(cssfile, 'r') as fd:
+        pymt_sheet.parse_text(fd.read())
+
+def css_register_state(name):
+    '''Register a new state'''
+    pymt_css_states.append('-%s' % name)
+
+def css_add_keyword(keyword, convertfunc):
+    '''Add a new keyword to be autoconverted when reading CSS.
+    Convert function can be found in parser.py'''
+    css_keyword_convert[keyword] = convertfunc
 
 
+# Autoload the default css + user css
 if 'PYMT_DOC' not in os.environ:
-    # Add default CSS
-    parser = cssutils.CSSParser(loglevel=logging.ERROR)
-    pymt_sheet = parser.parseString(default_css)
+    # Add default CSSheet
+    pymt_sheet = CSSSheet()
+    css_add_file(os.path.join(pymt.pymt_data_dir, 'default.css'))
 
     # Add user css if exist
     css_filename = os.path.join(pymt.pymt_home_dir, 'user.css')
     if os.path.exists(css_filename):
-        user_sheet = parser.parseFile(css_filename)
-        for rule in user_sheet.cssRules:
-            pymt_sheet.add(rule)
+        css_add_file(css_filename)
 
 
 if __name__ == '__main__':

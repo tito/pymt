@@ -166,7 +166,7 @@ class CSSSheet(object):
                     value = css_keyword_convert[name](value)
                 except:
                     pymt_logger.exception(
-                        'Error while convert %s: %s' % (prop.name, prop.value))
+                        'Error while convert %s: %s' % (name, value))
                     pass
             return sname, value
 

@@ -11,10 +11,15 @@ class MTTextArea(MTTextInput):
     def __init__(self, **kwargs):
         super(MTTextArea, self).__init__(**kwargs)
         self.value = kwargs.get('label') or ''
-
+        self.buffer_size = kwargs.get('buffer_size') or 128000
+        
     def _get_value(self):
-        return '\n'.join(self.lines)
+        try:
+            return '\n'.join(self.lines)
+        except:
+            return ""
     def _set_value(self, text):
+        old_value = self.value
         self.lines = text.split('\n')
         self.line_labels = map(self.create_line_label, self.lines)
         self.line_height = self.line_labels[0].content_height
@@ -23,6 +28,8 @@ class MTTextArea(MTTextInput):
         self.cursor = 1 #pos inside line
         self.cursor_fade = 0
         self.init_glyph_sizes()
+        if old_value != self.value:
+            self.dispatch_event('on_text_change', self)
     value = property(_get_value, _set_value)
 
     def set_line_text(self, line_num, text):
@@ -103,12 +110,17 @@ class MTTextArea(MTTextInput):
         pass
 
     def insert_charachter(self, c):
+        if len(self.value) >= self.buffer_size:
+            return
         text = self.lines[self.edit_line]
         new_text = text[:self.cursor] + c + text[self.cursor:]
         self.set_line_text(self.edit_line, new_text)
         self.cursor +=1
+        self.dispatch_event('on_text_change', self)
 
     def insert_line_feed(self):
+        if len(self.value) >= self.buffer_size:
+            return
         text  = self.lines[self.edit_line]
         left  = text[:self.cursor]
         right = text[self.cursor:]
@@ -117,6 +129,7 @@ class MTTextArea(MTTextInput):
         self.line_labels.insert(self.edit_line+1, self.create_line_label(right))
         self.edit_line += 1
         self.cursor = 0
+        self.dispatch_event('on_text_change', self)
 
     def do_backspace(self):
         if self.cursor == 0:

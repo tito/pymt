@@ -71,7 +71,7 @@ class KeyboardLayoutQWERTY(KeyboardLayout):
         ('>', '>', None, 1),    ('?', '?', None, 1),    (u'\u21e7', None, 'shift_R', 2.5),
     ]
     NORMAL_5 = [
-        ('', ' ', None, 12), (u'\u2b12', None, 'layout', 1.5), (u'\u2a2f', None, 'escape', 1.5),
+        (' ', ' ', None, 12), (u'\u2b12', None, 'layout', 1.5), (u'\u2a2f', None, 'escape', 1.5),
 
     ]
     SHIFT_1 = [
@@ -102,7 +102,7 @@ class KeyboardLayoutQWERTY(KeyboardLayout):
         ('.', '.', None, 1),    ('/', '/', None, 1),    (u'\u21e7', None, 'shift_R', 2.5),
     ]
     SHIFT_5 = [
-        ('', ' ', None, 12), (u'\u2b12', None, 'layout', 1.5), (u'\u2a2f', None, 'escape', 1.5),
+        (' ', ' ', None, 12), (u'\u2b12', None, 'layout', 1.5), (u'\u2a2f', None, 'escape', 1.5),
     ]
 
 class KeyboardLayoutAZERTY(KeyboardLayout):
@@ -140,7 +140,7 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
         (':', ':', None, 1),    ('!', '!', None, 1),    (u'\u21e7', None, 'shift_R', 2.5),
     ]
     NORMAL_5 = [
-        ('', ' ', None, 12), (u'\u2b12', None, 'layout', 1.5), (u'\u2a2f', None, 'escape', 1.5),
+        (' ', ' ', None, 12), (u'\u2b12', None, 'layout', 1.5), (u'\u2a2f', None, 'escape', 1.5),
     ]
     SHIFT_1 = [
         ('|', '|', None, 1),    ('1', '1', None, 1),    ('2', '2', None, 1),
@@ -171,7 +171,7 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
         (u'\u21e7', None, 'shift_R', 2.5),
     ]
     SHIFT_5 = [
-        ('', ' ', None, 12), (u'\u2b12', None, 'layout', 1.5), (u'\u2a2f', None, 'escape', 1.5),
+        (' ', ' ', None, 12), (u'\u2b12', None, 'layout', 1.5), (u'\u2a2f', None, 'escape', 1.5),
     ]
 
 class MTVKeyboard(MTScatterWidget):

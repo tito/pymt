@@ -39,7 +39,6 @@ class MTTextInput(MTButton):
         kwargs.setdefault('anchor_y', 'center')
         kwargs.setdefault('halign', 'left')
         kwargs.setdefault('keyboard', None)
-        kwargs.setdefault('padding', 20)
         kwargs.setdefault('password', False)
         kwargs.setdefault('group', None)
         super(MTTextInput, self).__init__(**kwargs)

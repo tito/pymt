@@ -42,6 +42,7 @@ testing the profile ::
 __all__ = ['Touch']
 
 from ..clock import getClock
+from ..vector import Vector
 
 class Touch(object):
     '''Abstract class to represent a touch, and support TUIO 1.0 definition.
@@ -191,6 +192,9 @@ class Touch(object):
     def __str__(self):
         classname = str(self.__class__).split('.')[-1].replace('>', '').replace('\'', '')
         return '<%s spos=%s pos=%s>' % (classname, str(self.spos), str(self.pos))
+        
+    def distance(self, other_touch):
+        return Vector(self.pos).distance(other_touch.pos)
 
     # facility
     pos = property(lambda self: (self.x, self.y),

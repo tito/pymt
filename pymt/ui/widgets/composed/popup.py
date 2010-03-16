@@ -51,38 +51,38 @@ class MTPopup(MTScatterWidget):
         self.exit_on_submit = kwargs.get('exit_on_submit')
 
         # Create layouts
-        self.layout = MTBoxLayout(orientation='vertical', padding=5, spacing=5)
-        self.l_title = MTBoxLayout(orientation='vertical', invert_y=True, padding=5)
+        self.layout = MTBoxLayout(size=self.size,  orientation='vertical')
         self.l_content = MTBoxLayout(orientation='vertical', invert_y=True)
-        self.l_buttons = MTBoxLayout(orientation='horizontal', spacing=5)
+        self.l_buttons = MTBoxLayout(size_hint=(1,None),orientation='horizontal')
 
         # Titles
-        if kwargs.get('title') is not None:
+        if kwargs.get('title'):
             self.w_title = MTLabel(label=kwargs.get('title'), font_size=10, bold=False, autosize=True)
-            self.l_title.add_widget(self.w_title)
 
         # Buttons
-        self.w_submit = MTButton(label=kwargs.get('label_submit'), size=(100, 40),
-                cls=['popup-button', 'popup-button-submit'])
+        self.w_submit = MTButton(label=kwargs.get('label_submit'), size_hint=(0.5,None), height=40,
+                cls='popup-button')
         self.w_submit.push_handlers(on_release=curry(self._dispatch_event, 'on_submit'))
         self.l_buttons.add_widget(self.w_submit)
         if kwargs.get('show_cancel'):
-            self.w_cancel = MTButton(label=kwargs.get('label_cancel'), size=(100, 40),
-                cls=['popup-button', 'popup-button-cancel'])
+            self.w_cancel = MTButton(label=kwargs.get('label_cancel'), size_hint=(0.5,None), height=40,
+                cls='popup-button')
             self.w_cancel.push_handlers(on_release=curry(self._dispatch_event, 'on_cancel'))
             self.l_buttons.add_widget(self.w_cancel)
 
         # Connect
         self.layout.add_widget(self.l_buttons)
         self.layout.add_widget(self.l_content)
-        if kwargs.get('title') is not None:
-            self.layout.add_widget(self.l_title)
+        if kwargs.get('title'):
+            self.layout.add_widget(self.w_title)
+            
         super(MTPopup, self).add_widget(self.layout)
 
     def _ensure_layout(self, force=False):
         while force or (self.size != self.layout.size):
-            self.size = self.layout.size
+        
             self.layout.do_layout()
+            self.size = self.layout.size
             force = False
 
     def add_widget(self, widget, force=False):

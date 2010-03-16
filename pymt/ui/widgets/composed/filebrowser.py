@@ -54,7 +54,7 @@ class FileTypeFactory:
 
 class MTFileEntryView(MTKineticItem):
     '''Base view class for every file entry'''
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):       
         super(MTFileEntryView, self).__init__(**kwargs)
         self.type_image = None
         self.filename   = kwargs.get('filename')
@@ -90,21 +90,23 @@ class MTFileListEntryView(MTFileEntryView):
         self.image.scale    = 0.5
         self.selected       = False
         self.browser.w_limit    = 1
+        self.font_size = self.style['font-size']
 
     def draw(self):
         pos = self.image.width, self.y
         # Max number of chars for this entry's label
         max_chars = 20
         # Simple trick to get the maximum label width for the current font size
-        max_width = getLabel('W'*max_chars).width
+        self.width = getLabel('W'*max_chars, font_size=self.font_size).width
         if self.selected:
             selected_color = self.style.get('selected-color', (0.4,) * 4)
             set_color(*selected_color)
-            drawRoundedRectangle(pos=pos, size=(max_width, self.height))
-        kwargs = {'pos': pos, 'anchor_x': 'left', 'anchor_y': 'bottom'}
-        drawLabel(label=self.striptext(self.label_txt, max_chars), **kwargs)
+            drawCSSRectangle(pos=(0, self.y), size=self.size, style=self.style)
+        kwargs = {'pos': pos, 'anchor_x': 'left', 'anchor_y': 'bottom', 'font_size':self.style['font-size'],
+                  'color':self.style['color']}
+        drawLabel(label=self.striptext(self.label_txt, max_chars), **kwargs )
 
-        self.image.pos = self.pos
+        self.image.pos = (0, self.y)
         self.image.draw()
 
 
@@ -121,7 +123,7 @@ class MTFileIconEntryView(MTFileEntryView):
         if self.selected:
             selected_color = self.style.get('selected-color', (0.4,) * 4)
             set_color(*selected_color)
-            drawRoundedRectangle(pos=self.pos, size=self.size)
+            drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
         pos = int(self.x + self.width / 2.), int(self.y + 10)
         drawLabel(label=self.striptext(self.label_txt, 10), pos=pos)
         self.image.x        = self.x + int(self.image.width / 2) - 5
@@ -161,6 +163,8 @@ class MTFileBrowserView(MTKineticList):
         kwargs.setdefault('view', MTFileIconEntryView)
         kwargs.setdefault('filters', [])
         kwargs.setdefault('multipleselection', False)
+        
+        
 
         super(MTFileBrowserView, self).__init__(**kwargs)
 
@@ -335,25 +339,24 @@ class MTFileBrowser(MTPopup):
 
     def __init__(self, **kwargs):
         kwargs.setdefault('title', 'Open a file')
-        kwargs.setdefault('size', (350, 300))
+        kwargs.setdefault('label_submit', 'Open')
+        kwargs.setdefault('size', (350, 500))
         kwargs.setdefault('filters', [])
         kwargs.setdefault('multipleselection', False)
         kwargs.setdefault('view', MTFileIconEntryView)
         kwargs.setdefault('invert_order', False)
-
+        kwargs.setdefault('show_toggles', True)
         super(MTFileBrowser, self).__init__(**kwargs)
 
         self.register_event_type('on_select')
 
-        # save size before resizing of Popup Layout
-        self.kbsize = self.width, self.height
-
+    
         # Title
         self.w_path = MTLabel(label='.', autoheight=True, size=(self.width, 30), color=(.7, .7, .7, .5))
-        self.add_widget(self.w_path)
+        #self.add_widget(self.w_path)
 
         # File View
-        self.view = MTFileBrowserView(size=self.kbsize, filters=kwargs.get('filters'),
+        self.view = MTFileBrowserView(size_hint=(1,1), filters=kwargs.get('filters'),
                 multipleselection=kwargs.get('multipleselection'), view=kwargs.get('view'),
                 invert_order=kwargs.get('invert_order'))
         self.view.push_handlers(on_path_change=self._on_path_change)
@@ -363,14 +366,15 @@ class MTFileBrowser(MTPopup):
         self.view.path = '.'
 
         # Show hidden files
-        self.w_hiddenfile = MTFileBrowserToggle(icon='filebrowser-hidden.png', size=(40, 40))
-        self.w_hiddenfile.push_handlers(on_press=curry(self._toggle_hidden, self.w_hiddenfile))
-        self.l_buttons.add_widget(self.w_hiddenfile)
-
-        # Select view
-        self.w_view = MTFileBrowserToggle(icon='filebrowser-iconview.png', size=(40, 40))
-        self.w_view.push_handlers(on_press=curry(self._toggle_view, self.w_view))
-        self.l_buttons.add_widget(self.w_view, True)
+        if kwargs['show_toggles']:
+            self.w_hiddenfile = MTFileBrowserToggle(icon='filebrowser-hidden.png', size=(40, 40))
+            self.w_hiddenfile.push_handlers(on_press=curry(self._toggle_hidden, self.w_hiddenfile))
+            self.l_buttons.add_widget(self.w_hiddenfile)
+    
+            # Select view
+            self.w_view = MTFileBrowserToggle(icon='filebrowser-iconview.png', size=(40, 40))
+            self.w_view.push_handlers(on_press=curry(self._toggle_view, self.w_view))
+            self.l_buttons.add_widget(self.w_view, True)
 
     def _toggle_hidden(self, btn, *largs):
         if btn.get_state() == 'down':

@@ -203,17 +203,7 @@ popup {
 	font-size: 16;
 }
 
-.popup-button {
-    bg-color: rgba(40, 40, 40, 255);
-    alpha-background: 1 1 .7 .7;
-    draw-alpha-background: 1;
-    draw-border: 1;
-    border-radius: 5;
-}
 
-.popup-button-submit {
-    bg-color: rgba(40, 40, 70, 255);
-}
 
 video {
 	bg-color: rgba(100, 100, 100, 220);

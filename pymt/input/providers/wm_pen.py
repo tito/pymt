@@ -60,6 +60,9 @@ else:
                     return True
 
         def _pen_handler(self, msg, wParam, lParam):
+            if msg not in (WM_LBUTTONDOWN, WM_MOUSEMOVE, WM_LBUTTONUP):
+                return
+
             windll.user32.GetClientRect(self.hwnd, byref(win_rect))
             x = c_int16(lParam & 0xffff).value / float(win_rect.w)
             y = c_int16(lParam >> 16).value / float(win_rect.h)

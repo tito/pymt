@@ -70,7 +70,7 @@ class GlDisplayList:
         self.do_compile = True
         self.mode = GL_COMPILE
         if 'execute' in kwargs.get('mode'):
-            self.mode = GL_COMPILE_EXECUTE
+            self.mode = GL_COMPILE_AND_EXECUTE
 
     def __enter__(self):
         self.start()

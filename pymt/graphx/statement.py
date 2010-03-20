@@ -57,11 +57,20 @@ class GlDisplayList:
         with dl:
             # do draw function, like drawLabel etc...
         dl.draw()
+
+
+    :Parameters:
+        `mode` : str, default to 'compile'
+            If mode is 'execute', the code in with will be also compiled + executed.
     '''
-    def __init__(self):
+    def __init__(self, **kwargs):
+        kwargs.setdefault('mode', 'compile')
         self.dl = glGenLists(1)
         self.compiled = False
         self.do_compile = True
+        self.mode = GL_COMPILE
+        if 'execute' in kwargs.get('mode'):
+            self.mode = GL_COMPILE_EXECUTE
 
     def __enter__(self):
         self.start()
@@ -77,7 +86,7 @@ class GlDisplayList:
         else:
             gl_displaylist_generate = True
             self.do_compile = True
-            glNewList(self.dl, GL_COMPILE)
+            glNewList(self.dl, self.mode)
 
     def stop(self):
         '''Stop recording GL operation'''

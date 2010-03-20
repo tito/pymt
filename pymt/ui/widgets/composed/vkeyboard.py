@@ -43,6 +43,7 @@ class KeyboardLayoutQWERTY(KeyboardLayout):
     TITLE           = 'Qwerty'
     DESCRIPTION     = 'A classical US Keyboard'
     FONT_FILENAME   = kbdlayout_default_font
+    SIZE            = (15, 5)
     NORMAL_1 = [
         ('`', '`', None, 1),    ('1', '1', None, 1),    ('2', '2', None, 1),
         ('3', '3', None, 1),    ('4', '4', None, 1),    ('5', '5', None, 1),
@@ -111,6 +112,7 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
     TITLE           = 'Azerty'
     DESCRIPTION     = 'A French keyboard without international keys'
     FONT_FILENAME   = kbdlayout_default_font
+    SIZE            = (15, 5)
     NORMAL_1 = [
         ('@', '@', None, 1),    ('&', '&', None, 1),    (u'\xe9', u'\xe9', None, 1),
         ('"', '"', None, 1),    ('\'', '\'', None, 1),  ('(', '(', None, 1),
@@ -366,7 +368,8 @@ class MTVKeyboard(MTScatterWidget):
         mtop, mright, mbottom, mleft = map(lambda x: x * s, self.style['margin'])
         self.texsize = Vector(w - mleft - mright,
                               h - mtop - mbottom)
-        self.keysize = Vector(self.texsize.x / 15, self.texsize.y / 5)
+        kx, ky = self.layout.SIZE
+        self.keysize = Vector(self.texsize.x / kx, self.texsize.y / ky)
         m = 3 * s
         x, y = 0, self.texsize.y - self.keysize.y
 
@@ -375,7 +378,7 @@ class MTVKeyboard(MTScatterWidget):
         with self._current_cache[mode]:
 
             # draw lines
-            for index in xrange(1, 6):
+            for index in xrange(1, ky + 1):
                 line = self.layout.__getattribute__('%s_%d' % (self.mode, index))
 
                 # draw keys
@@ -465,21 +468,22 @@ class MTVKeyboard(MTScatterWidget):
         '''Return the key + size info on the current layout, at the coordinate (x, y)'''
         mtop, mright, mbottom, mleft = self.style['margin']
         w, h = self.width - mleft - mright, self.height - mtop - mbottom
-        keysize = Vector(w / 15, h / 5)
+        kx, ky = self.layout.SIZE
+        keysize = Vector(w / kx, h / ky)
         if x < mleft or x > self.width - mright or \
            y < mbottom or y > self.height - mtop:
                return None
-        index = 5-int((y - mbottom) /
+        index = ky-int((y - mbottom) /
                 (self.height - mtop - mbottom)
-                * 5.)
+                * ky)
         line = self.layout.__getattribute__('%s_%d' % (self.mode, index))
         x -= mleft
         kx = 0
         for key in line:
             kw = keysize.x * key[3]
             if x >= kx and x < kx + kw:
-                h = (self.height - mtop - mbottom) / 5.
-                return (key, (kx, h * (5-index), kw, h))
+                h = (self.height - mtop - mbottom) / ky
+                return (key, (kx, h * (ky-index), kw, h))
             kx += kw
         return None
 

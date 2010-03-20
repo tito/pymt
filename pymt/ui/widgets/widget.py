@@ -296,6 +296,8 @@ class MTWidget(EventDispatcher):
 
     def collide_point(self, x, y):
         '''Test if the (x,y) is in widget bounding box'''
+        if not self.visible:
+            return False
         if( x > self.x  and x < self.x + self.width and
            y > self.y and y < self.y + self.height  ):
             return True

@@ -10,6 +10,9 @@ from ...factory import MTWidgetFactory
 from ....graphx import set_color, drawCSSRectangle
 from ....vector import Vector
 
+def escape(s):
+    return s.replace('"', '\\&quot;').replace('\'', '\\&quot;').replace('<', '&lt;').replace('>', '&gt;')
+
 class MTModalPopup(MTModalWindow):
     '''A simple implementation of a popup.
 
@@ -41,7 +44,9 @@ class MTModalPopup(MTModalWindow):
                     size_hint='(1,None)' height='40' valign='"center"'
                     halign='"center"'/>
             </MTBoxLayout>
-        ''' % (str(self.size), self.title, self.content)
+        ''' % (str(self.size),
+               escape(self.title),
+               escape(self.content))
 
         xml = XMLWidget(xml=layout)
         super(MTModalPopup, self).add_widget(xml.root)

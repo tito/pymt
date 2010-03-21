@@ -75,7 +75,8 @@ class MTScreenLayout(MTAbstractLayout):
                 if btn.label == widget:
                     self.tabs.remove_widget(btn)
                     break
-            elif btn.label == widget.id:
+            elif btn.label == widget.id or (
+                hasattr(widget, 'title') and btn.label == widget.title):
                 self.tabs.remove_widget(btn)
                 break
         if widget in self.screens:

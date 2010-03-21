@@ -7,6 +7,7 @@ __all__ = ('MTWindowPygame', )
 import os
 import pymt
 from . import BaseWindow
+from ...exceptions import pymt_exception_manager, ExceptionManager
 from ...logger import pymt_logger
 from ...utils import curry
 from ...base import stopTouchApp, getEventLoop
@@ -113,6 +114,61 @@ class MTWindowPygame(BaseWindow):
             self.flags |= pygame.FULLSCREEN
         self._pygame_set_mode()
 
+    def _mainloop(self):
+        evloop = getEventLoop()
+        evloop.idle()
+
+        for event in pygame.event.get():
+
+            # kill application (SIG_TERM)
+            if event.type == pygame.QUIT:
+                evloop.quit = True
+                self.close()
+
+            # mouse move
+            elif event.type == pygame.MOUSEMOTION:
+                # don't dispatch motion if no button are pressed
+                if event.buttons == (0, 0, 0):
+                    continue
+                x, y = event.pos
+                self.dispatch_event('on_mouse_move', x, y, self.modifiers)
+
+            # mouse action
+            elif event.type in (pygame.MOUSEBUTTONDOWN,
+                                pygame.MOUSEBUTTONUP):
+                self._pygame_update_modifiers()
+                x, y = event.pos
+                btn = 'left'
+                if event.button == 3:
+                    btn = 'right'
+                elif event.button == 2:
+                    btn = 'middle'
+                eventname = 'on_mouse_down'
+                if event.type == pygame.MOUSEBUTTONUP:
+                    eventname = 'on_mouse_up'
+                self.dispatch_event(eventname, x, y, btn, self.modifiers)
+
+            # keyboard action
+            elif event.type in (pygame.KEYDOWN, pygame.KEYUP):
+                self._pygame_update_modifiers(event.mod)
+                # atm, don't handle keyup
+                if event.type == pygame.KEYUP:
+                    continue
+                self.dispatch_event('on_keyboard', event.key,
+                                    event.scancode, event.unicode)
+
+            # video resize
+            elif event.type == pygame.VIDEORESIZE:
+                pass
+
+            # ignored event
+            elif event.type in (pygame.ACTIVEEVENT, pygame.VIDEOEXPOSE):
+                pass
+
+            # unhandled event !
+            else:
+                pymt_logger.debug('WinPygame: Unhandled event %s' % str(event))
+
     def mainloop(self):
         # don't known why, but pygame required a resize event
         # for opengl, before mainloop... window reinit ?
@@ -120,59 +176,16 @@ class MTWindowPygame(BaseWindow):
 
         evloop = getEventLoop()
         while not evloop.quit:
-
-            evloop.idle()
-
-            for event in pygame.event.get():
-
-                # kill application (SIG_TERM)
-                if event.type == pygame.QUIT:
-                    evloop.quit = True
-                    self.close()
-
-                # mouse move
-                elif event.type == pygame.MOUSEMOTION:
-                    # don't dispatch motion if no button are pressed
-                    if event.buttons == (0, 0, 0):
-                        continue
-                    x, y = event.pos
-                    self.dispatch_event('on_mouse_move', x, y, self.modifiers)
-
-                # mouse action
-                elif event.type in (pygame.MOUSEBUTTONDOWN,
-                                    pygame.MOUSEBUTTONUP):
-                    self._pygame_update_modifiers()
-                    x, y = event.pos
-                    btn = 'left'
-                    if event.button == 3:
-                        btn = 'right'
-                    elif event.button == 2:
-                        btn = 'middle'
-                    eventname = 'on_mouse_down'
-                    if event.type == pygame.MOUSEBUTTONUP:
-                        eventname = 'on_mouse_up'
-                    self.dispatch_event(eventname, x, y, btn, self.modifiers)
-
-                # keyboard action
-                elif event.type in (pygame.KEYDOWN, pygame.KEYUP):
-                    self._pygame_update_modifiers(event.mod)
-                    # atm, don't handle keyup
-                    if event.type == pygame.KEYUP:
-                        continue
-                    self.dispatch_event('on_keyboard', event.key,
-                                        event.scancode, event.unicode)
-
-                # video resize
-                elif event.type == pygame.VIDEORESIZE:
-                    pass
-
-                # ignored event
-                elif event.type in (pygame.ACTIVEEVENT, pygame.VIDEOEXPOSE):
-                    pass
-
-                # unhandled event !
+            try:
+                self._mainloop()
+            except BaseException, inst:
+                # use exception manager first
+                r = pymt_exception_manager.handle_exception(inst)
+                if r == ExceptionManager.RAISE:
+                    stopTouchApp()
+                    raise
                 else:
-                    pymt_logger.debug('WinPygame: Unhandled event %s' % str(event))
+                    pass
 
         # force deletion of window
         pygame.display.quit()

@@ -117,6 +117,7 @@ class MTButton(MTLabel):
     def draw_label(self, dx=0, dy=0):
         if self.style['draw-text-shadow']:
             tsp = self.style['text-shadow-position']
+            tsp_old = tsp[:]
             tsp[0] += dx
             tsp[1] += dy
             old_color = self.kwargs.get('color')
@@ -124,6 +125,7 @@ class MTButton(MTLabel):
 
             super(MTButton, self).draw_label(*tsp)
             self.kwargs['color'] = old_color
+            self.style['text-shadow-position'] = tsp_old
         super(MTButton, self).draw_label(dx, dy)
 
 

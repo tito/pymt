@@ -214,8 +214,12 @@ class MTVKeyboard(MTScatterWidget):
 
     available_layout = []
 
+    DEFAULT_SIZE = (700, 200)
+    DEFAULT_POS = (0, 0)
+
     def __init__(self, **kwargs):
-        kwargs.setdefault('size', (700, 200))
+        kwargs.setdefault('size', MTVKeyboard.DEFAULT_SIZE)
+        kwargs.setdefault('pos', MTVKeyboard.DEFAULT_POS)
         kwargs.setdefault('layout', None)
         kwargs.setdefault('time_lazy_update', .2)
         super(MTVKeyboard, self).__init__(**kwargs)

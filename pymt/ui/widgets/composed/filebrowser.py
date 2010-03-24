@@ -173,11 +173,13 @@ class MTFileBrowserView(MTKineticList):
         self.selection = []
         self._path          = '(invalid path)'
         self.show_hidden    = kwargs.get('show_hidden')
-        self.path           = kwargs.get('path')
         self.view           = kwargs.get('view')
         self.filters        = kwargs.get('filters')
         self.multipleselection = kwargs.get('multipleselection')
         self.invert_order = kwargs.get('invert_order', False)
+
+        # only at the end, set path to the user path
+        self.path           = kwargs.get('path')
 
     def update(self):
         '''Update the content of view. You must call this function after

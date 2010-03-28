@@ -28,7 +28,7 @@ __all__ = ['css_get_style', 'get_truncated_classname',
 
 from ..logger import pymt_logger
 from .. import Cache
-from parser import *
+from ..parser import *
 import pymt
 import os
 import sys

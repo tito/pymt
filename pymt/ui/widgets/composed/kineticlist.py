@@ -22,6 +22,9 @@ class MTKineticList(MTStencilContainer):
     a kinetic list scrolling in either direction.
 
     :Parameters:
+        `align` : string, default to 'center'
+            Alignement of widget inside the row (or col). Can be
+            one of 'center', 'left', 'right'
         `friction` : float, defaults to 10
             The Pseudo-friction of the pseudo-kinetic scrolling.
             Formula for friction is ::
@@ -81,6 +84,7 @@ class MTKineticList(MTStencilContainer):
         kwargs.setdefault('deletable', True)
         kwargs.setdefault('searchable', True)
         kwargs.setdefault('trigger_distance', 3)
+        kwargs.setdefault('align', 'center')
 
         super(MTKineticList, self).__init__(**kwargs)
 
@@ -96,6 +100,7 @@ class MTKineticList(MTStencilContainer):
         self.padding_y  = kwargs.get('padding_y')
         self.w_limit    = kwargs.get('w_limit')
         self.h_limit    = kwargs.get('h_limit')
+        self.align      = kwargs.get('align')
         self.trigger_distance = kwargs.get('trigger_distance')
 
         if self.w_limit and self.h_limit:
@@ -331,8 +336,13 @@ class MTKineticList(MTStencilContainer):
                 ny = y + h + padding_y
 
                 # reset x for this row.
-                x = sx + w2 + xoffset - \
-                    (self._get_total_width(childrens, width_attr) / 2.)
+                if self.align == 'center':
+                    x = sx + w2 + xoffset - \
+                        (self._get_total_width(childrens, width_attr) / 2.)
+                elif self.align == 'left':
+                    x = 0
+                elif self.align == 'right':
+                    x = getattr(self, width_attr) - getattr(child, width_attr) - xoffset
                 t += limit
 
             # reposition x

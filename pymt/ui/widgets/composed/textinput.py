@@ -43,7 +43,6 @@ class MTTextInput(MTButton):
         kwargs.setdefault('group', None)
         super(MTTextInput, self).__init__(**kwargs)
         self._keyboard = kwargs.get('keyboard')
-        self.original_width = None
         self.is_active_input = False
         self.password = kwargs.get('password')
 

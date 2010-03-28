@@ -69,19 +69,24 @@ class LabelBase(BaseObject):
         kwargs.setdefault('padding_y', 0)
         kwargs.setdefault('color', (1, 1, 1, 1))
 
-        super(LabelBase, self).__init__(**kwargs)
-
-        self._label     = None
-
         if kwargs.get('padding') is not None:
             kwargs['padding_x'] = kwargs['padding']
             kwargs['padding_y'] = kwargs['padding']
+
+        uw, uh = kwargs['size']
+        if uw != None:
+            kwargs['size'] = uw - kwargs['padding_x'] * 2, uh
+
+        super(LabelBase, self).__init__(**kwargs)
+
+        self._label     = None
 
         self.color      = kwargs.get('color')
         self.usersize   = kwargs.get('size')
         self.options    = kwargs
         self.texture    = None
         self.label      = label
+
 
     def get_extents(self, text):
         '''Return a tuple with (width, height) for a text.'''

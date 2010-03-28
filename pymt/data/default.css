@@ -34,6 +34,7 @@
     text-shadow-position: -1 1;
 }
 
+widget,
 label {
     draw-background: 0;
 }
@@ -99,7 +100,12 @@ kineticcontainer {
     bg-color: rgba(90, 90, 90, 127);
 }
 
+kineticitem {
+	color: rgb(255, 255, 255);
+}
+
 kineticlist {
+	draw-background: 1;
     title-draw-background: 1;
     title-color: rgb(127, 127, 127);
     draw-title-border: 0;

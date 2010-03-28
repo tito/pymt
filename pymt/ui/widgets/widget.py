@@ -17,9 +17,7 @@ from ...utils import SafeList
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
 from ..colors import css_get_style
-
-import inspect
-
+from ...graphx import set_color, drawCSSRectangle
 
 _id_2_widget = {}
 
@@ -386,7 +384,8 @@ class MTWidget(EventDispatcher):
     def draw(self):
         '''Handle the draw of widget.
         Derivate this method to draw your widget.'''
-        pass
+        set_color(*self.style.get('bg-color'))
+        drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
 
     def add_widget(self, w, front=True):
         '''Add a widget in the children list.'''

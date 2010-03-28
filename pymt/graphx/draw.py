@@ -57,6 +57,7 @@ def getLabel(label, **kwargs):
 
     Used by drawLabel()
     '''
+    kwargs.setdefault('markup', False)
     kwargs.setdefault('font_size', 12)
     kwargs.setdefault('center', True)
     if kwargs.get('center'):
@@ -73,7 +74,10 @@ def getLabel(label, **kwargs):
     # get or store
     obj = pymt.Cache.get('drawlabel', id)
     if not obj:
-        obj = pymt.Label(label, **kwargs)
+        if kwargs.get('markup'):
+            obj = pymt.MarkupLabel(label, **kwargs)
+        else:
+            obj = pymt.Label(label, **kwargs)
         pymt.Cache.append('drawlabel', id, obj)
 
     return obj

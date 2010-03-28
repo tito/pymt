@@ -30,6 +30,7 @@ class MTLabel(MTWidget):
         '_used_label', 'kwargs', 'anchor_x', 'anchor_y')
 
     def __init__(self, **kwargs):
+        kwargs.setdefault('markup', False)
         kwargs.setdefault('anchor_x', 'left')
         kwargs.setdefault('anchor_y', 'bottom')
         kwargs.setdefault('autowidth', False)

@@ -46,6 +46,7 @@ def set_color(*colors, **kwargs):
         glColor3f(*colors)
         if force_blend:
             glEnable(GL_BLEND)
+            glBlendFunc(kwargs.get('sfactor'), kwargs.get('dfactor'))
         else:
             glDisable(GL_BLEND)
 

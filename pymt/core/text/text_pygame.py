@@ -56,7 +56,7 @@ class LabelPygame(LabelBase):
 
     def _render_begin(self):
         self._pygame_surface = pygame.Surface(self.size, pygame.SRCALPHA, 32)
-        #self._pygame_surface.fill((0, 255, 0))
+        self._pygame_surface.fill((0, 0, 0, 0))
 
     def _render_text(self, text, x, y):
         font = self._get_font()

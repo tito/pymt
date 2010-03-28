@@ -268,7 +268,7 @@ class LabelBase(BaseObject):
         elif anchor_y == 'top':
             y -= h - padding_y
 
-        pymt.set_color(*self.color, blend=True)
+        pymt.set_color(1, 1, 1, blend=True)
         pymt.drawTexturedRectangle(
             texture=self.texture,
             pos=(int(x), int(y)), size=self.texture.size)

@@ -38,7 +38,7 @@ class LabelCairo(LabelBase):
         if self.options['bold']:
             bold = cairo.FONT_WEIGHT_BOLD
         if self.options['italic']:
-            italic = cairo.FONT_WEIGHT_ITALIC
+            italic = cairo.FONT_SLANT_ITALIC
 
         context.select_font_face(fontname, italic, bold)
         context.set_font_size(fontsize)
@@ -65,9 +65,10 @@ class LabelCairo(LabelBase):
         self._cairo_context = cairo.Context(self._cairo_surface)
 
         self._select_font(self._cairo_context)
-        self._cairo_context.set_source_rgb(1., 1., 1.)
 
     def _render_text(self, text, x, y):
+        color = map(lambda x: x * 255, self.options['color'])
+        self._cairo_context.set_source_rgba(*color)
         self._cairo_context.move_to(x,
             y + self._font_extents[FONT_EXTENTS_ASCENT_IDX])
         self._cairo_context.show_text(text)

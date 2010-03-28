@@ -40,7 +40,8 @@ class LabelPIL(LabelBase):
         self._pil_draw = ImageDraw.Draw(self._pil_im)
 
     def _render_text(self, text, x, y):
-        self._pil_draw.text((x, y), text, font=self._select_font())
+        color = tuple(map(lambda x: x * 255, self.options['color']))
+        self._pil_draw.text((x, y), text, font=self._select_font(), fill=color)
 
     def _render_end(self):
         data = pymt.ImageData(self.width, self.height,

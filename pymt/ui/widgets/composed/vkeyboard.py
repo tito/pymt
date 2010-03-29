@@ -404,10 +404,14 @@ class MTVKeyboard(MTScatterWidget):
                             font_size = 14 * s
                             if font_size < 8:
                                 font_size = 8
+                            color = self.style['color']
+                            if internal_action is not None:
+                                color = self.style['color-syskey']
                             drawLabel(label=displayed_str,
                                     pos=(x + kw / 2., y + self.keysize.y / 2.),
                                     font_size=font_size, bold=False,
-                                    font_name=self.layout.FONT_FILENAME)
+                                    font_name=self.layout.FONT_FILENAME,
+                                    color=color)
                             self._current_cache['usedlabel'].append(getLastLabel())
                     # advance X
                     x += kw
@@ -456,8 +460,8 @@ class MTVKeyboard(MTScatterWidget):
             set_color(*self.style['color-down'])
             for key, size in self._active_keys:
                 x, y, w, h = size
-                drawRoundedRectangle(pos=(x+2, y+2), size=(w-4, h-4),
-                    radius=self.style['key-border-radius'])
+                drawCSSRectangle(pos=(x+2, y+2), size=(w-4, h-4),
+                    style=self.style, prefix='key', state='down')
 
             # search the good scale for current precalculated keys layer
             if self._last_update_scale == self.scale:

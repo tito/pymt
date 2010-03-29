@@ -24,7 +24,7 @@ please look on the widget documentation.
 
 __all__ = ['css_get_style', 'get_truncated_classname',
            'pymt_sheet', 'css_add_sheet', 'css_add_file', 'css_get_widget_id',
-           'css_register_state', 'css_add_keyword']
+           'css_register_state', 'css_add_keyword', 'css_register_prefix']
 
 from ..logger import pymt_logger
 from .. import Cache
@@ -43,7 +43,11 @@ Cache.register('css')
 pymt_sheet = None
 
 #: State allowed to CSS rules (bg-color[-state] for eg)
-pymt_css_states = ['-down', '-move', '-dragging', '-active', '-error', '-validated']
+pymt_css_states = ['-down', '-move', '-dragging', '-active', '-error',
+                   '-validated', '-syskey']
+
+#: Prefix allowed to CSS rules
+pymt_css_prefix = ['key-', 'slider-', 'title-']
 
 # Auto conversion from css to a special type.
 css_keyword_convert = {
@@ -160,6 +164,11 @@ class CSSSheet(object):
                 for state in pymt_css_states:
                     if name.endswith(state):
                         name = name[:-len(state)]
+                        break
+                # searching for a prefix
+                for prefix in pymt_css_prefix:
+                    if name.startswith(prefix):
+                        name = name[len(prefix):]
                         break
             if name in css_keyword_convert:
                 try:
@@ -295,6 +304,10 @@ def css_add_file(cssfile):
 def css_register_state(name):
     '''Register a new state'''
     pymt_css_states.append('-%s' % name)
+
+def css_register_prefix(name):
+    '''Register a new prefix'''
+    pymt_css_prefix.append('%s-' % name)
 
 def css_add_keyword(keyword, convertfunc):
     '''Add a new keyword to be autoconverted when reading CSS.

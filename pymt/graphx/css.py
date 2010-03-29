@@ -72,6 +72,8 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None, state=Non
         prefix += '-'
         newstyle = {}
         for k in style:
+            newstyle[k] = style[k]
+        for k in style:
             if prefix in k:
                 newstyle[k.replace(prefix, '')] = style[k]
         style = newstyle

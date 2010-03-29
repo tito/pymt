@@ -55,12 +55,14 @@ form,
 vkeyboard,
 flippablewidget,
 button {
-    color: rgb(0,0,0);
+    border-color: rgb(150, 150, 150);
+    color: rgb(255, 255, 255);
     bg-color: rgba(60, 60, 60, 200);
     draw-alpha-background: 1;
     draw-border: 1;
     draw-text-shadow: 1;
 	draw-background: 1;
+	draw-alpha-background: 1;
 }
 
 textinput {
@@ -79,7 +81,13 @@ textinput {
 }
 
 formslider,
-slider, xyslider, vectorslider, multislider, boundaryslider {
+slider,
+xyslider,
+vectorslider,
+multislider,
+boundaryslider,
+circularslider {
+	draw-background: 1;
     padding: 8;
     slider-color: rgb(68, 170, 0);
     draw-slider-border: 0;
@@ -163,8 +171,9 @@ vkeyboard {
 	border-color: rgb(100, 100, 100);
     border-radius: 15;
     border-radius-precision: 0.35;
-	border-width: 2;
-    color-down: rgba(200, 200, 200, 255);
+	border-width: 1.5;
+	color: rgb(50, 50, 50);
+	color-syskey: rgb(200, 200, 200);
     draw-border: 1;
     draw-key-alpha-background: 1;
     draw-key-border: 1;
@@ -172,10 +181,12 @@ vkeyboard {
 	key-border-color: rgb(60, 60, 60);
     key-border-radius: 5;
     key-border-radius-precision: 0.35;
-    key-color: rgba(20, 20, 20, 255);
+    key-color: rgba(210, 210, 210, 255);
+    key-color-down: rgba(200, 200, 200, 255);
     key-draw-background: 1;
+    key-draw-border: 0;
     margin: 10 50 10 50;
-    syskey-color: rgba(20, 20, 40, 255);
+    syskey-color: rgba(44, 75, 119, 255);
 }
 
 modalpopup,

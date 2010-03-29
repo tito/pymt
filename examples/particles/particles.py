@@ -150,26 +150,26 @@ class ParticleEngine(MTWidget):
         w = XMLWidget()
         w.loadString(xml)
 
-        layout = getWidgetById('layout')
+        layout = w.getById('layout')
         corner = MTSidePanel(layout=layout)
         self.add_widget(corner)
 
-        getWidgetById('sl_number').connect('on_value_change', self, 'number')
-        getWidgetById('sl_dispersion_start').connect(
+        w.getById('sl_number').connect('on_value_change', self, 'number')
+        w.getById('sl_dispersion_start').connect(
             'on_value_change', self, 'dispersion_start')
-        getWidgetById('sl_dispersion_end').connect(
+        w.getById('sl_dispersion_end').connect(
             'on_value_change', self, 'dispersion_end')
-        getWidgetById('sl_lifetime').connect('on_value_change', self, 'lifetime')
-        getWidgetById('sl_pointsize').connect('on_value_change', self, 'pointsize')
-        getWidgetById('sl_alpha_decrease').connect(
+        w.getById('sl_lifetime').connect('on_value_change', self, 'lifetime')
+        w.getById('sl_pointsize').connect('on_value_change', self, 'pointsize')
+        w.getById('sl_alpha_decrease').connect(
             'on_value_change', self, 'alpha_decrease')
-        getWidgetById('sl_color_r').connect('on_value_change', self, 'color_r')
-        getWidgetById('sl_color_g').connect('on_value_change', self, 'color_g')
-        getWidgetById('sl_color_b').connect('on_value_change', self, 'color_b')
+        w.getById('sl_color_r').connect('on_value_change', self, 'color_r')
+        w.getById('sl_color_g').connect('on_value_change', self, 'color_g')
+        w.getById('sl_color_b').connect('on_value_change', self, 'color_b')
         for x in ('linear', 'ease_in_bounce', 'ease_out_bounce',
                   'ease_in_cubic', 'ease_out_cubic',
                   'ease_in_elastic', 'ease_out_elastic'):
-            getWidgetById('btn_%s' % x).connect('on_press',
+            w.getById('btn_%s' % x).connect('on_press',
                    curry(self._btn_alpha_change, x))
 
     def _btn_alpha_change(self, funcname, *largs):

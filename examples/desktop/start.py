@@ -61,7 +61,8 @@ class MTMenuItem(MTKineticItem):
     def __init__(self, path, label, icon, **kwargs):
         super(MTMenuItem, self).__init__(**kwargs)
         self._label = MTLabel(label=label, font_size=12, anchor_x='left',
-                           anchor_y='center', size=(self.width, self.height))
+                           anchor_y='center', size=(self.width, self.height),
+                             color=self.style.get('color'))
         self._icon = None
         try:
             if icon != '':

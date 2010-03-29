@@ -26,8 +26,10 @@ class MTCircularSlider(MTWidget):
             Default value of slider
         `thickness` : int, default is 40
             Thickness of the slider
-        `Radius` : int, default is 200
+        `radius` : int, default is 200
             Radius of the slider
+        `rotation` : int, default is 0
+            Start rotation of circle
     :Styles:
         `slider-color` : color
             Color of the slider
@@ -47,6 +49,7 @@ class MTCircularSlider(MTWidget):
         kwargs.setdefault('thickness', 40)
         kwargs.setdefault('padding', 3)
         kwargs.setdefault('sweep_angle', 90)
+        kwargs.setdefault('rotation', 0)
         super(MTCircularSlider, self).__init__(**kwargs)
         self.radius = kwargs.get('radius')
         self.last_touch = (0, 0)

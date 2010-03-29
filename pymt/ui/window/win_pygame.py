@@ -22,6 +22,11 @@ except:
 
 class MTWindowPygame(BaseWindow):
     def create_window(self, params):
+        # force display to show (available only for fullscreen)
+        displayidx = pymt.pymt_config.getint('graphics', 'display')
+        if not 'SDL_VIDEO_FULLSCREEN_HEAD' in os.environ and displayidx != -1:
+            os.environ['SDL_VIDEO_FULLSCREEN_HEAD'] = '%d' % displayidx
+
         # init some opengl, same as before.
         self.flags = pygame.HWSURFACE | pygame.OPENGL | pygame.DOUBLEBUF
 

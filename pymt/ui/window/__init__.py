@@ -37,8 +37,6 @@ class BaseWindow(EventDispatcher):
             Height of window
         `vsync`: bool
             Vsync window
-        `display`: int
-            Display index to use
 
     :Styles:
         `bg-color`: color
@@ -134,27 +132,6 @@ class BaseWindow(EventDispatcher):
             params['vsync'] = kwargs.get('vsync')
         else:
             params['vsync'] = pymt.pymt_config.getint('graphics', 'vsync')
-
-        displayidx = -1
-        if 'display' in kwargs:
-            displayidx = kwargs.get('display')
-        else:
-            displayidx = pymt.pymt_config.getint('graphics', 'display')
-
-        '''
-        if displayidx >= 0:
-            display = window.get_platform().get_default_display()
-            screens = display.get_screens()
-            i = 0
-            for screen in screens:
-                pymt.pymt_logger.debug('Detected display %d: %s' % (i, str(screen)))
-                i += 1
-            try:
-                params['screen'] = screens[displayidx]
-            except Exception, e:
-                pymt.pymt_logger.error('Invalid display specified %d' % displayidx)
-                pymt.pymt_logger.exception(e)
-        '''
 
         # show fps if asked
         self.show_fps = kwargs.get('show_fps')

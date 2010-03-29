@@ -30,7 +30,7 @@
 
     /* text shadow */
     draw-text-shadow: 0;
-    text-shadow-color: rgba(22, 22, 22, 63);
+    text-shadow-color: rgba(150, 150, 150, 63);
     text-shadow-position: -1 1;
 }
 
@@ -56,7 +56,7 @@ vkeyboard,
 flippablewidget,
 button {
     color: rgb(0,0,0);
-    bg-color: rgba(60, 60, 60, 100);
+    bg-color: rgba(60, 60, 60, 200);
     draw-alpha-background: 1;
     draw-border: 1;
     draw-text-shadow: 1;
@@ -132,11 +132,13 @@ kineticlist {
     draw-alpha-background: 1;
 }
 
+innerwindowcontainer,
 basewindow,
 window {
     bg-color: rgb(250,250,250);
     draw-alpha-background: 0;
     alpha-background: 0.8 0.8 0.0 0.0;
+	draw-background: 1;
 }
 
 modalwindow {
@@ -149,10 +151,6 @@ innerwindow {
     bg-color-move: rgba(0, 175, 0, 175);
     bg-color-full: rgba(175, 0, 0, 175);
     border-width: 30;
-}
-
-innerwindowcontainer {
-    bg-color: rgba(0, 0, 0);
 }
 
 vectorslider,

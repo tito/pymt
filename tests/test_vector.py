@@ -1,29 +1,50 @@
-import unittest
-from pymt import Vector
 
-__all__ = ['VectorTestCase']
+from init import test
 
-class VectorTestCase(unittest.TestCase):
-    def setUp(self):
-        self.v = Vector(10, 10)
+def unittest_basics():
+    from pymt import Vector
+    v = Vector(10, 10)
+    test(v.x == 10)
+    test(v.y == 10)
 
-    def testX(self):
-        self.failUnless(self.v.x == 10)
+    a = Vector(1, 1)
+    b = Vector(2, 2)
 
-    def testY(self):
-        self.failUnless(self.v.y == 10)
+    test(a != b)
 
-    def testAdd(self):
-        a = Vector(1, 1)
-        b = Vector(2, 2)
-        c = a + b
-        self.failUnless(c.x == 3)
-        self.failUnless(c.y == 3)
+    # add
+    c = a + b
+    test(c.x == 3)
+    test(c.y == 3)
+    test(c[0] == 3)
+    test(c[1] == 3)
 
-    def testCmp(self):
-        a = Vector(1, 1)
-        b = Vector(2, 2)
-        self.failUnless(a != b)
-        a = Vector(2, 2)
-        self.failUnless(a == b)
+    # sub
+    c = a - b
+    test(c.x == -1)
+    test(c.y == -1)
+
+    # mul
+    c = b * 2
+    test(c.x == 4)
+    test(c.y == 4)
+
+    # add with tuple
+    c = b + (5, 6)
+    test(c.x == 7)
+    test(c.y == 8)
+
+    # add with list
+    c = b + [5, 6]
+    test(c.x == 7)
+    test(c.y == 8)
+
+def unittest_methods():
+    from pymt import Vector
+
+    a = Vector(0, 10)
+    test(a.length == 10)
+
+    b = Vector(0, 20)
+    test(b.distance(a) == 10)
 

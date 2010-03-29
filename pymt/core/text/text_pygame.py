@@ -60,8 +60,8 @@ class LabelPygame(LabelBase):
 
     def _render_text(self, text, x, y):
         font = self._get_font()
-        color = map(lambda x: x * 255, self.options['color'])
-        color[0], color[2] = color[2], color[0]
+        color = map(lambda x: min(255, x * 255), self.options['color'])
+        color = color[2], color[1], color[0]
         text = font.render(text, 1, color)
         self._pygame_surface.blit(text, (x, y), None, pygame.BLEND_RGBA_ADD)
 

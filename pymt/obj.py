@@ -21,11 +21,15 @@ class OBJ:
             Use file instead of filename if possible
         `path` : string, default to None
             Use custom path for material
+        `compat` : bool, default to True
+            Set to False if you want to take care yourself of the lights, depth
+            test, color...
     '''
-    def __init__(self, filename, file=None, path=None):
+    def __init__(self, filename, file=None, path=None, compat=True):
         self.materials = {}
         self.meshes = {}        # Name mapping
         self.mesh_list = []     # Also includes anonymous meshes
+        self.compat = compat
 
         if file is None:
             file = open(filename, 'r')
@@ -142,14 +146,40 @@ class OBJ:
                     material.opacity = float(values[1])
                 elif values[0] == 'map_Kd':
                     try:
-                        material.texture = pymt.Image(values[1]).get_texture()
+                        filename = ' '.join(values[1:])
+                        material.texture = pymt.Image(filename).texture
+                        material.wrap = GL_REPEAT
                     except:
                         warnings.warn('Could not load texture %s' % values[1])
+                        raise
             except:
                 warnings.warn('Parse error in %s.' % filename)
+                raise
+
+    def enter(self):
+        if not self.compat:
+            return
+        glLightfv(GL_LIGHT0, GL_AMBIENT, (0,0,0,1))
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, (.8,.8,.8,1))
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, (.9,.9,.9))
+        glLightModelfv(GL_LIGHT_MODEL_LOCAL_VIEWER, 0)
+        glEnable(GL_LIGHTING)
+        glEnable(GL_LIGHT0)
+        glEnable(GL_DEPTH_TEST)
+        glColor3f(1, 1, 1)
+
+    def leave(self):
+        if not self.compat:
+            return
+        glDisable(GL_LIGHTING)
+        glDisable(GL_LIGHT0)
+        glDisable(GL_COLOR_MATERIAL)
+        glDisable(GL_DEPTH_TEST)
 
     def draw(self):
         '''Draw the object on screen'''
+        self.enter()
         for mesh in self.mesh_list:
             mesh.draw()
+        self.leave()
 

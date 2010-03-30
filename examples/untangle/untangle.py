@@ -86,6 +86,7 @@ class TrialLogger(EventLogger):
 
 class NewGameMenu(MTBoxLayout):
     def __init__(self, window, **kwargs):
+        kwargs.setdefault('size_hint', (None, None))
         super(NewGameMenu, self).__init__(**kwargs)
         self.window = window
         self.trial_num = 0
@@ -111,6 +112,7 @@ class NewGameMenu(MTBoxLayout):
         self.stop_time = None
 
     def on_update(self):
+        super(NewGameMenu, self).on_update()
         self.center = self.get_parent_window().center
 
     def draw(self):

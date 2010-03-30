@@ -79,12 +79,12 @@ class MTAbstractLayout(MTWidget):
     def get_parent_layout(self):
         return self
 
-
     def on_parent(self):
+        if not self.parent:
+            return
         layout = self.parent.get_parent_layout()
         if layout:
             self.push_handlers(on_layout=layout.update)
-
 
     def on_move(self, x, y):
         self.update()

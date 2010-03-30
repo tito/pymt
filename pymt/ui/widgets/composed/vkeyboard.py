@@ -18,14 +18,12 @@ from OpenGL.GL import *#glScalef, glTranslatef
 
 __all__ = ('MTVKeyboard', 'KeyboardLayout', 'KeyboardLayoutQWERTY', 'KeyboardLayoutAZERTY')
 
-kbdlayout_default_font = os.path.join(pymt.pymt_data_dir, 'DejaVuSans.ttf')
-
 class KeyboardLayout(object):
     '''Base for all Keyboard Layout'''
     ID              = 'nolayout'
     TITLE           = 'nolayout'
     DESCRIPTION     = 'nodescription'
-    FONT_FILENAME   = kbdlayout_default_font
+    FONT_FILENAME   = None
     NORMAL_1 = []
     NORMAL_2 = []
     NORMAL_3 = []
@@ -42,7 +40,6 @@ class KeyboardLayoutQWERTY(KeyboardLayout):
     ID              = 'qwerty'
     TITLE           = 'Qwerty'
     DESCRIPTION     = 'A classical US Keyboard'
-    FONT_FILENAME   = kbdlayout_default_font
     SIZE            = (15, 5)
     NORMAL_1 = [
         ('`', '`', None, 1),    ('1', '1', None, 1),    ('2', '2', None, 1),
@@ -111,7 +108,6 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
     ID              = 'azerty'
     TITLE           = 'Azerty'
     DESCRIPTION     = 'A French keyboard without international keys'
-    FONT_FILENAME   = kbdlayout_default_font
     SIZE            = (15, 5)
     NORMAL_1 = [
         ('@', '@', None, 1),    ('&', '&', None, 1),    (u'\xe9', u'\xe9', None, 1),
@@ -282,12 +278,14 @@ class MTVKeyboard(MTScatterWidget):
         if not layout_class in MTVKeyboard.available_layout:
             # Append layout in class
             MTVKeyboard.available_layout.append(layout_class)
-            # Load custom font
-            try:
-                #font.add_file(layout_class.FONT_FILENAME)
-                pass
-            except:
-                pymt.pymt_logger.exception('Vkeyboard: Unable to load custom font')
+            if layout_class.FONT_FILENAME != None:
+                # Load custom font
+                try:
+                    # XXX FIXME
+                    #font.add_file(layout_class.FONT_FILENAME)
+                    pass
+                except:
+                    pymt.pymt_logger.exception('Vkeyboard: Unable to load custom font')
 
     #
     # Keyboard properties
@@ -401,7 +399,7 @@ class MTVKeyboard(MTScatterWidget):
                                 size=(kw-m*2, self.keysize.y-m*2),
                                 style=self.style, prefix='key')
                         elif mode == 'keys':
-                            font_size = 14 * s
+                            font_size = int(14 * s)
                             if font_size < 8:
                                 font_size = 8
                             color = self.style['color']
@@ -410,7 +408,7 @@ class MTVKeyboard(MTScatterWidget):
                             drawLabel(label=displayed_str,
                                     pos=(x + kw / 2., y + self.keysize.y / 2.),
                                     font_size=font_size, bold=False,
-                                    font_name=self.layout.FONT_FILENAME,
+                                    font_name=self.style.get('font-name'),
                                     color=color)
                             self._current_cache['usedlabel'].append(getLastLabel())
                     # advance X

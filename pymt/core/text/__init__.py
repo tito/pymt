@@ -6,10 +6,13 @@ __all__ = ('LabelBase', 'Label')
 
 import pymt
 import re
+import os
 from .. import core_select_lib
 from ...baseobject import BaseObject
 
 DEFAULT_FONT = 'Liberation Sans,Bitstream Vera Sans,Free Sans,Arial, Sans'
+
+label_font_cache = {}
 
 class LabelBase(BaseObject):
     '''Core text label.
@@ -85,8 +88,22 @@ class LabelBase(BaseObject):
         self.usersize   = kwargs.get('size')
         self.options    = kwargs
         self.texture    = None
-        self.label      = label
 
+        if 'font_name' in self.options:
+            fontname = self.options['font_name']
+            if fontname in label_font_cache:
+                if label_font_cache[fontname] is not None:
+                    self.options['font_name'] = label_font_cache[fontname]
+            else:
+                filename = os.path.join(pymt.pymt_data_dir, fontname)
+                print filename
+                if os.path.exists(filename):
+                    label_font_cache[fontname] = filename
+                    self.options['font_name'] = filename
+                else:
+                    label_font_cache[fontname] = None
+
+        self.label      = label
 
     def get_extents(self, text):
         '''Return a tuple with (width, height) for a text.'''

@@ -110,6 +110,14 @@ class Texture(object):
         '''Bind the texture to current opengl state'''
         glBindTexture(self.target, self.id)
 
+    def enable(self):
+        '''Do the appropriate glEnable()'''
+        glEnable(self.target)
+
+    def disable(self):
+        '''Do the appropriate glDisable()'''
+        glDisable(self.target)
+
     def _get_min_filter(self):
         return self._gl_min_filter
     def _set_min_filter(self, filter):
@@ -150,14 +158,29 @@ class Texture(object):
         if rectangle:
             if _is_pow2(width) and _is_pow2(height):
                 rectangle = False
-            elif GL_ARB_texture_rectangle:
-                target = GL_TEXTURE_RECTANGLE_ARB
-            elif GL_NV_texture_rectangle:
-                target = GL_TEXTURE_RECTANGLE_NV
             else:
-                pymt_logger.warning('Texture: Unable to create a rectangular texture, ' +
-                                    'no GL support found.')
                 rectangle = False
+
+                try:
+                    if glInitTextureRectangleNV():
+                        target = GL_TEXTURE_RECTANGLE_NV
+                        rectangle = True
+                except:
+                    pass
+
+                try:
+                    if not rectangle and glInitTextureRectangleARB():
+                        target = GL_TEXTURE_RECTANGLE_ARB
+                        rectangle = True
+                except:
+                    pass
+
+                if not rectangle:
+                    pymt_logger.debug(
+                        'Texture: Missing support for rectangular texture')
+                else:
+                    # Can't do mipmap with rectangle texture
+                    mipmap = False
 
         if rectangle:
             texture_width = width
@@ -199,12 +222,14 @@ class Texture(object):
         return texture.get_region(0, 0, width, height)
 
     @staticmethod
-    def create_from_data(im):
+    def create_from_data(im, rectangle=True, mipmap=False):
         '''Create a texture from an ImageData class'''
 
         format = Texture.mode_to_gl_format(im.mode)
 
-        texture = Texture.create(im.width, im.height, format)
+        texture = Texture.create(im.width, im.height,
+                                 format, rectangle=rectangle,
+                                 mipmap=mipmap)
         if texture is None:
             return None
 

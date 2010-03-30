@@ -143,6 +143,25 @@ def screen_tabs(w):
     w.add_widget(w)
 '''
 
+@registerscreen('Side Panel')
+def screen_sidepanel(w):
+    w = getWindow()
+
+    panel = MTSidePanel(side='right', size=(500, 100))
+    for x in xrange(5):
+        panel.add_widget(MTButton(label=str(x)))
+    w.add_widget(panel)
+
+    panel = MTSidePanel(side='top', size=(500, 100))
+    for x in xrange(5):
+        panel.add_widget(MTButton(label=str(x)))
+    w.add_widget(panel)
+
+    panel = MTSidePanel(side='bottom', size=(500, 100))
+    for x in xrange(5):
+        panel.add_widget(MTButton(label=str(x)))
+    w.add_widget(panel)
+
 @registerscreen('Text Input')
 def screen_textinput(w):
     txt = MTTextInput()

@@ -104,8 +104,9 @@ class ParticleEngine(MTWidget):
 
     def create_ui(self):
         xml = '''<?xml version="1.0" encoding="UTF-8"?>
-        <MTBoxLayout id="'layout'" orientation="'vertical'" invert_y="True">
-        <MTGridLayout cols="4">
+        <MTBoxLayout id="'layout'" orientation="'vertical'" size_hint='(None,
+        None)' invert_y='True'>
+        <MTGridLayout cols="4" size_hint='(None,None)'>
             <MTLabel label="'Lifetime'" size="(200, 30)"/>
             <MTSlider id="'sl_lifetime'" min="1" max="10" value="1"
                 orientation="'horizontal'" value_show="True" size="(200, 30)"/>
@@ -135,7 +136,7 @@ class ParticleEngine(MTWidget):
                 value_min="0" value_max="255"
                 orientation="'horizontal'" showtext="True" size="(200, 30)"/>
         </MTGridLayout>
-        <MTGridLayout rows="1">
+        <MTGridLayout rows="1" size_hint='(None,None)'>
             <MTLabel label="'Animation'" size="(120, 30)"/>
             <MTButton id="'btn_linear'" label="'linear'" size="(100, 30)"/>
             <MTButton id="'btn_ease_in_bounce'" label="'in_bounce'" size="(80, 30)"/>

@@ -268,10 +268,13 @@ def css_get_widget_id(widget):
     '''Return the css id of a widget'''
     if not hasattr(widget, 'cls'):
         widget.__setattr__('cls', '')
-    if type(widget.cls) == str:
-        idwidget = str(widget.__class__) + ':' + widget.cls
-    else:
-        idwidget = str(widget.__class__) + ':' + '.'.join(widget.cls)
+    cls = widget.cls
+    if type(cls) in (tuple, list):
+        cls = '.'.join(cls)
+    cid = ''
+    if hasattr(widget, 'id') and widget.id:
+        cid = '#%s#' % getattr(widget, 'id')
+    idwidget = cid + str(widget.__class__) + ':' + cls
     return idwidget
 
 def css_get_style(widget):

@@ -232,6 +232,13 @@ class CSSSheet(object):
                     for r, v in self._css.items():
                         if r == lcls:
                             styles.update(v)
+
+        # match #<objectname>
+        if hasattr(widget, 'id') and widget.id is not None:
+            widgetid = '#%s' % widget.id
+            if widgetid in self._css:
+                styles.update(self._css[widgetid])
+
         return styles
 
 def get_truncated_classname(name):
@@ -296,7 +303,7 @@ def css_add_file(cssfile):
     '''Add a css file to use.
     Adds all the css rules in the given file to the pymt css rule set being
     used ::
-    	css_add_sheet(cssfile)
+        css_add_sheet(cssfile)
     '''
     with open(cssfile, 'r') as fd:
         pymt_sheet.parse_text(fd.read())

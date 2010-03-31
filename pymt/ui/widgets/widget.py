@@ -182,6 +182,8 @@ class MTWidget(EventDispatcher):
             del _id_2_widget[self._id]
         self._id = id
         if self._id:
+            if self._id in _id_2_widget:
+                pymt_logger.warning('Widget: ID <%s> is already used ! Replacing with new one.' % id)
             _id_2_widget[self._id] = self
     def _get_id(self):
         return self._id

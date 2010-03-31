@@ -96,7 +96,6 @@ class LabelBase(BaseObject):
                     self.options['font_name'] = label_font_cache[fontname]
             else:
                 filename = os.path.join(pymt.pymt_data_dir, fontname)
-                print filename
                 if os.path.exists(filename):
                     label_font_cache[fontname] = filename
                     self.options['font_name'] = filename

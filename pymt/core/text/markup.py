@@ -7,9 +7,14 @@ __all__ = ('MarkupLabel', )
 import pymt
 import pymt.parser
 import re
-from . import Label
+from . import Label, LabelBase
 
-class MarkupLabel(Label):
+# We need to do this trick when documentation is generated
+MarkupLabelBase = Label
+if Label is None:
+    MarkupLabelBase = LabelBase
+
+class MarkupLabel(MarkupLabelBase):
     '''Markup text label.
 
     Markup is defined as tag with []. Example of markup text :

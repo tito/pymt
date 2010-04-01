@@ -49,6 +49,8 @@ class MTLabel(MTWidget):
         del kwargs['autosize']
         del kwargs['label']
 
+        self.kwargs = {}
+
         super(MTLabel, self).__init__(**kwargs)
 
         size_specified = 'size' in kwargs or 'width' in kwargs or 'height' in kwargs
@@ -58,21 +60,47 @@ class MTLabel(MTWidget):
 
         self.kwargs = kwargs
 
-        #apply default CSS if not already set in kwargs
-        self.kwargs.setdefault('color', self.style.get('color'))
-        self.kwargs.setdefault('font_name', self.style.get('font-name'))
-        self.kwargs.setdefault('font_size', self.style.get('font-size'))
-        if self.style.get('font-weight') in ['bold', 'bolditalic']:
-            self.kwargs.setdefault('bold', True)
-        if self.style.get('font-weight') in ['italic', 'bolditalic']:
-            self.kwargs.setdefault('italic', True)
+        # copy style to inline one (needed for css reloading)
+        if 'color' in kwargs:
+            self._inline_style['color'] = kwargs.get('color')
+        if 'font-name' in kwargs:
+            self._inline_style['font-name'] = kwargs.get('font-name')
+        if 'font-size' in kwargs:
+            self._inline_style['font-size'] = kwargs.get('font-size')
+        if 'bold' in kwargs and 'italic' in kwargs and \
+            kwargs.get('bold') and kwargs.get('italic'):
+            self._inline_style['font-weight'] = 'bolditalic'
+        elif 'bold' in kwargs and kwargs.get('bold'):
+            self._inline_style['font-weight'] = 'bold'
+        elif 'italic' in kwargs and kwargs.get('italic'):
+            self._inline_style['font-weight'] = 'italic'
+
+        # update from inline
+        self.apply_css(self._inline_style)
 
         # update this label size
-        label = getLabel(label=self.label, **self.kwargs)
+        label = getLabel(label=self.label, **kwargs)
         if not size_specified:
             self.size = label.size
         self._update_size(*label.size)
         self._used_label = label
+
+    def apply_css(self, styles):
+        super(MTLabel, self).apply_css(styles)
+
+        # transform css attribute to style one
+        k = self.kwargs
+        s = self.style
+        k['color'] = s['color']
+        k['font_name'] = s['font-name']
+        k['font_size'] = s['font-size']
+        k['bold'] = False
+        k['italic'] = False
+        if s['font-weight'] in ('bold', 'bolditalic'):
+            k['bold'] = True
+        if s['font-weight'] in ('italic', 'bolditalic'):
+            k['italic'] = True
+
 
     @property
     def label_obj(self):

@@ -9,6 +9,7 @@ import logging
 from pymt.base import getWindow
 from pymt.graphx import drawRectangle, drawLabel, set_color, drawLine, drawCircle
 from pymt.logger import pymt_logger_history, pymt_logger
+from pymt.ui.colors import css_reload
 
 _toggle_state = ''
 
@@ -243,6 +244,8 @@ def _on_keyboard_handler(key, scancode, unicode):
         win.toggle_fullscreen()
     elif key == 287: # F6
         toggle('log')
+    elif key == 288: # F7
+        css_reload()
     elif key == 293:
         _screenshot()
 

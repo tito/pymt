@@ -160,6 +160,7 @@ class MTWidget(EventDispatcher):
             self.apply_css(style)
 
         # apply inline css
+        self._inline_style = kwargs.get('style')
         if len(kwargs.get('style')):
             self.apply_css(kwargs.get('style'))
 
@@ -272,6 +273,13 @@ class MTWidget(EventDispatcher):
         '''Called at __init__ time to applied css attribute in current class.
         '''
         self.style.update(styles)
+
+    def reload_css(self, styles):
+        '''Called when css want to be reloaded from scratch'''
+        self.style = {}
+        self.apply_css(styles)
+        if len(self._inline_style):
+            self.apply_css(self._inline_style)
 
     def to_widget(self, x, y):
         '''Return the coordinate from window to local widget'''

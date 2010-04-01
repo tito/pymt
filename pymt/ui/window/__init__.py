@@ -96,6 +96,7 @@ class BaseWindow(EventDispatcher):
         self.apply_css(style)
 
         # apply inline css
+        self._inline_style = kwargs.get('style')
         if len(kwargs.get('style')):
             self.apply_css(kwargs.get('style'))
 
@@ -177,6 +178,12 @@ class BaseWindow(EventDispatcher):
 
     def apply_css(self, styles):
         self.style.update(styles)
+
+    def reload_css(self, styles):
+        self.style = {}
+        self.apply_css(styles)
+        if len(self._inline_style):
+            self.apply_css(self._inline_style)
 
     def _get_modifiers(self):
         return self._modifiers

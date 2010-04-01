@@ -24,7 +24,8 @@ please look on the widget documentation.
 
 __all__ = ['css_get_style', 'get_truncated_classname',
            'pymt_sheet', 'css_add_sheet', 'css_add_file', 'css_get_widget_id',
-           'css_register_state', 'css_add_keyword', 'css_register_prefix']
+           'css_register_state', 'css_add_keyword', 'css_register_prefix',
+           'css_reload']
 
 from ..logger import pymt_logger
 from .. import Cache
@@ -35,6 +36,7 @@ import sys
 import shutil
 import logging
 import re
+import weakref
 
 # Register CSS cache
 Cache.register('css')
@@ -48,6 +50,10 @@ pymt_css_states = ['-down', '-move', '-dragging', '-active', '-error',
 
 #: Prefix allowed to CSS rules
 pymt_css_prefix = ['key-', 'slider-', 'title-']
+
+# Privates vars for reload features
+_css_sources = []
+_css_widgets = []
 
 # Auto conversion from css to a special type.
 css_keyword_convert = {
@@ -107,6 +113,12 @@ css_keyword_convert = {
 
 class CSSSheet(object):
     def __init__(self):
+        self._rule = ''
+        self._content = ''
+        self._state = 'rule'
+        self._css = {}
+
+    def reset(self):
         self._rule = ''
         self._content = ''
         self._state = 'rule'
@@ -286,6 +298,11 @@ def css_get_style(widget):
     '''
 
     global pymt_sheet
+
+    ref = weakref.ref(widget)
+    if not ref in _css_widgets:
+        _css_widgets.append(ref)
+
     idwidget = css_get_widget_id(widget)
     styles = Cache.get('css', idwidget)
     if styles is not None:
@@ -295,14 +312,16 @@ def css_get_style(widget):
     Cache.append('css', idwidget, styles)
     return styles
 
-def css_add_sheet(text):
+def css_add_sheet(text, _reload=False):
     '''Add a css text to use ::
         mycss = '#buttonA { bg-color: rgba(255, 127, 0, 127); }'
         css_add_sheet(mycss)
     '''
     pymt_sheet.parse_text(text)
+    if not _reload:
+        _css_sources.append((css_add_sheet, (text, )))
 
-def css_add_file(cssfile):
+def css_add_file(cssfile, _reload=False):
     '''Add a css file to use.
     Adds all the css rules in the given file to the pymt css rule set being
     used ::
@@ -310,6 +329,8 @@ def css_add_file(cssfile):
     '''
     with open(cssfile, 'r') as fd:
         pymt_sheet.parse_text(fd.read())
+    if not _reload:
+        _css_sources.append((css_add_file, (cssfile, )))
 
 def css_register_state(name):
     '''Register a new state'''
@@ -324,6 +345,19 @@ def css_add_keyword(keyword, convertfunc):
     Convert function can be found in parser.py'''
     css_keyword_convert[keyword] = convertfunc
 
+def css_reload():
+    pymt_logger.debug('CSS: Reloading CSS in progress')
+    pymt_sheet.reset()
+    for callback, args in _css_sources[:]:
+        callback(*args, _reload=True)
+    Cache.remove('css')
+    for r in _css_widgets[:]:
+        o = r()
+        if o is None:
+            _css_widgets.remove(o)
+            continue
+        o.reload_css(css_get_style(o))
+    pymt_logger.info('CSS: CSS Reloaded')
 
 # Autoload the default css + user css
 if 'PYMT_DOC' not in os.environ:

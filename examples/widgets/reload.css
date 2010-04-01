@@ -1,0 +1,11 @@
+/**
+ * Change this CSS and hit F7 or reload button
+ * on cssreload.py example
+ */
+#btn1 {
+	border-color: rgb(255, 0, 0);
+	draw-background: 0;
+	draw-border: 1;
+	draw-text-shadow: 1;
+	color: rgb(0,0,0);
+}

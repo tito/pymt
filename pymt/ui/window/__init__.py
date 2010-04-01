@@ -28,6 +28,21 @@ from ..widgets import MTWidget
 class BaseWindow(EventDispatcher):
     '''BaseWindow is a abstract window widget, for any window implementation.
 
+    .. warning::
+
+        The parameters are not working in normal case. Because at import, PyMT
+        create a default OpenGL window, to add the ability to use OpenGL
+        directives, texture creation.. before creating MTWindow.
+        If you don't like this behavior, you can include before the very first
+        import of PyMT ::
+
+            import os
+            os.environ['PYMT_SHADOW'] = '0'
+            from pymt import *
+
+        This will forbid PyMT to create the default window !
+
+
     :Parameters:
         `fullscreen`: bool
             Make window as fullscreen

@@ -291,7 +291,8 @@ class MTWidget(EventDispatcher):
 
     def to_widget(self, x, y):
         '''Return the coordinate from window to local widget'''
-        x, y = self.parent.to_widget(x, y)
+        if self.parent:
+            x, y = self.parent.to_widget(x, y)
         return self.to_local(x, y)
 
     def to_window(self, x, y, initial=True):

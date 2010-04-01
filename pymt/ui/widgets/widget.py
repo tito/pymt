@@ -9,6 +9,7 @@ __all__ = ['getWidgetById','getWidgetByID',
 
 import sys
 import os
+import weakref
 from ...event import EventDispatcher
 from ...logger import pymt_logger
 from ...base import getCurrentTouches
@@ -23,8 +24,14 @@ _id_2_widget = {}
 
 def getWidgetById(id):
     global _id_2_widget
-    if id in _id_2_widget:
-        return _id_2_widget[id]
+    if id not in _id_2_widget:
+        return
+    ref = _id_2_widget[id]
+    obj = ref()
+    if not obj:
+        del _id_2_widget[id]
+        return
+    return obj
 getWidgetByID = getWidgetById
 
 _event_stats = {}
@@ -179,13 +186,14 @@ class MTWidget(EventDispatcher):
 
     def _set_id(self, id):
         global _id_2_widget
-        if self._id and self._id in _id_2_widget:
+        ref = weakref.ref(self)
+        if ref in _id_2_widget:
             del _id_2_widget[self._id]
         self._id = id
         if self._id:
-            if self._id in _id_2_widget:
+            if ref in _id_2_widget:
                 pymt_logger.warning('Widget: ID <%s> is already used ! Replacing with new one.' % id)
-            _id_2_widget[self._id] = self
+            _id_2_widget[self._id] = ref
     def _get_id(self):
         return self._id
     id = property(_get_id, _set_id, doc='str: id of widget')

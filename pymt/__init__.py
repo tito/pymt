@@ -219,3 +219,6 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         pymt_logger.error('Core: %s' % str(err))
         pymt_usage()
         sys.exit(2)
+
+# cleanup namespace
+del sys, getopt, os

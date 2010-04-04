@@ -61,8 +61,6 @@ else:
                     return True
 
         def _pen_handler(self, msg, wParam, lParam):
-            if msg not in (132, 32, 512):
-                print msg
             if msg not in (WM_LBUTTONDOWN, WM_MOUSEMOVE, WM_LBUTTONUP):
                 return
 
@@ -81,9 +79,6 @@ else:
             if msg == WM_LBUTTONUP:
                 self.pen_events.appendleft(('up', x, y))
                 self.pen_status = False
-
-            import time
-            print '%.4f'%time.time(), msg, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE, self.pen_status
 
         def _pen_wndProc( self, hwnd, msg, wParam, lParam ):
             if self._is_pen_message(msg):

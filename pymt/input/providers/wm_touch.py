@@ -31,6 +31,7 @@ else:
     from pymt import pymt_logger
     from ctypes import *
     from ctypes import wintypes
+    from collections import deque
     from ..provider import TouchProvider
     from ..factory import TouchFactory
     from ...base import getWindow
@@ -131,7 +132,7 @@ else:
     class WM_TouchProvider(TouchProvider):
 
         def start(self):
-            self.touch_events = []
+            self.touch_events = deque()
             self.touches = {}
             self.uid = 0
 
@@ -152,9 +153,11 @@ else:
             win_rect = RECT()
             windll.user32.GetWindowRect(self.hwnd, byref(win_rect))
 
-            while len(self.touch_events):
-
-                t = self.touch_events.pop(0)
+            while True:
+                try:
+                    t = self.touch_events.pop()
+                except:
+                    break
 
                 # adjust x,y to window coordinates (0.0 to 1.0)
                 x = (t.screen_x()-win_rect.x)/float(win_rect.w)
@@ -212,7 +215,8 @@ else:
                                             wParam,
                                             pointer(touches),
                                             sizeof(TOUCHINPUT))
-            self.touch_events.extend(touches)
+            for i in xrange(wParam):
+                self.touch_events.appendleft(touches[i])
             return True
 
 

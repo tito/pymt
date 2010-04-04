@@ -21,6 +21,7 @@ if 'PYMT_DOC' in os.environ:
     WM_PenProvider = None
 
 else:
+    from collections import deque
     from ...base import getWindow
     from ctypes import *
     from ..provider import TouchProvider
@@ -60,6 +61,8 @@ else:
                     return True
 
         def _pen_handler(self, msg, wParam, lParam):
+            if msg not in (132, 32, 512):
+                print msg
             if msg not in (WM_LBUTTONDOWN, WM_MOUSEMOVE, WM_LBUTTONUP):
                 return
 
@@ -69,15 +72,18 @@ else:
             y = abs(1.0 - y)
 
             if msg == WM_LBUTTONDOWN:
-                self.pen_events.append(('down', x, y))
+                self.pen_events.appendleft(('down', x, y))
                 self.pen_status = True
 
             if msg == WM_MOUSEMOVE and self.pen_status:
-                self.pen_events.append(('move', x, y))
+                self.pen_events.appendleft(('move', x, y))
 
             if msg == WM_LBUTTONUP:
-                self.pen_events.append(('up', x, y))
+                self.pen_events.appendleft(('up', x, y))
                 self.pen_status = False
+
+            import time
+            print '%.4f'%time.time(), msg, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE, self.pen_status
 
         def _pen_wndProc( self, hwnd, msg, wParam, lParam ):
             if self._is_pen_message(msg):
@@ -90,7 +96,7 @@ else:
             self.uid = 0
             self.pen = None
             self.pen_status = None
-            self.pen_events = []
+            self.pen_events = deque()
 
             self.hwnd = windll.user32.GetActiveWindow()
 
@@ -103,9 +109,12 @@ else:
             )
 
         def update(self, dispatch_fn):
-            while len(self.pen_events):
+            while True:
 
-                type, x, y = self.pen_events.pop(0)
+                try:
+                    type, x, y = self.pen_events.pop()
+                except:
+                    break
 
                 if  type == 'down':
                     self.uid += 1

@@ -91,7 +91,7 @@ class MTTextInput(MTButton):
         self.label = value
         self.dispatch_event('on_text_change', value)
 
-    def _kbd_on_key_up(self, key):
+    def _kbd_on_key_up(self, key, repeat=False):
         displayed_str, internal_str, internal_action, scale = key
         if internal_action is None:
             return
@@ -147,7 +147,8 @@ class MTTextInput(MTButton):
         w = self.get_parent_window()
         w.add_widget(self.keyboard)
         w = self.get_root_window()
-        w.push_handlers(on_keyboard=self._window_on_keyboard)
+        w.push_handlers(on_key_down=self._window_on_key_down,
+                        on_key_up=self._window_on_key_up)
         self.is_active_input = True
         if self._keyboard is not None:
             self._keyboard.push_handlers(
@@ -163,7 +164,8 @@ class MTTextInput(MTButton):
         w = self.get_parent_window()
         w.remove_widget(self.keyboard)
         w = self.get_root_window()
-        w.remove_handlers(on_keyboard=self._window_on_keyboard)
+        w.remove_handlers(on_key_down=self._window_on_key_down,
+                          on_key_up=self._window_on_key_up)
         self.is_active_input = False
         if self._keyboard is not None:
             self._keyboard.remove_handlers(
@@ -195,7 +197,7 @@ class MTTextInput(MTButton):
             set_color(*self.style.get('bg-color'))
             drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
 
-    def _window_on_keyboard(self, key, scancode=None, unicode=None):
+    def _window_on_key_down(self, key, scancode=None, unicode=None):
         if key == 27: # escape
             self.hide_keyboard()
             return True
@@ -204,17 +206,23 @@ class MTTextInput(MTButton):
         elif key == 8: # backspace
             key = (None, None, 'backspace', 1)
             self.keyboard.dispatch_event('on_key_down', key)
-            self.keyboard.dispatch_event('on_key_up', key)
         elif key in (13, 271): # enter or numenter
             key = (None, None, 'enter', 1)
             self.keyboard.dispatch_event('on_key_down', key)
-            self.keyboard.dispatch_event('on_key_up', key)
         else:
             if unicode is not None:
                 self.keyboard.text = self.keyboard.text + unicode
             else:
                 # oh god :[
                 self.keyboard.text = self.keyboard.text + chr(key)
+
+    def _window_on_key_up(self, key, scancode=None, unicode=None):
+        if key == 8: # backspace
+            key = (None, None, 'backspace', 1)
+            self.keyboard.dispatch_event('on_key_up', key)
+        elif key in (13, 271): # enter or numenter
+            key = (None, None, 'enter', 1)
+            self.keyboard.dispatch_event('on_key_up', key)
 
     def _get_value(self):
         return self.label

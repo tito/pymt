@@ -5,6 +5,7 @@ VKeyboard: Virtual keyboard with custom layout support
 
 import os
 import pymt
+from ....base import getFrameDt
 from ....graphx import set_color, drawCSSRectangle, drawLabel, GlDisplayList, \
                        gx_matrix, drawRoundedRectangle, getLastLabel
 from ....clock import getClock
@@ -13,7 +14,6 @@ from ....vector import Vector
 from ...factory import MTWidgetFactory
 from ..scatter import MTScatterWidget
 from kineticlist import MTKineticList, MTKineticItem
-from ....clock import getClock
 from OpenGL.GL import *#glScalef, glTranslatef
 
 __all__ = ('MTVKeyboard', 'KeyboardLayout', 'KeyboardLayoutQWERTY', 'KeyboardLayoutAZERTY')
@@ -184,6 +184,10 @@ class MTVKeyboard(MTScatterWidget):
             property.
         `time_lazy_update` : float, default to 0.2
             Time in seconds of force a lazy update when keyboard size change
+        `repeat` : float, default to 0.2
+            If 1/15., will repeat the last key 5 time per seconds
+        `repeat_timeout` : float, default to 0.2
+            Will start repeatition after 200ms
 
     :Events:
         `on_key_down` : key
@@ -218,6 +222,8 @@ class MTVKeyboard(MTScatterWidget):
         kwargs.setdefault('pos', MTVKeyboard.DEFAULT_POS)
         kwargs.setdefault('layout', None)
         kwargs.setdefault('time_lazy_update', .2)
+        kwargs.setdefault('repeat', 1 / 15.)
+        kwargs.setdefault('repeat_timeout', .2)
         super(MTVKeyboard, self).__init__(**kwargs)
 
         self.register_event_type('on_key_down')
@@ -227,6 +233,8 @@ class MTVKeyboard(MTScatterWidget):
         self.time_lazy_update   = kwargs.get('time_lazy_update')
         self.layout             = kwargs.get('layout')
         self.container_width, self.container_height   = self.size
+        self.repeat             = kwargs.get('repeat')
+        self.repeat_timeout     = kwargs.get('repeat_timeout')
 
         # read default layout in configuration
         if self.layout is None:
@@ -252,6 +260,9 @@ class MTVKeyboard(MTScatterWidget):
         self._active_keys       = []
         self._old_scale         = self.scale
         self._used_label        = []
+        self._last_key_down     = []
+        self._last_key_repeat   = 0
+        self._last_key_repeat_timeout  = 0
 
         # prepare layout widget
         mtop, mright, mbottom, mleft = self.style['margin']
@@ -438,9 +449,24 @@ class MTVKeyboard(MTScatterWidget):
         self.layout = layout()
         self._need_update = 'now'
 
-    def draw(self):
+    def on_update(self):
+        super(MTVKeyboard, self).on_update()
         self._update()
 
+        if not len(self._last_key_down):
+            return
+        self._last_key_repeat_timeout -= getFrameDt()
+        if self._last_key_repeat_timeout < 0:
+            self._last_key_repeat -= getFrameDt()
+            if self._last_key_repeat > 0:
+                return
+            self._last_key_repeat = self.repeat
+            key = self._last_key_down[-1]
+            self.dispatch_event('on_key_down', key, True)
+            self.dispatch_event('on_key_up', key, True)
+
+
+    def draw(self):
         # background
         set_color(*self.style['bg-color'])
         drawCSSRectangle(size=self.size, style=self.style)
@@ -493,7 +519,11 @@ class MTVKeyboard(MTScatterWidget):
             kx += kw
         return None
 
-    def on_key_down(self, key):
+    def on_key_down(self, key, repeat=False):
+        if repeat is False:
+            self._last_key_down.append(key)
+            self._last_key_repeat_timeout = self.repeat_timeout
+            self._last_key_repeat = self.repeat
         displayed_str, internal_str, internal_action, scale = key
         if internal_action is None:
             if internal_str is not None:
@@ -517,7 +547,9 @@ class MTVKeyboard(MTScatterWidget):
         elif internal_action in ('backspace'):
             self.text = self.text[:-1]
 
-    def on_key_up(self, key):
+    def on_key_up(self, key, repeat=False):
+        if key in self._last_key_down and repeat is False:
+            self._last_key_down.remove(key)
         displayed_str, internal_str, internal_action, scale = key
         if internal_action is None:
             pass

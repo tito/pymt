@@ -101,6 +101,8 @@ class BaseWindow(EventDispatcher):
         self.register_event_type('on_mouse_move')
         self.register_event_type('on_mouse_up')
         self.register_event_type('on_keyboard')
+        self.register_event_type('on_key_down')
+        self.register_event_type('on_key_up')
 
         # set out window as the main pymt window
         setWindow(self)
@@ -423,6 +425,15 @@ class BaseWindow(EventDispatcher):
             Some providers can skip `scancode` or `unicode` !!
         '''
         pass
+
+    def on_key_down(self, key, scancode=None, unicode=None):
+        '''Event called when a key is down (same arguments as on_keyboard)'''
+        pass
+
+    def on_key_up(self, key, scancode=None, unicode=None):
+        '''Event called when a key is up (same arguments as on_keyboard)'''
+        pass
+
 
 class MTDisplay(MTWidget):
     '''MTDisplay is a widget that draw a circle

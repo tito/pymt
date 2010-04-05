@@ -159,7 +159,11 @@ class MTWindowPygame(BaseWindow):
                 self._pygame_update_modifiers(event.mod)
                 # atm, don't handle keyup
                 if event.type == pygame.KEYUP:
+                    self.dispatch_event('on_key_up', event.key,
+                        event.scancode)
                     continue
+                self.dispatch_event('on_key_down', event.key,
+                                    event.scancode, event.unicode)
                 self.dispatch_event('on_keyboard', event.key,
                                     event.scancode, event.unicode)
 

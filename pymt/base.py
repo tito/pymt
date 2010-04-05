@@ -15,6 +15,7 @@ __all__ = [
 import pymt
 import sys
 import os
+import weakref
 from logger import pymt_logger
 from exceptions import pymt_exception_manager, ExceptionManager
 from clock import getClock
@@ -123,7 +124,15 @@ class TouchEventLoop(object):
 
         # dispatch grabbed touch
         touch.grab_state = True
-        for wid in touch.grab_list[:]:
+        for _wid in touch.grab_list.iterate():
+
+            # it's a weakref, call it!
+            wid = _wid()
+            if wid is None:
+                # object is gone, stop.
+                touch.grab_list.remove(_wid)
+                continue
+
             root_window = wid.get_root_window()
             if wid != root_window and root_window is not None:
                 touch.push()

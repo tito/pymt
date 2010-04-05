@@ -41,6 +41,8 @@ testing the profile ::
 
 __all__ = ['Touch']
 
+import weakref
+from ..utils import SafeList
 from ..clock import getClock
 from ..vector import Vector
 
@@ -75,7 +77,7 @@ class Touch(object):
         self.attr = []
 
         # For grab
-        self.grab_list = []
+        self.grab_list = SafeList()
         self.grab_exclusive_class = None
         self.grab_state = False
         self.grab_current = None
@@ -150,12 +152,14 @@ class Touch(object):
         '''
         if self.grab_exclusive_class is not None:
             raise Exception('Cannot grab the touch, touch are exclusive')
+        class_instance = weakref.ref(class_instance)
         if exclusive:
             self.grab_exclusive_class = class_instance
         self.grab_list.append(class_instance)
 
     def ungrab(self, class_instance):
         '''Ungrab a previous grabbed touch'''
+        class_instance = weakref.ref(class_instance)
         if self.grab_exclusive_class == class_instance:
             self.grab_exclusive_class = None
         if class_instance in self.grab_list:

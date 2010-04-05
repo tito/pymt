@@ -6,6 +6,7 @@ __all__ = ('start', 'stop')
 
 import sys
 import logging
+from pymt.clock import getClock
 from pymt.base import getWindow
 from pymt.graphx import drawRectangle, drawLabel, set_color, drawLine, drawCircle
 from pymt.logger import pymt_logger_history, pymt_logger
@@ -78,6 +79,8 @@ def _on_draw():
                   pos=(w2, win.height - 100), font_size=40)
         drawLabel('Press F1 to leave help',
                   pos=(w2, win.height - 160), font_size=12)
+        drawLabel('FPS is %.3f' % getClock().get_fps(),
+                  pos=(w2, win.height - 180), font_size=12)
         drawLabel('F1 - Show Help',
                   pos=(w2, h2), **k)
         y += 35

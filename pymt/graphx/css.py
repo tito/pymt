@@ -14,7 +14,7 @@ from pymt.core.svg import Svg
 
 
 if not 'PYMT_DOC' in os.environ:
-    Cache.register('css_rect', limit=100, timeout=500)
+    Cache.register('pymt.cssrect', limit=100, timeout=60)
 
 
 def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None, state=None):
@@ -42,7 +42,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None, state=Non
 
     # Check if we have a cached version
     cache_id = '%s:%s:%s:%s:%s' % (pos, size, style, prefix, state)
-    cache = Cache.get('css_rect', cache_id)
+    cache = Cache.get('pymt.cssrect', cache_id)
     if cache:
         cache.draw()
         if bg_image:
@@ -142,7 +142,7 @@ def drawCSSRectangle(pos=(0,0), size=(100,100), style={}, prefix=None, state=Non
     # compilation will not happen, but drawing yes.
     # so, store only if a cache is created !
     if new_cache.is_compiled():
-        Cache.append('css_rect', cache_id, new_cache)
+        Cache.append('pymt.cssrect', cache_id, new_cache)
         new_cache.draw()
 
     if bg_image:

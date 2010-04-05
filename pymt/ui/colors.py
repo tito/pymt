@@ -39,7 +39,7 @@ import re
 import weakref
 
 # Register CSS cache
-Cache.register('css')
+Cache.register('pymt.css', limit=500, timeout=60)
 
 #: Instance of the CSS sheet
 pymt_sheet = None
@@ -304,12 +304,12 @@ def css_get_style(widget):
         _css_widgets.append(ref)
 
     idwidget = css_get_widget_id(widget)
-    styles = Cache.get('css', idwidget)
+    styles = Cache.get('pymt.css', idwidget)
     if styles is not None:
         return styles
 
     styles = pymt_sheet.get_style(widget)
-    Cache.append('css', idwidget, styles)
+    Cache.append('pymt.css', idwidget, styles)
     return styles
 
 def css_add_sheet(text, _reload=False):
@@ -350,7 +350,7 @@ def css_reload():
     pymt_sheet.reset()
     for callback, args in _css_sources[:]:
         callback(*args, _reload=True)
-    Cache.remove('css')
+    Cache.remove('pymt.css')
     print _css_widgets
     for r in _css_widgets[:]:
         o = r()

@@ -10,7 +10,7 @@ from pymt.cache import Cache
 from pymt.graphx.statement import gx_matrix
 from OpenGL.GL import glTranslate, glScale
 
-Cache.register('_pymt_core_svg_cache', limit=500, timeout=None)
+Cache.register('pymt.svg', limit=50)
 
 class SvgBase(object):
     '''Base to implement an svg loader.'''
@@ -20,10 +20,10 @@ class SvgBase(object):
     def __init__(self, filename, **kwargs):
         self.filename = filename
 
-        self.svg_data = Cache.get('_pymt_core_svg_cache', filename)
+        self.svg_data = Cache.get('pymt.svg', filename)
         if not self.svg_data:
             new_svg = self.load(filename)
-            Cache.append('_pymt_core_svg_cache', filename, new_svg)
+            Cache.append('pymt.svg', filename, new_svg)
             self.svg_data = new_svg
 
     def load(self, filename):

@@ -6,6 +6,7 @@ __all__ = ('start', 'stop')
 
 import sys
 import logging
+from pymt.cache import Cache
 from pymt.clock import getClock
 from pymt.base import getWindow
 from pymt.graphx import drawRectangle, drawLabel, set_color, drawLine, drawCircle
@@ -87,7 +88,7 @@ def _on_draw():
         drawLabel('F2 - Show FPS (%s)' % str(win.show_fps),
                   pos=(w2, h2 - y), **k)
         y += 35
-        drawLabel('F3 - Draw back gradient (%s)' % str(win.gradient),
+        drawLabel('F3 - Show Cache state',
                   pos=(w2, h2 - y), **k)
         y += 35
         drawLabel('F4 - Show Calibration screen',
@@ -102,6 +103,39 @@ def _on_draw():
         y += 35
         drawLabel('F12 - Screenshot',
                   pos=(w2, h2 - y), **k)
+
+        return True
+
+    #
+    # Draw cache state
+    #
+    elif _toggle_state == 'cachestat':
+        # draw the usual window
+        win.on_draw()
+
+        # make background more black
+        set_color(0, 0, 0, .8)
+        drawRectangle(size=win.size)
+
+        y = 0
+        for x in Cache._categories:
+            y += 25
+            cat = Cache._categories[x]
+            count = 0
+            usage = '-'
+            limit = cat['limit']
+            timeout = cat['timeout']
+            try:
+                count = len(Cache._objects[x])
+            except:
+                pass
+            try:
+                usage = 100 * count / limit
+            except:
+                pass
+            args = (x, usage, count, limit, timeout)
+            drawLabel('%s: usage=%s%% count=%d limit=%s timeout=%s' % args,
+                      pos=(20, 20 + y), font_size=20, center=False, nocache=True)
 
         return True
 
@@ -234,7 +268,7 @@ def _on_keyboard_handler(key, scancode, unicode):
     elif key == 283: # F2
         win.show_fps = not win.show_fps
     elif key == 284: # F3
-        win.gradient = not win.gradient
+        toggle('cachestat')
     elif key == 285: # F4
         # rotating between calibration screen
         if _toggle_state == 'calibration':

@@ -34,7 +34,7 @@ import collections
 import os
 
 # Register a cache for loader
-Cache.register('loader', limit=500)
+Cache.register('pymt.loader', limit=500, timeout=60)
 
 class ProxyImage(Image, EventDispatcher):
     '''Image returned by the Loader.image() function.
@@ -168,7 +168,7 @@ class LoaderBase(object):
 
             # create the image
             image = ProxyImage(data)
-            Cache.append('loader', filename, image)
+            Cache.append('pymt.loader', filename, image)
 
             # update client
             for c_filename, client in self._client.iterate():
@@ -191,7 +191,7 @@ class LoaderBase(object):
             # to the new loaded image
 
         '''
-        data = Cache.get('loader', filename)
+        data = Cache.get('pymt.loader', filename)
         if data not in (None, False):
             # found image
             return ProxyImage(data,
@@ -204,7 +204,7 @@ class LoaderBase(object):
         if data is None:
             # if data is None, this is really the first time
             self._q_load.append((filename, load_callback, post_callback))
-            Cache.append('loader', filename, False)
+            Cache.append('pymt.loader', filename, False)
             self._start_wanted = True
         else:
             # already queued for loading

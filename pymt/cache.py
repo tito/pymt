@@ -64,11 +64,16 @@ class Cache:
             `timeout` : double (optionnal)
                 Custom time to delete the object if it's not used.
         '''
-        if not category in Cache._categories:
+        try:
+            cat = Cache._categories[category]
+        except KeyError:
             pymt.pymt_logger.warning('Cache: category <%s> not exist' % category)
             return
-        if timeout is None:
-            timeout = Cache._categories[category]['timeout']
+        timeout = timeout or cat['timeout']
+        # FIXME: activate purge when limit is hit
+        #limit = cat['limit']
+        #if limit is not None and len(Cache._objects[category]) >= limit:
+        #    Cache._purge_oldest(category)
         Cache._objects[category][key] = {
             'object': obj,
             'timeout': timeout,
@@ -145,6 +150,27 @@ class Cache:
                 Cache._objects[category] = {}
         except:
             pass
+
+    @staticmethod
+    def _purge_oldest(category, maxpurge=1):
+        print 'PURGE', category
+        import heapq
+        heap_list = []
+        for key in Cache._objects[category]:
+            obj = Cache._objects[category][key]
+            if obj['lastaccess'] == obj['timestamp']:
+                continue
+            heapq.heappush(heap_list, (obj['lastaccess'], key))
+            print '<<<', obj['lastaccess']
+        n = 0
+        while n < maxpurge:
+            try:
+                lastaccess, key = heapq.heappop(heap_list)
+                print '=>', key, lastaccess, getClock().get_time()
+            except:
+                return
+            del Cache._objects[category][key]
+
 
     @staticmethod
     def _purge_by_timeout(*largs):

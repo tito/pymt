@@ -27,7 +27,7 @@ from colors import *
 # create a cache for label
 _temp_label = None
 if not 'PYMT_DOC' in os.environ:
-    Cache.register('drawlabel', timeout=1., limit=100)
+    Cache.register('pymt.label', timeout=1., limit=100)
 
 
 def _make_point_list(points):
@@ -72,13 +72,14 @@ def getLabel(label, **kwargs):
     id = '%s##%s' % (label, str(kwargs))
 
     # get or store
-    obj = pymt.Cache.get('drawlabel', id)
+    obj = Cache.get('pymt.label', id)
     if not obj:
         if kwargs.get('markup'):
             obj = pymt.MarkupLabel(label, **kwargs)
         else:
             obj = pymt.Label(label, **kwargs)
-        pymt.Cache.append('drawlabel', id, obj)
+        if 'nocache' not in kwargs:
+            Cache.append('pymt.label', id, obj)
 
     return obj
 

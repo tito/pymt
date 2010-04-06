@@ -6,9 +6,11 @@ Button package: implement different type of button
 __all__ = ['MTButton', 'MTToggleButton', 'MTImageButton']
 
 import pymt
+import weakref
 from OpenGL.GL import *
 from ...graphx import GlDisplayList, set_color, gx_blending
 from ...graphx import drawCSSRectangle
+from ...utils import SafeList
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 from label import MTLabel
@@ -70,7 +72,8 @@ class MTButton(MTLabel):
         kwargs.setdefault('valign', 'center')
         # FIXME, would be nice to suppress it !
         kwargs.setdefault('size', (100, 100))
-        self._state         = ('normal', 0)
+        self._state         = 'normal'
+        self._current_touch = None
         super(MTButton, self).__init__(**kwargs)
         self.register_event_type('on_press')
         self.register_event_type('on_release')
@@ -78,9 +81,10 @@ class MTButton(MTLabel):
     def on_touch_down(self, touch):
         if not self.collide_point(touch.x, touch.y):
             return False
-        if self._state[1] != 0:
+        if self._current_touch is not None:
             return False
-        self._state = ('down', touch.id)
+        self._current_touch = touch
+        self.state = 'down'
         self.dispatch_event('on_press', touch)
         touch.grab(self)
         return True
@@ -95,15 +99,17 @@ class MTButton(MTLabel):
         if not touch.grab_current == self:
             return False
         touch.ungrab(self)
-        self._state = ('normal', 0)
+        self._current_touch = None
+        self.state = 'normal'
         self.dispatch_event('on_release', touch)
         return True
 
-    def get_state(self):
-        return self._state[0]
-    def set_state(self, state):
-        self._state = (state, 0)
-    state = property(get_state, set_state,
+    def _get_state(self):
+        return self._state
+    def _set_state(self, state):
+        self._state = state
+    state = property(lambda self: self._get_state(),
+                     lambda self, x: self._set_state(x),
                      doc='Sets the state of the button, "normal" or "down"')
 
     def update_label(self):
@@ -130,17 +136,35 @@ class MTButton(MTLabel):
 
 
 class MTToggleButton(MTButton):
-    '''Toggle button implementation, based on MTButton'''
+    '''Toggle button implementation, based on MTButton
+
+    :Parameters:
+        `group`: str, default to None
+            Name of the selection group. If the button have the same groupname
+            as other, when his state will be down, all other button will have up
+            state.
+    '''
+    _groups = {}
     def __init__(self, **kwargs):
+        kwargs.setdefault('group', None)
         super(MTToggleButton, self).__init__(**kwargs)
+
+        # add the widget to the group if exist.
+        self._group = kwargs.get('group')
+        if self._group is not None:
+            if not self._group in self._groups:
+                MTToggleButton._groups[self._group] = SafeList()
+            ref = weakref.ref(self)
+            MTToggleButton._groups[self._group].append(ref)
 
     def on_touch_down(self, touch):
         if not self.collide_point(touch.x, touch.y):
             return False
-        if self.get_state() == 'down':
-            self._state = ('normal', 0)
+        if self.state == 'down':
+            self.state = 'normal'
         else:
-            self._state = ('down', touch.id)
+            self._reset_group()
+            self.state = 'down'
         self.dispatch_event('on_press', touch)
         touch.grab(self)
         return True
@@ -149,9 +173,45 @@ class MTToggleButton(MTButton):
         if not touch.grab_current == self:
             return False
         touch.ungrab(self)
-        self._state = (self.state, 0)
+        self.state = self.state
         self.dispatch_event('on_release', touch)
         return True
+
+    @property
+    def group(self):
+        '''Return the group of a toggle button'''
+        return self._group
+
+    @staticmethod
+    def get_widgets(groupname):
+        '''Return all widgets in a group'''
+        if groupname not in MTToggleButton._groups:
+            return []
+        return MTToggleButton._groups[groupname]
+
+    @staticmethod
+    def get_selected_widgets(groupname):
+        '''Return all widgets selected in a group'''
+        g = MTToggleButton.get_widgets(groupname)
+        return [x() for x in g if x() is not None and x().state == 'down']
+
+    def _set_state(self, x):
+        self._reset_group()
+        self._state = x
+        if not len(self.get_selected_widgets(self.group)):
+            self._state = 'down'
+
+    def _reset_group(self):
+        # set all button do 'normal' state
+        if self._group is None:
+            return
+        g = MTToggleButton._groups[self._group]
+        for ref in g.iterate():
+            obj = ref()
+            if obj is None:
+                g.remove(ref)
+                continue
+            obj._state = 'normal'
 
 
 class MTImageButton(MTButton):

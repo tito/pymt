@@ -198,6 +198,8 @@ class MTToggleButton(MTButton):
     def _set_state(self, x):
         self._reset_group()
         self._state = x
+        if self._group is None:
+            return
         if not len(self.get_selected_widgets(self.group)):
             self._state = 'down'
 

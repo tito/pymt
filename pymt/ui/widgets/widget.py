@@ -99,6 +99,7 @@ class MTWidget(EventDispatcher):
     __slots__ = ('cls', 'children', 'style', 'draw_children',
                  '_root_window_source', '_root_window',
                  '_parent_window_source', '_parent_window',
+                 '_parent_layout_source', '_parent_layout',
                  '_size_hint', '_id', '_parent',
                  '_visible', '_inline_style',
                  '__weakref__')
@@ -142,6 +143,8 @@ class MTWidget(EventDispatcher):
         self.draw_children        = kwargs.get('draw_children')
 
         # cache for get_parent_window()
+        self._parent_layout         = None
+        self._parent_layout_source  = None
         self._parent_window         = None
         self._parent_window_source  = None
         self._root_window           = None
@@ -280,6 +283,20 @@ class MTWidget(EventDispatcher):
             self._root_window_source = self.parent
 
         return self._root_window
+
+    def get_parent_layout(self):
+        '''Return the parent layout of widget'''
+        if not self.parent:
+            return None
+
+        # cache value
+        if self._parent_layout_source != self.parent or self._parent_layout is None:
+            self._parent_layout = self.parent.get_parent_layout()
+            if not self._parent_layout:
+                return None
+            self._parent_layout_source = self.parent
+
+        return self._parent_layout
 
     def get_parent_window(self):
         '''Return the parent window of widget'''

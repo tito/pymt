@@ -1,10 +1,11 @@
 from __future__ import with_statement
+import os
 import math
 from pymt import *
 from OpenGL.GL import GL_LINE_STRIP, glColor4f, glVertex2f, GL_LINE_BIT, glLineWidth
 from OpenGL.GL import glTranslatef
 
-plugins = MTPlugins(plugin_paths=['..'])
+plugins = MTPlugins(plugin_paths=[os.path.join(os.path.dirname(__file__), '..')])
 plugins.search_plugins()
 
 def gesture_add_default(gdb):
@@ -259,13 +260,15 @@ class MTGestureDetector(MTGestureWidget):
 
 
 if __name__ == '__main__':
+    import os
+
     # Create and fill gesture database
     gdb = GestureDatabase()
     gesture_add_default(gdb)
 
     # Create background window
     w = getWindow()
-    w.wallpaper = 'wallpaper.jpg'
+    w.wallpaper = os.path.join(os.path.dirname(__file__), 'wallpaper.jpg')
     w.wallpaper_position = 'scale'
 
     g = MTGestureDetector(gdb)

@@ -31,7 +31,7 @@ class MTModalPopup(MTModalWindow):
         self.content    = kwargs.get('content')
 
         layout = '''
-            <MTBoxLayout id='"popup"' orientation='"vertical"' invert='True'
+            <MTBoxLayout id='"popup"' orientation='"vertical"'
                 size='%s' size_hint='(None, None)'>
                 <MTLabel id='"popuptitle"' cls='"modalpopup-title"' label='"%s"'
                     size_hint='(1,None)' autosize='False' autowidth='False'

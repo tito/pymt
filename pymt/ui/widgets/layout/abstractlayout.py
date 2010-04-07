@@ -42,6 +42,7 @@ class MTAbstractLayout(MTWidget):
         self.auto_layout        = kwargs.get('auto_layout')
         self.bg_color           = kwargs.get('bg_color')
         self.need_update        = False
+        self.need_update_set    = False
 
         self.register_event_type('on_layout')
 
@@ -119,33 +120,45 @@ class MTAbstractLayout(MTWidget):
     # overload all possible function that need to apply
     # relayout before accessing to the value
     def _get_size(self):
-        if self.need_update:
+        if self.need_update and not self.need_update_set:
+            self.need_update_set = True
             self.need_update = False
             self.do_layout()
+            self.need_update_set = False
         return super(MTAbstractLayout, self)._get_size()
     def _get_width(self):
-        if self.need_update:
+        if self.need_update and not self.need_update_set:
+            self.need_update_set = True
             self.need_update = False
             self.do_layout()
+            self.need_update_set = False
         return super(MTAbstractLayout, self)._get_width()
     def _get_height(self):
-        if self.need_update:
+        if self.need_update and not self.need_update_set:
+            self.need_update_set = True
             self.need_update = False
             self.do_layout()
+            self.need_update_set = False
         return super(MTAbstractLayout, self)._get_height()
     def _get_pos(self):
-        if self.need_update:
+        if self.need_update and not self.need_update_set:
+            self.need_update_set = True
             self.need_update = False
             self.do_layout()
+            self.need_update_set = False
         return super(MTAbstractLayout, self)._get_pos()
     def _get_x(self):
-        if self.need_update:
+        if self.need_update and not self.need_update_set:
+            self.need_update_set = True
             self.need_update = False
             self.do_layout()
+            self.need_update_set = False
         return super(MTAbstractLayout, self)._get_x()
     def _get_y(self):
-        if self.need_update:
+        if self.need_update and not self.need_update_set:
+            self.need_update_set = True
             self.need_update = False
             self.do_layout()
+            self.need_update_set = False
         return super(MTAbstractLayout, self)._get_y()
 

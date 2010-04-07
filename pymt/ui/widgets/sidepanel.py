@@ -5,6 +5,7 @@ Side panel: a panel widget that attach to a side of the screen
 __all__ = ('MTSidePanel', )
 
 from ...graphx import drawCSSRectangle, set_color
+from ...utils import curry
 from ..factory import MTWidgetFactory
 from ..animation import Animation
 from widget import MTWidget
@@ -80,10 +81,10 @@ class MTSidePanel(MTWidget):
         self.corner.connect('on_press', self._corner_on_press)
 
         self.initial_pos    = self.pos
-        self.layout_visible = True
         self.need_reposition = True
 
         if kwargs.get('hide'):
+            self.layout.visible = False
             self.hide()
 
     def add_widget(self, widget):
@@ -93,7 +94,7 @@ class MTSidePanel(MTWidget):
         self.layout.remove_widget(widget)
 
     def _corner_on_press(self, *largs):
-        if self.layout_visible:
+        if self.layout.visible:
             self.hide()
         else:
             self.show()
@@ -101,11 +102,13 @@ class MTSidePanel(MTWidget):
 
     def show(self):
         dpos = self.initial_pos
+        self.layout.visible = True
         self.layout.do(Animation(duration=self.duration, f='ease_out_cubic', pos=dpos))
-        self.layout_visible = True
+
+    def _on_animation_complete_hide(self, *largs):
+        self.layout.visible = False
 
     def hide(self):
-        self.layout_visible = False
         w = self.get_parent_window()
         if not w:
             return
@@ -117,14 +120,16 @@ class MTSidePanel(MTWidget):
             dpos = (self.x, w.height)
         elif self.side == 'bottom':
             dpos = (self.x, -self.layout.height)
-        self.layout.do(Animation(duration=self.duration, f='ease_out_cubic', pos=dpos))
+        anim = Animation(duration=self.duration, f='ease_out_cubic', pos=dpos)
+        anim.connect('on_complete', self._on_animation_complete_hide)
+        self.layout.do(anim)
 
     def on_update(self):
         w = self.get_parent_window()
 
         # first execution, need to place layout in the good size
         if self.need_reposition:
-            if self.layout_visible:
+            if self.layout.visible:
                 if self.side == 'right':
                     self.layout.x = w.width - self.layout.width
                 elif self.side == 'top':
@@ -182,6 +187,8 @@ class MTSidePanel(MTWidget):
         self.layout.pos  = x, y
 
     def draw(self):
+        if not self.layout.visible:
+            return
         set_color(*self.style.get('bg-color'))
         drawCSSRectangle(pos=self.layout.pos, size=self.layout.size, style=self.style)
 

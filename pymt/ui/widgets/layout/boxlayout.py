@@ -34,7 +34,7 @@ class MTBoxLayout(MTAbstractLayout):
         self._orientation = kwargs.get('orientation')
         self._invert      =  kwargs.get('invert')
         
-    def add_widget(self, widget, front=True, do_layout=None):
+    def add_widget(self, widget, front=False, do_layout=None):
         if self._invert:
             front = not front
         super(MTBoxLayout, self).add_widget(widget, front, do_layout)

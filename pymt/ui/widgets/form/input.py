@@ -30,12 +30,6 @@ class MTFormInput(MTTextInput):
         self.label_obj.x, self.label_obj.y = self.pos
         self.label_obj.draw()
 
-    def on_resize(self, w, h):
-        layout = self.get_parent_layout()
-        if layout:
-            layout.do_layout()
-        super(MTFormInput, self).on_resize(w, h)
-
     def _set_value(self, value):
         self.label = value
         self.dispatch_event('on_text_change')

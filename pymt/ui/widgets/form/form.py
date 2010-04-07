@@ -52,9 +52,6 @@ class MTForm(MTAbstractFormWidget):
         else:
             drawRectangle(pos=self.pos, size=self.size)
 
-    def get_parent_layout(self):
-        return self
-
     def do_layout(self):
         self.size = self.layout.content_width, self.layout.content_height
 

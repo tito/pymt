@@ -269,11 +269,11 @@ class MTScatterWidget(MTWidget):
         trans = p1_now - p1_start
         self.apply_angle_scale_trans(0, 1.0, trans, Vector(*center))
         center = self.to_local(*self.to_parent(0, 0))
-        if self._x == center[0] and self._y == center[1]:
+        if self._pos[0] == center[0] and self._pos[1] == center[1]:
             return
-        self._x, self._y = center
+        self._pos = center
         if do_event:
-            self.dispatch_event('on_move', self._x, self._y)
+            self.dispatch_event('on_move', *self.pos)
     center = property(_get_center, _set_center)
     pos = property(_get_center, _set_center)
 
@@ -376,10 +376,10 @@ class MTScatterWidget(MTWidget):
             # dispatch move event
             #self._set_center(self.to_parent(0, 0), do_event=False)
             center = self.to_local(*self.to_parent(0, 0))
-            if self._x == center[0] and self._y == center[1]:
+            if self._pos[0] == center[0] and self._pos[1] == center[1]:
                 return
-            self._x, self._y = center
-            self.dispatch_event('on_move', self.x, self.y)
+            self._pos = center
+            self.dispatch_event('on_move', *self._pos)
             return True
 
         # stop porpagation if its within our bounds

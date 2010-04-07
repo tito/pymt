@@ -27,9 +27,3 @@ class MTAbstractFormWidget(MTWidget):
     def remove_widget(self, widget):
         raise Exception('Cannot remove widget from a form widget')
 
-    def on_resize(self, w, h):
-        layout = self.get_parent_layout()
-        if layout:
-            layout.do_layout()
-        super(MTAbstractFormWidget, self).on_resize(w, h)
-

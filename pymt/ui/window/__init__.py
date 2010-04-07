@@ -333,9 +333,6 @@ class BaseWindow(EventDispatcher):
     def get_parent_window(self):
         return self
 
-    def get_parent_layout(self):
-        return None
-
     def on_update(self):
         '''Event called when window are update the widget tree.
         (Usually before on_draw call.)

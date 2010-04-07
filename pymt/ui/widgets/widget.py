@@ -95,6 +95,14 @@ class MTWidget(EventDispatcher):
         `on_parent_resize` (float width, float height)
             Fired when parent widget is resized
     '''
+
+    __slots__ = ('cls', 'children', 'style', 'draw_children',
+                 '_root_window_source', '_root_window',
+                 '_parent_window_source', '_parent_window',
+                 '_size_hint', '_id', '_parent',
+                 '_visible', '_inline_style',
+                 '__weakref__')
+
     visible_events = [
         'on_update',
         'on_draw',
@@ -120,7 +128,7 @@ class MTWidget(EventDispatcher):
         if 'id' in kwargs:
             self.id = kwargs.get('id')
 
-        super(MTWidget, self).__init__()
+        super(MTWidget, self).__init__(**kwargs)
 
         # Registers events
         for ev in MTWidget.visible_events:
@@ -129,18 +137,13 @@ class MTWidget(EventDispatcher):
         self._parent              = None
         self.children             = SafeList()
         self._visible             = False
-        self._x, self._y          = kwargs.get('pos')
-        self._width, self._height = kwargs.get('size')
         self._size_hint           = kwargs.get('size_hint')
-        self.animations           = []
         self.visible              = kwargs.get('visible')
         self.draw_children        = kwargs.get('draw_children')
 
         # cache for get_parent_window()
         self._parent_window         = None
         self._parent_window_source  = None
-        self._parent_layout         = None
-        self._parent_layout_source  = None
         self._root_window           = None
         self._root_window_source    = None
 
@@ -170,8 +173,6 @@ class MTWidget(EventDispatcher):
         self._inline_style = kwargs.get('style')
         if len(kwargs.get('style')):
             self.apply_css(kwargs.get('style'))
-
-        self.a_properties = {}
 
         self.init()
 
@@ -220,80 +221,6 @@ class MTWidget(EventDispatcher):
     size_hint = property(lambda self: self._get_size_hint(),
                          lambda self, x: self._set_size_hint(x),
                          doc='size_hint is used by layouts to determine size behaviour during layout')
-
-    def _set_x(self, x):
-        if self._x == x:
-            return False
-        self._x = x
-        self.dispatch_event('on_move', self.x, self.y)
-    def _get_x(self):
-        return self._x
-    x = property(lambda self: self._get_x(),
-                 lambda self, x: self._set_x(x),
-                 doc='int: X position of widget')
-
-    def _set_y(self, y):
-        if self._y == y:
-            return False
-        self._y = y
-        self.dispatch_event('on_move', self.x, self.y)
-    def _get_y(self):
-        return self._y
-    y = property(lambda self: self._get_y(),
-                 lambda self, x: self._set_y(x),
-                 doc='int: Y position of widget')
-
-    def _set_width(self, w):
-        if self._width == w:
-            return False
-        self._width = w
-        self.dispatch_event('on_resize', self._width, self._height)
-    def _get_width(self):
-        return self._width
-    width = property(lambda self: self._get_width(),
-                     lambda self, x: self._set_width(x),
-                     doc='int: width of widget')
-
-    def _set_height(self, h):
-        if self._height == h:
-            return False
-        self._height = h
-        self.dispatch_event('on_resize', self._width, self._height)
-    def _get_height(self):
-        return self._height
-    height = property(lambda self: self._get_height(),
-                      lambda self, x: self._set_height(x), 
-                      doc='int: height of widget')
-
-    def _get_center(self):
-        return (self._x + self._width/2, self._y+self._height/2)
-    def _set_center(self, center):
-        self.pos = (center[0] - self.width/2, center[1] - self.height/2)
-    center = property(lambda self: self._get_center(),
-                      lambda self, x: self._set_center(x),
-                      doc='tuple(x, y): center of widget')
-
-    def _set_pos(self, pos):
-        if self._x == pos[0] and self._y == pos[1]:
-            return
-        self._x, self._y = pos
-        self.dispatch_event('on_move', self._x, self._y)
-    def _get_pos(self):
-        return (self._x, self._y)
-    pos = property(lambda self: self._get_pos(),
-                   lambda self, x: self._set_pos(x),
-                   doc='tuple(x, y): position of widget')
-
-    def _set_size(self, size):
-        if self._width == size[0] and self._height == size[1]:
-            return
-        self._width, self._height = size
-        self.dispatch_event('on_resize', self.width, self.height)
-    def _get_size(self):
-        return (self.width, self.height)
-    size = property(lambda self: self._get_size(),
-                    lambda self, x: self._set_size(x),
-                    doc='tuple(width, height): width/height of widget')
 
     def apply_css(self, styles):
         '''Called at __init__ time to applied css attribute in current class.
@@ -367,20 +294,6 @@ class MTWidget(EventDispatcher):
             self._parent_window_source = self.parent
 
         return self._parent_window
-
-    def get_parent_layout(self):
-        '''Return the parent layout of widget'''
-        if not self.parent:
-            return None
-
-        # cache value
-        if self._parent_layout_source != self.parent or self._parent_layout is None:
-            self._parent_layout = self.parent.get_parent_layout()
-            if not self._parent_layout:
-                return None
-            self._parent_layout_source = self.parent
-
-        return self._parent_layout
 
     def bring_to_front(self):
         '''Remove it from wherever it is and add it back at the top'''
@@ -488,6 +401,39 @@ class MTWidget(EventDispatcher):
         for arg in largs:
             if arg.set_widget(self):
                 return arg.start(self)
+
+    # generate event for all baseobject methods
+
+    def _set_pos(self, x):
+        if super(MTWidget, self)._set_pos(x):
+            self.dispatch_event('on_move', *self._pos)
+            return True
+
+    def _set_x(self, x):
+        if super(MTWidget, self)._set_x(x):
+            self.dispatch_event('on_move', *self._pos)
+            return True
+
+    def _set_y(self, x):
+        if super(MTWidget, self)._set_y(x):
+            self.dispatch_event('on_move', *self._pos)
+            return True
+
+    def _set_size(self, x):
+        if super(MTWidget, self)._set_size(x):
+            self.dispatch_event('on_resize', *self._size)
+            return True
+
+    def _set_width(self, x):
+        if super(MTWidget, self)._set_width(x):
+            self.dispatch_event('on_resize', *self._size)
+            return True
+
+    def _set_height(self, x):
+        if super(MTWidget, self)._set_height(x):
+            self.dispatch_event('on_resize', *self._size)
+            return True
+
 
 # Register all base widgets
 MTWidgetFactory.register('MTWidget', MTWidget)

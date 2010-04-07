@@ -55,13 +55,17 @@ class BaseObject(object):
         if pos == self._pos:
             return False
         self._pos = tuple(pos)
+        return True
     pos = property(lambda self: self._get_pos(),
                    lambda self, x: self._set_pos(x), doc='Object position (x, y)')
 
     def _get_x(self):
         return self._pos[0]
     def _set_x(self, x):
-        self.pos = (x, self.y)
+        if x == self.pos[0]:
+            return False
+        self._pos = (x, self.y)
+        return True
     x = property(lambda self: self._get_x(),
                  lambda self, x: self._set_x(x),
                  doc = 'Object X position')
@@ -69,10 +73,22 @@ class BaseObject(object):
     def _get_y(self):
         return self._pos[1]
     def _set_y(self, y):
-        self.pos = (self.x, y)
+        if y == self.pos[1]:
+            return False
+        self._pos = (self.x, y)
+        return True
     y = property(lambda self: self._get_y(),
                  lambda self, x: self._set_y(x),
                  doc = 'Object Y position')
+
+    def _get_center(self):
+        return (self._pos[0] + self._size[0] / 2., self._pos[1] + self._size[1] / 2.)
+    def _set_center(self, center):
+        return self._set_pos((center[0] - self._size[0] / 2.,
+                              center[1] - self._size[1] / 2.))
+    center = property(lambda self: self._get_center(),
+                      lambda self, x: self._set_center(x),
+                      doc='Object center (cx, cy)')
 
     def update(self):
         pass

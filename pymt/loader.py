@@ -36,7 +36,7 @@ import os
 # Register a cache for loader
 Cache.register('pymt.loader', limit=500, timeout=60)
 
-class ProxyImage(Image, EventDispatcher):
+class ProxyImage(Image):
     '''Image returned by the Loader.image() function.
 
     :Events:
@@ -44,9 +44,7 @@ class ProxyImage(Image, EventDispatcher):
             Fired when the image is loaded and changed
     '''
     def __init__(self, arg, **kwargs):
-        Image.__init__(self, arg, **kwargs)
-        EventDispatcher.__init__(self)
-
+        super(ProxyImage, self).__init__(self, arg, **kwargs)
         self.register_event_type('on_load')
 
     def on_load(self):

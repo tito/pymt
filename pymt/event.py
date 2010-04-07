@@ -143,17 +143,19 @@ the particular class documentation.
 __all__ = ('EventDispatcher', )
 
 import inspect
+from baseobject import BaseObject
 
-class EventDispatcher(object):
+class EventDispatcher(BaseObject):
     '''Generic event dispatcher interface.
 
     See the module docstring for usage.
     '''
 
+    __slots__ = ('_event_types', )
     _event_stack = ()
 
-    def __init__(self):
-        super(EventDispatcher, self).__init__()
+    def __init__(self, **kwargs):
+        super(EventDispatcher, self).__init__(**kwargs)
         self._event_types = []
 
     @property

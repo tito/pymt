@@ -18,21 +18,18 @@ If the callback return False, the schedule will be removed.
 __all__ =  ('Clock', 'getClock')
 
 import time
-import weakref
 
 class _Event(object):
 
     def __init__(self, loop, callback, timeout, starttime):
         self.loop = loop
-        self.callback = weakref.ref(callback)
+        self.callback = callback
         self.timeout = timeout
         self._last_dt = starttime
         self._dt = 0.
 
     def do(self, dt):
-        cb = self.callback()
-        if cb is not None:
-            cb(dt)
+        self.callback(dt)
 
     def tick(self, curtime):
         # timeout happen ?
@@ -44,10 +41,7 @@ class _Event(object):
         self._last_dt = curtime
 
         # call the callback
-        cb = self.callback()
-        if cb is None:
-            return False
-        ret = cb(self._dt)
+        ret = self.callback(self._dt)
 
         # if it's a once event, don't care about the result
         # just remove the event
@@ -109,15 +103,16 @@ class Clock(object):
         '''Schedule an event in <timeout> seconds'''
         event = _Event(False, callback, timeout, self._last_tick)
         self._events.append(event)
+        return event
 
     def schedule_interval(self, callback, timeout):
         '''Schedule a event to be call every <timeout> seconds'''
         event = _Event(True, callback, timeout, self._last_tick)
         self._events.append(event)
+        return event
 
     def unschedule(self, callback):
         '''Remove a previous schedule event'''
-        callback = weakref.ref(callback)
         self._events = [x for x in self._events if x.callback != callback]
 
     def _process_events(self):

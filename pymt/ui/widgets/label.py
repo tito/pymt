@@ -170,6 +170,9 @@ class MTLabel(MTWidget):
                 kw[name] = value
         except:
             pass
-        return super(MTLabel, self).__setattr__(name, value)
+        try:
+            return super(MTLabel, self).__setattr__(name, value)
+        except:
+            pass
 
 MTWidgetFactory.register('MTLabel', MTLabel)

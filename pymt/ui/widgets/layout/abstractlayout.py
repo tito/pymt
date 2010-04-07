@@ -66,7 +66,6 @@ class MTAbstractLayout(MTWidget):
         if do_layout or (not do_layout and self.auto_layout):
             self.need_update = True
 
-
     def reposition_child(self, child, **kwargs):
         if self.animation_type and len(kwargs):
             kwargs['f'] = self.animation_type
@@ -94,8 +93,8 @@ class MTAbstractLayout(MTWidget):
 
     def on_update(self):
         if self.need_update:
-            self.do_layout()
             self.need_update = False
+            self.do_layout()
         super(MTAbstractLayout, self).on_update()
 
     def update(self):
@@ -117,5 +116,36 @@ class MTAbstractLayout(MTWidget):
             if w.size_hint[1]:
                 w.height = w.size_hint[1]*self.height
 
-
+    # overload all possible function that need to apply
+    # relayout before accessing to the value
+    def _get_size(self):
+        if self.need_update:
+            self.need_update = False
+            self.do_layout()
+        return super(MTAbstractLayout, self)._get_size()
+    def _get_width(self):
+        if self.need_update:
+            self.need_update = False
+            self.do_layout()
+        return super(MTAbstractLayout, self)._get_width()
+    def _get_height(self):
+        if self.need_update:
+            self.need_update = False
+            self.do_layout()
+        return super(MTAbstractLayout, self)._get_height()
+    def _get_pos(self):
+        if self.need_update:
+            self.need_update = False
+            self.do_layout()
+        return super(MTAbstractLayout, self)._get_pos()
+    def _get_x(self):
+        if self.need_update:
+            self.need_update = False
+            self.do_layout()
+        return super(MTAbstractLayout, self)._get_x()
+    def _get_y(self):
+        if self.need_update:
+            self.need_update = False
+            self.do_layout()
+        return super(MTAbstractLayout, self)._get_y()
 

@@ -30,8 +30,6 @@ class MTAnchorLayout(MTAbstractLayout):
         self.anchor_x = kwargs.get('anchor_x')
         self.anchor_y = kwargs.get('anchor_y')
 
-
-
     def _get_anchor_x(self):
         return self._anchor_x
     def _set_anchor_x(self, anchor):
@@ -41,7 +39,9 @@ class MTAnchorLayout(MTAbstractLayout):
             self.do_layout()
         else:
             raise ValueError("'%s' is not a valid anchor for horizontal(X) axis!  Allowed values are: 'center', 'left', or 'right'." % anchor)
-    anchor_x = property(_get_anchor_x, _set_anchor_x, doc="Horizontal Anchor.  One of: 'left', 'right, or 'center'.  default is center ")
+    anchor_x = property(_get_anchor_x, _set_anchor_x,
+                        doc="Horizontal Anchor.  One of: 'left', 'right', or" +
+                            "'center'.  default is center ")
 
     def _get_anchor_y(self):
         return self._anchor_y
@@ -52,7 +52,9 @@ class MTAnchorLayout(MTAbstractLayout):
             self.do_layout()
         else:
             raise ValueError("'%s' is not a valid anchor for vertical(Y) axis!  Allowed values are: 'center', 'top', or 'bottom'." % anchor)
-    anchor_y = property(_get_anchor_y, _set_anchor_y, doc="Vertical Anchor.  One of: 'top', 'bottom, or 'center'.  default is center ")
+    anchor_y = property(_get_anchor_y, _set_anchor_y,
+                        doc="Vertical Anchor.  One of: 'top', 'bottom', or" +
+                            "'center'.  default is center ")
 
 
     def do_layout(self):

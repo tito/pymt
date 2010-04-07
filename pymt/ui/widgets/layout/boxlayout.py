@@ -38,7 +38,6 @@ class MTBoxLayout(MTAbstractLayout):
         if self._invert:
             front = not front
         super(MTBoxLayout, self).add_widget(widget, front, do_layout)
-
         
     def _get_orientation(self):
         return self._orientation
@@ -53,9 +52,6 @@ class MTBoxLayout(MTAbstractLayout):
     orientation = property(_get_orientation, _set_orientation, doc="Orientation of widget inside layout, can be `horizontal` or `vertical`")
 
     def do_layout(self):
-        # we just do a layout, dispatch event
-        self.dispatch_event('on_layout')
-        
         width  = self.padding*2
         height = self.padding*2
         
@@ -107,6 +103,8 @@ class MTBoxLayout(MTAbstractLayout):
 
         self.width  = max(width+self.padding, self.width)
         self.height = max(height+self.padding, self.height)
+
+        self.dispatch_event('on_layout')
 
 
 # Register all base widgets

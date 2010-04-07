@@ -406,13 +406,14 @@ class MTWidget(EventDispatcher):
             self.register_event_type(ev)
 
     def on_update(self):
+        if not self.visible:
+            return
         for w in self.children.iterate():
             w.dispatch_event('on_update')
 
     def on_draw(self):
         if not self.visible:
             return
-
         self.draw()
         if self.draw_children:
             for w in self.children.iterate():

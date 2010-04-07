@@ -151,12 +151,12 @@ class EventDispatcher(BaseObject):
     See the module docstring for usage.
     '''
 
-    __slots__ = ('_event_types', )
-    _event_stack = ()
+    __slots__ = ('_event_types', '_event_stack')
 
     def __init__(self, **kwargs):
         super(EventDispatcher, self).__init__(**kwargs)
         self._event_types = []
+        self._event_stack = [{}]
 
     @property
     def event_types(self):
@@ -190,12 +190,7 @@ class EventDispatcher(BaseObject):
         object may also be specified, in which case it will be searched for
         callables with event names.
         '''
-        # Create event stack if necessary
-        if type(self._event_stack) is tuple:
-            self._event_stack = []
-
         # Place dict full of new handlers at beginning of stack
-        self._event_stack.insert(0, {})
         self.set_handlers(*args, **kwargs)
 
     def remove_handler(self, name, handler):
@@ -291,10 +286,6 @@ class EventDispatcher(BaseObject):
 
         See `push_handlers` for the accepted argument types.
         '''
-        # Create event stack if necessary
-        if type(self._event_stack) is tuple:
-            self._event_stack = [{}]
-
         for name, handler in self._get_handlers(args, kwargs):
             self.set_handler(name, handler)
 
@@ -308,9 +299,6 @@ class EventDispatcher(BaseObject):
                 Event handler to attach.
 
         '''
-        # Create event stack if necessary
-        if type(self._event_stack) is tuple:
-            self._event_stack = [{}]
         self._event_stack[0][name] = handler
 
     def dispatch_event(self, event_type, *args):

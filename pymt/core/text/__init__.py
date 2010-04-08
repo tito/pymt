@@ -53,7 +53,7 @@ class LabelBase(BaseObject):
             Text color in (R, G, B, A)
     '''
 
-    __slots__ = ('options', 'texture', '_label', 'color')
+    __slots__ = ('options', 'texture', '_label', 'color', 'usersize')
 
     _cache_glyphs = {}
 

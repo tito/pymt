@@ -19,6 +19,7 @@ class TouchTracer(MTWidget):
         k      = {'anchor_y': 'bottom', 'font_size': 10}
         margin = 4
         set_brush(particle_fn)
+        points = 0
         for touch in getCurrentTouches():
             set_color(*touch.userdata['touchtracer.color'])
             paintLine(touch.userdata['touchtracer.pos'], width=5)
@@ -34,6 +35,10 @@ class TouchTracer(MTWidget):
             set_color(.2, .2, .4)
             drawRoundedRectangle(pos=(int(lpos.x), int(lpos.y)), size=lsize)
             drawLabel(label=label, pos=pos, **k)
+            points += len(touch.userdata['touchtracer.pos'])
+
+        drawLabel(label='%d' % points, color=(.5,.5,.5), pos=(5, 5),
+                  center=False)
 
 
 if __name__ == '__main__':

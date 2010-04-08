@@ -1,4 +1,12 @@
 from distutils.core import setup
+from distutils.extension import Extension
+
+try:
+    have_cython = True
+    from Cython.Distutils import build_ext
+except:
+    have_cython = False
+
 import sys
 import os
 
@@ -19,6 +27,13 @@ for root, subFolders, files in os.walk('examples'):
             continue
         examples.append(os.path.join(root,file))
 
+# modules
+ext_modules = []
+cmdclass = {}
+if have_cython:
+    cmdclass['build_ext'] = build_ext
+    ext_modules.append(Extension('pymt.graphx._graphx', ['pymt/graphx/_graphx.pyx']))
+
 # setup !
 setup(
     name='PyMT',
@@ -28,6 +43,8 @@ setup(
     url='http://pymt.txzone.net/',
     license='LGPL',
     description='A framework for making accelerated multitouch UI',
+    ext_modules=ext_modules,
+    cmdclass=cmdclass,
     packages=[
         'pymt',
         'pymt.graphx',

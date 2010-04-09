@@ -207,7 +207,7 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
         else:
             glVertex2f(x, y)
 
-    if linewidth is not None:
+    if linewidth > 0:
         glPopAttrib()
 
 
@@ -257,13 +257,13 @@ def drawPolygon(points, style=GL_POLYGON, linewidth=0):
         _graphx.drawPolygon(style, points, linewidth)
         return
 
-    if linewidth is not None:
+    if linewidth > 0:
         glPushAttrib(GL_LINE_BIT)
         glLineWidth(linewidth)
     with gx_begin(style):
         for x, y in zip(points[::2], points[1::2]):
             glVertex2f(x, y)
-    if linewidth is not None:
+    if linewidth > 0:
         glPopAttrib()
 
 
@@ -424,7 +424,7 @@ def drawLine(points, width=None, colors=[]):
         glPopAttrib()
 
 def drawRoundedRectangleAlpha(pos=(0,0), size=(100,50), radius=5, alpha=(1,1,1,1),
-                         linewidth=1.5, precision=0.5, style=GL_TRIANGLE_FAN):
+                         precision=0.5, style=GL_TRIANGLE_FAN):
     '''Draw a rounded rectangle alpha layer.
 
     :Parameters:
@@ -436,8 +436,6 @@ def drawRoundedRectangleAlpha(pos=(0,0), size=(100,50), radius=5, alpha=(1,1,1,1
             Radius of corner
         `alpha` : list, default to (1, 1, 1, 1)
             Alpha to set in each corner (top, right, bottom, left)
-        `linewidth` : float, default to 1.5
-            Line with of border
         `precision` : float, default to 0.5
             Precision of corner angle
         `style` : opengl begin, default to GL_POLYGON

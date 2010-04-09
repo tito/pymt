@@ -1,5 +1,10 @@
 __all__ = ('test', 'test_runpymt', 'test_image')
 
+def import_pymt_no_window():
+    import os
+    os.environ['PYMT_SHADOW_WINDOW'] = '0'
+    import pymt
+
 def test_image():
     pass
 
@@ -22,19 +27,24 @@ def test(cond):
     '''Test a condition, and print the result on the screen'''
     import sys
     import inspect
+    import os
     frame = sys._current_frames().values()[0]
     callers = inspect.getouterframes(frame)
     caller = callers[1]
     info = inspect.getframeinfo(caller[0])
     code = info.code_context[0].replace('\n','').strip()
     if cond:
+        os.environ['__test_passed'] = str(int(os.environ['__test_passed']) + 1)
         testresult(code, 'OK')
     else:
+        os.environ['__test_failed'] = str(int(os.environ['__test_failed']) + 1)
         testresult(code, 'Failed')
 
 def testresult(code, ret):
     '''Print a result on the screen'''
     import os, sys
+    if '__verbose' not in os.environ:
+        return
     print '%-25s %-35s %4s' % (
         '%s:%s' % (os.environ['__modname'][5:],
                    os.environ['__testname'][9:]),
@@ -46,24 +56,55 @@ def _set_testinfo(a, b):
     import os
     os.environ['__modname'] = a
     os.environ['__testname'] = b
+    os.environ['__test_passed'] = '0'
+    os.environ['__test_failed'] = '0'
 
 
 if __name__ == '__main__':
     import os
     import sys
+    import time
 
     def testrun(modname, testname):
         _set_testinfo(modname, testname)
         mod = __import__(modname)
         getattr(mod, testname)()
+        passed = os.environ['__test_passed']
+        failed = os.environ['__test_failed']
+        print '%-25s %3s passed, %3s failed' % (
+            '%s:%s' % (os.environ['__modname'][5:],
+                       os.environ['__testname'][9:]),
+            passed, failed)
 
     def testrun_launch(modname, testname):
         import subprocess
+        args = []
+        kargs = {}
+        if '__verbose' in os.environ:
+            args.append('--verbose')
+        if '__debug' not in os.environ:
+            kargs['stderr'] = subprocess.PIPE
         p = subprocess.Popen(
-            ['python', __file__, modname, testname],
-            stderr=subprocess.PIPE
+            ['python', __file__, modname, testname] + args,
+            env=os.environ,
+            **kargs
         )
         p.communicate()
+
+    opts = [x for x in sys.argv if x.startswith('--')]
+    sys.argv = [x for x in sys.argv if not x.startswith('--')]
+
+    for x in opts:
+        if x in ('--verbose'):
+            os.environ['__verbose'] = '1'
+        elif x in ('--debug'):
+            os.environ['__debug'] = '1'
+        elif x in ('--help'):
+            print 'Usage: python init.py [options]'
+            print '  --debug              show debug'
+            print '  --verbose            show verbose'
+            print '  --help               show this help'
+            sys.exit(0)
 
     if len(sys.argv) == 3:
         modname = sys.argv[1][:-3]
@@ -73,7 +114,12 @@ if __name__ == '__main__':
         current_dir = os.path.dirname(__file__)
         if current_dir == '':
             current_dir = '.'
-        for modname in os.listdir(current_dir):
+
+        start = time.time()
+
+        l = os.listdir(current_dir)
+        l.sort()
+        for modname in l:
             if not modname.startswith('test_'):
                 continue
             if modname[-3:] != '.py':
@@ -83,3 +129,8 @@ if __name__ == '__main__':
                 if not testname.startswith('unittest_'):
                     continue
                 testrun_launch(modname, testname)
+
+        elasped = time.time() - start
+        print '>> Finished in %.3fs' % (
+            elasped,
+        )

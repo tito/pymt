@@ -1,7 +1,8 @@
 
-from init import test
+from init import test, import_pymt_no_window
 
 def unittest_basics():
+    import_pymt_no_window()
     from pymt import Vector
     v = Vector(10, 10)
     test(v.x == 10)
@@ -40,10 +41,11 @@ def unittest_basics():
     test(c.y == 8)
 
 def unittest_methods():
+    import_pymt_no_window()
     from pymt import Vector
 
     a = Vector(0, 10)
-    test(a.length == 10)
+    test(a.length() == 10)
 
     b = Vector(0, 20)
     test(b.distance(a) == 10)

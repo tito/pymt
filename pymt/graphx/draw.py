@@ -2,8 +2,6 @@
 Draw: primitive drawing
 '''
 
-
-
 __all__ = (
     'drawLabel', 'drawRoundedRectangle',
     'drawCircle', 'drawPolygon',
@@ -29,17 +27,16 @@ _temp_label = None
 if not 'PYMT_DOC' in os.environ:
     Cache.register('pymt.label', timeout=1., limit=100)
 
-
 def _make_point_list(points):
     t = type(points)
     if not t in (tuple, list):
-        raise Exception("Point list must be tuple or list of coordinates or points(tuple/list of 2D coords)")
+        raise Exception(
+            'Point list must be tuple or list of coordinates' +
+            'or points(tuple/list of 2D coords)')
     if type(points[0]) in (tuple, list): #flatten the points
         return [coord for point in points for coord in point]
     else:
         return list(points)
-
-
 
 def getLabel(label, **kwargs):
     '''Get a cached label object

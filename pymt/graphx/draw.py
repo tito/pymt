@@ -22,17 +22,22 @@ from paint import *
 from statement import *
 from colors import *
 
+try:
+    import _graphx
+except ImportError:
+    _graphx = None
+    pymt.pymt_logger.warning('Extensions: _graphx not available')
+
 # create a cache for label
 _temp_label = None
 if not 'PYMT_DOC' in os.environ:
-    Cache.register('pymt.label', timeout=1., limit=100)
+    Cache.register('pymt.label', timeout=1., limit=1000)
 
 def _make_point_list(points):
     t = type(points)
     if not t in (tuple, list):
-        raise Exception(
-            'Point list must be tuple or list of coordinates' +
-            'or points(tuple/list of 2D coords)')
+        raise Exception('Point list must be tuple or list of' +
+                        'coordinates or points(tuple/list of 2D coords)')
     if type(points[0]) in (tuple, list): #flatten the points
         return [coord for point in points for coord in point]
     else:
@@ -107,7 +112,7 @@ def getLastLabel():
     return _temp_label
 
 def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
-                         linewidth=None, precision=0.5, style=GL_POLYGON,
+                         linewidth=0, precision=0.5, style=GL_POLYGON,
                          corners=(True, True, True, True)):
     '''Draw a rounded rectangle
 
@@ -120,7 +125,7 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
             Radius of corner
         `color` : tuple, default to None
             Color to be passed to set_color()
-        `linewidth` : float, default to 1.5
+        `linewidth` : float (default to current linewidth)
             Line with of border
         `precision` : float, default to 0.5
             Precision of corner angle
@@ -133,15 +138,22 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
     x, y = pos
     w, h = size
 
+    if color:
+        set_color(*color)
+
+    # use accelerate version
+    '''
+    if _graphx:
+        _graphx.drawRoundedRectangle()
+        return
+    '''
+
     if size[0] < radius * 2:
         radius = size[0] / 2
     if size[1] < radius * 2:
         radius = size[1] / 2
 
-    if color:
-        set_color(*color)
-
-    if linewidth is not None:
+    if linewidth > 0:
         glPushAttrib(GL_LINE_BIT)
         glLineWidth(linewidth)
 
@@ -199,7 +211,7 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
         glPopAttrib()
 
 
-def drawCircle(pos=(0,0), radius=1.0, linewidth=None):
+def drawCircle(pos=(0,0), radius=1.0, linewidth=0):
     '''Draw a simple circle
 
     :Parameters:
@@ -212,12 +224,12 @@ def drawCircle(pos=(0,0), radius=1.0, linewidth=None):
     with gx_matrix:
         glTranslatef(x, y, 0)
         glScalef(radius, radius, 1.0)
-        if linewidth:
+        if linewidth > 0:
             gluDisk(gluNewQuadric(), 1-linewidth/float(radius), 1, 32,1)
         else:
             gluDisk(gluNewQuadric(), 0, 1, 32,1)
 
-def drawPolygon(points, style=GL_POLYGON, linewidth=None):
+def drawPolygon(points, style=GL_POLYGON, linewidth=0):
     '''Draw polygon from points list
 
     :Parameters:
@@ -237,22 +249,25 @@ def drawPolygon(points, style=GL_POLYGON, linewidth=None):
             style = GL_LINE_LOOP
         else:
             raise Exception("Invalid style argument for drawPolygon method, try 'fill', 'GL_POLYGON', 'line', or 'GL_LINE_LOOP'")
-    
+
     points = _make_point_list(points)
+
+    # use accelerate version
+    if _graphx:
+        _graphx.drawPolygon(style, points, linewidth)
+        return
 
     if linewidth is not None:
         glPushAttrib(GL_LINE_BIT)
         glLineWidth(linewidth)
-
     with gx_begin(style):
         for x, y in zip(points[::2], points[1::2]):
             glVertex2f(x, y)
-            
     if linewidth is not None:
         glPopAttrib()
-        
 
-def drawTriangle(pos, w, h, style=None, linewidth=None):
+
+def drawTriangle(pos, w, h, style=None, linewidth=0):
     '''Draw one triangle
 
     :Parameters:
@@ -283,6 +298,11 @@ def drawRectangle(pos=(0,0), size=(1.0,1.0), style=GL_QUADS):
         `style` : opengl begin, default to GL_QUADS
             Style of rectangle (try GL_LINE_LOOP)
     '''
+    # use accelerated version
+    if _graphx:
+        _graphx.drawRectangle(style, pos[0], pos[1], size[0], size[1])
+        return
+
     with gx_begin(style):
         glVertex2f(pos[0], pos[1])
         glVertex2f(pos[0] + size[0], pos[1])
@@ -309,20 +329,20 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0),
             list.
     '''
     # initialize texcoords
-    texcoords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
+    tex_coords_def = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
 
     # if texture is provided, use it
     if texture:
         stmt = gx_texture(texture)
         stmt.bind()
         if type(texture) in (pymt.Texture, pymt.TextureRegion):
-            texcoords = texture.tex_coords
+            tex_coords = texture.tex_coords
 
     # if tex_coords is provided, use it
-    if tex_coords:
-        texcoords = tex_coords
+    if tex_coords is None:
+        tex_coords = tex_coords_def
 
-    pos = ( pos[0], pos[1],
+    coords = ( pos[0], pos[1],
             pos[0] + size[0], pos[1],
             pos[0] + size[0], pos[1] + size[1],
             pos[0], pos[1] + size[1])
@@ -330,27 +350,32 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0),
     if color_coords:
         with gx_begin(GL_QUADS):
             glColor4f(*color_coords[0])
-            glTexCoord2f(texcoords[0], texcoords[1])
-            glVertex2f(pos[0], pos[1])
+            glTexCoord2f(tex_coords[0], tex_coords[1])
+            glVertex2f(coords[0], coords[1])
             glColor4f(*color_coords[1])
-            glTexCoord2f(texcoords[2], texcoords[3])
-            glVertex2f(pos[2], pos[3])
+            glTexCoord2f(tex_coords[2], tex_coords[3])
+            glVertex2f(coords[2], coords[3])
             glColor4f(*color_coords[2])
-            glTexCoord2f(texcoords[4], texcoords[5])
-            glVertex2f(pos[4], pos[5])
+            glTexCoord2f(tex_coords[4], tex_coords[5])
+            glVertex2f(coords[4], coords[5])
             glColor4f(*color_coords[3])
-            glTexCoord2f(texcoords[6], texcoords[7])
-            glVertex2f(pos[6], pos[7])
+            glTexCoord2f(tex_coords[6], tex_coords[7])
+            glVertex2f(coords[6], coords[7])
     else:
-        with gx_begin(GL_QUADS):
-            glTexCoord2f(texcoords[0], texcoords[1])
-            glVertex2f(pos[0], pos[1])
-            glTexCoord2f(texcoords[2], texcoords[3])
-            glVertex2f(pos[2], pos[3])
-            glTexCoord2f(texcoords[4], texcoords[5])
-            glVertex2f(pos[4], pos[5])
-            glTexCoord2f(texcoords[6], texcoords[7])
-            glVertex2f(pos[6], pos[7])
+        if _graphx:
+            x, y = pos
+            w, h = size
+            _graphx.drawTexturedRectangle(x, y, w, h, *tex_coords)
+        else:
+            with gx_begin(GL_QUADS):
+                glTexCoord2f(tex_coords[0], tex_coords[1])
+                glVertex2f(coords[0], coords[1])
+                glTexCoord2f(tex_coords[2], tex_coords[3])
+                glVertex2f(coords[2], coords[3])
+                glTexCoord2f(tex_coords[4], tex_coords[5])
+                glVertex2f(coords[4], coords[5])
+                glTexCoord2f(tex_coords[6], tex_coords[7])
+                glVertex2f(coords[6], coords[7])
 
     # release texture
     if texture:
@@ -496,6 +521,14 @@ def drawRectangleAlpha(pos=(0,0), size=(1.0,1.0), alpha=(1,1,1,1), style=GL_QUAD
         `style` : opengl begin, default to GL_QUADS
             Style of rectangle (try GL_LINE_LOOP)
     '''
+    # use accelerated version
+    if _graphx:
+        x, y = pos
+        w, h = size
+        a0, a1, a2, a3 = alpha
+        _graphx.drawRectangleAlpha(style, x, y, w, h, a0, a1, a2, a3)
+        return
+
     with DO(gx_alphablending, gx_begin(style)):
         glColor4f(1, 1, 1, alpha[0])
         glVertex2f(pos[0], pos[1])

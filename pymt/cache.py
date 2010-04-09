@@ -173,13 +173,22 @@ class Cache:
 
 
     @staticmethod
-    def _purge_by_timeout(*largs):
+    def _purge_by_timeout(dt):
 
         curtime = getClock().get_time()
 
         for category in Cache._objects:
 
             timeout = Cache._categories[category]['timeout']
+            if timeout is not None and dt > timeout:
+                # XXX got a lag ! that may be because the frame take lot of time to
+                # draw. and the timeout is not adapted to the current framerate
+                # so, increase the timeout by two.
+                # ie: if the timeout is 1 sec, and framerate go to 0.7, newly
+                # object added will be automaticly trashed.
+                timeout *= 2
+                Cache._categories[category]['timeout'] = timeout
+                continue
 
             for key in Cache._objects[category].keys():
 

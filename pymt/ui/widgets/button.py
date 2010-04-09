@@ -115,11 +115,6 @@ class MTButton(MTLabel):
     def update_label(self):
         pass
 
-    def draw_background(self):
-        set_color(*self.style.get('bg-color'))
-        drawCSSRectangle(pos=self.pos, size=self.size, style=self.style,
-                         state=self.state)
-
     def draw_label(self, dx=0, dy=0):
         if self.style['draw-text-shadow']:
             tsp = self.style['text-shadow-position']

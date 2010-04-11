@@ -74,7 +74,6 @@ class BaseWindow(EventDispatcher):
         kwargs.setdefault('config', None)
         kwargs.setdefault('show_fps', False)
         kwargs.setdefault('style', {})
-        kwargs.setdefault('gradient', False)
 
         # don't init window 2 times,
         # except if force is specified
@@ -86,7 +85,6 @@ class BaseWindow(EventDispatcher):
         # init privates
         self._modifiers = []
         self._size = (0, 0)
-        self.gradient = kwargs.get('gradient')
 
         # event subsystem
         self.register_event_type('on_flip')
@@ -282,12 +280,6 @@ class BaseWindow(EventDispatcher):
         self.clear()
         if self.wallpaper is not None:
             self.draw_wallpaper()
-        elif self.gradient:
-            self.draw_gradient()
-
-    def draw_gradient(self):
-        set_color(*self.style.get('bg-color'))
-        drawCSSRectangle(size=self.size, style=self.style)
 
     def draw_wallpaper(self):
         if self.wallpaper_position == 'center':

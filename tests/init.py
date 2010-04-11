@@ -45,7 +45,7 @@ def testresult(code, ret):
     import os, sys
     if '__verbose' not in os.environ:
         return
-    print '%-25s %-35s %4s' % (
+    print '%-35s %-35s %4s' % (
         '%s:%s' % (os.environ['__modname'][5:],
                    os.environ['__testname'][9:]),
         code,
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         getattr(mod, testname)()
         passed = os.environ['__test_passed']
         failed = os.environ['__test_failed']
-        print '%-25s %3s passed, %3s failed' % (
+        print '%-35s %3s passed, %3s failed' % (
             '%s:%s' % (os.environ['__modname'][5:],
                        os.environ['__testname'][9:]),
             passed, failed)
@@ -100,7 +100,7 @@ if __name__ == '__main__':
         elif x in ('--debug'):
             os.environ['__debug'] = '1'
         elif x in ('--help'):
-            print 'Usage: python init.py [options]'
+            print 'Usage: python init.py [options] <filter>'
             print '  --debug              show debug'
             print '  --verbose            show verbose'
             print '  --help               show this help'
@@ -111,6 +111,11 @@ if __name__ == '__main__':
         testname = sys.argv[2]
         testrun(modname, testname)
     else:
+
+        flt = None
+        if len(sys.argv) == 2:
+            flt = sys.argv[1]
+
         current_dir = os.path.dirname(__file__)
         if current_dir == '':
             current_dir = '.'
@@ -128,7 +133,8 @@ if __name__ == '__main__':
             for testname in dir(mod):
                 if not testname.startswith('unittest_'):
                     continue
-                testrun_launch(modname, testname)
+                if flt is None or flt in testname:
+                    testrun_launch(modname, testname)
 
         elasped = time.time() - start
         print '>> Finished in %.3fs' % (

@@ -2,11 +2,11 @@ from pymt import *
 
 
 class JitterSensor(MTWidget):
-    """
+    """Explanation:
     This widget helps you to find a good jitter_distance setting for your
-    specific multi-touch setup. Just run it and follow the instructions. It will
-    then measure the amount of your BLOB's jitter and suggest a config value
-    which you can then consider adjusting in your configuration file.
+    specific multi-touch setup. Just follow the instructions. The amount of
+    your BLOB's jitter will be measured and a fitting configuration value will be
+    set in your configuration file.
     """
     def __init__(self, **kwargs):
         super(JitterSensor, self).__init__(**kwargs)
@@ -24,6 +24,10 @@ class JitterSensor(MTWidget):
         # When the touch is stable, get the original position
         self.original_spos = None
         self.switch_label()
+        # Being lazy here. Just reuse the docstring :-)
+        explanation = MTLabel(pos=(10, 10), anchor_x='left', anchor_y='top',
+                              autosize=True, label=self.__doc__)
+        self.add_widget(explanation)
 
     def switch_label(self):
         try:
@@ -39,8 +43,7 @@ class JitterSensor(MTWidget):
         if self._done:
             label = 'You may now lift your finger.'
         x, y = self.pos
-        self.label = MTLabel(pos=(x, y-100), anchor_x='left', anchor_y='bottom',
-                             autosize=True, label=label)
+        self.label = MTLabel(pos=(x+self.width+5, y+self.height/2), label=label)
         self.add_widget(self.label)
 
     def ready(self, dt):
@@ -108,8 +111,6 @@ class JitterSensor(MTWidget):
         return maxmean
 
     def draw(self):
-        # Being lazy here. :-)
-        drawLabel(self.__doc__, pos=(30, 30), center=False)
         if self._done:
             set_color(0, 0, 0.8)
         elif self._ready:
@@ -119,7 +120,7 @@ class JitterSensor(MTWidget):
         drawRectangle(self.pos, self.size)
         set_color(1, 1, 1)
         drawRectangle((self.x+self.margin, self.y+self.margin),
-                       (self.width - 2 * self.margin, self.height - 2 * self.margin))
+                      (self.width - 2 * self.margin, self.height - 2 * self.margin))
 
 
 if __name__ == '__main__':

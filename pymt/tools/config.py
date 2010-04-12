@@ -102,8 +102,7 @@ def configuration_save():
         pymt_config.set('input', device_id, option)
 
     try:
-        with open(pymt_config_fn, 'w') as fd:
-            pymt_config.write(fd)
+        pymt_config.write()
         tkMessageBox.showinfo('PyMT', 'Configuration saved !')
     except Exception, e:
         tkMessageBox.showwarning('PyMT', 'Unable to save default configuration : ' + str(e))

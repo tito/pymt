@@ -27,17 +27,22 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             if self.has_option(section, option):
                 return
             self.set(section, option, value)
+
         def getdefault(self, section, option, defaultvalue):
             if not self.has_section(section):
                 return defaultvalue
             if not self.has_option(section, option):
                 return defaultvalue
             return self.getint(section, option)
+
         def adddefaultsection(self, section):
             if self.has_section(section):
                 return
             self.add_section(section)
 
+        def write(self):
+            with open(pymt_config_fn, 'w') as fd:
+                ConfigParser.write(self, fd)
 
     # Create default configuration
     pymt_config = PyMTConfigParser()
@@ -132,6 +137,10 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             # add option to turn off pyOpenGL Error Checking
             pymt_config.setdefault('pymt', 'gl_error_check', '1')
 
+        elif pymt_config_version == 8:
+            pymt_config.setdefault('pymt', 'jitter_distance', '0')
+            pymt_config.setdefault('pymt', 'jitter_ignore_devices', 'mouse,mactouch,')
+
         else:
             # for future.
             pass
@@ -149,8 +158,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 # If no configuration exist, write the default one.
     if not os.path.exists(pymt_config_fn) or need_save:
         try:
-            with open(pymt_config_fn, 'w') as fd:
-                pymt_config.write(fd)
+            pymt_config.write()
         except Exception, e:
             pymt_logger.exception('Core: error while saving default configuration file')
 

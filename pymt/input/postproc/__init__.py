@@ -10,11 +10,12 @@ import ignorelist
 import retaintouch
 import dejitter
 
-pymt_postproc_modules = []
+# Mapping of ID to module
+pymt_postproc_modules = {}
 
 # Don't go further if we generate documentation
 if 'PYMT_DOC' not in os.environ:
-    pymt_postproc_modules.append(retaintouch.InputPostprocRetainTouch())
-    pymt_postproc_modules.append(ignorelist.InputPostprocIgnoreList())
-    pymt_postproc_modules.append(doubletap.InputPostprocDoubleTap())
-    pymt_postproc_modules.append(dejitter.InputPostprocDejitter())
+    pymt_postproc_modules["retaintouch"] = retaintouch.InputPostprocRetainTouch()
+    pymt_postproc_modules["ignorelist"] = ignorelist.InputPostprocIgnoreList()
+    pymt_postproc_modules["doubletap"] = doubletap.InputPostprocDoubleTap()
+    pymt_postproc_modules["dejitter"] = dejitter.InputPostprocDejitter()

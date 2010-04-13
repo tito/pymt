@@ -332,7 +332,7 @@ def runTouchApp(widget=None, slave=False):
     pymt_evloop = TouchEventLoop()
 
     # add postproc modules
-    for mod in pymt_postproc_modules:
+    for mod in pymt_postproc_modules.values():
         pymt_evloop.add_postproc_module(mod)
 
     # add main widget

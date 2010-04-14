@@ -7,6 +7,7 @@ __all__ = ['intersection', 'difference', 'curry', 'strtotuple',
            'is_color_transparent', 'boundary', 'connect',
            'deprecated', 'SafeList']
 
+import inspect
 import re
 import functools
 import warnings
@@ -95,15 +96,23 @@ def connect(w1, p1, w2, p2, func=lambda x: x):
     '''Connect events to a widget property'''
     w1.connect(p1, w2, p2, func)
 
+DEPRECATED_CALLERS = []
 def deprecated(func):
     '''This is a decorator which can be used to mark functions
-    as deprecated. It will result in a warning being emitted
-    when the function is used.'''
+    as deprecated. It will result in a warning being emitted the first time
+    the function is used.'''
 
     @functools.wraps(func)
     def new_func(*args, **kwargs):
-        warning = "Call to deprecated function %s.  In %s, Line: %d." % (func.__name__, func.func_code.co_filename, func.func_code.co_firstlineno + 1 )
-        logger.pymt_logger.warn(warning)
+        file, line, caller = inspect.stack()[1][1:4]
+        caller_id = "%s:%s:%s" % (file, line, caller)
+        # We want to print deprecated warnings only once:
+        if caller_id not in DEPRECATED_CALLERS:
+            DEPRECATED_CALLERS.append(caller_id)
+            warning = ("Call to deprecated function %s in %s line %d. Called from %s line %d" + \
+                       " by %s().") % (func.__name__, func.func_code.co_filename,
+                                       func.func_code.co_firstlineno + 1, file, line, caller)
+            logger.pymt_logger.warn(warning)
         return func(*args, **kwargs)
     return new_func
 

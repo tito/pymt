@@ -254,10 +254,6 @@ class EventDispatcher(BaseObject):
             except KeyError:
                 pass
 
-        # Remove the frame if it's empty.
-        if not frame:
-            self._event_stack.remove(frame)
-
     def _get_handlers(self, args, kwargs):
         '''Implement handler matching on arguments for set_handlers and
         remove_handlers.

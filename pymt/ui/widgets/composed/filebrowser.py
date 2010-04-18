@@ -54,7 +54,7 @@ class FileTypeFactory:
 
 class MTFileEntryView(MTKineticItem):
     '''Base view class for every file entry'''
-    def __init__(self, **kwargs):       
+    def __init__(self, **kwargs):
         super(MTFileEntryView, self).__init__(**kwargs)
         self.type_image = None
         self.filename   = kwargs.get('filename')
@@ -163,8 +163,6 @@ class MTFileBrowserView(MTKineticList):
         kwargs.setdefault('view', MTFileIconEntryView)
         kwargs.setdefault('filters', [])
         kwargs.setdefault('multipleselection', False)
-        
-        
 
         super(MTFileBrowserView, self).__init__(**kwargs)
 
@@ -352,7 +350,6 @@ class MTFileBrowser(MTPopup):
 
         self.register_event_type('on_select')
 
-    
         # Title
         self.w_path = MTLabel(label='.', autoheight=True, size=(self.width, 30), color=(.7, .7, .7, .5))
         #self.add_widget(self.w_path)
@@ -372,7 +369,7 @@ class MTFileBrowser(MTPopup):
             self.w_hiddenfile = MTFileBrowserToggle(icon='filebrowser-hidden.png', size=(40, 40))
             self.w_hiddenfile.push_handlers(on_press=curry(self._toggle_hidden, self.w_hiddenfile))
             self.l_buttons.add_widget(self.w_hiddenfile)
-    
+
             # Select view
             self.w_view = MTFileBrowserToggle(icon='filebrowser-iconview.png', size=(40, 40))
             self.w_view.push_handlers(on_press=curry(self._toggle_view, self.w_view))

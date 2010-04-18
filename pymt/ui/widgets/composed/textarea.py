@@ -148,7 +148,7 @@ class MTTextArea(MTTextInput):
             self.set_line_text(self.edit_line, new_text)
             self.cursor -=1
 
-    def _kbd_on_key_up(self, key):
+    def _kbd_on_key_up(self, key, repeat=False):
         displayed_str, internal_str, internal_action, scale = key
         if internal_action is None:
             self.insert_charachter(displayed_str)

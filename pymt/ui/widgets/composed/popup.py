@@ -52,7 +52,7 @@ class MTPopup(MTScatterWidget):
 
         # Create layouts
         self.layout = MTBoxLayout(size=self.size,  orientation='vertical')
-        self.l_content = MTBoxLayout(orientation='vertical', invert_y=True)
+        self.l_content = MTBoxLayout(orientation='vertical')
         self.l_buttons = MTBoxLayout(size_hint=(1,None),orientation='horizontal')
 
         # Titles
@@ -71,16 +71,14 @@ class MTPopup(MTScatterWidget):
             self.l_buttons.add_widget(self.w_cancel)
 
         # Connect
-        self.layout.add_widget(self.l_buttons)
-        self.layout.add_widget(self.l_content)
         if kwargs.get('title'):
             self.layout.add_widget(self.w_title)
-            
+        self.layout.add_widget(self.l_content)
+        self.layout.add_widget(self.l_buttons)
         super(MTPopup, self).add_widget(self.layout)
 
     def _ensure_layout(self, force=False):
         while force or (self.size != self.layout.size):
-        
             self.layout.do_layout()
             self.size = self.layout.size
             force = False

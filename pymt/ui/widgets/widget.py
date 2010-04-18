@@ -72,8 +72,6 @@ class MTWidget(EventDispatcher):
             Visibility of widget
         `draw_children` : bool, default is True
             Indicate if children will be draw, or not
-        `no_css` : bool, default is False
-            Don't search/do CSS for this widget
         `style` : dict, default to {}
             Add inline CSS
         `cls` : str, default is ''
@@ -96,7 +94,8 @@ class MTWidget(EventDispatcher):
             Fired when parent widget is resized
     '''
 
-    __slots__ = ('cls', 'children', 'style', 'draw_children',
+    __slots__ = ('children', 'style', 'draw_children',
+                 '_cls',
                  '_root_window_source', '_root_window',
                  '_parent_window_source', '_parent_window',
                  '_parent_layout_source', '_parent_layout',
@@ -121,7 +120,6 @@ class MTWidget(EventDispatcher):
         kwargs.setdefault('height', None)
         kwargs.setdefault('visible', True)
         kwargs.setdefault('draw_children', True)
-        kwargs.setdefault('no_css', False)
         kwargs.setdefault('cls', '')
         kwargs.setdefault('style', {})
 
@@ -167,18 +165,22 @@ class MTWidget(EventDispatcher):
 
         # apply css
         self.style = {}
-        self.cls = kwargs.get('cls')
-        if not kwargs.get('no_css'):
-            style = css_get_style(widget=self)
-            self.apply_css(style)
-
-        # apply inline css
+        self._cls = ''
         self._inline_style = kwargs.get('style')
-        if len(kwargs.get('style')):
-            self.apply_css(kwargs.get('style'))
+        # loading is done here automaticly
+        self.cls = kwargs.get('cls')
 
         self.init()
 
+    def _set_cls(self, cls):
+        self._cls = cls
+        self.reload_css()
+    def _get_cls(self):
+        return self._cls
+    cls = property(
+        lambda self: self._get_cls(),
+        lambda self, x: self._set_cls(x),
+        doc='Get/Set the class of the widget (used for CSS)')
 
     def _set_parent(self, parent):
         self._parent = parent
@@ -230,10 +232,11 @@ class MTWidget(EventDispatcher):
         '''
         self.style.update(styles)
 
-    def reload_css(self, styles):
+    def reload_css(self):
         '''Called when css want to be reloaded from scratch'''
         self.style = {}
-        self.apply_css(styles)
+        style = css_get_style(widget=self)
+        self.apply_css(style)
         if len(self._inline_style):
             self.apply_css(self._inline_style)
 

@@ -351,13 +351,12 @@ def css_reload():
     for callback, args in _css_sources[:]:
         callback(*args, _reload=True)
     Cache.remove('pymt.css')
-    print _css_widgets
     for r in _css_widgets[:]:
         o = r()
         if o is None:
             _css_widgets.remove(r)
             continue
-        o.reload_css(css_get_style(o))
+        o.reload_css()
     pymt_logger.info('CSS: CSS Reloaded')
 
 # Autoload the default css + user css

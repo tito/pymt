@@ -101,7 +101,8 @@ class MTButton(MTLabel):
         touch.ungrab(self)
         self._current_touch = None
         self.state = 'normal'
-        self.dispatch_event('on_release', touch)
+        if self.collide_point(*touch.pos):
+            self.dispatch_event('on_release', touch)
         return True
 
     def _get_state(self):
@@ -174,7 +175,8 @@ class MTToggleButton(MTButton):
             return False
         touch.ungrab(self)
         self.state = self.state
-        self.dispatch_event('on_release', touch)
+        if self.collide_point(*touch.pos):
+            self.dispatch_event('on_release', touch)
         return True
 
     @property

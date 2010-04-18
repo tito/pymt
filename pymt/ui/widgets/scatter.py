@@ -158,6 +158,8 @@ class MTScatterWidget(MTWidget):
         return (self.new_point.x, self.new_point.y)
 
     def collide_point(self, x, y):
+        if not self.visible:
+            return False
         local_coords = self.to_local(x, y)
         if local_coords[0] > 0 and local_coords[0] < self.width \
            and local_coords[1] > 0 and local_coords[1] < self.height:
@@ -440,7 +442,7 @@ class MTScatterPlane(MTScatterWidget):
         pass
 
     def collide_point(self, x, y):
-        return True
+        return self.visible
 
 
 class MTScatterImage(MTScatterWidget):

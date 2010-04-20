@@ -99,6 +99,10 @@ circularslider {
     slider-draw-background: 1;
 }
 
+circularslider {
+	draw-background: 0;
+}
+
 fileentryview {
     item-selected: rgb(255, 100, 0, 200);
     border-radius: 8;

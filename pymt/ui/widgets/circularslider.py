@@ -3,17 +3,25 @@ Circular Slider: Using this you can make circularly shaped sliders
 '''
 
 
-__all__ = ['MTCircularSlider']
+__all__ = ('MTCircularSlider', 'RangeException')
 
-from OpenGL.GL import *
-from ...graphx import drawSemiCircle, gx_matrix_identity, set_color
+from OpenGL.GL import glTranslatef, glRotatef
+from ...graphx import drawSemiCircle, gx_matrix, set_color, drawLine
 from ...vector import Vector
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 from math import cos,sin,radians
 
+class RangeException(Exception):
+    pass
+
 class MTCircularSlider(MTWidget):
     '''MTCircularSlider is an implementation of a circular scrollbar using MTWidget.
+
+    ..warning ::
+        The widget is drawed from his center. Cause of that, the size of the
+        widget will be automaticly adjusted from the radius of the slider.
+        Eg: if you ask for a radius=100, the widget size will be 200x200
 
     :Parameters:
         `min` : int, default is 0
@@ -30,13 +38,14 @@ class MTCircularSlider(MTWidget):
             Radius of the slider
         `rotation` : int, default is 0
             Start rotation of circle
+        `padding` : int
+            Padding of content
+
     :Styles:
         `slider-color` : color
             Color of the slider
         `bg-color` : color
             Background color of the slider
-        `padding` : int
-            Padding of content
 
     :Events:
         `on_value_change`
@@ -50,79 +59,108 @@ class MTCircularSlider(MTWidget):
         kwargs.setdefault('padding', 3)
         kwargs.setdefault('sweep_angle', 90)
         kwargs.setdefault('rotation', 0)
+
+        have_size = 'size' in kwargs
+
         super(MTCircularSlider, self).__init__(**kwargs)
-        self.radius = kwargs.get('radius')
-        self.last_touch = (0, 0)
-        self.angle = 0.0
-        self.rotation = kwargs.get('rotation')
-        self.radius_line = (int(self.radius*sin(radians(self.rotation))),int(self.radius*cos(radians(self.rotation))))
-        self.thickness = kwargs.get('thickness')
-        self.padding = kwargs.get('padding')
-        self.sweep_angle = kwargs.get('sweep_angle')
-        self.slider_fill_angle = 0.0
-        self.slider_color = kwargs.get('slider_color')
+
+        # register event
         self.register_event_type('on_value_change')
+
+        # privates
+        self._last_touch    = (0, 0)
+        self._slider_angle  = 0.
+
+        self.radius         = kwargs.get('radius')
+        self.rotation       = kwargs.get('rotation')
+        self.thickness      = kwargs.get('thickness')
+        self.padding        = kwargs.get('padding')
+        self.sweep_angle    = kwargs.get('sweep_angle')
         self.min            = kwargs.get('min')
         self.max            = kwargs.get('max')
-        self._value         = self.min
+
+        # calculate radius line, needed for collision
+        self._radius_line   = self.radius * sin(radians(self.rotation)), \
+                              self.radius * cos(radians(self.rotation))
+
+        # adjust size
+        if not have_size:
+            self.size       = self.radius * 2, self.radius * 2
+
+        # set value
+        self._value         = 0
+        self.value          = self.min
         if kwargs.get('value'):
-            self._value = kwargs.get('value')
-        self.touchstarts    = []
+            self.value      = kwargs.get('value')
 
     def collide_point(self, x, y):
         #A algorithm to find the whether a touch is within a semi ring
-        point_dist = Vector(self.pos).distance((x, y))
-        point_angle = Vector(self.radius_line).angle((x - self.pos[0], y - self.pos[1]))
+        cx, cy = self.center
+        point_dist = Vector(self.center).distance((x, y))
+        point_angle = Vector(self._radius_line).angle((x - cx, y - cy))
         if point_angle < 0:
-           point_angle=360+point_angle
-        if point_angle <= self.sweep_angle and point_angle >=0:
-            return  point_dist<= self.radius and point_dist > self.radius-self.thickness
+            point_angle = 360. + point_angle
+        if 0 < point_angle > self.sweep_angle:
+            return False
+        return self.radius - self.thickness < point_dist <= self.radius
 
     def on_value_change(self, value):
         pass
 
     def on_touch_down(self, touch):
         if self.collide_point(touch.x, touch.y):
-            self.touchstarts.append(touch.id)
-            self.last_touch = (touch.x - self.pos[0], touch.y - self.pos[1])
-            self._value = (self.slider_fill_angle) * (self.max - self.min) / self.sweep_angle + self.min
-            self._calculate_angle()
+            touch.userdata['pymt.circularslider'] = self
+            self._calculate_angle(*touch.pos)
             return True
-
-    def on_touch_up(self, touch):
-        if touch.id in self.touchstarts:
-            self.touchstarts.remove(touch.id)
 
     def on_touch_move(self, touch):
-        if self.collide_point(touch.x, touch.y) and touch.id in self.touchstarts:
-            self.last_touch = (touch.x - self.pos[0], touch.y - self.pos[1])
-            self._value = (self.slider_fill_angle) * (self.max - self.min) / self.sweep_angle + self.min
-            self._calculate_angle()
+        if touch.userdata.get('pymt.circularslider') is self:
+            self._calculate_angle(*touch.pos)
             return True
 
-    def _calculate_angle(self):
-        self.angle = Vector(self.radius_line).angle(self.last_touch)
-        if self.angle<0:
-            self.slider_fill_angle = self.angle+360
-        else:
-            self.slider_fill_angle = self.angle
+    def _calculate_angle(self, x, y):
+        cx, cy = self.center
+        self._last_touch = x - cx, y - cy 
+        angle = Vector(self._radius_line).angle(self._last_touch)
+        if angle < 0:
+            angle += 360
+        try:
+            self.value = angle * (self.max - self.min) / self.sweep_angle + self.min
+            self._slider_angle = angle
+        except RangeException:
+            pass
         self.dispatch_event('on_value_change', self._value)
 
-    def on_draw(self):
-        with gx_matrix_identity:
-            set_color(*self.style.get('bg-color'))
-            glTranslated(self.pos[0], self.pos[1], 0)
-            glRotatef(-self.rotation, 0, 0, 1)
-            drawSemiCircle((0,0),self.radius-self.thickness,self.radius,32,1,0,self.sweep_angle)
-            set_color(*self.style.get('slider-color'))
-            drawSemiCircle((0,0),self.radius-self.thickness+self.padding,self.radius-self.padding,32,1,0,self.slider_fill_angle)
+    def draw(self):
+        super(MTCircularSlider, self).draw()
 
-    def _get_value(self,value):
+        # faster calculation if we remove dot
+        x, y = self.center
+        p = 0, 0
+        r = self.radius
+        t = self.thickness
+        s = self.sweep_angle
+        padding = self.padding
+
+        with gx_matrix:
+            set_color(*self.style.get('bg-color'))
+            glTranslatef(x, y, 0)
+            glRotatef(-self.rotation, 0, 0, 1)
+            drawSemiCircle(p, r - t, r, 32, 1, 0, s)
+            set_color(*self.style.get('slider-color'))
+            drawSemiCircle(p, r - t + padding, r - padding, 32, 1, 0, self._slider_angle)
+
+    def _get_value(self):
         return self._value
-    def _set_value(self,value):
-        self.slider_fill_angle = float(value)/float(100)*self.sweep_angle
-        self._value = float(value)/float(100)*self.max
-        self._calculate_angle()
-    value = property(_get_value, _set_value, doc='Sets the current value of the slider')
+    def _set_value(self, value):
+        value = float(value)
+        if self.min < value > self.max:
+            raise RangeException('Invalid value, not in range min/max')
+        self._slider_angle = value / 100. * self.sweep_angle
+        self._value = value / 100. * self.max
+    value = property(
+        lambda self: self._get_value(),
+        lambda self, x: self._set_value(x),
+        doc='Sets the current value of the slider')
 
 MTWidgetFactory.register('MTCircularSlider', MTCircularSlider)

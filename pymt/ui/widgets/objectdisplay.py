@@ -41,7 +41,7 @@ class MTObjectDisplay(MTWidget):
                 glTranslatef(x, y, 0.0)
                 glRotatef(angle, 0.0, 0.0, 1.0)
 
-                set_color(*self.style['bg-color'])
+                set_color(.5)
                 drawCSSRectangle(
                     pos=(-0.5 * self.width, -0.5 * self.height),
                     size=(self.width, self.height),

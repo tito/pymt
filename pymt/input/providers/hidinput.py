@@ -11,10 +11,6 @@ To configure HIDInput, put in your configuration ::
     stantum = hidinput,/dev/input/event2
 
 You must have read access to the input event.
-
-TODO:
-* read name of device, and show it in log
-* read descriptor of device, and get min/max of X/Y value
 '''
 
 __all__ = ('HIDInputTouchProvider', 'HIDTouch')
@@ -27,13 +23,15 @@ class HIDTouch(Touch):
     def depack(self, args):
         self.sx = args['x']
         self.sy = args['y']
+        self.profile = ['pos']
         if 'size_w' in args and 'size_h' in args:
             self.shape = TouchShapeRect()
             self.shape.width = args['size_w']
             self.shape.height = args['size_h']
-            self.profile = ('pos', 'shape')
-        else:
-            self.profile = ('pos', )
+            self.profile.append('shape')
+        if 'pressure' in args:
+            self.pressure = args['pressure']
+            self.profile.append('pressure')
         super(HIDTouch, self).depack(args)
 
     def __str__(self):
@@ -73,6 +71,8 @@ else:
     EV_MAX		    = 0x1f
     EV_CNT		    = (EV_MAX+1)
 
+    KEY_MAX			= 0x2ff
+
     # Synchronization events
     SYN_REPORT		= 0
     SYN_CONFIG		= 1
@@ -99,8 +99,14 @@ else:
     ABS_MT_TRACKING_ID  = 0x39	# Unique ID of initiated contact
     ABS_MT_PRESSURE		= 0x3a	# Pressure on contact area
 
+    # some ioctl base (with 0 value)
+    EVIOCGNAME = 2147501318
+    EVIOCGBIT = 2147501344
+    EVIOCGABS = 2149074240
+
     # sizeof(struct input_event)
     struct_input_event_sz = 24
+    struct_input_absinfo_sz = 24
 
     class HIDInputTouchProvider(TouchProvider):
         def __init__(self, device, args):
@@ -136,6 +142,14 @@ else:
             point = {}
             l_points = []
 
+            # prepare some vars to get limit of some component
+            range_min_position_x    = 0
+            range_max_position_x    = 2048
+            range_min_position_y    = 0
+            range_max_position_y    = 2048
+            range_min_pressure      = 0
+            range_max_pressure      = 255
+
             def process(points):
                 actives = [args['id'] for args in points]
                 for args in points:
@@ -161,12 +175,55 @@ else:
                             touches_sent.remove(tid)
                         del touches[tid]
 
+            def normalize(value, vmin, vmax):
+                return (value - vmin) / float(vmax - vmin)
+
             # open the input
             fd = open(input_fn, 'rb')
 
             # get the controler name (EVIOCGNAME)
-            device_name = fcntl.ioctl(fd, 2164278534, " " * 256).split('\x00')[0]
+            device_name = fcntl.ioctl(fd, EVIOCGNAME + (256 << 16), " " * 256).split('\x00')[0]
             pymt_logger.info('HIDTouch: using <%s>' % device_name)
+
+            # get abs infos
+            bit = fcntl.ioctl(fd, EVIOCGBIT + (EV_MAX << 16), ' ' * 8)
+            bit, = struct.unpack('L', bit)
+            for x in xrange(EV_MAX):
+                # preserve this, we may want other things than EV_ABS
+                if x != EV_ABS:
+                    continue
+                # EV_ABS available for this device ?
+                if (bit & (1 << x)) == 0:
+                    continue
+                # ask abs info keys to the devices
+                sbit = fcntl.ioctl(fd, EVIOCGBIT + x + (KEY_MAX << 16), ' ' * 8)
+                sbit, = struct.unpack('L', sbit)
+                for y in xrange(KEY_MAX):
+                    if (sbit & (1 << y)) == 0:
+                        continue
+                    absinfo = fcntl.ioctl(fd, EVIOCGABS + y +
+                                          (struct_input_absinfo_sz << 16),
+                                          ' ' * struct_input_absinfo_sz)
+                    abs_value, abs_min, abs_max, abs_fuzz, \
+                        abs_flat, abs_res = struct.unpack('iiiiii', absinfo)
+                    if y == ABS_MT_POSITION_X:
+                        range_min_position_x = abs_min
+                        range_max_position_x = abs_max
+                        pymt_logger.info('HIDTouch: ' +
+                            '<%s> range position X is %d - %d' % (
+                            device_name, abs_min, abs_max))
+                    elif y == ABS_MT_POSITION_Y:
+                        range_min_position_y = abs_min
+                        range_max_position_y = abs_max
+                        pymt_logger.info('HIDTouch: ' +
+                            '<%s> range position Y is %d - %d' % (
+                            device_name, abs_min, abs_max))
+                    elif y == ABS_MT_PRESSURE:
+                        range_min_pressure = abs_min
+                        range_max_pressure = abs_max
+                        pymt_logger.info('HIDTouch: ' +
+                            '<%s> range pressure is %d - %d' % (
+                            device_name, abs_min, abs_max))
 
             # read until the end
             while fd:
@@ -202,15 +259,18 @@ else:
                             point = {}
                             point['id'] = ev_value
                         elif ev_code == ABS_MT_POSITION_X:
-                            point['x'] = ev_value / 2048.
+                            point['x'] = normalize(ev_value,
+                                range_min_position_x, range_max_position_x)
                         elif ev_code == ABS_MT_POSITION_Y:
-                            point['y'] = (1. - ev_value / 2048.)
+                            point['y'] = 1. - normalize(ev_value,
+                                range_min_position_y, range_max_position_y)
                         elif ev_code == ABS_MT_ORIENTATION:
                             point['orientation'] = ev_value
                         elif ev_code == ABS_MT_BLOB_ID:
                             point['blobid'] = ev_value
                         elif ev_code == ABS_MT_PRESSURE:
-                            point['pressure'] = ev_value
+                            point['pressure'] = normalize(ev_value,
+                                range_min_pressure, range_max_pressure)
                         elif ev_code == ABS_MT_TOUCH_MAJOR:
                             point['size_w'] = ev_value
                         elif ev_code == ABS_MT_TOUCH_MINOR:

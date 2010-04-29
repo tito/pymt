@@ -192,7 +192,7 @@ else:
                         elif ev_code == ABS_MT_POSITION_X:
                             point['x'] = ev_value / 2048.
                         elif ev_code == ABS_MT_POSITION_Y:
-                            point['y'] = ev_value / 2048.
+                            point['y'] = (1. - ev_value / 2048.)
                         elif ev_code == ABS_MT_ORIENTATION:
                             point['orientation'] = ev_value
                         elif ev_code == ABS_MT_BLOB_ID:

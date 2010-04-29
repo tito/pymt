@@ -21,12 +21,19 @@ __all__ = ('HIDInputTouchProvider', 'HIDTouch')
 
 import os
 from ..touch import Touch
+from ..shape import TouchShapeRect
 
 class HIDTouch(Touch):
     def depack(self, args):
         self.sx = args['x']
         self.sy = args['y']
-        self.profile = ('pos', )
+        if 'size_w' in args and 'size_h' in args:
+            self.shape = TouchShapeRect()
+            self.shape.width = args['size_w']
+            self.shape.height = args['size_h']
+            self.profile = ('pos', 'shape')
+        else:
+            self.profile = ('pos', )
         super(HIDTouch, self).depack(args)
 
     def __str__(self):
@@ -41,6 +48,7 @@ else:
     import collections
     import struct
     import sys
+    import fcntl
     from ..provider import TouchProvider
     from ..factory import TouchFactory
     from ...logger import pymt_logger
@@ -156,6 +164,10 @@ else:
             # open the input
             fd = open(input_fn, 'rb')
 
+            # get the controler name (EVIOCGNAME)
+            device_name = fcntl.ioctl(fd, 2164278534, " " * 256).split('\x00')[0]
+            pymt_logger.info('HIDTouch: using <%s>' % device_name)
+
             # read until the end
             while fd:
 
@@ -199,6 +211,10 @@ else:
                             point['blobid'] = ev_value
                         elif ev_code == ABS_MT_PRESSURE:
                             point['pressure'] = ev_value
+                        elif ev_code == ABS_MT_TOUCH_MAJOR:
+                            point['size_w'] = ev_value
+                        elif ev_code == ABS_MT_TOUCH_MINOR:
+                            point['size_h'] = ev_value
 
         def update(self, dispatch_fn):
             # dispatch all event from threads

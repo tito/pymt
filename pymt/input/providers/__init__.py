@@ -22,3 +22,8 @@ if sys.platform == 'darwin' or 'PYMT_DOC' in os.environ:
     except:
         pymt.pymt_logger.exception('Input: MacMultitouchSupport is not available for your version')
 
+if sys.platform == 'linux2' or 'PYMT_DOC' in os.environ:
+    try:
+        from hidinput import *
+    except:
+        pymt.pymt_logger.exception('Input: HIDInput is not available for your version')

@@ -88,6 +88,7 @@ class MTInnerWindow(MTScatterWidget):
 
     def setup_controls(self):
         self.controls = MTWidget()
+        self.controls.parent = self
 
         self.btn_fullscreen = MTImageButton(filename=iconPath+'fullscreen.png',
                                             scale=self.control_scale,

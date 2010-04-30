@@ -105,7 +105,10 @@ else:
     EVIOCGABS = 2149074240
 
     # sizeof(struct input_event)
-    struct_input_event_sz = 24
+    if sys.maxint == 9223372036854775807: # 64 bits
+        struct_input_event_sz = 24
+    else: # 32 bits
+        struct_input_event_sz = 16
     struct_input_absinfo_sz = 24
 
     class HIDInputTouchProvider(TouchProvider):

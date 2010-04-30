@@ -105,11 +105,9 @@ else:
     EVIOCGABS = 2149074240
 
     # sizeof(struct input_event)
-    if sys.maxint == 9223372036854775807: # 64 bits
-        struct_input_event_sz = 24
-    else: # 32 bits
-        struct_input_event_sz = 16
-    struct_input_absinfo_sz = 24
+    struct_input_event_sz = struct.calcsize('LLHHi')
+    struct_input_absinfo_sz = struct.calcsize('iiiiii')
+    sz_l = struct.calcsize('L')
 
     class HIDInputTouchProvider(TouchProvider):
         def __init__(self, device, args):
@@ -189,7 +187,7 @@ else:
             pymt_logger.info('HIDTouch: using <%s>' % device_name)
 
             # get abs infos
-            bit = fcntl.ioctl(fd, EVIOCGBIT + (EV_MAX << 16), ' ' * 8)
+            bit = fcntl.ioctl(fd, EVIOCGBIT + (EV_MAX << 16), ' ' * sz_l)
             bit, = struct.unpack('L', bit)
             for x in xrange(EV_MAX):
                 # preserve this, we may want other things than EV_ABS
@@ -199,7 +197,7 @@ else:
                 if (bit & (1 << x)) == 0:
                     continue
                 # ask abs info keys to the devices
-                sbit = fcntl.ioctl(fd, EVIOCGBIT + x + (KEY_MAX << 16), ' ' * 8)
+                sbit = fcntl.ioctl(fd, EVIOCGBIT + x + (KEY_MAX << 16), ' ' * sz_l)
                 sbit, = struct.unpack('L', sbit)
                 for y in xrange(KEY_MAX):
                     if (sbit & (1 << y)) == 0:

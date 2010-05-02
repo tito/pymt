@@ -205,24 +205,30 @@ class MTTextInput(MTButton):
             self.focus_next()
         elif key == 8: # backspace
             key = (None, None, 'backspace', 1)
-            self.keyboard.dispatch_event('on_key_down', key)
+            if self.keyboard:
+                self.keyboard.dispatch_event('on_key_down', key)
         elif key in (13, 271): # enter or numenter
             key = (None, None, 'enter', 1)
-            self.keyboard.dispatch_event('on_key_down', key)
+            if self.keyboard:
+                self.keyboard.dispatch_event('on_key_down', key)
         else:
             if unicode is not None:
-                self.keyboard.text = self.keyboard.text + unicode
+                if self.keyboard:
+                    self.keyboard.text = self.keyboard.text + unicode
             else:
                 # oh god :[
-                self.keyboard.text = self.keyboard.text + chr(key)
+                if self.keyboard:
+                    self.keyboard.text = self.keyboard.text + chr(key)
 
     def _window_on_key_up(self, key, scancode=None, unicode=None):
         if key == 8: # backspace
             key = (None, None, 'backspace', 1)
-            self.keyboard.dispatch_event('on_key_up', key)
+            if self.keyboard:
+                self.keyboard.dispatch_event('on_key_up', key)
         elif key in (13, 271): # enter or numenter
             key = (None, None, 'enter', 1)
-            self.keyboard.dispatch_event('on_key_up', key)
+            if self.keyboard:
+                self.keyboard.dispatch_event('on_key_up', key)
 
     def _get_value(self):
         return self.label

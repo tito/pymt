@@ -1,23 +1,29 @@
+'''
+TextArea: a multiline text input, based on TextInput
+'''
+
+__all__ = ('MTTextArea', )
+
 from ...factory import MTWidgetFactory
 from ....graphx import set_color
 from ....base import getFrameDt
-from ....graphx import drawLabel, drawRectangle
+from ....graphx import drawRectangle
 from ....core.text import Label
 from textinput import MTTextInput
 from OpenGL.GL import glPushMatrix, glPopMatrix, glTranslate
 
 class MTTextArea(MTTextInput):
-    ''' A multi line text input widget'''
+    '''A multi line text input widget'''
     def __init__(self, **kwargs):
         super(MTTextArea, self).__init__(**kwargs)
         self.value = kwargs.get('label') or ''
         self.buffer_size = kwargs.get('buffer_size') or 128000
-        
+
     def _get_value(self):
         try:
             return '\n'.join(self.lines)
         except:
-            return ""
+            return ''
     def _set_value(self, text):
         old_value = self.value
         self.lines = text.split('\n')
@@ -109,7 +115,7 @@ class MTTextArea(MTTextInput):
     def _kbd_on_text_change(self, value):
         pass
 
-    def insert_charachter(self, c):
+    def insert_character(self, c):
         if len(self.value) >= self.buffer_size:
             return
         text = self.lines[self.edit_line]
@@ -151,13 +157,18 @@ class MTTextArea(MTTextInput):
     def _kbd_on_key_up(self, key, repeat=False):
         displayed_str, internal_str, internal_action, scale = key
         if internal_action is None:
-            self.insert_charachter(displayed_str)
+            self.insert_character(displayed_str)
         elif internal_action == 'backspace':
             self.do_backspace()
         elif internal_action == 'enter':
             self.insert_line_feed()
         elif internal_action == 'escape':
             self.hide_keyboard()
+
+    def _window_on_key_down(self, key, scancode=None, unicode=None):
+        if unicode and not key in (27, 9, 8, 13, 271):
+            self.insert_character(unicode)
+        super(MTTextArea, self)._window_on_key_down(key, scancode, unicode)
 
 # Register all base widgets
 MTWidgetFactory.register('MTTextArea', MTTextArea)

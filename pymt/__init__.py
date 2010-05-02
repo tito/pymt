@@ -15,9 +15,6 @@ import getopt
 import os
 from logger import pymt_logger, LOG_LEVELS
 
-# Version number of current configuration format
-PYMT_CONFIG_VERSION = 9
-
 # internals for post-configuration
 __pymt_post_configuration = []
 def pymt_configure():

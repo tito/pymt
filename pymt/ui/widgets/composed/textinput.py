@@ -4,6 +4,7 @@ TextInput: a text input who instance vkeyboard if needed
 
 __all__ = ['MTTextInput']
 
+from ....config import pymt_config
 from ....graphx import set_color, drawCSSRectangle, drawLine, GlDisplayList
 from ..button import MTButton
 from ...factory import MTWidgetFactory
@@ -19,12 +20,18 @@ class MTTextInput(MTButton):
     :Parameters:
         `keyboard`: MTVkeyboard object, default to None
             Use another MTVKeyboard than the default one
+        `keyboard_type`: str, default to config.
+            Configuration section is 'widgets', token 'keyboard_type'.
+            Can be one of 'virtual' or 'real'. If real, the virtual keyboard
+            will be not showed
         `password`: bool, default to False
             If True, the label will be showed with star
         `group`: str, default to random
             If the group is the same for multiple text input
             You can switch between them with TAB, and use the same keyboard.
-
+        `switch`: bool, default to True
+            If True, a switch button will be show to switch from real or virtual
+            keyboard
     :Events:
         `on_text_change` (text)
             Fired when the content of text input is changed
@@ -41,6 +48,9 @@ class MTTextInput(MTButton):
         kwargs.setdefault('keyboard', None)
         kwargs.setdefault('password', False)
         kwargs.setdefault('group', None)
+        kwargs.setdefault('switch', True)
+        kwargs.setdefault('keyboard_type',
+            pymt_config.get('widgets', 'keyboard_type'))
         super(MTTextInput, self).__init__(**kwargs)
         self._keyboard = kwargs.get('keyboard')
         self.is_active_input = False
@@ -64,6 +74,16 @@ class MTTextInput(MTButton):
         self._notify_bg_color = self.style['bg-color']
         self._notify_bg_color_active = self.style['bg-color-active']
         self._notify_animation = None
+
+        # switch button between vkeyboard or hardware
+        self._switch = None
+        if kwargs.get('switch'):
+            self._switch = MTButton(
+                label=kwargs.get('keyboard_type'), cls='switch-button',
+                size=(60, 25), font_size=5,
+                pos=(self.x + self.width - 60, self.y + self.height))
+
+        self.keyboard_type = kwargs.get('keyboard_type')
 
     def _get_keyboard(self):
         if not self._keyboard:
@@ -143,13 +163,21 @@ class MTTextInput(MTButton):
         '''Show the associed keyboard of this widget.'''
         if self.is_active_input:
             return
+        if self._switch:
+            self.remove_widget(self._switch)
+            self.add_widget(self._switch)
         self.deactivate_group()
-        w = self.get_parent_window()
-        w.add_widget(self.keyboard)
+        self.is_active_input = True
+
+        # activate the real keyboard
         w = self.get_root_window()
         w.push_handlers(on_key_down=self._window_on_key_down,
                         on_key_up=self._window_on_key_up)
-        self.is_active_input = True
+
+        # activate the virtual keyboard
+        w = self.get_parent_window()
+        if self.keyboard_type == 'virtual':
+            w.add_widget(self.keyboard)
         if self._keyboard is not None:
             self._keyboard.push_handlers(
                 on_text_change=self._kbd_on_text_change,
@@ -161,6 +189,8 @@ class MTTextInput(MTButton):
         '''Hide the associed keyboard of this widget.'''
         if not self.is_active_input:
             return
+        if self._switch:
+            self.remove_widget(self._switch)
         w = self.get_parent_window()
         w.remove_widget(self.keyboard)
         w = self.get_root_window()
@@ -187,6 +217,10 @@ class MTTextInput(MTButton):
         super(MTTextInput, self).draw()
         if self.password:
             self.label = old_label
+
+        if self.is_active_input:
+            # draw the switch button
+            pass
 
     def draw_background(self):
         if self.is_active_input:
@@ -234,7 +268,50 @@ class MTTextInput(MTButton):
         return self.label
     def _set_value(self, value):
         self.label = value
-    value = property(_get_value, _set_value)
+    value = property(
+        lambda self: self._get_value(),
+        lambda self, x: self._set_value(x),
+        doc='Get/set the value of the label')
+
+    def _get_keyboard_type(self):
+        return self._keyboard_type
+    def _set_keyboard_type(self, t):
+        self.hide_keyboard()
+        self._keyboard_type = t
+        if self.is_active_input:
+            self.show_keyboard()
+    keyboard_type = property(
+        lambda self: self._get_keyboard_type(),
+        lambda self, x: self._set_keyboard_type(x),
+        doc='Get/set the keyboard type to use')
+
+    #
+    # Needed if the switch button must be replaced
+    #
+
+    def on_move(self, x, y):
+        super(MTTextInput, self).on_move(x, y)
+        if self._switch:
+            self._switch.pos = self.w + self.width - 60, self.y + self.height
+
+    def on_resize(self, w, h):
+        super(MTTextInput, self).on_resize(w, h)
+        if self._switch:
+            self._switch.pos = self.w + self.width - 60, self.y + self.height
+
+    def on_touch_down(self, touch):
+        if self._switch and self._switch.collide_point(*touch.pos):
+            self.hide_keyboard()
+            if self.keyboard_type == 'virtual':
+                self.keyboard_type = 'real'
+            else:
+                self.keyboard_type = 'virtual'
+            self._switch.label = self.keyboard_type
+            self.show_keyboard()
+            return True
+        return super(MTTextInput, self).on_touch_down(touch)
+
+
 
 # Register all base widgets
 MTWidgetFactory.register('MTTextInput', MTTextInput)

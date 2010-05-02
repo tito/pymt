@@ -9,7 +9,10 @@ import sys
 import os
 import logger
 from logger import pymt_logger
-from . import pymt_config_fn, PYMT_CONFIG_VERSION, logger
+from . import pymt_config_fn, logger
+
+# Version number of current configuration format
+PYMT_CONFIG_VERSION = 10
 
 #: PyMT configuration object
 pymt_config = None
@@ -56,15 +59,16 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 
     pymt_config_version = pymt_config.getdefault('pymt', 'config_version', 0)
 
-# Add defaults section
+    # Add defaults section
     pymt_config.adddefaultsection('pymt')
     pymt_config.adddefaultsection('keyboard')
     pymt_config.adddefaultsection('graphics')
     pymt_config.adddefaultsection('input')
     pymt_config.adddefaultsection('dump')
     pymt_config.adddefaultsection('modules')
+    pymt_config.adddefaultsection('widgets')
 
-# Upgrade default configuration until having the current version
+    # Upgrade default configuration until having the current version
     need_save = False
     if pymt_config_version != PYMT_CONFIG_VERSION:
         pymt_logger.warning('Config: Older configuration version detected (%d instead of %d)' % (
@@ -141,9 +145,12 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             pymt_config.setdefault('pymt', 'jitter_distance', '0')
             pymt_config.setdefault('pymt', 'jitter_ignore_devices', 'mouse,mactouch,')
 
+        elif pymt_config_version == 9:
+            pymt_config.setdefault('widgets', 'keyboard_type', 'virtual')
+
         else:
             # for future.
-            pass
+            break
 
         # Pass to the next version
         pymt_config_version += 1

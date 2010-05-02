@@ -168,7 +168,7 @@ class MTTextArea(MTTextInput):
     def _window_on_key_down(self, key, scancode=None, unicode=None):
         if unicode and not key in (27, 9, 8, 13, 271):
             self.insert_character(unicode)
-        super(MTTextArea, self)._window_on_key_down(key, scancode, unicode)
+        return super(MTTextArea, self)._window_on_key_down(key, scancode, unicode)
 
 # Register all base widgets
 MTWidgetFactory.register('MTTextArea', MTTextArea)

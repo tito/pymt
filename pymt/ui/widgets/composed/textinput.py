@@ -80,7 +80,7 @@ class MTTextInput(MTButton):
         if kwargs.get('switch'):
             self._switch = MTButton(
                 label=kwargs.get('keyboard_type'), cls='switch-button',
-                size=(60, 25), font_size=5,
+                size=(60, 20), font_size=5,
                 pos=(self.x + self.width - 60, self.y + self.height))
 
         self.keyboard_type = kwargs.get('keyboard_type')
@@ -163,11 +163,12 @@ class MTTextInput(MTButton):
         '''Show the associed keyboard of this widget.'''
         if self.is_active_input:
             return
-        if self._switch:
-            self.remove_widget(self._switch)
-            self.add_widget(self._switch)
         self.deactivate_group()
         self.is_active_input = True
+
+        # activate switch button if necessary
+        if self._switch:
+            self.add_widget(self._switch)
 
         # activate the real keyboard
         w = self.get_root_window()
@@ -175,10 +176,10 @@ class MTTextInput(MTButton):
                         on_key_up=self._window_on_key_up)
 
         # activate the virtual keyboard
-        w = self.get_parent_window()
         if self.keyboard_type == 'virtual':
+            w = self.get_parent_window()
             w.add_widget(self.keyboard)
-        if self._keyboard is not None:
+        if self.keyboard is not None:
             self._keyboard.push_handlers(
                 on_text_change=self._kbd_on_text_change,
                 on_key_up=self._kbd_on_key_up
@@ -203,8 +204,13 @@ class MTTextInput(MTButton):
                 on_key_up=self._kbd_on_key_up
             )
 
+    def on_update(self):
+        super(MTTextInput, self).on_update()
+        if self._switch:
+            self._switch.pos = self.x + self.width - 60, self.y + self.height
+
     def draw(self):
-        if self.is_active_input:
+        if self.is_active_input and self.keyboard_type == 'virtual':
             set_color(*self.style.get('bg-color'))
             kx, ky = self.keyboard.to_window(*self.keyboard.center)
             kx, ky = self.to_widget(kx, ky)
@@ -217,10 +223,6 @@ class MTTextInput(MTButton):
         super(MTTextInput, self).draw()
         if self.password:
             self.label = old_label
-
-        if self.is_active_input:
-            # draw the switch button
-            pass
 
     def draw_background(self):
         if self.is_active_input:
@@ -288,16 +290,6 @@ class MTTextInput(MTButton):
     #
     # Needed if the switch button must be replaced
     #
-
-    def on_move(self, x, y):
-        super(MTTextInput, self).on_move(x, y)
-        if self._switch:
-            self._switch.pos = self.w + self.width - 60, self.y + self.height
-
-    def on_resize(self, w, h):
-        super(MTTextInput, self).on_resize(w, h)
-        if self._switch:
-            self._switch.pos = self.w + self.width - 60, self.y + self.height
 
     def on_touch_down(self, touch):
         if self._switch and self._switch.collide_point(*touch.pos):

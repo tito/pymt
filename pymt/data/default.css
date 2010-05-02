@@ -248,3 +248,7 @@ video {
 coverflow {
 	bg-color: rgba(255,255,255,255);
 }
+
+.switch-button {
+	draw-border: 0;
+}

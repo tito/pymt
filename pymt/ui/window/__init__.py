@@ -192,11 +192,15 @@ class BaseWindow(EventDispatcher):
         pass
 
     def apply_css(self, styles):
+        '''Called at __init__ time to applied css attribute in current class.
+        '''
         self.style.update(styles)
 
-    def reload_css(self, styles):
+    def reload_css(self):
+        '''Called when css want to be reloaded from scratch'''
         self.style = {}
-        self.apply_css(styles)
+        style = css_get_style(widget=self)
+        self.apply_css(style)
         if len(self._inline_style):
             self.apply_css(self._inline_style)
 

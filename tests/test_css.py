@@ -14,6 +14,5 @@ def unittest_css():
     ''')
     w = MTWidget(cls='style')
     x = MTWidget(id='my',cls='style')
-    #css_reload()
     test(w.style['bg-color'] == [1.0 ,1.0 ,1.0 ,1.0])
     test(x.style['bg-color'] == [1.0 ,0.0 ,1.0 ,0.0])

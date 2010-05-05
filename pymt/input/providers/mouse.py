@@ -19,12 +19,12 @@ class MouseTouchProvider(TouchProvider):
 
     def __init__(self, device, args):
         super(MouseTouchProvider, self).__init__(device, args)
-        self.waiting_event  = deque()
-        self.window         = None
-        self.touches		= {}
-        self.counter		= 0
-        self.current_drag	= None
-        self.alt_touch      = None
+        self.waiting_event = deque()
+        self.window = None
+        self.touches = {}
+        self.counter = 0
+        self.current_drag = None
+        self.alt_touch = None
 
     def start(self):
         '''Start the mouse provider'''

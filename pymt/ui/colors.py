@@ -189,7 +189,7 @@ class CSSSheet(object):
                     pymt_logger.exception(
                         'Error while convert %s: %s' % (name, value))
                     pass
-            return name, value
+            return sname.strip(), value
 
         rules = [x.strip() for x in rulestr.split(',') if x.strip() != '']
         keys = [extract(x.strip()) for x in contentstr.split(';') if x.strip() != '']

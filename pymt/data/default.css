@@ -4,7 +4,7 @@
 
     /* color when something is pushed TODO: change everywhere this is used, becsue it will be foregroudn color when state is down*/
     color-down: rgba(50,50,50, 128);
-    
+
     /*new way of background color when somethign is pushed*/
     bg-color-down: rgba(50,50,50, 128);
 
@@ -15,7 +15,7 @@
     font-size: 12;
     font-name: 'DejaVuSans.ttf';
     font-weight: normal; /* normal, bold, italic, bolditalic */
-			   
+
 
     /* borders */
     border-width: 1.5;
@@ -61,8 +61,8 @@ vkeyboard {
     draw-alpha-background: 1;
     draw-border: 1;
     draw-text-shadow: 1;
-	draw-background: 1;
-	draw-alpha-background: 1;
+    draw-background: 1;
+    draw-alpha-background: 1;
 }
 
 textinput {
@@ -71,7 +71,7 @@ textinput {
     font-weight: bold;
     bg-color: rgba(200, 200, 200, 200);
     bg-color-active: rgb(250, 250, 250);
-	bg-color-error: rgb(255, 100, 100);
+    bg-color-error: rgb(255, 100, 100);
     draw-alpha-background: 1;
     border-width: 1;
     border-color: rgb(100,100,100);
@@ -88,7 +88,7 @@ multislider,
 boundaryslider,
 sidepanel,
 circularslider {
-	draw-background: 1;
+    draw-background: 1;
     padding: 8;
     slider-color: rgb(68, 170, 0);
     draw-slider-border: 0;
@@ -100,7 +100,7 @@ circularslider {
 }
 
 circularslider {
-	draw-background: 0;
+    draw-background: 0;
 }
 
 fileentryview {
@@ -114,11 +114,11 @@ kineticcontainer {
 }
 
 kineticitem {
-	color: rgb(255, 255, 255);
+    color: rgb(255, 255, 255);
 }
 
 kineticlist {
-	draw-background: 1;
+    draw-background: 1;
     title-draw-background: 1;
     title-color: rgb(127, 127, 127);
     draw-title-border: 0;
@@ -151,12 +151,12 @@ window {
     bg-color: rgb(250,250,250);
     draw-alpha-background: 0;
     alpha-background: 0.8 0.8 0.0 0.0;
-	draw-background: 1;
+    draw-background: 1;
 }
 
 modalwindow {
-	draw-background: 1;
-	bg-color: rgba(0, 0, 0, 200);
+    draw-background: 1;
+    bg-color: rgba(0, 0, 0, 200);
 }
 
 innerwindow {
@@ -168,23 +168,23 @@ innerwindow {
 
 vectorslider,
 objectdisplay {
-	draw-background: 1;
+    draw-background: 1;
     vector-color: rgb(255, 255, 255);
 }
 
 vkeyboard {
     /* onboard keyboard */
-	border-color: rgb(100, 100, 100);
+    border-color: rgb(100, 100, 100);
     border-radius: 15;
     border-radius-precision: 0.35;
-	border-width: 1.5;
-	color: rgb(50, 50, 50);
-	color-syskey: rgb(200, 200, 200);
+    border-width: 1.5;
+    color: rgb(50, 50, 50);
+    color-syskey: rgb(200, 200, 200);
     draw-border: 1;
     draw-key-alpha-background: 1;
     draw-key-border: 1;
     key-alpha-background: 1 1 .7 .7;
-	key-border-color: rgb(60, 60, 60);
+    key-border-color: rgb(60, 60, 60);
     key-border-radius: 5;
     key-border-radius-precision: 0.35;
     key-color: rgba(210, 210, 210, 255);
@@ -203,7 +203,7 @@ popup {
     alpha-background: 1 1 .7 .7;
     draw-alpha-background: 1;
     draw-border: 1;
-	draw-background: 1;
+    draw-background: 1;
 }
 
 popup {
@@ -212,24 +212,24 @@ popup {
 
 .modalpopup-submit,
 .modalpopup-title {
-	bg-color: rgba(200, 200, 200, 100);
+    bg-color: rgba(200, 200, 200, 100);
     alpha-background: .9 .9 .8 .8;
-	draw-alpha-background: 1;
-	draw-background: 1;
-	font-size: 12;
-	border-radius: 5;
-	border-precision: 1;
-	draw-text-shadow: 0;
+    draw-alpha-background: 1;
+    draw-background: 1;
+    font-size: 12;
+    border-radius: 5;
+    border-precision: 1;
+    draw-text-shadow: 0;
 }
 
 .modalpopup-title {
-	font-size: 16;
+    font-size: 16;
 }
 
 
 
 video {
-	bg-color: rgba(100, 100, 100, 220);
+    bg-color: rgba(100, 100, 100, 220);
     draw-alpha-background: 1;
     alpha-background: 1 1 0.2 0.2;
     border-radius: 8;
@@ -238,7 +238,7 @@ video {
 .video-toggleplay,
 .video-togglemute,
 .video-timeline {
-	bg-color: rgba(100, 100, 100, 220);
+    bg-color: rgba(100, 100, 100, 220);
     slider-color: rgba(255, 127, 0, 200);
     draw-slider-alpha-background: 1;
     slider-alpha-background: 1 1 .6 .6;
@@ -246,9 +246,9 @@ video {
 }
 
 coverflow {
-	bg-color: rgba(255,255,255,255);
+    bg-color: rgba(255,255,255,255);
 }
 
 .switch-button {
-	draw-border: 0;
+    draw-border: 0;
 }

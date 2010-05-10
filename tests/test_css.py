@@ -16,3 +16,5 @@ def unittest_css():
     x = MTWidget(id='my',cls='style')
     test(w.style['bg-color'] == [1.0 ,1.0 ,1.0 ,1.0])
     test(x.style['bg-color'] == [1.0 ,0.0 ,1.0 ,0.0])
+    x.style['bg-color'] = [0, 0, 0, 0]
+    test(x.style['bg-color'] == [0 ,0 ,0 ,0])

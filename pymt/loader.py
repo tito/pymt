@@ -136,9 +136,8 @@ class LoaderBase(object):
             fd.close()
 
             # write to local filename
-            fd = open(_out_filename, 'wb')
-            fd.write(idata)
-            fd.close()
+            os.write(_out_osfd, idata)
+            os.close(_out_osfd)
 
             # load data
             data = self._load_local(_out_filename)

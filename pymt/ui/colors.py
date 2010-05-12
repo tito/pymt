@@ -219,22 +219,12 @@ class CSSSheet(object):
                     styles.update(v)
 
         # match .<classname>
-        if type(widget.cls) in (unicode, str):
-            cls = '.%s' % widget.cls
-            if cls in self._css:
-                styles.update(self._css[cls])
-
-            # match <objectname>.<classname>
-            for name in reversed(widget_classes):
-                lcls = '%s%s' % (name, cls)
-                for r, v in self._css.items():
-                    if r == lcls:
-                        styles.update(v)
-
-        # match .<classname>
-        elif type(widget.cls) in (list, tuple):
-            for cls in widget.cls:
-                cls = '.%s' % widget.cls
+        widget_cls = widget.cls
+        if type(widget_cls) in (unicode, str):
+            widget_cls = [widget.cls]
+        if type(widget_cls) in (list, tuple):
+            for kcls in widget_cls:
+                cls = '.%s' % kcls
                 if cls in self._css:
                     styles.update(self._css[cls])
 

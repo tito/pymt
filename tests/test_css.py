@@ -31,7 +31,6 @@ def unittest_css_label():
     ''')
     l = MTLabel(label='test', cls='style')
     test(l.style['color'] == [0.0, 1.0, 0.0, 1.0])
-    # print l.style['color'] # print [0.0, 0.0, 0.0, 1.0]
 
 def unittest_css_multiclass():
     import_pymt_no_window()

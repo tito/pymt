@@ -199,10 +199,10 @@ class MTKineticList(MTStencilContainer):
         Attached to the on_press handler of the delete button(self.db)
         '''
         if self.db.get_state() == 'down':
-            for child in self.children:
+            for child in self.children.iterate():
                 child.show_delete()
         else:
-            for child in self.children:
+            for child in self.children.iterate():
                 child.hide_delete()
 
     def toggle_search(self, touch):
@@ -314,7 +314,7 @@ class MTKineticList(MTStencilContainer):
         ny = y
 
         # recalculate position for each children
-        for child in self.children:
+        for child in self.children.iterate():
 
             # each row, calculate the height, advance y and reset x
             if index % limit == 0:
@@ -431,12 +431,14 @@ class MTKineticList(MTStencilContainer):
 
         # ok, the trigger distance is enough, we can dispatch event.
         # will not work if children grab the touch in down state :/
-        for child in self.children:
-            child.dispatch_event('on_touch_down', touch)
+        for child in self.children.iterate(reverse=True):
+            must_break = child.dispatch_event('on_touch_down', touch)
             old_grab_current = touch.grab_current
             touch.grab_current = child
             child.dispatch_event('on_touch_up', touch)
             touch.grab_current = old_grab_current
+            if must_break:
+                break
         return True
 
     def ensure_bounding(self):
@@ -480,7 +482,7 @@ class MTKineticList(MTStencilContainer):
 
         # draw children
         self.stencil_push()
-        for w in self.children:
+        for w in self.children.iterate():
             # internal update of children
             w.update()
             # optimization to draw only viewed children
@@ -609,7 +611,7 @@ class MTKineticObject(MTWidget):
 
     def update(self):
         if not self.free:
-            self.x, self.y = self.kx + self.xoffset, self.ky + self.yoffset
+            self.pos = self.kx + self.xoffset, self.ky + self.yoffset
         if self.deletable:
             self.db.pos = (self.x + self.width-40, self.y + self.height-40)
             self.db.style['bg-color'] = (1, 0, 0, self.db_alpha)

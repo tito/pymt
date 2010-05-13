@@ -60,6 +60,7 @@ class MTFileEntryView(MTKineticItem):
         self.filename   = kwargs.get('filename')
         self.browser    = kwargs.get('browser')
         self.label_txt  = kwargs.get('label')
+        self.selected   = False
 
         self.get_image_for_filename()
 
@@ -88,7 +89,6 @@ class MTFileListEntryView(MTFileEntryView):
         self.height         = 25
         self.image          = Loader.image(self.type_image)
         self.image.scale    = 0.5
-        self.selected       = False
         self.browser.w_limit    = 1
         self.font_size = self.style['font-size']
 
@@ -116,7 +116,6 @@ class MTFileIconEntryView(MTFileEntryView):
         super(MTFileIconEntryView, self).__init__(**kwargs)
         self.size           = (80, 80)
         self.image          = Loader.image(self.type_image)
-        self.selected       = False
         self.browser.w_limit= 4
 
     def draw(self):

@@ -183,6 +183,7 @@ class MTFileBrowserView(MTKineticList):
         any change of a property. (except path.)'''
         # remove all actual entries
         self.clear()
+        self.selection = []
 
         children = []
         listfiles = os.listdir(self.path)

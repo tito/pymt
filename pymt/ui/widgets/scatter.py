@@ -191,7 +191,6 @@ class MTScatterWidget(MTWidget):
         self._scale *= scale
         if self._scale < self.scale_min or \
            self.scale_max is not None and self._scale > self.scale_max:
-            scale = self.scale_max
             self._scale = old_scale
             scale = 1
         self._rotation = (self._rotation + angle) % 360

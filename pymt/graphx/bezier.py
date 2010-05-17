@@ -30,6 +30,8 @@ You can also provide a point list, and directly create a path ::
 
 '''
 
+from __future__ import with_statement
+
 __all__ = ('BezierPath', )
 
 from statement import GlDisplayList, gx_begin

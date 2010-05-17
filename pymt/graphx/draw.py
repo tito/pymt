@@ -2,6 +2,8 @@
 Draw: primitive drawing
 '''
 
+from __future__ import with_statement
+
 __all__ = (
     'drawLabel', 'drawRoundedRectangle',
     'drawCircle', 'drawPolygon',
@@ -250,7 +252,9 @@ def drawPolygon(points, style=GL_POLYGON, linewidth=0):
         else:
             raise Exception("Invalid style argument for drawPolygon method, try 'fill', 'GL_POLYGON', 'line', or 'GL_LINE_LOOP'")
 
-    points = _make_point_list(points)
+    #points = _make_point_list(points)
+    from pymt.clock import getClock
+    print 'call', len(points), getClock().get_fps()
 
     # use accelerate version
     if _graphx:

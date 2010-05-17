@@ -1,6 +1,7 @@
 '''
 CSS: Draw shapes with css attributes !
 '''
+from __future__ import with_statement
 
 __all__ = ['drawCSSRectangle']
 

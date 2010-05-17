@@ -2,6 +2,7 @@
 Color picker: a simple color picker with 3 slider
 '''
 
+from __future__ import with_statement
 
 __all__ = ['MTColorPicker']
 

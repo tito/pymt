@@ -27,7 +27,6 @@ from pymt.cache import Cache
 from pymt.utils import SafeList
 from pymt.core.image import ImageLoader, Image
 from pymt.event import EventDispatcher
-from abc import ABCMeta, abstractmethod
 
 import time
 import collections
@@ -59,14 +58,13 @@ class LoaderBase(object):
     less than 25 FPS.
     '''
 
-    __metaclass__ = ABCMeta
-
     def __init__(self):
         loading_png_fn = os.path.join(pymt_data_dir, 'loader.png')
         error_png_fn = os.path.join(pymt_data_dir, 'error.png')
 
-        self.loading_image = ImageLoader.load(loading_png_fn)
-        self.error_image = ImageLoader.load(error_png_fn)
+        # XXX
+        #self.loading_image = ImageLoader.load(loading_png_fn)
+        #self.error_image = ImageLoader.load(error_png_fn)
 
         self._q_load  = collections.deque()
         self._q_done  = collections.deque()
@@ -82,17 +80,14 @@ class LoaderBase(object):
         except:
             pass
 
-    @abstractmethod
     def start(self):
         '''Start the loader thread/process'''
         self._running = True
 
-    @abstractmethod
     def run(self, *largs):
         '''Main loop for the loader.'''
         pass
 
-    @abstractmethod
     def stop(self):
         '''Stop the loader thread/process'''
         self._running = False

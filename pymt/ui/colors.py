@@ -21,6 +21,7 @@ please look on the widget documentation.
 
 '''
 
+from __future__ import with_statement
 
 __all__ = ['css_get_style', 'get_truncated_classname',
            'pymt_sheet', 'css_add_sheet', 'css_add_file', 'css_get_widget_id',
@@ -338,8 +339,9 @@ def css_add_keyword(keyword, convertfunc):
 def css_reload():
     pymt_logger.debug('CSS: Reloading CSS in progress')
     pymt_sheet.reset()
-    for callback, args in _css_sources[:]:
-        callback(*args, _reload=True)
+    # XXX
+    #for callback, args in _css_sources[:]:
+    #    callback(*args, _reload=True)
     Cache.remove('pymt.css')
     for r in _css_widgets[:]:
         o = r()

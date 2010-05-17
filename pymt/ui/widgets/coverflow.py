@@ -2,6 +2,8 @@
 Coverflow: a coverflow widget
 '''
 
+from __future__ import with_statement
+
 __all__ = ('MTCoverFlow', )
 
 from OpenGL.GL import glRotatef, glTranslatef, GL_ZERO, GL_ONE

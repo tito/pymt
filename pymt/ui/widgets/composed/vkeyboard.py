@@ -2,6 +2,7 @@
 VKeyboard: Virtual keyboard with custom layout support
 '''
 
+from __future__ import with_statement
 
 import os
 import pymt

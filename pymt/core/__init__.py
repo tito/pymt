@@ -34,7 +34,7 @@ else:
                     (category.capitalize(), option, category))
                 return cls
 
-            except Exception as e:
+            except Exception, e:
                 pymt.pymt_logger.warning('%s: Unable to use <%s> as %s provider' %
                     (category.capitalize(), option, category))
                 pymt.pymt_logger.debug('', exc_info=e)
@@ -59,7 +59,7 @@ else:
                                  locals=locals(),
                                  fromlist=[lib], level=-1)
 
-            except Exception as e:
+            except Exception, e:
                 pymt.pymt_logger.warning('%s: Unable to use <%s> as loader!' %
                     (category.capitalize(), option))
                 pymt.pymt_logger.debug('', exc_info=e)

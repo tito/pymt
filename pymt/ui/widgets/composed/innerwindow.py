@@ -2,6 +2,7 @@
 Inner window: a lightweight window with fullscreen and resize ability
 '''
 
+from __future__ import with_statement
 
 __all__ = ['MTInnerWindow']
 

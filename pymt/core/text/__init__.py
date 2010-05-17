@@ -237,7 +237,8 @@ class LabelBase(BaseObject):
 
         # get data from provider
         data = self._render_end()
-        assert(data)
+        if data is None:
+            return
 
         # create texture is necessary
         if self.texture is None:
@@ -343,4 +344,7 @@ Label = core_select_lib('text', (
     ('cairo', 'text_cairo', 'LabelCairo'),
     ('pil', 'text_pil', 'LabelPIL'),
 ))
+
+if Label is None:
+    Label = LabelBase
 

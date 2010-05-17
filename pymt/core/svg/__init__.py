@@ -2,6 +2,8 @@
 SVG: handle loading of svg data
 '''
 
+from __future__ import with_statement
+
 __all__ = ('Svg',)
 
 from pymt.core import core_register_libs

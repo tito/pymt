@@ -6,7 +6,6 @@ __all__ = ('Sound', 'SoundLoader')
 
 import pymt
 import sys
-from abc import ABCMeta, abstractmethod
 from .. import core_register_libs
 
 class SoundLoader:
@@ -49,7 +48,6 @@ class Sound(object):
     Use SoundLoader to load a sound !
     '''
 
-    __metaclass__ = ABCMeta
     __slots__ = ('_filename', '_volume')
 
     def __init__(self, **kwargs):
@@ -89,27 +87,22 @@ class Sound(object):
     length = property(lambda self: self._get_length(),
             doc='Get length of the sound (in seconds)')
 
-    @abstractmethod
     def load(self):
         '''Load the file into memory'''
         pass
 
-    @abstractmethod
     def unload(self):
         '''Unload the file from memory'''
         pass
 
-    @abstractmethod
     def play(self):
         '''Play the file'''
         pass
 
-    @abstractmethod
     def stop(self):
         '''Stop playback'''
         pass
 
-    @abstractmethod
     def seek(self, position):
         '''Seek to the <position> (in seconds)'''
         pass

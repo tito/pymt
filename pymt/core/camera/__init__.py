@@ -6,7 +6,6 @@ __all__ = ('CameraBase', 'Camera')
 
 import pymt
 from OpenGL.GL import GL_RGB
-from abc import ABCMeta, abstractmethod
 from .. import core_select_lib
 from ...baseobject import BaseObject
 from ...graphx import set_color, drawRectangle, drawTexturedRectangle, drawLabel
@@ -27,8 +26,6 @@ class CameraBase(BaseObject):
             to this resolution. If the camera doesnt support the resolution
             a negotiation error might be thrown.
     '''
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, **kwargs):
         kwargs.setdefault('stopped', False)
@@ -77,12 +74,10 @@ class CameraBase(BaseObject):
     texture = property(lambda self: self._get_texture(),
                 doc='Return the camera texture with the latest capture')
 
-    @abstractmethod
     def init_camera(self):
         '''Initialise the camera (internal)'''
         pass
 
-    @abstractmethod
     def update(self):
         '''Update the camera (internal)'''
         pass

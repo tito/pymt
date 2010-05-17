@@ -2,6 +2,7 @@
 Circular Slider: Using this you can make circularly shaped sliders
 '''
 
+from __future__ import with_statement
 
 __all__ = ('MTCircularSlider', 'RangeException')
 

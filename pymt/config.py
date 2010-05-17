@@ -2,6 +2,8 @@
 Config: base for PyMT configuration file
 '''
 
+from __future__ import with_statement
+
 __all__ = ('pymt_config', )
 
 from ConfigParser import ConfigParser

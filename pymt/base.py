@@ -67,10 +67,12 @@ class TouchEventLoop(object):
         self.quit = False
         self.input_events = []
         self.postproc_modules = []
+        self.status = 'idle'
 
     def start(self):
         '''Must be call only one time before run().
         This start all configured input providers.'''
+        self.status = 'started'
         global pymt_providers
         for provider in pymt_providers:
             provider.start()
@@ -81,6 +83,7 @@ class TouchEventLoop(object):
         global pymt_providers
         self.quit = True
         self.stop()
+        self.status = 'closed'
 
     def stop(self):
         '''Stop all input providers'''
@@ -90,6 +93,7 @@ class TouchEventLoop(object):
         #happens, crashing badly without error
         for provider in reversed(pymt_providers):
             provider.stop()
+        self.status = 'stopped'
 
     def add_postproc_module(self, mod):
         '''Add a postproc input module (DoubleTap, RetainTouch are default)'''
@@ -373,7 +377,9 @@ def runTouchApp(widget=None, slave=False):
 def stopTouchApp():
     '''Stop the current application by leaving the main loop'''
     global pymt_evloop
-    if pymt_evloop is None or pymt_evloop.quit:
+    if pymt_evloop is None:
+        return
+    if pymt_evloop.status != 'started':
         return
     pymt_logger.info('Base: Leaving application in progress...')
     pymt_evloop.close()

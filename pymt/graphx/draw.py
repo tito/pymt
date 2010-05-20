@@ -16,6 +16,7 @@ import os
 import math
 import pymt
 from pymt.cache import Cache
+from pymt.vector import Vector
 from OpenGL.GL import *
 from OpenGL.GLU import gluNewQuadric, gluDisk, gluPartialDisk
 from paint import *
@@ -38,7 +39,7 @@ def _make_point_list(points):
     if not t in (tuple, list):
         raise Exception('Point list must be tuple or list of' +
                         'coordinates or points(tuple/list of 2D coords)')
-    if type(points[0]) in (tuple, list): #flatten the points
+    if type(points[0]) in (tuple, list, Vector):
         return [coord for point in points for coord in point]
     else:
         return list(points)

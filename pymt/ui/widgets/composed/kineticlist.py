@@ -11,7 +11,6 @@ from ....graphx import drawCSSRectangle
 from ...factory import MTWidgetFactory
 from ....vector import Vector
 from ....base import getFrameDt
-from ....utils import boundary, SafeList
 from ..stencilcontainer import MTStencilContainer
 from ..widget import MTWidget
 from ..button import MTButton, MTToggleButton, MTImageButton
@@ -115,11 +114,11 @@ class MTKineticList(MTStencilContainer):
         self.vx = 0
         self.vy = 0
         # List of all children, whatever will be the search
-        self.pchildren = SafeList()
+        self.pchildren = []
         # For extra blob stats
         self.touch = {}
         # Holds widgets not a part of the scrolling(search button, etc)
-        self.widgets = SafeList()
+        self.widgets = []
         self._last_content_size = 0
         self._scrollbar_index = 0
         self._scrollbar_size = 0
@@ -199,10 +198,10 @@ class MTKineticList(MTStencilContainer):
         Attached to the on_press handler of the delete button(self.db)
         '''
         if self.db.get_state() == 'down':
-            for child in self.children.iterate():
+            for child in self.children[:]:
                 child.show_delete()
         else:
-            for child in self.children.iterate():
+            for child in self.children[:]:
                 child.hide_delete()
 
     def toggle_search(self, touch):
@@ -314,7 +313,7 @@ class MTKineticList(MTStencilContainer):
         ny = y
 
         # recalculate position for each children
-        for child in self.children.iterate():
+        for child in self.children[:]:
 
             # each row, calculate the height, advance y and reset x
             if index % limit == 0:
@@ -365,7 +364,7 @@ class MTKineticList(MTStencilContainer):
         touch.grab(self)
 
         # first, check if own widget take the touch
-        for w in self.widgets.iterate(reverse=True):
+        for w in reversed(self.widgets[:]):
             if w.on_touch_down(touch):
                 return True
 
@@ -389,7 +388,7 @@ class MTKineticList(MTStencilContainer):
         # ok, if it's not a kinetic movement,
         # dispatch to children
         if touch.id not in self.touch:
-            for w in self.widgets.iterate(reverse=True):
+            for w in reversed(self.widgets[:]):
                 if w.on_touch_move(touch):
                     return True
             return
@@ -415,7 +414,7 @@ class MTKineticList(MTStencilContainer):
         touch.ungrab(self)
 
         if touch.id not in self.touch:
-            for w in self.widgets.iterate(reverse=True):
+            for w in reversed(self.widgets[:]):
                 if w.on_touch_up(touch):
                     return True
             return
@@ -431,7 +430,7 @@ class MTKineticList(MTStencilContainer):
 
         # ok, the trigger distance is enough, we can dispatch event.
         # will not work if children grab the touch in down state :/
-        for child in self.children.iterate(reverse=True):
+        for child in reversed(self.children[:]):
             must_break = child.dispatch_event('on_touch_down', touch)
             old_grab_current = touch.grab_current
             touch.grab_current = child
@@ -482,7 +481,7 @@ class MTKineticList(MTStencilContainer):
 
         # draw children
         self.stencil_push()
-        for w in self.children.iterate():
+        for w in self.children[:]:
             # internal update of children
             w.update()
             # optimization to draw only viewed children

@@ -128,7 +128,7 @@ class TouchEventLoop(object):
 
         # dispatch grabbed touch
         touch.grab_state = True
-        for _wid in touch.grab_list.iterate():
+        for _wid in touch.grab_list[:]:
 
             # it's a weakref, call it!
             wid = _wid()

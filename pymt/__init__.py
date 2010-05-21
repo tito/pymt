@@ -118,6 +118,18 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     # Note: import are done after logger module initialization,
     # and configuration applied to logger.
 
+    # try to use cython is available
+    try:
+        pymt_logger.info('Core: Compile accelerate module')
+        import pyximport
+        pyximport.install()
+        import accelerate
+        pymt_logger.info('Core: Accelerate module compiled')
+    except ImportError:
+        pymt_logger.warning('Core: Error while compiling accelerate module')
+        pymt_logger.warning('Core: No core acceleration available')
+
+
     # no dependices at all
     from baseobject import *
     from exceptions import *

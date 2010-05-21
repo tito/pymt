@@ -144,6 +144,7 @@ __all__ = ('EventDispatcher', )
 
 import inspect
 from baseobject import BaseObject
+from logger import pymt_logger
 
 class EventDispatcher(BaseObject):
     '''Generic event dispatcher interface.
@@ -463,3 +464,13 @@ class EventDispatcher(BaseObject):
             self.push_handlers(**{p1: w2})
         else:
             self.push_handlers(**{p1: lambda_connect})
+
+# install acceleration
+try:
+    pymt_logger.debug('Event: install acceleration')
+    import types
+    import accelerate
+    EventDispatcher.dispatch_event = types.MethodType(
+        accelerate.eventdispatcher_dispatch_event, None, EventDispatcher)
+except ImportError, e:
+    pymt_logger.warning('Event: no accelerate module available <%s>' % e)

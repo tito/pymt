@@ -41,7 +41,7 @@ class MTStencilContainer(MTWidget):
     def on_draw(self):
         self.stencil_push()
         # draw childrens
-        for w in self.children.iterate():
+        for w in self.children[:]:
             w.dispatch_event('on_draw')
         self.stencil_pop()
 

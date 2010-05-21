@@ -103,7 +103,7 @@ class MTKinetic(MTWidget):
         ret = super(MTKinetic, self).on_touch_move(ktouch)
 
         # dispatch ktouch also in grab mode
-        for _wid in ktouch.grab_list.iterate():
+        for _wid in ktouch.grab_list[:]:
             wid = _wid()
             if wid is None:
                 ktouch.grab_list.remove(_wid)
@@ -162,7 +162,7 @@ class MTKinetic(MTWidget):
                 super(MTKinetic, self).on_touch_move(ktouch)
 
             # dispatch ktouch also in grab mode
-            for _wid in ktouch.grab_list.iterate():
+            for _wid in ktouch.grab_list[:]:
                 wid = _wid()
                 if wid is None:
                     ktouch.grab_list.remove(_wid)

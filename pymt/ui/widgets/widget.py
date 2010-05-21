@@ -12,7 +12,6 @@ from ...event import EventDispatcher
 from ...logger import pymt_logger
 from ...base import getCurrentTouches
 from ...input import Touch
-from ...utils import SafeList
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
 from ..colors import css_get_style
@@ -116,7 +115,7 @@ class MTWidget(EventDispatcher):
             self.register_event_type(ev)
 
         self._parent              = None
-        self.children             = SafeList()
+        self.children             = []
         self._visible             = False
         self._size_hint           = kwargs.get('size_hint')
         self.visible              = kwargs.get('visible')
@@ -315,13 +314,13 @@ class MTWidget(EventDispatcher):
         self.visible = True
 
     def on_update(self):
-        for w in self.children.iterate():
+        for w in self.children[:]:
             w.dispatch_event('on_update')
 
     def on_draw(self):
         self.draw()
         if self.draw_children:
-            for w in self.children.iterate():
+            for w in self.children[:]:
                 w.dispatch_event('on_draw')
 
     def draw(self):
@@ -362,25 +361,25 @@ class MTWidget(EventDispatcher):
         pass
 
     def on_resize(self, w, h):
-        for c in self.children.iterate():
+        for c in self.children[:]:
             c.dispatch_event('on_parent_resize', w, h)
 
     def on_move(self, x, y):
-        for c in self.children.iterate():
+        for c in self.children[:]:
             c.dispatch_event('on_move', x, y)
 
     def on_touch_down(self, touch):
-        for w in self.children.iterate(reverse=True):
+        for w in reversed(self.children[:]):
             if w.dispatch_event('on_touch_down', touch):
                 return True
 
     def on_touch_move(self, touch):
-        for w in self.children.iterate(reverse=True):
+        for w in reversed(self.children[:]):
             if w.dispatch_event('on_touch_move', touch):
                 return True
 
     def on_touch_up(self, touch):
-        for w in self.children.iterate(reverse=True):
+        for w in reversed(self.children[:]):
             if w.dispatch_event('on_touch_up', touch):
                 return True
 
@@ -432,6 +431,15 @@ class MTWidget(EventDispatcher):
             return True
     height = property(EventDispatcher._get_height, _set_height)
 
+# install acceleration
+try:
+    pymt_logger.debug('Widget: install acceleration')
+    import types
+    from ...accelerate import widget_on_update, widget_on_draw
+    MTWidget.on_update = types.MethodType(widget_on_update, None, MTWidget)
+    MTWidget.on_draw = types.MethodType(widget_on_draw, None, MTWidget)
+except ImportError, e:
+    pymt_logger.warning('Widget: no accelerate module available <%s>' % e)
 
 # Register all base widgets
 MTWidgetFactory.register('MTWidget', MTWidget)

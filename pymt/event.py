@@ -344,15 +344,14 @@ class EventDispatcher(BaseObject):
                     except TypeError:
                         self._raise_dispatch_exception(event_type, args, handler)
 
-        # check instance for an event handler
-        if hasattr(self, event_type):
-            try:
-                # call event
-                if getattr(self, event_type)(*args):
-                    return True
-            except TypeError, e:
-                self._raise_dispatch_exception(
-                    event_type, args, getattr(self, event_type))
+        # a instance always have a event handler, don't check it with hasattr.
+        try:
+            # call event
+            if getattr(self, event_type)(*args):
+                return True
+        except TypeError, e:
+            self._raise_dispatch_exception(
+                event_type, args, getattr(self, event_type))
 
     def _raise_dispatch_exception(self, event_type, args, handler):
         # A common problem in applications is having the wrong number of

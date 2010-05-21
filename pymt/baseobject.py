@@ -23,8 +23,7 @@ class BaseObject(object):
             return False
         self._size = size
         return True
-    size = property(lambda self: self._get_size(),
-                    lambda self, x: self._set_size(x),
+    size = property(_get_size, _set_size,
                     doc='Object size (width, height)')
 
     def _get_width(self):
@@ -34,8 +33,7 @@ class BaseObject(object):
             return False
         self._size = (w, self._size[1])
         return True
-    width = property(lambda self: self._get_width(),
-                     lambda self, x: self._set_width(x),
+    width = property(_get_width, _set_width,
                      doc='Object width')
 
     def _get_height(self):
@@ -45,8 +43,7 @@ class BaseObject(object):
             return False
         self._size = (self._size[0], h)
         return True
-    height = property(lambda self: self._get_height(),
-                     lambda self, x: self._set_height(x),
+    height = property(_get_height, _set_height,
                       doc='Object height')
 
     def _get_pos(self):
@@ -56,8 +53,8 @@ class BaseObject(object):
             return False
         self._pos = tuple(pos)
         return True
-    pos = property(lambda self: self._get_pos(),
-                   lambda self, x: self._set_pos(x), doc='Object position (x, y)')
+    pos = property(_get_pos, _set_pos,
+                   doc='Object position (x, y)')
 
     def _get_x(self):
         return self._pos[0]
@@ -66,8 +63,7 @@ class BaseObject(object):
             return False
         self._pos = (x, self.y)
         return True
-    x = property(lambda self: self._get_x(),
-                 lambda self, x: self._set_x(x),
+    x = property(_get_x, _set_x,
                  doc = 'Object X position')
 
     def _get_y(self):
@@ -77,8 +73,7 @@ class BaseObject(object):
             return False
         self._pos = (self.x, y)
         return True
-    y = property(lambda self: self._get_y(),
-                 lambda self, x: self._set_y(x),
+    y = property(_get_y, _set_y,
                  doc = 'Object Y position')
 
     def _get_center(self):
@@ -86,8 +81,7 @@ class BaseObject(object):
     def _set_center(self, center):
         return self._set_pos((center[0] - self._size[0] / 2.,
                               center[1] - self._size[1] / 2.))
-    center = property(lambda self: self._get_center(),
-                      lambda self, x: self._set_center(x),
+    center = property(_get_center, _set_center,
                       doc='Object center (cx, cy)')
 
     def update(self):

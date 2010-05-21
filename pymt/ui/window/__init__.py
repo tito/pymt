@@ -208,30 +208,18 @@ class BaseWindow(EventDispatcher):
         return self._modifiers
     modifiers = property(_get_modifiers)
 
-    def _get_size(self):
-        return self._size
     def _set_size(self, size):
-        if self._size == size:
-            return False
-        self._size = size
-        pymt_logger.debug('Window: Resize window to %s' % str(self.size))
-        self.dispatch_event('on_resize', *size)
-        return True
-    size = property(lambda self: self._get_size(),
-                    lambda self, x: self._set_size(x))
+        if super(BaseWindow, self)._set_size(size):
+            pymt_logger.debug('Window: Resize window to %s' % str(self.size))
+            self.dispatch_event('on_resize', *size)
+            return True
+        return False
+    size = property(EventDispatcher._get_size, _set_size)
 
-    def _get_width(self):
-        return self._size[0]
-    width = property(_get_width)
-
-    def _get_height(self):
-        return self._size[1]
-    height = property(_get_height)
-
-    def _get_center(self):
-        return (self.width/2, self.height/2)
-    center = property(_get_center)
-
+    # make some property read-only
+    width = property(EventDispatcher._get_width)
+    height = property(EventDispatcher._get_height)
+    center = property(EventDispatcher._get_center)
 
     def _get_wallpaper(self):
         return self._wallpaper

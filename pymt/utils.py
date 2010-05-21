@@ -2,10 +2,10 @@
 Utils: generic toolbox
 '''
 
-__all__ = ['intersection', 'difference', 'curry', 'strtotuple',
+__all__ = ('intersection', 'difference', 'curry', 'strtotuple',
            'get_color_from_hex', 'get_color_for_pyglet', 'get_random_color',
            'is_color_transparent', 'boundary', 'connect',
-           'deprecated', 'SafeList']
+           'deprecated')
 
 import inspect
 import re
@@ -116,33 +116,3 @@ def deprecated(func):
         return func(*args, **kwargs)
     return new_func
 
-class SafeList(list):
-    '''Special list that some case of list modification while iterating on it.
-    It's mainly used for children ::
-
-        children = SafeList()
-        for child in children.iterate():
-            if child == mychild:
-                children.remove(child)
-
-    .. warning::
-        Only append,remove,insert methods are protected.
-    '''
-    def __init__(self, *largs, **kwargs):
-        super(SafeList, self).__init__(*largs, **kwargs)
-
-    def iterate(self, reverse=False):
-        '''Safe iteration in items.
-
-        .. warning::
-            Iterate don't support recursive call.
-        '''
-        it = iter(self[:])
-        if reverse:
-            it = reversed(it)
-        return it
-
-    def clear(self):
-        '''Remove safely all elements in the list'''
-        for v in self.iterate():
-            self.remove(v)

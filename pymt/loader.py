@@ -24,7 +24,6 @@ from pymt import pymt_data_dir
 from pymt.logger import pymt_logger
 from pymt.clock import getClock
 from pymt.cache import Cache
-from pymt.utils import SafeList
 from pymt.core.image import ImageLoader, Image
 from pymt.event import EventDispatcher
 from abc import ABCMeta, abstractmethod
@@ -70,7 +69,7 @@ class LoaderBase(object):
 
         self._q_load  = collections.deque()
         self._q_done  = collections.deque()
-        self._client  = SafeList()
+        self._client  = []
         self._running = False
         self._start_wanted = False
 
@@ -168,7 +167,7 @@ class LoaderBase(object):
             Cache.append('pymt.loader', filename, image)
 
             # update client
-            for c_filename, client in self._client.iterate():
+            for c_filename, client in self._client[:]:
                 if filename != c_filename:
                     continue
                 # got one client to update

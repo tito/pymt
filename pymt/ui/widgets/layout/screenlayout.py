@@ -3,7 +3,7 @@ __all__ = ('MTScreenLayout', )
 from abstractlayout import MTAbstractLayout
 from boxlayout import MTBoxLayout
 from ....logger import pymt_logger
-from ....utils import SafeList, curry
+from ....utils import curry
 from ....base import getFrameDt
 from ....graphx import set_color, drawRectangle
 from ...factory import MTWidgetFactory
@@ -26,7 +26,7 @@ class MTScreenLayout(MTAbstractLayout):
         kwargs.setdefault('show_tabs', False)
         kwargs.setdefault('duration', 1.)
         super(MTScreenLayout, self).__init__(**kwargs)
-        self.screens = SafeList()
+        self.screens = []
         self.screen = None
         self.previous_screen = None
         self._switch_t = 1.1
@@ -70,7 +70,7 @@ class MTScreenLayout(MTAbstractLayout):
         self.screens.append(widget)
 
     def remove_widget(self, widget):
-        for btn in self.tabs.children.iterate():
+        for btn in self.tabs.children[:]:
             if type(widget) in (str, unicode):
                 if btn.label == widget:
                     self.tabs.remove_widget(btn)

@@ -58,7 +58,7 @@ class MTBoxLayout(MTAbstractLayout):
         if self.orientation == 'horizontal':
             total_width = 0
             hint_width = 0
-            for w in self.children.iterate(reverse=True):
+            for w in reversed(self.children):
                 if w.size_hint[0]:
                     hint_width += w.size_hint[0]
                 else:
@@ -67,7 +67,7 @@ class MTBoxLayout(MTAbstractLayout):
             room_left = max(0,self.width - total_width)
             x = self.x + self.padding
             y = self.y + self.padding
-            for c in self.children.iterate(reverse=True):
+            for c in reversed(self.children):
                 w,h = c.size
                 if c.size_hint[0]:
                     w = room_left*c.size_hint[0]/max(1.0, float(hint_width))
@@ -81,7 +81,7 @@ class MTBoxLayout(MTAbstractLayout):
         if self.orientation == 'vertical':
             total_height = 0
             hint_height = 0
-            for w in self.children.iterate():
+            for w in self.children:
                 if w.size_hint[1]:
                     hint_height += w.size_hint[1]
                 else:
@@ -90,7 +90,7 @@ class MTBoxLayout(MTAbstractLayout):
             room_left = max(0,self.height - total_height)
             x = self.x + self.padding
             y = self.y + self.padding
-            for c in self.children.iterate():
+            for c in self.children:
                 w,h = c.size
                 if c.size_hint[0]:
                     w = max(1.0, c.size_hint[0])*self.width

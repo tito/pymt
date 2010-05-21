@@ -11,7 +11,6 @@ from OpenGL.GL import *
 from ....graphx import gx_matrix, drawRectangle, set_color, gx_stencil, stencilUse
 from ....graphx import drawRoundedRectangle, drawTexturedRectangle
 from ....vector import matrix_inv_mult
-from ....utils import SafeList
 from ..rectangle import MTRectangularWidget
 from ..scatter import MTScatterWidget
 from ..button import MTImageButton, MTButton
@@ -112,7 +111,7 @@ class MTInnerWindow(MTScatterWidget):
         self.old_size = self.size
 
         # set new children
-        root_win.children = SafeList()
+        root_win.children = []
         root_win.add_widget(self.container)
 
         btn_unfullscreen = MTButton(pos=(root_win.width-50, root_win.height-50),

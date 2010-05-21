@@ -83,7 +83,6 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         if pymt_config_version == 0:
 
             pymt_config.setdefault('pymt', 'show_fps', '0')
-            pymt_config.setdefault('pymt', 'show_eventstats', '0')
             pymt_config.setdefault('pymt', 'log_level', 'info')
             pymt_config.setdefault('pymt', 'double_tap_time', '250')
             pymt_config.setdefault('pymt', 'double_tap_distance', '20')

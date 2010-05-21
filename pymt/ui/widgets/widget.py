@@ -2,10 +2,8 @@
 Widget: Base of every widget implementation.
 '''
 
-__all__ = ['getWidgetById','getWidgetByID',
-    'event_stats_activate', 'event_stats_print',
-    'MTWidget'
-]
+__all__ = ('getWidgetById',
+           'MTWidget')
 
 import sys
 import os
@@ -32,22 +30,6 @@ def getWidgetById(id):
         del _id_2_widget[id]
         return
     return obj
-getWidgetByID = getWidgetById
-
-_event_stats = {}
-_event_stats_activate = False
-
-def event_stats_activate(activate=True):
-    '''Activate or deactivate debug info on event'''
-    global _event_stats_activate
-    _event_stats_activate = activate
-
-def event_stats_print():
-    '''Print actual event stats'''
-    pymt_logger.info('Widget: Event stats')
-    global _event_stats
-    for k in _event_stats:
-        pymt_logger.info('Widget: %6d: %s' % (_event_stats[k], k))
 
 class MTWidget(EventDispatcher):
     '''Global base for any multitouch widget.

@@ -1,6 +1,8 @@
 from time import time
 from pymt import *
 
+OverheadWidget = MTWidget
+
 call = 0
 frames = 1000
 
@@ -9,11 +11,11 @@ def on_call(*largs):
     call += 1
 
 # start to build a scene graph
-root = MTWidget()
+root = OverheadWidget()
 for x in xrange(10):
-    m = MTWidget()
+    m = OverheadWidget()
     for x in xrange(100):
-        m.add_widget(MTWidget())
+        m.add_widget(OverheadWidget())
     root.add_widget(m)
 
 # time !

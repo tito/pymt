@@ -156,7 +156,7 @@ class EventDispatcher(BaseObject):
     def __init__(self, **kwargs):
         super(EventDispatcher, self).__init__(**kwargs)
         self._event_types = []
-        self._event_stack = [{}]
+        self._event_stack = None
 
     @property
     def event_types(self):
@@ -190,7 +190,12 @@ class EventDispatcher(BaseObject):
         object may also be specified, in which case it will be searched for
         callables with event names.
         '''
+        # Create event stack if necessary
+        if self._event_stack is None:
+            self._event_stack = []
+
         # Place dict full of new handlers at beginning of stack
+        self._event_stack.insert(0, {})
         self.set_handlers(*args, **kwargs)
 
     def remove_handler(self, name, handler):
@@ -209,6 +214,8 @@ class EventDispatcher(BaseObject):
             `handler` : callable
                 Event handler to remove.
         '''
+        if self._event_stack is None:
+            return
         for frame in self._event_stack:
             try:
                 if frame[name] is handler:
@@ -233,6 +240,8 @@ class EventDispatcher(BaseObject):
 
         # Find the first stack frame containing any of the handlers
         def find_frame():
+            if self._event_stack is None:
+                return
             for frame in self._event_stack:
                 for name, handler in handlers:
                     try:
@@ -282,6 +291,10 @@ class EventDispatcher(BaseObject):
 
         See `push_handlers` for the accepted argument types.
         '''
+        # Create event stack if necessary
+        if self._event_stack is None:
+            self._event_stack = [{}]
+
         for name, handler in self._get_handlers(args, kwargs):
             self.set_handler(name, handler)
 
@@ -295,6 +308,10 @@ class EventDispatcher(BaseObject):
                 Event handler to attach.
 
         '''
+        # Create event stack if necessary
+        if self._event_stack is None:
+            self._event_stack = [{}]
+
         self._event_stack[0][name] = handler
 
     def dispatch_event(self, event_type, *args):
@@ -317,23 +334,22 @@ class EventDispatcher(BaseObject):
             return
 
         # search handler stack for matching event handlers
-        for frame in self._event_stack:
-            handler = frame.get(event_type, None)
-            if handler:
-                try:
-                    if handler(*args):
-                        return True
-                except TypeError:
-                    self._raise_dispatch_exception(event_type, args, handler)
+        if self._event_stack is not None:
+            for frame in self._event_stack:
+                handler = frame.get(event_type, None)
+                if handler:
+                    try:
+                        if handler(*args):
+                            return True
+                    except TypeError:
+                        self._raise_dispatch_exception(event_type, args, handler)
 
         # check instance for an event handler
         if hasattr(self, event_type):
             try:
                 # call event
-                func = getattr(self, event_type)
-                if func(*args):
+                if getattr(self, event_type)(*args):
                     return True
-
             except TypeError, e:
                 self._raise_dispatch_exception(
                     event_type, args, getattr(self, event_type))

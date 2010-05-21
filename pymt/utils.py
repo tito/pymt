@@ -130,8 +130,6 @@ class SafeList(list):
     '''
     def __init__(self, *largs, **kwargs):
         super(SafeList, self).__init__(*largs, **kwargs)
-        self.clone = None
-        self.in_iterate = False
 
     def iterate(self, reverse=False):
         '''Safe iteration in items.
@@ -139,37 +137,10 @@ class SafeList(list):
         .. warning::
             Iterate don't support recursive call.
         '''
-        self.clone = None
-        self.in_iterate = True
-        ref = self
+        it = iter(self[:])
         if reverse:
-            rng = xrange(len(ref) - 1, -1, -1)
-        else:
-            rng = xrange(0, len(ref))
-        for x in rng:
-            if self.clone:
-                ref = self.clone
-            yield ref[x]
-        self.clone = None
-        self.in_iterate = False
-
-    def append(self, value):
-        '''Append a value'''
-        if self.in_iterate and not self.clone:
-            self.clone = self[:]
-        super(SafeList, self).append(value)
-
-    def remove(self, value):
-        '''Remove the first matched value'''
-        if self.in_iterate and not self.clone:
-            self.clone = self[:]
-        super(SafeList, self).remove(value)
-
-    def insert(self, index, value):
-        '''Insert a value at index'''
-        if self.in_iterate and not self.clone:
-            self.clone = self[:]
-        super(SafeList, self).insert(index, value)
+            it = reversed(it)
+        return it
 
     def clear(self):
         '''Remove safely all elements in the list'''

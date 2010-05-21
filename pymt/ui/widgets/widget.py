@@ -177,9 +177,7 @@ class MTWidget(EventDispatcher):
         self.reload_css()
     def _get_cls(self):
         return self._cls
-    cls = property(
-        lambda self: self._get_cls(),
-        lambda self, x: self._set_cls(x),
+    cls = property(_get_cls, _set_cls,
         doc='Get/Set the class of the widget (used for CSS)')
 
     def _set_parent(self, parent):
@@ -187,8 +185,7 @@ class MTWidget(EventDispatcher):
         self.dispatch_event('on_parent')
     def _get_parent(self):
         return self._parent
-    parent = property(lambda self: self._get_parent(),
-                      lambda self, x: self._set_parent(x),
+    parent = property(_get_parent, _set_parent,
                       doc='MTWidget: parent of widget. Fired on_parent event when set')
 
     def _set_id(self, id):
@@ -203,18 +200,24 @@ class MTWidget(EventDispatcher):
             _id_2_widget[self._id] = ref
     def _get_id(self):
         return self._id
-    id = property(lambda self: self._get_id(),
-                  lambda self, x: self._set_id(x),
+    id = property(_get_id, _set_id,
                   doc='str: id of widget')
 
     def _set_visible(self, visible):
         if self._visible == visible:
             return
         self._visible = visible
+        # register or unregister event if the widget is visible or not
+        if visible:
+            for ev in MTWidget.visible_events:
+                self.register_event_type(ev)
+        else:
+            for ev in MTWidget.visible_events:
+                self.unregister_event_type(ev)
+
     def _get_visible(self):
         return self._visible
-    visible = property(lambda self: self._get_visible(),
-                       lambda self, x: self._set_visible(x),
+    visible = property(_get_visible, _set_visible,
                        doc='bool: visibility of widget')
 
     def _set_size_hint(self, size_hint):
@@ -223,8 +226,7 @@ class MTWidget(EventDispatcher):
         self._size_hint = size_hint
     def _get_size_hint(self):
         return self._size_hint
-    size_hint = property(lambda self: self._get_size_hint(),
-                         lambda self, x: self._set_size_hint(x),
+    size_hint = property(_get_size_hint, _set_size_hint,
                          doc='size_hint is used by layouts to determine size behaviour during layout')
 
     def apply_css(self, styles):
@@ -326,27 +328,15 @@ class MTWidget(EventDispatcher):
         '''Hide the widget'''
         self.visible = False
 
-        # unregister all event used for drawing / interaction
-        for ev in MTWidget.visible_events:
-            self.unregister_event_type(ev)
-
     def show(self):
         '''Show the widget'''
         self.visible = True
 
-        # register all event used for drawing / interaction
-        for ev in MTWidget.visible_events:
-            self.register_event_type(ev)
-
     def on_update(self):
-        if not self.visible:
-            return
         for w in self.children.iterate():
             w.dispatch_event('on_update')
 
     def on_draw(self):
-        if not self.visible:
-            return
         self.draw()
         if self.draw_children:
             for w in self.children.iterate():
@@ -428,31 +418,37 @@ class MTWidget(EventDispatcher):
         if super(MTWidget, self)._set_pos(x):
             self.dispatch_event('on_move', *self._pos)
             return True
+    pos = property(EventDispatcher._get_pos, _set_pos)
 
     def _set_x(self, x):
         if super(MTWidget, self)._set_x(x):
             self.dispatch_event('on_move', *self._pos)
             return True
+    x = property(EventDispatcher._get_x, _set_x)
 
     def _set_y(self, x):
         if super(MTWidget, self)._set_y(x):
             self.dispatch_event('on_move', *self._pos)
             return True
+    y = property(EventDispatcher._get_y, _set_y)
 
     def _set_size(self, x):
         if super(MTWidget, self)._set_size(x):
             self.dispatch_event('on_resize', *self._size)
             return True
+    size = property(EventDispatcher._get_size, _set_size)
 
     def _set_width(self, x):
         if super(MTWidget, self)._set_width(x):
             self.dispatch_event('on_resize', *self._size)
             return True
+    width = property(EventDispatcher._get_width, _set_width)
 
     def _set_height(self, x):
         if super(MTWidget, self)._set_height(x):
             self.dispatch_event('on_resize', *self._size)
             return True
+    height = property(EventDispatcher._get_height, _set_height)
 
 
 # Register all base widgets

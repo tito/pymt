@@ -205,9 +205,10 @@ class MTWindowPygame(BaseWindow):
 
 
     def _set_size(self, size):
-        # set pygame mode only if size have really changed
         if super(MTWindowPygame, self)._set_size(size):
             self._pygame_set_mode()
+            return True
+    size = property(BaseWindow._get_size, _set_size)
 
 
     #

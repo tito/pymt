@@ -56,8 +56,10 @@ class MTWindowGlut(BaseWindow):
         super(MTWindowGlut, self).on_keyboard(key, scancode, unicode)
 
     def _set_size(self, size):
-        glutReshapeWindow(*size)
-        super(MTWindowGlut, self)._set_size(size)
+        if super(MTWindowGlut, self)._set_size(size):
+            glutReshapeWindow(*size)
+            return True
+    size = property(BaseWindow._get_size, _set_size)
 
     def flip(self):
         glutSwapBuffers()

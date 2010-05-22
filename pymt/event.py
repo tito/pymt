@@ -179,6 +179,9 @@ class EventDispatcher(BaseObject):
                 Name of the event to register.
 
         '''
+        if not hasattr(self, event_type):
+            raise Exception('Missing default handler <%s> in <%s>' % (
+                            event_type, self.__class__.__name__))
         if not event_type in self._event_types:
             self._event_types.append(event_type)
 

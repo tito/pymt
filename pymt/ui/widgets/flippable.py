@@ -10,7 +10,6 @@ from ..factory import MTWidgetFactory
 from ...graphx import gx_matrix, drawCSSRectangle, set_color
 from widget import MTWidget
 from ..animation import Animation, AnimationAlpha
-from ...utils import SafeList
 
 class MTFlippableWidget(MTWidget):
     '''This is wrapper widget using which you can make a
@@ -43,8 +42,8 @@ class MTFlippableWidget(MTWidget):
         self.side           = 'front'
 
         # Holds children for both sides
-        self.children_front = SafeList()
-        self.children_back  = SafeList()
+        self.children_front = []
+        self.children_back  = []
 
         self._anim_current  = None
         self._anim_back     = Animation(zangle=180)
@@ -93,12 +92,12 @@ class MTFlippableWidget(MTWidget):
         if self.side == 'front':
             self.side = 'back'
             self.children.clear()
-            for x in self.children_back.iterate():
+            for x in self.children_back[:]:
                 super(MTFlippableWidget, self).add_widget(x)
         else:
             self.side = 'front'
             self.children.clear()
-            for x in self.children_front.iterate():
+            for x in self.children_front[:]:
                 super(MTFlippableWidget, self).add_widget(x)
 
     def flip_to(self, to):

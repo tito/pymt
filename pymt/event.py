@@ -144,6 +144,7 @@ __all__ = ('EventDispatcher', )
 
 import inspect
 from baseobject import BaseObject
+from logger import pymt_logger
 
 class EventDispatcher(BaseObject):
     '''Generic event dispatcher interface.
@@ -344,15 +345,14 @@ class EventDispatcher(BaseObject):
                     except TypeError:
                         self._raise_dispatch_exception(event_type, args, handler)
 
-        # check instance for an event handler
-        if hasattr(self, event_type):
-            try:
-                # call event
-                if getattr(self, event_type)(*args):
-                    return True
-            except TypeError, e:
-                self._raise_dispatch_exception(
-                    event_type, args, getattr(self, event_type))
+        # a instance always have a event handler, don't check it with hasattr.
+        try:
+            # call event
+            if getattr(self, event_type)(*args):
+                return True
+        except TypeError, e:
+            self._raise_dispatch_exception(
+                event_type, args, getattr(self, event_type))
 
     def _raise_dispatch_exception(self, event_type, args, handler):
         # A common problem in applications is having the wrong number of
@@ -464,3 +464,13 @@ class EventDispatcher(BaseObject):
             self.push_handlers(**{p1: w2})
         else:
             self.push_handlers(**{p1: lambda_connect})
+
+# install acceleration
+try:
+    pymt_logger.debug('Event: install acceleration')
+    import types
+    import accelerate
+    EventDispatcher.dispatch_event = types.MethodType(
+        accelerate.eventdispatcher_dispatch_event, None, EventDispatcher)
+except ImportError, e:
+    pymt_logger.warning('Event: no accelerate module available <%s>' % e)

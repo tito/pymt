@@ -128,7 +128,7 @@ class TouchEventLoop(object):
 
         # dispatch grabbed touch
         touch.grab_state = True
-        for _wid in touch.grab_list.iterate():
+        for _wid in touch.grab_list[:]:
 
             # it's a weakref, call it!
             wid = _wid()
@@ -310,10 +310,6 @@ def runTouchApp(widget=None, slave=False):
     #    from ui.window import MTWindow
     #    pymt_window = MTWindow()
 
-    # Check if we show event stats
-    if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
-        pymt.widget.event_stats_activate()
-
     # Instance all configured input
     for key, value in pymt.pymt_config.items('input'):
         pymt_logger.debug('Base: Create provider from %s' % (str(value)))
@@ -369,10 +365,6 @@ def runTouchApp(widget=None, slave=False):
             pymt_window.mainloop()
     finally:
         stopTouchApp()
-
-    # Show event stats
-    if pymt.pymt_config.getboolean('pymt', 'show_eventstats'):
-        pymt.widget.event_stats_print()
 
 def stopTouchApp():
     '''Stop the current application by leaving the main loop'''

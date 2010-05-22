@@ -20,7 +20,6 @@ from ...clock import getClock
 from ...graphx import set_color, drawCircle, drawLabel, drawRectangle, drawCSSRectangle
 from ...modules import pymt_modules
 from ...event import EventDispatcher
-from ...utils import SafeList
 from ..colors import css_get_style
 from ..factory import MTWidgetFactory
 from ..widgets import MTWidget
@@ -115,7 +114,7 @@ class BaseWindow(EventDispatcher):
         if len(kwargs.get('style')):
             self.apply_css(kwargs.get('style'))
 
-        self.children = SafeList()
+        self.children = []
         self.parent = self
         self.visible = True
 
@@ -208,30 +207,18 @@ class BaseWindow(EventDispatcher):
         return self._modifiers
     modifiers = property(_get_modifiers)
 
-    def _get_size(self):
-        return self._size
     def _set_size(self, size):
-        if self._size == size:
-            return False
-        self._size = size
-        pymt_logger.debug('Window: Resize window to %s' % str(self.size))
-        self.dispatch_event('on_resize', *size)
-        return True
-    size = property(lambda self: self._get_size(),
-                    lambda self, x: self._set_size(x))
+        if super(BaseWindow, self)._set_size(size):
+            pymt_logger.debug('Window: Resize window to %s' % str(self.size))
+            self.dispatch_event('on_resize', *size)
+            return True
+        return False
+    size = property(EventDispatcher._get_size, _set_size)
 
-    def _get_width(self):
-        return self._size[0]
-    width = property(_get_width)
-
-    def _get_height(self):
-        return self._size[1]
-    height = property(_get_height)
-
-    def _get_center(self):
-        return (self.width/2, self.height/2)
-    center = property(_get_center)
-
+    # make some property read-only
+    width = property(EventDispatcher._get_width)
+    height = property(EventDispatcher._get_height)
+    center = property(EventDispatcher._get_center)
 
     def _get_wallpaper(self):
         return self._wallpaper
@@ -336,7 +323,7 @@ class BaseWindow(EventDispatcher):
         '''Event called when window are update the widget tree.
         (Usually before on_draw call.)
         '''
-        for w in self.children.iterate():
+        for w in self.children[:]:
             w.dispatch_event('on_update')
 
     def on_draw(self):
@@ -348,7 +335,7 @@ class BaseWindow(EventDispatcher):
         self.draw()
 
         # then, draw childrens
-        for w in self.children.iterate():
+        for w in self.children[:]:
             w.dispatch_event('on_draw')
 
         if self.show_fps:
@@ -362,21 +349,21 @@ class BaseWindow(EventDispatcher):
     def on_touch_down(self, touch):
         '''Event called when a touch is down'''
         touch.scale_for_screen(*self.size)
-        for w in self.children.iterate(reverse=True):
+        for w in reversed(self.children[:]):
             if w.dispatch_event('on_touch_down', touch):
                 return True
 
     def on_touch_move(self, touch):
         '''Event called when a touch move'''
         touch.scale_for_screen(*self.size)
-        for w in self.children.iterate(reverse=True):
+        for w in reversed(self.children[:]):
             if w.dispatch_event('on_touch_move', touch):
                 return True
 
     def on_touch_up(self, touch):
         '''Event called when a touch up'''
         touch.scale_for_screen(*self.size)
-        for w in self.children.iterate(reverse=True):
+        for w in reversed(self.children[:]):
             if w.dispatch_event('on_touch_up', touch):
                 return True
 

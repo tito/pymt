@@ -2,10 +2,8 @@
 Widget: Base of every widget implementation.
 '''
 
-__all__ = ['getWidgetById','getWidgetByID',
-    'event_stats_activate', 'event_stats_print',
-    'MTWidget'
-]
+__all__ = ('getWidgetById',
+           'MTWidget')
 
 import sys
 import os
@@ -14,7 +12,6 @@ from ...event import EventDispatcher
 from ...logger import pymt_logger
 from ...base import getCurrentTouches
 from ...input import Touch
-from ...utils import SafeList
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
 from ..colors import css_get_style
@@ -32,22 +29,6 @@ def getWidgetById(id):
         del _id_2_widget[id]
         return
     return obj
-getWidgetByID = getWidgetById
-
-_event_stats = {}
-_event_stats_activate = False
-
-def event_stats_activate(activate=True):
-    '''Activate or deactivate debug info on event'''
-    global _event_stats_activate
-    _event_stats_activate = activate
-
-def event_stats_print():
-    '''Print actual event stats'''
-    pymt_logger.info('Widget: Event stats')
-    global _event_stats
-    for k in _event_stats:
-        pymt_logger.info('Widget: %6d: %s' % (_event_stats[k], k))
 
 class MTWidget(EventDispatcher):
     '''Global base for any multitouch widget.
@@ -134,7 +115,7 @@ class MTWidget(EventDispatcher):
             self.register_event_type(ev)
 
         self._parent              = None
-        self.children             = SafeList()
+        self.children             = []
         self._visible             = False
         self._size_hint           = kwargs.get('size_hint')
         self.visible              = kwargs.get('visible')
@@ -177,9 +158,7 @@ class MTWidget(EventDispatcher):
         self.reload_css()
     def _get_cls(self):
         return self._cls
-    cls = property(
-        lambda self: self._get_cls(),
-        lambda self, x: self._set_cls(x),
+    cls = property(_get_cls, _set_cls,
         doc='Get/Set the class of the widget (used for CSS)')
 
     def _set_parent(self, parent):
@@ -187,8 +166,7 @@ class MTWidget(EventDispatcher):
         self.dispatch_event('on_parent')
     def _get_parent(self):
         return self._parent
-    parent = property(lambda self: self._get_parent(),
-                      lambda self, x: self._set_parent(x),
+    parent = property(_get_parent, _set_parent,
                       doc='MTWidget: parent of widget. Fired on_parent event when set')
 
     def _set_id(self, id):
@@ -203,18 +181,24 @@ class MTWidget(EventDispatcher):
             _id_2_widget[self._id] = ref
     def _get_id(self):
         return self._id
-    id = property(lambda self: self._get_id(),
-                  lambda self, x: self._set_id(x),
+    id = property(_get_id, _set_id,
                   doc='str: id of widget')
 
     def _set_visible(self, visible):
         if self._visible == visible:
             return
         self._visible = visible
+        # register or unregister event if the widget is visible or not
+        if visible:
+            for ev in MTWidget.visible_events:
+                self.register_event_type(ev)
+        else:
+            for ev in MTWidget.visible_events:
+                self.unregister_event_type(ev)
+
     def _get_visible(self):
         return self._visible
-    visible = property(lambda self: self._get_visible(),
-                       lambda self, x: self._set_visible(x),
+    visible = property(_get_visible, _set_visible,
                        doc='bool: visibility of widget')
 
     def _set_size_hint(self, size_hint):
@@ -223,8 +207,7 @@ class MTWidget(EventDispatcher):
         self._size_hint = size_hint
     def _get_size_hint(self):
         return self._size_hint
-    size_hint = property(lambda self: self._get_size_hint(),
-                         lambda self, x: self._set_size_hint(x),
+    size_hint = property(_get_size_hint, _set_size_hint,
                          doc='size_hint is used by layouts to determine size behaviour during layout')
 
     def apply_css(self, styles):
@@ -326,30 +309,18 @@ class MTWidget(EventDispatcher):
         '''Hide the widget'''
         self.visible = False
 
-        # unregister all event used for drawing / interaction
-        for ev in MTWidget.visible_events:
-            self.unregister_event_type(ev)
-
     def show(self):
         '''Show the widget'''
         self.visible = True
 
-        # register all event used for drawing / interaction
-        for ev in MTWidget.visible_events:
-            self.register_event_type(ev)
-
     def on_update(self):
-        if not self.visible:
-            return
-        for w in self.children.iterate():
+        for w in self.children[:]:
             w.dispatch_event('on_update')
 
     def on_draw(self):
-        if not self.visible:
-            return
         self.draw()
         if self.draw_children:
-            for w in self.children.iterate():
+            for w in self.children[:]:
                 w.dispatch_event('on_draw')
 
     def draw(self):
@@ -390,25 +361,25 @@ class MTWidget(EventDispatcher):
         pass
 
     def on_resize(self, w, h):
-        for c in self.children.iterate():
+        for c in self.children[:]:
             c.dispatch_event('on_parent_resize', w, h)
 
     def on_move(self, x, y):
-        for c in self.children.iterate():
+        for c in self.children[:]:
             c.dispatch_event('on_move', x, y)
 
     def on_touch_down(self, touch):
-        for w in self.children.iterate(reverse=True):
+        for w in reversed(self.children[:]):
             if w.dispatch_event('on_touch_down', touch):
                 return True
 
     def on_touch_move(self, touch):
-        for w in self.children.iterate(reverse=True):
+        for w in reversed(self.children[:]):
             if w.dispatch_event('on_touch_move', touch):
                 return True
 
     def on_touch_up(self, touch):
-        for w in self.children.iterate(reverse=True):
+        for w in reversed(self.children[:]):
             if w.dispatch_event('on_touch_up', touch):
                 return True
 
@@ -428,32 +399,47 @@ class MTWidget(EventDispatcher):
         if super(MTWidget, self)._set_pos(x):
             self.dispatch_event('on_move', *self._pos)
             return True
+    pos = property(EventDispatcher._get_pos, _set_pos)
 
     def _set_x(self, x):
         if super(MTWidget, self)._set_x(x):
             self.dispatch_event('on_move', *self._pos)
             return True
+    x = property(EventDispatcher._get_x, _set_x)
 
     def _set_y(self, x):
         if super(MTWidget, self)._set_y(x):
             self.dispatch_event('on_move', *self._pos)
             return True
+    y = property(EventDispatcher._get_y, _set_y)
 
     def _set_size(self, x):
         if super(MTWidget, self)._set_size(x):
             self.dispatch_event('on_resize', *self._size)
             return True
+    size = property(EventDispatcher._get_size, _set_size)
 
     def _set_width(self, x):
         if super(MTWidget, self)._set_width(x):
             self.dispatch_event('on_resize', *self._size)
             return True
+    width = property(EventDispatcher._get_width, _set_width)
 
     def _set_height(self, x):
         if super(MTWidget, self)._set_height(x):
             self.dispatch_event('on_resize', *self._size)
             return True
+    height = property(EventDispatcher._get_height, _set_height)
 
+# install acceleration
+try:
+    pymt_logger.debug('Widget: install acceleration')
+    import types
+    from ...accelerate import widget_on_update, widget_on_draw
+    MTWidget.on_update = types.MethodType(widget_on_update, None, MTWidget)
+    MTWidget.on_draw = types.MethodType(widget_on_draw, None, MTWidget)
+except ImportError, e:
+    pymt_logger.warning('Widget: no accelerate module available <%s>' % e)
 
 # Register all base widgets
 MTWidgetFactory.register('MTWidget', MTWidget)

@@ -100,6 +100,9 @@ class MTScatterWidget(MTWidget):
         else:
             self.init_transform(kwargs.get('rotation'), kwargs.get('scale'), super(MTScatterWidget, self).pos)
 
+    def on_transform(self, *largs):
+        pass
+
     def init_transform(self, angle, scale, trans, point=(0, 0)):
         '''Initialize transformation matrix with new parameters.
 

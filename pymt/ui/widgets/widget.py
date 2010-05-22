@@ -350,12 +350,11 @@ class MTWidget(EventDispatcher):
         if w in self.children:
             self.children.remove(w)
 
-    def __setattr__(self, name, value):
-        super(MTWidget, self).__setattr__(name, value)
+    def on_animation_complete(self, *largs):
+        pass
 
     def on_parent(self):
         pass
-
 
     def on_parent_resize(self, w, h):
         pass

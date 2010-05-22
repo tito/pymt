@@ -185,7 +185,7 @@ if __name__ == '__main__':
     current = None
     def select_screen(callback, *largs):
         w = getWindow()
-        w.children.clear()
+        w.children = []
         w.add_widget(lbox)
 
         anchor = MTAnchorLayout(pos=(150, 0))

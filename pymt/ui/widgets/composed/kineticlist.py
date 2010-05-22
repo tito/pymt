@@ -6,6 +6,7 @@ __all__ = ['MTKineticList', 'MTKineticObject', 'MTKineticItem', 'MTKineticImage'
 
 import pymt
 from OpenGL.GL import *
+from ....utils import boundary
 from ....graphx import set_color, drawRectangle
 from ....graphx import drawCSSRectangle
 from ...factory import MTWidgetFactory
@@ -179,8 +180,8 @@ class MTKineticList(MTStencilContainer):
         pass
 
     def clear(self):
-        self.children.clear()
-        self.pchildren.clear()
+        self.children = []
+        self.pchildren = []
         self.xoffset = self.yoffset = 0
 
     def add_widget(self, widget, **kwargs):

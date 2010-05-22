@@ -49,11 +49,14 @@ class MTButtonMatrix(MTWidget):
         self.matrix = [[0 for i in range(self._matrix_size[1])] for j in range(self._matrix_size[0])]
         self.last_tile = 0
 
-    def reset(self):
-        self.matrix = [[0 for i in range(self._matrix_size[1])] for j in range(self._matrix_size[0])]
+    def on_press(self, *largs):
+        pass
 
     def on_value_change(self, matrix):
         pass
+
+    def reset(self):
+        self.matrix = [[0 for i in range(self._matrix_size[1])] for j in range(self._matrix_size[0])]
 
     def _get_matrix_size(self):
         return self._matrix_size

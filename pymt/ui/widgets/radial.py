@@ -62,6 +62,15 @@ class MTVectorSlider(MTWidget):
         self.register_event_type('on_angle_change')
         self.register_event_type('on_vector_change')
 
+    def on_amplitude_change(self, *largs):
+        pass
+
+    def on_angle_change(self, *largs):
+        pass
+
+    def on_vector_change(self, *largs):
+        pass
+
     def collide_point(self, x, y):
         '''Because this widget is a circle, and this method as
         defined in MTWidget is for a square, we have to override

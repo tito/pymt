@@ -26,8 +26,10 @@ class MTLabel(MTWidget):
     MTLabel support all parameters from the Core label. Check `LabelBase`
     class to known all availables parameters.
     '''
-    __slots__ = ('autowidth', 'autoheight', 'autosize', 'label',
-        '_used_label', 'kwargs', 'anchor_x', 'anchor_y')
+
+    # TODO reactivate slots
+    #__slots__ = ('autowidth', 'autoheight', 'autosize', 'label',
+    #    '_used_label', 'kwargs', 'anchor_x', 'anchor_y')
 
     def __init__(self, **kwargs):
         kwargs.setdefault('markup', False)
@@ -37,6 +39,8 @@ class MTLabel(MTWidget):
         kwargs.setdefault('autoheight', False)
         kwargs.setdefault('autosize', False)
         kwargs.setdefault('label', '')
+
+        self.kwargs = {}
 
         self.autowidth  = kwargs.get('autowidth')
         self.autoheight = kwargs.get('autoheight')
@@ -48,8 +52,6 @@ class MTLabel(MTWidget):
         del kwargs['autoheight']
         del kwargs['autosize']
         del kwargs['label']
-
-        self.kwargs = {}
 
         super(MTLabel, self).__init__(**kwargs)
 
@@ -89,17 +91,16 @@ class MTLabel(MTWidget):
         super(MTLabel, self).apply_css(styles)
 
         # transform css attribute to style one
-        k = self.kwargs
         s = self.style
-        k['color'] = s['color']
-        k['font_name'] = s['font-name']
-        k['font_size'] = s['font-size']
-        k['bold'] = False
-        k['italic'] = False
+        self.color = s['color']
+        self.font_name = s['font-name']
+        self.font_size = s['font-size']
+        self.bold = False
+        self.italic = False
         if s['font-weight'] in ('bold', 'bolditalic'):
-            k['bold'] = True
+            self.bold = True
         if s['font-weight'] in ('italic', 'bolditalic'):
-            k['italic'] = True
+            self.italic = True
 
 
     @property
@@ -107,8 +108,6 @@ class MTLabel(MTWidget):
         return self._used_label
 
     def draw(self):
-        if not self.visible:
-            return
         self.draw_background()
         self.draw_label()
 
@@ -152,27 +151,77 @@ class MTLabel(MTWidget):
         elif self.autowidth:
             self.width = w
 
-    def __getattribute__(self, name):
-        try:
-            return super(MTLabel, self).__getattribute__(name)
-        except:
-            kw = self.kwargs
-            if name in kw:
-                return kw[name]
-            raise
+    def _get_font_size(self):
+        return self.kwargs.get('font_size')
+    def _set_font_size(self, x):
+        self.kwargs['font_size'] = x
+    font_size = property(_get_font_size, _set_font_size)
 
-    def __setattr__(self, name, value):
-        try:
-            kw = super(MTLabel, self).__getattribute__('kwargs')
-            if name in ('font_size', 'font_name', 'bold', 'italic', 'size',
-                        'anchor_x', 'anchor_y', 'halign', 'valign', 'padding',
-                        'padding_x', 'padding_y', 'color'):
-                kw[name] = value
-        except:
-            pass
-        try:
-            return super(MTLabel, self).__setattr__(name, value)
-        except:
-            pass
+    def _get_font_name(self):
+        return self.kwargs.get('font_name')
+    def _set_font_name(self, x):
+        self.kwargs['font_name'] = x
+    font_name = property(_get_font_size, _set_font_size)
+
+    def _get_bold(self):
+        return self.kwargs.get('bold')
+    def _set_bold(self, x):
+        self.kwargs['bold'] = x
+    bold = property(_get_bold, _set_bold)
+
+    def _get_italic(self):
+        return self.kwargs.get('italic')
+    def _set_italic(self, x):
+        self.kwargs['italic'] = x
+    italic = property(_get_italic, _set_italic)
+
+    def _get_anchor_x(self):
+        return self.kwargs.get('anchor_x')
+    def _set_anchor_x(self, x):
+        self.kwargs['anchor_x'] = x
+    anchor_x = property(_get_anchor_x, _set_anchor_x)
+
+    def _get_anchor_y(self):
+        return self.kwargs.get('anchor_y')
+    def _set_anchor_y(self, x):
+        self.kwargs['anchor_y'] = x
+    anchor_y = property(_get_anchor_y, _set_anchor_y)
+
+    def _get_halign(self):
+        return self.kwargs.get('halign')
+    def _set_halign(self, x):
+        self.kwargs['halign'] = x
+    halign = property(_get_halign, _set_halign)
+
+    def _get_valign(self):
+        return self.kwargs.get('valign')
+    def _set_valign(self, x):
+        self.kwargs['valign'] = x
+    valign = property(_get_valign, _set_valign)
+
+    def _get_padding(self):
+        return self.kwargs.get('padding')
+    def _set_padding(self, x):
+        self.kwargs['padding'] = x
+    padding = property(_get_padding, _set_padding)
+
+    def _get_padding_x(self):
+        return self.kwargs.get('padding_x')
+    def _set_padding_x(self, x):
+        self.kwargs['padding_x'] = x
+    padding_x = property(_get_padding_x, _set_padding_x)
+
+    def _get_padding_y(self):
+        return self.kwargs.get('padding_y')
+    def _set_padding_y(self, x):
+        self.kwargs['padding_y'] = x
+    padding_y = property(_get_padding_y, _set_padding_y)
+
+    def _get_color(self):
+        return self.kwargs.get('color')
+    def _set_color(self, x):
+        self.kwargs['color'] = x
+    color = property(_get_color, _set_color)
+
 
 MTWidgetFactory.register('MTLabel', MTLabel)

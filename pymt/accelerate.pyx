@@ -29,5 +29,7 @@ def widget_on_update(self):
         w.dispatch_event('on_update')
 
 def widget_on_draw(self):
-    for w in self.children[:]:
-        w.dispatch_event('on_draw')
+    self.draw()
+    if self.draw_children:
+        for w in self.children[:]:
+            w.dispatch_event('on_draw')

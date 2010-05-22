@@ -279,6 +279,10 @@ class MTVKeyboard(MTScatterWidget):
         self.add_widget(self._layout_widget)
 
 
+    def on_text_change(self, *largs):
+        pass
+
+
     #
     # Static methods
     #

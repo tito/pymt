@@ -33,3 +33,13 @@ def widget_on_draw(self):
     if self.draw_children:
         for w in self.children[:]:
             w.dispatch_event('on_draw')
+
+def widget_collide_point(self, double x, double y):
+    cdef double ox, oy, ow, oh
+    ox, oy = self.x, self.y
+    ow, oh = self.width, self.height
+    if not self.visible:
+        return False
+    if x > ox  and x < ox + ow and \
+       y > oy and y < oy + oh:
+        return True

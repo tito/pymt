@@ -249,8 +249,8 @@ class MTWidget(EventDispatcher):
         '''Test if the (x,y) is in widget bounding box'''
         if not self.visible:
             return False
-        if( x > self.x  and x < self.x + self.width and
-           y > self.y and y < self.y + self.height  ):
+        if x > self.x  and x < self.x + self.width and \
+           y > self.y and y < self.y + self.height:
             return True
 
     def init(self):
@@ -434,9 +434,10 @@ class MTWidget(EventDispatcher):
 try:
     pymt_logger.debug('Widget: install acceleration')
     import types
-    from ...accelerate import widget_on_update, widget_on_draw
+    from ...accelerate import widget_on_update, widget_on_draw, widget_collide_point
     MTWidget.on_update = types.MethodType(widget_on_update, None, MTWidget)
     MTWidget.on_draw = types.MethodType(widget_on_draw, None, MTWidget)
+    MTWidget.collide_point = types.MethodType(widget_collide_point, None, MTWidget)
 except ImportError, e:
     pymt_logger.warning('Widget: no accelerate module available <%s>' % e)
 

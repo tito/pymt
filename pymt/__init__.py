@@ -45,6 +45,7 @@ options = {
     'image': ('pil', 'pygame'),
     'camera': ('opencv', 'gstreamer', 'videocapture'),
     'svg': ('squirtle',),
+    'spelling': ('enchant',),
 }
 
 # Read environment

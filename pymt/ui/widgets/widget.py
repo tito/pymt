@@ -117,7 +117,7 @@ class MTWidget(EventDispatcher):
 
         self._parent              = None
         self.children             = SafeList()
-        self._visible             = False
+        self._visible             = None
         self._size_hint           = kwargs.get('size_hint')
         self.visible              = kwargs.get('visible')
         self.draw_children        = kwargs.get('draw_children')

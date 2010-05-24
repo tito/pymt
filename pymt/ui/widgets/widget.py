@@ -12,6 +12,7 @@ from ...event import EventDispatcher
 from ...logger import pymt_logger
 from ...base import getCurrentTouches
 from ...input import Touch
+from ...utils import SafeList
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
 from ..colors import css_get_style
@@ -115,7 +116,7 @@ class MTWidget(EventDispatcher):
             self.register_event_type(ev)
 
         self._parent              = None
-        self.children             = []
+        self.children             = SafeList()
         self._visible             = False
         self._size_hint           = kwargs.get('size_hint')
         self.visible              = kwargs.get('visible')

@@ -14,6 +14,7 @@ __all__ = ['BaseWindow', 'MTWindow', 'MTDisplay']
 import os
 from OpenGL.GL import *
 import pymt
+from ...utils import SafeList
 from ...logger import pymt_logger
 from ...base import getCurrentTouches, setWindow, touch_event_listeners
 from ...clock import getClock
@@ -114,7 +115,7 @@ class BaseWindow(EventDispatcher):
         if len(kwargs.get('style')):
             self.apply_css(kwargs.get('style'))
 
-        self.children = []
+        self.children = SafeList()
         self.parent = self
         self.visible = True
 

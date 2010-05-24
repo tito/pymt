@@ -24,6 +24,7 @@ from pymt import pymt_data_dir
 from pymt.logger import pymt_logger
 from pymt.clock import getClock
 from pymt.cache import Cache
+from pymt.utils import SafeList
 from pymt.core.image import ImageLoader, Image
 from pymt.event import EventDispatcher
 from abc import ABCMeta, abstractmethod
@@ -69,7 +70,7 @@ class LoaderBase(object):
 
         self._q_load  = collections.deque()
         self._q_done  = collections.deque()
-        self._client  = []
+        self._client  = SafeList()
         self._running = False
         self._start_wanted = False
 

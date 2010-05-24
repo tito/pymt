@@ -161,7 +161,7 @@ class MTLabel(MTWidget):
         return self.kwargs.get('font_name')
     def _set_font_name(self, x):
         self.kwargs['font_name'] = x
-    font_name = property(_get_font_size, _set_font_size)
+    font_name = property(_get_font_name, _set_font_name)
 
     def _get_bold(self):
         return self.kwargs.get('bold')

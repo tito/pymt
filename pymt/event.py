@@ -470,10 +470,10 @@ class EventDispatcher(BaseObject):
 
 # install acceleration
 try:
-    pymt_logger.debug('Event: install acceleration')
     import types
-    import accelerate
-    EventDispatcher.dispatch_event = types.MethodType(
-        accelerate.eventdispatcher_dispatch_event, None, EventDispatcher)
+    from accelerate import accelerate
+    if accelerate is not None:
+        EventDispatcher.dispatch_event = types.MethodType(
+            accelerate.eventdispatcher_dispatch_event, None, EventDispatcher)
 except ImportError, e:
-    pymt_logger.warning('Event: no accelerate module available <%s>' % e)
+    pymt_logger.warning('Event: Unable to use accelerate module <%s>' % e)

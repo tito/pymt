@@ -433,14 +433,14 @@ class MTWidget(EventDispatcher):
 
 # install acceleration
 try:
-    pymt_logger.debug('Widget: install acceleration')
     import types
-    from ...accelerate import widget_on_update, widget_on_draw, widget_collide_point
-    MTWidget.on_update = types.MethodType(widget_on_update, None, MTWidget)
-    MTWidget.on_draw = types.MethodType(widget_on_draw, None, MTWidget)
-    MTWidget.collide_point = types.MethodType(widget_collide_point, None, MTWidget)
+    from ...accelerate import accelerate
+    if accelerate is not None:
+        MTWidget.on_update = types.MethodType(accelerate.widget_on_update, None, MTWidget)
+        MTWidget.on_draw = types.MethodType(accelerate.widget_on_draw, None, MTWidget)
+        MTWidget.collide_point = types.MethodType(accelerate.widget_collide_point, None, MTWidget)
 except ImportError, e:
-    pymt_logger.warning('Widget: no accelerate module available <%s>' % e)
+    pymt_logger.warning('Widget: Unable to use accelerate module <%s>' % e)
 
 # Register all base widgets
 MTWidgetFactory.register('MTWidget', MTWidget)

@@ -21,12 +21,11 @@ from draw import *
 
 # for a specific bug in 3.0.0, about deletion of framebuffer.
 OpenGLversion = tuple(int(re.match('^(\d+)', i).groups()[0]) for i in OpenGL.__version__.split('.'))
-if OpenGLversion < (3, 0, 1):
-    try:
-        import numpy
-        have_numpy = True
-    except:
-        have_numpy = False
+try:
+    import numpy
+    have_numpy = True
+except ImportError:
+    have_numpy = False
 
 
 class UnsupportedFboException(Exception):
@@ -183,10 +182,14 @@ class HardwareFbo(AbstractFbo):
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0)
 
     def __del__(self):
+        # if application is closed, symbol may be not available anymore
+        # so, prevent failure, instead of having an exception !
+        if not bool(glDeleteRenderbuffersEXT):
+            return
         # XXX deletion of framebuffer failed with PyOpenGL 3.0.0
         # Closed bug : http://sourceforge.net/tracker/index.php?func=detail&aid=2727274&group_id=5988&atid=105988
         # So, we must test the version, and use numpy array instead.
-        if OpenGLversion < (3, 0, 1) and have_numpy:
+        if OpenGLversion <= (3, 0, 1) and have_numpy:
             glDeleteFramebuffersEXT(1, numpy.array(self.framebuffer))
             if self.with_depthbuffer:
                 glDeleteRenderbuffersEXT(1, numpy.array(self.depthbuffer))

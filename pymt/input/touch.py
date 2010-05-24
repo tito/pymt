@@ -42,6 +42,7 @@ testing the profile ::
 __all__ = ['Touch']
 
 import weakref
+from ..utils import SafeList
 from ..clock import getClock
 from ..vector import Vector
 
@@ -76,7 +77,7 @@ class Touch(object):
         self.attr = []
 
         # For grab
-        self.grab_list = []
+        self.grab_list = SafeList()
         self.grab_exclusive_class = None
         self.grab_state = False
         self.grab_current = None

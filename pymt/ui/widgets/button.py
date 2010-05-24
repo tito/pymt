@@ -10,6 +10,7 @@ import weakref
 from OpenGL.GL import *
 from ...graphx import GlDisplayList, set_color, gx_blending
 from ...graphx import drawCSSRectangle
+from ...utils import SafeList
 from ..factory import MTWidgetFactory
 from widget import MTWidget
 from label import MTLabel
@@ -159,7 +160,7 @@ class MTToggleButton(MTButton):
         self._group = kwargs.get('group')
         if self._group is not None:
             if not self._group in self._groups:
-                MTToggleButton._groups[self._group] = []
+                MTToggleButton._groups[self._group] = SafeList()
             ref = weakref.ref(self)
             MTToggleButton._groups[self._group].append(ref)
 

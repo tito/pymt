@@ -5,7 +5,7 @@ Utils: generic toolbox
 __all__ = ('intersection', 'difference', 'curry', 'strtotuple',
            'get_color_from_hex', 'get_color_for_pyglet', 'get_random_color',
            'is_color_transparent', 'boundary', 'connect',
-           'deprecated')
+           'deprecated', 'SafeList')
 
 import inspect
 import re
@@ -116,3 +116,17 @@ def deprecated(func):
         return func(*args, **kwargs)
     return new_func
 
+class SafeList(list):
+    '''List with clear() method
+    
+    ..warning ::
+        Usage of iterate() function will decrease your performance.
+    '''
+    def clear(self):
+        del self[:]
+
+    @deprecated
+    def iterate(self, reverse=False):
+        if reverse:
+            return reversed(iter(self))
+        return iter(self)

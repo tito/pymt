@@ -116,23 +116,11 @@ class Clock(object):
         self._events = [x for x in self._events if x.callback != callback]
 
     def _process_events(self):
-        to_remove = None
-
-        # process event
-        for event in self._events:
+        for event in self._events[:]:
             if event.tick(self._last_tick) == False:
-                if to_remove is None:
-                    to_remove = [event]
-                else:
-                    to_remove.append(event)
-
-        # event to remove ?
-        if to_remove is None:
-            return
-        for event in to_remove:
-            self._events.remove(event)
-
-
+                # event may be already removed by the callback
+                if event in self._events:
+                    self._events.remove(event)
 
 
 # create a default clock

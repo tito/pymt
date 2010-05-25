@@ -59,8 +59,8 @@ class MTTextInput(MTButton):
         # initialize group on random if nothing is set
         self._groupname = kwargs.get('group')
         if self._groupname is None:
-            self._group_id += 1
-            self._groupname = 'uniqgroup%d' % self._group_id
+            MTTextInput._group_id += 1
+            self._groupname = 'uniqgroup%d' % MTTextInput._group_id
         # first time ? create the group
         if not self._groupname in self._group:
             self.group['keyboard'] = None

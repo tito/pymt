@@ -49,11 +49,13 @@ class SoundGstreamer(Sound):
         if not self._data:
             return
         self._data.set_state(gst.STATE_PLAYING)
+        super(SoundGstreamer, self).play()
 
     def stop(self):
         if not self._data:
             return
         self._data.set_state(gst.STATE_NULL)
+        super(SoundGstreamer, self).stop()
 
     def load(self):
         self.unload()

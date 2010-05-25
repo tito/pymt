@@ -18,7 +18,7 @@ pygame.mixer.init()
 pygame.mixer.set_num_channels(32)
 
 class SoundPygame(Sound):
-    __slots__ = ('_data')
+    __slots__ = ('_data', '_channel')
 
     @staticmethod
     def extensions():
@@ -26,17 +26,33 @@ class SoundPygame(Sound):
 
     def __init__(self, **kwargs):
         self._data = None
+        self._channel = None
         super(SoundPygame, self).__init__(**kwargs)
+
+    def _check_play(self, dt):
+        if self._channel is None:
+            return False
+        if self._channel.get_busy():
+            return
+        self.stop()
+        return False
 
     def play(self):
         if not self._data:
             return
-        self._data.play()
+        self._channel = self._data.play()
+        # schedule event to check if the sound is still playing or not
+        pymt.getClock().schedule_interval(self._check_play, 0.1)
+        super(SoundPygame, self).play()
 
     def stop(self):
         if not self._data:
             return
         self._data.stop()
+        # ensure we don't have anymore the callback
+        pymt.getClock().unschedule(self._check_play)
+        self._channel = None
+        super(SoundPygame, self).stop()
 
     def load(self):
         self.unload()

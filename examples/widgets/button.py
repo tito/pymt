@@ -9,4 +9,8 @@ def on_press(*largs):
 def on_release(*largs):
 	print 'on_release()', b.state, largs
 
+@b.event
+def on_state_change(*largs):
+    print 'on_state_change()', b.state, largs
+
 runTouchApp(b)

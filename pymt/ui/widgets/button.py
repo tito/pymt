@@ -57,6 +57,8 @@ class MTButton(MTLabel):
             Indicate if the alpha background must be drawed
 
     :Events:
+        `on_state_change` : (state string "down" or "normal", )
+            Fired when the state of the button change
         `on_press` (touch object, )
             Fired when the button are pressed (not released)
         `on_release` (touch object, )
@@ -74,14 +76,20 @@ class MTButton(MTLabel):
         kwargs.setdefault('size', (100, 100))
         self._state         = 'normal'
         self._current_touch = None
+
         super(MTButton, self).__init__(**kwargs)
+
         self.register_event_type('on_press')
         self.register_event_type('on_release')
+        self.register_event_type('on_state_change')
 
     def on_press(*largs):
         pass
 
     def on_release(*largs):
+        pass
+
+    def on_state_change(*largs):
         pass
 
     def on_touch_down(self, touch):
@@ -114,7 +122,10 @@ class MTButton(MTLabel):
     def _get_state(self):
         return self._state
     def _set_state(self, state):
+        if self._state == state:
+            return
         self._state = state
+        self.dispatch_event('on_state_change', state)
     state = property(lambda self: self._get_state(),
                      lambda self, x: self._set_state(x),
                      doc='Sets the state of the button, "normal" or "down"')

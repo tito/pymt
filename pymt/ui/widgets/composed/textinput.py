@@ -85,6 +85,11 @@ class MTTextInput(MTButton):
 
         self.keyboard_type = kwargs.get('keyboard_type')
 
+    def on_resize(self, *largs):
+        if hasattr(self, '_switch'):
+            self._switch.pos = self.x + self.width - 60, self.y + self.height
+        return super(MTTextInput, self).on_resize(*largs)
+
     def _get_keyboard(self):
         if not self._keyboard:
             self._keyboard = self.group['keyboard']

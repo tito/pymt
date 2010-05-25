@@ -17,7 +17,7 @@ class MTBoxLayout(MTAbstractLayout):
         `orientation` : str, default is 'horizontal'
             Orientation of widget inside layout, can be `horizontal` or `vertical`
         'invert': bool, default to False
-            makes the layout do top to bottom on horizontal, or rigth to left on vertical 
+            makes the layout do top to bottom on horizontal, or rigth to left on vertical
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('spacing', 1)
@@ -33,12 +33,12 @@ class MTBoxLayout(MTAbstractLayout):
         self.padding      = kwargs.get('padding')
         self._orientation = kwargs.get('orientation')
         self._invert      =  kwargs.get('invert')
-        
+
     def add_widget(self, widget, front=False, do_layout=None):
         if self._invert:
             front = not front
         super(MTBoxLayout, self).add_widget(widget, front, do_layout)
-        
+
     def _get_orientation(self):
         return self._orientation
     def _set_orientation(self, orientation):

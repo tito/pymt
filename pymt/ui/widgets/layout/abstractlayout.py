@@ -101,11 +101,6 @@ class MTAbstractLayout(MTWidget):
     def update(self):
         self.need_update = True
 
-    def draw(self):
-        if self.bg_color[3] > 0:
-            set_color(*self.bg_color)
-            drawRectangle(self.pos, self.size)
-
     def on_layout(self):
         pass
 

@@ -25,9 +25,9 @@ from colors import *
 
 try:
     import _graphx
-except ImportError:
+except ImportError, e:
     _graphx = None
-    pymt.pymt_logger.warning('Extensions: _graphx not available')
+    pymt.pymt_logger.warning('Extensions: _graphx not available: <%s>' % e)
 
 # create a cache for label
 _temp_label = None

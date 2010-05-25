@@ -28,21 +28,10 @@ accelerate = None
 # try to use cython is available
 if options.get('use_accelerate'):
     try:
-        import pyximport
-        pyximport.install()
-    except ImportError:
-        pyximport = None
-        pymt_logger.warning('Core: pyximport unavailable (cython not installed ?)')
-        pymt_logger.exception('')
-
-    if pyximport:
-        try:
-            pymt_logger.info('Core: Compile accelerate module')
-            import _accelerate as accelerate
-            pymt_logger.info('Core: Accelerate module compiled')
-        except ImportError:
-            pymt_logger.warning('Core: Error while compiling accelerate module')
-            pymt_logger.warning('Core: No core acceleration available')
+        import _accelerate as accelerate
+    except ImportError, e:
+        pymt_logger.warning('Core: Accelerate module not available <%s>' % e)
+        pymt_logger.warning('Core: Execute "python setup.py build_ext --inplace"')
 else:
     pymt_logger.info('Core: Accelerate module disabled by user')
 

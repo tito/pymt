@@ -1,3 +1,18 @@
+# ----------------------------------------------------------------------------
+#
+# Accelerate module
+#
+# This module provide acceleration for some critical function of PyMT
+#
+# ----------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------
+#
+# Event part
+#
+# ----------------------------------------------------------------------------
+
 def eventdispatcher_dispatch_event(self, event_type, *args):
     # unknown event type
     if event_type not in self._event_types:
@@ -23,6 +38,13 @@ def eventdispatcher_dispatch_event(self, event_type, *args):
     except TypeError, e:
         self._raise_dispatch_exception(
             event_type, args, getattr(self, event_type))
+
+
+# ----------------------------------------------------------------------------
+#
+# Widget part
+#
+# ----------------------------------------------------------------------------
 
 def widget_on_update(self):
     for w in self.children[:]:

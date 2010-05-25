@@ -1,11 +1,22 @@
-cdef extern from "GL/gl.h":
+# ----------------------------------------------------------------------------
+#
+# Graphx acceleration module
+#
+# This module should be not integrated inside accelerate module
+# Because it's loaded after OpenGL symbol are imported inside the main binary
+# Accelerate module is loaded at start, before any PyMT lib is used.
+#
+# ----------------------------------------------------------------------------
+
+# from the documentation http://docs.cython.org/src/tutorial/external.html
+# filename in extern is only required for compiler.
+# i (mathieu) have tested without filename, and seem work.
+# if people don't have gl.h, we can even compile and use the symbol in runtime ?
+
+# XXX cdef extern from "GL/gl.h":
+cdef extern:
     ctypedef float         GLfloat
     ctypedef unsigned int  GLenum
-    int GL_QUADS
-    int GL_LINE_BIT
-    int GL_BLEND
-    int GL_DST_COLOR
-    int GL_ONE_MINUS_SRC_ALPHA
     cdef void glBegin(GLenum mode)
     cdef void glBlendFunc(GLenum src, GLenum dst)
     cdef void glDisable(GLenum mode)
@@ -17,6 +28,13 @@ cdef extern from "GL/gl.h":
     cdef void glVertex2f(GLfloat x, GLfloat y)
     cdef void glTexCoord2f(GLfloat x, GLfloat y)
     cdef void glColor4f(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
+
+cdef enum gldef:
+    GL_QUADS            = 0x0007
+    GL_LINE_BIT         = 0x00000004
+    GL_BLEND            = 0x0BE2
+    GL_DST_COLOR        = 0x0306
+    GL_ONE_MINUS_SRC_ALPHA = 0x0303
 
 def drawRectangle(GLenum style, float x, float y, float w, float h):
     glBegin(style)

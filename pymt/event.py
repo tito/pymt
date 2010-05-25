@@ -223,7 +223,7 @@ class EventDispatcher(BaseObject):
             return
         for frame in self._event_stack:
             try:
-                if frame[name] == handler:
+                if frame[name]() == handler:
                     del frame[name]
                     break
             except KeyError:
@@ -250,7 +250,7 @@ class EventDispatcher(BaseObject):
             for frame in self._event_stack:
                 for name, handler in handlers:
                     try:
-                        if frame[name] == handler:
+                        if frame[name]() == handler:
                             return frame
                     except KeyError:
                         pass
@@ -263,7 +263,7 @@ class EventDispatcher(BaseObject):
         # Remove each handler from the frame.
         for name, handler in handlers:
             try:
-                if frame[name] == handler:
+                if frame[name]() == handler:
                     del frame[name]
             except KeyError:
                 pass

@@ -22,13 +22,18 @@ def eventdispatcher_dispatch_event(self, event_type, *args):
     # search handler stack for matching event handlers
     if _event_stack is not None:
         for frame in _event_stack:
-            handler = frame.get(event_type, None)
-            if handler:
-                try:
-                    if handler(*args):
-                        return True
-                except TypeError:
-                    self._raise_dispatch_exception(event_type, args, handler)
+            wkhandler = frame.get(event_type, None)
+            if wkhandler is None:
+                continue
+            handler = wkhandler()
+            if handler is None:
+                frame.remove(wkhandler)
+                continue
+            try:
+                if handler(*args):
+                    return True
+            except TypeError:
+                self._raise_dispatch_exception(event_type, args, handler)
 
     # a instance always have a event handler, don't check it with hasattr.
     try:

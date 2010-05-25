@@ -46,7 +46,7 @@ options = {
     'image': ('pil', 'pygame'),
     'camera': ('opencv', 'gstreamer', 'videocapture'),
     'svg': ('squirtle',),
-    'spelling': ('enchant',),
+    'spelling': ('enchant', 'osxappkit',),
 }
 
 # Read environment

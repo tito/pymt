@@ -12,6 +12,9 @@ class SpellingEnchant(SpellingBase):
     '''
     Spelling backend based on the enchant library.
     '''
+    def __init__(self, language=None):
+        self._language = None
+        super(SpellingEnchant, self).__init__(language)
 
     def register_language(self, language, langpath=None):
         raise NotImplementedError('Runtime addition of languages not supported ' + \
@@ -21,7 +24,7 @@ class SpellingEnchant(SpellingBase):
         try:
             self._language = enchant.Dict(language)
         except enchant.DictNotFoundError:
-            raise NoSuchLangError('No language for %s provided by the enchant ' + \
+            raise NoSuchLangError('No language for "%s" provided by the enchant ' % (language, ) + \
                                   'backend')
 
     def list_languages(self):

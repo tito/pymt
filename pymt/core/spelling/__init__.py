@@ -39,7 +39,6 @@ class SpellingBase(object):
         available languages, which is only available after object
         initialization via self.list_languages()).
         '''
-        self._language = None
         if language:
             self.select_language(language)
 
@@ -99,5 +98,6 @@ class SpellingBase(object):
 
 Spelling = core_select_lib('spelling', (
     ('enchant', 'spelling_enchant', 'SpellingEnchant'),
+    ('osxappkit', 'spelling_osxappkit', 'SpellingOSXAppKit'),
 ))
 

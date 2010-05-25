@@ -25,6 +25,7 @@ from colors import *
 
 try:
     import _graphx
+    pymt.pymt_logger.info('Graphx: Using accelerate graphx module')
 except ImportError, e:
     _graphx = None
     pymt.pymt_logger.warning('Extensions: _graphx not available: <%s>' % e)

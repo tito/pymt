@@ -376,7 +376,7 @@ class MTFileBrowser(MTPopup):
             self.l_buttons.add_widget(self.w_view, True)
 
     def _toggle_hidden(self, btn, *largs):
-        if btn.get_state() == 'down':
+        if btn.state == 'down':
             self.view.show_hidden = True
         else:
             self.view.show_hidden = False

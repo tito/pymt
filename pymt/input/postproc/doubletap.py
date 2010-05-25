@@ -31,6 +31,8 @@ class InputPostprocDoubleTap(object):
             if ref.id == touchid:
                 continue
             type, touch = self.touches[touchid]
+            if type != 'up':
+                continue
             if touch.is_double_tap:
                 continue
             distance = pymt.Vector.distance(

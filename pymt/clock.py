@@ -18,18 +18,21 @@ If the callback return False, the schedule will be removed.
 __all__ =  ('Clock', 'getClock')
 
 import time
+from weakmethod import WeakMethod
 
 class _Event(object):
 
     def __init__(self, loop, callback, timeout, starttime):
         self.loop = loop
-        self.callback = callback
+        self.callback = WeakMethod(callback)
         self.timeout = timeout
         self._last_dt = starttime
         self._dt = 0.
 
     def do(self, dt):
-        self.callback(dt)
+        if self.callback.is_dead():
+            return False
+        self.callback()(dt)
 
     def tick(self, curtime):
         # timeout happen ?
@@ -41,7 +44,9 @@ class _Event(object):
         self._last_dt = curtime
 
         # call the callback
-        ret = self.callback(self._dt)
+        if self.callback.is_dead():
+            return False
+        ret = self.callback()(self._dt)
 
         # if it's a once event, don't care about the result
         # just remove the event
@@ -113,7 +118,7 @@ class Clock(object):
 
     def unschedule(self, callback):
         '''Remove a previous schedule event'''
-        self._events = [x for x in self._events if x.callback != callback]
+        self._events = [x for x in self._events if x.callback() != callback]
 
     def _process_events(self):
         for event in self._events[:]:

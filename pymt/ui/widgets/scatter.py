@@ -427,6 +427,30 @@ class MTScatterWidget(MTWidget):
     scale = property(_get_scale, _set_scale,
                      doc='''Get/set the scaling of the object''')
 
+    def _get_state(self):
+        import numpy
+        from StringIO import StringIO
+        from base64 import b64encode
+        io = StringIO()
+        numpy.save(io, self.transform_mat)
+        io.seek(0)
+        return b64encode(io.read())
+    def _set_state(self, state):
+        if state is None:
+            return
+        import numpy
+        from StringIO import StringIO
+        from base64 import b64decode
+        io = StringIO(b64decode(state))
+        self.transform_mat = numpy.load(io)
+        p1_trans = matrix_mult(self.transform_mat, (1,1,0,1))
+        p2_trans = matrix_mult(self.transform_mat, (2,1,0,1))
+        self._scale = p1_trans.distance(p2_trans)
+    state = property(
+        lambda self: self._get_state(),
+        lambda self, x: self._set_state(x),
+        doc='Save/restore the state of matrix widget (require numpy)'
+    )
 
 class MTScatterPlane(MTScatterWidget):
     '''A Plane that transforms for zoom/rotate/pan.

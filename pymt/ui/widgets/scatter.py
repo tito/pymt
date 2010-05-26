@@ -10,7 +10,7 @@ from OpenGL.GL import *
 from ...graphx import drawRectangle, drawCSSRectangle, gx_matrix, gx_matrix_identity, set_color, \
     drawTexturedRectangle, gx_blending
 from ...vector import Vector, matrix_mult, matrix_inv_mult
-from ...utils import deprecated
+from ...utils import deprecated, serialize_numpy, deserialize_numpy
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
 from svg import MTSvg
@@ -428,21 +428,9 @@ class MTScatterWidget(MTWidget):
                      doc='''Get/set the scaling of the object''')
 
     def _get_state(self):
-        import numpy
-        from StringIO import StringIO
-        from base64 import b64encode
-        io = StringIO()
-        numpy.save(io, self.transform_mat)
-        io.seek(0)
-        return b64encode(io.read())
+        return serialize_numpy(self.transform_mat)
     def _set_state(self, state):
-        if state is None:
-            return
-        import numpy
-        from StringIO import StringIO
-        from base64 import b64decode
-        io = StringIO(b64decode(state))
-        self.transform_mat = numpy.load(io)
+        self.transform_mat = deserialize_numpy(state)
         p1_trans = matrix_mult(self.transform_mat, (1,1,0,1))
         p2_trans = matrix_mult(self.transform_mat, (2,1,0,1))
         self._scale = p1_trans.distance(p2_trans)

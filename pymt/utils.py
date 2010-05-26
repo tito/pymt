@@ -5,7 +5,8 @@ Utils: generic toolbox
 __all__ = ('intersection', 'difference', 'curry', 'strtotuple',
            'get_color_from_hex', 'get_color_for_pyglet', 'get_random_color',
            'is_color_transparent', 'boundary', 'connect',
-           'deprecated', 'SafeList')
+           'deprecated', 'SafeList',
+           'serialize_numpy', 'deserialize_numpy')
 
 import inspect
 import re
@@ -130,3 +131,20 @@ class SafeList(list):
         if reverse:
             return reversed(iter(self))
         return iter(self)
+
+def serialize_numpy(obj):
+    import numpy
+    from StringIO import StringIO
+    from base64 import b64encode
+    io = StringIO()
+    numpy.save(io, obj)
+    io.seek(0)
+    return b64encode(io.read())
+
+def deserialize_numpy(s):
+    import numpy
+    from StringIO import StringIO
+    from base64 import b64decode
+    io = StringIO(b64decode(s))
+    return numpy.load(io)
+

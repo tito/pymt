@@ -76,6 +76,8 @@ class Texture(object):
 
     _has_bgr = None
     _has_bgr_tested = False
+    _has_texture_nv = None
+    _has_texture_arb = None
 
     def __init__(self, width, height, target, id, mipmap=False):
         self.tex_coords = (0., 0., 1., 0., 1., 1., 0., 1.)
@@ -162,14 +164,18 @@ class Texture(object):
                 rectangle = False
 
                 try:
-                    if glInitTextureRectangleNV():
+                    if Texture._has_texture_nv is None:
+                        Texture._has_texture_nv = glInitTextureRectangleNV()
+                    if Texture._has_texture_nv:
                         target = GL_TEXTURE_RECTANGLE_NV
                         rectangle = True
                 except:
                     pass
 
                 try:
-                    if not rectangle and glInitTextureRectangleARB():
+                    if Texture._has_texture_arb is None:
+                        Texture._has_texture_arb = glInitTextureRectangleARB()
+                    if not rectangle and Texture._has_texture_arb:
                         target = GL_TEXTURE_RECTANGLE_ARB
                         rectangle = True
                 except:

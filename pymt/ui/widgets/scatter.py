@@ -94,11 +94,23 @@ class MTScatterWidget(MTWidget):
         self.touches        = {}
         self._scale         = 1.
         self._rotation      = 0.
-        self.transform_mat  = (GLfloat * 16)()
+        self._transform_mat  = (GLfloat * 16)()
         if kwargs.get('translation')[0] != 0 or kwargs.get('translation')[1] != 0:
             self.init_transform(kwargs.get('rotation'), kwargs.get('scale'), kwargs.get('translation'))
         else:
             self.init_transform(kwargs.get('rotation'), kwargs.get('scale'), super(MTScatterWidget, self).pos)
+
+    def _get_transform_mat(self):
+        return self._transform_mat
+    def _set_transform_mat(self, x):
+        self._transform_mat = x
+        #invalidate cashed values for parent transform calucaltion
+        self.__to_local = (-9999, 9999)
+        self.__to_parent = (-9999, 9999)
+    transform_mat = property(
+        _get_transform_mat,
+        _set_transform_mat,
+        doc='Get/Set transformation matrix (numpy matrix)')
 
     def on_transform(self, *largs):
         pass
@@ -206,10 +218,6 @@ class MTScatterWidget(MTWidget):
             glTranslatef(-point.x, -point.y,0)
             glMultMatrixf(self.transform_mat)
             self.transform_mat = glGetFloatv(GL_MODELVIEW_MATRIX)
-
-        #invalidate cashed values for parent transform calucaltion
-        self.__to_local = (-9999, 9999)
-        self.__to_parent = (-9999, 9999)
 
         self.dispatch_event('on_transform', angle, scale, trans, point)
 

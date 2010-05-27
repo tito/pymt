@@ -17,6 +17,7 @@ import pymt
 from . import VideoBase
 from pymt.graphx import drawTexturedRectangle, set_color, drawRectangle
 from OpenGL.GL import GL_RGB
+from gst.extend import discoverer
 
 # install the gobject iteration
 from pymt.support import install_gobject_iteration
@@ -27,7 +28,8 @@ class VideoGStreamer(VideoBase):
     '''
 
     __slots__ = ('_pipeline', '_decoder', '_videosink', '_colorspace',
-                 '_videosize', '_buffer_lock', '_audiosink', '_volumesink')
+                 '_videosize', '_buffer_lock', '_audiosink', '_volumesink',
+                 '_is_audio', '_is_video', '_do_load', '_pipeline_canplay')
 
     def __init__(self, **kwargs):
         self._pipeline      = None
@@ -36,21 +38,25 @@ class VideoGStreamer(VideoBase):
         self._colorspace    = None
         self._audiosink     = None
         self._volumesink    = None
+        self._is_audio      = None
+        self._is_video      = None
+        self._do_load       = None
+        self._pipeline_canplay = False
         self._buffer_lock   = threading.Lock()
         self._videosize     = (0, 0)
         super(VideoGStreamer, self).__init__(**kwargs)
 
     def stop(self):
+        self._wantplay = False
         if self._pipeline is None:
             return
-        self._wantplay = False
         self._pipeline.set_state(gst.STATE_PAUSED)
         self._state = ''
 
     def play(self):
+        self._wantplay = True
         if self._pipeline is None:
             return
-        self._wantplay = True
         self._pipeline.set_state(gst.STATE_PAUSED)
         self._state = ''
 
@@ -59,20 +65,45 @@ class VideoGStreamer(VideoBase):
             return
         self._pipeline.set_state(gst.STATE_NULL)
         self._pipeline.get_state() # block until the null is ok
-        self._pipeline = None
-        self._decoder = None
-        self._videosink = None
-        self._texture = None
-        self._audiosink = None
-        self._volumesink = None
-        self._state = ''
+        self._pipeline      = None
+        self._decoder       = None
+        self._videosink     = None
+        self._texture       = None
+        self._audiosink     = None
+        self._volumesink    = None
+        self._is_audio      = None
+        self._is_video      = None
+        self._do_load       = None
+        self._pipeline_canplay = False
+        self._state         = ''
 
     def load(self):
         # ensure that nothing is loaded before.
         self.unload()
 
+        def discovered(d, is_media):
+            self._is_audio = d.is_audio
+            self._is_video = d.is_video
+            self._do_load  = True
+
+        # discover the media
+        d = discoverer.Discoverer(self._filename)
+        d.connect('discovered', discovered)
+        d.discover()
+
+    def _on_gst_message(self, bus, message):
+        if message.type == gst.MESSAGE_ASYNC_DONE:
+            self._pipeline_canplay = True
+
+    def _really_load(self):
         # create the pipeline
         self._pipeline = gst.Pipeline()
+
+        # create bus
+        bus = self._pipeline.get_bus()
+        bus.add_signal_watch()
+        bus.enable_sync_message_emission()
+        bus.connect('message', self._on_gst_message)
 
         # hardcoded to check which decoder is better
         if self._filename.split(':')[0] in ('http', 'https', 'file'):
@@ -99,15 +130,21 @@ class VideoGStreamer(VideoBase):
         self._videosink = gst.element_factory_make('appsink', 'videosink')
         self._videosink.set_property('emit-signals', True)
         self._videosink.set_property('caps', caps)
+        self._videosink.set_property('drop', True)
+        self._videosink.set_property('render-delay', 1000000000)
+        self._videosink.set_property('max-lateness', 1000000000)
         self._videosink.connect('new-buffer', self._gst_new_buffer)
         self._audiosink = gst.element_factory_make('autoaudiosink', 'audiosink')
         self._volumesink = gst.element_factory_make('volume', 'volume')
 
         # connect colorspace -> appsink
-        self._pipeline.add(self._colorspace, self._videosink, self._audiosink,
-                           self._volumesink)
-        gst.element_link_many(self._colorspace, self._videosink)
-        gst.element_link_many(self._volumesink, self._audiosink)
+        if self._is_video:
+            self._pipeline.add(self._colorspace, self._videosink)
+            gst.element_link_many(self._colorspace, self._videosink)
+
+        if self._is_audio:
+            self._pipeline.add(self._audiosink, self._volumesink)
+            gst.element_link_many(self._volumesink, self._audiosink)
 
         # set to paused, for loading the file, and get the size information.
         self._pipeline.set_state(gst.STATE_PAUSED)
@@ -162,6 +199,10 @@ class VideoGStreamer(VideoBase):
             self._volume = volume
 
     def update(self):
+        if self._do_load:
+            self._really_load()
+            self._do_load = False
+
         # no video sink ?
         if self._videosink is None:
             return
@@ -182,7 +223,7 @@ class VideoGStreamer(VideoBase):
             return
 
         # ok, we got a texture, user want play ?
-        if self._wantplay:
+        if self._wantplay and self._pipeline_canplay:
             self._pipeline.set_state(gst.STATE_PLAYING)
             self._state = 'playing'
             self._wantplay = False

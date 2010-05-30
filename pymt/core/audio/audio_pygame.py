@@ -18,7 +18,13 @@ pygame.mixer.init()
 pygame.mixer.set_num_channels(32)
 
 class SoundPygame(Sound):
-    __slots__ = ('_data', '_channel')
+
+    # XXX we don't set __slots__ here, to automaticly add
+    # a dictionnary. We need that to be able to use weakref for
+    # SoundPygame object. Otherwise, it failed with:
+    # TypeError: cannot create weak reference to 'SoundPygame' object
+    # We use our clock in play() method.
+    #__slots__ = ('_data', '_channel')
 
     @staticmethod
     def extensions():

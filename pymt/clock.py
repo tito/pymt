@@ -104,7 +104,7 @@ class Clock(object):
         '''Get the last tick made by the clock'''
         return self._last_tick
 
-    def schedule_once(self, callback, timeout):
+    def schedule_once(self, callback, timeout=0):
         '''Schedule an event in <timeout> seconds'''
         event = _Event(False, callback, timeout, self._last_tick)
         self._events.append(event)

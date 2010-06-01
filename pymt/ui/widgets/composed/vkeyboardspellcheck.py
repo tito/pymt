@@ -9,6 +9,7 @@ from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.button import MTButton
 from pymt.ui.widgets.layout import MTBoxLayout
 from pymt.ui.widgets.composed.vkeyboard import MTVKeyboard
+from pymt.utils import curry
 
 __all__ = ('MTSpellVKeyboard', )
 
@@ -17,8 +18,6 @@ __all__ = ('MTSpellVKeyboard', )
 #       1. integrate this into vkeyboard.py???
 #       2. don't hardcode 'en' language
 #       3. maybe make keys that are less likely as next key darker?
-
-
 
 
 css_spell_vkeyboard_label = '''

@@ -32,12 +32,14 @@ class SpellingEnchant(SpellingBase):
         #       the enchant dict objects and not only the language identifiers.
         return enchant.list_languages()
 
-
     def check(self, word):
         self._assure_initialization()
         return self._language.check(word)
 
     def suggest(self, fragment):
         self._assure_initialization()
-        return self._language.suggest(fragment)
+        suggestions = self._language.suggest(fragment)
+        # Don't show suggestions that are invalid
+        suggestions = [s for s in suggestions if self.check(s)]
+        return suggestions
 

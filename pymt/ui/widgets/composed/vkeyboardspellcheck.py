@@ -1,9 +1,24 @@
-from pymt import *
+'''
+SpellVKeyboard: Virtual keyboard that provides spelling
+                suggestions/corrections as you type.
+'''
+
+from pymt.core.spelling import Spelling
+from pymt.ui.colors import css_add_sheet
+from pymt.ui.factory import MTWidgetFactory
+from pymt.ui.widgets.button import MTButton
+from pymt.ui.widgets.layout import MTBoxLayout
+from pymt.ui.widgets.composed.vkeyboard import MTVKeyboard
+
+__all__ = ('MTSpellVKeyboard', )
+
 
 # TODO:
 #       1. integrate this into vkeyboard.py???
 #       2. don't hardcode 'en' language
 #       3. maybe make keys that are less likely as next key darker?
+
+
 
 
 css_spell_vkeyboard_label = '''
@@ -82,6 +97,9 @@ class MTSpellVKeyboard(MTVKeyboard):
         # ensure the layout position
         self.slayout.pos = (5, self.height + 5)
         super(MTSpellVKeyboard, self).on_update()
+
+
+MTWidgetFactory.register('MTSpellVKeyboard', MTSpellVKeyboard)
 
 
 if __name__ == '__main__':

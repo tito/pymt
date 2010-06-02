@@ -40,6 +40,6 @@ class SpellingEnchant(SpellingBase):
         self._assure_initialization()
         suggestions = self._language.suggest(fragment)
         # Don't show suggestions that are invalid
-        suggestions = [s for s in suggestions if self.check(s)]
+        suggestions = [s.decode('utf-8') for s in suggestions if self.check(s)]
         return suggestions
 

@@ -67,7 +67,7 @@ if use_multiprocessing:
 
     class _OSCServer(Process):
         def __init__(self, **kwargs):
-            self.addressManager = OSC.addressManager()
+            self.addressManager = OSC.CallbackManager()
             self.queue = Queue()
             Process.__init__(self, args=(self.queue,))
             self.daemon     = True

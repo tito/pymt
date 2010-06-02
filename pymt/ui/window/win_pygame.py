@@ -191,6 +191,8 @@ class MTWindowPygame(BaseWindow):
         while not evloop.quit:
             try:
                 self._mainloop()
+                if not pygame.display.get_active():
+                    pygame.time.wait(100)
             except BaseException, inst:
                 # use exception manager first
                 r = pymt_exception_manager.handle_exception(inst)

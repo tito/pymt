@@ -42,6 +42,7 @@ testing the profile ::
 __all__ = ['Touch']
 
 import weakref
+from inspect import isroutine
 from ..utils import SafeList
 from ..clock import getClock
 from ..vector import Vector
@@ -57,7 +58,7 @@ class Touch(object):
     '''
 
     __uniq_id = 0
-    copy_attributes = \
+    __copy_attributes__ = \
         ('id','sx','sy','sz','a','b','c',
          'X','Y','Z','A','B','C','m','r',
          'profile','x','y','z','dxpos',
@@ -190,7 +191,7 @@ class Touch(object):
 
     def copy_to(self, to):
         '''Copy some attribute to another touch object.'''
-        for attr in self.copy_attributes:
+        for attr in self.__copy_attributes__:
             to.__setattr__(attr, self.__getattribute__(attr))
 
     def __str__(self):
@@ -199,6 +200,20 @@ class Touch(object):
         
     def distance(self, other_touch):
         return Vector(self.pos).distance(other_touch.pos)
+
+    def __repr__(self):
+        out = []
+        for x in dir(self):
+            v = getattr(self, x)
+            if x[0] == '_':
+                continue
+            if isroutine(v):
+                continue
+            out.append('%s="%s"' % (x, v))
+        return '<%s %s>' % (
+            self.__class__.__name__,
+            ' '.join(out)
+        )
 
     # facility
     pos = property(lambda self: (self.x, self.y),

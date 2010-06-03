@@ -47,13 +47,12 @@ except:
 
 # globals
 outSocket      = 0
-addressManager = None
 oscThreads     = {}
 oscLock        = Lock()
 
 if use_multiprocessing:
     def _readQueue(thread_id=None):
-        global addressManager, oscThreads
+        global oscThreads
         for id in oscThreads:
             if thread_id is not None:
                 if id != thread_id:
@@ -62,12 +61,13 @@ if use_multiprocessing:
             try:
                 while True:
                     message = thread.queue.get_nowait()
-                    addressManager.handle(message)
+                    thread.addressManager.handle(message)
             except:
                 pass
 
     class _OSCServer(Process):
         def __init__(self, **kwargs):
+            self.addressManager = OSC.CallbackManager()
             self.queue = Queue()
             Process.__init__(self, args=(self.queue,))
             self.daemon     = True
@@ -95,37 +95,29 @@ else:
     class _OSCServer(Thread):
         def __init__(self, **kwargs):
             Thread.__init__(self)
+            self.addressManager = OSC.CallbackManager()
             self.daemon     = True
             self.isRunning  = True
             self.haveSocket = False
 
         def _queue_message(self, message):
-            global addressManager, oscLock
-            oscLock.acquire()
-            addressManager.handle(message)
-            oscLock.release()
+            self.addressManager.handle(message)
 
 
 def init() :
     '''instantiates address manager and outsocket as globals
     '''
-    global outSocket, addressManager, oscLock
-    oscLock.acquire()
-    if addressManager is not None:
-        oscLock.release()
-        return
-    outSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    addressManager = OSC.CallbackManager()
-    oscLock.release()
+    assert('Not used anymore')
 
 
-def bind(func, oscaddress):
+def bind(oscid, func, oscaddress):
     '''bind given oscaddresses with given functions in address manager
     '''
-    global oscLock, addressManager
-    oscLock.acquire()
-    addressManager.add(func, oscaddress)
-    oscLock.release()
+    global oscThreads
+    thread = oscThreads.get(oscid, None)
+    if thread is None:
+        assert('Unknown thread')
+    thread.addressManager.add(func, oscaddress)
 
 
 def sendMsg(oscAddress, dataArray=[], ipAddr='127.0.0.1', port=9000) :

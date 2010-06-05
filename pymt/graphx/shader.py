@@ -9,19 +9,6 @@ from ctypes import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-# FIXME Remove that when the bug will be fixed on PyOpenGL
-# The default wrapper in PyOpenGL is bugged on ATI card
-# It's a open bug.
-# http://sourceforge.net/tracker/?func=detail&atid=105988&aid=2935298&group_id=5988
-
-glShaderSourceFIX = platform.createBaseFunction(
-	'glShaderSource', dll=platform.GL,
-	resultType=None,
-	argTypes=(constants.GLhandle, constants.GLsizei, ctypes.POINTER(ctypes.c_char_p), arrays.GLintArray,),
-	doc = 'glShaderSource( GLhandle(shaderObj), str( string) ) -> None',
-	argNames = ('shaderObj', 'count', 'string', 'length',),
-)
-
 
 class ShaderException(Exception):
     '''Exception launched by shader in error case'''
@@ -54,18 +41,11 @@ class Shader(object):
 
     def create_shader(self, source, shadertype):
         shader = glCreateShader(shadertype)
-
-        # FIXME Use the generic wrapper of glShaderSource
-        try:
-            # use fixed version on ATI and anywhere it works
-            char_source = c_char_p(source)
-            length = c_int(-1)
-            glShaderSourceFIX(shader, 1, byref(char_source), byref(length))
-        except:
-            # the created function does not work on e.g.
-            # Intel GMA 4500MHD...so use built in there
-            glShaderSource(shader,source)
-
+        # PyOpenGL bug ? He's waiting for a list of string, not a string
+        # on some card, it failed :)
+        if type(source) in (str, unicode):
+            source = [source]
+        glShaderSource(shader, source)
         glCompileShader(shader)
         message = self.get_shader_log(shader)
         if message:

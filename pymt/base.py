@@ -365,6 +365,7 @@ def runTouchApp(widget=None, slave=False):
             pymt_window.mainloop()
     finally:
         stopTouchApp()
+        return
 
 def stopTouchApp():
     '''Stop the current application by leaving the main loop'''

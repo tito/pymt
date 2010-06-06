@@ -87,8 +87,7 @@ class MTWindowPygame(BaseWindow):
             pymt.pymt_config.getboolean('graphics', 'show_cursor'))
 
     def close(self):
-        import sys
-        sys.exit(0)
+        pygame.display.quit()
 
     def on_keyboard(self, key, scancode=None, unicode=None):
         if key == 27:

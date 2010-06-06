@@ -568,6 +568,10 @@ class MTKineticObject(MTWidget):
 
         self.db_alpha = 0.0
 
+        # Set to true if you want to break free from
+        # the grasp of a kinetic widget
+        self.free = False
+
         # Delete Button
         if self.deletable:
             self.db = MTButton(label='',
@@ -585,10 +589,6 @@ class MTKineticObject(MTWidget):
 
         self.a_show = Animation(db_alpha=.5, duration=0.25)
         self.a_hide = Animation(db_alpha=0.0, duration=0.25)
-
-        # Set to true if you want to break free from
-        # the grasp of a kinetic widget
-        self.free = False
 
     def show_delete(self):
         if not self.deletable:

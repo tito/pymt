@@ -32,8 +32,16 @@ ext_modules = []
 cmdclass = {}
 if have_cython:
     cmdclass['build_ext'] = build_ext
-    ext_modules.append(Extension('pymt.graphx._graphx', ['pymt/graphx/_graphx.pyx']))
-    ext_modules.append(Extension('pymt._accelerate', ['pymt/_accelerate.pyx']))
+    libraries = []
+    if sys.platform == 'win32':
+        libraries.append('opengl32')
+    else:
+        libraries.append('GL')
+    ext_modules.append(Extension('pymt.graphx._graphx',
+        ['pymt/graphx/_graphx.pyx'],
+        libraries=libraries))
+    ext_modules.append(Extension('pymt._accelerate',
+        ['pymt/_accelerate.pyx']))
 
 # setup !
 setup(

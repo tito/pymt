@@ -14,7 +14,7 @@
 # if people don't have gl.h, we can even compile and use the symbol in runtime ?
 
 # XXX cdef extern from "GL/gl.h":
-cdef extern:
+cdef extern from "GL/gl.h":
     ctypedef float         GLfloat
     ctypedef unsigned int  GLenum
     cdef void glBegin(GLenum mode)

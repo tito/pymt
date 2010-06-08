@@ -1,3 +1,7 @@
+'''
+Button example with all events in button.
+'''
+
 from pymt import *
 
 b = MTButton(label='Push me')

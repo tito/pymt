@@ -1,6 +1,7 @@
 from pymt import *
 
 b = MTToggleButton(label='Push me')
+
 @b.event
 def on_press(*largs):
 	print 'on_press()', b.state, largs

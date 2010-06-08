@@ -40,7 +40,7 @@ class MTSlider(MTWidget):
             Padding of content
 
     :Events:
-        `on_value_change`
+        `on_value_change` (value)
             Fired when slider value is changed
     '''
     def __init__(self, **kwargs):
@@ -158,7 +158,7 @@ class MTXYSlider(MTWidget):
             Background color of the slider
 
     :Events:
-        `on_value_change`
+        `on_value_change` (value X, value Y)
             Fired when slider x/y value is changed
     '''
     def __init__(self, **kwargs):
@@ -265,7 +265,7 @@ class MTBoundarySlider(MTWidget):
             Background color of the slider
 
     :Events:
-        `on_value_change`
+        `on_value_change` (value_min, value_max)
             Fired when min or max is changed
     '''
     def __init__(self, **kwargs):
@@ -440,7 +440,7 @@ class MTMultiSlider(MTWidget):
             Background color of slider
 
     :Events:
-        `on_value_change` (int value)
+        `on_value_change` (values)
             Fired when the value of one slider change
 
     '''

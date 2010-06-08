@@ -27,9 +27,9 @@ __all__ = ['css_get_style', 'get_truncated_classname',
            'css_register_state', 'css_add_keyword', 'css_register_prefix',
            'css_reload']
 
-from ..logger import pymt_logger
-from .. import Cache
-from ..parser import *
+from pymt.logger import pymt_logger
+from pymt.cache import Cache
+from pymt.parser import *
 import pymt
 import os
 import sys

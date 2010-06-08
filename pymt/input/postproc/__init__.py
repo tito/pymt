@@ -9,6 +9,7 @@ import doubletap
 import ignorelist
 import retaintouch
 import dejitter
+import touchandhold
 
 # Mapping of ID to module
 pymt_postproc_modules = {}
@@ -19,3 +20,4 @@ if 'PYMT_DOC' not in os.environ:
     pymt_postproc_modules["ignorelist"] = ignorelist.InputPostprocIgnoreList()
     pymt_postproc_modules["doubletap"] = doubletap.InputPostprocDoubleTap()
     pymt_postproc_modules["dejitter"] = dejitter.InputPostprocDejitter()
+    pymt_postproc_modules["touchandhold"] = touchandhold.InputPostprocTouchAndHold()

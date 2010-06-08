@@ -2,7 +2,8 @@
 Accelerate: wrapper around _accelerate module, written in cython.
 
 This module increase internal performance of PyMT. User should not use directly
-this module. It's designed to enhance performance of:
+this module. It's designed to enhance performance of :
+
     * event dispatching (EventDispatcher class)
     * event traversal (Widget class, on_update and on_draw)
     * collide method (Widget class, collide_point)

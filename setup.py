@@ -49,7 +49,7 @@ setup(
     version=pymt.__version__,
     author='PyMT Crew',
     author_email='pymt-dev@googlegroups.com',
-    url='http://pymt.txzone.net/',
+    url='http://pymt.eu/',
     license='LGPL',
     description='A framework for making accelerated multitouch UI',
     ext_modules=ext_modules,

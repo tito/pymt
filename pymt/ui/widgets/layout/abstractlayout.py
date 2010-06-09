@@ -51,7 +51,8 @@ class MTAbstractLayout(MTWidget):
         if type in AnimationAlpha.__dict__ :
             self._animation_type = type
         else:
-            raise ValueError("'%s' is not a valid animation type! See http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions for a list of availabe easing functions!" % type)
+            raise ValueError("'%s' is not a valid animation type! See
+http://pymt.eu/wiki/DevGuide/EasingFunctions for a list of availabe easing functions!" % type)
     def _get_animation_type(self):
         return self._animation_type
     animation_type = property(_get_animation_type, _set_animation_type)

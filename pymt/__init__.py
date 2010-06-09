@@ -5,7 +5,7 @@ PyMT is a python module for developing multi-touch enabled media rich applicatio
 
 Currently the aim is to allow for quick and easy interaction design and rapid prototype development. There is also a focus on logging tasks or sessions of user interaction to quantitative data and the analysis/visualization of such data.
 
-You can visit http://pymt.txzone.net/ for more informations !
+You can visit http://pymt.eu/ for more informations !
 '''
 
 __version__ = '0.4'

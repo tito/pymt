@@ -15,7 +15,7 @@ There is also a focus on logging tasks and sessions of user interaction to
 quantify data and allow the analysis and visualization of such data.
 
 For more general information on PyMT, be sure to visit our website at
-http://pymt.txzone.net/.
+http://pymt.eu/.
 
 
 Programming Guide of PyMT
@@ -28,7 +28,7 @@ created specifically for PyMT.
 
 You can access to the Programming Guide on the Wiki :
 
-http://pymt.txzone.net/wiki/index.php/DevGuide/Index
+http://pymt.eu/wiki/DevGuide/Index
 
 
 API Documentation of PyMT

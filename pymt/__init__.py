@@ -8,7 +8,7 @@ Currently the aim is to allow for quick and easy interaction design and rapid pr
 You can visit http://pymt.eu/ for more informations !
 '''
 
-__version__ = '0.4'
+__version__ = '0.5-dev'
 
 import sys
 import getopt

@@ -2,7 +2,7 @@
 MacTouch: Native support of MultitouchSupport framework for MacBook (MaxOSX platform)
 '''
 
-__all__ = ('MacTouchProvider', )
+__all__ = ('MacTouchProvider', 'MacTouch')
 
 import time
 import ctypes

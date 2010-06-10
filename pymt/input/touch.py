@@ -42,10 +42,13 @@ testing the profile ::
 __all__ = ['Touch']
 
 import weakref
+from time import time
 from inspect import isroutine
+from recorder import pymt_touch_record
 from ..utils import SafeList
 from ..clock import getClock
 from ..vector import Vector
+
 
 class Touch(object):
     '''Abstract class to represent a touch, and support TUIO 1.0 definition.
@@ -120,6 +123,10 @@ class Touch(object):
         self.double_tap_time = 0
         self.no_event = False
         self.userdata = {}
+        self.record = []
+
+        if pymt_touch_record.started:
+            pymt_touch_record.append(self)
 
         self.depack(args)
 
@@ -128,6 +135,8 @@ class Touch(object):
         if self.oxpos is None:
             self.oxpos, self.oypos = self.sx, self.sy
             self.dxpos, self.dypos = self.sx, self.sy
+        if pymt_touch_record.started:
+            self.record.append((time(), args))
 
     def grab(self, class_instance, exclusive=False):
         '''Grab a touch. You can grab a touch if you absolutly want to receive

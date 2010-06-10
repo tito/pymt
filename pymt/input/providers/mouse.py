@@ -2,7 +2,7 @@
 Mouse: Mouse provider implementation
 '''
 
-__all__ = ['MouseTouchProvider']
+__all__ = ('MouseTouchProvider', 'MouseTouch')
 
 from collections import deque
 from ..provider import TouchProvider

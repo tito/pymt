@@ -6,12 +6,14 @@ __all__ = ('start', 'stop')
 
 import sys
 import logging
+import os
 from pymt.cache import Cache
 from pymt.clock import getClock
 from pymt.base import getWindow
 from pymt.graphx import drawRectangle, drawLabel, set_color, drawLine, drawCircle
 from pymt.logger import pymt_logger_history, pymt_logger
 from pymt.ui.colors import css_reload
+from pymt.input.recorder import pymt_touch_record, TouchReplay
 
 _toggle_state = ''
 
@@ -258,6 +260,37 @@ def _on_draw():
         return True
 
 
+replay_last_filename = None
+replay_instance = None
+def event_record_toggle():
+    print 'event_record_toggle()'
+    global replay_last_filename
+    if pymt_touch_record.started:
+        pymt_touch_record.stop()
+        pymt_touch_record.save()
+    else:
+        filename = pymt_touch_record.filename
+        if filename is None:
+            for i in xrange(9999):
+                path = os.path.join(os.getcwd(), 'event%04d.rec' % i)
+                if not os.path.exists(path):
+                    filename = path
+                    break
+        pymt_touch_record.start(filename)
+        replay_last_filename = pymt_touch_record.filename
+
+def event_replay_toggle():
+    print 'event_replay_toggle()'
+    global replay_instance, replay_last_filename
+    if replay_instance is None:
+        replay_instance = TouchReplay(replay_last_filename)
+    if replay_instance.started:
+        replay_instance.stop()
+    else:
+        replay_instance.start()
+
+
+
 
 def _on_keyboard_handler(key, scancode, unicode):
     if key is None:
@@ -283,6 +316,10 @@ def _on_keyboard_handler(key, scancode, unicode):
         toggle('log')
     elif key == 288: # F7
         css_reload()
+    elif key == 289: # F8
+        event_record_toggle()
+    elif key == 290: # F9
+        event_replay_toggle()
     elif key == 293:
         _screenshot()
 

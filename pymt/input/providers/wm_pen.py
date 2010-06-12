@@ -2,19 +2,11 @@
 WM_PEN: Support of WM_PEN message (Window platform)
 '''
 
-__all__ = ('WM_PenProvider', 'WM_Pen')
+__all__ = ('WM_PenProvider',)
 
 import os
+from touchclass import WM_Pen
 from ..touch import Touch
-
-class WM_Pen(Touch):
-    '''Touch representing the WM_Pen event. Support pos profile'''
-    def depack(self, args):
-        self.sx, self.sy = args[0], args[1]
-        super(WM_Pen, self).depack(args)
-
-    def __str__(self):
-        return '<WMPen id:%d uid:%d pos:%s device:%s>' % (self.id, self.uid, str(self.spos), self.device)
 
 if 'PYMT_DOC' in os.environ:
     # documentation hack

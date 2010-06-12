@@ -2,7 +2,7 @@
 MacTouch: Native support of MultitouchSupport framework for MacBook (MaxOSX platform)
 '''
 
-__all__ = ('MacTouchProvider', 'MacTouch')
+__all__ = ('MacTouchProvider',)
 
 import time
 import ctypes
@@ -10,6 +10,7 @@ import threading
 import collections
 import os
 from ctypes.util import find_library
+from touchclass import MacTouch
 from ..provider import TouchProvider
 from ..factory import TouchFactory
 from ..touch import Touch
@@ -82,21 +83,6 @@ if 'PYMT_DOC' not in os.environ:
 else:
 	MTContactCallbackFunction = lambda x: None
 
-
-class MacTouch(Touch):
-    '''Touch representing a contact point on touchpad. Support pos and shape
-    profile'''
-
-    def depack(self, args):
-        self.shape = TouchShapeRect()
-        self.sx, self.sy = args[0], args[1]
-        self.shape.width = args[2]
-        self.shape.height = args[2]
-        self.profile = ('pos', 'shape')
-        super(MacTouch, self).depack(args)
-
-    def __str__(self):
-        return '<MacTouch id=%d pos=(%f, %f) device=%s>' % (self.id, self.sx, self.sy, self.device)
 
 _instance = None
 

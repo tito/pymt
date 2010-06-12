@@ -9,6 +9,10 @@ import os
 from tuio import *
 from mouse import *
 
+# import touch for every platform
+# needed for touch record/replay, and network
+from touchclass import *
+
 if sys.platform == 'win32' or 'PYMT_DOC' in os.environ:
     try:
         from wm_touch import *

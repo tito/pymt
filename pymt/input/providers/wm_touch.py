@@ -2,26 +2,12 @@
 WM_TOUCH: Support of WM_TOUCH message (Window platform)
 '''
 
-__all__ = ('WM_TouchProvider', 'WM_Touch')
+__all__ = ('WM_TouchProvider',)
 
 import os
+from touchclass import WM_Touch
 from ..touch import Touch
 from ..shape import TouchShapeRect
-
-class WM_Touch(Touch):
-    '''Touch representing the WM_Touch event. Support pos, shape and size profiles'''
-    def depack(self, args):
-        self.shape = TouchShapeRect()
-        self.sx, self.sy = args[0], args[1]
-        self.shape.width = args[2]
-        self.shape.height = args[3]
-        self.size = self.shape.width * self.shape.height
-        self.profile = ('pos', 'shape', 'size')
-
-        super(WM_Touch, self).depack(args)
-
-    def __str__(self):
-        return '<WMTouch id:%d uid:%d pos:%s device:%s>' % (self.id, self.uid, str(self.spos), self.device)
 
 if 'PYMT_DOC' in os.environ:
     # documentation hack

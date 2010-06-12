@@ -184,7 +184,13 @@ class TouchEventLoop(object):
         # remove the save event for the touch if exist
         if ev in self.input_events:
             self.input_events.remove(ev)
+
+        #send to network slaves
+        if pymt_touch_network.mode == 'master':
+            pymt_touch_network.broadcast_input(self.input_events)
+
         self.input_events.append(ev)
+
 
     def dispatch_input(self):
         '''Called by idle() to read events from input providers,

@@ -1,3 +1,8 @@
+# Ideas list:
+# - prevent sending EVERY touch event
+# - fix hidtouch (flat the list !!!)
+
+
 __all__ = ('pymt_touch_network', )
 
 import os
@@ -16,7 +21,7 @@ class TouchNetworkManager(object):
         self.clients = []
         self.touches = {}
 
-        self.osc_server = listen(self.ip, self.port)
+        self.osc_server = listen('0.0.0.0', self.port)
         bind(self.osc_server, self.network_receive, '/pymt/touch')
         getClock().schedule_interval(self.network_update, 0)
 

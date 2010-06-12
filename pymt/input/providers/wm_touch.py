@@ -13,8 +13,8 @@ class WM_Touch(Touch):
     def depack(self, args):
         self.shape = TouchShapeRect()
         self.sx, self.sy = args[0], args[1]
-        self.shape.width = args[2][0]
-        self.shape.height = args[2][1]
+        self.shape.width = args[2]
+        self.shape.height = args[3]
         self.size = self.shape.width * self.shape.height
         self.profile = ('pos', 'shape', 'size')
 
@@ -97,7 +97,7 @@ else:
                    ]
 
         def size(self):
-            return (self.size_x, self.size_y)
+            return [self.size_x, self.size_y]
 
         def screen_x(self):
             return self.x/100.0
@@ -166,15 +166,15 @@ else:
                 # actually dispatch input
                 if t.event_type == 'down':
                     self.uid += 1
-                    self.touches[t.id] = WM_Touch(self.device, self.uid, [x,y,t.size()])
+                    self.touches[t.id] = WM_Touch(self.device, self.uid, [x,y] + t.size())
                     dispatch_fn('down', self.touches[t.id] )
 
                 if t.event_type == 'move' and self.touches.has_key(t.id):
-                    self.touches[t.id].move([x,y, t.size()])
+                    self.touches[t.id].move([x,y] + t.size())
                     dispatch_fn('move', self.touches[t.id] )
 
                 if t.event_type == 'up'  and self.touches.has_key(t.id):
-                    self.touches[t.id].move([x,y, t.size()])
+                    self.touches[t.id].move([x,y] + t.size())
                     dispatch_fn('up', self.touches[t.id] )
                     del self.touches[t.id]
 

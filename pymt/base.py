@@ -20,6 +20,7 @@ from logger import pymt_logger
 from exceptions import pymt_exception_manager, ExceptionManager
 from clock import getClock
 from input import *
+from input.network import pymt_touch_network
 from utils import deprecated
 
 # All event listeners will add themselves to this
@@ -67,12 +68,17 @@ class TouchEventLoop(object):
         self.quit = False
         self.input_events = []
         self.postproc_modules = []
+        self.proxy_dispatch_input = self._dispatch_input
         self.status = 'idle'
 
     def start(self):
         '''Must be call only one time before run().
         This start all configured input providers.'''
         self.status = 'started'
+
+        if pymt_touch_network.mode == 'slave':
+            self.proxy_dispatch_input = pymt_touch_network.dispatch_input
+
         global pymt_providers
         for provider in pymt_providers:
             provider.start()
@@ -187,7 +193,7 @@ class TouchEventLoop(object):
 
         # first, aquire input events
         for provider in pymt_providers:
-            provider.update(dispatch_fn=self._dispatch_input)
+            provider.update(dispatch_fn=self.proxy_dispatch_input)
 
         # execute post-processing modules
         for mod in self.postproc_modules:

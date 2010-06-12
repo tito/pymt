@@ -124,6 +124,7 @@ class Touch(object):
         self.no_event = False
         self.userdata = {}
         self.record = []
+        self.last_args = None
 
         if pymt_touch_record.started:
             pymt_touch_record.append(self)
@@ -135,6 +136,7 @@ class Touch(object):
         if self.oxpos is None:
             self.oxpos, self.oypos = self.sx, self.sy
             self.dxpos, self.dypos = self.sx, self.sy
+        self.last_args = args
         if pymt_touch_record.started:
             self.record.append((time(), args))
 

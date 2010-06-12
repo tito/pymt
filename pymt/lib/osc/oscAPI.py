@@ -107,7 +107,8 @@ else:
 def init() :
     '''instantiates address manager and outsocket as globals
     '''
-    assert('Not used anymore')
+    global outSocket
+    outSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 
 def bind(oscid, func, oscaddress):

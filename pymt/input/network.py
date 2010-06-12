@@ -1,5 +1,6 @@
 __all__ = ('pymt_touch_network', )
 
+import os
 from pymt.lib.osc.oscAPI import sendMsg, init, listen, bind, readQueue
 from pymt.clock import getClock
 from pprint import pprint
@@ -38,5 +39,8 @@ class TouchNetworkManager(object):
         readQueue(self.osc_server)
 
 
-pymt_touch_network = TouchNetworkManager(mode='master')
-pymt_touch_network.clients.append(('192.168.0.193', 7968))
+if 'SLAVE' in os.environ:
+    pymt_touch_network = TouchNetworkManager(mode='slave', ip='192.168.0.139')
+else:
+    pymt_touch_network = TouchNetworkManager(mode='master')
+    pymt_touch_network.clients.append(('192.168.0.193', 7968))

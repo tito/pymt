@@ -77,7 +77,7 @@ class TouchEventLoop(object):
         self.status = 'started'
 
         if pymt_touch_network.mode == 'slave':
-            self.proxy_dispatch_input = pymt_touch_network.dispatch_input
+            self.proxy_dispatch_input = pymt_touch_network.slave_send
 
         global pymt_providers
         for provider in pymt_providers:
@@ -186,8 +186,10 @@ class TouchEventLoop(object):
             self.input_events.remove(ev)
 
         #send to network slaves
+        '''
         if pymt_touch_network.mode == 'master':
             pymt_touch_network.broadcast_input(self.input_events)
+        '''
 
         self.input_events.append(ev)
 

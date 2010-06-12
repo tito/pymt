@@ -1,6 +1,7 @@
 __all__ = ('pymt_touch_network', )
 
-from pymt.lib.osc.oscAPI import sendMsg, init listen, bind, readQueue
+from pymt.lib.osc.oscAPI import sendMsg, init, listen, bind, readQueue
+from pymt.clock import getClock
 from pprint import pprint
 
 init()
@@ -11,24 +12,31 @@ class TouchNetworkManager(object):
         self.mode = kwargs.get('mode', 'master')
         self.ip = kwargs.get('ip', '127.0.0.1')
         self.port = kwargs.get('port', 7968)
+        self.clients = []
 
+        if self.mode == 'master':
+            self.osc_server = listen(self.ip, self.port)
+            bind(self.osc_server, '/pymt/touch', self.master_receive)
+            getClock().schedule_interval(self.master_update, 0)
 
-        self.osc_server = listen("0.0.0.0", 7968)
-        bind(self.osc.server, "/pymt/event/send", pprint)
-
-
-    def dispatch_input(self, event_type, touch):
-        sendMsg('/pymt/event/send',
+    def slave_send(self, event_type, touch):
+        sendMsg('/pymt/touch',
                 [event_type, touch.__class__.__name__, touch.last_args],
                 self.ip, self.port)
         print 'INPUT', event_type, touch.last_args
 
 
-    def broadcast_input(self, event_type, touch):
-        readQueue(self.osc_server)
-        sendMsg('/pymt/event/receive',
+    def master_send(self, event_type, touch):
+        sendMsg('/pymt/touch',
                 [event_type, touch.__class__.__name__, touch.last_args],
                 self.ip, self.port)
-#send touch
 
-pymt_touch_network = TouchNetworkManager(mode='master', ip='192.168.0.193')
+    def master_receive(self, event_type, touch):
+        print event_type, touch
+
+    def master_update(self, *largs):
+        readQueue(self.osc_server)
+
+
+pymt_touch_network = TouchNetworkManager(mode='master')
+pymt_touch_network.clients.append(('192.168.0.193', 7968))

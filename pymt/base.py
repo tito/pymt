@@ -185,11 +185,9 @@ class TouchEventLoop(object):
         if ev in self.input_events:
             self.input_events.remove(ev)
 
-        #send to network slaves
-        '''
+        # send to network slaves
         if pymt_touch_network.mode == 'master':
-            pymt_touch_network.broadcast_input(self.input_events)
-        '''
+            pymt_touch_network.master_send(type, touch)
 
         self.input_events.append(ev)
 

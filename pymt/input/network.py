@@ -16,10 +16,9 @@ class TouchNetworkManager(object):
         self.clients = []
         self.touches = {}
 
-        if self.mode == 'master':
-            self.osc_server = listen(self.ip, self.port)
-            bind(self.osc_server, self.master_receive, '/pymt/touch')
-            getClock().schedule_interval(self.master_update, 0)
+        self.osc_server = listen(self.ip, self.port)
+        bind(self.osc_server, self.network_receive, '/pymt/touch')
+        getClock().schedule_interval(self.network_update, 0)
 
     def slave_send(self, event_type, touch):
         sendMsg('/pymt/touch',
@@ -29,15 +28,14 @@ class TouchNetworkManager(object):
 
 
     def master_send(self, event_type, touch):
-        sendMsg('/pymt/touch',
-                [event_type, touch.__class__.__name__, touch.device, touch.id] + touch.last_args,
-                self.ip, self.port)
+        for ip, port in self.clients:
+            sendMsg('/pymt/touch',
+                    [event_type, touch.__class__.__name__, touch.device, touch.id] + touch.last_args,
+                    ip, port)
 
-    def master_receive(self, data, *largs):
+    def network_receive(self, data, *largs):
         event_type, class_name, device, id = data[2:6]
         args = data[6:]
-        print 'RAW', data
-        print event_type, args
 
         cid = (class_name, device, id) # FIXME add ip/port of client
         if event_type == 'down':
@@ -48,14 +46,13 @@ class TouchNetworkManager(object):
             touch.depack(args)
 
         # dispatch
-        pymt.getEventLoop().proxy_dispatch_input(event_type, touch)
+        pymt.getEventLoop()._dispatch_input(event_type, touch)
 
         if event_type == 'up':
             del self.touches[cid]
 
-    def master_update(self, *largs):
+    def network_update(self, *largs):
         readQueue(self.osc_server)
-
 
 if 'SLAVE' in os.environ:
     pymt_touch_network = TouchNetworkManager(mode='slave', ip='192.168.0.139')

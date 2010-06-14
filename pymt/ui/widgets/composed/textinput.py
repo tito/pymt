@@ -46,6 +46,7 @@ class MTTextInput(MTButton):
         kwargs.setdefault('anchor_y', 'center')
         kwargs.setdefault('halign', 'left')
         kwargs.setdefault('keyboard', None)
+        kwargs.setdefault('keyboard_to_root', False)
         kwargs.setdefault('password', False)
         kwargs.setdefault('group', None)
         kwargs.setdefault('switch', True)
@@ -84,6 +85,7 @@ class MTTextInput(MTButton):
                 pos=(self.x + self.width - 60, self.y + self.height))
 
         self.keyboard_type = kwargs.get('keyboard_type')
+        self.keyboard_to_root = kwargs.get('keyboard_to_root')
 
     def on_resize(self, *largs):
         if hasattr(self, '_switch'):
@@ -182,7 +184,8 @@ class MTTextInput(MTButton):
 
         # activate the virtual keyboard
         if self.keyboard_type == 'virtual':
-            w = self.get_parent_window()
+            to_root = self.keyboard_to_root
+            w = self.get_root_window() if to_root else self.get_parent_window()
             w.add_widget(self.keyboard)
         if self.keyboard is not None:
             self._keyboard.push_handlers(
@@ -197,8 +200,7 @@ class MTTextInput(MTButton):
             return
         if self._switch:
             self.remove_widget(self._switch)
-        w = self.get_parent_window()
-        w.remove_widget(self.keyboard)
+        self.keyboard.parent.remove_widget(self.keyboard)
         w = self.get_root_window()
         w.remove_handlers(on_key_down=self._window_on_key_down,
                           on_key_up=self._window_on_key_up)

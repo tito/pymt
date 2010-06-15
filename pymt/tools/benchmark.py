@@ -14,6 +14,11 @@ from random import randint, random
 from pymt import *
 from time import clock
 
+try:
+    window_size = getWindow().size
+except:
+    window_size = MTWindow().size
+
 class bench_core_label:
     '''Core: label creation (10000 * 10 a-z)'''
     def __init__(self):
@@ -54,7 +59,7 @@ class bench_graphx_line:
     '''Graphx: draw lines (50000 x/y) 100 times'''
     def __init__(self):
         lines = []
-        w, h = getWindow().size
+        w, h = window_size
         for x in xrange(50000):
             lines.extend([random() * w, random() * h])
         self.lines = lines
@@ -67,7 +72,7 @@ class bench_graphx_rectangle:
     '''Graphx: draw rectangle (50000 rect) 100 times'''
     def __init__(self):
         rects = []
-        w, h = getWindow().size
+        w, h = window_size
         for x in xrange(50000):
             rects.append(((random() * w, random() * h), (random() * w, random() * h)))
         self.rects = rects
@@ -81,7 +86,7 @@ class bench_graphx_roundedrectangle:
     '''Graphx: draw rounded rectangle (5000 rect) 100 times'''
     def __init__(self):
         rects = []
-        w, h = getWindow().size
+        w, h = window_size
         for x in xrange(5000):
             rects.append(((random() * w, random() * h), (random() * w, random() * h)))
         self.rects = rects
@@ -96,7 +101,7 @@ class bench_graphx_paintline:
     '''Graphx: paint line (500 x/y) 100 times'''
     def __init__(self):
         lines = []
-        w, h = getWindow().size
+        w, h = window_size
         for x in xrange(500):
             lines.extend([random() * w, random() * h])
         self.lines = lines
@@ -183,7 +188,10 @@ if __name__ == '__main__':
     log('Result: %.6f' % clock_total)
     log('')
 
-getWindow().close()
+try:
+    getWindow().close()
+except:
+    pass
 
 try:
     reply = raw_input('Do you want to send benchmark to paste.pocoo.org (Y/n) : ')

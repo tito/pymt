@@ -53,7 +53,7 @@ pymt_css_prefix = ['key-', 'slider-', 'title-']
 
 # Privates vars for reload features
 _css_sources = []
-_css_widgets = []
+_css_widgets = set()
 
 # Auto conversion from css to a special type.
 css_keyword_convert = {
@@ -291,7 +291,7 @@ def css_get_style(widget):
 
     ref = weakref.ref(widget)
     if not ref in _css_widgets:
-        _css_widgets.append(ref)
+        _css_widgets.add(ref)
 
     idwidget = css_get_widget_id(widget)
     styles = Cache.get('pymt.css', idwidget)

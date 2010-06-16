@@ -20,6 +20,10 @@ class MTTextInput(MTButton):
     :Parameters:
         `keyboard`: MTVkeyboard object, default to None
             Use another MTVKeyboard than the default one
+        `keyboard_to_root`: bool, defaults to False.
+            Indicate whether the keyboard should be attached to the root
+            window. If True, this will have the effect of the keyboard being
+            raised above other widgets.
         `keyboard_type`: str, default to config.
             Configuration section is 'widgets', token 'keyboard_type'.
             Can be one of 'virtual' or 'real'. If real, the virtual keyboard

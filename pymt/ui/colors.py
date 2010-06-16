@@ -341,7 +341,7 @@ def css_reload():
     for callback, args in _css_sources[:]:
         callback(*args, _reload=True)
     Cache.remove('pymt.css')
-    for r in _css_widgets[:]:
+    for r in _css_widgets.copy():
         o = r()
         if o is None:
             _css_widgets.remove(r)

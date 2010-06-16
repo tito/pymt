@@ -118,6 +118,22 @@ class bench_graphics_rectangle:
         for x in xrange(1000):
             canvas.draw()
 
+class bench_graphics_rectanglemesh:
+    '''Graphics: draw rectangle in same mesh (5000 rect) 1000 times'''
+    def __init__(self):
+        rects = []
+        w, h = window_size
+        canvas = Canvas()
+        mesh = canvas.graphicElement(format='vv', type='quads')
+        vertex = []
+        for x in xrange(50000):
+            vertex.extend([random() * w, random() * h, random() * w, random() * h])
+        mesh.data_v = vertex
+        self.canvas = canvas
+    def run(self):
+        canvas = self.canvas
+        for x in xrange(1000):
+            canvas.draw()
 
 class bench_graphx_roundedrectangle:
     '''Graphx: draw rounded rectangle (5000 rect) 1000 times'''
@@ -245,6 +261,8 @@ if __name__ == '__main__':
             test = x()
         except Exception, e:
             log('failed %s' % str(e))
+            import traceback
+            traceback.print_exc()
             continue
 
         clock_start = clockfn()

@@ -37,6 +37,9 @@ if have_cython:
         libraries.append('opengl32')
     else:
         libraries.append('GL')
+    ext_modules.append(Extension('pymt.graphics.c_graphics',
+        ['pymt/graphics/c_graphics.pyx'],
+        libraries=libraries))
     ext_modules.append(Extension('pymt.graphx._graphx',
         ['pymt/graphx/_graphx.pyx'],
         libraries=libraries))

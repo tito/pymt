@@ -14,7 +14,13 @@ from OpenGL.GL import *
 from random import randint, random
 from pymt import *
 from pymt.graphics import *
-from time import clock
+from time import clock, time, ctime
+
+if sys.platform == 'linux2':
+    # on linux, we lost some precision if we use clock()
+    clockfn = time
+else:
+    clockfn = clock
 
 try:
     window_size = getWindow().size
@@ -210,7 +216,7 @@ if __name__ == '__main__':
     except:
         log('PyMT Version    : unknown (too old)')
     log('Install path    : %s' % os.path.dirname(pymt.__file__))
-    log('Install date    : %s' % time.ctime(os.path.getctime(pymt.__file__)))
+    log('Install date    : %s' % ctime(os.path.getctime(pymt.__file__)))
 
     log('')
     log('OpenGL informations')
@@ -241,12 +247,12 @@ if __name__ == '__main__':
             log('failed %s' % str(e))
             continue
 
-        clock_start = clock()
+        clock_start = clockfn()
 
         try:
             sys.stderr.write('.')
             test.run()
-            clock_end = clock() - clock_start
+            clock_end = clockfn() - clock_start
             log('%.6f' % clock_end)
         except Exception, e:
             log('failed %s' % str(e))

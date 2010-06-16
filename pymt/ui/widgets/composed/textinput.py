@@ -204,7 +204,11 @@ class MTTextInput(MTButton):
             return
         if self._switch:
             self.remove_widget(self._switch)
-        self.keyboard.parent.remove_widget(self.keyboard)
+        parent = self.keyboard.parent
+        if parent is not None:
+            # If keyboard type is real, the keyboard is not attached to any
+            # parent widget.
+            parent.remove_widget(self.keyboard)
         w = self.get_root_window()
         w.remove_handlers(on_key_down=self._window_on_key_down,
                           on_key_up=self._window_on_key_up)

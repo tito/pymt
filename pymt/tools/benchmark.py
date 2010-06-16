@@ -4,6 +4,7 @@ Benchmark for PyMT Framework
 
 benchmark_version = '1'
 
+import gc
 import pymt
 import sys
 import os
@@ -12,6 +13,7 @@ import time
 from OpenGL.GL import *
 from random import randint, random
 from pymt import *
+from pymt.graphics import *
 from time import clock
 
 try:
@@ -56,34 +58,34 @@ class bench_widget_dispatch:
             root.dispatch_event('on_update')
 
 class bench_graphx_line:
-    '''Graphx: draw lines (50000 x/y) 100 times'''
+    '''Graphx: draw lines (5000 x/y) 1000 times'''
     def __init__(self):
         lines = []
         w, h = window_size
-        for x in xrange(50000):
+        for x in xrange(5000):
             lines.extend([random() * w, random() * h])
         self.lines = lines
     def run(self):
         lines = self.lines
-        for x in xrange(100):
+        for x in xrange(1000):
             drawLine(lines)
 
-class bench_graphx_rectangle:
-    '''Graphx: draw rectangle (50000 rect) 100 times'''
+class bench_graphics_line:
+    '''Graphics: draw lines (5000 x/y) 1000 times'''
     def __init__(self):
-        rects = []
         w, h = window_size
-        for x in xrange(50000):
-            rects.append(((random() * w, random() * h), (random() * w, random() * h)))
-        self.rects = rects
+        self.canvas = Canvas()
+        line = self.canvas.line()
+        for x in xrange(5000):
+            line.points += [random() * w, random() * h]
     def run(self):
-        rects = self.rects
-        for x in xrange(100):
-            for pos, size in rects:
-                drawRectangle(pos=pos, size=size)
+        canvas = self.canvas
+        for x in xrange(1000):
+            canvas.draw()
 
-class bench_graphx_roundedrectangle:
-    '''Graphx: draw rounded rectangle (5000 rect) 100 times'''
+
+class bench_graphx_rectangle:
+    '''Graphx: draw rectangle (5000 rect) 1000 times'''
     def __init__(self):
         rects = []
         w, h = window_size
@@ -92,13 +94,56 @@ class bench_graphx_roundedrectangle:
         self.rects = rects
     def run(self):
         rects = self.rects
-        for x in xrange(100):
+        for x in xrange(1000):
+            for pos, size in rects:
+                drawRectangle(pos=pos, size=size)
+
+class bench_graphics_rectangle:
+    '''Graphics: draw rectangle (5000 rect) 1000 times'''
+    def __init__(self):
+        rects = []
+        w, h = window_size
+        canvas = Canvas()
+        for x in xrange(5000):
+            canvas.rectangle(random() * w, random() * h, random() * w, random() * h)
+        self.canvas = canvas
+    def run(self):
+        canvas = self.canvas
+        for x in xrange(1000):
+            canvas.draw()
+
+
+class bench_graphx_roundedrectangle:
+    '''Graphx: draw rounded rectangle (5000 rect) 1000 times'''
+    def __init__(self):
+        rects = []
+        w, h = window_size
+        for x in xrange(5000):
+            rects.append(((random() * w, random() * h), (random() * w, random() * h)))
+        self.rects = rects
+    def run(self):
+        rects = self.rects
+        for x in xrange(1000):
             for pos, size in rects:
                 drawRoundedRectangle(pos=pos, size=size)
 
 
+class bench_graphics_roundedrectangle:
+    '''Graphics: draw rounded rectangle (5000 rect) 1000 times'''
+    def __init__(self):
+        rects = []
+        w, h = window_size
+        canvas = Canvas()
+        for x in xrange(5000):
+            canvas.roundedRectangle(random() * w, random() * h, random() * w, random() * h)
+        self.canvas = canvas
+    def run(self):
+        canvas = self.canvas
+        for x in xrange(1000):
+            canvas.draw()
+
 class bench_graphx_paintline:
-    '''Graphx: paint line (500 x/y) 100 times'''
+    '''Graphx: paint line (5000 x/y) 1000 times'''
     def __init__(self):
         lines = []
         w, h = window_size
@@ -110,6 +155,21 @@ class bench_graphx_paintline:
         lines = self.lines
         for x in xrange(100):
             paintLine(lines)
+
+class bench_graphics_paintline:
+    '''Graphics: paint lines (5000 x/y) 1000 times'''
+    def __init__(self):
+        w, h = window_size
+        self.canvas = Canvas()
+        texture = Image(os.path.join(pymt_data_dir, 'particle.png')).texture
+        line = self.canvas.point(type='line_strip', texture=texture)
+        for x in xrange(500):
+            line.points += [random() * w, random() * h]
+    def run(self):
+        canvas = self.canvas
+        for x in xrange(100):
+            canvas.draw()
+
 
 if __name__ == '__main__':
     report = []
@@ -164,9 +224,18 @@ if __name__ == '__main__':
 
     log('Benchmark')
     log('---------')
+
     for x in benchs:
+        # clean cache to prevent weird case
+        for cat in Cache._categories:
+            Cache.remove(cat)
+
+        # force gc before next test
+        gc.collect()
+
         log('%2d/%-2d %-60s' % (benchs.index(x)+1, len(benchs), x.__doc__), False)
         try:
+            sys.stderr.write('.')
             test = x()
         except Exception, e:
             log('failed %s' % str(e))
@@ -175,6 +244,7 @@ if __name__ == '__main__':
         clock_start = clock()
 
         try:
+            sys.stderr.write('.')
             test.run()
             clock_end = clock() - clock_start
             log('%.6f' % clock_end)

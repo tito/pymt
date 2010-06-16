@@ -19,10 +19,21 @@ class MTTextArea(MTTextInput):
         self.value = kwargs.get('label') or ''
         self.buffer_size = kwargs.get('buffer_size') or 128000
 
+    def _recalc_size(self):
+        # We could do this as .size property I suppose, but then we'd
+        # be calculating it all the time when .size is accessed.
+        num = len(self.lines)
+        # The following two if statements ensure that the textarea remains
+        # easily clickable even if there's no content.
+        if num:
+            self.height = num * self.line_height + self.line_spacing * (num - 1)
+            if self.lines[0]:
+                self.width = max(label.content_width for label in self.line_labels)
+
     def _get_value(self):
         try:
             return '\n'.join(self.lines)
-        except:
+        except AttributeError:
             return ''
     def _set_value(self, text):
         old_value = self.value
@@ -34,6 +45,7 @@ class MTTextArea(MTTextInput):
         self.cursor = 1 #pos inside line
         self.cursor_fade = 0
         self.init_glyph_sizes()
+        self._recalc_size()
         if old_value != self.value:
             self.dispatch_event('on_text_change', self)
     value = property(_get_value, _set_value)
@@ -164,10 +176,13 @@ class MTTextArea(MTTextInput):
             self.insert_line_feed()
         elif internal_action == 'escape':
             self.hide_keyboard()
+        if internal_action != 'escape':
+            self._recalc_size()
 
     def _window_on_key_down(self, key, scancode=None, unicode=None):
         if unicode and not key in (27, 9, 8, 13, 271):
             self.insert_character(unicode)
+            self._recalc_size()
         return super(MTTextArea, self)._window_on_key_down(key, scancode, unicode)
 
 # Register all base widgets

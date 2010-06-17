@@ -115,14 +115,16 @@ class MTTextArea(MTTextInput):
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
-            self.place_cursor(touch.pos)
-            touch.userdata[str(self.id)+'cursor'] = True
-        return super(MTTextArea, self).on_touch_down(touch)
+            touch.userdata['initial_pos'] = touch.pos
+            return super(MTTextArea, self).on_touch_down(touch)
 
-    def on_touch_move(self, touch):
-        if touch.userdata.get(str(self.id)+'cursor'):
-            self.place_cursor(touch.pos)
-        return super(MTTextArea, self).on_touch_move(touch)
+    def on_touch_up(self, touch):
+        if self.collide_point(*touch.pos):
+            initial_pos = touch.userdata.get('initial_pos')
+            # XXX Should perhaps use a tolerance
+            if initial_pos and initial_pos == touch.pos:
+                self.place_cursor(touch.pos)
+            return super(MTTextArea, self).on_touch_down(touch)
 
     def _kbd_on_text_change(self, value):
         pass

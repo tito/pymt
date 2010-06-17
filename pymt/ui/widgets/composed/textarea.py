@@ -124,7 +124,7 @@ class MTTextArea(MTTextInput):
             # XXX Should perhaps use a tolerance
             if initial_pos and initial_pos == touch.pos:
                 self.place_cursor(touch.pos)
-            return super(MTTextArea, self).on_touch_down(touch)
+            return super(MTTextArea, self).on_touch_up(touch)
 
     def _kbd_on_text_change(self, value):
         pass

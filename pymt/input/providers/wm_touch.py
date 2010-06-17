@@ -83,7 +83,7 @@ else:
                    ]
 
         def size(self):
-            return [self.size_x, self.size_y]
+            return map(int, [self.size_x, self.size_y])
 
         def screen_x(self):
             return self.x/100.0

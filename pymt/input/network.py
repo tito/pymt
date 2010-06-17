@@ -33,6 +33,12 @@ class TouchNetworkManager(object):
 
 
     def master_send(self, event_type, touch):
+        if event_type == 'move':
+            if not hasattr(touch, '_count'):
+                touch._count = 0
+            touch._count += 1
+            if touch._count % 10 == 0:
+                return
         for ip, port in self.clients:
             sendMsg('/pymt/touch',
                     [event_type, touch.__class__.__name__, touch.device, touch.id] + touch.last_args,

@@ -222,7 +222,6 @@ cdef class GraphicInstruction:
         self.context = default_context
     cpdef draw(self):
         '''Draw/Execute the graphical element on screen'''
-        pass
 
 cdef class GraphicContextSave(GraphicInstruction):
     cpdef draw(self):
@@ -1182,29 +1181,21 @@ cdef class Color(GraphicInstruction):
     cdef int _dfactor
     cdef tuple _color
 
+    def __cinit__(self):
+        self._color = (0, 0, 0, 0)
+
     def __init__(self, *color, **kwargs):
         GraphicInstruction.__init__(self)
 
-        self._blend = kwargs.get('blend', None)
+        self._blend = kwargs.get('blend', 0)
         self._sfactor = kwargs.get('sfactor', GL_SRC_ALPHA)
         self._dfactor = kwargs.get('dfactor', GL_ONE_MINUS_SRC_ALPHA)
-        self._color = tuple(color)
+        self.color = color
 
     cpdef draw(self):
         force_blend = self._blend == 1
         color = self._color
         ctx = self.context
-        l = len(color)
-
-        if l == 1:
-            color = (color[0], color[0], color[0], 1)
-        elif l == 3:
-            color = (color[0], color[1], color[2], 1)
-        elif l == 4:
-            pass
-        else:
-            raise Exception('Unsupported color format')
-
         ctx.set('color', color)
         if color[3] == 1 and not force_blend:
             ctx.set('blend', 0)
@@ -1218,7 +1209,17 @@ cdef class Color(GraphicInstruction):
     def _set_color(self, x):
         if self._color == x:
             return
-        self._color = x
+        # convert to 4 integer
+        l = len(x)
+        if l == 1:
+            x = (x[0], x[0], x[0], 1)
+        elif l == 3:
+            x = (x[0], x[1], x[2], 1)
+        elif l == 4:
+            pass
+        else:
+            raise Exception('Unsupported color format')
+        self._color = tuple(x)
     color = property(_get_color, _set_color,
         doc='''Get/Set the color in tuple format (r, g, b, a)''')
 
@@ -1513,7 +1514,7 @@ cdef class Canvas:
 
     def draw(self):
         '''Draw all the canvas elements'''
-        cdef GraphicInstruction x
+        #cdef GraphicInstruction x
         for x in self._batch:
             x.draw()
 

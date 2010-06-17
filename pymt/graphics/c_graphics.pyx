@@ -122,6 +122,8 @@ cdef int gl_type_from_str(str typ):
         return GL_POINTS
     elif typ == 'lines':
         return GL_LINES
+    elif typ == 'line_strip':
+        return GL_LINE_STRIP
     elif typ == 'line_loop':
         return GL_LINE_LOOP
     elif typ == 'triangles':
@@ -642,11 +644,8 @@ cdef class Point(GraphicElement):
     def _get_points(self):
         return self._points
     def _set_points(self, points):
-        if self._points == points:
-            return False
         self._points = list(points)
         self._need_build = 1
-        return True
     points = property(_get_points, _set_points,
         doc='Object points (list in the format [x, y, x, y...])')
 

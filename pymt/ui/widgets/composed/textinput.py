@@ -267,7 +267,7 @@ class MTTextInput(MTButton):
         if k:
             self.keyboard.dispatch_event('on_key_down', key)
         else:
-            self.keyboard.text = self.keyboard.text + unicode or chr(k)
+            self.keyboard.text += unicode or chr(k) if k else ''
 
     def _window_on_key_up(self, key, scancode=None, unicode=None):
         k = self.interesting_keys.get(key)

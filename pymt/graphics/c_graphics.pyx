@@ -161,6 +161,7 @@ cdef class GraphicContext:
     cpdef set(self, str key, value):
         self.state[key] = value
         self.journal.add(key)
+        self.need_flush = 1
 
     cpdef get(self, str key):
         return self.state[key]
@@ -209,7 +210,6 @@ cdef class GraphicContext:
                 glLineWidth(value)
 
         journal.clear()
-
         self.need_flush = 0
 
 
@@ -510,7 +510,7 @@ cdef class Line(GraphicElement):
     cdef int _need_build
 
     def __init__(self, points=[], **kwargs):
-        kwargs.setdefault('type', 'line_loop')
+        kwargs.setdefault('type', 'line_strip')
         GraphicElement.__init__(self, format='vv', **kwargs)
         self._need_build = 1
         self._points = []
@@ -528,7 +528,7 @@ cdef class Line(GraphicElement):
     def _get_points(self):
         return self._points
     def _set_points(self, points):
-        self._points = points
+        self._points = list(points)
         self._need_build = 1
     points = property(_get_points, _set_points,
         doc='''Add/remove points of the line (list of [x, y, x, y ...])'''
@@ -554,22 +554,26 @@ cdef class Point(GraphicElement):
     cdef int _need_build
     cdef int _steps
 
+    def __cinit__(self):
+        self._points = []
+        self._use_stmt = 0
+        self._need_build = 1
+        self._use_stmt = 0
+        self._stmt = None
+
     def __init__(self, points=[], **kwargs):
         kwargs.setdefault('format', 'vv')
         kwargs.setdefault('type', 'points')
 
         GraphicElement.__init__(self, **kwargs)
 
-        self._need_build = 1
         self._texture = kwargs.get('texture', None)
         self._radius = kwargs.get('radius', 1.)
         self._steps = kwargs.get('steps', -1)
-        self._points = points
-        self._use_stmt = False
-        self._stmt = None
+        self.points = points
         if self._texture:
             self._stmt = gx_texture(self._texture)
-            self._use_stmt = True
+            self._use_stmt = 1
 
     cpdef build(self):
         outputList = []
@@ -640,7 +644,7 @@ cdef class Point(GraphicElement):
     def _set_points(self, points):
         if self._points == points:
             return False
-        self._points = points
+        self._points = list(points)
         self._need_build = 1
         return True
     points = property(_get_points, _set_points,

@@ -199,6 +199,9 @@ class MTTextArea(MTTextInput):
             self.insert_character(displayed_str)
         elif internal_action.startswith('cursor_'):
             self.do_cursor_movement(internal_action)
+        elif internal_action == 'del':
+            self.cursor += 1
+            self.do_backspace()
         elif internal_action == 'backspace':
             self.do_backspace()
         elif internal_action == 'enter':

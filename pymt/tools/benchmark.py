@@ -16,10 +16,8 @@ from pymt import *
 from pymt.graphics import *
 from time import clock, time, ctime
 
-if sys.platform == 'linux2':
-    # on linux, we lost some precision if we use clock()
-    clockfn = time
-else:
+clockfn = time
+if sys.platform == 'win32':
     clockfn = clock
 
 try:

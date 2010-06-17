@@ -169,6 +169,7 @@ class MTTextArea(MTTextInput):
             new_text = text[:self.cursor-1] + text[self.cursor:]
             self.set_line_text(self.edit_line, new_text)
             self.cursor -=1
+        self.dispatch_event('on_text_change', self)
 
     def do_cursor_movement(self, action):
         pgmove_speed = 3

@@ -55,9 +55,13 @@ class MTTextArea(MTTextInput):
         self.line_labels[line_num].label = text
 
     def create_line_label(self, text):
-        return Label(text, anchor_x='left', anchor_y='top',
-                     font_size= 20,
-                     color= (0,0,0,1))
+        # Honour attributes like color.
+        # XXX Currently only works once initially. Not updated if self.color is changed!
+        #     What would be a proper solution?
+        kw = self.kwargs.copy()
+        kw['anchor_x'] = 'left'
+        kw['anchor_y'] = 'top'
+        return Label(text, **kw)
 
     def glyph_size(self, g):
         if not self._glyph_size.has_key(g):
@@ -101,7 +105,7 @@ class MTTextArea(MTTextInput):
         glTranslate(self.x, self.y+self.height,0)
         for line_num in xrange(len(self.lines)):
             self.line_labels[line_num].draw()
-            if self.edit_line == line_num and  self.is_active_input:
+            if self.edit_line == line_num and self.is_active_input:
                 self.draw_cursor()
             glTranslate(0,-(self.line_height+self.line_spacing),0)
         glPopMatrix()

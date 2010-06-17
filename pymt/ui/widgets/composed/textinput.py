@@ -93,7 +93,9 @@ class MTTextInput(MTButton):
 
         self.interesting_keys = {8: 'backspace', 13: 'enter', 271: 'enter',
                                  273: 'cursor_up', 274: 'cursor_down',
-                                 275: 'cursor_right', 276: 'cursor_left'}
+                                 275: 'cursor_right', 276: 'cursor_left',
+                                 278: 'cursor_home', 279: 'cursor_end',
+                                 280: 'cursor_pgup', 281: 'cursor_pgdown'}
 
     def on_resize(self, *largs):
         if hasattr(self, '_switch'):

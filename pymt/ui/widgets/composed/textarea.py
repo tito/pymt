@@ -171,6 +171,7 @@ class MTTextArea(MTTextInput):
             self.cursor -=1
 
     def do_cursor_movement(self, action):
+        pgmove_speed = 3
         if action == 'cursor_up':
             self.edit_line = max(self.edit_line - 1, 0)
             self.cursor = min(len(self.lines[self.edit_line]), self.cursor)
@@ -181,6 +182,16 @@ class MTTextArea(MTTextInput):
             self.cursor = max(self.cursor - 1, 0)
         elif action == 'cursor_right':
             self.cursor = min(self.cursor + 1, len(self.lines[self.edit_line]))
+        elif action == 'cursor_home':
+            self.cursor = 0
+        elif action == 'cursor_end':
+            self.cursor = len(self.lines[self.edit_line])
+        elif action == 'cursor_pgup':
+            self.edit_line /= pgmove_speed
+            self.cursor = min(len(self.lines[self.edit_line]), self.cursor)
+        elif action == 'cursor_pgdown':
+            self.edit_line = min((self.edit_line + 1) * pgmove_speed, len(self.lines) - 1)
+            self.cursor = min(len(self.lines[self.edit_line]), self.cursor)
 
     def _kbd_on_key_up(self, key, repeat=False):
         displayed_str, internal_str, internal_action, scale = key
@@ -198,7 +209,7 @@ class MTTextArea(MTTextInput):
             self._recalc_size()
 
     def _window_on_key_down(self, key, scancode=None, unicode=None):
-        if unicode and not key in (8, 9, 13, 27, 271, 273, 274, 275, 276):
+        if unicode and not key in self.interesting_keys.keys() + [9, 27]:
             self.insert_character(unicode)
             self._recalc_size()
         return super(MTTextArea, self)._window_on_key_down(key, scancode, unicode)

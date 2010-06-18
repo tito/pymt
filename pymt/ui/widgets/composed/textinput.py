@@ -91,6 +91,12 @@ class MTTextInput(MTButton):
         self.keyboard_type = kwargs.get('keyboard_type')
         self.keyboard_to_root = kwargs.get('keyboard_to_root')
 
+        self.interesting_keys = {8: 'backspace', 13: 'enter', 127: 'del',
+                                 271: 'enter', 273: 'cursor_up', 274: 'cursor_down',
+                                 275: 'cursor_right', 276: 'cursor_left',
+                                 278: 'cursor_home', 279: 'cursor_end',
+                                 280: 'cursor_pgup', 281: 'cursor_pgdown'}
+
     def on_resize(self, *largs):
         if hasattr(self, '_switch'):
             self._switch.pos = self.x + self.width - 60, self.y + self.height
@@ -254,32 +260,20 @@ class MTTextInput(MTButton):
             return True
         elif key == 9: # tab
             self.focus_next()
-        elif key == 8: # backspace
-            key = (None, None, 'backspace', 1)
-            if self.keyboard:
-                self.keyboard.dispatch_event('on_key_down', key)
-        elif key in (13, 271): # enter or numenter
-            key = (None, None, 'enter', 1)
-            if self.keyboard:
-                self.keyboard.dispatch_event('on_key_down', key)
+        if not self.keyboard:
+            return
+        k = self.interesting_keys.get(key)
+        key = (None, None, k, 1)
+        if k:
+            self.keyboard.dispatch_event('on_key_down', key)
         else:
-            if unicode is not None:
-                if self.keyboard:
-                    self.keyboard.text = self.keyboard.text + unicode
-            else:
-                # oh god :[
-                if self.keyboard:
-                    self.keyboard.text = self.keyboard.text + chr(key)
+            self.keyboard.text += unicode or chr(k) if k else ''
 
     def _window_on_key_up(self, key, scancode=None, unicode=None):
-        if key == 8: # backspace
-            key = (None, None, 'backspace', 1)
-            if self.keyboard:
-                self.keyboard.dispatch_event('on_key_up', key)
-        elif key in (13, 271): # enter or numenter
-            key = (None, None, 'enter', 1)
-            if self.keyboard:
-                self.keyboard.dispatch_event('on_key_up', key)
+        k = self.interesting_keys.get(key)
+        if k and self.keyboard:
+            key = (None, None, k, 1)
+            self.keyboard.dispatch_event('on_key_up', key)
 
     def _get_value(self):
         return self.label

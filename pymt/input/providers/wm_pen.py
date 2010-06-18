@@ -5,6 +5,7 @@ WM_PEN: Support of WM_PEN message (Window platform)
 __all__ = ('WM_PenProvider', 'WM_Pen')
 
 import os
+from wm_common import *
 from ..touch import Touch
 
 class WM_Pen(Touch):
@@ -28,14 +29,6 @@ else:
     from ..factory import TouchFactory
 
     WNDPROC = WINFUNCTYPE(c_long, c_int, c_int, c_int, c_int)
-    GWL_WNDPROC            = -4
-    PEN_OR_TOUCH_SIGNATURE = 0xFF515700
-    PEN_OR_TOUCH_MASK      = 0xFFFFFF00
-    PEN_EVENT_TOUCH_MASK   = 0x80
-    WM_MOUSEMOVE           = 512
-    WM_LBUTTONDOWN         = 513
-    WM_LBUTTONUP           = 514
-
 
     class RECT(Structure):
         _fields_ = [
@@ -81,6 +74,8 @@ else:
                 self.pen_status = False
 
         def _pen_wndProc( self, hwnd, msg, wParam, lParam ):
+            if msg == WM_TABLET_QUERYSYSTEMGESTURE:
+                return QUERYSYSTEMGESTURE_WNDPROC
             if self._is_pen_message(msg):
                 self._pen_handler(msg, wParam, lParam)
                 return 1

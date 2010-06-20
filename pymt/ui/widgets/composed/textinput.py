@@ -260,14 +260,18 @@ class MTTextInput(MTButton):
             return True
         elif key == 9: # tab
             self.focus_next()
+            return True
         if not self.keyboard:
             return
         k = self.interesting_keys.get(key)
-        key = (None, None, k, 1)
         if k:
+            key = (None, None, k, 1)
             self.keyboard.dispatch_event('on_key_down', key)
         else:
-            self.keyboard.text += unicode or chr(k) if k else ''
+            if unicode is not None:
+                self.keyboard.text += unicode
+            else:
+                self.keyboard.text += chr(key)
 
     def _window_on_key_up(self, key, scancode=None, unicode=None):
         k = self.interesting_keys.get(key)

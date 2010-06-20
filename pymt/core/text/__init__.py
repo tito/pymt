@@ -267,7 +267,7 @@ class LabelBase(BaseObject):
         '''Draw the label'''
         if self.texture is None:
             return
-        if self.width == 1:
+        if not len(self.label):
             # it's a empty label, don't waste time to draw it
             return
 

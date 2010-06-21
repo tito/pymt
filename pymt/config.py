@@ -12,7 +12,7 @@ from logger import pymt_logger
 from . import pymt_config_fn, logger
 
 # Version number of current configuration format
-PYMT_CONFIG_VERSION = 10
+PYMT_CONFIG_VERSION = 11
 
 #: PyMT configuration object
 pymt_config = None
@@ -146,6 +146,11 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 
         elif pymt_config_version == 9:
             pymt_config.setdefault('widgets', 'keyboard_type', 'virtual')
+
+        elif pymt_config_version == 10:
+            pymt_config.setdefault('widgets', 'list_friction', '10')
+            pymt_config.setdefault('widgets', 'list_friction_bound', '20')
+            pymt_config.setdefault('widgets', 'list_trigger_distance', '5')
 
         else:
             # for future.

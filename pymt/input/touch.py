@@ -131,10 +131,7 @@ class Touch(object):
 
     def depack(self, args):
         '''Depack `args` into attributes in class'''
-        if self.oxpos is None:
-            self.dxpos = self.oxpos = self.x
-            self.dypos = self.oypos = self.y
-            self.dzpos = self.ozpos = self.z
+        if self.dsxpos is None:
             self.dsxpos = self.osxpos = self.sx
             self.dsypos = self.osypos = self.sy
             self.dszpos = self.oszpos = self.sz
@@ -192,6 +189,10 @@ class Touch(object):
         self.y = self.sy * float(h)
         if p:
             self.z = self.sz * float(p)
+        if self.oxpos is None:
+            self.dxpos = self.oxpos = self.x
+            self.dypos = self.oypos = self.y
+            self.dzpos = self.ozpos = self.z
 
     def push(self, attrs='xyz'):
         '''Push attributes values in `attrs` in the stack'''

@@ -358,8 +358,6 @@ class MTBoundarySlider(MTWidget):
         # So the first on_touch_move in a
         # two-finger-drag doesn't teleport the widget
         if self.collide_point(touch.x, touch.y):
-            touch.oxpos = touch.x
-            touch.oypos = touch.y
             if touch.is_double_tap:
                 # Randomize the bound
                 if self.orientation == 'vertical':
@@ -393,7 +391,7 @@ class MTBoundarySlider(MTWidget):
             if self.orientation == 'vertical':
                 if len(self.touchstarts) >= 2:
                     # Two or more fingers, shift the whole bound
-                    rel = (touch.y - touch.oypos)
+                    rel = (touch.y - touch.dypos)
                     self.value_min += rel
                     self.value_max += rel
                 else:
@@ -404,7 +402,7 @@ class MTBoundarySlider(MTWidget):
             elif self.orientation == 'horizontal':
                 if len(self.touchstarts) >= 2:
                     # Two or more fingers, shift the whole bound
-                    rel = (touch.x - touch.oxpos)
+                    rel = (touch.x - touch.dxpos)
                     self.value_min += rel
                     self.value_max += rel
                 else:
@@ -412,8 +410,6 @@ class MTBoundarySlider(MTWidget):
                     self.set_value(touch.userdata['boundary.side'],
                                    (touch.x - self.x) / self.ratio)
                     self.dispatch_event('on_value_change', *self.get_value())
-            touch.oypos = touch.y
-            touch.oxpos = touch.x
             return True
         return super(MTBoundarySlider, self).on_touch_move(touch)
 

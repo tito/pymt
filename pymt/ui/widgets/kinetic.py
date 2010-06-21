@@ -5,12 +5,12 @@ Kinetic: kinetic abstraction
 __all__ = ['MTKinetic']
 
 from OpenGL.GL import *
-from ..factory import MTWidgetFactory
-from ...input import Touch
-from ...vector import Vector
-from ...base import getFrameDt, getCurrentTouches
-from stencilcontainer import MTStencilContainer
-from widget import MTWidget
+from pymt.ui.factory import MTWidgetFactory
+from pymt.input import Touch
+from pymt.vector import Vector
+from pymt.base import getFrameDt, getCurrentTouches
+from pymt.utils import curry, boundary
+from pymt.ui.widgets.widget import MTWidget
 
 class KineticTouch(Touch):
     counter = 0
@@ -23,8 +23,8 @@ class KineticTouch(Touch):
     def depack(self, args):
         self.x, self.y = args
         if self.dxpos is not None:
-            self.X = self.x - self.dxpos
-            self.Y = self.y - self.dypos
+            self.X += (self.x - self.dxpos)
+            self.Y += (self.y - self.dypos)
         self.profile = ('pos', 'kinetic')
         super(KineticTouch, self).depack(args)
 
@@ -62,14 +62,15 @@ class MTKinetic(MTWidget):
 
         `velstop` : float, default to 1.0
             The distance of velocity vector to stop animation
+        `max_acceleration`: int, default to 50
+            Maximum acceleration allowed
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('no_css', True)
-        kwargs.setdefault('friction', 10)
-        kwargs.setdefault('velstop', 1.0)
         super(MTKinetic, self).__init__(**kwargs)
-        self.friction   = kwargs.get('friction')
-        self.velstop    = kwargs.get('velstop')
+        self.friction   = kwargs.get('friction', 10)
+        self.velstop    = kwargs.get('velstop', 1.0)
+        self.max_acceleration = kwargs.get('max_acceleration', 50)
         self.touch      = {} # internals
 
     def on_touch_down(self, touch):
@@ -136,9 +137,20 @@ class MTKinetic(MTWidget):
         '''Processing of kinetic, called in draw time.'''
         dt = getFrameDt()
         todelete = []
+        acceleration = self.max_acceleration
 
         for touchID in self.touch:
             ktouch = self.touch[touchID]
+            if abs(ktouch.X) < 0.01:
+                ktouch.X = 0
+            else:
+                ktouch.X /= 1 + (self.friction * dt)
+                ktouch.X = boundary(ktouch.X, -acceleration, acceleration)
+            if abs(ktouch.Y) < 0.01:
+                ktouch.Y = 0
+            else:
+                ktouch.Y /= 1 + (self.friction * dt)
+                ktouch.Y = boundary(ktouch.Y, -acceleration, acceleration)
 
             if ktouch.mode != 'spinning':
                 continue
@@ -147,8 +159,6 @@ class MTKinetic(MTWidget):
             type        = ''
             ktouch.x    += ktouch.X
             ktouch.y    += ktouch.Y
-            ktouch.X    /= 1 + (self.friction * dt)
-            ktouch.Y    /= 1 + (self.friction * dt)
 
             if Vector(ktouch.X, ktouch.Y).length() < self.velstop:
                 # simulation finished

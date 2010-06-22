@@ -400,10 +400,12 @@ class MTWidget(EventDispatcher):
         # we need to store a reference of our animation class
         # otherwise, if the animation is called with self.do(),
         # gc can suppress reference, and it's gone !
-        self.__animationcache__.add(animation)
         animobj = animation.start(self)
-        def animobject_on_complete(*l):
-            self.__animationcache__.remove(animation)
+        self.__animationcache__.add(animobj)
+        def animobject_on_complete(widget, *l):
+            if widget != self:
+                return
+            self.__animationcache__.remove(animobj)
         animation.connect('on_complete', animobject_on_complete)
         return animobj
 

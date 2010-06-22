@@ -13,24 +13,25 @@ Exemple of user.css ::
     }
 
 .. warning::
+
     Only class name of widget is currently use to search CSS.
 
 We cannot describe how to style every widget in this class.
 If you want to known which attribute is needed to style a widget,
 please look on the widget documentation.
-
 '''
 
-
-__all__ = ['css_get_style', 'get_truncated_classname',
-           'pymt_sheet', 'css_add_sheet', 'css_add_file', 'css_get_widget_id',
-           'css_register_state', 'css_add_keyword', 'css_register_prefix',
-           'css_reload']
+__all__ = (
+    'css_get_style', 'get_truncated_classname',
+    'pymt_sheet', 'css_add_sheet', 'css_add_file', 'css_get_widget_id',
+    'css_register_state', 'css_add_keyword', 'css_register_prefix',
+    'css_reload'
+)
 
 from pymt.logger import pymt_logger
 from pymt.cache import Cache
 from pymt.parser import *
-import pymt
+from pymt import pymt_data_dir
 import os
 import sys
 import shutil
@@ -283,7 +284,7 @@ def css_get_style(widget):
     '''Return a dict() with all the style for the widget.
 
     :Parameters:
-        `widget` : class
+        `widget`: class
             Widget to search CSS
     '''
 
@@ -303,9 +304,12 @@ def css_get_style(widget):
     return styles
 
 def css_add_sheet(text, _reload=False):
-    '''Add a css text to use ::
+    '''Add a css text to use.
+    Example ::
+
         mycss = '#buttonA { bg-color: rgba(255, 127, 0, 127); }'
         css_add_sheet(mycss)
+
     '''
     pymt_sheet.parse_text(text)
     if not _reload:
@@ -315,7 +319,9 @@ def css_add_file(cssfile, _reload=False):
     '''Add a css file to use.
     Adds all the css rules in the given file to the pymt css rule set being
     used ::
+
         css_add_sheet(cssfile)
+
     '''
     with open(cssfile, 'r') as fd:
         pymt_sheet.parse_text(fd.read())
@@ -353,10 +359,10 @@ def css_reload():
 if 'PYMT_DOC' not in os.environ:
     # Add default CSSheet
     pymt_sheet = CSSSheet()
-    css_add_file(os.path.join(pymt.pymt_data_dir, 'default.css'))
+    css_add_file(os.path.join(pymt_data_dir, 'default.css'))
 
     # Add user css if exist
-    css_filename = os.path.join(pymt.pymt_home_dir, 'user.css')
+    css_filename = os.path.join(pymt_home_dir, 'user.css')
     if os.path.exists(css_filename):
         css_add_file(css_filename)
 

@@ -2,7 +2,10 @@
 Kinetic List: Custom list with kinetic interaction
 '''
 
-__all__ = ['MTKineticList', 'MTKineticObject', 'MTKineticItem', 'MTKineticImage']
+__all__ = (
+    'MTKineticList', 'MTKineticObject',
+    'MTKineticItem', 'MTKineticImage'
+)
 
 import pymt
 from OpenGL.GL import *
@@ -29,7 +32,9 @@ class MTKineticList(MTStencilContainer):
         `friction` : float, defaults to 10
             The Pseudo-friction of the pseudo-kinetic scrolling.
             Formula for friction is ::
+
                 acceleration = 1 + friction * frame_delta_time
+
         `padding_x` : int, defaults to 4
             The spacing between scrolling items on the x axis
         `padding_y` : int, defaults to 4

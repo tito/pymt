@@ -4,7 +4,7 @@ List: a list with kinetic effect
 
 __all__ = ('MTList', 'MTListContainer')
 
-from pymt import gx_matrix
+from pymt.graphx import gx_matrix
 from pymt.utils import boundary
 from pymt.base import getFrameDt
 from pymt.ui.widgets.widget import MTWidget
@@ -22,8 +22,10 @@ from math import sqrt, pow
 
 class MTListContainer(MTWidget):
     '''Container for MTList.
+
     ..warning ::
         The size of this container is taken from the first children size.
+
     '''
     def __init__(self, **kwargs):
         super(MTListContainer, self).__init__(**kwargs)
@@ -49,6 +51,7 @@ class MTList(MTStencilContainer):
         The MTList have the same behavior as MTScatterWidget: coordinates of his
         children are relative to the MTList (not fixed to the screen.)
 
+
     The MTList use a Stencil container, to prevent drawing outside his size.
     Then, it use a MTListContainer to be able to scroll his content. The
     MTListContainer size is taken from the first children in the list. We
@@ -68,7 +71,9 @@ class MTList(MTStencilContainer):
             Allow scrolling on Y axis
         `friction`: int, default to 10 (list_friction in conf)
             Friction of scrolling movement. The formula is ::
+
                 acceleration = 1 + friction * frame_delta_time
+
         `friction_bound`: int, default to 10 (list_friction_bound in conf)
             Friction of scrolling movement when position are outside bounds.
         `trigger_distance`: int, default to 5 (list_trigger_distance in config)

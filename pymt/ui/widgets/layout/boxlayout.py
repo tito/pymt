@@ -2,13 +2,14 @@
 Box layout: arrange widget in horizontal or vertical
 '''
 
-__all__ = ['MTBoxLayout']
+__all__ = ('MTBoxLayout', )
 
 from abstractlayout import MTAbstractLayout
 from ...factory import MTWidgetFactory
 
 class MTBoxLayout(MTAbstractLayout):
     '''Box layout can arrange item in horizontal or vertical orientation.
+
     :Parameters:
         `padding` : int, default to 0
             Padding between the border and content

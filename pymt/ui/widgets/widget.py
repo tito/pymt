@@ -2,8 +2,10 @@
 Widget: Base of every widget implementation.
 '''
 
-__all__ = ('getWidgetById',
-           'MTWidget')
+__all__ = (
+    'getWidgetById',
+    'MTWidget'
+)
 
 import sys
 import os
@@ -387,6 +389,7 @@ class MTWidget(EventDispatcher):
 
     def do(self, animation):
         '''Apply/Start animations on the widgets.
+
         :Parameters:
             `animation` : Animation Object
                 Animation object with properties to be animateds ","

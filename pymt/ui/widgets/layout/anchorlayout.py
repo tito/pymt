@@ -1,8 +1,11 @@
 '''
-Anchor layout: Anchors its child widgtes to a certain section of the parent, like left, top, center, rigth etc
+Anchor layout: Align child widget to a border or center.
+
+Anchors its child widgtes to a certain section of the parent,
+like left, top, center, rigth...
 '''
 
-__all__ = ['MTAnchorLayout']
+__all__ = ('MTAnchorLayout', )
 
 from abstractlayout import MTAbstractLayout
 from ...factory import MTWidgetFactory

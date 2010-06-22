@@ -31,7 +31,7 @@ __all__ = (
 from pymt.logger import pymt_logger
 from pymt.cache import Cache
 from pymt.parser import *
-from pymt import pymt_data_dir
+from pymt import pymt_data_dir, pymt_home_dir
 import os
 import sys
 import shutil

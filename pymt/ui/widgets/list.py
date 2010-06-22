@@ -161,10 +161,11 @@ class MTList(MTStencilContainer):
         ret = self.collide_point(*touch.pos)
         if self._is_controled:
             return ret
-        touch.userdata['list.startpos'] = self.content_x, self.content_y
-        touch.grab(self)
-        self._is_controled = True
-        return ret
+        if ret:
+            touch.userdata['list.startpos'] = self.content_x, self.content_y
+            touch.grab(self)
+            self._is_controled = True
+            return True
 
     def on_touch_move(self, touch):
         if touch.grab_current is not self:

@@ -134,18 +134,23 @@ class MTList(MTStencilContainer):
             # make the content back to origin if it's out of bounds
             # don't go back to the initial bound, but use friction to do it in a
             # smooth way.
+            #
+            # if the container is smaller than our width, always align to left
+            # XXX should be customizable.
+            #
             f = 1 + self.friction_bound * dt
-            if cx > 0:
+            smaller = self.width > container.width
+            if cx > 0 or smaller:
                 cx /= f
                 vx = 0
-            if cy > 0:
-                cy /= f
-                vy = 0
-            if cx < -cw:
+            elif cx < -cw and not smaller:
                 a = (cw + cx) / f
                 cx = -cw + a
                 vx = 0
-            if cy < -ch:
+            if cy > 0 or smaller:
+                cy /= f
+                vy = 0
+            elif cy < -ch and not smaller:
                 a = (ch + cy) / f
                 cy = -ch + a
                 vy = 0

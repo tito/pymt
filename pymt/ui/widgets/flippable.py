@@ -103,7 +103,7 @@ class MTFlippableWidget(MTWidget):
 
     def flip_to(self, to):
         '''Flip to the requested side ('front' or 'back')'''
-        assert(to in 'back', 'front')
+        assert(to in ('back', 'front'))
         if to == 'back' and self.side == 'front':
             self.flip_children()
         elif to == 'front' and self.side == 'back':

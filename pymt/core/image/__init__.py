@@ -230,7 +230,9 @@ class Image(BaseObject):
         ..warning ::
             This function can be used only with images loaded with
             keep_data=True keyword. For examples ::
-                m = Image.load('
+
+                m = Image.load('image.png', keep_data=True)
+                color = m.read_pixel(150, 150)
 
         :Parameters:
             `x` : int

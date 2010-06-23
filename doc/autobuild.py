@@ -9,6 +9,7 @@ Be careful if you change anything in !
 import os
 import sys
 import re
+import types
 from glob import glob
 
 os.environ['PYMT_SHADOW_WINDOW'] = '0'
@@ -177,6 +178,62 @@ for module in m:
         t = t.replace('$EXAMPLES', '')
     writefile('api-%s.rst' % module, t)
 
+# Write reference
+template_ref = \
+'''Classes
+-------
+
+'''
+
+template_examples = \
+'''.. _example-reference%d:
+
+Examples
+--------
+
+%s
+'''
+classification = (
+    ('pymt.ui.widgets', 'Widgets'),
+    ('pymt.ui', 'User interface'),
+    ('pymt.core', 'Core providers'),
+    ('pymt.input', 'Input providers'),
+    ('pymt.graphx', 'Drawing'),
+    ('pymt.', 'Base'),
+    ('*', 'Others'),
+)
+
+classes = {}
+def get_classification_for(key):
+    for name, title in classification:
+        if key.startswith(name):
+            return name, title
+    return classification[-1]
+
+def get_classification_title(key):
+    for name, title in classification:
+        if name == key:
+            return title
+    
+for attr in dir(pymt):
+    x = getattr(pymt, attr)
+    if type(x) == types.TypeType:
+        key, title = get_classification_for(x.__module__)
+        if not key in classes:
+            classes[key] = []
+        classes[key].append(x)
+
+output = []
+for key, values in classes.items():
+    values.sort()
+    title = get_classification_title(key)
+    output.append('%s' % title)
+    output.append('^' * len(title))
+    output.append('')
+    for value in values:
+        output.append('* %s' % value.__name__)
+    output.append('')
+writefile('reference.rst', template_ref + '\n'.join(output))
 
 # Generation finished
 print 'Generation finished, do make html'

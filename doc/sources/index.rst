@@ -31,8 +31,14 @@ You can access to the Programming Guide on the Wiki :
 http://pymt.eu/wiki/DevGuide/Index
 
 
-API Documentation of PyMT
--------------------------
+Reference
+---------
+
+.. include:: reference.rst
+
+
+API Documentation
+-----------------
 
 :Release: |version|
 :Date: |today|

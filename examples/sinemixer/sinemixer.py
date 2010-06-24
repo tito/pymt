@@ -51,12 +51,12 @@ def pymt_plugin_activate(w, ctx):
     # This function gets called when a slider moves, it sets the pitch of each sine.
     def on_value_change_callback(slider, value):
         sines[slider].freq = value
-
-    # When the button is pressed, the amplitude is changed to 0.5
+        
+    # When the button is pressed, the fader object performs it's fade.
     def on_press_callback(btn, *largs):
         faders[btn].play()
 
-    # When the button is released, the amplitude goes back to 0
+    # When the button is released, the fader object fades back to 0.
     def on_release_callback(btn, *largs):
         faders[btn].stop()
     

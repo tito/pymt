@@ -512,8 +512,9 @@ cdef class Line(GraphicElement):
     cdef int _need_build
 
     def __init__(self, points=[], **kwargs):
+        kwargs.setdefault('format', 'vv')
         kwargs.setdefault('type', 'line_strip')
-        GraphicElement.__init__(self, format='vv', **kwargs)
+        GraphicElement.__init__(self, **kwargs)
         self._need_build = 1
         self._points = []
         self.points = points

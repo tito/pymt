@@ -32,6 +32,7 @@ class MTGridLayout(MTAbstractLayout):
         kwargs.setdefault('spacing', 1)
         kwargs.setdefault('uniform_width', False)
         kwargs.setdefault('uniform_height', False)
+        #kwargs.setdefault('size_hint', (None,None))
 
         super(MTGridLayout, self).__init__(**kwargs)
 
@@ -40,6 +41,7 @@ class MTGridLayout(MTAbstractLayout):
         self.cols           = kwargs.get('cols')
         self.rows           = kwargs.get('rows')
         self.spacing        = kwargs.get('spacing')
+        self.size_hint = (None, None)
 
         if self.cols is None and self.rows is None:
             raise GridLayoutException('Need at least cols or rows restriction.')
@@ -57,16 +59,7 @@ class MTGridLayout(MTAbstractLayout):
             raise Exception('Too much children in MTGridLayout. Increase your rows/cols!')
         super(MTGridLayout, self).add_widget(widget, front=front, do_layout=do_layout)
 
-
-    def do_layout(self):
-        super(MTGridLayout, self).do_layout()
-
-        # no children, no layout :)
-        if len(self.children) == 0:
-            return
-
-        spacing = self.spacing
-
+    def update_minimum_size(self):
         current_cols = self.cols
         current_rows = self.rows
         if current_cols is None:
@@ -84,59 +77,70 @@ class MTGridLayout(MTAbstractLayout):
             for col in range(current_cols):
                 if i >= len(self.children):
                     break
+
+                #get needed size for that child
                 c = self.children[i]
-                if c.width > cols[col]:
-                    cols[col] = c.width
-                if c.height > rows[row]:
-                    rows[row] = c.height
-                if c.width > max_width:
-                    max_width = c.width
-                if c.height > max_height:
-                    max_height = c.height
+                w,h = c.size
+                if isinstance(c, MTAbstractLayout):
+                    w,h = c.minimum_size
+
+                cols[col] = max(cols[col], w)
+                self.max_col_width = max(max_width, cols[col])
+
+                rows[row] = max(rows[row], h)
+                self.max_row_height = max(max_height, rows[row])
+
                 i = i + 1
 
-        # apply uniform
+        # consider uniform sizeing
         if self.uniform_width:
             for col in range(current_cols):
-                cols[col] = max_width
+                cols[col] = self.max_col_width
         if self.uniform_height:
             for row in range(current_rows):
-                rows[row] = max_height
+                rows[row] = self.max_row_height
 
-        # calculate width/height of content
-        current_width = spacing * (len(cols) + 1)
+
+        # calculate minimum width/height for this widget
+        width = self.spacing * (len(cols) + 1)
+        height = self.spacing * (len(rows) + 1)
         for i in cols:
-            current_width += cols[i]
-        current_height = spacing * (len(rows) + 1)
+            width += cols[i]
         for i in rows:
-            current_height += rows[i]
+            height += rows[i]
 
-        # reposition every children
+        #remeber for layout
+        self.col_widths  = cols
+        self.row_heights = rows
+
+        self.minimum_size = (width, height)
+
+
+    def do_layout(self):
+        if len(self.children) == 0:
+            return
+
+        # reposition every child
         i = 0
-        y = self.y + spacing
-        for row in range(current_rows):
-            x = self.x + spacing
-            for col in range(current_cols):
+        y = self.y + self.spacing
+        for row_height in self.row_heights.values():
+            x = self.x + self.spacing
+            for col_width in self.col_widths.values():
                 if i >= len(self.children):
                     break
                 c = self.children[i]
                 # special y, we inverse order of children at reposition
-                c_pos = (x, self.y + current_height - rows[row] - (y - self.y))
+                c_pos = (x, self.top - row_height - (y - self.y))
                 c_size = list(self.children[i].size)
-                if self.uniform_width and self.uniform_height:
-                    c_size = (cols[col], rows[row])
-                elif self.uniform_width:
-                    c_size[0] = cols[col]
-                elif self.uniform_height:
-                    c_size[1] = rows[row]
+                if self.uniform_width or c.size_hint[0]:
+                    c_size[0] = col_width * (c.size_hint[0] or 1.0)
+                if self.uniform_height or c.size_hint[1]:
+                    c_size[1] = row_height * (c.size_hint[1] or 1.0)
                 self.reposition_child(c, pos=c_pos, size=c_size)
                 i = i + 1
-                x = x + cols[col] + spacing
-            y = y + rows[row] + spacing
+                x = x + col_width + self.spacing
+            y = y + row_height + self.spacing
 
-        self.size = (current_width, current_height)
-
-        # we just do a layout, dispatch event
         self.dispatch_event('on_layout')
 
 # Register all base widgets

@@ -15,7 +15,7 @@ def _test_boxlayout(orientation):
     from pymt import MTBoxLayout, MTWidget
 
     # note: this test act always if orientation
-    # is a vertical one. use sw() around pos or size
+    # is a horizontal one. use sw() around pos or size
     # to ensure that the swap is done.
 
     # note: default spacing is 1
@@ -30,10 +30,12 @@ def _test_boxlayout(orientation):
     m = MTBoxLayout(orientation=orientation)
     for x in xrange(10):
         m.add_widget(MTWidget(size=(10,10)))
-    test(sw(m.size) == (10, 109))
+    print m.size
+    test(sw(m.size) == (109, 10))
 
     # spacing to 10
     m = MTBoxLayout(orientation=orientation, spacing=10)
     for x in xrange(10):
         m.add_widget(MTWidget(size=(10,10)))
-    test(sw(m.size) == (10, 190))
+    test(sw(m.size) == (190, 10))
+

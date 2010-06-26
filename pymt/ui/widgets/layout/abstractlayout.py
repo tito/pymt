@@ -35,6 +35,9 @@ class MTAbstractLayout(MTWidget):
         kwargs.setdefault('animation_type', None)
         kwargs.setdefault('animation_duration', 1)
         kwargs.setdefault('bg_color', (0,0,0,0)) #good for debugging layout
+
+        self._minimum_size = (1,1)
+
         super(MTAbstractLayout, self).__init__(**kwargs)
 
         self._animation_type    = kwargs.get('animation_type')
@@ -44,8 +47,19 @@ class MTAbstractLayout(MTWidget):
         self.need_update        = False
         self.need_update_set    = False
 
+
         self.register_event_type('on_layout')
 
+
+    def _get_minimum_size(self):
+        return self._minimum_size
+    def _set_minimum_size(self, size):
+        self._minimum_size = size
+        if self.width < size [0]:
+            self.width = size[0]
+        if self.height < size[1]:
+            self.height = size[1]
+    minimum_size = property(_get_minimum_size, _set_minimum_size)
 
     def _set_animation_type(self, type):
         if type in AnimationAlpha.__dict__ :
@@ -58,6 +72,7 @@ class MTAbstractLayout(MTWidget):
 
     def add_widget(self, widget, front=True, do_layout=None):
         super(MTAbstractLayout, self).add_widget(widget, front=front)
+        self.update_minimum_size()
         if do_layout or (not do_layout and self.auto_layout):
             self.need_update = True
 
@@ -82,24 +97,29 @@ class MTAbstractLayout(MTWidget):
     def on_parent(self):
         if not self.parent:
             return
-        layout = self.parent.get_parent_layout()
-        if layout:
-            self.push_handlers(on_layout=layout.update)
+
+    def update_minimum_size(self):
+        self.minimum_size = self.size
 
     def on_move(self, x, y):
         self.update()
 
     def on_resize(self, w, h):
+        self.width = max(w, self.minimum_size[0])
+        self.height = max(h, self.minimum_size[1])
+
         self.update()
 
     def on_update(self):
+        super(MTAbstractLayout, self).on_update()
         if self.need_update:
             self.need_update = False
+            self.update_minimum_size()
             self.do_layout()
-        super(MTAbstractLayout, self).on_update()
 
     def update(self):
         self.need_update = True
+
 
     def on_layout(self):
         pass
@@ -111,61 +131,3 @@ class MTAbstractLayout(MTWidget):
                 w.width = w.size_hint[0]*self.width
             if w.size_hint[1]:
                 w.height = w.size_hint[1]*self.height
-
-    # overload all possible function that need to apply
-    # relayout before accessing to the value
-    def _get_size(self):
-        if self.need_update and not self.need_update_set:
-            self.need_update_set = True
-            self.need_update = False
-            self.do_layout()
-            self.need_update_set = False
-        return super(MTAbstractLayout, self)._get_size()
-    size = property(_get_size, MTWidget._set_size)
-
-    def _get_width(self):
-        if self.need_update and not self.need_update_set:
-            self.need_update_set = True
-            self.need_update = False
-            self.do_layout()
-            self.need_update_set = False
-        return super(MTAbstractLayout, self)._get_width()
-    width = property(_get_width, MTWidget._set_width)
-
-    def _get_height(self):
-        if self.need_update and not self.need_update_set:
-            self.need_update_set = True
-            self.need_update = False
-            self.do_layout()
-            self.need_update_set = False
-        return super(MTAbstractLayout, self)._get_height()
-    height = property(_get_height, MTWidget._set_height)
-
-    def _get_pos(self):
-        if self.need_update and not self.need_update_set:
-            self.need_update_set = True
-            self.need_update = False
-            self.do_layout()
-            self.need_update_set = False
-        return super(MTAbstractLayout, self)._get_pos()
-    pos = property(_get_pos, MTWidget._set_pos)
-
-    def _get_x(self):
-        if self.need_update and not self.need_update_set:
-            self.need_update_set = True
-            self.need_update = False
-            self.do_layout()
-            self.need_update_set = False
-        return super(MTAbstractLayout, self)._get_x()
-    x = property(_get_x, MTWidget._set_x)
-
-    def _get_y(self):
-        if self.need_update and not self.need_update_set:
-            self.need_update_set = True
-            self.need_update = False
-            self.do_layout()
-            self.need_update_set = False
-        return super(MTAbstractLayout, self)._get_y()
-    y = property(_get_y, MTWidget._set_y)
-
-

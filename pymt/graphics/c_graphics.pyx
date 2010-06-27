@@ -1,8 +1,3 @@
-#
-# Some Cython ressources
-# http://docs.cython.org/src/tutorial/cdef_classes.html
-#
-
 '''
 Graphics: all low level function to draw object in Open
 
@@ -78,6 +73,17 @@ An example with a rectangle + texture ::
 
 '''
 
+#
+# Some Cython ressources
+# http://docs.cython.org/src/tutorial/cdef_classes.html
+#
+# TODO
+# 1. use our own VBO
+# 2. handle ourself texture
+# 3. handle all in a shader (aka opengl es)
+#
+
+
 from pymt import BaseObject, Texture, TextureRegion, getLabel
 from math import pi
 from array import array
@@ -99,23 +105,9 @@ cdef extern from "math.h":
 #  c = Color (ccc = rgb, cccc = rgba)
 #  t = Texture (tt = uv, ttt = uvw)
 #  n = Normal (nn = xy, nnn = xyz)
-#  i = Index
+#  i = Index (color index)
 #  e = Edge
 #
-
-cdef int gl_array_from_fmt(str typ):
-    if typ == 'v':
-        return GL_VERTEX_ARRAY
-    elif typ == 'c':
-        return GL_COLOR_ARRAY
-    elif typ == 't':
-        return GL_TEXTURE_COORD_ARRAY
-    elif typ == 'n':
-        return GL_NORMAL_ARRAY
-    elif typ == 'e':
-        return GL_EDGE_FLAG_ARRAY
-    elif typ == 'i':
-        return GL_INDEX_ARRAY
 
 cdef int gl_type_from_str(str typ):
     if typ == 'points':
@@ -286,13 +278,14 @@ cdef class GraphicElement(GraphicInstruction):
     cdef str _vbo_target
     cdef str _format_str
     cdef int _type
+    cdef bytes _indices
     cdef readonly int count
 
     # declare all possible vbo
     cdef object _vbo_v, _vbo_c, _vbo_t, _vbo_n, _vbo_e, _vbo_i
     cdef object _data_v, _data_c, _data_t, _data_n, _data_e, _data_i
     cdef int _size_v, _size_c, _size_t
-    cdef int _use_v, _use_c, _use_t, _use_n, _use_e, _use_i
+    cdef int _use_v, _use_c, _use_t, _use_n, _use_e, _use_i, _use_indices
 
     def __cinit__(self):
         self.count = 0
@@ -306,12 +299,14 @@ cdef class GraphicElement(GraphicInstruction):
         self._use_n = 0
         self._use_e = 0
         self._use_i = 0
+        self._use_indices = 0
         self._vbo_v = None
         self._vbo_c = None
         self._vbo_t = None
         self._vbo_n = None
         self._vbo_e = None
         self._vbo_i = None
+        self._indices = ''
 
     def __init__(self, **kwargs):
         kwargs.setdefault('format', None)
@@ -363,7 +358,10 @@ cdef class GraphicElement(GraphicInstruction):
             self.context.flush()
 
         # draw array
-        glDrawArrays(self._type, 0, self.count)
+        if self._use_indices:
+            glDrawElements(self._type, len(self._indices), GL_UNSIGNED_INT, <char *>self._indices)
+        else:
+            glDrawArrays(self._type, 0, self.count)
 
         # unbind all
         if self._use_v:
@@ -485,6 +483,17 @@ cdef class GraphicElement(GraphicInstruction):
         doc='Get/set the edges data (not used yet.)')
     data_i = property(_get_data_i, _set_data_i,
         doc='Get/set the indexes data (not used yet.)')
+
+    def _get_indices(self):
+        return self._indices
+    def _set_indices(self, x):
+        if x is None:
+            self._use_indices = 0
+            return
+        self._indices = array('I', x).tostring()
+        self._use_indices = 1
+    indices = property(_get_indices, _set_indices,
+        doc='(optional) Use an indice array to draw')
 
     def _get_type(self):
         return self._type
@@ -890,6 +899,142 @@ cdef class Rectangle(GraphicElement):
         self._need_build = 1
     colors_coords = property(_get_colors_coords, _set_colors_coords,
         doc='Colors coordinates for each vertex')
+
+cdef class ImageRectangle(Rectangle):
+    '''Draw an Image rectangle, as same as border-image in CSS3.
+
+    '''
+    cdef list _borders
+    cdef object _mode
+
+    def __init__(self, *largs, **kwargs):
+        kwargs.setdefault('type', 'quads')
+        kwargs.setdefault('format', 'vvtt')
+        Rectangle.__init__(self, *largs, **kwargs)
+        self._borders = self.convert_border(kwargs.get('borders', [0]))
+        self._mode = 'strech'
+        self.indices = [
+            0, 4, 5, 1,
+            1, 2, 6, 5,
+            2, 3, 7, 6,
+            4, 5, 9, 8,
+            5, 6, 10, 9,
+            6, 7, 11, 10,
+            8, 9, 13, 12,
+            9, 10, 14, 13,
+            10, 11, 15, 14
+        ]
+
+    cpdef build(self):
+        cdef double w, h, x, y, tw, th, l1, l2, l3, l4
+        cdef list cpos, ctex
+        cdef int idx
+
+        texture = self._texture
+        mode = self._mode
+        w, h = self._size
+        x, y = self._pos
+        l1, l2, l3, l4 = self._borders
+
+        # take the texture size from the tex_coords
+        tw = float(texture.tex_coords[2])
+        th = float(texture.tex_coords[5])
+
+        # calculate texture coordinate
+        texcoords = texture.tex_coords
+        if self._mode == 'strech':
+            ctex = [
+                0,          th,
+                l4,         th,
+                tw - l2,    th,
+                tw,         th,
+
+                0,          th - l1,
+                l4,         th - l1,
+                tw - l2,    th - l1,
+                tw,         th - l1,
+
+                0,          l3,
+                l4,         l3,
+                tw - l2,    l3,
+                tw,         l3,
+
+                0,          0,
+                l4,         0,
+                tw - l2,    0,
+                tw,         0,
+            ]
+
+            cpos = [
+                0,          h,
+                l4,         h,
+                w - l2,     h,
+                w,          h,
+
+                0,          h - l1,
+                l4,         h - l1,
+                w - l2,     h - l1,
+                w,          h - l1,
+
+                0,          l3,
+                l4,         l3,
+                w - l2,     l3,
+                w,          l3,
+
+                0,          0,
+                l4,         0,
+                w - l2,     0,
+                w,          0,
+
+            ]
+
+        # move to position
+        for idx in xrange(len(cpos)):
+            if idx % 2 == 0:
+                cpos[idx] += x
+            else:
+                cpos[idx] += y
+
+        # construct the vbo
+        self.data_v = cpos
+        self.data_t = ctex
+
+    def convert_border(self, largs):
+        if len(largs) == 0:
+            l1 = l2 = l3 = l4 = 0
+        elif len(largs) == 1:
+            l1 = l2 = l3 = l4 = largs[0]
+        elif len(largs) == 2:
+            l1 = l3 = largs[0]
+            l2 = l4 = largs[1]
+        elif len(largs) == 4:
+            l1, l2, l3, l4 = largs
+        else:
+            assert('Unknown directive')
+        return [l1, l2, l3, l4]
+
+    def _get_borders(self):
+        return self._borders
+    def _set_borders(self, x):
+        x = self.convert_border(x)
+        if x == self._borders:
+            return
+        self._borders = x
+        self._need_build = 1
+    borders = property(_get_borders, _set_borders,
+        doc='Borders in pixels of the image')
+
+    def _get_mode(self):
+        return self._mode
+    def _set_mode(self, x):
+        if self._mode == x:
+            return
+        self._mode = x
+        assert(self._mode in ('strech', ))
+        self._need_build = 1
+    mode = property(_get_mode, _set_mode,
+        doc='Mode of the drawing (only strech is supported')
+
 
 cdef class Text(Rectangle):
     '''Draw a Text/Label.
@@ -1557,6 +1702,11 @@ cdef class Canvas:
         '''Create a Rectangle() object, and add to the list.
         Check Rectangle() for more information.'''
         return self.add(Rectangle(*largs, **kwargs))
+
+    def imageRectangle(self, *largs, **kwargs):
+        '''Create a ImageRectangle() object, and add to the list.
+        Check ImageRectangle() for more information.'''
+        return self.add(ImageRectangle(*largs, **kwargs))
 
     def roundedRectangle(self, *largs, **kwargs):
         '''Create a RoundedRectangle() object, and add to the list.

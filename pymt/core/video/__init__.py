@@ -5,22 +5,30 @@ VideoBase: base for implementing a video reader
 __all__ = ('VideoBase', 'Video')
 
 from .. import core_select_lib
-from ...baseobject import BaseObject
+from ...event import EventDispatcher
 
-class VideoBase(BaseObject):
+class VideoBase(EventDispatcher):
     '''VideoBase, a class to implement a video reader.
+
+    .. warning::
+        For this object, you need to call update() yourself to let
+        the engine update the video texture before calling draw().
 
     :Parameters:
         `filename` : str
             Filename of the video. Can be a file or an URI.
         `color` : list
             Color filter of the video (usually white.)
-        `eos` : str
+        `eos` : str, default to 'pause'
             Action to do when EOS is hit. Can be one of 'pause' or 'loop'
         `async` : bool, default to True
             Asynchronous loading (may be not supported by all providers)
         `autoplay` : bool, default to False
             Auto play the video at init
+
+    :Events:
+        `on_eos`
+            Fired when EOS is hit
     '''
 
     __slots__ = ('_wantplay', '_buffer', '_filename', '_texture', 'color',
@@ -34,6 +42,8 @@ class VideoBase(BaseObject):
         kwargs.setdefault('autoplay', False)
 
         super(VideoBase, self).__init__(**kwargs)
+
+        self.register_event_type('on_eos')
 
         self._wantplay      = False
         self._buffer        = None
@@ -53,6 +63,9 @@ class VideoBase(BaseObject):
 
     def __del__(self):
         self.unload()
+
+    def on_eos(self):
+        pass
 
     def _get_filename(self):
         return self._filename
@@ -98,6 +111,15 @@ class VideoBase(BaseObject):
         return self._state
     state = property(lambda self: self._get_state(),
             doc='Get the video playing status')
+
+    def _do_eos(self):
+        print 'EOS', self.eos
+        if self.eos == 'pause':
+            self.stop()
+        elif self.eos == 'loop':
+            self.stop()
+            print 'stop / play'
+            self.play()
 
     def seek(self, percent):
         '''Move on percent position'''

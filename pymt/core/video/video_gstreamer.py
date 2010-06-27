@@ -46,18 +46,28 @@ class VideoGStreamer(VideoBase):
         self._videosize     = (0, 0)
         super(VideoGStreamer, self).__init__(**kwargs)
 
+    def _do_eos(self):
+        self.stop()
+        self.unload()
+        self.dispatch_event('on_eos')
+        super(VideoGStreamer, self)._do_eos()
+        if self._wantplay:
+            self.load()
+
     def stop(self):
         self._wantplay = False
         if self._pipeline is None:
             return
         self._pipeline.set_state(gst.STATE_PAUSED)
         self._state = ''
+        super(VideoGStreamer, self).stop()
 
     def play(self):
         self._wantplay = True
         if self._pipeline is None:
             return
         self._pipeline.set_state(gst.STATE_PAUSED)
+        super(VideoGStreamer, self).play()
         self._state = ''
 
     def unload(self):
@@ -94,6 +104,8 @@ class VideoGStreamer(VideoBase):
     def _on_gst_message(self, bus, message):
         if message.type == gst.MESSAGE_ASYNC_DONE:
             self._pipeline_canplay = True
+        elif message.type == gst.MESSAGE_EOS:
+            self._do_eos()
 
     def _really_load(self):
         # create the pipeline
@@ -152,6 +164,15 @@ class VideoGStreamer(VideoBase):
         # be sync if asked
         if self._async == False:
             self._pipeline.get_state()
+
+    def seek(self, percent):
+        if not self._pipeline:
+            return
+        print 'SEEK', percent
+        self._pipeline.seek_simple(
+            gst.FORMAT_PERCENT,
+            gst.SEEK_FLAG_FLUSH,
+            percent)
 
     def _gst_new_pad(self, dbin, pad, *largs):
         # a new pad from decoder ?

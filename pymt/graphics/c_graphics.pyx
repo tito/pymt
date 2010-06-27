@@ -1543,6 +1543,11 @@ cdef class Canvas:
         Check Line() for more information.'''
         return self.add(Line(*largs, **kwargs))
 
+    def circle(self, *largs, **kwargs):
+        '''Create a Circle() object, and add to the list.
+        Check Circle() for more information.'''
+        return self.add(Circle(*largs, **kwargs))
+
     def point(self, *largs, **kwargs):
         '''Create a Point() object, and add to the list.
         Check Point() for more information.'''

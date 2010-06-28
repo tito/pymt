@@ -6,7 +6,8 @@ __all__ = ('intersection', 'difference', 'curry', 'strtotuple',
            'get_color_from_hex', 'get_color_for_pyglet', 'get_random_color',
            'is_color_transparent', 'boundary', 'connect',
            'deprecated', 'SafeList',
-           'serialize_numpy', 'deserialize_numpy')
+           'serialize_numpy', 'deserialize_numpy',
+           'interpolate')
 
 import inspect
 import re
@@ -33,6 +34,29 @@ def curry(fn, *cargs, **ckwargs):
         d.update(fkwargs)
         return fn(*(cargs + fargs), **d)
     return call_fn
+
+
+def interpolate(value_from, value_to, step=10):
+    '''Interpolate a value to another. Can be useful to smooth some transition.
+    For example ::
+
+        # instead of setting directly 
+        self.pos = pos
+
+        # use interpolate, and you'll have a nice transition
+        self.pos = interpolate(self.pos, new_pos)
+
+    .. warning::
+        This interpolation work only on list/tuple/double with the same
+        dimension. No test are done if the dimension is not the same.
+    '''
+    if type(value_from) in (list, tuple):
+        out = []
+        for x, y in zip(value_from, value_to):
+            out.append(interpolate(x, y, step))
+        return out
+    else:
+        return value_from + (value_to - value_from) / float(step)
 
 def strtotuple(s):
     '''Convert a tuple string into tuple,

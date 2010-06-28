@@ -27,5 +27,4 @@ from xmlwidget import *
 from speechbubble import *
 from sidepanel import *
 
-from form import *
 from composed import *

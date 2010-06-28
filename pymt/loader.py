@@ -39,12 +39,18 @@ Cache.register('pymt.loader', limit=500, timeout=60)
 class ProxyImage(Image, EventDispatcher):
     '''Image returned by the Loader.image() function.
 
+    :Properties:
+        `loaded`: bool, default to False
+            It can be True if the image is already cached
+
     :Events:
         `on_load`
             Fired when the image is loaded and changed
     '''
     def __init__(self, arg, **kwargs):
+        kwargs.setdefault('loaded', False)
         super(ProxyImage, self).__init__(arg, **kwargs)
+        self.loaded = kwargs.get('loaded')
         self.register_event_type('on_load')
 
     def on_load(self):
@@ -164,7 +170,7 @@ class LoaderBase(object):
                 return
 
             # create the image
-            image = ProxyImage(data)
+            image = data#ProxyImage(data)
             Cache.append('pymt.loader', filename, image)
 
             # update client
@@ -173,6 +179,7 @@ class LoaderBase(object):
                     continue
                 # got one client to update
                 client.image = image
+                client.loaded = True
                 client.dispatch_event('on_load')
                 self._client.remove((c_filename, client))
 
@@ -192,7 +199,8 @@ class LoaderBase(object):
         if data not in (None, False):
             # found image
             return ProxyImage(data,
-                    loading_image=self.loading_image)
+                    loading_image=self.loading_image,
+                    loaded=True)
 
         client = ProxyImage(self.loading_image,
                     loading_image=self.loading_image)

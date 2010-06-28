@@ -2,8 +2,10 @@
 Widget: Base of every widget implementation.
 '''
 
-__all__ = ('getWidgetById',
-           'MTWidget')
+__all__ = (
+    'getWidgetById',
+    'MTWidget'
+)
 
 import sys
 import os
@@ -83,6 +85,7 @@ class MTWidget(EventDispatcher):
                  '_parent_layout_source', '_parent_layout',
                  '_size_hint', '_id', '_parent',
                  '_visible', '_inline_style',
+                 '__animationcache__',
                  '__weakref__')
 
     visible_events = [
@@ -115,9 +118,10 @@ class MTWidget(EventDispatcher):
         for ev in MTWidget.visible_events:
             self.register_event_type(ev)
 
+        self.__animationcache__   = set()
         self._parent              = None
         self.children             = SafeList()
-        self._visible             = False
+        self._visible             = None
         self._size_hint           = kwargs.get('size_hint')
         self.visible              = kwargs.get('visible')
         self.draw_children        = kwargs.get('draw_children')
@@ -383,15 +387,27 @@ class MTWidget(EventDispatcher):
             if w.dispatch_event('on_touch_up', touch):
                 return True
 
-    def do(self,*largs):
+    def do(self, animation):
         '''Apply/Start animations on the widgets.
+
         :Parameters:
             `animation` : Animation Object
                 Animation object with properties to be animateds ","
         '''
-        for arg in largs:
-            if arg.set_widget(self):
-                return arg.start(self)
+        if not animation.set_widget(self):
+            return
+        # XXX bug from Animation framework
+        # we need to store a reference of our animation class
+        # otherwise, if the animation is called with self.do(),
+        # gc can suppress reference, and it's gone !
+        animobj = animation.start(self)
+        self.__animationcache__.add(animobj)
+        def animobject_on_complete(widget, *l):
+            if widget != self:
+                return
+            self.__animationcache__.remove(animobj)
+        animation.connect('on_complete', animobject_on_complete)
+        return animobj
 
     # generate event for all baseobject methods
 

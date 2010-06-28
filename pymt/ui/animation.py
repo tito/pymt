@@ -708,22 +708,22 @@ class AnimationAlpha(object):
     '''
     @staticmethod
     def linear(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#linear'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#linear'''
         return progress
 
     @staticmethod
     def ease_in_quad(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_quad'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_quad'''
         return progress * progress
 
     @staticmethod
     def ease_out_quad(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_out_quad'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_out_quad'''
         return -1.0 * progress * (progress - 2.0)
 
     @staticmethod
     def ease_in_out_quad(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_out_quad'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_out_quad'''
         p = progress * 2
         if p < 1 :
            return 0.5 * p * p
@@ -732,18 +732,18 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_cubic(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_cubic'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_cubic'''
         return progress * progress * progress
 
     @staticmethod
     def ease_out_cubic(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_out_cubic'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_out_cubic'''
         p = progress - 1.0
         return p * p * p + 1.0
 
     @staticmethod
     def ease_in_out_cubic(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_out_cubic'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_out_cubic'''
         p = progress * 2
         if p < 1 :
             return 0.5 * p * p * p
@@ -752,18 +752,18 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_quart(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_quart'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_quart'''
         return progress * progress * progress * progress
 
     @staticmethod
     def ease_out_quart(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_out_quart'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_out_quart'''
         p = progress - 1.0
         return -1.0 * (p * p * p * p - 1.0);
 
     @staticmethod
     def ease_in_out_quart(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_out_quart'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_out_quart'''
         p = progress * 2
         if p < 1 :
             return 0.5 * p * p * p * p
@@ -772,18 +772,18 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_quint(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_quint'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_quint'''
         return progress * progress * progress * progress * progress
 
     @staticmethod
     def ease_out_quint(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_out_quint'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_out_quint'''
         p = progress - 1.0
         return p * p * p * p * p + 1.0;
 
     @staticmethod
     def ease_in_out_quint(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_out_quint'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_out_quint'''
         p = progress * 2
         if p < 1 :
             return 0.5 * p * p * p * p * p
@@ -792,36 +792,36 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_sine(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_sine'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_sine'''
         return -1.0 * math.cos(progress * (math.pi/2.0)) + 1.0
 
     @staticmethod
     def ease_out_sine(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_out_sine'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_out_sine'''
         return math.sin(progress * (math.pi/2.0))
 
     @staticmethod
     def ease_in_out_sine(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_out_sine'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_out_sine'''
         return -0.5 * (math.cos(math.pi * progress) - 1.0)
 
     @staticmethod
     def ease_in_expo(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_expo'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_expo'''
         if progress == 0:
             return 0.0
         return math.pow(2, 10 * (progress - 1.0))
 
     @staticmethod
     def ease_out_expo(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_out_expo'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_out_expo'''
         if progress == 1.0:
             return 1.0
         return  -math.pow(2, -10 * progress) + 1.0
 
     @staticmethod
     def ease_in_out_expo(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_out_expo'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_out_expo'''
         if progress == 0:
             return 0.0
         if progress == 1.:
@@ -834,18 +834,18 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_circ(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_circ'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_circ'''
         return -1.0 * (math.sqrt(1.0 - progress * progress) - 1.0)
 
     @staticmethod
     def ease_out_circ(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_out_circ'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_out_circ'''
         p = progress - 1.0
         return math.sqrt(1.0 - p * p)
 
     @staticmethod
     def ease_in_out_circ(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_out_circ'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_out_circ'''
         p = progress * 2
         if p < 1:
             return -0.5 * (math.sqrt(1.0 - p * p) - 1.0)
@@ -854,7 +854,7 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_elastic(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_elastic'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_elastic'''
         p = .3
         s = p / 4.0
         q = progress
@@ -865,7 +865,7 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_out_elastic(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_out_elastic'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_out_elastic'''
         p = .3
         s = p / 4.0
         q = progress
@@ -875,7 +875,7 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_out_elastic(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_out_elastic'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_out_elastic'''
         p = .3 * 1.5
         s = p / 4.0
         q = progress * 2
@@ -890,18 +890,18 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_back(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_back'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_back'''
         return progress * progress * ((1.70158 + 1.0) * progress - 1.70158)
 
     @staticmethod
     def ease_out_back(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_out_back'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_out_back'''
         p = progress - 1.0
         return p * p * ((1.70158 + 1) * p + 1.70158) + 1.0
 
     @staticmethod
     def ease_in_out_back(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_out_back'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_out_back'''
         p = progress * 2.
         s = 1.70158 * 1.525
         if p < 1:
@@ -930,17 +930,17 @@ class AnimationAlpha(object):
 
     @staticmethod
     def ease_in_bounce(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_bounce'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_bounce'''
         return AnimationAlpha._ease_in_bounce_internal(progress, 1.)
 
     @staticmethod
     def ease_out_bounce(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_out_bounce'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_out_bounce'''
         return AnimationAlpha._ease_out_bounce_internal(progress, 1.)
 
     @staticmethod
     def ease_in_out_bounce(progress):
-        '''See documentation at http://pymt.txzone.net/wiki/index.php/DevGuide/EasingFunctions#ease_in_out_bounce'''
+        '''See documentation at http://pymt.eu/wiki/DevGuide/EasingFunctions#ease_in_out_bounce'''
         p = progress * 2
         if p < 1.:
             return AnimationAlpha._ease_in_bounce_internal(progress * 2.0, 1.) * 0.5

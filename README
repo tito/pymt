@@ -1,8 +1,8 @@
 PyMT - A Multitouch Framework for Python
 ========================================
 
-Website: http://pymt.txzone.net/
-Planet: http://pymt.txzone.net/planet/
+Website: http://pymt.eu/
+Planet: http://pymt.eu/planet/
 
 
 About 0.4
@@ -44,9 +44,9 @@ Installation
 Depending on your operating system you can follow one of the following guides
 to install PyMT and the dependencies:
 
- * http://pymt.txzone.net/wiki/index.php/DevGuide/InstallPymtUbuntu
- * http://pymt.txzone.net/wiki/index.php/DevGuide/InstallPymtMacOSX
- * http://pymt.txzone.net/wiki/index.php/DevGuide/InstallPymtWindows
+ * http://pymt.eu/wiki/DevGuide/InstallPymtUbuntu
+ * http://pymt.eu/wiki/DevGuide/InstallPymtMacOSX
+ * http://pymt.eu/wiki/DevGuide/InstallPymtWindows
 
 If you chose to install all the dependencies (see below) yourself, you can invoke
 the setup script as follows to install pymt systemwide for python:
@@ -59,12 +59,12 @@ Dependencies
 
 Since we abstract from the libraries that we use, some dependencies are
 optional and may be used instead of others. A list of dependencies and what
-we use them for is http://pymt.txzone.net/wiki/index.php/Devel/FeaturesByLibraries
+we use them for is http://pymt.eu/wiki/Devel/FeaturesByLibraries
 
 Here is what works best:
 
   * python (>= 2.6, < 3.0) - http://python.org
-  * PyOpenGL
+  * PyOpenGL >= 3.0.1
   * Pygame
   * PIL
   * GST + PyGST
@@ -76,13 +76,13 @@ Dcoumentation, Examples & Tutorials
 There is an API reference included in doc. Check the doc/README about how
 to build the documentation. It's also available online at :
 
-	http://pymt.txzone.net/docs/api/
+	http://pymt.eu/docs/api/
 
 There is some simple example apps in the examples folder that should get
 you started for now. Additionally you may want to take a look at our wiki
 at :
 
-	http://pymt.txzone.net/wiki/
+	http://pymt.eu/wiki/
 
 
 Configuration

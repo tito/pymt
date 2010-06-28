@@ -38,6 +38,14 @@ class MTVectorSlider(MTWidget):
         `radius` : int, default to 200
             The radius of the whole widget
 
+    :Events:
+        `on_amplitude_change`: (amplitude)
+            Fired when amplitude is changed
+        `on_angle_change`: (angle)
+            Fired when angle is changed
+        `on_vector_change`: (amplitude, angle)
+            Fired when vector is changed
+
     :Styles:
         `vector-color` : color
             Color of the vector

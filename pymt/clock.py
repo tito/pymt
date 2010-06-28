@@ -18,18 +18,21 @@ If the callback return False, the schedule will be removed.
 __all__ =  ('Clock', 'getClock')
 
 import time
+from weakmethod import WeakMethod
 
 class _Event(object):
 
     def __init__(self, loop, callback, timeout, starttime):
         self.loop = loop
-        self.callback = callback
+        self.callback = WeakMethod(callback)
         self.timeout = timeout
         self._last_dt = starttime
         self._dt = 0.
 
     def do(self, dt):
-        self.callback(dt)
+        if self.callback.is_dead():
+            return False
+        self.callback()(dt)
 
     def tick(self, curtime):
         # timeout happen ?
@@ -41,7 +44,9 @@ class _Event(object):
         self._last_dt = curtime
 
         # call the callback
-        ret = self.callback(self._dt)
+        if self.callback.is_dead():
+            return False
+        ret = self.callback()(self._dt)
 
         # if it's a once event, don't care about the result
         # just remove the event
@@ -99,7 +104,7 @@ class Clock(object):
         '''Get the last tick made by the clock'''
         return self._last_tick
 
-    def schedule_once(self, callback, timeout):
+    def schedule_once(self, callback, timeout=0):
         '''Schedule an event in <timeout> seconds'''
         event = _Event(False, callback, timeout, self._last_tick)
         self._events.append(event)
@@ -113,26 +118,14 @@ class Clock(object):
 
     def unschedule(self, callback):
         '''Remove a previous schedule event'''
-        self._events = [x for x in self._events if x.callback != callback]
+        self._events = [x for x in self._events if x.callback() != callback]
 
     def _process_events(self):
-        to_remove = None
-
-        # process event
-        for event in self._events:
+        for event in self._events[:]:
             if event.tick(self._last_tick) == False:
-                if to_remove is None:
-                    to_remove = [event]
-                else:
-                    to_remove.append(event)
-
-        # event to remove ?
-        if to_remove is None:
-            return
-        for event in to_remove:
-            self._events.remove(event)
-
-
+                # event may be already removed by the callback
+                if event in self._events:
+                    self._events.remove(event)
 
 
 # create a default clock

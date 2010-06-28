@@ -1,8 +1,11 @@
 '''
-Anchor layout: Anchors its child widgtes to a certain section of the parent, like left, top, center, rigth etc
+Anchor layout: Align child widget to a border or center.
+
+Anchors its child widgtes to a certain section of the parent,
+like left, top, center, rigth...
 '''
 
-__all__ = ['MTAnchorLayout']
+__all__ = ('MTAnchorLayout', )
 
 from abstractlayout import MTAbstractLayout
 from ...factory import MTWidgetFactory
@@ -61,19 +64,6 @@ class MTAnchorLayout(MTAbstractLayout):
         for c in self.children:
             x,y = self.pos
 
-            if self.anchor_x == 'left':
-                x = self.x + self.padding
-            if self.anchor_x == 'right':
-                x = self.x + self.width - (c.width+self.padding)
-            if self.anchor_x == 'center':
-                x = self.x + (self.width/2) - (c.width/2)
-
-            if self.anchor_y == 'bottom':
-                y = self.y + self.padding
-            if self.anchor_y == 'top':
-                y = self.y + self.height - (c.height+self.padding)
-            if self.anchor_y == 'center':
-                y = self.y + (self.height/2) - (c.height/2)
 
             w,h = c.size
             if c.size_hint[0]:
@@ -84,6 +74,22 @@ class MTAnchorLayout(MTAbstractLayout):
                 h = c.size_hint[1]*self.height
             elif not self.size_hint[1]:
                 self.height= max(self.height, c.height)
+
+
+            if self.anchor_x == 'left':
+                x = self.x + self.padding
+            if self.anchor_x == 'right':
+                x = self.x + self.width - (w+self.padding)
+            if self.anchor_x == 'center':
+                x = self.x + (self.width/2) - (w/2)
+
+            if self.anchor_y == 'bottom':
+                y = self.y + self.padding
+            if self.anchor_y == 'top':
+                y = self.y + self.height - (h+self.padding)
+            if self.anchor_y == 'center':
+                y = self.y + (self.height/2) - (h/2)
+
 
             self.reposition_child(c, pos=(x,y), size=(w,h))
 

@@ -2,13 +2,14 @@
 Box layout: arrange widget in horizontal or vertical
 '''
 
-__all__ = ['MTBoxLayout']
+__all__ = ('MTBoxLayout', )
 
 from abstractlayout import MTAbstractLayout
 from ...factory import MTWidgetFactory
 
 class MTBoxLayout(MTAbstractLayout):
     '''Box layout can arrange item in horizontal or vertical orientation.
+
     :Parameters:
         `padding` : int, default to 0
             Padding between the border and content
@@ -17,7 +18,7 @@ class MTBoxLayout(MTAbstractLayout):
         `orientation` : str, default is 'horizontal'
             Orientation of widget inside layout, can be `horizontal` or `vertical`
         'invert': bool, default to False
-            makes the layout do top to bottom on horizontal, or rigth to left on vertical 
+            makes the layout do top to bottom on horizontal, or rigth to left on vertical
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('spacing', 1)
@@ -33,12 +34,12 @@ class MTBoxLayout(MTAbstractLayout):
         self.padding      = kwargs.get('padding')
         self._orientation = kwargs.get('orientation')
         self._invert      =  kwargs.get('invert')
-        
+
     def add_widget(self, widget, front=False, do_layout=None):
         if self._invert:
             front = not front
         super(MTBoxLayout, self).add_widget(widget, front, do_layout)
-        
+
     def _get_orientation(self):
         return self._orientation
     def _set_orientation(self, orientation):
@@ -51,58 +52,82 @@ class MTBoxLayout(MTAbstractLayout):
             raise ValueError("'%s' is not a valid orientation for BoxLayout!  Allowed values are: 'horizontal' and 'vertical'." % orientation)
     orientation = property(_get_orientation, _set_orientation, doc="Orientation of widget inside layout, can be `horizontal` or `vertical`")
 
-    def do_layout(self):
-        width  = self.padding*2
-        height = self.padding*2
+
+    def update_minimum_size(self):
+        '''
+        calculates the minimum size of teh layout
+        there mus be room for child widgets that have fixed size (size_hint == None)
+        there must also be at least enough room for every child layout's minimum size (cant be too small even if size_hint is set)
+        '''
+        width  = self.padding
+        height = self.padding
 
         if self.orientation == 'horizontal':
-            total_width = 0
-            hint_width = 0
-            for w in reversed(self.children):
-                if w.size_hint[0]:
-                    hint_width += w.size_hint[0]
-                else:
-                    total_width += w.width
-                total_width += self.spacing
-            room_left = max(0,self.width - total_width)
-            x = self.x + self.padding
-            y = self.y + self.padding
-            for c in reversed(self.children):
-                w,h = c.size
-                if c.size_hint[0]:
-                    w = room_left*c.size_hint[0]/max(1.0, float(hint_width))
-                if c.size_hint[1]:
-                    h = max(1.0, c.size_hint[1])*self.height
-                self.reposition_child(c, pos=(x,y), size=(w,h))
-                x += w+self.spacing
-                width += w+self.spacing
-                height = max(height, h+self.padding*2)
+            width += (len(self.children)-1) * self.spacing
+            for w in self.children:
+                if w.size_hint[0] == None:
+                    width += w.width+self.padding
+                if w.size_hint[1] == None:
+                    height = max(w.height+self.padding, height)
+                if isinstance(w, MTAbstractLayout):
+                    w,h = w.minimum_size
+                    width  += w+self.padding
+                    height = max(h+self.padding, height)
 
         if self.orientation == 'vertical':
-            total_height = 0
-            hint_height = 0
+            height += (len(self.children)-1) * self.spacing
             for w in self.children:
-                if w.size_hint[1]:
-                    hint_height += w.size_hint[1]
-                else:
-                    total_height += w.height
-                total_height += self.spacing
-            room_left = max(0,self.height - total_height)
-            x = self.x + self.padding
-            y = self.y + self.padding
-            for c in self.children:
-                w,h = c.size
-                if c.size_hint[0]:
-                    w = max(1.0, c.size_hint[0])*self.width
-                if c.size_hint[1]:
-                    h = room_left*c.size_hint[1]/max(1.0, float(hint_height))
-                self.reposition_child(c, pos=(x,y), size=(w,h))
-                y += h+self.spacing
-                height += h+self.spacing
-                width = max(width, w+self.padding*2)
+                if w.size_hint[0] == None:
+                    width   = max(w.width+self.padding, width)
+                if w.size_hint[1] == None:
+                    height += w.height+self.padding
+                if isinstance(w, MTAbstractLayout):
+                    w,h = w.minimum_size
+                    width   = max(w+self.padding, width)
+                    height += h+self.padding
 
-        self.width  = max(width+self.padding, self.width)
-        self.height = max(height+self.padding, self.height)
+        self.minimum_size = (width, height)
+
+
+    def do_layout(self):
+
+        stretch_weight = [0,0]
+        for w in self.children:
+            stretch_weight[0] += w.size_hint[0] or 0.0
+            stretch_weight[1] += w.size_hint[1] or 0.0
+
+        if self.orientation == 'horizontal':
+            x = self.padding
+            stretch_space = max(0.0,self.width - self.minimum_size[0])
+            for c in reversed(self.children):
+                c_pos = self.x + x, self.y
+                c_size = list(c.size)
+                if c.size_hint[0]:
+                    #its sizehint * available space
+                    c_size[0] = stretch_space * c.size_hint[0]/float(stretch_weight[0])
+                    if isinstance(c, MTAbstractLayout):
+                        c_size[0] += c.minimum_size[0]
+                if c.size_hint[1]:
+                    c_size[1] = c.size_hint[1] * self.height
+                self.reposition_child(c, pos=c_pos, size=c_size)
+                x += c_size[0] + self.spacing
+            x += self.padding
+
+        if self.orientation == 'vertical':
+            y = self.padding
+            stretch_space = max(0.0,self.height - self.minimum_size[1])
+            for c in self.children:
+                c_pos = self.x, self.y + y
+                c_size = list(c.size)
+                if c.size_hint[1]:
+                    c_size[1] = stretch_space * c.size_hint[1]/float(stretch_weight[1])
+                    if isinstance(c, MTAbstractLayout):
+                        c_size[1] += c.minimum_size[1]
+                if c.size_hint[0]:
+                    c_size[0] = c.size_hint[0] * self.width
+                self.reposition_child(c, pos=c_pos, size=c_size)
+                y += c_size[1] + self.spacing
+
 
         self.dispatch_event('on_layout')
 

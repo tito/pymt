@@ -15,7 +15,7 @@ Cache.register('pymt.svg', limit=50)
 class SvgBase(object):
     '''Base to implement an svg loader.'''
 
-    __slots__ = ('filename')
+    __slots__ = ('filename', )
 
     def __init__(self, filename, **kwargs):
         self.filename = filename
@@ -59,22 +59,24 @@ class Svg(BaseObject):
     '''Load and draw an SVG file.
 
     :Parameters:
-        `filename` : str, path to the svg that should be loaded.
-        `keep_data` : bool, default to False
+        `filename`: str
+            Path to the svg that should be loaded.
+        `keep_data`: bool, default to False
             Keep the raw svg data when the display list is created
-        `scale` : float, default to 1.0
+        `scale`: float, default to 1.0
             Scale of the svg
-        `anchor_x` : float, default to 0
+        `anchor_x`: float, default to 0
             X anchor (x coordinate based on original width, which will be at x pos and used as center for scaling)
-        `anchor_y` : float, default to 0
+        `anchor_y`: float, default to 0
             Y anchor (y coordinate based on original height, which will be at y pos and used as center for scaling)
     '''
 
     @staticmethod
     def load(filename, **kwargs):
         '''Load an Svg file
+
         :Parameters:
-            `filename` : str
+            `filename`: str
                 Filename of the image
         '''
         return Svg(filename, **kwargs)

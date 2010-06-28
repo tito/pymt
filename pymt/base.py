@@ -3,11 +3,11 @@ Base: Main event loop, provider creation, window management...
 '''
 
 __all__ = [
-    'TouchEventLoop',
-    'pymt_usage', 'runTouchApp', 'stopTouchApp',
-    'getFrameDt', 'getAvailableTouchs', 'getCurrentTouches',
+    'pymt_usage',
+    'runTouchApp', 'stopTouchApp',
+    'getFrameDt', 'getCurrentTouches',
     'getEventLoop',
-    'touch_event_listeners',
+    'pymt_event_listeners', 'touch_event_listeners',
     'pymt_providers',
     'getWindow', 'setWindow'
 ]
@@ -22,14 +22,19 @@ from clock import getClock
 from input import *
 from utils import deprecated
 
-# All event listeners will add themselves to this
-# list upon creation
-touch_event_listeners   = []
+# private vars
 touch_list              = []
 pymt_window             = None
 pymt_providers          = []
 pymt_evloop             = None
 frame_dt                = 0.01 # init to a non-zero value, to prevent user zero division
+
+#: List of event listeners
+pymt_event_listeners    = []
+
+#: .. deprecated:: 0.5
+#:      This symbol have been renamed to pymt_event_listeners 
+touch_event_listeners   = pymt_event_listeners
 
 def getFrameDt():
     '''Return the last delta between old and new frame.'''
@@ -40,10 +45,6 @@ def getCurrentTouches():
     '''Return the list of all current touches'''
     global touch_list
     return touch_list
-
-@deprecated
-def getAvailableTouchs():
-    return getCurrentTouches()
 
 def getWindow():
     '''Return the MTWindow'''
@@ -118,7 +119,7 @@ class TouchEventLoop(object):
 
         # dispatch to listeners
         if not touch.grab_exclusive_class:
-            for listener in touch_event_listeners:
+            for listener in pymt_event_listeners:
                 if type == 'down':
                     listener.dispatch_event('on_touch_down', touch)
                 elif type == 'move':
@@ -219,7 +220,7 @@ class TouchEventLoop(object):
             pymt_window.dispatch_event('on_flip')
 
         # don't loop if we don't have listeners !
-        if len(touch_event_listeners) == 0:
+        if len(pymt_event_listeners) == 0:
             self.exit()
             return False
 

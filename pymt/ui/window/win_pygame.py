@@ -87,8 +87,7 @@ class MTWindowPygame(BaseWindow):
             pymt.pymt_config.getboolean('graphics', 'show_cursor'))
 
     def close(self):
-        import sys
-        sys.exit(0)
+        pygame.display.quit()
 
     def on_keyboard(self, key, scancode=None, unicode=None):
         if key == 27:
@@ -191,6 +190,8 @@ class MTWindowPygame(BaseWindow):
         while not evloop.quit:
             try:
                 self._mainloop()
+                if not pygame.display.get_active():
+                    pygame.time.wait(100)
             except BaseException, inst:
                 # use exception manager first
                 r = pymt_exception_manager.handle_exception(inst)

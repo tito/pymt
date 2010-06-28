@@ -3,6 +3,7 @@ Colors: manipulate colors
 '''
 
 from OpenGL.GL import *
+from pymt.utils import get_color_from_hex
 
 __all__ = ['set_color']
 
@@ -33,6 +34,11 @@ def set_color(*colors, **kwargs):
     kwargs.setdefault('dfactor', GL_ONE_MINUS_SRC_ALPHA)
     kwargs.setdefault('blend', None)
     force_blend = kwargs['blend'] == True
+    if len(colors) == 1:
+        if type(colors[0]) in (unicode, str):
+            colors = get_color_from_hex(colors[0])
+        else:
+            colors = (colors[0], colors[0], colors[0])
     if len(colors) == 4:
         glColor4f(*colors)
         if colors[3] == 1 and not force_blend:
@@ -40,8 +46,6 @@ def set_color(*colors, **kwargs):
         else:
             glEnable(GL_BLEND)
             glBlendFunc(kwargs.get('sfactor'), kwargs.get('dfactor'))
-    if len(colors) == 1:
-        colors = (colors[0], colors[0], colors[0])
     if len(colors) == 3:
         glColor3f(*colors)
         if force_blend:

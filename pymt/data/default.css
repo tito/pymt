@@ -243,6 +243,8 @@ video {
     draw-slider-alpha-background: 1;
     slider-alpha-background: 1 1 .6 .6;
     slider-border-radius: 8;
+	draw-border: 0;
+	draw-alpha-background: 0;
 }
 
 coverflow {

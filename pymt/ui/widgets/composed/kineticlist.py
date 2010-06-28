@@ -2,7 +2,10 @@
 Kinetic List: Custom list with kinetic interaction
 '''
 
-__all__ = ['MTKineticList', 'MTKineticObject', 'MTKineticItem', 'MTKineticImage']
+__all__ = (
+    'MTKineticList', 'MTKineticObject',
+    'MTKineticItem', 'MTKineticImage'
+)
 
 import pymt
 from OpenGL.GL import *
@@ -12,6 +15,7 @@ from ....graphx import drawCSSRectangle
 from ...factory import MTWidgetFactory
 from ....vector import Vector
 from ....base import getFrameDt
+from ....utils import SafeList
 from ..stencilcontainer import MTStencilContainer
 from ..widget import MTWidget
 from ..button import MTButton, MTToggleButton, MTImageButton
@@ -28,7 +32,9 @@ class MTKineticList(MTStencilContainer):
         `friction` : float, defaults to 10
             The Pseudo-friction of the pseudo-kinetic scrolling.
             Formula for friction is ::
+
                 acceleration = 1 + friction * frame_delta_time
+
         `padding_x` : int, defaults to 4
             The spacing between scrolling items on the x axis
         `padding_y` : int, defaults to 4
@@ -180,8 +186,8 @@ class MTKineticList(MTStencilContainer):
         pass
 
     def clear(self):
-        self.children = []
-        self.pchildren = []
+        self.children = SafeList()
+        self.pchildren = SafeList()
         self.xoffset = self.yoffset = 0
 
     def add_widget(self, widget, **kwargs):
@@ -567,6 +573,10 @@ class MTKineticObject(MTWidget):
 
         self.db_alpha = 0.0
 
+        # Set to true if you want to break free from
+        # the grasp of a kinetic widget
+        self.free = False
+
         # Delete Button
         if self.deletable:
             self.db = MTButton(label='',
@@ -584,10 +594,6 @@ class MTKineticObject(MTWidget):
 
         self.a_show = Animation(db_alpha=.5, duration=0.25)
         self.a_hide = Animation(db_alpha=0.0, duration=0.25)
-
-        # Set to true if you want to break free from
-        # the grasp of a kinetic widget
-        self.free = False
 
     def show_delete(self):
         if not self.deletable:

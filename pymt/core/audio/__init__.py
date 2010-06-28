@@ -4,7 +4,8 @@ Audio: Load and play sound
 
 __all__ = ('Sound', 'SoundLoader')
 
-import pymt
+from pymt.logger import pymt_logger
+from pymt.event import EventDispatcher
 import sys
 from abc import ABCMeta, abstractmethod
 from .. import core_register_libs
@@ -28,7 +29,7 @@ class SoundLoader:
     @staticmethod
     def register(classobj):
         '''Register a new class to load sound'''
-        pymt.pymt_logger.debug('Audio: register %s' % classobj.__name__)
+        pymt_logger.debug('Audio: register %s' % classobj.__name__)
         SoundLoader._classes.append(classobj)
 
     @staticmethod
@@ -38,24 +39,36 @@ class SoundLoader:
         for classobj in SoundLoader._classes:
             if ext in classobj.extensions():
                 return classobj(filename=filename)
-        pymt.pymt_logger.warning('Audio: Unable to found a loader for <%s>' %
+        pymt_logger.warning('Audio: Unable to found a loader for <%s>' %
                                  filename)
         return None
 
 
-class Sound(object):
+class Sound(EventDispatcher):
     '''Represent a sound to play. This class is abstract, and cannot be used
     directly.
     Use SoundLoader to load a sound !
+
+    :Events:
+        `on_play` : None
+            Fired when the sound is played
+        `on_stop` : None
+            Fired when the sound is stopped
     '''
 
     __metaclass__ = ABCMeta
-    __slots__ = ('_filename', '_volume')
+    __slots__ = ('_filename', '_volume', '_status')
 
     def __init__(self, **kwargs):
         kwargs.setdefault('filename', None)
         kwargs.setdefault('volume', 1.)
 
+        super(Sound, self).__init__(**kwargs)
+
+        self.register_event_type('on_play')
+        self.register_event_type('on_stop')
+
+        self._status    = 'stop'
         self._volume    = kwargs.get('volume')
         self._filename  = kwargs.get('filename')
         self.load()
@@ -84,6 +97,22 @@ class Sound(object):
             lambda self, x: self._set_volume(x),
             doc='Get/set the volume of the sound')
 
+    def _get_status(self):
+        return self._status
+    def _set_status(self, x):
+        # this function must not be available for user
+        if self._status == x:
+            return
+        self._status = x
+        if x == 'stop':
+            self.dispatch_event('on_stop')
+        elif x == 'play':
+            self.dispatch_event('on_play')
+        else:
+            assert('unknown status %s' % x)
+    status = property(_get_status,
+            doc='Get the status of the sound (stop, play)')
+
     def _get_length(self):
         return 0
     length = property(lambda self: self._get_length(),
@@ -99,19 +128,23 @@ class Sound(object):
         '''Unload the file from memory'''
         pass
 
-    @abstractmethod
     def play(self):
         '''Play the file'''
-        pass
+        self._set_status('play')
 
-    @abstractmethod
     def stop(self):
         '''Stop playback'''
-        pass
+        self._set_status('stop')
 
     @abstractmethod
     def seek(self, position):
         '''Seek to the <position> (in seconds)'''
+        pass
+
+    def on_play(self):
+        pass
+
+    def on_stop(self):
         pass
 
 

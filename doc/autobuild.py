@@ -1,6 +1,15 @@
+'''
+Script to generate PyMT API from source code.
+
+Code is messy, but working.
+Be careful if you change anything in !
+
+'''
+
 import os
 import sys
 import re
+from glob import glob
 
 os.environ['PYMT_SHADOW_WINDOW'] = '0'
 import pymt
@@ -9,6 +18,7 @@ import pymt
 # Directory of doc
 base_dir = os.path.dirname(__file__)
 dest_dir = os.path.join(base_dir, 'sources')
+examples_framework_dir = os.path.join(base_dir, '..', 'examples', 'framework')
 
 def writefile(filename, data):
     global dest_dir
@@ -60,13 +70,29 @@ template = \
 $SUMMARY
 ==========================================================================================================
 
+$EXAMPLES_REF
+
 .. automodule:: $PACKAGE
     :members:
     :show-inheritance:
 
 .. toctree::
 
+$EXAMPLES
 '''
+
+template_examples = \
+'''.. _example-reference%d:
+
+Examples
+--------
+
+%s
+'''
+
+template_examples_ref = \
+'''# :ref:`Jump directly to Examples <example-reference%d>`'''
+
 for package in packages:
     try:
         summary = [x for x in sys.modules[package].__doc__.split("\n") if len(x) > 1][0]
@@ -77,7 +103,10 @@ for package in packages:
             pass
     except:
         summary = 'NO DOCUMENTATION (package %s)' % package
-    t = template.replace('$SUMMARY', summary).replace('$PACKAGE', package)
+    t = template.replace('$SUMMARY', summary)
+    t = t.replace('$PACKAGE', package)
+    t = t.replace('$EXAMPLES', '')
+    t = t.replace('$EXAMPLES_REF', '')
 
     # search packages
     for subpackage in packages:
@@ -101,6 +130,7 @@ for package in packages:
 # Create index for all module
 m = modules.keys()
 m.sort()
+refid = 0
 for module in m:
     try:
         summary = [x for x in sys.modules[module].__doc__.split("\n") if len(x) > 1][0]
@@ -111,7 +141,40 @@ for module in m:
             pass
     except:
         summary = 'NO DOCUMENTATION (module %s)' % module
-    t = template.replace('$SUMMARY', summary).replace('$PACKAGE', module)
+
+    # search examples
+    example_output = []
+    example_prefix = module
+    if module.startswith('pymt.'):
+        example_prefix = module[5:]
+    example_prefix = example_prefix.replace('.', '_')
+
+    # try to found any example in framework directory
+    list_examples = glob('%s*.py' % os.path.join(examples_framework_dir, example_prefix))
+    for x in list_examples:
+        # extract filename without directory
+        xb = os.path.basename(x)
+
+        # add a section !
+        example_output.append('File :download:`%s <%s>` ::' % (
+            xb, os.path.join('..', x)))
+
+        # put the file in
+        with open(x, 'r') as fd:
+            d = fd.read().strip()
+            d = '\t' + '\n\t'.join(d.split('\n'))
+            example_output.append(d)
+
+    t = template.replace('$SUMMARY', summary)
+    t = t.replace('$PACKAGE', module)
+    if len(example_output):
+        refid += 1
+        example_output = template_examples % (refid, '\n\n\n'.join(example_output))
+        t = t.replace('$EXAMPLES_REF', template_examples_ref % refid)
+        t = t.replace('$EXAMPLES', example_output)
+    else:
+        t = t.replace('$EXAMPLES_REF', '')
+        t = t.replace('$EXAMPLES', '')
     writefile('api-%s.rst' % module, t)
 
 

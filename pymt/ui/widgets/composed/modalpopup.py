@@ -54,7 +54,7 @@ class MTModalPopup(MTModalWindow):
         self._xml = xml
 
     def on_popup_draw(self):
-        from pymt import *
+        from pymt.graphx import set_color, drawCSSRectangle
         self._xml.root.center = self.get_parent_window().center
         popup = self._xml.getById('popup')
         set_color(*self.style.get('bg-color-full'))

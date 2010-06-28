@@ -2,10 +2,11 @@
 Double Tap: search touch for a double tap
 '''
 
-__all__ = ['InputPostprocDoubleTap']
+__all__ = ('InputPostprocDoubleTap', )
 
-import pymt
-from ...clock import getClock
+from pymt.config import pymt_config
+from pymt.vector import Vector
+from pymt.clock import getClock
 
 class InputPostprocDoubleTap(object):
     '''
@@ -19,8 +20,8 @@ class InputPostprocDoubleTap(object):
     Distance parameter is in 0-1000, and time is in millisecond.
     '''
     def __init__(self):
-        self.double_tap_distance = pymt.pymt_config.getint('pymt', 'double_tap_distance') / 1000.0
-        self.double_tap_time = pymt.pymt_config.getint('pymt', 'double_tap_time') / 1000.0
+        self.double_tap_distance = pymt_config.getint('pymt', 'double_tap_distance') / 1000.0
+        self.double_tap_time = pymt_config.getint('pymt', 'double_tap_time') / 1000.0
         self.touches = {}
 
     def find_double_tap(self, ref):
@@ -31,11 +32,13 @@ class InputPostprocDoubleTap(object):
             if ref.id == touchid:
                 continue
             type, touch = self.touches[touchid]
+            if type != 'up':
+                continue
             if touch.is_double_tap:
                 continue
-            distance = pymt.Vector.distance(
-                pymt.Vector(ref.sx, ref.sy),
-                pymt.Vector(touch.oxpos, touch.oypos))
+            distance = Vector.distance(
+                Vector(ref.sx, ref.sy),
+                Vector(touch.osxpos, touch.osypos))
             if distance > self.double_tap_distance:
                 continue
             touch.double_tap_distance = distance
@@ -57,19 +60,13 @@ class InputPostprocDoubleTap(object):
             self.touches[touch.id] = (type, touch)
 
         # second, check if up-touch is timeout for double tap
-        to_remove = []
         time_current = getClock().get_time()
-        for touchid in self.touches:
+        for touchid in self.touches.keys()[:]:
             type, touch = self.touches[touchid]
             if type != 'up':
                 continue
             if time_current - touch.time_start < self.double_tap_time:
                 continue
-            to_remove.append(touch.id)
-
-        # third, remove expired internal touches
-        for touchid in to_remove:
-            if touchid in self.touches:
-                del self.touches[touchid]
+            del self.touches[touchid]
 
         return events

@@ -143,6 +143,7 @@ the particular class documentation.
 __all__ = ('EventDispatcher', )
 
 import inspect
+from weakmethod import WeakMethod
 from baseobject import BaseObject
 from logger import pymt_logger
 
@@ -222,7 +223,7 @@ class EventDispatcher(BaseObject):
             return
         for frame in self._event_stack:
             try:
-                if frame[name] is handler:
+                if frame[name]() == handler:
                     del frame[name]
                     break
             except KeyError:
@@ -249,7 +250,7 @@ class EventDispatcher(BaseObject):
             for frame in self._event_stack:
                 for name, handler in handlers:
                     try:
-                        if frame[name] == handler:
+                        if frame[name]() == handler:
                             return frame
                     except KeyError:
                         pass
@@ -262,7 +263,7 @@ class EventDispatcher(BaseObject):
         # Remove each handler from the frame.
         for name, handler in handlers:
             try:
-                if frame[name] == handler:
+                if frame[name]() == handler:
                     del frame[name]
             except KeyError:
                 pass
@@ -316,7 +317,7 @@ class EventDispatcher(BaseObject):
         if self._event_stack is None:
             self._event_stack = [{}]
 
-        self._event_stack[0][name] = handler
+        self._event_stack[0][name] = WeakMethod(handler)
 
     def dispatch_event(self, event_type, *args):
         '''Dispatch a single event to the attached handlers.
@@ -338,15 +339,21 @@ class EventDispatcher(BaseObject):
             return
 
         # search handler stack for matching event handlers
-        if self._event_stack is not None:
-            for frame in self._event_stack:
-                handler = frame.get(event_type, None)
-                if handler:
-                    try:
-                        if handler(*args):
-                            return True
-                    except TypeError:
-                        self._raise_dispatch_exception(event_type, args, handler)
+        _event_stack = self._event_stack
+        if _event_stack is not None:
+            for frame in _event_stack:
+                wkhandler = frame.get(event_type, None)
+                if wkhandler is None:
+                    continue
+                handler = wkhandler()
+                if handler is None:
+                    frame.remove(wkhandler)
+                    continue
+                try:
+                    if handler(*args):
+                        return True
+                except TypeError:
+                    self._raise_dispatch_exception(event_type, args, handler)
 
         # a instance always have a event handler, don't check it with hasattr.
         try:

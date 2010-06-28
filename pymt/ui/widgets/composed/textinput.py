@@ -20,6 +20,10 @@ class MTTextInput(MTButton):
     :Parameters:
         `keyboard`: MTVkeyboard object, default to None
             Use another MTVKeyboard than the default one
+        `keyboard_to_root`: bool, defaults to False.
+            Indicate whether the keyboard should be attached to the root
+            window. If True, this will have the effect of the keyboard being
+            raised above other widgets.
         `keyboard_type`: str, default to config.
             Configuration section is 'widgets', token 'keyboard_type'.
             Can be one of 'virtual' or 'real'. If real, the virtual keyboard
@@ -46,6 +50,7 @@ class MTTextInput(MTButton):
         kwargs.setdefault('anchor_y', 'center')
         kwargs.setdefault('halign', 'left')
         kwargs.setdefault('keyboard', None)
+        kwargs.setdefault('keyboard_to_root', False)
         kwargs.setdefault('password', False)
         kwargs.setdefault('group', None)
         kwargs.setdefault('switch', True)
@@ -59,8 +64,8 @@ class MTTextInput(MTButton):
         # initialize group on random if nothing is set
         self._groupname = kwargs.get('group')
         if self._groupname is None:
-            self._group_id += 1
-            self._groupname = 'uniqgroup%d' % self._group_id
+            MTTextInput._group_id += 1
+            self._groupname = 'uniqgroup%d' % MTTextInput._group_id
         # first time ? create the group
         if not self._groupname in self._group:
             self.group['keyboard'] = None
@@ -84,6 +89,18 @@ class MTTextInput(MTButton):
                 pos=(self.x + self.width - 60, self.y + self.height))
 
         self.keyboard_type = kwargs.get('keyboard_type')
+        self.keyboard_to_root = kwargs.get('keyboard_to_root')
+
+        self.interesting_keys = {8: 'backspace', 13: 'enter', 127: 'del',
+                                 271: 'enter', 273: 'cursor_up', 274: 'cursor_down',
+                                 275: 'cursor_right', 276: 'cursor_left',
+                                 278: 'cursor_home', 279: 'cursor_end',
+                                 280: 'cursor_pgup', 281: 'cursor_pgdown'}
+
+    def on_resize(self, *largs):
+        if hasattr(self, '_switch'):
+            self._switch.pos = self.x + self.width - 60, self.y + self.height
+        return super(MTTextInput, self).on_resize(*largs)
 
     def _get_keyboard(self):
         if not self._keyboard:
@@ -177,7 +194,8 @@ class MTTextInput(MTButton):
 
         # activate the virtual keyboard
         if self.keyboard_type == 'virtual':
-            w = self.get_parent_window()
+            to_root = self.keyboard_to_root
+            w = self.get_root_window() if to_root else self.get_parent_window()
             w.add_widget(self.keyboard)
         if self.keyboard is not None:
             self._keyboard.push_handlers(
@@ -192,8 +210,11 @@ class MTTextInput(MTButton):
             return
         if self._switch:
             self.remove_widget(self._switch)
-        w = self.get_parent_window()
-        w.remove_widget(self.keyboard)
+        parent = self.keyboard.parent
+        if parent is not None:
+            # If keyboard type is real, the keyboard is not attached to any
+            # parent widget.
+            parent.remove_widget(self.keyboard)
         w = self.get_root_window()
         w.remove_handlers(on_key_down=self._window_on_key_down,
                           on_key_up=self._window_on_key_up)
@@ -239,32 +260,24 @@ class MTTextInput(MTButton):
             return True
         elif key == 9: # tab
             self.focus_next()
-        elif key == 8: # backspace
-            key = (None, None, 'backspace', 1)
-            if self.keyboard:
-                self.keyboard.dispatch_event('on_key_down', key)
-        elif key in (13, 271): # enter or numenter
-            key = (None, None, 'enter', 1)
-            if self.keyboard:
-                self.keyboard.dispatch_event('on_key_down', key)
+            return True
+        if not self.keyboard:
+            return
+        k = self.interesting_keys.get(key)
+        if k:
+            key = (None, None, k, 1)
+            self.keyboard.dispatch_event('on_key_down', key)
         else:
             if unicode is not None:
-                if self.keyboard:
-                    self.keyboard.text = self.keyboard.text + unicode
+                self.keyboard.text += unicode
             else:
-                # oh god :[
-                if self.keyboard:
-                    self.keyboard.text = self.keyboard.text + chr(key)
+                self.keyboard.text += chr(key)
 
     def _window_on_key_up(self, key, scancode=None, unicode=None):
-        if key == 8: # backspace
-            key = (None, None, 'backspace', 1)
-            if self.keyboard:
-                self.keyboard.dispatch_event('on_key_up', key)
-        elif key in (13, 271): # enter or numenter
-            key = (None, None, 'enter', 1)
-            if self.keyboard:
-                self.keyboard.dispatch_event('on_key_up', key)
+        k = self.interesting_keys.get(key)
+        if k and self.keyboard:
+            key = (None, None, k, 1)
+            self.keyboard.dispatch_event('on_key_up', key)
 
     def _get_value(self):
         return self.label

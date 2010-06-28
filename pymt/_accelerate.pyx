@@ -1,3 +1,18 @@
+# ----------------------------------------------------------------------------
+#
+# Accelerate module
+#
+# This module provide acceleration for some critical function of PyMT
+#
+# ----------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------
+#
+# Event part
+#
+# ----------------------------------------------------------------------------
+
 def eventdispatcher_dispatch_event(self, event_type, *args):
     # unknown event type
     if event_type not in self._event_types:
@@ -7,13 +22,18 @@ def eventdispatcher_dispatch_event(self, event_type, *args):
     # search handler stack for matching event handlers
     if _event_stack is not None:
         for frame in _event_stack:
-            handler = frame.get(event_type, None)
-            if handler:
-                try:
-                    if handler(*args):
-                        return True
-                except TypeError:
-                    self._raise_dispatch_exception(event_type, args, handler)
+            wkhandler = frame.get(event_type, None)
+            if wkhandler is None:
+                continue
+            handler = wkhandler()
+            if handler is None:
+                frame.remove(wkhandler)
+                continue
+            try:
+                if handler(*args):
+                    return True
+            except TypeError:
+                self._raise_dispatch_exception(event_type, args, handler)
 
     # a instance always have a event handler, don't check it with hasattr.
     try:
@@ -23,6 +43,13 @@ def eventdispatcher_dispatch_event(self, event_type, *args):
     except TypeError, e:
         self._raise_dispatch_exception(
             event_type, args, getattr(self, event_type))
+
+
+# ----------------------------------------------------------------------------
+#
+# Widget part
+#
+# ----------------------------------------------------------------------------
 
 def widget_on_update(self):
     for w in self.children[:]:
@@ -43,3 +70,4 @@ def widget_collide_point(self, double x, double y):
     if x > ox  and x < ox + ow and \
        y > oy and y < oy + oh:
         return True
+

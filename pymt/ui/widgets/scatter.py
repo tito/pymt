@@ -10,7 +10,7 @@ from OpenGL.GL import *
 from ...graphx import drawRectangle, drawCSSRectangle, gx_matrix, gx_matrix_identity, set_color, \
     drawTexturedRectangle, gx_blending
 from ...vector import Vector, matrix_mult, matrix_inv_mult
-from ...utils import deprecated
+from ...utils import deprecated, serialize_numpy, deserialize_numpy
 from ..animation import Animation, AnimationAlpha
 from ..factory import MTWidgetFactory
 from svg import MTSvg
@@ -81,24 +81,23 @@ class MTScatterWidget(MTWidget):
                     self.do_translation_y = 1.0
             self.do_translation = True
 
-        # Cache to_local value
-        self.__to_local = (-9999, 9999) # Invalid cache for the first run
-        self.__to_local_x = 0
-        self.__to_local_y = 0
-        self.__to_parent = (-9999, 9999) # Invalid cache for the first run
-        self.__to_parent_x = 0
-        self.__to_parent_y = 0
-        self.__width = 0
-        self.__height = 0
-
         self.touches        = {}
         self._scale         = 1.
         self._rotation      = 0.
-        self.transform_mat  = (GLfloat * 16)()
+        self._transform_mat  = (GLfloat * 16)()
         if kwargs.get('translation')[0] != 0 or kwargs.get('translation')[1] != 0:
             self.init_transform(kwargs.get('rotation'), kwargs.get('scale'), kwargs.get('translation'))
         else:
             self.init_transform(kwargs.get('rotation'), kwargs.get('scale'), super(MTScatterWidget, self).pos)
+
+    def _get_transform_mat(self):
+        return self._transform_mat
+    def _set_transform_mat(self, x):
+        self._transform_mat = x
+    transform_mat = property(
+        _get_transform_mat,
+        _set_transform_mat,
+        doc='Get/Set transformation matrix (numpy matrix)')
 
     def on_transform(self, *largs):
         pass
@@ -142,21 +141,12 @@ class MTScatterWidget(MTWidget):
             super(MTScatterWidget, self).on_draw()
 
     def to_parent(self, x, y):
-        if self.__to_parent == (x, y):
-            return (self.__to_parent_x, self.__to_parent_y)
-
-        self.__to_parent = (x, y)
-        self.new_point = matrix_mult(self.transform_mat, (x, y, 0, 1))
-        self.__to_parent_x, self.__to_parent_y = self.new_point.x, self.new_point.y
-        return (self.new_point.x, self.new_point.y)
+        point = matrix_mult(self.transform_mat, (x, y, 0, 1))
+        return (point.x, point.y)
 
     def to_local(self, x, y):
-        if self.__to_local == (x, y):
-            return (self.__to_local_x, self.__to_local_y)
-        self.__to_local = (x, y)
-        self.new_point = matrix_inv_mult(self.transform_mat, (x, y, 0, 1))
-        self.__to_local_x, self.__to_local_y = self.new_point.x, self.new_point.y
-        return (self.new_point.x, self.new_point.y)
+        point = matrix_inv_mult(self.transform_mat, (x, y, 0, 1))
+        return (point.x, point.y)
 
     def collide_point(self, x, y):
         if not self.visible:
@@ -206,10 +196,6 @@ class MTScatterWidget(MTWidget):
             glTranslatef(-point.x, -point.y,0)
             glMultMatrixf(self.transform_mat)
             self.transform_mat = glGetFloatv(GL_MODELVIEW_MATRIX)
-
-        #invalidate cashed values for parent transform calucaltion
-        self.__to_local = (-9999, 9999)
-        self.__to_parent = (-9999, 9999)
 
         self.dispatch_event('on_transform', angle, scale, trans, point)
 
@@ -362,19 +348,6 @@ class MTScatterWidget(MTWidget):
             # apply the rotate/zoom/move
             self.rotate_zoom_move(touch.uid, x, y)
 
-            # precalculate size of container
-            container_width = int(self.width * self.scale)
-            container_height = int(self.height * self.scale)
-
-            # dispatch event only if it change
-            if container_width != self.__width or container_height != self.__height:
-                # Not entirely sure about this. We must generate one resize
-                # event for us, but not for children, since content is not
-                # resized...
-                #self.dispatch_event('on_resize', container_width, container_height)
-                self.__width = container_width
-                self.__height = container_height
-
             # dispatch move event
             #self._set_center(self.to_parent(0, 0), do_event=False)
             center = self.to_local(*self.to_parent(0, 0))
@@ -427,6 +400,18 @@ class MTScatterWidget(MTWidget):
     scale = property(_get_scale, _set_scale,
                      doc='''Get/set the scaling of the object''')
 
+    def _get_state(self):
+        return serialize_numpy(self.transform_mat)
+    def _set_state(self, state):
+        self.transform_mat = deserialize_numpy(state)
+        p1_trans = matrix_mult(self.transform_mat, (1,1,0,1))
+        p2_trans = matrix_mult(self.transform_mat, (2,1,0,1))
+        self._scale = p1_trans.distance(p2_trans)
+    state = property(
+        lambda self: self._get_state(),
+        lambda self, x: self._set_state(x),
+        doc='Save/restore the state of matrix widget (require numpy)'
+    )
 
 class MTScatterPlane(MTScatterWidget):
     '''A Plane that transforms for zoom/rotate/pan.

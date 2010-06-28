@@ -7,6 +7,7 @@ PLUGIN_AUTHOR = 'Sharath Patali'
 PLUGIN_EMAIL = 'sharath.patali@gmail.com'
 PLUGIN_DESCRIPTION = 'This is a music game inspired by Bloom App.'
 
+import os
 from pymt import *
 from OpenGL.GL import *
 import random

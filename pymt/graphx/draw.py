@@ -25,9 +25,10 @@ from colors import *
 
 try:
     import _graphx
-except ImportError:
+    pymt.pymt_logger.info('Graphx: Using accelerate graphx module')
+except ImportError, e:
     _graphx = None
-    pymt.pymt_logger.warning('Extensions: _graphx not available')
+    pymt.pymt_logger.warning('Extensions: _graphx not available: <%s>' % e)
 
 # create a cache for label
 _temp_label = None
@@ -48,11 +49,11 @@ def getLabel(label, **kwargs):
     '''Get a cached label object
 
     :Parameters:
-        `label` : str
+        `label`: str
             Text to be draw
-        `font_size` : int, default to 12
+        `font_size`: int, default to 12
             Font size of label
-        `center` : bool, default to True
+        `center`: bool, default to True
             Indicate if pos is center or left-right of label
 
     getLabel() support all parameters from the Core label. Check `LabelBase`
@@ -90,17 +91,17 @@ def drawLabel(label, pos=(0,0), **kwargs):
     '''Draw a label on the window.
 
     :Parameters:
-        `label` : str
+        `label`: str
             Text to be draw
-        `pos` : tuple, default to (0, 0)
+        `pos`: tuple, default to (0, 0)
             Position of text
-        `font_size` : int, default to 12
+        `font_size`: int, default to 12
             Font size of label
-        `center` : bool, default to True
+        `center`: bool, default to True
             Indicate if pos is center or left-right of label
 
-    If you want to get the label object, use getLastLabel() just after your
-    drawLabel().
+    If you want to get the label object, use getLastLabel()
+    just after your drawLabel().
     '''
     global _temp_label
     _temp_label = getLabel(label, **kwargs)
@@ -118,21 +119,21 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
     '''Draw a rounded rectangle
 
     :Parameters:
-        `pos` : tuple, default to (0, 0)
+        `pos`: tuple, default to (0, 0)
             Position of rectangle
-        `size` : tuple, default to (100, 50)
+        `size`: tuple, default to (100, 50)
             Size of rectangle
-        `radius` : int, default to 5
+        `radius`: int, default to 5
             Radius of corner
-        `color` : tuple, default to None
+        `color`: tuple, default to None
             Color to be passed to set_color()
-        `linewidth` : float (default to current linewidth)
+        `linewidth`: float (default to current linewidth)
             Line with of border
-        `precision` : float, default to 0.5
+        `precision`: float, default to 0.5
             Precision of corner angle
-        `style` : opengl begin, default to GL_POLYGON
+        `style`: opengl begin, default to GL_POLYGON
             Style of the rounded rectangle (try GL_LINE_LOOP)
-        `corners` : tuple of bool, default to (True, True, True, True)
+        `corners`: tuple of bool, default to (True, True, True, True)
             Indicate if round must be draw for each corners
             starting to bottom-left, bottom-right, top-right, top-left
     '''
@@ -216,9 +217,9 @@ def drawCircle(pos=(0,0), radius=1.0, linewidth=0):
     '''Draw a simple circle
 
     :Parameters:
-        `pos` : tuple, default to (0, 0)
+        `pos`: tuple, default to (0, 0)
             Position of circle
-        `radius` : float, default to 1.0
+        `radius`: float, default to 1.0
             Radius of circle
     '''
     x, y = pos[0], pos[1]
@@ -234,14 +235,17 @@ def drawPolygon(points, style=GL_POLYGON, linewidth=0):
     '''Draw polygon from points list
 
     :Parameters:
-        `points` : list
+        `points`: list
             List of points, length must be power of 2. (x,y,x,y...)
-        `style` : opengl begin, default to GL_POLYGON
+        `style`: opengl begin, default to GL_POLYGON
             Default type to draw (will be passed to glBegin)
-            can also be string:
+            can also be string ::
+
                 'fill' == 'GL_POLYGON' == GL_POLYGON
                 'line' == 'GL_LINE_LOOP' == GL_LINE_LOOP
-        `linewidth` :  defaults to current OpenGL state.  sets the linewidth if drawign style is a line based one
+
+        `linewidth`: int, defaults to current OpenGL state. 
+            Sets the linewidth if drawign style is a line based one
     '''
     if type(style) in (str, unicode):
         if style in ('fill', 'GL_POLYGON'):
@@ -272,18 +276,21 @@ def drawTriangle(pos, w, h, style=GL_POLYGON, linewidth=0):
     '''Draw one triangle
 
     :Parameters:
-        `pos` : tuple
+        `pos`: tuple
             Position of triangle
-        `w` : int
+        `w`: int
             Width of triangle
-        `h` : int
+        `h`: int
             Height of triangle
-        `style` : opengl begin, default to GL_POLYGON
+        `style`: opengl begin, default to GL_POLYGON
             Default type to draw (will be passed to glBegin)
-            can also be string:
+            can also be string ::
+
                 'fill' == 'GL_POLYGON' == GL_POLYGON
                 'line' == 'GL_LINE_LOOP' == GL_LINE_LOOP
-        `linewidth` : int, defaults to current OpenGL state. sets the linewidth if drawign style is a line based one
+
+        `linewidth`: int, defaults to current OpenGL state.
+            Sets the linewidth if drawign style is a line based one
     '''
     points = [pos[0]-w/2, pos[1], pos[0]+w/2, pos[1], pos[0], pos[1]+h]
     drawPolygon(points, style, linewidth)
@@ -292,11 +299,11 @@ def drawRectangle(pos=(0,0), size=(1.0,1.0), style=GL_QUADS):
     '''Draw a simple rectangle
 
     :Parameters:
-        `pos` : tuple, default to (0, 0)
+        `pos`: tuple, default to (0, 0)
             Position of rectangle
-        `size` : tuple, default to (1.0, 1.0)
+        `size`: tuple, default to (1.0, 1.0)
             Size of rectangle
-        `style` : opengl begin, default to GL_QUADS
+        `style`: opengl begin, default to GL_QUADS
             Style of rectangle (try GL_LINE_LOOP)
     '''
     # use accelerated version
@@ -316,16 +323,16 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0),
     The rectangle is drawed from bottom-left, bottom-right, top-right, top-left.
 
     :Parameters:
-        `texture` : Texture
+        `texture`: Texture
             Texture object, created with Texture().
-        `pos` : tuple, default to (0, 0)
+        `pos`: tuple, default to (0, 0)
             Position of rectangle
-        `size` : tuple, default to (1.0, 1.0)
+        `size`: tuple, default to (1.0, 1.0)
             Size of rectangle
-        `tex_coords` : list, default to None
+        `tex_coords`: list, default to None
             Contain a list of UV coords to use. If None, texture UV coordinates
             will be used.
-        `color_coords` : list, default to None
+        `color_coords`: list, default to None
             Specify a color for each vertex. The format is 4 colors tuples in a
             list.
     '''
@@ -386,13 +393,13 @@ def drawLine(points, width=None, colors=[]):
     '''Draw a line
 
     :Parameters:
-        `points` : list
+        `points`: list
             List of corresponding coordinates representing the points that the
             line comprises, like [x1, y1, x2, y2]. Hence, len(points) must be
             a power of 2.
-        `width` : float, defaults to 5.0
+        `width`: float, defaults to 5.0
             Default width of line
-        `colors` : list of tuples, defaults to []
+        `colors`: list of tuples, defaults to []
             If you want to draw colors between the points of the line, this
             list has to be populated with a tuple for each point representing
             that point's color. Hence, len(colors) == len(points) / 2 holds.
@@ -429,17 +436,17 @@ def drawRoundedRectangleAlpha(pos=(0,0), size=(100,50), radius=5, alpha=(1,1,1,1
     '''Draw a rounded rectangle alpha layer.
 
     :Parameters:
-        `pos` : tuple, default to (0, 0)
+        `pos`: tuple, default to (0, 0)
             Position of rectangle
-        `size` : tuple, default to (100, 50)
+        `size`: tuple, default to (100, 50)
             Size of rectangle
-        `radius` : int, default to 5
+        `radius`: int, default to 5
             Radius of corner
-        `alpha` : list, default to (1, 1, 1, 1)
+        `alpha`: list, default to (1, 1, 1, 1)
             Alpha to set in each corner (top, right, bottom, left)
-        `precision` : float, default to 0.5
+        `precision`: float, default to 0.5
             Precision of corner angle
-        `style` : opengl begin, default to GL_POLYGON
+        `style`: opengl begin, default to GL_POLYGON
             Style of the rounded rectangle (try GL_LINE_LOOP)
     '''
     x, y = pos
@@ -511,13 +518,13 @@ def drawRectangleAlpha(pos=(0,0), size=(1.0,1.0), alpha=(1,1,1,1), style=GL_QUAD
     '''Draw an rectangle alpha layer.
 
     :Parameters:
-        `pos` : tuple, default to (0, 0)
+        `pos`: tuple, default to (0, 0)
             Position of rectangle
-        `size` : tuple, default to (1.0, 1.0)
+        `size`: tuple, default to (1.0, 1.0)
             Size of rectangle
-        `alpha` : list, default to (1, 1, 1, 1)
+        `alpha`: list, default to (1, 1, 1, 1)
             Alpha to set in each corner (top, right, bottom, left)
-        `style` : opengl begin, default to GL_QUADS
+        `style`: opengl begin, default to GL_QUADS
             Style of rectangle (try GL_LINE_LOOP)
     '''
     # use accelerated version
@@ -543,17 +550,17 @@ def drawSemiCircle(pos=(0,0), inner_radius=100, outer_radius=120, slices=32, loo
     and the ending angle (from 0 to 360), and the inner/outer radius !
 
     :Parameters:
-        `pos` : tuple, default to (0, 0)
+        `pos`: tuple, default to (0, 0)
             Center position of the circle
-        `inner_radius` : int, default to 100
+        `inner_radius`: int, default to 100
             Radius of the inner circle
-        `outer_radius` : int, default to 120
+        `outer_radius`: int, default to 120
             Radius of the outer circle
-        `slices` : int, default to 32
+        `slices`: int, default to 32
             Precision of circle drawing
-        `start_angle` : int, default to 0
+        `start_angle`: int, default to 0
             Angle to start drawing
-        `sweep_angle` : int, default to 360
+        `sweep_angle`: int, default to 360
             Angle to finish drawing
     '''
     with gx_matrix:
@@ -567,13 +574,13 @@ def drawStippledCircle(pos=(0,0), inner_radius=200, outer_radius=400, segments=1
     segment. The circle's position and thickness can be specified.
 
     :Parameters:
-        `pos` : tuple, default to (0, 0)
+        `pos`: tuple, default to (0, 0)
             Center position of the circle
-        `inner_radius` : int, default to 100
+        `inner_radius`: int, default to 100
             Radius of the inner circle
-        `outer_radius` : int, default to 120
+        `outer_radius`: int, default to 120
             Radius of the outer circle
-        `segments` : int, defaults to 10
+        `segments`: int, defaults to 10
             Number of visible segments
     '''
     angle_delta = (360/segments)/2

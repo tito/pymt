@@ -12,6 +12,7 @@ from pymt.base import getWindow
 from pymt.graphx import drawRectangle, drawLabel, set_color, drawLine, drawCircle
 from pymt.logger import pymt_logger_history, pymt_logger
 from pymt.ui.colors import css_reload
+from pymt.ui.widgets import *
 
 _toggle_state = ''
 
@@ -259,6 +260,69 @@ def _on_draw():
 
 
 
+class SceneGraphNode(MTBoxLayout):
+    def __init__(self, **kwargs):
+        kwargs['invert'] = True
+        super(SceneGraphNode, self).__init__(**kwargs)
+
+        self.widget = kwargs['node']
+        self.selected = False
+
+        self.child_layout = MTBoxLayout(size_hint=(None, None), spacing=10, orientation="vertical")
+        for c in self.widget.children:
+            self.child_layout.add_widget(SceneGraphNode(node=c, size_hint=(None, None)))
+        self.add_widget(self.child_layout)
+
+        self.node_btn = MTToggleButton(label=str(self.widget.__class__.__name__), size=(150,30))
+        self.title = MTAnchorLayout(size_hint=(None, None), size=(200,self.child_layout.height))
+        self.title.add_widget(self.node_btn)
+        self.add_widget(self.title)
+
+        self.node_btn.connect('on_release',self.select)
+
+    def draw(self):
+        if self.selected:
+            set_color(1,0,0,0.3)
+            drawRectangle(self.to_widget(*self.widget.pos), self.widget.size)
+
+        set_color(1,.3,0)
+        for c in self.child_layout.children:
+            drawLine((self.node_btn.centerright,c.node_btn.centerleft), width=2)
+
+    def select(self, *args):
+        self.selected = not self.selected
+
+    def add_new_widget(self, *args):
+        new_widget = MTButton(label="I'm new!!!")
+        self.widget.add_widget(new_widget)
+        self.child_layout.add_widget(SceneGraphNode(node=new_widget, size_hint=(None, None)))
+        self.title.size=(200,self.child_layout.height)
+
+    def print_props(self, *args):
+        for prop in self.widget.__dict__:
+            if not prop.startswith("_"):
+                print prop, ":", getattr(self.widget, prop)
+
+
+
+_scene_graph_modal_layover = None
+def toggle_scene_graph():
+    global _scene_graph_modal_layover
+    win = getWindow()
+    if _scene_graph_modal_layover:
+        win.remove_widget(_scene_graph_modal_layover)
+        _scene_graph_modal_layover = None
+        return
+    else:
+        scene_graph = SceneGraphNode(node=win.children[0], size_hint=(None, None))
+        plane = MTScatterPlane(do_rotation=False)
+        plane.add_widget(scene_graph)
+        _scene_graph_modal_layover = MTModalWindow()
+        _scene_graph_modal_layover.add_widget(plane)
+        win.add_widget(_scene_graph_modal_layover)
+
+
+
 def _on_keyboard_handler(key, scancode, unicode):
     if key is None:
         return
@@ -283,6 +347,8 @@ def _on_keyboard_handler(key, scancode, unicode):
         toggle('log')
     elif key == 288: # F7
         css_reload()
+    elif key == 289: # F8
+        toggle_scene_graph()
     elif key == 293:
         _screenshot()
 

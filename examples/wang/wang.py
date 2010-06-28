@@ -346,8 +346,12 @@ class Menu(MTWidget):
         w3 = w.width / 3.
         h2 = w.height / 2.
         self.menu.pos = (w2, 0)
-        drawLabel('Speed x%d' % self.game.speed, font_size=42, pos=(w3 - 100, h2 - 50))
-        drawLabel('Balls %d' % len(self.game.balls), font_size=42, pos=(w3 - 100, h2))
+        drawLabel('Speed x%d' % self.game.speed,
+                  font_size=42, pos=(w3 - 100, h2 - 50),
+                  color=(1, 1, 1))
+        drawLabel('Balls %d' % len(self.game.balls),
+                  font_size=42, pos=(w3 - 100, h2),
+                  color=(1, 1, 1))
 
 
 class Wang(MTWidget):
@@ -417,7 +421,7 @@ class Wang(MTWidget):
             else:
                 ball.x = (w.width / 3.) * 2.
 
-    def update(self):
+    def on_update(self):
         dt = getFrameDt() * self.speed
         if self.pause:
             dt = 0
@@ -487,7 +491,9 @@ class Wang(MTWidget):
         self.need_reset = True
 
     def draw(self):
-        self.update()
+        set_color(0)
+        drawRectangle(size=getWindow().size)
+
         self.drawUI()
 
         # draw

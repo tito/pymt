@@ -151,6 +151,8 @@ class MTFileBrowserView(MTKineticList):
     :Events:
         `on_path_change` : (str)
             Fired when path changed
+        `on_selection_change` : list of str
+            Fired when selection change
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('w_limit', 4)
@@ -166,8 +168,9 @@ class MTFileBrowserView(MTKineticList):
         super(MTFileBrowserView, self).__init__(**kwargs)
 
         self.register_event_type('on_path_change')
+        self.register_event_type('on_selection_change')
 
-        self.selection = []
+        self._selection     = []
         self._path          = '(invalid path)'
         self.show_hidden    = kwargs.get('show_hidden')
         self.view           = kwargs.get('view')
@@ -275,19 +278,36 @@ class MTFileBrowserView(MTKineticList):
             return
 
         # select file ?
+        selection = self.selection[:]
         if not fileview.selected:
             if not self.multipleselection:
                 for child in self.children:
                     child.selected = False
             fileview.selected = True
-            if filename not in self.selection:
+            if filename not in selection:
                 if not self.multipleselection:
-                    self.selection = []
-                self.selection.append(filename)
+                    selection = []
+                selection.append(filename)
         elif self.multipleselection:
             fileview.selected = False
-            if filename in self.selection:
-                self.selection.remove(filename)
+            if filename in selection:
+                selection.remove(filename)
+        self.selection = selection
+
+    def _get_selection(self):
+        return self._selection
+    def _set_selection(self, x):
+        if x == self._selection:
+            return
+        self._selection = x
+        self.dispatch_event('on_selection_change', self._selection)
+    selection = property(
+        _get_selection, _set_selection,
+        doc='Get selected filenames')
+
+
+    def on_selection_change(self, filelist):
+        pass
 
     def on_path_change(self, path):
         pass
@@ -376,7 +396,7 @@ class MTFileBrowser(MTPopup):
             self.l_buttons.add_widget(self.w_view, True)
 
     def _toggle_hidden(self, btn, *largs):
-        if btn.get_state() == 'down':
+        if btn.state == 'down':
             self.view.show_hidden = True
         else:
             self.view.show_hidden = False

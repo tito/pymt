@@ -12,6 +12,7 @@ from gesturewidget import *
 from kinetic import *
 from label import *
 from layout import *
+from klist import *
 from modalwindow import *
 from radial import *
 from rectangle import *

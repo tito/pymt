@@ -87,11 +87,10 @@ class TuioTouchProvider(TouchProvider):
 
     def start(self):
         '''Start the tuio provider'''
-        osc.init()
         self.oscid = osc.listen(self.ip, self.port)
         for oscpath in TuioTouchProvider.__handlers__:
             self.touches[oscpath] = {}
-            osc.bind(self._osc_tuio_cb, oscpath)
+            osc.bind(self.oscid, self._osc_tuio_cb, oscpath)
 
     def stop(self):
         '''Stop the tuio provider'''

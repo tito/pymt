@@ -32,7 +32,19 @@ ext_modules = []
 cmdclass = {}
 if have_cython:
     cmdclass['build_ext'] = build_ext
-    ext_modules.append(Extension('pymt.graphx._graphx', ['pymt/graphx/_graphx.pyx']))
+    libraries = []
+    if sys.platform == 'win32':
+        libraries.append('opengl32')
+    else:
+        libraries.append('GL')
+    ext_modules.append(Extension('pymt.graphics.c_graphics',
+        ['pymt/graphics/c_graphics.pyx'],
+        libraries=libraries))
+    ext_modules.append(Extension('pymt.graphx._graphx',
+        ['pymt/graphx/_graphx.pyx'],
+        libraries=libraries))
+    ext_modules.append(Extension('pymt._accelerate',
+        ['pymt/_accelerate.pyx']))
 
 # setup !
 setup(
@@ -40,7 +52,7 @@ setup(
     version=pymt.__version__,
     author='PyMT Crew',
     author_email='pymt-dev@googlegroups.com',
-    url='http://pymt.txzone.net/',
+    url='http://pymt.eu/',
     license='LGPL',
     description='A framework for making accelerated multitouch UI',
     ext_modules=ext_modules,

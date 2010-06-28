@@ -19,10 +19,21 @@ class MTTextArea(MTTextInput):
         self.value = kwargs.get('label') or ''
         self.buffer_size = kwargs.get('buffer_size') or 128000
 
+    def _recalc_size(self):
+        # We could do this as .size property I suppose, but then we'd
+        # be calculating it all the time when .size is accessed.
+        num = len(self.lines)
+        # The following two if statements ensure that the textarea remains
+        # easily clickable even if there's no content.
+        if num:
+            self.height = num * self.line_height + self.line_spacing * (num - 1)
+            if self.lines[0]:
+                self.width = max(label.content_width for label in self.line_labels)
+
     def _get_value(self):
         try:
             return '\n'.join(self.lines)
-        except:
+        except AttributeError:
             return ''
     def _set_value(self, text):
         old_value = self.value
@@ -34,6 +45,7 @@ class MTTextArea(MTTextInput):
         self.cursor = 1 #pos inside line
         self.cursor_fade = 0
         self.init_glyph_sizes()
+        self._recalc_size()
         if old_value != self.value:
             self.dispatch_event('on_text_change', self)
     value = property(_get_value, _set_value)
@@ -43,9 +55,13 @@ class MTTextArea(MTTextInput):
         self.line_labels[line_num].label = text
 
     def create_line_label(self, text):
-        return Label(text, anchor_x='left', anchor_y='top',
-                     font_size= 20,
-                     color= (0,0,0,1))
+        # Honour attributes like color.
+        # XXX Currently only works once initially. Not updated if self.color is changed!
+        #     What would be a proper solution?
+        kw = self.kwargs.copy()
+        kw['anchor_x'] = 'left'
+        kw['anchor_y'] = 'top'
+        return Label(text, **kw)
 
     def glyph_size(self, g):
         if not self._glyph_size.has_key(g):
@@ -89,7 +105,7 @@ class MTTextArea(MTTextInput):
         glTranslate(self.x, self.y+self.height,0)
         for line_num in xrange(len(self.lines)):
             self.line_labels[line_num].draw()
-            if self.edit_line == line_num and  self.is_active_input:
+            if self.edit_line == line_num and self.is_active_input:
                 self.draw_cursor()
             glTranslate(0,-(self.line_height+self.line_spacing),0)
         glPopMatrix()
@@ -153,21 +169,53 @@ class MTTextArea(MTTextInput):
             new_text = text[:self.cursor-1] + text[self.cursor:]
             self.set_line_text(self.edit_line, new_text)
             self.cursor -=1
+        self.dispatch_event('on_text_change', self)
+
+    def do_cursor_movement(self, action):
+        pgmove_speed = 3
+        if action == 'cursor_up':
+            self.edit_line = max(self.edit_line - 1, 0)
+            self.cursor = min(len(self.lines[self.edit_line]), self.cursor)
+        elif action == 'cursor_down':
+            self.edit_line = min(self.edit_line + 1, len(self.lines) - 1)
+            self.cursor = min(len(self.lines[self.edit_line]), self.cursor)
+        elif action == 'cursor_left':
+            self.cursor = max(self.cursor - 1, 0)
+        elif action == 'cursor_right':
+            self.cursor = min(self.cursor + 1, len(self.lines[self.edit_line]))
+        elif action == 'cursor_home':
+            self.cursor = 0
+        elif action == 'cursor_end':
+            self.cursor = len(self.lines[self.edit_line])
+        elif action == 'cursor_pgup':
+            self.edit_line /= pgmove_speed
+            self.cursor = min(len(self.lines[self.edit_line]), self.cursor)
+        elif action == 'cursor_pgdown':
+            self.edit_line = min((self.edit_line + 1) * pgmove_speed, len(self.lines) - 1)
+            self.cursor = min(len(self.lines[self.edit_line]), self.cursor)
 
     def _kbd_on_key_up(self, key, repeat=False):
         displayed_str, internal_str, internal_action, scale = key
         if internal_action is None:
             self.insert_character(displayed_str)
+        elif internal_action.startswith('cursor_'):
+            self.do_cursor_movement(internal_action)
+        elif internal_action == 'del':
+            self.cursor += 1
+            self.do_backspace()
         elif internal_action == 'backspace':
             self.do_backspace()
         elif internal_action == 'enter':
             self.insert_line_feed()
         elif internal_action == 'escape':
             self.hide_keyboard()
+        if internal_action != 'escape':
+            self._recalc_size()
 
     def _window_on_key_down(self, key, scancode=None, unicode=None):
-        if unicode and not key in (27, 9, 8, 13, 271):
+        if unicode and not key in self.interesting_keys.keys() + [9, 27]:
             self.insert_character(unicode)
+            self._recalc_size()
         return super(MTTextArea, self)._window_on_key_down(key, scancode, unicode)
 
 # Register all base widgets

@@ -125,6 +125,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     # no dependices at all
     from baseobject import *
     from exceptions import *
+    from resources import *
     from cache import Cache
 
     # system dependices

@@ -84,7 +84,7 @@ An example with a rectangle + texture ::
 #
 
 
-from pymt import BaseObject, Texture, TextureRegion, getLabel
+from pymt import BaseObject, Texture, TextureRegion, getLabel, Image, resource_find
 from math import pi
 from array import array
 from statement import gx_texture
@@ -108,6 +108,18 @@ cdef extern from "math.h":
 #  i = Index (color index)
 #  e = Edge
 #
+
+cdef dict texture_map = {}
+cdef texture_lookup(filename):
+    texture = texture_map.get(filename, None)
+    if not texture:
+        correctFilename = resource_find(filename)
+        if correctFilename is None:
+            raise Exception('Unable to found image %s' % filename)
+        texture = Image(correctFilename).texture
+        print filename, 'texture=', texture
+        texture_map[filename] = texture
+    return texture
 
 cdef int gl_type_from_str(str typ):
     if typ == 'points':
@@ -277,7 +289,7 @@ cdef class GraphicElement(GraphicInstruction):
     cdef str _vbo_usage
     cdef str _vbo_target
     cdef str _format_str
-    cdef int _type
+    cdef int _type, _indices_count
     cdef bytes _indices
     cdef readonly int count
 
@@ -307,6 +319,7 @@ cdef class GraphicElement(GraphicInstruction):
         self._vbo_e = None
         self._vbo_i = None
         self._indices = ''
+        self._indices_count = 0
 
     def __init__(self, **kwargs):
         kwargs.setdefault('format', None)
@@ -359,7 +372,7 @@ cdef class GraphicElement(GraphicInstruction):
 
         # draw array
         if self._use_indices:
-            glDrawElements(self._type, len(self._indices), GL_UNSIGNED_INT, <char *>self._indices)
+            glDrawElements(self._type, self._indices_count, GL_UNSIGNED_INT, <char *>self._indices)
         else:
             glDrawArrays(self._type, 0, self.count)
 
@@ -491,6 +504,7 @@ cdef class GraphicElement(GraphicInstruction):
             self._use_indices = 0
             return
         self._indices = array('I', x).tostring()
+        self._indices_count = len(x)
         self._use_indices = 1
     indices = property(_get_indices, _set_indices,
         doc='(optional) Use an indice array to draw')
@@ -1406,8 +1420,8 @@ cdef class CSSRectangle(GraphicInstruction):
     cdef str _prefix
     cdef str _state
     cdef list _objects
-    cdef list _pos
-    cdef list _size
+    cdef tuple _pos
+    cdef tuple _size
     cdef int _need_build
 
     def __init__(self, *values, **kwargs):
@@ -1417,8 +1431,8 @@ cdef class CSSRectangle(GraphicInstruction):
         self._style = kwargs.get('style', {})
         self._prefix = kwargs.get('prefix', None)
         self._state = kwargs.get('state', None)
-        self._pos = kwargs.get('pos', (0, 0))
-        self._size = kwargs.get('size', (1, 1))
+        self._pos = tuple(kwargs.get('pos', (0, 0)))
+        self._size = tuple(kwargs.get('size', (1, 1)))
         if len(values) == 4:
             x, y, w, h = values
             self._pos = x, y
@@ -1498,6 +1512,15 @@ cdef class CSSRectangle(GraphicInstruction):
             else:
                 obj.append(Rectangle(**k))
 
+        # add border image object
+        if style.get('draw-border-image', 0):
+            texture = texture_lookup(style.get('border-image'))
+            if texture is not None:
+                k2 = k.copy()
+                k2['borders'] = style.get('border-image-width', [0, 0, 0, 0])
+                k2['texture'] = texture
+                obj.append(ImageRectangle(**k2))
+
         # add border object
         if style.get('draw-border', 0):
             if linewidth or bordercolor:
@@ -1529,7 +1552,7 @@ cdef class CSSRectangle(GraphicInstruction):
     def _set_size(self, size):
         if self._size == size:
             return False
-        self._size = size
+        self._size = tuple(size)
         self._need_build = 1
         return True
     size = property(_get_size, _set_size,

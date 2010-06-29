@@ -47,12 +47,11 @@ class VideoGStreamer(VideoBase):
         super(VideoGStreamer, self).__init__(**kwargs)
 
     def _do_eos(self):
-        self.stop()
-        self.unload()
+        # reset to start for next play
+        self._pipeline.seek_simple(
+            gst.FORMAT_TIME, gst.SEEK_FLAG_FLUSH, 0)
         self.dispatch_event('on_eos')
         super(VideoGStreamer, self)._do_eos()
-        if self._wantplay:
-            self.load()
 
     def stop(self):
         self._wantplay = False
@@ -168,7 +167,6 @@ class VideoGStreamer(VideoBase):
     def seek(self, percent):
         if not self._pipeline:
             return
-        print 'SEEK', percent
         self._pipeline.seek_simple(
             gst.FORMAT_PERCENT,
             gst.SEEK_FLAG_FLUSH,

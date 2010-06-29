@@ -421,7 +421,8 @@ class MTWidget(EventDispatcher):
         def animobject_on_complete(widget, *l):
             if widget != self:
                 return
-            self.__animationcache__.remove(animobj)
+            if animobj in self.__animationcache__:
+                self.__animationcache__.remove(animobj)
         animation.connect('on_complete', animobject_on_complete)
         return animobj
 

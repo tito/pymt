@@ -8,6 +8,10 @@ def unittest_dispatcher():
     import_pymt_no_window()
     from pymt import EventDispatcher
 
+    class MyEventDispatcher(EventDispatcher):
+        def on_test(self, *largs):
+            pass
+
     global testpass, testargs
     testpass = False
     testargs = None
@@ -22,7 +26,7 @@ def unittest_dispatcher():
         testpass = False
         testargs = None
 
-    a = EventDispatcher()
+    a = MyEventDispatcher()
 
     # test unknown event
     resettest()

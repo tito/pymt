@@ -441,7 +441,7 @@ class EventDispatcher(BaseObject):
             name = func.__name__
             self.set_handler(name, func)
             return args[0]
-        elif type(args[0]) in (str, unicode): # @a.event('on_event')
+        elif isinstance(args[0], basestring): # @a.event('on_event')
             name = args[0]
             def decorator(func):
                 self.set_handler(name, func)

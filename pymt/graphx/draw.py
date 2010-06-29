@@ -247,7 +247,7 @@ def drawPolygon(points, style=GL_POLYGON, linewidth=0):
         `linewidth`: int, defaults to current OpenGL state. 
             Sets the linewidth if drawign style is a line based one
     '''
-    if type(style) in (str, unicode):
+    if isinstance(style, basestring):
         if style in ('fill', 'GL_POLYGON'):
             style = GL_POLYGON
         if style in ('line', 'GL_LINE_LOOP'):

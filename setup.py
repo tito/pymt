@@ -76,7 +76,6 @@ setup(
         'pymt.ui',
         'pymt.ui.widgets',
         'pymt.ui.widgets.composed',
-        'pymt.ui.widgets.form',
         'pymt.ui.widgets.layout',
         'pymt.ui.window',
         'pymt.tools',

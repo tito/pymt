@@ -69,3 +69,33 @@ def unittest_visible_events():
     w.dispatch_event('on_update')
     test(on_update_called == 1)
 
+def unittest_coordinate_transform():
+    import_pymt_no_window()
+    from pymt import MTWidget
+
+    # child 2 inside child 1 inside child0
+    child0 = MTWidget(pos=(100, 100))
+    child1 = MTWidget(pos=(200, 200))
+    child2 = MTWidget(pos=(300, 300))
+
+    child0.add_widget(child1)
+    child1.add_widget(child2)
+
+    test(child0.pos == (100, 100))
+    test(child1.pos == (200, 200))
+    test(child2.pos == (300, 300))
+
+    # screen coordinate is default
+    test(child0.to_local(*child1.pos) == (200, 200))
+
+    # using the relative attribute,
+    # we should have relative coordinate
+    test(child0.to_local(*child1.pos, relative=True) == (100, 100))
+    test(child1.to_local(*child2.pos, relative=True) == (100, 100))
+
+    # screen coordinate 400,400 is 100,100 in relative coordinate from child2
+    test(child2.to_widget(400, 400, relative=True) == (100, 100))
+
+    # 100, 100 relative coordinate from child2 is 400, 400 in screen coordinate
+    test(child2.to_window(100, 100, relative=True) == (400, 400))
+

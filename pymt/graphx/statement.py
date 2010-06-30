@@ -77,6 +77,7 @@ class GlDisplayList:
 
     def __exit__(self, type, value, traceback):
         self.stop()
+        return False
 
     def start(self):
         '''Start recording GL operation'''
@@ -128,6 +129,7 @@ class DO:
     def __exit__(self, type, value, traceback):
         for item in reversed(self.args):
             item.__exit__(type, value, traceback)
+        return False
 
 
 class GlBlending:
@@ -147,6 +149,7 @@ class GlBlending:
 
     def __exit__(self, type, value, traceback):
         glDisable(GL_BLEND)
+        return False
 
 class GlMatrix:
     '''Statement of glPushMatrix/glPopMatrix, designed to be use with "with" keyword.
@@ -172,6 +175,7 @@ class GlMatrix:
     def __exit__(self, type, value, traceback):
         glMatrixMode(self.matrixmode)
         glPopMatrix()
+        return False
 
 class GlEnable:
     '''Statement of glEnable/glDisable, designed to be use with "with" keyword.
@@ -186,6 +190,7 @@ class GlEnable:
 
     def __exit__(self, type, value, traceback):
         glDisable(self.flag)
+        return False
 
 gx_enable = GlEnable
 
@@ -202,6 +207,7 @@ class GlBegin:
 
     def __exit__(self, type, value, traceback):
         glEnd()
+        return False
 
 class GlAttrib:
     '''Statement of glPushAttrib/glPopAttrib, designed to be use with "with" keyword
@@ -216,6 +222,7 @@ class GlAttrib:
 
     def __exit__(self, type, value, traceback):
         glPopAttrib()
+        return False
 
 class GlColor:
     '''Statement of glPushAttrib/glPopAttrib on COLOR BUFFER + color,
@@ -238,6 +245,7 @@ class GlColor:
 
     def __exit__(self, type, value, traceback):
         glPopAttrib()
+        return False
 
 class GlTexture:
     '''Statement of setting a texture
@@ -252,6 +260,7 @@ class GlTexture:
 
     def __exit__(self, type, value, traceback):
         self.release()
+        return False
 
     def bind(self):
         target = self.get_target()

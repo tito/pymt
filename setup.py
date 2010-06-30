@@ -37,14 +37,14 @@ if have_cython:
         libraries.append('opengl32')
     else:
         libraries.append('GL')
-    ext_modules.append(Extension('pymt.graphics.c_graphics',
-        ['pymt/graphics/c_graphics.pyx'],
+    ext_modules.append(Extension('pymt.c_ext.c_graphics',
+        ['pymt/c_ext/c_graphics.pyx'],
         libraries=libraries))
-    ext_modules.append(Extension('pymt.graphx._graphx',
-        ['pymt/graphx/_graphx.pyx'],
+    ext_modules.append(Extension('pymt.c_ext.c_graphx',
+        ['pymt/c_ext/c_graphx.pyx'],
         libraries=libraries))
-    ext_modules.append(Extension('pymt._accelerate',
-        ['pymt/_accelerate.pyx']))
+    ext_modules.append(Extension('pymt.c_ext.c_accelerate',
+        ['pymt/c_ext/c_accelerate.pyx']))
 
 # setup !
 setup(
@@ -59,27 +59,30 @@ setup(
     cmdclass=cmdclass,
     packages=[
         'pymt',
-        'pymt.graphx',
+        'pymt.c_ext',
         'pymt.core',
         'pymt.core.audio',
         'pymt.core.camera',
         'pymt.core.image',
+        'pymt.core.svg',
         'pymt.core.text',
         'pymt.core.video',
-        'pymt.core.svg',
+        'pymt.graphics',
+        'pymt.graphx',
         'pymt.input',
         'pymt.input.postproc',
         'pymt.input.providers',
         'pymt.lib',
         'pymt.lib.osc',
         'pymt.modules',
+        'pymt.tools',
+        'pymt.tools.calibration',
+        'pymt.tools.designerapp',
         'pymt.ui',
         'pymt.ui.widgets',
         'pymt.ui.widgets.composed',
         'pymt.ui.widgets.layout',
         'pymt.ui.window',
-        'pymt.tools',
-        'pymt.tools.designerapp',
     ],
     package_dir={'pymt': 'pymt'},
     package_data={'pymt': [

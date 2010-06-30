@@ -244,7 +244,7 @@ class MTWidget(EventDispatcher):
 
     def to_parent(self, x, y, relative=False):
         '''Transform local coordinate to parent coordinate
-        
+
         :Parameters:
             `relative`: bool, default to False
                 Change to True is you want to translate relative position from
@@ -256,7 +256,7 @@ class MTWidget(EventDispatcher):
 
     def to_local(self, x, y, relative=False):
         '''Transform parent coordinate to local coordinate
-        
+
         :Parameters:
             `relative`: bool, default to False
                 Change to True is you want to translate a coordinate to a

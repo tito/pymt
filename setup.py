@@ -1,6 +1,21 @@
 from distutils.core import setup
 from distutils.extension import Extension
 
+
+
+"""
+#build numpy transformation extension
+import numpy
+setup(name='_transformations', ext_modules=[
+      Extension('_transformations', ['pymt/lib/transformations.c'],
+      include_dirs=[numpy.get_include()], extra_compile_args=[])],)
+
+
+import sys
+sys.exit()
+"""
+
+
 try:
     have_cython = True
     from Cython.Distutils import build_ext
@@ -9,6 +24,7 @@ except:
 
 import sys
 import os
+
 
 # extract version (simulate doc generation, pymt will be not imported)
 os.environ['PYMT_DOC_INCLUDE'] = '1'
@@ -28,7 +44,13 @@ for root, subFolders, files in os.walk('examples'):
         examples.append(os.path.join(root,file))
 
 # modules
-ext_modules = []
+import numpy
+numpy_transform_ext = Extension('pymt.lib._transformations',
+                                ['pymt/lib/transformations.c'],
+                                include_dirs=[numpy.get_include()],
+                                extra_compile_args=[])
+
+ext_modules = [numpy_transform_ext]
 cmdclass = {}
 if have_cython:
     cmdclass['build_ext'] = build_ext

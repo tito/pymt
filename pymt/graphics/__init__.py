@@ -1,1 +1,1 @@
-from c_graphics import *
+from pymt.c_ext.c_graphics import *

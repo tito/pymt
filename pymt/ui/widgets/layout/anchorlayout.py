@@ -25,13 +25,13 @@ class MTAnchorLayout(MTAbstractLayout):
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('padding',  0)
-        kwargs.setdefault('anchor_x','center')
-        kwargs.setdefault('anchor_y', 'center')
-        super(MTAnchorLayout, self).__init__(**kwargs)
 
+        super(MTAnchorLayout, self).__init__(**kwargs)
+        
+        self._anchor_x = kwargs.get('anchor_x', 'center')
+        self._anchor_y = kwargs.get('anchor_y', 'center')
         self.padding  = kwargs.get('padding')
-        self.anchor_x = kwargs.get('anchor_x')
-        self.anchor_y = kwargs.get('anchor_y')
+
 
     def _get_anchor_x(self):
         return self._anchor_x

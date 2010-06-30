@@ -72,9 +72,11 @@ class MTBoxLayout(MTAbstractLayout):
                 if w.size_hint[1] == None:
                     height = max(w.height + padding, height)
                 if isinstance(w, MTAbstractLayout):
-                    w,h = w.minimum_size
-                    width  += w + padding
-                    height = max(h + padding, height)
+                    _w,_h = w.minimum_size
+                    if w.size_hint[0] != None:
+                        width  += _w + padding
+                    if w.size_hint[1] != None:
+                        height = max(_h + padding, height)
 
         if self.orientation == 'vertical':
             height += (len(self.children) -1) * spacing
@@ -84,9 +86,11 @@ class MTBoxLayout(MTAbstractLayout):
                 if w.size_hint[1] == None:
                     height += w.height + padding
                 if isinstance(w, MTAbstractLayout):
-                    w,h = w.minimum_size
-                    width   = max(w + padding, width)
-                    height += h + padding
+                    _w,_h = w.minimum_size
+                    if w.size_hint[0] != None:
+                        width   = max(_w + padding, width)
+                    if w.size_hint[1] != None:
+                        height += _h + padding
 
         self.minimum_size = (width, height)
 

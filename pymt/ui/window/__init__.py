@@ -305,10 +305,10 @@ class BaseWindow(EventDispatcher):
         for t in [x for x in getCurrentTouches() if x.device == 'mouse']:
             drawCircle(pos=(t.x, t.y), radius=10)
 
-    def to_widget(self, x, y):
+    def to_widget(self, x, y,initial=True, relative=False):
         return (x, y)
 
-    def to_window(self, x, y, initial=True):
+    def to_window(self, x, y, initial=True, relative=False):
         return (x, y)
 
     def get_root_window(self):

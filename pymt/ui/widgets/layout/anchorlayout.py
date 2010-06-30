@@ -61,38 +61,42 @@ class MTAnchorLayout(MTAbstractLayout):
 
 
     def do_layout(self):
+
+        #only acces properties once, instead of every time inside loop for optimization
+        _x,_y = self.pos
+        width, height = self.size
+        anchor_x, anchor_y = self.anchor_x, self.anchor_y
+        padding = self.padding
+
         for c in self.children:
-            x,y = self.pos
-
-
+            x,y = _x,_y
             w,h = c.size
             if c.size_hint[0]:
-                w = c.size_hint[0]*self.width
+                w = c.size_hint[0]*width
             elif not self.size_hint[0]:
-                self.width= max(self.width, c.width)
+                width= max(width, c.width)
             if c.size_hint[1]:
-                h = c.size_hint[1]*self.height
+                h = c.size_hint[1]*height
             elif not self.size_hint[1]:
-                self.height= max(self.height, c.height)
+                height= max(height, c.height)
 
-
-            if self.anchor_x == 'left':
-                x = self.x + self.padding
-            if self.anchor_x == 'right':
-                x = self.x + self.width - (w+self.padding)
+            if anchor_x == 'left':
+                x = x + self.padding
+            if anchor_x == 'right':
+                x = x + width - (w+padding)
             if self.anchor_x == 'center':
-                x = self.x + (self.width/2) - (w/2)
-
-            if self.anchor_y == 'bottom':
-                y = self.y + self.padding
-            if self.anchor_y == 'top':
-                y = self.y + self.height - (h+self.padding)
-            if self.anchor_y == 'center':
-                y = self.y + (self.height/2) - (h/2)
+                x = x + (width/2) - (w/2)
+            if anchor_y == 'bottom':
+                y = y + padding
+            if anchor_y == 'top':
+                y = y + height - (h+padding)
+            if anchor_y == 'center':
+                y = y + (height/2) - (h/2)
 
 
             self.reposition_child(c, pos=(x,y), size=(w,h))
 
+        self.size = (width, height) #might have changed inside loop
         self.dispatch_event('on_layout')
 
 

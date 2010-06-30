@@ -59,32 +59,34 @@ class MTBoxLayout(MTAbstractLayout):
         there mus be room for child widgets that have fixed size (size_hint == None)
         there must also be at least enough room for every child layout's minimum size (cant be too small even if size_hint is set)
         '''
-        width  = self.padding
-        height = self.padding
+        padding = self.padding
+        spacing = self.spacing
+        width  = padding
+        height = padding
 
         if self.orientation == 'horizontal':
-            width += (len(self.children)-1) * self.spacing
+            width += (len(self.children) -1) * spacing
             for w in self.children:
                 if w.size_hint[0] == None:
-                    width += w.width+self.padding
+                    width += w.width + padding
                 if w.size_hint[1] == None:
-                    height = max(w.height+self.padding, height)
+                    height = max(w.height + padding, height)
                 if isinstance(w, MTAbstractLayout):
                     w,h = w.minimum_size
-                    width  += w+self.padding
-                    height = max(h+self.padding, height)
+                    width  += w + padding
+                    height = max(h + padding, height)
 
         if self.orientation == 'vertical':
-            height += (len(self.children)-1) * self.spacing
+            height += (len(self.children) -1) * spacing
             for w in self.children:
                 if w.size_hint[0] == None:
-                    width   = max(w.width+self.padding, width)
+                    width   = max(w.width + padding, width)
                 if w.size_hint[1] == None:
-                    height += w.height+self.padding
+                    height += w.height + padding
                 if isinstance(w, MTAbstractLayout):
                     w,h = w.minimum_size
-                    width   = max(w+self.padding, width)
-                    height += h+self.padding
+                    width   = max(w + padding, width)
+                    height += h + padding
 
         self.minimum_size = (width, height)
 

@@ -120,17 +120,20 @@ class MTGridLayout(MTAbstractLayout):
         if len(self.children) == 0:
             return
 
+
+        spacing = self.spacing
+        _x, _y = self.pos
         # reposition every child
         i = 0
-        y = self.y + self.spacing
+        y = _y + spacing
         for row_height in self.row_heights.values():
-            x = self.x + self.spacing
+            x = _x + spacing
             for col_width in self.col_widths.values():
                 if i >= len(self.children):
                     break
                 c = self.children[i]
                 # special y, we inverse order of children at reposition
-                c_pos = (x, self.top - row_height - (y - self.y))
+                c_pos = (x, self.top - row_height - (y - _y))
                 c_size = list(self.children[i].size)
                 if self.uniform_width or c.size_hint[0]:
                     c_size[0] = col_width * (c.size_hint[0] or 1.0)
@@ -138,8 +141,8 @@ class MTGridLayout(MTAbstractLayout):
                     c_size[1] = row_height * (c.size_hint[1] or 1.0)
                 self.reposition_child(c, pos=c_pos, size=c_size)
                 i = i + 1
-                x = x + col_width + self.spacing
-            y = y + row_height + self.spacing
+                x = x + col_width + spacing
+            y = y + row_height + spacing
 
         self.dispatch_event('on_layout')
 

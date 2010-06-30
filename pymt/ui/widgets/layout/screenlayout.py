@@ -56,8 +56,8 @@ class MTScreenLayout(MTAbstractLayout):
         return MTBoxLayout(size_hint=(1.0,None), height=50)
 
     def new_tab(self, label):
-        '''fucntion that returns a new tab.  return value must be of type MTButton or derive from it (must have on_press handler).
-        Screenlayuot subclasses can overwrite this to create tabs based ona tehir own look and feel or do otehr custom things when a new tab is created'''
+        '''fucntion that returns a new tab.  return value must be of type MTButton or derive from it (must have on_press handler) if you overwrite the method.
+        A Screenlayuot subclasses can overwrite this to create tabs based with own look and feel or do other custom things when a new tab is created'''
         return MTButton(label=label, size_hint=(1, 1), height=30)
 
     def add_widget(self, widget, tab_name=None):

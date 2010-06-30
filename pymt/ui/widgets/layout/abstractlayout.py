@@ -52,10 +52,17 @@ class MTAbstractLayout(MTWidget):
 
 
     def _get_minimum_size(self):
+        '''
+        returns minimum size of layout (based on size of fixed/minimum size of children)
+        '''
         return self._minimum_size
     def _set_minimum_size(self, size):
+        '''
+        sets teh layout minimum size property (teh layout calculates this in update_minimum_size and uses it to perform layout calculations).
+        if teh widgets size (width or height) is smaller than teh minimum size, it is resized to be at least minimum size
+        '''
         self._minimum_size = size
-        if self.width < size [0]:
+        if self.width < size[0]:
             self.width = size[0]
         if self.height < size[1]:
             self.height = size[1]
@@ -119,7 +126,6 @@ class MTAbstractLayout(MTWidget):
 
     def update(self):
         self.need_update = True
-
 
     def on_layout(self):
         pass

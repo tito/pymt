@@ -25,10 +25,6 @@ class SpellingOSXAppKit(SpellingBase):
         self._language = NSSpellChecker.alloc().init()
         super(SpellingOSXAppKit, self).__init__(language)
 
-    def register_language(self, language, langpath=None):
-        raise NotImplementedError('Runtime addition of languages not supported ' + \
-                                  'by OSX AppKit backend.')
-
     def select_language(self, language):
         success = self._language.setLanguage_(language)
         if not success:

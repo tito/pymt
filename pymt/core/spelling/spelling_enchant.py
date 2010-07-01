@@ -16,10 +16,6 @@ class SpellingEnchant(SpellingBase):
         self._language = None
         super(SpellingEnchant, self).__init__(language)
 
-    def register_language(self, language, langpath=None):
-        raise NotImplementedError('Runtime addition of languages not supported ' + \
-                                  'by enchant backend.')
-
     def select_language(self, language):
         try:
             self._language = enchant.Dict(language)

@@ -53,15 +53,6 @@ class SpellingBase(object):
             raise NoLanguageSelectedError('This method cannot be used if no language ' + \
                                           'has been selected.')
 
-    def register_language(self, language, langpath=None):
-        '''
-        Register a language for a language.
-        The individual backends might support adding new languages from
-        files. In that case, we accept a path to a language.
-        '''
-        raise NotImplementedError('register_language() method not implemented ' + \
-                                  'by abstract spelling base class!')
-
     def select_language(self, language):
         '''
         From the set of registered languages, select the first language

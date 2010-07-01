@@ -14,12 +14,6 @@ from pymt.utils import curry
 __all__ = ('MTSpellVKeyboard', )
 
 
-# TODO:
-#       1. integrate this into vkeyboard.py???
-#       2. don't hardcode 'en' language
-#       3. maybe make keys that are less likely as next key darker?
-
-
 css_spell_vkeyboard_label = '''
 spellvkeyboardlabel {
     -bg-color: rgba(208, 208, 208, 255);

@@ -1,10 +1,10 @@
 * {
     /* foreground/text color */
-    color: rgba(0, 0, 0, 255);
+    color: rgb(240, 240, 240);
 
     /* color when something is pushed TODO: change everywhere this is used,
 	 * because it will be foreground color when state is down */
-    color-down: rgba(50,50,50, 200);
+    color-down: rgba(50, 50, 50, 200);
 
     /* new way of background color when something is pushed*/
     bg-color-down: rgba(120, 120, 120, 200);
@@ -39,6 +39,7 @@
  */
 label {
 	padding: 0;
+	color: rgb(240, 240, 240);
 }
 
 widget,

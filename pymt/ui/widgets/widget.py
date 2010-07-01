@@ -89,7 +89,6 @@ class MTWidget(EventDispatcher):
                  '__weakref__')
 
     visible_events = [
-        'on_update',
         'on_draw',
         'on_touch_up',
         'on_touch_move',

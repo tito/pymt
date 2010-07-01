@@ -4,7 +4,7 @@ Spelling: Provide abstracted access to a range of spellchecking backends.
           but other backends can be added that implement the same API.
 '''
 
-__all__ = ('Spelling', 'SpellingBase', 'NoSuchLangError', )
+__all__ = ('Spelling', 'SpellingBase', 'NoSuchLangError', 'NoLanguageSelectedError' )
 
 from pymt.core import core_select_lib
 

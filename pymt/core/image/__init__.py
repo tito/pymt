@@ -148,7 +148,7 @@ class Image(BaseObject):
             self.height     = self.texture.height
         elif isinstance(arg, ImageLoaderBase):
             self.image      = arg
-        elif type(arg) in (str, unicode):
+        elif isinstance(arg, basestring):
             self.filename   = arg
         else:
             raise Exception('Unable to load image with type %s' % str(type(arg)))

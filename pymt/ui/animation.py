@@ -165,7 +165,7 @@ class AnimationBase(object):
         '''Starts animating the AnimationBase Object'''
         if not self._running:
             self._running = True
-            getClock().schedule_interval(self._next_frame, 1/60.0)
+            getClock().schedule_interval(self._next_frame, 0)
 
     def stop(self):
         '''Stops animating the AnimationBase Object'''

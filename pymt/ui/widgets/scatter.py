@@ -8,7 +8,7 @@ __all__ = ['MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane', 'MTScatterImage'
 import pymt
 from OpenGL.GL import *
 from ...graphx import drawRectangle, drawCSSRectangle, gx_matrix, gx_matrix_identity, set_color, \
-    drawTexturedRectangle, gx_blending
+    drawTexturedRectangle, gx_blending, drawTriangle
 from ...logger import pymt_logger
 from ...vector import Vector, matrix_mult, matrix_inv_mult
 from ...utils import deprecated, serialize_numpy, deserialize_numpy
@@ -19,12 +19,10 @@ from svg import MTSvg
 from widget import MTWidget
 
 #new scatter imports
-try:
-    from ...lib._transformations import *
-except:
-    from ...lib.transformations import *
 import numpy
-from math import atan,cos
+from ...lib.transformations import *
+
+from math import atan,cos, radians, degrees
 from OpenGL.GL import glMultMatrixf
 
 
@@ -93,24 +91,25 @@ class MTScatter(MTWidget):
 
         self.touches = []
 
+
         self._transform_gl = identity_matrix().T.tolist()  #openGL matrix
         self.transform = identity_matrix()
         self.transform_inv = identity_matrix()
         self._current_transform = identity_matrix()
         self._prior_transform = identity_matrix()
-
+        self.update_matrices()
 
         #inital transformation
-        if kwargs.get("pos"):
-            pymt_logger.warning('Deprecation Warning: "pos" attribute set in MTScatter constructor. Use "center" instead!!  Using the value given as "pos" for center property.  In scatter pos==center')
-            kwargs['center'] = kwargs['pos']
-        if kwargs.get("translation"):
-            pymt_logger.warning('Deprecation Warning: "translation" attribute set in MTScatter constructor.  Use "center" instead!!  Using the value given as "translation" for center property.  In scatter pos==center')
-            kwargs['center'] = kwargs['pos']
+        #if kwargs.get("pos"):
+        #    pymt_logger.warning('Deprecation Warning: "pos" attribute set in MTScatter constructor. Use "center" instead!!  Using the value given as "pos" for center property.  In scatter pos==center')
+        #    kwargs['center'] = kwargs['pos']
+        #if kwargs.get("translation"):
+        #    pymt_logger.warning('Deprecation Warning: "translation" attribute set in MTScatter constructor.  Use "center" instead!!  Using the value given as "translation" for center property.  In scatter pos==center')
+        #    kwargs['center'] = kwargs['pos']
 
         #self.center = kwargs['center']
-        self.scale = kwargs['scale']
-        self.rotation = kwargs['rotation']
+        #self.scale = kwargs['scale']
+        #self.rotation = kwargs['rotation']
 
     @property
     def transform_gl(self):
@@ -138,29 +137,66 @@ class MTScatter(MTWidget):
     )
 
 
+    #bounding box is in parent oordiante space
+    def _get_bbox(self):
+        '''
+        Returns teh bounding box of teh widget in parent space
+            returns "bbox":  ((x,y),(w,h))  x,y = lower left corner
+        '''
+        xmin, ymin = xmax, ymax = self.to_parent(0,0)
+        for point in [(self.width,0),(0, self.height), self.size]:
+            x,y = self.to_parent(*point)
+            if x < xmin: xmin = x
+            if y < ymin: ymin = y
+            if x > xmax: xmax = x
+            if y > ymax: ymax = y
+        return (xmin, ymin), (xmax-xmin, ymax-ymin)
+    bbox = property(_get_bbox)
+
+
     def _get_center(self):
-        return self.to_parent(self.width / 2, self.height / 2)
-    def _set_center(self, center, do_event=True):
-        curr_center = self.center
-        if curr_center[0] == center[0] and curr_center[1] == center[1]:
-            return
-        p1_start = Vector(self.width / 2, self.height / 2)
-        p1_now   = Vector(*self.to_local(*center))
-        t = p1_now - p1_start
+        return (self.bbox[0][0] + self.bbox[1][0]/2.0,
+                self.bbox[0][1] + self.bbox[1][1]/2.0)
+    def _set_center(self, center, do_event=False):
+        trans = Vector(*center) - self.center
+        new_pos = trans + self.pos
+        self.pos = new_pos
+
+    center = property(_get_center, _set_center)
+
+
+    def _get_pos(self):
+        return self.bbox[0]
+    def _set_pos(self, pos):
+        _pos = self.bbox[0]
+        if pos == _pos:
+            return False
+        t = Vector(*pos) - _pos
         trans = translation_matrix( (t.x, t.y, 0) )
         self.apply_transform(trans)
-        if do_event:
-            self.dispatch_event('on_move', *self.pos)
-    center = property(_get_center, _set_center)
-    pos = property(_get_center, _set_center)
+        return True
+    pos = property(_get_pos, _set_pos,
+                   doc='Object position (x, y).  Lower left of bounding box for rotated scatter')
 
-    # Scatter widget don't have write attribute on x/y
     def _get_x(self):
-        return self.center[0]
-    x = property(_get_x)
+        return self.pos[0]
+    def _set_x(self, x):
+        if x == self.pos[0]:
+            return False
+        self.pos = (x, self.y)
+        return True
+    x = property(_get_x, _set_x,
+                 doc = 'Object X position')
+
     def _get_y(self):
-        return self.center[1]
-    y = property(_get_y)
+        return self.pos[1]
+    def _set_y(self, y):
+        if y == self.pos[1]:
+            return False
+        self.pos = (self.x, y)
+        return True
+    y = property(_get_y, _set_y,
+                 doc = 'Object Y position')
 
 
     def _get_rotation(self):
@@ -168,16 +204,12 @@ class MTScatter(MTWidget):
         # v2 = vector from center to center + (0,10) (in widget space)
         v1 = Vector(0,10)
         v2 = Vector(*self.to_parent(*self.pos)) - self.to_parent(self.x, self.y+10)
-        angle =  v1.angle(v2)
-        #0 is special case, angle is returned as 180, but vectros point in opposite directions
-        if angle == 180.0 and v1.normalize()[1] != v2.normalize()[1]:
-            return 0
-        return angle
+        return(v1.angle(v2) + 180) % 360
     def _set_rotation(self, rotation):
         angle_change = rotation - self.rotation
         print "new rotation: XXXXXX", self.rotation, rotation, angle_change
         trans = translation_matrix( (self.width / 2, self.height / 2, 0) )
-        trans = numpy.dot(trans,rotation_matrix( angle_change, (0, 0, 1)))
+        trans = numpy.dot(trans,rotation_matrix( -radians(angle_change), (0, 0, 1)))
         trans = numpy.dot(trans,translation_matrix( (-self.width / 2, -self.height / 2, 0) ))
         self.apply_transform(trans,post_multiply=True)
     rotation = property(_get_rotation, _set_rotation,
@@ -192,8 +224,10 @@ class MTScatter(MTWidget):
     def _set_scale(self, scale):
         scale_now = self.scale
         rescale = scale * (1.0/scale_now)
-        self.apply_transform(scale_matrix(rescale))
-        #self.transform_mat = numpy.dot(trans, self.transform)
+        trans = translation_matrix( (self.width / 2, self.height / 2, 0) )
+        trans = numpy.dot(trans,scale_matrix(rescale))
+        trans = numpy.dot(trans,translation_matrix( (-self.width / 2, -self.height / 2, 0) ))
+        self.apply_transform(trans,post_multiply=True)
     scale = property(_get_scale, _set_scale,
                      doc='''Get/set the scaling of the object''')
     _scale = property(_get_scale, _set_scale,
@@ -202,12 +236,11 @@ class MTScatter(MTWidget):
 
     def to_parent(self, x, y, **k):
         p = numpy.dot(self.transform, (x,y,0,1))
-        return p[0:2]
+        return (p[0],p[1])
 
     def to_local(self, x, y, **k):
         p = numpy.dot(self.transform_inv, (x,y,0,1))
-        return p[0:2]
-
+        return (p[0],p[1])
 
     def collide_point(self, x, y):
         if not self.visible:
@@ -218,7 +251,6 @@ class MTScatter(MTWidget):
             return True
         else:
             return False
-
 
     def reset_transformation_origin(self):
         for t in self.touches:
@@ -235,7 +267,7 @@ class MTScatter(MTWidget):
             trans, transformation to be applied to teh scatter widget)
         '''
         if post_multiply:
-            self._prior_transform = numpy.dot(self._prior_transform,trans)
+            self._prior_transform = numpy.dot(self._prior_transform, trans)
         else:
             self._prior_transform = numpy.dot(trans, self._prior_transform)
         self.update_matrices()
@@ -310,10 +342,7 @@ class MTScatter(MTWidget):
 
             angle = artan(b/a)     (based on teh definitionsof a and b above)
             scale = a/cos(angle)
-
-
         """
-
         #old coordinates
         x1 = self.touches[0].userdata['transform_origin'][0]
         y1 = self.touches[0].userdata['transform_origin'][1]
@@ -426,6 +455,9 @@ class MTScatter(MTWidget):
             glMultMatrixf(self._transform_gl)
             super(MTScatter, self).on_draw()
 
+    def draw(self):
+        set_color(*self.style['bg-color'])
+        drawCSSRectangle((0,0), (self.width, self.height), style=self.style)
 
 
 class MTScatterWidget(MTScatter):

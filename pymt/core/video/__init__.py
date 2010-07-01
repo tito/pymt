@@ -113,12 +113,10 @@ class VideoBase(EventDispatcher):
             doc='Get the video playing status')
 
     def _do_eos(self):
-        print 'EOS', self.eos
         if self.eos == 'pause':
             self.stop()
         elif self.eos == 'loop':
             self.stop()
-            print 'stop / play'
             self.play()
 
     def seek(self, percent):

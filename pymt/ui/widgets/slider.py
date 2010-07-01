@@ -81,12 +81,21 @@ class MTSlider(MTWidget):
 
     def draw(self):
         p2 = self.style['padding'] / 2
+        diff = self.max - self.min
         if self.orientation == 'vertical':
-            length = int((self._value - self.min) * (self.height - self.style['padding']) / (self.max - self.min))
+            if diff == 0:
+                length = 0
+            else:
+                length = int((self._value - self.min) * \
+                             (self.height - self.style['padding']) / diff)
             pos = self.x + p2, self.y + p2
             size = self.width - self.style['padding'], length
         else:
-            length = int((self._value - self.min) * (self.width - self.style['padding']) / (self.max - self.min))
+            if diff == 0:
+                length = 0
+            else:
+                length = int((self._value - self.min) * \
+                             (self.width - self.style['padding']) / diff)
             pos = self.x + p2, self.y + p2
             size = length, self.height - self.style['padding']
 

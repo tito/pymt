@@ -143,6 +143,7 @@ the particular class documentation.
 __all__ = ('EventDispatcher', )
 
 import inspect
+import types
 from weakmethod import WeakMethod
 from baseobject import BaseObject
 from logger import pymt_logger
@@ -374,6 +375,9 @@ class EventDispatcher(BaseObject):
         # doesn't find a problem with the number of arguments, the error
         # is re-raised as if we weren't here.
 
+        if not isinstance(handler.im_func, types.FunctionType):
+            raise
+
         n_args = len(args)
 
         # Inspect the handler
@@ -441,7 +445,7 @@ class EventDispatcher(BaseObject):
             name = func.__name__
             self.set_handler(name, func)
             return args[0]
-        elif type(args[0]) in (str, unicode): # @a.event('on_event')
+        elif isinstance(args[0], basestring): # @a.event('on_event')
             name = args[0]
             def decorator(func):
                 self.set_handler(name, func)

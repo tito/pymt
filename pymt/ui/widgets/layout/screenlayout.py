@@ -71,7 +71,7 @@ class MTScreenLayout(MTAbstractLayout):
 
     def remove_widget(self, widget):
         for btn in self.tabs.children[:]:
-            if type(widget) in (str, unicode):
+            if isinstance(widget, basestring):
                 if btn.label == widget:
                     self.tabs.remove_widget(btn)
                     break

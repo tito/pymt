@@ -43,7 +43,7 @@ class Shader(object):
         shader = glCreateShader(shadertype)
         # PyOpenGL bug ? He's waiting for a list of string, not a string
         # on some card, it failed :)
-        if type(source) in (str, unicode):
+        if isinstance(source, basestring):
             source = [source]
         glShaderSource(shader, source)
         glCompileShader(shader)

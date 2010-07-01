@@ -133,15 +133,13 @@ def screen_kineticlist(w):
     w.add_widget(m)
 
 
-'''
 @registerscreen('Tabs')
 def screen_tabs(w):
     tabs = MTTabs()
     tabs.add_widget(MTButton(label="Hello"), tab='Tab1')
     tabs.add_widget(MTButton(label="World"), tab='Tab2')
     tabs.select('Tab2')
-    w.add_widget(w)
-'''
+    w.add_widget(tabs)
 
 @registerscreen('Side Panel')
 def screen_sidepanel(w):

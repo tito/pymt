@@ -140,11 +140,11 @@ class MTScatterWidget(MTWidget):
             glMultMatrixf(self.transform_mat)
             super(MTScatterWidget, self).on_draw()
 
-    def to_parent(self, x, y):
+    def to_parent(self, x, y, **k):
         point = matrix_mult(self.transform_mat, (x, y, 0, 1))
         return (point.x, point.y)
 
-    def to_local(self, x, y):
+    def to_local(self, x, y, **k):
         point = matrix_inv_mult(self.transform_mat, (x, y, 0, 1))
         return (point.x, point.y)
 

@@ -305,7 +305,14 @@ class LabelBase(BaseObject):
     def _set_label(self, label):
         if label == self._label:
             return
-        self._label = unicode(label)
+        # try to automaticly decode unicode
+        try:
+            self._label = label.decode('utf8')
+        except:
+            try:
+                self._label = str(label)
+            except UnicodeDecodeError:
+                self._label = label
         self.refresh()
     label = property(_get_label, _set_label, doc='Get/Set the label text')
     text = property(_get_label, _set_label, doc='Get/Set the label text')

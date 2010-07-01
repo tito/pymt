@@ -24,11 +24,11 @@ from statement import *
 from colors import *
 
 try:
-    import _graphx
+    import pymt.c_ext.c_graphx as c_graphx
     pymt.pymt_logger.info('Graphx: Using accelerate graphx module')
 except ImportError, e:
-    _graphx = None
-    pymt.pymt_logger.warning('Extensions: _graphx not available: <%s>' % e)
+    c_graphx = None
+    pymt.pymt_logger.warning('Extensions: c_graphx not available: <%s>' % e)
 
 # create a cache for label
 _temp_label = None
@@ -145,8 +145,8 @@ def drawRoundedRectangle(pos=(0,0), size=(100,50), radius=5, color=None,
 
     # use accelerate version
     '''
-    if _graphx:
-        _graphx.drawRoundedRectangle()
+    if c_graphx:
+        c_graphx.drawRoundedRectangle()
         return
     '''
 
@@ -247,7 +247,7 @@ def drawPolygon(points, style=GL_POLYGON, linewidth=0):
         `linewidth`: int, defaults to current OpenGL state. 
             Sets the linewidth if drawign style is a line based one
     '''
-    if type(style) in (str, unicode):
+    if isinstance(style, basestring):
         if style in ('fill', 'GL_POLYGON'):
             style = GL_POLYGON
         if style in ('line', 'GL_LINE_LOOP'):
@@ -258,8 +258,8 @@ def drawPolygon(points, style=GL_POLYGON, linewidth=0):
     points = _make_point_list(points)
 
     # use accelerate version
-    if _graphx:
-        _graphx.drawPolygon(style, points, linewidth)
+    if c_graphx:
+        c_graphx.drawPolygon(style, points, linewidth)
         return
 
     if linewidth > 0:
@@ -307,8 +307,8 @@ def drawRectangle(pos=(0,0), size=(1.0,1.0), style=GL_QUADS):
             Style of rectangle (try GL_LINE_LOOP)
     '''
     # use accelerated version
-    if _graphx:
-        _graphx.drawRectangle(style, pos[0], pos[1], size[0], size[1])
+    if c_graphx:
+        c_graphx.drawRectangle(style, pos[0], pos[1], size[0], size[1])
         return
 
     with gx_begin(style):
@@ -370,10 +370,10 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0),
             glTexCoord2f(tex_coords[6], tex_coords[7])
             glVertex2f(coords[6], coords[7])
     else:
-        if _graphx:
+        if c_graphx:
             x, y = pos
             w, h = size
-            _graphx.drawTexturedRectangle(x, y, w, h, *tex_coords)
+            c_graphx.drawTexturedRectangle(x, y, w, h, *tex_coords)
         else:
             with gx_begin(GL_QUADS):
                 glTexCoord2f(tex_coords[0], tex_coords[1])
@@ -528,11 +528,11 @@ def drawRectangleAlpha(pos=(0,0), size=(1.0,1.0), alpha=(1,1,1,1), style=GL_QUAD
             Style of rectangle (try GL_LINE_LOOP)
     '''
     # use accelerated version
-    if _graphx:
+    if c_graphx:
         x, y = pos
         w, h = size
         a0, a1, a2, a3 = alpha
-        _graphx.drawRectangleAlpha(style, x, y, w, h, a0, a1, a2, a3)
+        c_graphx.drawRectangleAlpha(style, x, y, w, h, a0, a1, a2, a3)
         return
 
     with DO(gx_alphablending, gx_begin(style)):

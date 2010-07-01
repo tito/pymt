@@ -2,21 +2,25 @@
 File browser: a filebrowser view + a popup file browser
 '''
 
+__all__ = (
+    'MTFileBrowser', 'MTFileBrowserView',
+    'MTFileEntryView', 'MTFileListEntryView',
+    'MTFileIconEntryView'
+)
+
 import os
 import re
 import pymt
-from ....utils import is_color_transparent, curry
-from ....loader import Loader
-from ....graphx import drawCSSRectangle, set_color, drawLabel, drawRoundedRectangle,\
+from pymt.utils import is_color_transparent, curry
+from pymt.loader import Loader
+from pymt.graphx import drawCSSRectangle, set_color, drawLabel, drawRoundedRectangle,\
                        getLabel
-from ...factory import MTWidgetFactory
-from ..label import MTLabel
-from ..button import MTToggleButton
+from pymt.ui.factory import MTWidgetFactory
+from pymt.ui.widgets.label import MTLabel
+from pymt.ui.widgets.button import MTToggleButton
 from kineticlist import MTKineticList, MTKineticItem
 from popup import MTPopup
 
-__all__ = ['MTFileBrowser', 'MTFileBrowserView', 'MTFileEntryView',
-        'MTFileListEntryView', 'MTFileIconEntryView']
 
 # Search icons in data/icons/filetype
 icons_filetype_dir = os.path.join(pymt.pymt_data_dir, 'icons', 'filetype')
@@ -89,7 +93,8 @@ class MTFileListEntryView(MTFileEntryView):
         self.height         = 25
         self.image          = Loader.image(self.type_image)
         self.image.scale    = 0.5
-        self.browser.w_limit    = 1
+        if self.browser._w_limit is None:
+            self.browser.w_limit    = 1
         self.font_size = self.style['font-size']
 
     def draw(self):
@@ -116,7 +121,8 @@ class MTFileIconEntryView(MTFileEntryView):
         super(MTFileIconEntryView, self).__init__(**kwargs)
         self.size           = (80, 80)
         self.image          = Loader.image(self.type_image)
-        self.browser.w_limit= 4
+        if self.browser._w_limit is None:
+            self.browser.w_limit = 4
 
     def draw(self):
         if self.selected:
@@ -155,7 +161,6 @@ class MTFileBrowserView(MTKineticList):
             Fired when selection change
     '''
     def __init__(self, **kwargs):
-        kwargs.setdefault('w_limit', 4)
         kwargs.setdefault('deletable', False)
         kwargs.setdefault('searchable', False)
         kwargs.setdefault('title', None)
@@ -164,6 +169,8 @@ class MTFileBrowserView(MTKineticList):
         kwargs.setdefault('view', MTFileIconEntryView)
         kwargs.setdefault('filters', [])
         kwargs.setdefault('multipleselection', False)
+
+        self._w_limit = kwargs.get('w_limit', None)
 
         super(MTFileBrowserView, self).__init__(**kwargs)
 

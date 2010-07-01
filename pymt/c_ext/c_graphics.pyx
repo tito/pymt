@@ -84,10 +84,9 @@ An example with a rectangle + texture ::
 #
 
 
-from pymt import BaseObject, Texture, TextureRegion, getLabel, Image, resource_find
-from math import pi
+from pymt import BaseObject, Texture, TextureRegion, getLabel, \
+        Image, resource_find, gx_texture
 from array import array
-from statement import gx_texture
 from OpenGL.arrays import vbo
 
 from c_opengl cimport *
@@ -109,6 +108,7 @@ cdef extern from "math.h":
 #  e = Edge
 #
 
+cdef double pi = 3.1415926535897931
 cdef dict texture_map = {}
 cdef texture_lookup(filename):
     texture = texture_map.get(filename, None)

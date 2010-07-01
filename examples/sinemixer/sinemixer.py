@@ -18,8 +18,8 @@ def pymt_plugin_activate(w, ctx):
     ctx.c = MTWidget()
     
     # We initialize the pyo server.
-    s = pyo.Server(nchnls = 2).boot()
-    s.start()
+    ctx.s = pyo.Server(nchnls = 2).boot()
+    ctx.s.start()
     
     widget_size = (w.size[0]/25, w.size[1] / 2)
     
@@ -74,7 +74,7 @@ def pymt_plugin_activate(w, ctx):
 
 def pymt_plugin_deactivate(w, ctx):
     # pyo Server is stopped
-    s.stop()
+    ctx.s.stop()
     w.remove_widget(ctx.c)
 
 if __name__ == '__main__':

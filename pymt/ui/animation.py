@@ -534,9 +534,12 @@ class SequenceAnimation(ComplexAnimation):
             return
         current_anim = self.animations[self.anim_counter]
         current_anim.start(widget)
+        return self
 
-    def stop(self,widget):
-        '''Sops the sequential animation'''
+    def stop(self, widget = None):
+        '''Stops the sequential animation'''
+        if widget == None:
+            widget = self.animations[self.anim_counter].children.keys()[0]
         if self.animations[self.anim_counter].children[widget].generate_event and not self.single_event:
             widget.dispatch_event('on_animation_complete', self)
         #self.animations[self.anim_counter]._del_child(widget)
@@ -568,16 +571,24 @@ class ParallelAnimation(ComplexAnimation):
             self.dispatch_event('on_start', widget)
         for animation in self.animations:
             animation.start(widget)
+        return self
 
-    def stop(self,widget, animobj = None):
+    def stop(self, widget = None, animobj = None):
         '''Stops the parallel animation'''
-        self.dispatch_counter += 1
+        if widget == None:
+            widget = self.animations[self.dispatch_counter].children.keys()[0]
+
+        if animobj == None:
+            animobj = self.animations[self.dispatch_counter].children[widget]
+
+        self.dispatch_counter += 1        
         if self.dispatch_counter == len(self.animations):
             self.dispatch_event('on_complete', widget)
             if self.single_event:
                 widget.dispatch_event('on_animation_complete', self)
             self.dispatch_counter = 0
             return
+
         if animobj.generate_event and not self.single_event:
             widget.dispatch_event('on_animation_complete', self)
 

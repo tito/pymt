@@ -133,6 +133,7 @@ class MTWidget(EventDispatcher):
         self._root_window           = None
         self._root_window_source    = None
 
+        self.register_event_type('on_update')
         self.register_event_type('on_animation_complete')
         self.register_event_type('on_resize')
         self.register_event_type('on_parent_resize')

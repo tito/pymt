@@ -311,7 +311,7 @@ class LabelBase(BaseObject):
         except:
             try:
                 self._label = str(label)
-            except UnicodeDecodeError:
+            except:
                 self._label = label
         self.refresh()
     label = property(_get_label, _set_label, doc='Get/Set the label text')

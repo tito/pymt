@@ -2,13 +2,12 @@
 Speech Bubble: a little speech bubble !
 '''
 
+__all__ = ('MTSpeechBubble', )
 
-from label import MTLabel
-from ...graphx import drawPolygon, drawRoundedRectangle, gx_matrix
-from ...vector import Vector
+from pymt.ui.widgets.label import MTLabel
+from pymt.graphx import drawPolygon, drawRoundedRectangle, gx_matrix
+from pymt.vector import Vector
 from OpenGL.GL import *
-
-__all__ = ['MTSpeechBubble']
 
 class MTSpeechBubble(MTLabel):
     '''A little speed bubble !
@@ -100,11 +99,10 @@ class MTSpeechBubble(MTLabel):
             super(MTSpeechBubble, self).draw()
 
 if __name__ == '__main__':
-    w = MTWindow()
+    from pymt import runTouchApp
     bl = MTSpeechBubble(
         color=(0,0,0,1),
         label="Bubble"
     )
     bl.pos = (100, 100)
-    w.add_widget(bl)
-    runTouchApp()
+    runTouchApp(bl)

@@ -48,7 +48,7 @@ def drawRectangle(GLenum style, float x, float y, float w, float h):
 def drawPolygon(GLenum style, list points, float linewidth):
     #points = _make_point_list(points)
 
-    if linewidth >= 0:
+    if linewidth > 0:
         glPushAttrib(GL_LINE_BIT)
         glLineWidth(linewidth)
 
@@ -57,7 +57,7 @@ def drawPolygon(GLenum style, list points, float linewidth):
         glVertex2f(x, y)
     glEnd()
 
-    if linewidth >= 0:
+    if linewidth > 0:
         glPopAttrib()
 
 def drawRectangleAlpha(GLenum style, float x, float y, float w, float h,

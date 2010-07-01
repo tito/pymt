@@ -40,11 +40,24 @@ class MTSpellVKeyboardLabel(MTButton):
         self.size = self.label_obj.content_width, self.label_obj.content_height
 
 class MTSpellVKeyboard(MTVKeyboard):
+    '''
+    The MTSpellVKeyboard augments the ordinary MTVKeyboard with spelling suggestions.
+    You can use it instead of the MTVKeyboard. The only difference are the spelling
+    suggestions that are shown on top of the widget. As you type, these are populated
+    by suggestions from the system. To use a suggestion, simply tap it.
+
+    :Parameters:
+        `spelling` : Spelling object
+            If provided, the keyboard uses this spelling instance (can be used to
+            indicate which language should be used for spelling). If not provided,
+            a fallback spelling instance will be created that uses the first language
+            available.
+    '''
+
     def __init__(self, **kwargs):
         super(MTSpellVKeyboard, self).__init__(**kwargs)
         self.last_word = ''
-        # XXX Make this a config option!
-        self.spelling = Spelling('en')
+        self.spelling = kwargs.get('spelling', Spelling())
         self.suggests = []
         self.buttons = []
         self.slayout = MTBoxLayout(orientation='horizontal', spacing=10)
@@ -100,7 +113,3 @@ class MTSpellVKeyboard(MTVKeyboard):
 
 MTWidgetFactory.register('MTSpellVKeyboard', MTSpellVKeyboard)
 
-
-if __name__ == '__main__':
-    m = MTTextInput(keyboard=MTSpellVKeyboard(), font_size=42)
-    runTouchApp(m)

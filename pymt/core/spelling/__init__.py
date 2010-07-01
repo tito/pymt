@@ -25,8 +25,8 @@ class NoLanguageSelectedError(Exception):
 
 class SpellingBase(object):
     '''
-    Base class for all spelling providers. Supports some abstract methods for
-    checking words and getting suggestions.
+    Base class for all spelling providers.
+    Supports some abstract methods for checking words and getting suggestions.
     '''
     def __init__(self, language=None):
         '''
@@ -36,6 +36,14 @@ class SpellingBase(object):
         self.select_language().
         If no `language` identifier is provided, we just fall back to the first
         one that is available.
+
+        :Parameters:
+            `language` : str, defaults to None
+                If provided, indicates the language to be used. This needs
+                to be a language identifier understood by select_language(),
+                i.e. one of the options returned by list_languages().
+                If nothing is provided, the first available language is used.
+                If no language is available, a NoLanguageSelectedError is raised.
         '''
         langs = self.list_languages()
         try:
@@ -50,6 +58,12 @@ class SpellingBase(object):
         '''
         From the set of registered languages, select the first language
         for `language`.
+
+        :Parameters:
+            `language` : str
+                Language identifier. Needs to be one of the options returned by
+                list_languages(). Sets the language used for spell checking and
+                word suggestions.
         '''
         raise NotImplementedError('select_language() method not implemented ' + \
                                   'by abstract spelling base class!')
@@ -63,9 +77,14 @@ class SpellingBase(object):
                                   'by abstract spelling base class!')
 
     def check(self, word):
-        # XXX `word` is a string.
         '''
         If `word` is a valid word in `self._language`, return True.
+
+        :Parameters:
+            `word` : str
+                The word to check. If the word is a valid word in the currently
+                active language, True is returned.
+
         '''
         raise NotImplementedError('check() method not implemented by abstract ' + \
                                   'spelling base class!')
@@ -75,6 +94,12 @@ class SpellingBase(object):
         For a given `fragment` (i.e., part of a word or a word by itself),
         provide corrections (`fragment` may be misspelled) or completions
         as a list of strings.
+
+        :Parameters:
+            `fragment` : str
+                The word fragment to get suggestions/corrections for.
+                E.g.: 'foo' might become 'of', 'food' or 'foot'.
+
         '''
         raise NotImplementedError('suggest() method not implemented by abstract ' + \
                                   'spelling base class!')

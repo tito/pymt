@@ -29,11 +29,9 @@ class SpellingEnchant(SpellingBase):
         return enchant.list_languages()
 
     def check(self, word):
-        self._assure_initialization()
         return self._language.check(word)
 
     def suggest(self, fragment):
-        self._assure_initialization()
         suggestions = self._language.suggest(fragment)
         # Don't show suggestions that are invalid
         suggestions = [s.decode('utf-8') for s in suggestions if self.check(s)]

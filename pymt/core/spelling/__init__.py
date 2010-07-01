@@ -34,24 +34,17 @@ class SpellingBase(object):
         language exists, it is selected. If an identifier is provided and no
         matching language exists, a NoSuchLangError exception is raised by
         self.select_language().
-        If no `language` identifier is provided, we leave self._language
-        uninitialized (Helpful if the user wants to choose from a list of
-        available languages, which is only available after object
-        initialization via self.list_languages()).
+        If no `language` identifier is provided, we just fall back to the first
+        one that is available.
         '''
-        if language:
-            self.select_language(language)
-
-    def _assure_initialization(self):
-        '''
-        If self._language is still None when a first call to a
-        language-using method is made, we raise an exception.
-        '''
-        if self._language is None:
-            # self._language may still be None due to missing initialization in
-            # __init__()
-            raise NoLanguageSelectedError('This method cannot be used if no language ' + \
-                                          'has been selected.')
+        langs = self.list_languages()
+        try:
+            # If no language was specified, we just use the first one
+            # that is available.
+            fallback_lang = langs[0]
+        except IndexError:
+            raise NoLanguageSelectedError("No languages available!")
+        self.select_language(language or fallback_lang)
 
     def select_language(self, language):
         '''

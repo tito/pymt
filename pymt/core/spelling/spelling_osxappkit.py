@@ -35,7 +35,6 @@ class SpellingOSXAppKit(SpellingBase):
         return list(self._language.availableLanguages())
 
     def check(self, word):
-        self._assure_initialization()
         # TODO Implement this!
         #      NSSpellChecker provides several functions that look like what we
         #      need, but they're a) slooow and b) return a strange result. Might
@@ -44,7 +43,6 @@ class SpellingOSXAppKit(SpellingBase):
         raise NotImplementedError('check() not currently supported by the OSX AppKit backend')
 
     def suggest(self, fragment):
-        self._assure_initialization()
         l = self._language
         # XXX Both ways below work on OSX 10.6. It has not been tested on any
         #     other version, but it should work.

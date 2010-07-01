@@ -65,10 +65,10 @@ class MTLabel(MTWidget):
         # copy style to inline one (needed for css reloading)
         if 'color' in kwargs:
             self._inline_style['color'] = kwargs.get('color')
-        if 'font-name' in kwargs:
-            self._inline_style['font-name'] = kwargs.get('font-name')
-        if 'font-size' in kwargs:
-            self._inline_style['font-size'] = kwargs.get('font-size')
+        if 'font_name' in kwargs:
+            self._inline_style['font-name'] = kwargs.get('font_name')
+        if 'font_size' in kwargs:
+            self._inline_style['font-size'] = kwargs.get('font_size')
         if 'bold' in kwargs and 'italic' in kwargs and \
             kwargs.get('bold') and kwargs.get('italic'):
             self._inline_style['font-weight'] = 'bolditalic'

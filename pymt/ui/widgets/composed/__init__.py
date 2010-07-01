@@ -13,3 +13,4 @@ from textinput import *
 from textarea import *
 from popup import *
 from filebrowser import *
+from vkeyboardspellcheck import *

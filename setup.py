@@ -1,20 +1,7 @@
+import sys
+import os
 from distutils.core import setup
 from distutils.extension import Extension
-
-
-
-"""
-#build numpy transformation extension
-import numpy
-setup(name='_transformations', ext_modules=[
-      Extension('_transformations', ['pymt/lib/transformations.c'],
-      include_dirs=[numpy.get_include()], extra_compile_args=[])],)
-
-
-import sys
-sys.exit()
-"""
-
 
 try:
     have_cython = True
@@ -22,8 +9,15 @@ try:
 except:
     have_cython = False
 
-import sys
-import os
+try:
+    import numpy
+except:
+    print '#' * 80
+    print
+    print 'PyMT require numpy now. Please install it before running PyMT setup'
+    print
+    print '#' * 80
+    sys.exit(1)
 
 
 # extract version (simulate doc generation, pymt will be not imported)
@@ -44,11 +38,11 @@ for root, subFolders, files in os.walk('examples'):
         examples.append(os.path.join(root,file))
 
 # modules
-import numpy
-numpy_transform_ext = Extension('pymt.c_ext._transformations',
-                                ['pymt/c_ext/transformations.c'],
-                                include_dirs=[numpy.get_include()],
-                                extra_compile_args=[])
+numpy_transform_ext = Extension(
+    'pymt.c_ext._transformations',
+    ['pymt/c_ext/transformations.c'],
+    include_dirs=[numpy.get_include()],
+    extra_compile_args=[])
 
 ext_modules = [numpy_transform_ext]
 cmdclass = {}

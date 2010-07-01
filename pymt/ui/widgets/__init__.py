@@ -10,6 +10,7 @@ from dragable import *
 from flippable import *
 from gesturewidget import *
 from kinetic import *
+from image import *
 from label import *
 from layout import *
 from klist import *

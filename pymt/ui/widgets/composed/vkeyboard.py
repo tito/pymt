@@ -34,6 +34,8 @@ class KeyboardLayout(object):
     SHIFT_3 = []
     SHIFT_4 = []
     SHIFT_5 = []
+    # Actual letters. No numbers or special chars or keys. Upper & lower.
+    LETTERS = []
 
 class KeyboardLayoutQWERTY(KeyboardLayout):
     '''Implementation of QWERTY Layout'''
@@ -103,6 +105,10 @@ class KeyboardLayoutQWERTY(KeyboardLayout):
         (' ', ' ', None, 12), (u'\u2b12', None, 'layout', 1.5), (u'\u2a2f', None, 'escape', 1.5),
     ]
 
+    LETTERS = NORMAL_2[1:11] + NORMAL_3[1:10] + NORMAL_4[1:8] + \
+              SHIFT_2[1:11] + SHIFT_3[1:10] + SHIFT_4[1:8]
+
+
 class KeyboardLayoutAZERTY(KeyboardLayout):
     '''Implementation of AZERTY Layout'''
     ID              = 'azerty'
@@ -171,6 +177,10 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
     SHIFT_5 = [
         (' ', ' ', None, 12), (u'\u2b12', None, 'layout', 1.5), (u'\u2a2f', None, 'escape', 1.5),
     ]
+
+    LETTERS = NORMAL_2[1:11] + NORMAL_3[1:11] + NORMAL_4[2:8] + \
+              SHIFT_2[1:11] + SHIFT_3[1:11] + SHIFT_4[2:8]
+
 
 class MTVKeyboard(MTScatterWidget):
     '''

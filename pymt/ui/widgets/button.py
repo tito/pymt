@@ -92,6 +92,12 @@ class MTButton(MTLabel):
     def on_state_change(*largs):
         pass
 
+    def on_press(*largs):
+        pass
+
+    def on_release(*largs):
+        pass
+
     def on_touch_down(self, touch):
         if not self.collide_point(touch.x, touch.y):
             return False

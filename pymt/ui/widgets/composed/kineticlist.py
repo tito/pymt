@@ -121,11 +121,11 @@ class MTKineticList(MTStencilContainer):
         self.vx = 0
         self.vy = 0
         # List of all children, whatever will be the search
-        self.pchildren = SafeList()
+        self.pchildren = []
         # For extra blob stats
         self.touch = {}
         # Holds widgets not a part of the scrolling(search button, etc)
-        self.widgets = SafeList()
+        self.widgets = []
         self._last_content_size = 0
         self._scrollbar_index = 0
         self._scrollbar_size = 0

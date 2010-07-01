@@ -57,7 +57,8 @@ class MTPopup(MTScatterWidget):
 
         # Titles
         if kwargs.get('title'):
-            self.w_title = MTLabel(label=kwargs.get('title'), font_size=10, bold=False, autosize=True)
+            self.w_title = MTLabel(label=kwargs.get('title'),
+                                   autosize=True, cls='popup-title')
 
         # Buttons
         self.w_submit = MTButton(label=kwargs.get('label_submit'), size_hint=(0.5,None), height=40,

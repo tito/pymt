@@ -2,14 +2,15 @@
     /* foreground/text color */
     color: rgba(0, 0, 0, 255);
 
-    /* color when something is pushed TODO: change everywhere this is used, becsue it will be foregroudn color when state is down*/
-    color-down: rgba(50,50,50, 128);
+    /* color when something is pushed TODO: change everywhere this is used,
+	 * because it will be foreground color when state is down */
+    color-down: rgba(50,50,50, 200);
 
-    /*new way of background color when somethign is pushed*/
-    bg-color-down: rgba(50,50,50, 128);
+    /* new way of background color when something is pushed*/
+    bg-color-down: rgba(120, 120, 120, 200);
 
     /* background color of widget */
-    bg-color: rgba(100,100,100, 128);
+    bg-color: rgba(100, 100, 100, 200);
 
     /* fonts */
     font-size: 12;
@@ -18,7 +19,7 @@
 
 
     /* borders */
-    border-width: 1.5;
+    border-width: 1;
     border-radius: 0;
     border-radius-precision: 1;
     draw-border: 0;
@@ -26,12 +27,18 @@
     /* background alpha layer */
     draw-background: 1;
     draw-alpha-background: 0;
-    alpha-background: 1 1 0.5 0.5;
+    alpha-background: 1 1 0.7 0.7;
 
     /* text shadow */
     draw-text-shadow: 0;
-    text-shadow-color: rgba(150, 150, 150, 63);
+    text-shadow-color: rgba(110, 110, 110, 80);
     text-shadow-position: -1 1;
+}
+
+/* special case for label, label support padding
+ */
+label {
+	padding: 0;
 }
 
 widget,
@@ -55,12 +62,10 @@ flippablewidget,
 form,
 popup,
 vkeyboard {
-    border-color: rgb(150, 150, 150);
+    border-color: rgb(130, 130, 130);
     color: rgb(255, 255, 255);
-    bg-color: rgba(60, 60, 60, 200);
-    draw-alpha-background: 1;
+    bg-color: rgba(120, 120, 120, 240);
     draw-border: 1;
-    draw-text-shadow: 1;
     draw-background: 1;
     draw-alpha-background: 1;
 }
@@ -69,10 +74,10 @@ textinput {
     color: rgb(0,0,0);
     font-size: 16;
     font-weight: bold;
-    bg-color: rgba(200, 200, 200, 200);
+    bg-color: rgba(240, 240, 240, 240);
     bg-color-active: rgb(250, 250, 250);
     bg-color-error: rgb(255, 100, 100);
-    draw-alpha-background: 1;
+    draw-alpha-background: 0;
     border-width: 1;
     border-color: rgb(100,100,100);
     border-radius-precision: 1;
@@ -110,7 +115,7 @@ fileentryview {
 }
 
 kineticcontainer {
-    bg-color: rgba(90, 90, 90, 127);
+    bg-color: rgba(90, 90, 0, 255);
 }
 
 kineticitem {
@@ -129,6 +134,7 @@ kineticlist {
     scrollbar-size: 3;
     scrollbar-color: rgba(127, 127, 127, 127);
     scrollbar-margin: 3 3 3 0;
+	bg-color: rgb(180, 180, 182);
 }
 
 .kineticlist-search {
@@ -148,7 +154,7 @@ kineticlist {
 innerwindowcontainer,
 basewindow,
 window {
-    bg-color: rgb(250,250,250);
+    bg-color: rgb(50, 50, 50);
     draw-alpha-background: 0;
     alpha-background: 0.8 0.8 0.0 0.0;
     draw-background: 1;
@@ -206,10 +212,6 @@ popup {
     draw-background: 1;
 }
 
-popup {
-    bg-color: rgba(60, 60, 60, 100);
-}
-
 .modalpopup-submit,
 .modalpopup-title {
     bg-color: rgba(200, 200, 200, 100);
@@ -219,14 +221,14 @@ popup {
     font-size: 12;
     border-radius: 5;
     border-precision: 1;
-    draw-text-shadow: 0;
 }
 
-.modalpopup-title {
-    font-size: 16;
+.modalpopup-title,
+.popup-title {
+	color: rgb(255, 255, 255);
+    font-size: 12;
+	padding: 10;
 }
-
-
 
 video {
     bg-color: rgba(100, 100, 100, 220);
@@ -254,3 +256,4 @@ coverflow {
 .switch-button {
     draw-border: 0;
 }
+

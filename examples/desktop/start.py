@@ -5,7 +5,10 @@ from pymt import *
 from OpenGL.GL import GL_LINE_STRIP, glColor4f, glVertex2f, GL_LINE_BIT, glLineWidth
 from OpenGL.GL import glTranslatef
 
-plugins = MTPlugins(plugin_paths=[os.path.join(os.path.dirname(__file__), '..')])
+plugins = MTPlugins(plugin_paths=[
+    os.path.join(os.path.dirname(__file__), '..', 'apps'),
+    os.path.join(os.path.dirname(__file__), '..', 'games')
+])
 plugins.search_plugins()
 
 def gesture_add_default(gdb):

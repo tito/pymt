@@ -295,6 +295,11 @@ class MTScatter(MTWidget):
             self.update_matrices()
             return
 
+        #if the twon fingers are too close dont compute...would cause div by zero error or singular matrix transform
+        dist = Vector(*self.touches[0].pos).distance(self.touches[1].pos)
+        if dist < 2: #in pixels
+            return
+
         #two or more touches...lets do some math!
         """
         heres an attempt at an exmplanation of the math
@@ -348,6 +353,7 @@ class MTScatter(MTWidget):
             angle = artan(b/a)     (based on teh definitionsof a and b above)
             scale = a/cos(angle)
         """
+
         #old coordinates
         x1 = self.touches[0].userdata['transform_origin'][0]
         y1 = self.touches[0].userdata['transform_origin'][1]

@@ -20,10 +20,15 @@ from widget import MTWidget
 
 #new scatter imports
 import numpy
-from ...lib.transformations import *
-
 from math import atan,cos, radians, degrees
 from OpenGL.GL import glMultMatrixf
+
+try:
+    from ...c_ext.transformations import *
+except:
+    pymt_logger.warning("could not import accelerated numpy transformations extension, falling back to plain python")
+    from ...lib.transformations import *
+
 
 
 

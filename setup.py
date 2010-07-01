@@ -45,8 +45,8 @@ for root, subFolders, files in os.walk('examples'):
 
 # modules
 import numpy
-numpy_transform_ext = Extension('pymt.lib._transformations',
-                                ['pymt/lib/transformations.c'],
+numpy_transform_ext = Extension('pymt.c_ext._transformations',
+                                ['pymt/c_ext/transformations.c'],
                                 include_dirs=[numpy.get_include()],
                                 extra_compile_args=[])
 

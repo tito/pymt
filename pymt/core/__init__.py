@@ -71,6 +71,7 @@ from image import *
 from text import *
 from video import *
 from svg import *
+from spelling import *
 
 # only after core loading, load extensions
 from text.markup import *

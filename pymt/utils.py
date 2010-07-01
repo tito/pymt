@@ -141,9 +141,10 @@ def deprecated(func):
         return func(*args, **kwargs)
     return new_func
 
+
 class SafeList(list):
     '''List with clear() method
-    
+
     ..warning ::
         Usage of iterate() function will decrease your performance.
     '''
@@ -155,6 +156,7 @@ class SafeList(list):
         if reverse:
             return reversed(iter(self))
         return iter(self)
+
 
 def serialize_numpy(obj):
     import numpy

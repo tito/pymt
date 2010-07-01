@@ -137,3 +137,4 @@ class MTAbstractLayout(MTWidget):
                 w.width = w.size_hint[0]*self.width
             if w.size_hint[1]:
                 w.height = w.size_hint[1]*self.height
+

@@ -39,25 +39,19 @@ class MTSidePanel(MTWidget):
             'left', 'right', 'top', 'bottom'.
     '''
     def __init__(self, **kwargs):
-        kwargs.setdefault('side', 'left')
-        kwargs.setdefault('align', 'center')
-        kwargs.setdefault('layout', None)
-        kwargs.setdefault('corner_size', 30)
-        kwargs.setdefault('corner', None)
         kwargs.setdefault('hide', True)
-        kwargs.setdefault('duration', .5)
-
-        assert(kwargs.get('side') in ('bottom', 'top', 'left', 'right'))
-        assert(kwargs.get('align') in ('bottom', 'top', 'left', 'right', 'middle', 'center'))
 
         super(MTSidePanel, self).__init__(**kwargs)
 
-        self.side        = kwargs.get('side')
-        self.align       = kwargs.get('align')
-        self.corner_size = kwargs.get('corner_size')
-        self.duration    = kwargs.get('duration')
-        layout           = kwargs.get('layout')
-        corner           = kwargs.get('corner')
+        self.side        = kwargs.get('side', 'left')
+        self.align       = kwargs.get('align', 'center')
+        self.corner_size = kwargs.get('corner_size', 30)
+        self.duration    = kwargs.get('duration', .5)
+        layout           = kwargs.get('layout', None)
+        corner           = kwargs.get('corner', None)
+
+        assert(self.side in ('bottom', 'top', 'left', 'right'))
+        assert(self.align in ('bottom', 'top', 'left', 'right', 'middle', 'center'))
 
         if layout is None:
             from layout import MTBoxLayout
@@ -80,7 +74,7 @@ class MTSidePanel(MTWidget):
         super(MTSidePanel, self).add_widget(self.corner)
         self.corner.connect('on_press', self._corner_on_press)
 
-        self.initial_pos    = self.pos
+        self.initial_pos = self.pos
         self.need_reposition = True
 
         if kwargs.get('hide'):
@@ -101,7 +95,7 @@ class MTSidePanel(MTWidget):
         return True
 
     def show(self):
-        dpos = self.initial_pos
+        dpos = self._get_position_for(True)
         self.layout.visible = True
         self.layout.do(Animation(duration=self.duration, f='ease_out_cubic', pos=dpos))
 
@@ -109,73 +103,79 @@ class MTSidePanel(MTWidget):
         self.layout.visible = False
 
     def hide(self):
-        w = self.get_parent_window()
-        if not w:
+        dpos = self._get_position_for(False)
+        if dpos is None:
             return
-        if self.side == 'left':
-            dpos = (-self.layout.width, self.y)
-        elif self.side == 'right':
-            dpos = (w.width, self.y)
-        elif self.side == 'top':
-            dpos = (self.x, w.height)
-        elif self.side == 'bottom':
-            dpos = (self.x, -self.layout.height)
         anim = Animation(duration=self.duration, f='ease_out_cubic', pos=dpos)
         anim.connect('on_complete', self._on_animation_complete_hide)
         self.layout.do(anim)
 
+    def _get_position_for(self, visible):
+        # get position for a specific state (visible or not visible)
+        w = self.get_parent_window()
+        if not w:
+            return
+
+        side = self.side
+        x = self.layout.x
+        y = self.layout.y
+        if visible:
+            if side == 'right':
+                x = w.width - self.layout.width
+            elif side == 'top':
+                y = w.height - self.layout.height
+            elif side == 'left':
+                x = 0
+            elif side == 'bottom':
+                y = 0
+        else:
+            if side == 'left':
+                x, y = (-self.layout.width, self.y)
+            elif side == 'right':
+                x, y = (w.width, self.y)
+            elif side == 'top':
+                x, y = (self.x, w.height)
+            elif side == 'bottom':
+                x, y = (self.x, -self.layout.height)
+        return x, y
+
     def on_update(self):
         w = self.get_parent_window()
+        side = self.side
+        align = self.align
 
         # first execution, need to place layout in the good size
         if self.need_reposition:
-            if self.layout.visible:
-                if self.side == 'right':
-                    self.layout.x = w.width - self.layout.width
-                elif self.side == 'top':
-                    self.layout.y = w.height - self.layout.height
-                elif self.side == 'left':
-                    self.layout.x = 0
-                elif self.side == 'bottom':
-                    self.layout.y = 0
-            else:
-                if self.side == 'left':
-                    dpos = (-self.layout.width, self.y)
-                elif self.side == 'right':
-                    dpos = (w.width, self.y)
-                elif self.side == 'top':
-                    dpos = (self.x, w.height)
-                elif self.side == 'bottom':
-                    dpos = (self.x, -self.layout.height)
-                self.layout.pos = dpos
+            dpos = self._get_position_for(self.layout.visible)
+            self.layout.pos = dpos
             self.need_reposition = False
 
         # adjust size + configure position
-        if self.side in ('left', 'right'):
+        if side in ('left', 'right'):
             self.corner.size = (self.corner_size, self.layout.height)
-            if self.align in ('bottom', 'left'):
+            if align in ('bottom', 'left'):
                 cy = 0
-            elif self.align in ('top', 'right'):
+            elif align in ('top', 'right'):
                 cy = w.height - self.layout.height
-            elif self.align in ('center', 'middle'):
+            elif align in ('center', 'middle'):
                 cy = w.center[1] - self.layout.height / 2.
             self.layout.y = cy
-        elif self.side in ('top', 'bottom'):
+        elif side in ('top', 'bottom'):
             self.corner.size = (self.layout.width, self.corner_size)
-            if self.align in ('bottom', 'left'):
+            if align in ('bottom', 'left'):
                 cx = 0
-            elif self.align in ('top', 'right'):
+            elif align in ('top', 'right'):
                 cx = w.width - self.layout.width
-            elif self.align in ('center', 'middle'):
+            elif align in ('center', 'middle'):
                 cx = w.center[0] - self.layout.width / 2.
             self.layout.x = cx
-        if self.side == 'left':
+        if side == 'left':
             cx = self.layout.x + self.layout.width
-        elif self.side == 'right':
+        elif side == 'right':
             cx = self.layout.x - self.corner_size
-        elif self.side == 'top':
+        elif side == 'top':
             cy = self.layout.y - self.corner_size
-        elif self.side == 'bottom':
+        elif side == 'bottom':
             cy = self.layout.y + self.layout.height
 
         # place corner :)

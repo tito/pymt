@@ -145,6 +145,11 @@ def screen_tabs(w):
 def screen_sidepanel(w):
     w = getWindow()
 
+    panel = MTSidePanel(side='left', size=(500, 100))
+    for x in xrange(5):
+        panel.add_widget(MTButton(label=str(x)))
+    w.add_widget(panel)
+
     panel = MTSidePanel(side='right', size=(500, 100))
     for x in xrange(5):
         panel.add_widget(MTButton(label=str(x)))

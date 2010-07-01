@@ -76,6 +76,8 @@ class MTLabel(MTWidget):
             self._inline_style['font-weight'] = 'bold'
         elif 'italic' in kwargs and kwargs.get('italic'):
             self._inline_style['font-weight'] = 'italic'
+        if 'padding' in kwargs:
+            self._inline_style['padding'] = kwargs.get('padding')
 
         # update from inline
         self.apply_css(self._inline_style)
@@ -95,6 +97,7 @@ class MTLabel(MTWidget):
         self.color = s['color']
         self.font_name = s['font-name']
         self.font_size = s['font-size']
+        self.padding = s['padding']
         self.bold = False
         self.italic = False
         if s['font-weight'] in ('bold', 'bolditalic'):
@@ -150,6 +153,24 @@ class MTLabel(MTWidget):
             self.height = h
         elif self.autowidth:
             self.width = w
+
+    def _get_padding_x(self):
+        return self.kwargs.get('padding_x')
+    def _set_padding_x(self, x):
+        self.kwargs['padding_x'] = x
+    padding_x = property(_get_padding_x, _set_padding_x)
+
+    def _get_padding_y(self):
+        return self.kwargs.get('padding_x')
+    def _set_padding_y(self, y):
+        self.kwargs['padding_y'] = x
+    padding_y = property(_get_padding_y, _set_padding_y)
+
+    def _get_padding(self):
+        return self.kwargs.get('padding')
+    def _set_padding(self, x):
+        self.kwargs['padding'] = x
+    padding = property(_get_padding, _set_padding)
 
     def _get_font_size(self):
         return self.kwargs.get('font_size')

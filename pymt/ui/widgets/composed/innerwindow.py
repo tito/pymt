@@ -207,9 +207,9 @@ class MTInnerWindow(MTScatterWidget):
 
     def draw(self):
         # select color from number of touch
-        if len(self.touches) == 0:
+        if len(self._touches) == 0:
             set_color(*self.style.get('bg-color'))
-        elif len(self.touches) == 1:
+        elif len(self._touches) == 1:
             set_color(*self.style.get('bg-color-move'))
         else:
             set_color(*self.style.get('bg-color-full'))

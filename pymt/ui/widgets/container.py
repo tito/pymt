@@ -48,3 +48,4 @@ class MTScatterContainer(MTContainer, MTScatterWidget):
         # just subclass this function, don't move the object :)
         super(MTContainer, self).draw()
         self.child.draw()
+

@@ -107,25 +107,25 @@ class ParticleEngine(MTWidget):
         <MTBoxLayout id="'layout'" orientation="'vertical'" size_hint='(None,
         None)' invert_y='True'>
         <MTGridLayout cols="4" size_hint='(None,None)'>
-            <MTLabel label="'Lifetime'" size="(200, 30)"/>
+            <MTLabel label="'Lifetime'" size="(200, 30)" anchor_x="'center'" anchor_y="'middle'"/>
             <MTSlider id="'sl_lifetime'" min="1" max="10" value="1"
                 orientation="'horizontal'" value_show="True" size="(200, 30)"/>
-            <MTLabel label="'Alpha decrease'" size="(200, 30)"/>
+            <MTLabel label="'Alpha decrease'" size="(200, 30)" anchor_x="'center'" anchor_y="'middle'"/>
             <MTSlider id="'sl_alpha_decrease'" min="1" max="100" value="40"
                 orientation="'horizontal'" value_show="True" size="(200, 30)"/>
-            <MTLabel label="'Start dispertion'" size="(200, 30)"/>
+            <MTLabel label="'Start dispertion'" size="(200, 30)" anchor_x="'center'" anchor_y="'middle'"/>
             <MTSlider id="'sl_dispersion_start'" min="10" max="500" value="10"
                 orientation="'horizontal'" value_show="True" size="(200, 30)"/>
-            <MTLabel label="'End dispertion'" size="(200, 30)"/>
+            <MTLabel label="'End dispertion'" size="(200, 30)" anchor_x="'center'" anchor_y="'middle'"/>
             <MTSlider id="'sl_dispersion_end'" min="10" max="500" value="200"
                 orientation="'horizontal'" value_show="True" size="(200, 30)"/>
-            <MTLabel label="'Number'" size="(200, 30)"/>
+            <MTLabel label="'Number'" size="(200, 30)" anchor_x="'center'" anchor_y="'middle'"/>
             <MTSlider id="'sl_number'" min="5" max="100" value="20"
                 orientation="'horizontal'" value_show="True" size="(200, 30)"/>
-            <MTLabel label="'Size'" size="(200, 30)"/>
+            <MTLabel label="'Size'" size="(200, 30)" anchor_x="'center'" anchor_y="'middle'"/>
             <MTSlider id="'sl_pointsize'" min="1" max="50" value="10"
                 orientation="'horizontal'" value_show="True" size="(200, 30)"/>
-            <MTLabel label="'Color range'" size="(200, 30)"/>
+            <MTLabel label="'Color range'" size="(200, 30)" anchor_x="'center'" anchor_y="'middle'"/>
             <MTBoundarySlider id="'sl_color_r'" min="0" max="255"
                 value_min="100" value_max="255"
                 orientation="'horizontal'" showtext="True" size="(200, 30)"/>
@@ -137,14 +137,14 @@ class ParticleEngine(MTWidget):
                 orientation="'horizontal'" showtext="True" size="(200, 30)"/>
         </MTGridLayout>
         <MTGridLayout rows="1" size_hint='(None,None)'>
-            <MTLabel label="'Animation'" size="(120, 30)"/>
-            <MTButton id="'btn_linear'" label="'linear'" size="(100, 30)"/>
-            <MTButton id="'btn_ease_in_bounce'" label="'in_bounce'" size="(80, 30)"/>
-            <MTButton id="'btn_ease_out_bounce'" label="'out_bounce'" size="(80, 30)"/>
-            <MTButton id="'btn_ease_in_cubic'" label="'in_cubic'" size="(80, 30)"/>
-            <MTButton id="'btn_ease_out_cubic'" label="'out_cubic'" size="(80, 30)"/>
-            <MTButton id="'btn_ease_in_elastic'" label="'in_elastic'" size="(80, 30)"/>
-            <MTButton id="'btn_ease_out_elastic'" label="'out_elastic'" size="(80, 30)"/>
+            <MTLabel label="'Animation'" size="(120, 30)" anchor_x="'center'" anchor_y="'middle'"/>
+            <MTToggleButton group="'animation'" id="'btn_linear'" label="'linear'" size="(90, 30)"/>
+            <MTToggleButton group="'animation'" id="'btn_ease_in_bounce'" label="'in bounce'" size="(90, 30)"/>
+            <MTToggleButton group="'animation'" id="'btn_ease_out_bounce'" label="'out bounce'" size="(90, 30)"/>
+            <MTToggleButton group="'animation'" id="'btn_ease_in_cubic'" label="'in cubic'" size="(90, 30)"/>
+            <MTToggleButton group="'animation'" id="'btn_ease_out_cubic'" label="'out cubic'" size="(90, 30)"/>
+            <MTToggleButton group="'animation'" id="'btn_ease_in_elastic'" label="'in elastic'" size="(90, 30)"/>
+            <MTToggleButton group="'animation'" id="'btn_ease_out_elastic'" label="'out elastic'" size="(90, 30)"/>
         </MTGridLayout>
         </MTBoxLayout>
         '''

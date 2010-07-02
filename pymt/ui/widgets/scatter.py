@@ -59,8 +59,10 @@ class MTScatter(MTWidget):
     '''
 
     def __init__(self, **kwargs):
-        kwargs.setdefault('rotation', 0.0)
+
+        kwargs.setdefault('pos', (0,0))
         kwargs.setdefault('center', (0,0))
+        kwargs.setdefault('rotation', 0.0)
         kwargs.setdefault('scale', 1.0)
 
         super(MTScatter, self).__init__(**kwargs)
@@ -74,12 +76,15 @@ class MTScatter(MTWidget):
         self.do_rotation    = kwargs.get('do_rotation', True)
         self.do_translation = kwargs.get('do_translation', True)
         self.do_translation_x = self.do_translation_y = 1.0
-        self.transform = identity_matrix()
-        self.transform_inv = identity_matrix()
+
 
         # private properties
         self._touches = []
+
+        self._transform = identity_matrix()
+        self._transform_inv = identity_matrix()
         self._transform_gl = identity_matrix().T.tolist()  #openGL matrix
+        self._transform_inv_gl = identity_matrix().T.tolist()  #openGL matrix
         self._current_transform = identity_matrix()
         self._prior_transform = identity_matrix()
 
@@ -94,37 +99,47 @@ class MTScatter(MTWidget):
         self.update_matrices()
 
         #inital transformation
-        #if kwargs.get("pos"):
-        #    pymt_logger.warning('Deprecation Warning: "pos" attribute set in MTScatter constructor. Use "center" instead!!  Using the value given as "pos" for center property.  In scatter pos==center')
-        #    kwargs['center'] = kwargs['pos']
-        #if kwargs.get("translation"):
-        #    pymt_logger.warning('Deprecation Warning: "translation" attribute set in MTScatter constructor.  Use "center" instead!!  Using the value given as "translation" for center property.  In scatter pos==center')
-        #    kwargs['center'] = kwargs['pos']
+        self.center = kwargs['center']
+        self.pos = kwargs['pos']
+        self.scale = kwargs['scale']
+        self.rotation = kwargs['rotation']
 
-        #self.center = kwargs['center']
-        #self.scale = kwargs['scale']
-        #self.rotation = kwargs['rotation']
 
-    @property
-    def transform_gl(self):
-        '''Return the transformation matrix for OpenGL'''
+    def _get_transform_gl(self):
         return self._transform_gl
+    transform_gl = property(_get_transform_gl,
+        doc = " Return the transformation matrix for OpenGL,  read only!'")
 
     def _get_transform_mat(self):
-        return self.transform
-    def _set_transform_mat(self, x):
+        pymt_logger.warn("MTScatterWidget.transform_mat is deprecated! Use transform_gl for an openGl transformation matrix instead!")
+        return self._transform_gl
+    transform_mat = property(_get_transform_mat,
+        doc = "DEPRECATED Return the transformation matrix for OpenGL,  read only!'")
+
+
+    def _get_transform_inv_gl(self):
+        return self._transform_gl
+    transform_inv_gl = property(_get_transform_inv_gl,
+        doc = " Return the inverse transformation matrix for OpenGL,  read only!'")
+
+    def _get_transform(self):
+        return self._transform
+    def _set_transform(self, x):
         self.reset_transformation_origin()
         self._prior_transform = x
         self.update_matrices()
-    transform_mat = property(
-        _get_transform_mat,
-        _set_transform_mat,
+    transform = property(_get_transform, _set_transform,
         doc='Get/Set transformation matrix (numpy matrix)')
 
+    def _get_transform_inv(self):
+        return self._transform_inv
+    transform_inv = property(_get_transform_inv,
+        doc = "Inverse of transformation matrix (numpy matrix),  read only!'")
+
     def _get_state(self):
-        return serialize_numpy(self.transform_mat)
+        return serialize_numpy(self._transform)
     def _set_state(self, state):
-        self.transform_mat = deserialize_numpy(state)
+        self.transform = deserialize_numpy(state)
     state = property(
         lambda self: self._get_state(),
         lambda self, x: self._set_state(x),
@@ -194,9 +209,9 @@ class MTScatter(MTWidget):
         # v2 = vector from center to center + (0,10) (in widget space)
         v1 = Vector(0,10)
         v2 = Vector(*self.to_parent(*self.pos)) - self.to_parent(self.x, self.y+10)
-        return(v1.angle(v2) + 180) % 360
+        return -1.0 *(v1.angle(v2) + 180) % 360
     def _set_rotation(self, rotation):
-        angle_change = rotation - self.rotation
+        angle_change = self.rotation - rotation
         trans = translation_matrix( (self.width / 2, self.height / 2, 0) )
         trans = dot(trans,rotation_matrix( -radians(angle_change), (0, 0, 1)))
         trans = dot(trans,translation_matrix( (-self.width / 2, -self.height / 2, 0) ))
@@ -224,11 +239,11 @@ class MTScatter(MTWidget):
 
 
     def to_parent(self, x, y, **k):
-        p = dot(self.transform, (x,y,0,1))
+        p = dot(self._transform, (x,y,0,1))
         return (p[0],p[1])
 
     def to_local(self, x, y, **k):
-        p = dot(self.transform_inv, (x,y,0,1))
+        p = dot(self._transform_inv, (x,y,0,1))
         return (p[0],p[1])
 
     def collide_point(self, x, y):
@@ -264,10 +279,11 @@ class MTScatter(MTWidget):
     def update_matrices(self):
         #compute the OpenGL matrix
         trans = dot( self._current_transform, self._prior_transform)
-        if not is_same_transform(trans, self.transform):
-            self.transform = trans
-            self.transform_inv = inverse_matrix(self.transform)
-            self._transform_gl = self.transform.T.tolist() #for openGL
+        if not is_same_transform(trans, self._transform):
+            self._transform = trans
+            self._transform_inv = inverse_matrix(self._transform)
+            self._transform_gl = self._transform.T.tolist() #for openGL
+            self._transform_inv_gl = self._transform.T.tolist() #for openGL
             self.dispatch_event('on_transform')
 
     def update_transformation(self):

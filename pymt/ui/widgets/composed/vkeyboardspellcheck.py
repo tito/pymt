@@ -3,6 +3,7 @@ SpellVKeyboard: Virtual keyboard that provides spelling
                 suggestions/corrections as you type.
 '''
 
+import os
 from pymt.core.spelling import Spelling
 from pymt.ui.colors import css_add_sheet
 from pymt.ui.factory import MTWidgetFactory
@@ -13,19 +14,21 @@ from pymt.utils import curry
 
 __all__ = ('MTSpellVKeyboard', )
 
+if 'PYMT_DOC' not in os.environ:
 
-css_spell_vkeyboard_label = '''
-spellvkeyboardlabel {
-    -bg-color: rgba(208, 208, 208, 255);
-    draw-border: 1;
-    border-radius: 5;
-    draw-alpha-background: 1;
-    alpha-background: 1 1 .1 .1;
-    border-radius-precision: .25;
-}
-'''
+    css_spell_vkeyboard_label = '''
+    spellvkeyboardlabel {
+        -bg-color: rgba(208, 208, 208, 255);
+        draw-border: 1;
+        border-radius: 5;
+        draw-alpha-background: 1;
+        alpha-background: 1 1 .1 .1;
+        border-radius-precision: .25;
+    }
+    '''
 
-css_add_sheet(css_spell_vkeyboard_label)
+    css_add_sheet(css_spell_vkeyboard_label)
+
 
 class MTSpellVKeyboardLabel(MTButton):
     def __init__(self, **kwargs):

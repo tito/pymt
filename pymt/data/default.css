@@ -7,7 +7,7 @@
     color-down: rgba(50, 50, 50, 200);
 
     /* new way of background color when something is pushed*/
-    bg-color-down: rgba(120, 120, 120, 200);
+    bg-color-down: rgba(150, 150, 150, 200);
 
     /* background color of widget */
     bg-color: rgba(100, 100, 100, 200);
@@ -27,7 +27,7 @@
     /* background alpha layer */
     draw-background: 1;
     draw-alpha-background: 0;
-    alpha-background: 1 1 0.7 0.7;
+    alpha-background: 1 1 0.75 0.75;
 
     /* text shadow */
     draw-text-shadow: 0;
@@ -64,8 +64,10 @@ form,
 popup,
 vkeyboard {
     border-color: rgb(130, 130, 130);
-    color: rgb(255, 255, 255);
-    bg-color: rgba(120, 120, 120, 240);
+    border-color-down: rgb(0, 180, 250);
+    color: rgb(230, 230, 230);
+    color-down: rgb(255, 255, 255);
+    bg-color-down: rgba(0, 80, 160, 240);
     draw-border: 1;
     draw-background: 1;
     draw-alpha-background: 1;

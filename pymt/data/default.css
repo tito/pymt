@@ -256,6 +256,10 @@ coverflow {
     bg-color: rgba(255,255,255,255);
 }
 
+touchring {
+	color: rgb(255, 255, 255, 200);
+}
+
 .switch-button {
     draw-border: 0;
 }

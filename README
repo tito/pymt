@@ -5,7 +5,7 @@ Website: http://pymt.eu/
 Planet: http://pymt.eu/planet/
 
 
-About 0.4
+About 0.5
 ---------
 
 This is beta, so keep in mind that it might not work as intended at all times.
@@ -32,7 +32,7 @@ applications. Currently the aim is to allow for quick and easy interaction
 design and rapid prototype development.
 
 PyMT is written in python, based on OpenGL and supports different input methods
-like Mouse, Dual Mouse, TUIO, WiiMote, WM_TOUCH, etc.
+like Mouse, Dual Mouse, TUIO, WiiMote, WM_TOUCH, HIDtouch etc.
 
 PyMT is actively being developed by a community and free to use. It operates on
 all major platforms (Linux, OSX, Windows).
@@ -68,6 +68,7 @@ Here is what works best:
   * Pygame
   * PIL
   * GST + PyGST
+  * Cython
 
 
 Dcoumentation, Examples & Tutorials
@@ -93,23 +94,26 @@ Configuration
   # show/hide fps
   show_fps = (0|1)
 
-  # display event stats at end
-  show_eventstats = (0|1)
-
   # set log level
   log_level = (debug|info|warning|error|critical)
 
   # detection time of double tap (in milliseconds)
   double_tap_time = <integer>
 
-  # max distance allowed for double tap
+  # max distance allowed for double tap (normalized in range 0 - 1000)
   double_tap_distance = <integer>
 
   # detection time of retain touch (in milliseconds)
   retain_time = <integer>
 
-  # max distance allowed for retain touch
+  # max distance allowed for retain touch (normalized in range 0 - 1000)
   retain_distance = <integer>
+
+  # max distance to detect jittering (normalized in range 0 - 1000)
+  jitter_distance = <integer>
+
+  # list of device to ignore jittering
+  jitter_ignore_devices = <devicename>,...
 
   # log directory
   log_dir = <string>
@@ -120,14 +124,15 @@ Configuration
   # activate logging on file
   log_enable = (0|1)
 
-  # fix ccv bug when touch go outside 0-1 coordinates
-  fixccv = (0|1)
-
   # GL error check (disable to have more speed)
   gl_error_check = (0|1)
 
+  # ignore list
+  ignore = [(xmin, ymin, xmax, ymax), ...]
+
   # INTERNAL, NEVER TOUCH TO config_version !!
   config_version = <integer>
+
 
   [keyboard]
 
@@ -154,9 +159,6 @@ Configuration
   # opengl line smooth
   line_smooth = (0|1)
 
-  # ignore list
-  ignore = [(xmin, ymin, xmax, ymax), ...]
-
   # show cursor on fullscreen
   show_cursor = (0|1)
 
@@ -180,6 +182,22 @@ Configuration
   # format of dump image
   format = <jpeg|png>
 
+  [widgets]
+
+  # mtlist control
+
+  # maximum distance to trigger down/up on child (pixels)
+  list_trigger_distance = <int>
+
+  # friction (factor, 1 = no friction)
+  list_friction = <int>
+
+  # friction when a bound have been hit
+  list_friction_bound = <int>
+
+  # keyboard type
+  keyboard_type = <real|virtual>
+
   [modules]
 
   # modulename= to activate a module
@@ -189,11 +207,17 @@ Configuration
   keybinding=
   closeapp=
   feedback=
+  touchring=
 
 
 
 Other python/MT resources
 -------------------------
+
+movid.org
+^^^^^^^^^
+
+Another image tracker we are working on.
 
 nuigroup.com
 ^^^^^^^^^^^^

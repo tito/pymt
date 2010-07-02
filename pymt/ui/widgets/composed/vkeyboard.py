@@ -234,6 +234,9 @@ class MTVKeyboard(MTScatterWidget):
         kwargs.setdefault('time_lazy_update', .2)
         kwargs.setdefault('repeat', 1 / 15.)
         kwargs.setdefault('repeat_timeout', .2)
+
+        self._old_scale = 0
+
         super(MTVKeyboard, self).__init__(**kwargs)
 
         self.register_event_type('on_key_down')
@@ -268,7 +271,6 @@ class MTVKeyboard(MTScatterWidget):
         self._internal_text     = u''
         self._show_layout       = False
         self._active_keys       = []
-        self._old_scale         = self.scale
         self._used_label        = []
         self._last_key_down     = []
         self._last_key_repeat   = 0

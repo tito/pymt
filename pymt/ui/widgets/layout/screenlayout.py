@@ -1,3 +1,7 @@
+'''
+ScreenLayout: display only one widget in fullscreen at time
+'''
+
 __all__ = ('MTScreenLayout', )
 
 from abstractlayout import MTAbstractLayout

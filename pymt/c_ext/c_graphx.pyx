@@ -1,12 +1,10 @@
-# ----------------------------------------------------------------------------
-#
-# Graphx acceleration module
-#
-# This module should be not integrated inside accelerate module
-# Because it's loaded after OpenGL symbol are imported inside the main binary
-# Accelerate module is loaded at start, before any PyMT lib is used.
-#
-# ----------------------------------------------------------------------------
+'''
+Graphx: acceleration module
+
+This module should be not integrated inside accelerate module
+Because it's loaded after OpenGL symbol are imported inside the main binary
+Accelerate module is loaded at start, before any PyMT lib is used.
+'''
 
 # from the documentation http://docs.cython.org/src/tutorial/external.html
 # filename in extern is only required for compiler.

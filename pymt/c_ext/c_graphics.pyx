@@ -1,5 +1,5 @@
 '''
-Graphics: all low level function to draw object in Open
+Graphics: all low level function to draw object in OpenGL.
 
 Previous version of graphx was rely on Immediate mode of Open Immediate mode
 is not anymore allowed in OpenGL 3.0, and OpenGL ES.
@@ -13,7 +13,7 @@ User mode
 For every object you want do draw on screen, you must create them before
 drawing, on a canvas object. The Canvas object is a class that will store
 all your graphics elements, and draw them. With this method, canvas can do some
-optimization and avoid repetitive colors.
+optimization and avoid repetitive colors ::
 
     canvas = Canvas()
     canvas.color(1, 0, 0, 1)
@@ -23,7 +23,7 @@ Then, to draw the canvas ::
 
     canvas.draw()
 
-You can also get any object instance from canvas, for later change :
+You can also get any object instance from canvas, for later change ::
 
     myline = canvas.line([50, 50, 100, 100])
     myline.points += [0, 150]
@@ -84,8 +84,11 @@ An example with a rectangle + texture ::
 #
 
 
-from pymt import BaseObject, Texture, TextureRegion, getLabel, \
-        Image, resource_find, gx_texture
+from pymt.baseobject import BaseObject
+from pymt.texture import Texture, TextureRegion
+from pymt.graphx import getLabel, gx_texture
+from pymt.resources import resource_find
+from pymt.core.image import Image
 from array import array
 from OpenGL.arrays import vbo
 

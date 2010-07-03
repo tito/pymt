@@ -103,6 +103,7 @@ setup(
         'pymt.core.audio',
         'pymt.core.camera',
         'pymt.core.image',
+        'pymt.core.spelling',
         'pymt.core.svg',
         'pymt.core.text',
         'pymt.core.video',

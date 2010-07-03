@@ -264,3 +264,11 @@ touchring {
     draw-border: 0;
 }
 
+spellvkeyboardlabel {
+	draw-border: 1;
+	border-radius: 5;
+	draw-alpha-background: 1;
+	alpha-background: .8 .8 .7 .7;
+	border-radius-precision: .25;
+}
+

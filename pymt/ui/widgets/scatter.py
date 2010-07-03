@@ -269,11 +269,6 @@ class MTScatter(MTWidget):
         trans = self._current_transform
         self._current_transform = identity_matrix()
         self.apply_transform(trans)
-        
-        if self.scale < self.scale_min:
-            self.do(Animation(scale=self.scale_min, f="ease_out_elastic"))
-        if self.scale > self.scale_max:
-            self.do(Animation(scale=self.scale_max, f="ease_out_elastic"))
 
     def apply_transform(self, trans, post_multiply=False):
         '''
@@ -295,6 +290,15 @@ class MTScatter(MTWidget):
             self._transform_inv = inverse_matrix(self._transform)
             self._transform_gl = self._transform.T.tolist() #for openGL
             self._transform_inv_gl = self._transform.T.tolist() #for openGL
+
+            if self.scale < self.scale_min:
+                self.scale = self.scale_min
+                return
+                #self.do(Animation(scale=self.scale_min, f="ease_out_elastic"))
+            if self.scale_max and self.scale > self.scale_max:
+                self.scale = self.scale_max
+                return
+                #self.do(Animation(scale=self.scale_max, f="ease_out_elastic"))
             self.dispatch_event('on_transform')
 
     def update_transformation(self):
@@ -392,8 +396,8 @@ class MTScatter(MTWidget):
 
         a  = x[0]
         b  = x[1]
-        tx = x[2] 
-        ty = x[3] 
+        tx = x[2]
+        ty = x[3]
 
         angle = atan(b / a)
         scale = a / cos(angle)

@@ -269,6 +269,11 @@ class MTScatter(MTWidget):
         trans = self._current_transform
         self._current_transform = identity_matrix()
         self.apply_transform(trans)
+        
+        if self.scale < self.scale_min:
+            self.do(Animation(scale=self.scale_min, f="ease_out_elastic"))
+        if self.scale > self.scale_max:
+            self.do(Animation(scale=self.scale_max, f="ease_out_elastic"))
 
     def apply_transform(self, trans, post_multiply=False):
         '''

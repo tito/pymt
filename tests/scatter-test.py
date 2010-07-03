@@ -22,7 +22,7 @@ class ScatterTest(MTWidget):
         self.xml.root.width=getWindow().width
         self.xml.autoconnect(self)
 
-        self.scatter = MTScatterWidget(style={'draw-background':1})
+        self.scatter = MTScatterWidget(style={'draw-background':1}, scale_max=5.0)
         self.scatter.connect('on_transform', self.update_values)
 
         self.add_widget(self.xml.root)

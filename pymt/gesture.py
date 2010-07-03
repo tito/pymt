@@ -238,7 +238,9 @@ class Gesture:
         min_y = min(map(lambda stroke: stroke.min_y, self.strokes))
         max_y = max(map(lambda stroke: stroke.max_y, self.strokes))
         x_len = max_x - min_x
+        self.width = x_len
         y_len = max_y - min_y
+        self.height = y_len
         scale_factor = max(x_len, y_len)
         if scale_factor <= 0.0:
             return False

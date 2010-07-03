@@ -179,7 +179,7 @@ def pymt_plugin_activate(root, ctx):
     ctx.btnclear.push_handlers(on_press=curry(clear_canvas, ctx.canvas))
     root.add_widget(ctx.btnclear)
 
-    ctx.brushes = PaintBrushLayout(pos=(300, 0))
+    ctx.brushes = PaintBrushLayout(pos=(300, 0), size_hint=(None, None))
     for brush in glob(os.path.join(current_dir, 'brushes', '*.png')):
         button = MTImageButton(filename=brush)
         button.push_handlers(on_press=curry(update_brush, brush,

@@ -1,5 +1,6 @@
 import sys
 import os
+import shutil
 from distutils.core import setup
 from distutils.extension import Extension
 
@@ -49,16 +50,38 @@ cmdclass = {}
 if have_cython:
     cmdclass['build_ext'] = build_ext
     libraries = []
+    include_dirs = []
+    extra_link_args = []
     if sys.platform == 'win32':
         libraries.append('opengl32')
+    elif sys.platform == 'darwin':
+        # On OSX, gl.h is not in GL/gl.h but OpenGL/gl.h. Cython has no
+        # such thing as #ifdef, hence we just copy the file here.
+        source = '/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h'
+        incl = 'build/include/'
+        dest = os.path.join(incl, 'GL/')
+        try:
+            os.makedirs(dest)
+        except OSError:
+            # Already exists, so don't care
+            pass
+        shutil.copy(source, dest)
+        include_dirs = [incl]
+        # On OSX, it's not -lGL, but -framework OpenGL...
+        extra_link_args = ['-framework', 'OpenGL']
     else:
         libraries.append('GL')
+
     ext_modules.append(Extension('pymt.c_ext.c_graphics',
         ['pymt/c_ext/c_graphics.pyx'],
-        libraries=libraries))
+        libraries=libraries,
+        include_dirs=include_dirs,
+        extra_link_args=extra_link_args))
     ext_modules.append(Extension('pymt.c_ext.c_graphx',
         ['pymt/c_ext/c_graphx.pyx'],
-        libraries=libraries))
+        libraries=libraries,
+        include_dirs=include_dirs,
+        extra_link_args=extra_link_args))
     ext_modules.append(Extension('pymt.c_ext.c_accelerate',
         ['pymt/c_ext/c_accelerate.pyx']))
 
@@ -80,6 +103,7 @@ setup(
         'pymt.core.audio',
         'pymt.core.camera',
         'pymt.core.image',
+        'pymt.core.spelling',
         'pymt.core.svg',
         'pymt.core.text',
         'pymt.core.video',

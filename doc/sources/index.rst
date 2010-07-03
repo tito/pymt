@@ -5,17 +5,20 @@
 Welcome to PyMT's documentation!
 ================================
 
-PyMT is a Python library for developing NUI (new user interfaces, including
-multi-touch) enabled media rich applications.
+PyMT is an open source library for developing multi-touch applications. It is
+completely cross platform (Linux/OSX/Win) and released under the terms of the
+GNU LGPL.
 
-The goal of PyMT is to provide a framework for quick and easy interaction
-design with a focus on rapid prototype development.
+It comes with native support for many multi-touch input devices, a growing
+library of multi-touch aware widgets, hardware accelerated OpenGL drawing,
+and an architecture that is designed to let you focus on building custom and
+highly interactive applications as quickly and easily as possible.
 
-There is also a focus on logging tasks and sessions of user interaction to
-quantify data and allow the analysis and visualization of such data.
+Since PyMT is a pure Python library, you can take advantage of its highly
+dynamic nature and use any of the thousands of high quality and open source
+python libraries out there.
 
-For more general information on PyMT, be sure to visit our website at
-http://pymt.eu/.
+You can visit http://pymt.eu/ for more informations !
 
 
 Programming Guide of PyMT

@@ -13,6 +13,7 @@ from glob import glob
 
 os.environ['PYMT_SHADOW_WINDOW'] = '0'
 import pymt
+import pymt.graphics
 
 
 # Directory of doc

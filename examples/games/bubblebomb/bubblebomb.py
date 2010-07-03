@@ -125,6 +125,9 @@ class World(MTWidget):
         self.s_gameover = SoundLoader.load(os.path.join(current_dir, 'gameover.wav'))
         self.s_touch = SoundLoader.load(os.path.join(current_dir, 'touch.wav'))
         self.s_nextlevel = SoundLoader.load(os.path.join(current_dir, 'level.wav'))
+        self.s_gameover.volume = .5
+        self.s_touch.volume = .5
+        self.s_nextlevel.volume = .5
 
     def sound(self, name):
         if name == 'gameover':

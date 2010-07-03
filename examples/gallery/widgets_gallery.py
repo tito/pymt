@@ -180,6 +180,11 @@ def screen_vkeyboard(w):
     k = MTVKeyboard()
     getWindow().add_widget(k)
 
+@registerscreen('Spell VKeyboard')
+def screen_vkeyboard(w):
+    k = MTSpellVKeyboard()
+    getWindow().add_widget(k)
+
 
 
 if __name__ == '__main__':

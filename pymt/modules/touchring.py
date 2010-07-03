@@ -20,13 +20,15 @@ class TouchRing(MTWidget):
         self.bring_to_front()
 
     def draw(self):
+        color = self.style.get('color')
+        ring_img.color = color
         for touch in getCurrentTouches():
+            alpha = color[3]
             if 'kinetic' in touch.profile:
-                set_color(1, 1, 1, .2)
-            else:
-                set_color(1, 1, 1, .7)
+                alpha = .2
 
             # draw touch
+            ring_img.opacity = alpha
             ring_img.pos = touch.pos
             ring_img.draw()
 

@@ -1,11 +1,6 @@
-# ----------------------------------------------------------------------------
-#
-# Accelerate module
-#
-# This module provide acceleration for some critical function of PyMT
-#
-# ----------------------------------------------------------------------------
-
+'''
+Accelerate: provide acceleration for some critical function of PyMT
+'''
 
 # ----------------------------------------------------------------------------
 #

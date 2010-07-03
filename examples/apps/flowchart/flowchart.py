@@ -10,8 +10,11 @@ from OpenGL.GL import GL_LINE_LOOP
 flowcss = '''
 flowchart {
     bg-color: rgba(255, 255, 255, 255);
-    draw-alpha-background: 0;
+}
+flowtext {
+    draw-background: 0;
     draw-border: 0;
+    color: rgb(255, 255, 255);
 }
 '''
 css_add_sheet(flowcss)
@@ -19,6 +22,7 @@ css_add_sheet(flowcss)
 
 class FlowText(MTTextInput):
     def __init__(self, **kwargs):
+        kwargs.setdefault('autosize', True)
         super(FlowText, self).__init__(**kwargs)
         self.orig = (0, 0)
         self.label_obj.options['font_size'] = self.height / 2.
@@ -45,11 +49,7 @@ class FlowElement(MTScatterWidget):
         self.editmode = True
         self.label = FlowText(style={'font-size': self.height / 2.},
                               keyboard=kwargs.get('keyboard'))
-        self.label.push_handlers(on_text_change=self._on_text_change)
         self.add_widget(self.label)
-
-    def _on_text_change(self, text):
-        self.width = max(100, self.label.width)
 
     def disable_all(self):
         self.parent.disable_all()
@@ -67,7 +67,7 @@ class FlowElement(MTScatterWidget):
         set_color(.298, .184, .192, .95)
         drawRoundedRectangle(size=self.size, linewidth=2, style=GL_LINE_LOOP)
         '''
-
+        self.width = max(100, self.label.width)
         set_color(.435, .749, .996)
         drawRoundedRectangle(size=self.size)
         set_color(.094, .572, .858)
@@ -83,11 +83,15 @@ class FlowLink(MTWidget):
         self.node2 = kwargs.get('node2')
 
     def draw(self):
-        ax, ay = self.to_widget(*self.to_window(*self.node1.pos))
+        if isinstance(self.node2, FlowElement):
+            node2p = self.node2.center
+        else:
+            node2p = self.node2.pos
+        ax, ay = self.to_widget(*self.to_window(*self.node1.center))
         if type(self.node2) == FlowElement:
-            bx, by = self.to_widget(*self.to_window(*self.node2.pos))
+            bx, by = self.to_widget(*self.to_window(*node2p))
         else: # touch case
-            bx, by = self.parent.to_local(*self.node2.pos)
+            bx, by = self.parent.to_local(*node2p)
         set_color(.094, .572, .858)
         drawLine((ax, ay, bx, by), width=8. * self.parent.scale)
 
@@ -187,7 +191,7 @@ class FlowChart(MTScatterPlane):
     def on_draw(self):
         w = self.get_parent_window()
         set_color(*self.style['bg-color'])
-        drawCSSRectangle(size=w.size, style=self.style)
+        drawRectangle(size=w.size)
         super(FlowChart, self).on_draw()
         self.draw_ui()
 

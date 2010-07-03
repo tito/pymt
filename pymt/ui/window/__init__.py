@@ -235,7 +235,7 @@ class BaseWindow(EventDispatcher):
     wallpaper_position = property(
             _get_wallpaper_position, _set_wallpaper_position,
             doc='Get/set the wallpaper position (can be one of' +
-                '"norepeat", "center", "repeat", "scale")')
+                '"norepeat", "center", "repeat", "scale", "strech")')
 
     def init_gl(self):
         version = glGetString(GL_VERSION)
@@ -274,28 +274,39 @@ class BaseWindow(EventDispatcher):
             self.draw_wallpaper()
 
     def draw_wallpaper(self):
+        wallpaper = self.wallpaper
         if self.wallpaper_position == 'center':
-            self.wallpaper.x = (self.width - self.wallpaper.width) / 2
-            self.wallpaper.y = (self.height - self.wallpaper.height) / 2
-            self.wallpaper.draw()
+            wallpaper.x = (self.width - wallpaper.width) / 2
+            wallpaper.y = (self.height - wallpaper.height) / 2
+            wallpaper.draw()
         elif self.wallpaper_position == 'repeat':
-            r_x = float(self.width) / self.wallpaper.width
-            r_y = float(self.height) / self.wallpaper.height
+            r_x = float(self.width) / wallpaper.width
+            r_y = float(self.height) / wallpaper.height
             if int(r_x) != r_x:
                 r_x = int(r_x) + 1
             if int(r_y) != r_y:
                 r_y = int(r_y) + 1
             for x in xrange(int(r_x)):
                 for y in xrange(int(r_y)):
-                    self.wallpaper.x = x * self.wallpaper.width
-                    self.wallpaper.y = y * self.wallpaper.height
-                    self.wallpaper.draw()
+                    wallpaper.x = x * wallpaper.width
+                    wallpaper.y = y * wallpaper.height
+                    wallpaper.draw()
         elif self.wallpaper_position == 'scale':
-            self.wallpaper.size = self.size
-            self.wallpaper.draw()
+            wallpaper.size = self.size
+            wallpaper.draw()
+
+        elif self.wallpaper_position == 'strech':
+            w = self.width
+            h = (self.width * wallpaper.height) / wallpaper.width
+            if h < self.height:
+                h = self.height
+                w = (self.height * wallpaper.width) / wallpaper.height
+            wallpaper.size = w, h
+            wallpaper.pos = -(w - self.width) / 2, -(h - self.height) / 2
+            wallpaper.draw()
         else:
             # no-repeat or any other options
-            self.wallpaper.draw()
+            wallpaper.draw()
 
 
     def draw_mouse_touch(self):

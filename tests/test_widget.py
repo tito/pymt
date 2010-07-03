@@ -38,36 +38,36 @@ def unittest_visible_events():
 
     # by default, visible is True
     w = MTWidget()
-    w.connect('on_update', on_update)
-    w.dispatch_event('on_update')
-    test(on_update_called == 1)
+    w.connect('on_draw', on_draw)
+    w.dispatch_event('on_draw')
+    test(on_draw_called == 1)
 
     # make it invisible
     w.visible = False
-    w.dispatch_event('on_update')
-    test(on_update_called == 1)
+    w.dispatch_event('on_draw')
+    test(on_draw_called == 1)
 
     # make it visible
     w.visible = True
-    w.dispatch_event('on_update')
-    test(on_update_called == 2)
+    w.dispatch_event('on_draw')
+    test(on_draw_called == 2)
 
     # create a new widget, visible default to False
-    on_update_called = 0
+    on_draw_called = 0
     w = MTWidget(visible=False)
     try:
-        # XXX FIXME unable to connect to default on_update
+        # XXX FIXME unable to connect to default on_draw
         # since it's not yet register.
-        w.connect('on_update', on_update)
+        w.connect('on_draw', on_draw)
     except:
         pass
-    w.dispatch_event('on_update')
-    test(on_update_called == 0)
+    w.dispatch_event('on_draw')
+    test(on_draw_called == 0)
 
     w.visible = True
-    w.connect('on_update', on_update)
-    w.dispatch_event('on_update')
-    test(on_update_called == 1)
+    w.connect('on_draw', on_draw)
+    w.dispatch_event('on_draw')
+    test(on_draw_called == 1)
 
 def unittest_coordinate_transform():
     import_pymt_no_window()

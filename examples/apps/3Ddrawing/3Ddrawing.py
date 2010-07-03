@@ -68,7 +68,7 @@ class ModelPainter(MTWidget):
         self.model = OBJ(os.path.join(current_dir, 'cow.obj'))
 
         #texture and FBO used for picking
-        self.picking_image = image.load(os.path.join(current_dir, 'picking.png'))
+        self.picking_image = Image.load(os.path.join(current_dir, 'picking.png'))
         self.picking_texture = self.picking_image.get_texture()
         self.fbo = Fbo(size=self.size)
         self.painting_fbo = Fbo(size=(512,512))

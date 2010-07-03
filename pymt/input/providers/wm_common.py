@@ -1,5 +1,5 @@
 '''
-WM_Touch/WM_Pen common file
+WM_Touch/WM_Pen: common definitions for both input providers
 
 This file provide common definition of some const used for WM_Touch / WM_Pen
 '''

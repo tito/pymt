@@ -56,6 +56,7 @@ class bloop(MTButton):
         self.color = kwargs.get('color')
         self.music_file = kwargs.get('music_file')
         self.music = SoundLoader.load(filename=self.music_file)
+        self.music.volume = .5
         self.radius = int(self.width/2)
         self.alpha = 0.00
         self.red = self.color[0]

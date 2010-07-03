@@ -138,6 +138,8 @@ def deprecated(func):
                        " by %s().") % (func.__name__, func.func_code.co_filename,
                                        func.func_code.co_firstlineno + 1, file, line, caller)
             logger.pymt_logger.warn(warning)
+            if func.__doc__:
+                logger.pymt_logger.warn(func.__doc__)
         return func(*args, **kwargs)
     return new_func
 

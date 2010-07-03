@@ -115,8 +115,9 @@ class MTScatter(MTWidget):
     transform_gl = property(_get_transform_gl,
         doc = " Return the transformation matrix for OpenGL,  read only!'")
 
+    @deprecated
     def _get_transform_mat(self):
-        pymt_logger.warn("MTScatterWidget.transform_mat is deprecated! Use transform_gl for an openGl transformation matrix instead!")
+        '''Use transform_gl for an OpenGL transformation instead.'''
         return self._transform_gl
     transform_mat = property(_get_transform_mat,
         doc = "DEPRECATED Return the transformation matrix for OpenGL,  read only!'")

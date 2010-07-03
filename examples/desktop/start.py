@@ -272,7 +272,7 @@ if __name__ == '__main__':
     # Create background window
     w = getWindow()
     w.wallpaper = os.path.join(os.path.dirname(__file__), 'wallpaper.jpg')
-    w.wallpaper_position = 'scale'
+    w.wallpaper_position = 'strech'
 
     g = MTGestureDetector(gdb)
     w.add_widget(g)

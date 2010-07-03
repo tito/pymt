@@ -10,7 +10,7 @@ from pymt.logger import pymt_logger
 from numpy import array, dot, float64
 
 try:
-    from pymt.c_ext.transformations import *
+    from pymt.c_ext._transformations import *
 except ImportError:
     pymt_logger.warning('Unable to import accelerated transformation, falling back to plain python.');
     from pymt.lib.transformations import *
@@ -75,8 +75,6 @@ class MTScatter(MTWidget):
         self.do_scale       = kwargs.get('do_scale', True)
         self.do_rotation    = kwargs.get('do_rotation', True)
         self.do_translation = kwargs.get('do_translation', True)
-        self.do_translation_x = self.do_translation_y = 1.0
-
 
         # private properties
         self._touches = []
@@ -88,14 +86,6 @@ class MTScatter(MTWidget):
         self._current_transform = identity_matrix()
         self._prior_transform = identity_matrix()
 
-        if type(self.do_translation) in (list, tuple):
-            self.do_translation_x = self.do_translation_y = 0
-            if 'x' in self.do_translation:
-                self.do_translation_x = 1.0
-            if 'y' in self.do_translation:
-                self.do_translation_y = 1.0
-            self.do_translation = True
-
         self.update_matrices()
 
         #inital transformation
@@ -103,6 +93,21 @@ class MTScatter(MTWidget):
         self.pos = kwargs['pos']
         self.scale = kwargs['scale']
         self.rotation = kwargs['rotation']
+
+
+    def _get_do_translation(self):
+        return self._do_translation
+    def _set_do_translation(self, val):
+        self._do_translation = val
+        self._do_translation_x = self._do_translation_y = 0.0
+        if type(val) in (list, tuple, str):
+            if 'x' in self.do_translation:
+                self._do_translation_x = 1.0
+            if 'y' in self.do_translation:
+                self._do_translation_y = 1.0
+        elif val:
+            self._do_translation_x = self._do_translation_y = 1.0
+    do_translation = property(_get_do_translation, _set_do_translation)
 
 
     def _get_transform_gl(self):
@@ -118,7 +123,7 @@ class MTScatter(MTWidget):
 
 
     def _get_transform_inv_gl(self):
-        return self._transform_gl
+        return self._transform_inv_gl
     transform_inv_gl = property(_get_transform_inv_gl,
         doc = " Return the inverse transformation matrix for OpenGL,  read only!'")
 
@@ -295,8 +300,8 @@ class MTScatter(MTWidget):
 
         # in the case of one touch, we really just have to translate
         if len(self._touches) == 1:
-            dx = touch0.x - touch0.userdata['transform_origin'][0]
-            dy = touch0.y - touch0.userdata['transform_origin'][1]
+            dx = (touch0.x - touch0.userdata['transform_origin'][0]) * self._do_translation_x
+            dy = (touch0.y - touch0.userdata['transform_origin'][1]) * self._do_translation_x
             self._current_transform = translation_matrix((dx,dy,0))
             self.update_matrices()
             return
@@ -381,22 +386,35 @@ class MTScatter(MTWidget):
 
         a  = x[0]
         b  = x[1]
-        tx = x[2] * self.do_translation_x
-        ty = x[3] * self.do_translation_y
+        tx = x[2] 
+        ty = x[3] 
 
         angle = atan(b / a)
         scale = a / cos(angle)
 
-        # concatenate transformations based on whther they are turned on/off
-        trans = translation_matrix( (tx, ty, 0) )
-        if self.do_scale:
-            trans = dot( trans, scale_matrix(scale))
-        if self.do_rotation:
-            trans = dot(trans, rotation_matrix( -angle, (0, 0, 1)))
+        old_center = self.center
+        old_scale = self.scale
+        old_rotation = self.rotation
 
-        # update tranformations
+        # concatenate transformations to find new transform and update tranformations
+        trans = translation_matrix( (tx, ty, 0) )
+        trans = dot( trans, scale_matrix(scale))
+        trans = dot(trans, rotation_matrix( -angle, (0, 0, 1)))
         self._current_transform = trans
         self.update_matrices()
+
+        if not self.do_scale:
+            self.scale = old_scale
+        if not self.do_rotation:
+            self.rotation = old_rotation
+        if (not self._do_translation_x) and (not self._do_translation_y):
+            self.reset_transformation_origin()
+            if self._do_translation_x:
+                self.center = (self.center[0], old_center[1])
+            elif self._do_translation_y:
+                self.center = (old_center[0], self.center[1])
+            else:
+                self.center = old_center
 
     def on_transform(self, *largs):
         pass
@@ -420,6 +438,11 @@ class MTScatter(MTWidget):
         touch.grab(self)
         self._touches.append(touch)
         self.reset_transformation_origin()
+
+        #bring to front if auto_bring to front is on
+        if self.auto_bring_to_front:
+            self.bring_to_front()
+
         return True
 
     def on_touch_move(self, touch):

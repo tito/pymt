@@ -199,7 +199,7 @@ class FlowChart(MTScatterPlane):
         w = self.get_parent_window()
         a = self.to_local(0, 0)
         b = self.to_local(w.width, w.height)
-        scale = int(1 / self.scale)
+        scale = max(1, int(1 / self.scale))
         step = 200 * scale
         a = int(a[0] / step - 1) * step, int(a[1] / step - 1) * step
         b = int(b[0] / step + 1) * step, int(b[1] / step + 1) * step

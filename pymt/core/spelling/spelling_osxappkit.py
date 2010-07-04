@@ -40,6 +40,8 @@ class SpellingOSXAppKit(SpellingBase):
         #      need, but they're a) slooow and b) return a strange result. Might
         #      be a snow leopard bug. Have to test further.
         #      See: http://paste.pocoo.org/show/217968/
+        if not word:
+            return None
         raise NotImplementedError('check() not currently supported by the OSX AppKit backend')
 
     def suggest(self, fragment):

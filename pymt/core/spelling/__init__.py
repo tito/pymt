@@ -84,6 +84,7 @@ class SpellingBase(object):
             `word` : str
                 The word to check. If the word is a valid word in the currently
                 active language, True is returned.
+                If the word shouldn't be checked, return None (e.g. for '').
 
         '''
         raise NotImplementedError('check() method not implemented by abstract ' + \

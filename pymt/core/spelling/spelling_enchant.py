@@ -29,6 +29,8 @@ class SpellingEnchant(SpellingBase):
         return enchant.list_languages()
 
     def check(self, word):
+        if not word:
+            return None
         return self._language.check(word)
 
     def suggest(self, fragment):

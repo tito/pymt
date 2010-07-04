@@ -14,12 +14,18 @@ from pymt import *
 from OpenGL.GL import *
 import pyo
 
+# will not work if 2 app use pyo
+pyo_server = pyo.Server(nchnls=2).boot()
+pyo_count = 0
+
 def pymt_plugin_activate(w, ctx):
     ctx.c = MTWidget()
 
     # We initialize the pyo server.
-    ctx.s = pyo.Server(nchnls = 2).boot()
-    ctx.s.start()
+    global pyo_count
+    pyo_count += 1
+    if pyo_count == 1:
+        pyo_server.start()
 
     # We create 4 lists which will contain our sliders (to control pitch),
     # buttons (to trigger the sound), pyo sine waves and fader objects.
@@ -80,7 +86,10 @@ def pymt_plugin_activate(w, ctx):
 
 def pymt_plugin_deactivate(w, ctx):
     # pyo Server is stopped
-    ctx.s.stop()
+    global pyo_count
+    pyo_count -= 1
+    if pyo_count == 0:
+        pyo_server.stop()
     w.remove_widget(ctx.c)
 
 if __name__ == '__main__':

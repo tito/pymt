@@ -152,6 +152,7 @@ class MTList(MTStencilContainer):
                 a = (cw + cx) / f
                 cx = -cw + a
                 vx = 0
+            smaller = self.height > container.height
             if cy > 0 or smaller:
                 cy /= f
                 vy = 0

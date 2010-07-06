@@ -18,6 +18,8 @@ from label import MTLabel
 class MTButton(MTLabel):
     '''MTButton is a button implementation using MTLabel
 
+    .. warnin
+
     :Parameters:
         `label` : string, default is ''
             Label of button
@@ -29,8 +31,14 @@ class MTButton(MTLabel):
             Indicate if button is a multiline button
 
     :Styles:
-        `color-down` : color
-            Background-color of the button when it is press
+        .. note::
+            All the css attributes can be postfixed with the state of the
+            button. It will only work with attributes used for background.
+            For example ::
+
+                `bg-color` for normal state
+                `bg-color-down` for down state
+
         `bg-color` : color
             Background color of the button
         `color` : color

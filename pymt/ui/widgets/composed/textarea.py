@@ -26,8 +26,9 @@ class MTTextArea(MTTextInput):
         # The following two if statements ensure that the textarea remains
         # easily clickable even if there's no content.
         if num:
-            self.height = num * self.line_height + self.line_spacing * (num - 1)
-            if self.lines[0]:
+            if self.autosize or self.autoheight:
+                self.height = num * self.line_height + self.line_spacing * (num - 1)
+            if self.lines[0] and (self.autosize or self.autowidth):
                 self.width = max(label.content_width for label in self.line_labels)
 
     def _get_value(self):

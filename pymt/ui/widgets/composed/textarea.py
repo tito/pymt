@@ -196,6 +196,7 @@ class MTTextArea(MTTextInput):
             self.cursor = min(len(self.lines[self.edit_line]), self.cursor)
 
     def _kbd_on_key_up(self, key, repeat=False):
+        self.cursor_fade = 1
         displayed_str, internal_str, internal_action, scale = key
         if internal_action is None:
             self.insert_character(displayed_str)

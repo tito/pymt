@@ -76,7 +76,7 @@ class XMLWidget(MTWidget):
             # parameters
             k = {}
             id = None
-            for (name, value) in node.attributes.items():
+            for name, value in node.attributes.iteritems():
                 if str(name) == 'id':
                     id = eval(value)
                 else:

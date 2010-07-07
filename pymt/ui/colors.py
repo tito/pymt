@@ -218,7 +218,7 @@ class CSSSheet(object):
 
         # match <objectname>
         for cls in reversed(widget_classes):
-            for r, v in self._css.items():
+            for r, v in self._css.iteritems():
                 if r == cls:
                     styles.update(v)
 
@@ -235,7 +235,7 @@ class CSSSheet(object):
                 # match <objectname>.<classname>
                 for name in reversed(widget_classes):
                     lcls = '%s%s' % (name, cls)
-                    for r, v in self._css.items():
+                    for r, v in self._css.iteritems():
                         if r == lcls:
                             styles.update(v)
 

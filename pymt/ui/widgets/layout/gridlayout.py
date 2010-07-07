@@ -126,9 +126,9 @@ class MTGridLayout(MTAbstractLayout):
         # reposition every child
         i = 0
         y = _y + spacing
-        for row_height in self.row_heights.values():
+        for row_height in self.row_heights.itervalues():
             x = _x + spacing
-            for col_width in self.col_widths.values():
+            for col_width in self.col_widths.itervalues():
                 if i >= len(self.children):
                     break
                 c = self.children[i]

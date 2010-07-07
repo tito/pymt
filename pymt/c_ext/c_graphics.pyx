@@ -188,7 +188,7 @@ cdef class GraphicContext:
     cpdef restore(self):
         newstate = self.stack.pop()
         state = self.state
-        for k, v in newstate.items():
+        for k, v in newstate.iteritems():
             if state[k] != v:
                 self.set(k, v)
 
@@ -340,7 +340,7 @@ cdef class GraphicElement(GraphicInstruction):
 
     def __del__(self):
         if hasattr(self, '_vbo'):
-            for vbo in self._vbo.values():
+            for vbo in self._vbo.itervalues():
                 vbo.delete()
 
     cpdef draw(self):

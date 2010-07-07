@@ -190,7 +190,7 @@ class Cache:
                 Cache._categories[category]['timeout'] = timeout
                 continue
 
-            for key in Cache._objects[category].keys():
+            for key in Cache._objects[category].keys()[:]:
 
                 lastaccess  = Cache._objects[category][key]['lastaccess']
                 objtimeout  = Cache._objects[category][key]['timeout']

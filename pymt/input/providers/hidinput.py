@@ -168,7 +168,7 @@ else:
                         touch = HIDTouch(device, tid, args)
                         touches[touch.id] = touch
 
-                for tid in touches.keys():
+                for tid in touches.keys()[:]:
                     if tid not in actives:
                         touch = touches[tid]
                         if tid in touches_sent:

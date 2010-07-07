@@ -194,11 +194,11 @@ class MacTouchProvider(TouchProvider):
                 _instance.queue.append(('move', touch))
 
         # delete old touchs
-        for id in touches.keys():
-            if id not in actives:
-                touch = touches[id]
+        for tid in touches.keys()[:]:
+            if tid not in actives:
+                touch = touches[tid]
                 _instance.queue.append(('up', touch))
-                del touches[id]
+                del touches[tid]
 
         return 0
 

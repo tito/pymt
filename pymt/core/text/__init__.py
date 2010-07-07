@@ -200,11 +200,10 @@ class LabelBase(BaseObject):
                         continue
 
                 # advance the width
-                if word != ' ' or x != 0:
-                    lw += ww
-                    x  += ww
-                    lh = max(wh, lh)
-                    glyphs += list(word)
+                lw += ww
+                x  += ww
+                lh = max(wh, lh)
+                glyphs += list(word)
 
             # got some char left ?
             if lw != 0:

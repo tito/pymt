@@ -148,6 +148,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     # internal dependices
     from graphx import *
     from vector import *
+    from geometry import *
 
     # dependices
     from core import *

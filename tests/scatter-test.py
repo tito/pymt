@@ -44,7 +44,7 @@ class ScatterTest(MTWidget):
         self.scatter.do(anim)
 
     def on_center_release(self, *args):
-        anim = Animation(center=(500,200))
+        anim = Animation(center=(500,200), scale=4)
         self.scatter.do(anim)
 
     def on_transform_release(self, *args):

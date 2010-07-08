@@ -271,9 +271,11 @@ class MTScatter(MTWidget):
             scale = 1
         
         t = translation_matrix((trans[0]*self._do_translation_x, trans[1]*self._do_translation_y, 0))
+        t = matrix_multiply(t, translation_matrix( (point[0], point[1], 0) ))
         t = matrix_multiply(t, rotation_matrix(angle, (0,0,1)) )
         t = matrix_multiply(t, scale_matrix(scale) )
-        self.apply_transform(t, post_multiply=True)
+        t = matrix_multiply(t, translation_matrix( (-point[0], -point[1], 0) ))
+        self.apply_transform(t)
         
         self.dispatch_event('on_transform', None)
 

@@ -1791,6 +1791,7 @@ def _import_module(module_name, warn=True, prefix='_py_', ignore='_'):
 
 
 _import_module('_transformations')
+matrix_multiply = numpy.dot
 
 # Documentation in HTML format can be generated with Epydoc
 __docformat__ = "restructuredtext en"

@@ -7,25 +7,20 @@ __all__ = ('MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane',
 
 import pymt
 from pymt.logger import pymt_logger
-from numpy import array, dot, float64
+from pymt.utils import deprecated, serialize_numpy, deserialize_numpy, boundary
 
-try:
-    from pymt.c_ext._transformations import *
-except ImportError:
-    pymt_logger.warning('Unable to import accelerated transformation, falling back to plain python.');
-    from pymt.lib.transformations import *
-
-from math import atan,cos, radians, degrees
-from OpenGL.GL import *
-
-from pymt.graphx import drawRectangle, drawCSSRectangle, gx_matrix, gx_matrix_identity, set_color, \
-    drawTexturedRectangle, gx_blending, drawTriangle
-from pymt.vector import Vector, matrix_mult, matrix_inv_mult
-from pymt.utils import deprecated, serialize_numpy, deserialize_numpy
-from pymt.ui.animation import Animation, AnimationAlpha
-from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.widget import MTWidget
 from pymt.ui.widgets.svg import MTSvg
+from pymt.ui.factory import MTWidgetFactory
+from pymt.ui.animation import Animation, AnimationAlpha
+
+from pymt.vector import Vector
+from pymt.geometry import minimum_bounding_circle
+from pymt.lib.transformations import *
+from math import atan,cos, radians, degrees
+
+from OpenGL.GL import *
+from pymt.graphx import *
 
 
 class MTScatter(MTWidget):
@@ -59,41 +54,53 @@ class MTScatter(MTWidget):
     '''
 
     def __init__(self, **kwargs):
-
-        kwargs.setdefault('pos', (0,0))
-        kwargs.setdefault('center', (0,0))
-        kwargs.setdefault('rotation', 0.0)
-        kwargs.setdefault('scale', 1.0)
-
         super(MTScatter, self).__init__(**kwargs)
 
         self.register_event_type('on_transform')
 
-        self.auto_bring_to_front = kwargs.get('auto_bring_to_front', True)
-        self.scale_min      = kwargs.get('scale_min', 0.01)
-        self.scale_max      = kwargs.get('scale_max', None)
-        self.do_scale       = kwargs.get('do_scale', True)
-        self.do_rotation    = kwargs.get('do_rotation', True)
-        self.do_translation = kwargs.get('do_translation', True)
-
         # private properties
         self._touches = []
 
-        self._transform = identity_matrix()
-        self._transform_inv = identity_matrix()
-        self._transform_gl = identity_matrix().T.tolist()  #openGL matrix
+        self._transform        = identity_matrix()
+        self._transform_inv    = identity_matrix()
+        self._transform_gl     = identity_matrix().T.tolist()  #openGL matrix
         self._transform_inv_gl = identity_matrix().T.tolist()  #openGL matrix
-        self._current_transform = identity_matrix()
-        self._prior_transform = identity_matrix()
-
         self.update_matrices()
 
-        #inital transformation
-        self.center = kwargs['center']
-        self.pos = kwargs['pos']
-        self.scale = kwargs['scale']
-        self.rotation = kwargs['rotation']
+        #enable/dissable features
+        self.auto_bring_to_front = kwargs.get('auto_bring_to_front', True)
+        self.do_translation = kwargs.get('do_translation', True)
+        self.do_rotation    = kwargs.get('do_rotation', True)
+        self.scale_min      = kwargs.get('scale_min', 0.01)
+        self.scale_max      = kwargs.get('scale_max', 1e20)
+        self.do_scale       = kwargs.get('do_scale', True)
 
+        #inital transformation
+        self.scale = kwargs.get('scale',1)
+        self.rotation = kwargs.get('rotation', 0)
+        if kwargs.get('pos') and kwargs.get('center'):
+            pymt_logger.exception("both 'pos' and 'center' set in MTScatter constructor, only use one of the two!")
+        if kwargs.get('pos'):
+            self.pos = kwargs.get('pos')
+        if kwargs.get('center'):
+            self.pos = kwargs.get('center')
+
+    """
+    properties for enabling/diableing rotate/scale/translate
+    """
+    def _get_do_rotation(self):
+        return self._do_rotation == 1
+    def _set_do_rotation(self, flag):
+        self._do_rotation = flag
+    do_rotation = property(_get_do_rotation, _set_do_rotation, doc='Determines whether user interaction can rotate the widget')
+    
+    def _get_do_scale(self):
+        return self._do_scale
+    def _set_do_scale(self, flag):
+        self._do_scale = flag
+        if not self._do_scale:
+            self.scale_max = self.scale_min = self.scale
+    do_scale = property(_get_do_scale, _set_do_scale, doc='Determines whether user interaction can scale the widget')
 
     def _get_do_translation(self):
         return self._do_translation
@@ -101,56 +108,12 @@ class MTScatter(MTWidget):
         self._do_translation = val
         self._do_translation_x = self._do_translation_y = 0.0
         if type(val) in (list, tuple, str):
-            if 'x' in self.do_translation:
-                self._do_translation_x = 1.0
-            if 'y' in self.do_translation:
-                self._do_translation_y = 1.0
+            self._do_translation_x = 'x' in self.do_translation
+            self._do_translation_y = 'y' in self.do_translation
         elif val:
             self._do_translation_x = self._do_translation_y = 1.0
-    do_translation = property(_get_do_translation, _set_do_translation)
+    do_translation = property(_get_do_translation, _set_do_translation, doc='Determines whether user interaction can translate the widget')
 
-
-    def _get_transform_gl(self):
-        return self._transform_gl
-    transform_gl = property(_get_transform_gl,
-        doc = " Return the transformation matrix for OpenGL,  read only!'")
-
-    @deprecated
-    def _get_transform_mat(self):
-        '''Use transform_gl for an OpenGL transformation instead.'''
-        return self._transform_gl
-    transform_mat = property(_get_transform_mat,
-        doc = "DEPRECATED Return the transformation matrix for OpenGL,  read only!'")
-
-
-    def _get_transform_inv_gl(self):
-        return self._transform_inv_gl
-    transform_inv_gl = property(_get_transform_inv_gl,
-        doc = " Return the inverse transformation matrix for OpenGL,  read only!'")
-
-    def _get_transform(self):
-        return self._transform
-    def _set_transform(self, x):
-        self.reset_transformation_origin()
-        self._prior_transform = x
-        self.update_matrices()
-    transform = property(_get_transform, _set_transform,
-        doc='Get/Set transformation matrix (numpy matrix)')
-
-    def _get_transform_inv(self):
-        return self._transform_inv
-    transform_inv = property(_get_transform_inv,
-        doc = "Inverse of transformation matrix (numpy matrix),  read only!'")
-
-    def _get_state(self):
-        return serialize_numpy(self._transform)
-    def _set_state(self, state):
-        self.transform = deserialize_numpy(state)
-    state = property(
-        lambda self: self._get_state(),
-        lambda self, x: self._set_state(x),
-        doc='Save/restore the state of matrix widget (require numpy)'
-    )
 
     @property
     def bbox(self):
@@ -171,23 +134,23 @@ class MTScatter(MTWidget):
         return (self.bbox[0][0] + self.bbox[1][0]/2.0,
                 self.bbox[0][1] + self.bbox[1][1]/2.0)
     def _set_center(self, center):
-        trans = Vector(*center) - self.center
-        new_pos = trans + self.pos
-        self.pos = new_pos
-    center = property(_get_center, _set_center)
+        if center == self.center:
+            return False
+        t = Vector(*center) - self.center
+        trans = translation_matrix( (t.x, t.y, 0) )
+        self.apply_transform(trans)
+    center = property(_get_center, _set_center, doc='Object center (x, y).' )
 
     def _get_pos(self):
         return self.bbox[0]
     def _set_pos(self, pos):
         _pos = self.bbox[0]
         if pos == _pos:
-            return False
+            return
         t = Vector(*pos) - _pos
         trans = translation_matrix( (t.x, t.y, 0) )
         self.apply_transform(trans)
-        return True
-    pos = property(_get_pos, _set_pos,
-                   doc='Object position (x, y).  Lower left of bounding box for rotated scatter')
+    pos = property(_get_pos, _set_pos, doc='Object position (x, y).  Lower left of bounding box for rotated scatter')
 
     def _get_x(self):
         return self.pos[0]
@@ -196,8 +159,7 @@ class MTScatter(MTWidget):
             return False
         self.pos = (x, self.y)
         return True
-    x = property(_get_x, _set_x,
-                 doc = 'Object X position')
+    x = property(_get_x, _set_x, doc = 'Object X position')
 
     def _get_y(self):
         return self.pos[1]
@@ -206,51 +168,70 @@ class MTScatter(MTWidget):
             return False
         self.pos = (self.x, y)
         return True
-    y = property(_get_y, _set_y,
-                 doc = 'Object Y position')
-
+    y = property(_get_y, _set_y, doc = 'Object Y position')
 
     def _get_rotation(self):
-        # v1 = vetor from (0,0) to (0,10)
-        # v2 = vector from center to center + (0,10) (in widget space)
         v1 = Vector(0,10)
         v2 = Vector(*self.to_parent(*self.pos)) - self.to_parent(self.x, self.y+10)
         return -1.0 *(v1.angle(v2) + 180) % 360
     def _set_rotation(self, rotation):
         angle_change = self.rotation - rotation
-        trans = translation_matrix( (self.width / 2, self.height / 2, 0) )
-        trans = dot(trans,rotation_matrix( -radians(angle_change), (0, 0, 1)))
-        trans = dot(trans,translation_matrix( (-self.width / 2, -self.height / 2, 0) ))
-        self.apply_transform(trans,post_multiply=True)
-    rotation = property(_get_rotation, _set_rotation,
-                        doc='''Get/set the rotation of the object (in degree)''')
-
+        r = rotation_matrix( -radians(angle_change), (0, 0, 1) )
+        self.apply_transform(r ,post_multiply=True, anchor=self.to_local(*self.center))
+    rotation = property(_get_rotation, _set_rotation, doc='''Get/set the rotation around center of the object (in degree)''')
 
     def _get_scale(self):
         p1 = Vector(*self.to_parent(0,0))
         p2 = Vector(*self.to_parent(1,0))
         scale = p1.distance(p2)
-        return scale
+        return float(scale)
     def _set_scale(self, scale):
-        scale_now = self.scale
-        rescale = scale * (1.0/scale_now)
-        trans = translation_matrix( (self.width / 2, self.height / 2, 0) )
-        trans = dot(trans,scale_matrix(rescale))
-        trans = dot(trans,translation_matrix( (-self.width / 2, -self.height / 2, 0) ))
-        self.apply_transform(trans,post_multiply=True)
-    scale = property(_get_scale, _set_scale,
-                     doc='''Get/set the scaling of the object''')
-    _scale = property(_get_scale, _set_scale,
-                     doc='''Get/set the scaling of the object''')
+        #scale = boundary(scale, self.scale_min, self.scale_max) 
+        rescale = scale * 1.0/self.scale
+        self.apply_transform(scale_matrix(rescale), post_multiply=True, anchor=self.to_local(*self.center))
+    scale = property(_get_scale, _set_scale, doc='''Get/set the scale factor of the object''')
+    _scale = property(_get_scale, _set_scale, doc='''Get/set the scale factor of the object''')
 
 
-    def to_parent(self, x, y, **k):
-        p = dot(self._transform, (x,y,0,1))
-        return (p[0],p[1])
+    @deprecated
+    def _get_transform_mat(self):
+        '''Use transform_gl for an OpenGL transformation instead.'''
+        return self._transform_gl
+    transform_mat = property(_get_transform_mat,
+        doc = "DEPRECATED Return the transformation matrix for OpenGL,  read only!'")
 
-    def to_local(self, x, y, **k):
-        p = dot(self._transform_inv, (x,y,0,1))
-        return (p[0],p[1])
+    def _get_transform_gl(self):
+        return self._transform_gl
+    transform_gl = property(_get_transform_gl,
+        doc = " Return the transformation matrix for OpenGL,  read only!'")
+
+    def _get_transform_inv_gl(self):
+        return self._transform_inv_gl
+    transform_inv_gl = property(_get_transform_inv_gl,
+        doc = " Return the inverse transformation matrix for OpenGL,  read only!'")
+
+    def _get_transform(self):
+        return self._transform
+    def _set_transform(self, x):
+        self._transform = x
+        self.update_matrices()
+    transform = property(_get_transform, _set_transform,
+        doc='Get/Set transformation matrix (numpy matrix)')
+
+    def _get_transform_inv(self):
+        return self._transform_inv
+    transform_inv = property(_get_transform_inv,
+        doc = "Inverse of transformation matrix (numpy matrix),  read only!'")
+
+    def _get_state(self):
+        return serialize_numpy(self._transform)
+    def _set_state(self, state):
+        self.transform = deserialize_numpy(state)
+    state = property(
+        lambda self: self._get_state(),
+        lambda self, x: self._set_state(x),
+        doc='Save/restore the state of matrix widget (require numpy)')
+
 
     def collide_point(self, x, y):
         if not self.visible:
@@ -261,177 +242,110 @@ class MTScatter(MTWidget):
             return True
         else:
             return False
+        
+    def to_parent(self, x, y, **k):
+        p = matrix_multiply(self._transform, (x,y,0,1))
+        return (p[0],p[1])
 
-    def reset_transformation_origin(self):
-        for t in self._touches:
-            t.userdata['transform_origin'] = t.pos
+    def to_local(self, x, y, **k):
+        p = matrix_multiply(self._transform_inv, (x,y,0,1))
+        return (p[0],p[1])
 
-        trans = self._current_transform
-        self._current_transform = identity_matrix()
-        self.apply_transform(trans)
+    
+    def apply_angle_scale_trans(self, angle, scale, trans, point=Vector(0,0)):
+        '''Update matrix transformation by adding new angle, scale and translate.
 
-    def apply_transform(self, trans, post_multiply=False):
+        :Parameters:
+            `angle` : float
+                Rotation angle to add
+            `scale` : float
+                Scaling value to add
+            `trans` : Vector
+                Vector translation to add
+            `point` : Vector, default to (0, 0)
+                Point to apply transformation
+        '''
+        old_scale = self.scale
+        new_scale = old_scale * scale
+        if new_scale < self.scale_min or old_scale > self.scale_max:
+            scale = 1
+        
+        t = translation_matrix((trans[0]*self._do_translation_x, trans[1]*self._do_translation_y, 0))
+        t = matrix_multiply(t, rotation_matrix(angle, (0,0,1)) )
+        t = matrix_multiply(t, scale_matrix(scale) )
+        self.apply_transform(t, post_multiply=True)
+        
+        self.dispatch_event('on_transform', None)
+
+    def apply_transform(self, trans, post_multiply=False, anchor=(0,0)):
         '''
         transforms scatter by trans (on top of its current transformation state
         args:
             trans, transformation to be applied to teh scatter widget)
+        optional args:
+            anchor (default=None,same as (0,0)), the point to use as the origin of teh transformation (uses local widget space)
+            post_multiply (default=False), if true the transform matrix is post multiplied (as if applied before the current transform)
         '''
+        t = translation_matrix( (anchor[0], anchor[1], 0) )
+        t = matrix_multiply(t, trans)
+        t = matrix_multiply(t, translation_matrix( (-anchor[0], -anchor[1], 0) ))
+
         if post_multiply:
-            self._prior_transform = dot(self._prior_transform, trans)
+            self.transform = matrix_multiply(self._transform, t)
         else:
-            self._prior_transform = dot(trans, self._prior_transform)
-        self.update_matrices()
+            self.transform = matrix_multiply(t, self._transform)
 
     def update_matrices(self):
-        #compute the OpenGL matrix
-        trans = dot( self._current_transform, self._prior_transform)
-        if not is_same_transform(trans, self._transform):
-            self._transform = trans
-            self._transform_inv = inverse_matrix(self._transform)
-            self._transform_gl = self._transform.T.tolist() #for openGL
-            self._transform_inv_gl = self._transform.T.tolist() #for openGL
+        #update the inverse and OpenGL matrices
+        self._transform_inv = inverse_matrix(self._transform)
+        self._transform_gl = self._transform.T.tolist() #for openGL
+        self._transform_inv_gl = self._transform.T.tolist() #for openGL
 
-            if self.scale < self.scale_min:
-                self.scale = self.scale_min
-                return
-                #self.do(Animation(scale=self.scale_min, f="ease_out_elastic"))
-            if self.scale_max and self.scale > self.scale_max:
-                self.scale = self.scale_max
-                return
-                #self.do(Animation(scale=self.scale_max, f="ease_out_elastic"))
-            self.dispatch_event('on_transform')
 
-    def update_transformation(self):
-        if not self._touches:
-            return
+    def _apply_drag(self, touch):
+        dx = (touch.x - touch.dxpos) * self._do_translation_x
+        dy = (touch.y - touch.dypos) * self._do_translation_y
+        self.apply_transform( translation_matrix((dx,dy,0)) )
 
-        # optimization
-        touch0 = self._touches[0]
-
-        # in the case of one touch, we really just have to translate
+    def transform_with_touch(self, touch):
+        #just do a simple one finger drag
         if len(self._touches) == 1:
-            dx = (touch0.x - touch0.userdata['transform_origin'][0]) * self._do_translation_x
-            dy = (touch0.y - touch0.userdata['transform_origin'][1]) * self._do_translation_x
-            self._current_transform = translation_matrix((dx,dy,0))
-            self.update_matrices()
+            return self._apply_drag(touch)
+
+        #we have more than one touch...
+        points = [Vector(*t.pos) for t in self._touches ]
+        
+        #fwe only want to transform if the touch is part of the two touches furthest apart!
+        #so firt we find anchor, the point to transform around as teh touch farthest away from touch
+        anchor  = max(points, key=lambda p: p.distance(touch.pos))
+        
+        #now we find the touch farthest away from anchor, if its not teh same as touch
+        #touch is not one of teh two touches used to transform
+        farthest = max(points, key=lambda p: anchor.distance(p))
+        if points.index(farthest) != self._touches.index(touch):
             return
-        else:
-            touch1 = self._touches[1]
 
-        #if the twon fingers are too close dont compute...would cause div by zero error or singular matrix transform
-        dist = Vector(*touch0.pos).distance(touch1.pos)
-        if dist < 2: #in pixels
-            return
+        #ok, so we have touch, and anchor, so we can actually compute the transformation        
+        old_line = Vector(*touch.dpos) - anchor
+        new_line = Vector(*touch.pos) - anchor
+        
+        angle = radians( new_line.angle(old_line) ) * self._do_rotation
+        scale = new_line.length()/old_line.length()
+        new_scale = scale*self.scale
+        if new_scale < self.scale_min or new_scale > self.scale_max:
+            scale = 1.0
+        
+        self.apply_transform(rotation_matrix(angle,(0,0,1)), anchor=anchor)
+        self.apply_transform(scale_matrix(scale), anchor=anchor)
+        
+        #dispatch on_transform with th touch that caused it
+        self.dispatch_event('on_transform', touch)
 
-        #two or more touches...lets do some math!
-        """
-        heres an attempt at an exmplanation of the math
-
-        we are given two sets of points P1,P2 and P1',P2' (before and after)
-        now we are trying to compute the transformation that takes both
-        P1->P1' and P2->P2'.  To do this, we have to rely on teh fact that
-        teh affine transformation we want is conformal.
-
-        because we know we want a 2D conformal transformation (no shearing, stretching etc)
-        we can state the following:
-
-            P1' = M*P1 + t
-            P2' = M*P2 + t
-
-            where:
-            M is a 2x2 matrix that describes the rotation and scale of the transformation
-            t is a 2X1 vector that descrobes the translation of the transformation
-
-        becasue this is a conformal affine transformation (only rotation and scale in M)
-        we also know that we can write M as follows:
-            |  a  b |
-            | -b  a |
-
-            where:
-            a = scale * cos(angle)
-            b = scale * sin(angle)
-
-        given this and the two equations above, we can rewrite as a system of linear equations:
-            x1' =  a*x1 + b*y1 + cx
-            y1' = -b*x1 + a*y1 + cy
-            x2' =  a*x2 + b*y2 + cx
-            y2' = -b*x1 + a*y2 + cy
-
-        the easiest way to solve this is to construct a matrix that takes (a,b,tx,ty)-> (x1',y1',x2',y2')
-        and then take its inverse so we can computer a,b,tx,ad ty from the known parameters
-
-           v    =          T         *    x
-
-         |x1'|     | x1  y1  1  0 |      | a|  (notice how multiplying this gives teh 4 equations above)
-         |y1'|  =  | y1 -x1  0  1 |  *   | b|
-         |x2'|     | x2  y2  1  0 |      |tx|
-         |y2'|     | y2 -x2  0  1 |      |ty|
-
-        Now we can easily compute x by multiplying both sides by the inverse of T
-
-            inv(T) * v = inv(T)*T *x  (everything but x cancels out on the right)
-
-        once we have a,b,tx, and ty, we just have to extract teh angle and scale
-
-            angle = artan(b/a)     (based on teh definitionsof a and b above)
-            scale = a/cos(angle)
-        """
-
-        # old coordinates
-        x1, y1 = touch0.userdata['transform_origin']
-        x2, y2 = touch1.userdata['transform_origin']
-
-        # new coordinates
-        v = (touch0.x, touch0.y, touch1.x, touch1.y)
-
-        # transformation matrix, use 64bit precision
-        T = array(
-            ((x1,  y1, 1.0, 0.0),
-             (y1, -x1, 0.0, 1.0),
-             (x2,  y2, 1.0, 0.0),
-             (y2, -x2, 0.0, 1.0)), dtype=float64 )
-
-        #compute the conformal parameters
-        x = dot(inverse_matrix(T), v)
-
-        a  = x[0]
-        b  = x[1]
-        tx = x[2]
-        ty = x[3]
-
-        angle = atan(b / a)
-        scale = a / cos(angle)
-
-        old_center = self.center
-        old_scale = self.scale
-        old_rotation = self.rotation
-
-        # concatenate transformations to find new transform and update tranformations
-        trans = translation_matrix( (tx, ty, 0) )
-        trans = dot( trans, scale_matrix(scale))
-        trans = dot(trans, rotation_matrix( -angle, (0, 0, 1)))
-        self._current_transform = trans
-        self.update_matrices()
-
-        if not self.do_scale:
-            self.scale = old_scale
-        if not self.do_rotation:
-            self.rotation = old_rotation
-        if (not self._do_translation_x) and (not self._do_translation_y):
-            self.reset_transformation_origin()
-            if self._do_translation_x:
-                self.center = (self.center[0], old_center[1])
-            elif self._do_translation_y:
-                self.center = (old_center[0], self.center[1])
-            else:
-                self.center = old_center
-
-    def on_transform(self, *largs):
+    def on_transform(self, touch):
         pass
 
     def on_touch_down(self, touch):
         x, y = touch.x, touch.y
-
         # if the touch isnt on the widget we do nothing
         if not self.collide_point(x, y):
             return False
@@ -447,17 +361,14 @@ class MTScatter(MTWidget):
         #grab the touch so we get all it later move events for sure
         touch.grab(self)
         self._touches.append(touch)
-        self.reset_transformation_origin()
 
         #bring to front if auto_bring to front is on
         if self.auto_bring_to_front:
             self.bring_to_front()
-
         return True
 
     def on_touch_move(self, touch):
         x, y = touch.x, touch.y
-
         # let the child widgets handle the event if they want
         if self.collide_point(x, y) and not touch.grab_current == self:
             touch.push()
@@ -469,7 +380,7 @@ class MTScatter(MTWidget):
 
         # rotate/scale/translate
         if touch in self._touches and touch.grab_current == self:
-            self.update_transformation()
+            self.transform_with_touch (touch)
 
         # stop porpagating if its within our bounds
         if self.collide_point(x, y):
@@ -477,8 +388,7 @@ class MTScatter(MTWidget):
 
     def on_touch_up(self, touch):
         x, y = touch.x, touch.y
-
-        # if the touch isnt on the widget we do nothing
+        # if the touch isnt on the widget we do nothing, just try children
         if not touch.grab_state:
             touch.push()
             touch.x, touch.y = self.to_local(x, y)
@@ -491,7 +401,6 @@ class MTScatter(MTWidget):
         if touch in self._touches and touch.grab_state:
             touch.ungrab(self)
             self._touches.remove(touch)
-            self.reset_transformation_origin()
 
         # stop porpagating if its within our bounds
         if self.collide_point(x, y):

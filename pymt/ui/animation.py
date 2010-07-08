@@ -115,7 +115,7 @@ class AnimationBase(object):
             attr = getattr(self.widget, prop)
             try:
                 if type(attr) == dict and type(value) == dict:
-                    for k, v in value.items():
+                    for k, v in value.iteritems():
                         attr[k] = v
                 else:
                     self.widget.__setattr__(prop, value, **kwargs)
@@ -323,7 +323,7 @@ class DeltaAnimationBase(AnimationBase):
     def _update_dict(self, ip_dict, op_dict):
         '''Used by reset function to update a dict type data'''
         temp_dict = {}
-        for key in ip_dict.keys():
+        for key in ip_dict.iterkeys():
             if type(ip_dict[key]) in (tuple, list):
                 temp_dict[key] = self._update_list(ip_dict[key], op_dict[key])
             else:

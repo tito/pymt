@@ -107,11 +107,11 @@ for x in pymt_logger_history.history:
     report.append(x.message)
 
 title('Environ')
-for k, v in os.environ.items():
+for k, v in os.environ.iteritems():
     report.append('%s = %s' % (k, v))
 
 title('Options')
-for k, v in options.items():
+for k, v in options.iteritems():
     report.append('%s = %s' % (k, v))
 
 

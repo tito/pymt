@@ -36,7 +36,7 @@ class MouseTouchProvider(TouchProvider):
 
     def find_touch(self, x, y):
         factor = 10. / self.window.width
-        for t in self.touches.values():
+        for t in self.touches.itervalues():
             if abs(x-t.sx) < factor and abs(y-t.sy) < factor:
                 return t
         return False

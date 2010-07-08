@@ -285,7 +285,7 @@ class EventDispatcher(BaseObject):
                 for name in dir(object):
                     if name in self._event_types:
                         yield name, getattr(object, name)
-        for name, handler in kwargs.items():
+        for name, handler in kwargs.iteritems():
             # Function for handling given event (no magic)
             if name not in self._event_types:
                 raise Exception('Unknown event "%s"' % name)

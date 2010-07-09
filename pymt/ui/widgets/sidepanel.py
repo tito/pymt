@@ -71,7 +71,8 @@ class MTSidePanel(MTWidget):
                 label = '^'
             corner = MTButton(label=label)
         self.corner = corner
-        super(MTSidePanel, self).add_widget(self.corner)
+        # Don't add to front or widgets added as children of layout will be occluded
+        super(MTSidePanel, self).add_widget(self.corner, front=False)
         self.corner.connect('on_press', self._corner_on_press)
 
         self.initial_pos = self.pos

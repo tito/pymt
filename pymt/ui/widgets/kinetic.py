@@ -157,8 +157,11 @@ class MTKinetic(MTWidget):
 
             # process kinetic
             type        = ''
+            ktouch.dxpos = ktouch.x
+            ktouch.dypos = ktouch.y
             ktouch.x    += ktouch.X
             ktouch.y    += ktouch.Y
+
 
             if Vector(ktouch.X, ktouch.Y).length() < self.velstop:
                 # simulation finished
@@ -179,10 +182,13 @@ class MTKinetic(MTWidget):
                     continue
                 ktouch.push()
                 ktouch.x, ktouch.y = self.to_window(*ktouch.pos)
+                ktouch.dxpos, ktouch.dypos = self.to_window(*ktouch.dpos)
                 if wid.parent:
                     ktouch.x, ktouch.y = wid.parent.to_widget(ktouch.x, ktouch.y)
+                    ktouch.dxpos, ktouch.dypos = wid.parent.to_widget(ktouch.dxpos, ktouch.dypos)
                 else:
                     ktouch.x, ktouch.y = wid.to_parent(*wid.to_widget(ktouch.x, ktouch.y))
+                    ktouch.dxpos, ktouch.dypos = wid.to_parent(*wid.to_widget(ktouch.dxpos, ktouch.dypos))
                 ktouch.grab_current = wid
                 ktouch.grab_state   = True
                 if type == 'move':

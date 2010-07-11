@@ -3,7 +3,7 @@ Scatter package: provide lot of widgets based on scatter (base, svg, plane, imag
 '''
 
 __all__ = ('MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane',
-           'MTScatterImage')
+           'MTScatterImage', 'MTScatter')
 
 import pymt
 from pymt.logger import pymt_logger

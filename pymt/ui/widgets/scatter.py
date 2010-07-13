@@ -60,6 +60,7 @@ class MTScatter(MTWidget):
 
         # private properties
         self._touches = []
+        self._last_touch_pos = {} #we keep track ourselves so we dont have to recompute to local parent space
 
         self._transform        = identity_matrix()
         self._transform_inv    = identity_matrix()
@@ -305,8 +306,9 @@ class MTScatter(MTWidget):
 
 
     def _apply_drag(self, touch):
-        dx = (touch.x - touch.dxpos) * self._do_translation_x
-        dy = (touch.y - touch.dypos) * self._do_translation_y
+        #_last_touch_pos has last pos in correct parent space, just liek incoming touch
+        dx = (touch.x - self._last_touch_pos[touch][0]) * self._do_translation_x
+        dy = (touch.y - self._last_touch_pos[touch][1]) * self._do_translation_y
         self.apply_transform( translation_matrix((dx,dy,0)) )
 
     def transform_with_touch(self, touch):
@@ -315,12 +317,12 @@ class MTScatter(MTWidget):
             return self._apply_drag(touch)
 
         #we have more than one touch...
-        points = [Vector(*t.pos) for t in self._touches ]
-        
-        #fwe only want to transform if the touch is part of the two touches furthest apart!
+        points = [Vector(*self._last_touch_pos[t]) for t in self._touches] 
+
+        #we only want to transform if the touch is part of the two touches furthest apart!
         #so firt we find anchor, the point to transform around as teh touch farthest away from touch
         anchor  = max(points, key=lambda p: p.distance(touch.pos))
-        
+                
         #now we find the touch farthest away from anchor, if its not teh same as touch
         #touch is not one of teh two touches used to transform
         farthest = max(points, key=lambda p: anchor.distance(p))
@@ -351,10 +353,11 @@ class MTScatter(MTWidget):
         # if the touch isnt on the widget we do nothing
         if not self.collide_point(x, y):
             return False
-
+        
         # let the child widgets handle the event if they want
-        touch.push()
+        touch.push(attrs=['x','y','dxpos','dypos'])
         touch.x, touch.y = self.to_local(x, y)
+        touch.dxpos, touch.dypos = self.to_local(touch.dxpos, touch.dypos)
         if super(MTScatter, self).on_touch_down(touch):
             touch.pop()
             return True
@@ -362,6 +365,7 @@ class MTScatter(MTWidget):
 
         #grab the touch so we get all it later move events for sure
         touch.grab(self)
+        self._last_touch_pos[touch] = touch.pos
         self._touches.append(touch)
 
         #bring to front if auto_bring to front is on
@@ -373,8 +377,9 @@ class MTScatter(MTWidget):
         x, y = touch.x, touch.y
         # let the child widgets handle the event if they want
         if self.collide_point(x, y) and not touch.grab_current == self:
-            touch.push()
+            touch.push(attrs=['x','y','dxpos','dypos'])
             touch.x, touch.y = self.to_local(x, y)
+            touch.dxpos, touch.dypos = self.to_local(touch.dxpos, touch.dypos)
             if super(MTScatter, self).on_touch_move(touch):
                 touch.pop()
                 return True
@@ -383,6 +388,7 @@ class MTScatter(MTWidget):
         # rotate/scale/translate
         if touch in self._touches and touch.grab_current == self:
             self.transform_with_touch (touch)
+            self._last_touch_pos[touch] = touch.pos
 
         # stop porpagating if its within our bounds
         if self.collide_point(x, y):
@@ -391,17 +397,19 @@ class MTScatter(MTWidget):
     def on_touch_up(self, touch):
         x, y = touch.x, touch.y
         # if the touch isnt on the widget we do nothing, just try children
-        if not touch.grab_state:
-            touch.push()
+        if not touch.grab_current == self:
+            touch.push(attrs=['x','y','dxpos','dypos'])
             touch.x, touch.y = self.to_local(x, y)
+            touch.dxpos, touch.dypos = self.to_local(touch.dxpos, touch.dypos)
             if super(MTScatter, self).on_touch_up(touch):
                 touch.pop()
                 return True
             touch.pop()
-
+   
         # remove it from our saved touches
         if touch in self._touches and touch.grab_state:
             touch.ungrab(self)
+            del self._last_touch_pos[touch]
             self._touches.remove(touch)
 
         # stop porpagating if its within our bounds

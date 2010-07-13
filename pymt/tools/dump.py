@@ -139,3 +139,7 @@ if reply.lower().strip() in ('', 'y'):
     print
 else:
     print 'No report posted.'
+
+# On windows system, the console leave directly after the end
+# of the dump. That's not cool if we want get report url
+raw_input('Enter any key to leave.')

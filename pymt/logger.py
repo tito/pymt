@@ -37,6 +37,7 @@ By default, logger log also in a file, with the according configuration token ::
 import logging
 import os
 import sys
+import random
 
 __all__ = ('pymt_logger', 'LOG_LEVELS', 'COLORS', 'pymt_logger_history',
            'pymt_logfile_activated')
@@ -82,6 +83,41 @@ class FileHandler(logging.Handler):
     filename = 'log.txt'
     fd = None
 
+    def purge_logs(self, directory):
+        '''Purge log is called randomly, to prevent log directory to be filled
+        by lot and lot of log files.
+        You've a chance of 1 on 20 to fire a purge log.
+        '''
+        if random.randint(0, 20) != 0:
+            return
+
+        # Use config ?
+        maxfiles = 100
+
+        print 'Purge log fired. Analysing...'
+        join = os.path.join
+        unlink = os.unlink
+
+        # search all log files
+        l = map(lambda x: join(directory, x), os.listdir(directory))
+        if len(l) > maxfiles:
+            # get creation time on every files
+            l = zip(l, map(os.path.getctime, l))
+
+            # sort by date
+            l.sort(cmp=lambda x, y: cmp(x[1], y[1]))
+
+            # get the oldest (keep last maxfiles)
+            l = l[:-maxfiles]
+            print 'Purge %d log files' % len(l)
+
+            # now, unlink every files in the list
+            for filename in l:
+                unlink(filename[0])
+
+        print 'Purge finished !'
+
+
     def _configure(self):
         global pymt_logfile_activated
         import pymt, time
@@ -95,6 +131,9 @@ class FileHandler(logging.Handler):
             _dir = os.path.join(_dir, log_dir)
             if not os.path.exists(_dir):
                 os.mkdir(_dir)
+
+        self.purge_logs(_dir)
+
         pattern = log_name.replace('%_', '@@NUMBER@@')
         pattern = os.path.join(_dir, time.strftime(pattern))
         n = 0

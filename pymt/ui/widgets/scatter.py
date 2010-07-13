@@ -75,8 +75,6 @@ class MTScatter(MTWidget):
         self.scale_min      = kwargs.get('scale_min', 0.01)
         self.scale_max      = kwargs.get('scale_max', 1e20)
         self.do_scale       = kwargs.get('do_scale', True)
-        
-        self._debug_touch = None
 
         #inital transformation
         self.scale = kwargs.get('scale',1)
@@ -324,10 +322,7 @@ class MTScatter(MTWidget):
         #we only want to transform if the touch is part of the two touches furthest apart!
         #so firt we find anchor, the point to transform around as teh touch farthest away from touch
         anchor  = max(points, key=lambda p: p.distance(touch.pos))
-        
-        #print anchor, touch.pos, touch.attr
-        self._debug_touch  = (anchor, touch.pos)
-        
+                
         #now we find the touch farthest away from anchor, if its not teh same as touch
         #touch is not one of teh two touches used to transform
         farthest = max(points, key=lambda p: anchor.distance(p))

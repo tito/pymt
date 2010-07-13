@@ -35,9 +35,9 @@ class MTColorPicker(MTScatterWidget):
         super(MTColorPicker, self).__init__(**kwargs)
         self.size = (130, 290)
         self.targets = kwargs.get('targets')
-        self.sliders = [ MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), slidercolor=(1,0,0,1), cls='colorpicker-slider'),
-                        MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), slidercolor=(0,1,0,1), cls='colorpicker-slider'),
-                        MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), slidercolor=(0,0,1,1), cls='colorpicker-slider')]
+        self.sliders = [ MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), style={'slider-color': (1,0,0,1)}, cls='colorpicker-slider'),
+                         MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), style={'slider-color': (0,1,0,1)}, cls='colorpicker-slider'),
+                         MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), style={'slider-color': (0,0,1,1)}, cls='colorpicker-slider')]
         vbox = MTBoxLayout(spacing=10, padding=10)
         for slider in self.sliders:
             slider.value = 77

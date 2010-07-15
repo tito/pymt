@@ -137,11 +137,11 @@ class MTButton(MTLabel):
         return self._state
     def _set_state(self, state):
         if self._state == state:
-            return
+            return False
         self._state = state
         self.dispatch_event('on_state_change', state)
-    state = property(lambda self: self._get_state(),
-                     lambda self, x: self._set_state(x),
+        return True
+    state = property(_get_state, _set_state,
                      doc='Sets the state of the button, "normal" or "down"')
 
     def update_label(self):
@@ -229,12 +229,15 @@ class MTToggleButton(MTButton):
         return [x() for x in g if x() is not None and x().state == 'down']
 
     def _set_state(self, x):
+        if not super(MTToggleButton, self)._set_state(x):
+            return
         self._reset_group()
         self._state = x
         if self._group is None:
             return
-        if not len(self.get_selected_widgets(self.group)):
+        if not self.get_selected_widgets(self.group):
             self._state = 'down'
+    state = property(MTButton._get_state, _set_state)
 
     def _reset_group(self):
         # set all button do 'normal' state
@@ -246,7 +249,13 @@ class MTToggleButton(MTButton):
             if obj is None:
                 g.remove(ref)
                 continue
-            obj._state = 'normal'
+            if obj is self:
+                continue
+
+            # change private state, and launch event to be sure.
+            if obj._state != 'normal':
+                obj._state = 'normal'
+                obj.dispatch_event('on_state_change', 'normal')
 
 
 class MTImageButton(MTButton):

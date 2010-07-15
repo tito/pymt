@@ -85,7 +85,7 @@ class MTTextInput(MTButton):
         if kwargs.get('switch'):
             self._switch = MTButton(
                 label=kwargs.get('keyboard_type'), cls='switch-button',
-                size=(60, 20), font_size=5,
+                size=(60, 20), font_size=8,
                 pos=(self.x + self.width - 60, self.y + self.height))
 
         self.keyboard_type = kwargs.get('keyboard_type')

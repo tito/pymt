@@ -5,6 +5,6 @@ wid = MTTextInput()
 
 @wid.event
 def on_text_change(text):
-    print 'Text have been changed (not validated):', text.value
+    print 'Text have been changed (not validated):', text
 
 runTouchApp(wid)

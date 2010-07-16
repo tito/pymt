@@ -135,10 +135,7 @@ class MTScreenLayout(MTAbstractLayout):
         super(MTScreenLayout, self).on_update()
 
     def on_draw(self):
-        self.draw()
-
         super(MTScreenLayout, self).on_draw()
-
         if self._switch_t < 1.0:
             if self.duration == 0:
                 self._switch_t = 1.

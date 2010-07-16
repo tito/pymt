@@ -55,85 +55,97 @@ class MTBoxLayout(MTAbstractLayout):
 
     def update_minimum_size(self):
         '''
-        calculates the minimum size of teh layout
-        there mus be room for child widgets that have fixed size (size_hint == None)
-        there must also be at least enough room for every child layout's minimum size (cant be too small even if size_hint is set)
+        Calculates the minimum size of the layout.
+        In calculation, there must be a space for child widgets that have fixed
+        size (size_hint == None). There must also be at least enough space for
+        every child layout's minimum size (cant be too small even if size_hint
+        is set)
         '''
         padding = self.padding
         spacing = self.spacing
-        width  = padding
-        height = padding
+        width = height = padding
 
         if self.orientation == 'horizontal':
-            width += (len(self.children) -1) * spacing
+            width += (len(self.children) - 1) * spacing
             for w in self.children:
-                if w.size_hint[0] == None:
+                shw, shh = w.size_hint
+                if shw is None:
                     width += w.width + padding
-                if w.size_hint[1] == None:
+                if shh is None:
                     height = max(w.height + padding, height)
                 if isinstance(w, MTAbstractLayout):
-                    _w,_h = w.minimum_size
-                    if w.size_hint[0] != None:
-                        width  += _w + padding
-                    if w.size_hint[1] != None:
+                    _w, _h = w.minimum_size
+                    if shw is not None:
+                        width += _w + padding
+                    if shh is not None:
                         height = max(_h + padding, height)
 
         if self.orientation == 'vertical':
-            height += (len(self.children) -1) * spacing
+            height += (len(self.children) - 1) * spacing
             for w in self.children:
-                if w.size_hint[0] == None:
-                    width   = max(w.width + padding, width)
-                if w.size_hint[1] == None:
+                shw, shh = w.size_hint
+                if shw is None:
+                    width = max(w.width + padding, width)
+                if shh is None:
                     height += w.height + padding
                 if isinstance(w, MTAbstractLayout):
-                    _w,_h = w.minimum_size
-                    if w.size_hint[0] != None:
-                        width   = max(_w + padding, width)
-                    if w.size_hint[1] != None:
+                    _w, _h = w.minimum_size
+                    if shw is not None:
+                        width = max(_w + padding, width)
+                    if shh is not None:
                         height += _h + padding
 
         self.minimum_size = (width, height)
 
 
     def do_layout(self):
+        # optimize layout by preventing looking at the same attribute in a loop
+        reposition_child = self.reposition_child
+        selfx, selfy = self.pos
+        selfw, selfh = self.size
+        padding = self.padding
+        spacing = self.spacing
+        orientation = self.orientation
 
-        stretch_weight = [0,0]
+        # calculate maximum space used by size_hint
+        stretch_weight_x = 0.
+        stretch_weight_y = 0.
         for w in self.children:
-            stretch_weight[0] += w.size_hint[0] or 0.0
-            stretch_weight[1] += w.size_hint[1] or 0.0
+            stretch_weight_x += w.size_hint[0] or 0.0
+            stretch_weight_y += w.size_hint[1] or 0.0
 
-        if self.orientation == 'horizontal':
-            x = self.padding
-            stretch_space = max(0.0,self.width - self.minimum_size[0])
+        if orientation == 'horizontal':
+            x = y = padding
+            stretch_space = max(0.0, selfw - self.minimum_size[0])
             for c in reversed(self.children):
-                c_pos = self.x + x, self.y
+                shw, shh = c.size_hint
+                c_pos = selfx + x, selfy + y
                 c_size = list(c.size)
-                if c.size_hint[0]:
+                if shw:
                     #its sizehint * available space
-                    c_size[0] = stretch_space * c.size_hint[0]/float(stretch_weight[0])
+                    c_size[0] = stretch_space * shw / stretch_weight_x
                     if isinstance(c, MTAbstractLayout):
                         c_size[0] += c.minimum_size[0]
-                if c.size_hint[1]:
-                    c_size[1] = c.size_hint[1] * self.height
-                self.reposition_child(c, pos=c_pos, size=c_size)
-                x += c_size[0] + self.spacing
-            x += self.padding
+                if shh:
+                    c_size[1] = shh * selfh
+                reposition_child(c, pos=c_pos, size=c_size)
+                x += c_size[0] + spacing
 
-        if self.orientation == 'vertical':
-            y = self.padding
-            stretch_space = max(0.0,self.height - self.minimum_size[1])
+        if orientation == 'vertical':
+            x = y = padding
+            stretch_space = max(0.0, selfh - self.minimum_size[1])
             for c in self.children:
-                c_pos = self.x, self.y + y
+                shw, shh = c.size_hint
+                c_pos = selfx + x, selfy + y
                 c_size = list(c.size)
-                if c.size_hint[1]:
-                    c_size[1] = stretch_space * c.size_hint[1]/float(stretch_weight[1])
+                if shh:
+                    c_size[1] = stretch_space * shh / stretch_weight_y
                     if isinstance(c, MTAbstractLayout):
                         c_size[1] += c.minimum_size[1]
-                if c.size_hint[0]:
-                    c_size[0] = c.size_hint[0] * self.width
-                self.reposition_child(c, pos=c_pos, size=c_size)
-                y += c_size[1] + self.spacing
-
+                if shw:
+                    c_size[0] = shw * selfw
+                reposition_child(c, pos=c_pos, size=c_size)
+                y += c_size[1] + spacing
 
         self.dispatch_event('on_layout')
 

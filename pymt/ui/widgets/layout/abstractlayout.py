@@ -109,23 +109,26 @@ class MTAbstractLayout(MTWidget):
         self.minimum_size = self.size
 
     def on_move(self, x, y):
-        self.update()
+        self.need_update = True
 
     def on_resize(self, w, h):
-        self.width = max(w, self.minimum_size[0])
-        self.height = max(h, self.minimum_size[1])
-
-        self.update()
+        self.size = max(w, self.minimum_size[0]), max(h, self.minimum_size[1])
+        self.need_update = True
 
     def on_update(self):
+        # layout must be done 2 time, in case of children
+        # are changing anythign between on_update.
+        # it must be done before too, to call minimum size before apply to
+        # children
+        if self.need_update:
+            self.need_update = False
+            self.update_minimum_size()
+            self.do_layout()
         super(MTAbstractLayout, self).on_update()
         if self.need_update:
             self.need_update = False
             self.update_minimum_size()
             self.do_layout()
-
-    def update(self):
-        self.need_update = True
 
     def on_layout(self):
         pass

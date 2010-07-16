@@ -390,10 +390,13 @@ class BaseWindow(EventDispatcher):
         glMatrixMode(GL_MODELVIEW)
 
         for w in self.children:
-            if w.size_hint[0]:
-                w.width = w.size_hint[0]*width
-            if w.size_hint[1]:
-                w.height = w.size_hint[1]*height
+            shw, shh = w.size_hint
+            if shw and shh:
+                w.size = shw * width, shh * height
+            elif shw:
+                w.width = shw * width
+            elif shh:
+                w.height = shh * height
 
     def on_close(self, *largs):
         '''Event called when the window is closed'''

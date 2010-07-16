@@ -27,7 +27,7 @@ class MTAnchorLayout(MTAbstractLayout):
         kwargs.setdefault('padding',  0)
 
         super(MTAnchorLayout, self).__init__(**kwargs)
-        
+
         self._anchor_x = kwargs.get('anchor_x', 'center')
         self._anchor_y = kwargs.get('anchor_y', 'center')
         self.padding  = kwargs.get('padding')
@@ -61,38 +61,37 @@ class MTAnchorLayout(MTAbstractLayout):
 
 
     def do_layout(self):
-
-        #only acces properties once, instead of every time inside loop for optimization
-        _x,_y = self.pos
+        # only acces properties once, instead of every time inside loop for
+        # optimization.
+        _x, _y = self.pos
         width, height = self.size
         anchor_x, anchor_y = self.anchor_x, self.anchor_y
         padding = self.padding
 
         for c in self.children:
-            x,y = _x,_y
-            w,h = c.size
+            x, y = _x, _y
+            w, h = c.size
             if c.size_hint[0]:
                 w = c.size_hint[0]*width
             elif not self.size_hint[0]:
-                width= max(width, c.width)
+                width = max(width, c.width)
             if c.size_hint[1]:
                 h = c.size_hint[1]*height
             elif not self.size_hint[1]:
-                height= max(height, c.height)
+                height = max(height, c.height)
 
             if anchor_x == 'left':
-                x = x + self.padding
+                x = x + padding
             if anchor_x == 'right':
-                x = x + width - (w+padding)
+                x = x + width - (w + padding)
             if self.anchor_x == 'center':
-                x = x + (width/2) - (w/2)
+                x = x + (width / 2) - (w / 2)
             if anchor_y == 'bottom':
                 y = y + padding
             if anchor_y == 'top':
-                y = y + height - (h+padding)
+                y = y + height - (h + padding)
             if anchor_y == 'center':
-                y = y + (height/2) - (h/2)
-
+                y = y + (height / 2) - (h / 2)
 
             self.reposition_child(c, pos=(x,y), size=(w,h))
 

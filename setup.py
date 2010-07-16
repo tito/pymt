@@ -69,6 +69,9 @@ if have_cython:
         include_dirs = [incl]
         # On OSX, it's not -lGL, but -framework OpenGL...
         extra_link_args = ['-framework', 'OpenGL']
+    elif sys.platform.startswith('freebsd'):
+        include_dirs += ['/usr/local/include']
+        extra_link_args += ['-L', '/usr/local/lib']
     else:
         libraries.append('GL')
 

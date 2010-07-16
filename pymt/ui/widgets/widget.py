@@ -141,13 +141,13 @@ class MTWidget(EventDispatcher):
         self.register_event_type('on_parent')
 
         if kwargs.get('x'):
-            self.x = kwargs.get('x')
+            self._pos = (kwargs.get('x'), self.y)
         if kwargs.get('y'):
-            self.y = kwargs.get('y')
+            self._pos = (self.x, kwargs.get('y'))
         if kwargs.get('width'):
-            self.width = kwargs.get('width')
+            self._size = (kwargs.get('width'), self.height)
         if kwargs.get('height'):
-            self.height = kwargs.get('height')
+            self._size = (self.width, kwargs.get('height'))
 
         # apply css
         self.style = {}

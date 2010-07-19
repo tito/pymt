@@ -20,6 +20,13 @@ except:
     print '#' * 80
     sys.exit(1)
 
+# create .c for every module in c_ext
+if 'sdist' in sys.argv:
+    print >>sys.stderr, 'Generate C files...',
+    import subprocess
+    files = os.path.join(os.path.dirname(__file__), 'pymt', 'c_ext', '*.pyx')
+    subprocess.Popen('cython %s' % files, shell=True).communicate()
+    print >>sys.stderr, 'Done !'
 
 # extract version (simulate doc generation, pymt will be not imported)
 os.environ['PYMT_DOC_INCLUDE'] = '1'

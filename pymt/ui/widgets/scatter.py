@@ -86,14 +86,12 @@ class MTScatter(MTWidget):
         if kwargs.get('center'):
             self.pos = kwargs.get('center')
 
-    """
-    properties for enabling/diableing rotate/scale/translate
-    """
     def _get_do_rotation(self):
         return self._do_rotation == 1
     def _set_do_rotation(self, flag):
         self._do_rotation = flag
-    do_rotation = property(_get_do_rotation, _set_do_rotation, doc='Determines whether user interaction can rotate the widget')
+    do_rotation = property(_get_do_rotation, _set_do_rotation,
+        doc='Determines whether user interaction can rotate the widget')
     
     def _get_do_scale(self):
         return self._do_scale
@@ -101,7 +99,8 @@ class MTScatter(MTWidget):
         self._do_scale = flag
         if not self._do_scale:
             self.scale_max = self.scale_min = self.scale
-    do_scale = property(_get_do_scale, _set_do_scale, doc='Determines whether user interaction can scale the widget')
+    do_scale = property(_get_do_scale, _set_do_scale,
+        doc='Determines whether user interaction can scale the widget')
 
     def _get_do_translation(self):
         return self._do_translation
@@ -119,8 +118,11 @@ class MTScatter(MTWidget):
     @property
     def bbox(self):
         '''
-        Returns teh bounding box of teh widget in parent space
-            returns "bbox":  ((x,y),(w,h))  x,y = lower left corner
+        Returns the bounding box of the widget in parent space ::
+
+            ((x, y), (w, h)
+            # x, y = lower left corner
+
         '''
         xmin, ymin = xmax, ymax = self.to_parent(0,0)
         for point in [(self.width,0),(0, self.height), self.size]:
@@ -140,7 +142,7 @@ class MTScatter(MTWidget):
         t = Vector(*center) - self.center
         trans = translation_matrix( (t.x, t.y, 0) )
         self.apply_transform(trans)
-    center = property(_get_center, _set_center, doc='Object center (x, y).' )
+    center = property(_get_center, _set_center)
 
     def _get_pos(self):
         return self.bbox[0]
@@ -160,7 +162,7 @@ class MTScatter(MTWidget):
             return False
         self.pos = (x, self.y)
         return True
-    x = property(_get_x, _set_x, doc = 'Object X position')
+    x = property(_get_x, _set_x)
 
     def _get_y(self):
         return self.pos[1]
@@ -169,7 +171,7 @@ class MTScatter(MTWidget):
             return False
         self.pos = (self.x, y)
         return True
-    y = property(_get_y, _set_y, doc = 'Object Y position')
+    y = property(_get_y, _set_y)
 
     def _get_rotation(self):
         v1 = Vector(0,10)
@@ -179,7 +181,8 @@ class MTScatter(MTWidget):
         angle_change = self.rotation - rotation
         r = rotation_matrix( -radians(angle_change), (0, 0, 1) )
         self.apply_transform(r ,post_multiply=True, anchor=self.to_local(*self.center))
-    rotation = property(_get_rotation, _set_rotation, doc='''Get/set the rotation around center of the object (in degree)''')
+    rotation = property(_get_rotation, _set_rotation,
+        doc='''Get/set the rotation around center of the object (in degree)''')
 
     def _get_scale(self):
         p1 = Vector(*self.to_parent(0,0))
@@ -190,26 +193,39 @@ class MTScatter(MTWidget):
         #scale = boundary(scale, self.scale_min, self.scale_max) 
         rescale = scale * 1.0/self.scale
         self.apply_transform(scale_matrix(rescale), post_multiply=True, anchor=self.to_local(*self.center))
-    scale = property(_get_scale, _set_scale, doc='''Get/set the scale factor of the object''')
-    _scale = property(_get_scale, _set_scale, doc='''Get/set the scale factor of the object''')
+    scale = property(_get_scale, _set_scale,
+        doc='''Get/set the scale factor of the object''')
+    _scale = property(_get_scale, _set_scale, doc='''
+        ..deprecated:: 0.5
+        Get/set the scale factor of the object
+    ''')
 
 
     @deprecated
-    def _get_transform_mat(self):
-        '''Use transform_gl for an OpenGL transformation instead.'''
+    @property
+    def transform_mat(self):
+        '''..deprecated:: 0.5
+        Use transform_gl for an OpenGL transformation instead.
+        '''
         return self._transform_gl
-    transform_mat = property(_get_transform_mat,
-        doc = "DEPRECATED Return the transformation matrix for OpenGL,  read only!'")
 
-    def _get_transform_gl(self):
+    @property
+    def transform_gl(self):
+        '''Return the transformation matrix for OpenGL, read only.
+        '''
         return self._transform_gl
-    transform_gl = property(_get_transform_gl,
-        doc = " Return the transformation matrix for OpenGL,  read only!'")
 
-    def _get_transform_inv_gl(self):
+    @property
+    def transform_inv_gl(self):
+        '''Return the inverse transformation matrix for OpenGL, read only.
+        '''
         return self._transform_inv_gl
-    transform_inv_gl = property(_get_transform_inv_gl,
-        doc = " Return the inverse transformation matrix for OpenGL,  read only!'")
+
+    @property
+    def transform_inv(self):
+        '''Inverse of transformation matrix (numpy matrix), read only.
+        '''
+        return self._transform_inv
 
     def _get_transform(self):
         return self._transform
@@ -219,20 +235,12 @@ class MTScatter(MTWidget):
     transform = property(_get_transform, _set_transform,
         doc='Get/Set transformation matrix (numpy matrix)')
 
-    def _get_transform_inv(self):
-        return self._transform_inv
-    transform_inv = property(_get_transform_inv,
-        doc = "Inverse of transformation matrix (numpy matrix),  read only!'")
-
     def _get_state(self):
         return serialize_numpy(self._transform)
     def _set_state(self, state):
         self.transform = deserialize_numpy(state)
-    state = property(
-        lambda self: self._get_state(),
-        lambda self, x: self._set_state(x),
+    state = property(_get_state, _set_state,
         doc='Save/restore the state of matrix widget (require numpy)')
-
 
     def collide_point(self, x, y):
         if not self.visible:
@@ -282,12 +290,17 @@ class MTScatter(MTWidget):
 
     def apply_transform(self, trans, post_multiply=False, anchor=(0,0)):
         '''
-        transforms scatter by trans (on top of its current transformation state
-        args:
-            trans, transformation to be applied to teh scatter widget)
-        optional args:
-            anchor (default=None,same as (0,0)), the point to use as the origin of teh transformation (uses local widget space)
-            post_multiply (default=False), if true the transform matrix is post multiplied (as if applied before the current transform)
+        Transforms scatter by trans (on top of its current transformation state)
+
+        :Parameters:
+            `trans`: transformation matrix from transformation lib.
+                Transformation to be applied to the scatter widget
+            `anchor`: tuple, default to (0, 0)
+                The point to use as the origin of the transformation
+                (uses local widget space)
+            `post_multiply`: bool, default to False
+                If true the transform matrix is post multiplied
+                (as if applied before the current transform)
         '''
         t = translation_matrix( (anchor[0], anchor[1], 0) )
         t = matrix_multiply(t, trans)
@@ -299,11 +312,13 @@ class MTScatter(MTWidget):
             self.transform = matrix_multiply(t, self._transform)
 
     def update_matrices(self):
-        #update the inverse and OpenGL matrices
+        '''Update inverse and OpenGL matrices, from the current transformation.
+        If you change manually the transformation, you should call this
+        function, or the drawing will failed.
+        '''
         self._transform_inv = inverse_matrix(self._transform)
         self._transform_gl = self._transform.T.tolist() #for openGL
         self._transform_inv_gl = self._transform.T.tolist() #for openGL
-
 
     def _apply_drag(self, touch):
         #_last_touch_pos has last pos in correct parent space, just liek incoming touch
@@ -312,30 +327,32 @@ class MTScatter(MTWidget):
         self.apply_transform( translation_matrix((dx,dy,0)) )
 
     def transform_with_touch(self, touch):
-        #just do a simple one finger drag
+        # just do a simple one finger drag
         if len(self._touches) == 1:
             return self._apply_drag(touch)
 
-        #we have more than one touch...
+        # we have more than one touch...
         points = [Vector(*self._last_touch_pos[t]) for t in self._touches] 
 
-        #we only want to transform if the touch is part of the two touches furthest apart!
-        #so firt we find anchor, the point to transform around as teh touch farthest away from touch
+        # we only want to transform if the touch is part of the two touches
+        # furthest apart! So first we find anchor, the point to transform
+        # around as the touch farthest away from touch
         anchor  = max(points, key=lambda p: p.distance(touch.pos))
                 
-        #now we find the touch farthest away from anchor, if its not teh same as touch
-        #touch is not one of teh two touches used to transform
+        # now we find the touch farthest away from anchor, if its not the
+        # same as touch. Touch is not one of the two touches used to transform
         farthest = max(points, key=lambda p: anchor.distance(p))
         if points.index(farthest) != self._touches.index(touch):
             return
 
-        #ok, so we have touch, and anchor, so we can actually compute the transformation        
+        # ok, so we have touch, and anchor, so we can actually compute the
+        # transformation        
         old_line = Vector(*touch.dpos) - anchor
         new_line = Vector(*touch.pos) - anchor
         
         angle = radians( new_line.angle(old_line) ) * self._do_rotation
-        scale = new_line.length()/old_line.length()
-        new_scale = scale*self.scale
+        scale = new_line.length() / old_line.length()
+        new_scale = scale * self.scale
         if new_scale < self.scale_min or new_scale > self.scale_max:
             scale = 1.0
         
@@ -425,7 +442,7 @@ class MTScatter(MTWidget):
 
     def draw(self):
         set_color(*self.style['bg-color'])
-        drawCSSRectangle((0,0), (self.width, self.height), style=self.style)
+        drawCSSRectangle(pos=(0,0), size=(self.width, self.height), style=self.style)
 
 
 class MTScatterWidget(MTScatter):

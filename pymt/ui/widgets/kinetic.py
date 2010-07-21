@@ -22,9 +22,10 @@ class KineticTouch(Touch):
 
     def depack(self, args):
         self.x, self.y = args
-        if self.dxpos is not None:
-            self.X += (self.x - self.dxpos)
-            self.Y += (self.y - self.dypos)
+        if self.dxpos is None:
+            self.dxpos, self.dypos = self.pos
+        self.X += (self.x - self.dxpos)
+        self.Y += (self.y - self.dypos)
         self.profile = ('pos', 'kinetic')
         super(KineticTouch, self).depack(args)
 

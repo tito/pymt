@@ -201,8 +201,8 @@ class MTScatter(MTWidget):
     ''')
 
 
-    @deprecated
     @property
+    @deprecated
     def transform_mat(self):
         '''..deprecated:: 0.5
         Use transform_gl for an OpenGL transformation instead.

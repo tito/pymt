@@ -33,7 +33,8 @@ os.environ['PYMT_DOC_INCLUDE'] = '1'
 import pymt
 
 # extracts all examples files except sandbox
-examples = []
+data_file_prefix = 'share/pymt-'
+examples = {}
 examples_allowed_ext = ('readme', 'py', 'wav', 'png', 'jpg', 'svg',
                         'avi', 'gif', 'txt', 'ttf', 'obj', 'mtl')
 for root, subFolders, files in os.walk('examples'):
@@ -43,7 +44,11 @@ for root, subFolders, files in os.walk('examples'):
         ext = file.split('.')[-1].lower()
         if ext not in examples_allowed_ext:
             continue
-        examples.append(os.path.join(root,file))
+        filename = os.path.join(root, file)
+        directory = '%s%s' % (data_file_prefix, os.path.dirname(filename))
+        if not directory in examples:
+            examples[directory] = []
+        examples[directory].append(filename)
 
 # modules
 numpy_transform_ext = Extension(
@@ -144,7 +149,7 @@ setup(
         'data/*.ttf',
         'tools/designerapp/icons/*.png']
     },
-    data_files=[('share/pymt-examples', examples)],
+    data_files=examples.items(),
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: MacOS X',

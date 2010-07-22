@@ -38,6 +38,8 @@ def action_close_all(menu, w, args):
     sys.exit()
 
 def action_launch_plugin(menu, w, plugin, *largs):
+    if not menu.parent:
+        return
     pos = w.parent.to_parent(*w.pos)
     win = MTInnerWindow(size=(320,280), pos=pos)
     plugins.activate(plugin, win)

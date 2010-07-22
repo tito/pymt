@@ -84,7 +84,7 @@ class MTFlippableWidget(MTWidget):
             pass
 
     def draw(self):
-        set_color(self.style.get('bg-color'))
+        set_color(*self.style.get('bg-color'))
         drawCSSRectangle(pos=(0,0), size=self.size, style=self.style)
 
     def flip_children(self):

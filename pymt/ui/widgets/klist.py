@@ -7,6 +7,7 @@ __all__ = ('MTList', 'MTListContainer')
 from pymt.graphx import gx_matrix
 from pymt.utils import boundary
 from pymt.base import getFrameDt
+from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.widget import MTWidget
 from pymt.ui.widgets.button import MTButton
 from pymt.ui.widgets.stencilcontainer import MTStencilContainer
@@ -249,3 +250,6 @@ class MTList(MTStencilContainer):
 
     def draw(self):
         pass
+
+# Register all base widgets
+MTWidgetFactory.register('MTList', MTList)

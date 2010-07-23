@@ -325,6 +325,7 @@ class MTScatter(MTWidget):
         dx = (touch.x - self._last_touch_pos[touch][0]) * self._do_translation_x
         dy = (touch.y - self._last_touch_pos[touch][1]) * self._do_translation_y
         self.apply_transform( translation_matrix((dx,dy,0)) )
+        self.dispatch_event('on_transform', touch)
 
     def transform_with_touch(self, touch):
         # just do a simple one finger drag

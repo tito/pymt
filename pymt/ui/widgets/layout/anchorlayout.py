@@ -67,6 +67,7 @@ class MTAnchorLayout(MTAbstractLayout):
         width, height = self.size
         anchor_x, anchor_y = self.anchor_x, self.anchor_y
         padding = self.padding
+        reposition_child = self.reposition_child
 
         for c in self.children:
             x, y = _x, _y
@@ -93,7 +94,7 @@ class MTAnchorLayout(MTAbstractLayout):
             if anchor_y == 'center':
                 y = y + (height / 2) - (h / 2)
 
-            self.reposition_child(c, pos=(x,y), size=(w,h))
+            reposition_child(c, pos=(x,y), size=(w,h))
 
         self.size = (width, height) #might have changed inside loop
         self.dispatch_event('on_layout')

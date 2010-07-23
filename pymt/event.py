@@ -375,6 +375,8 @@ class EventDispatcher(BaseObject):
         # doesn't find a problem with the number of arguments, the error
         # is re-raised as if we weren't here.
 
+        if not hasattr(handler, 'im_func'):
+            raise
         if not isinstance(handler.im_func, types.FunctionType):
             raise
 

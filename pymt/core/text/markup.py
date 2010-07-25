@@ -24,6 +24,7 @@ class MarkupLabel(MarkupLabelBase):
     Available markups tags :
         * [b][/b] : bold
         * [i][/i] : italic
+        * [font=<str>][/font] : font name
         * [size=<integer>][/size] : size
         * [color=#<color>][/color] : text color
     '''
@@ -80,6 +81,12 @@ class MarkupLabel(MarkupLabelBase):
                 self.options['color'] = color
             elif item == '[/color]':
                 self._pop_style('color')
+            elif item.startswith('[font='):
+                fontname = item[6:-1]
+                self._push_style('font_name')
+                self.options['font_name'] = fontname
+            elif item == '[/font]':
+                self._pop_style('font_name')
             else:
                 args = x, y, w, h, lw, lh, nl
                 args = self.render_label(real, item, args)

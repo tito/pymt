@@ -34,10 +34,13 @@ class ImageData(object):
 class ImageLoaderBase(object):
     '''Base to implement an image loader.'''
 
-    __slots__ = ('_texture', '_data', 'filename', 'keep_data')
+    __slots__ = ('_texture', '_data', 'filename', 'keep_data',
+                '_texture_rectangle', '_texture_mipmap')
 
-    def __init__(self, filename, keep_data=False):
-        self.keep_data  = keep_data
+    def __init__(self, filename, **kwargs):
+        self._texture_rectangle = kwargs.get('texture_rectangle', True)
+        self._texture_mipmap = kwargs.get('texture_mipmap', False)
+        self.keep_data  = kwargs.get('keep_data', False)
         self.filename   = filename
         self._texture   = None
         self._data      = self.load(filename)
@@ -63,7 +66,9 @@ class ImageLoaderBase(object):
         if self._texture is None:
             if self._data is None:
                 return None
-            self._texture = Texture.create_from_data(self._data)
+            self._texture = Texture.create_from_data( self._data,
+                                rectangle=self._texture_rectangle,
+                                mipmap=self._texture_mipmap)
             if not self.keep_data:
                 self._data.release_data()
         return self._texture
@@ -119,20 +124,27 @@ class Image(BaseObject):
             X anchor
         `anchor_y` : float, default to 0
             Y anchor
+        `texture_rectangle` : bool, default to True
+            Use rectangle texture is available (if false, will use the nearest
+            power of 2 size for texture)
+        `texture_mipmap` : bool, default to False
+            Create mipmap for the texture
     '''
 
     copy_attributes = ('opacity', 'scale', 'anchor_x', 'anchor_y', '_pos',
-                       '_size', 'texture', '_filename', 'color', 'texture')
+                       '_size', 'texture', '_filename', 'color', 'texture',
+                       '_texture_rectangle', '_texture_mipmap')
 
     def __init__(self, arg, **kwargs):
         kwargs.setdefault('keep_data', False)
 
         super(Image, self).__init__(**kwargs)
 
+        self._texture_rectangle = kwargs.get('texture_rectangle', True)
+        self._texture_mipmap    = kwargs.get('texture_mipmap', False)
         self._keep_data = kwargs.get('keep_data')
         self._image     = None
         self._filename  = None
-        self.texture    = None
         self.opacity    = 1.
         self.scale      = 1.
         self.anchor_x   = 0
@@ -191,7 +203,6 @@ class Image(BaseObject):
     def _set_image(self, image):
         self._image = image
         if image:
-            self.texture    = self.image.texture
             self.width      = self.image.width
             self.height     = self.image.height
     image = property(_get_image, _set_image,
@@ -206,7 +217,9 @@ class Image(BaseObject):
             return
         self._filename = value
         self.image     = ImageLoader.load(
-                self._filename, keep_data=self._keep_data)
+                self._filename, keep_data=self._keep_data,
+                texture_rectangle=self._texture_rectangle,
+                texture_mipmap=self._texture_mipmap)
     filename = property(_get_filename, _set_filename,
             doc='Get/set the filename of image')
 
@@ -214,6 +227,13 @@ class Image(BaseObject):
     def get_texture(self):
         '''Retreive the texture of image
         @deprecated: use self.texture instead.'''
+        return self.texture
+
+    @property
+    def texture(self):
+        '''Texture of the image'''
+        if self.image:
+            return self.image.texture
         return self.texture
 
     def draw(self):

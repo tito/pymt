@@ -197,8 +197,8 @@ class MTInnerWindow(MTScatterWidget):
     def collide_point(self, x, y):
         scaled_border = self.get_scaled_border()
         local_coords = super(MTInnerWindow,self).to_local(x, y)
-        left, right = -scaled_border, self.width + scaled_border * 2
-        bottom,top = -scaled_border, self.height + scaled_border * 2
+        left, right = -scaled_border, self.width + scaled_border
+        bottom,top = -scaled_border, self.height + scaled_border
         if local_coords[0] > left and local_coords[0] < right \
            and local_coords[1] > bottom and local_coords[1] < top:
             return True

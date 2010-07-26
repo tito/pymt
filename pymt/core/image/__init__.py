@@ -132,7 +132,7 @@ class Image(BaseObject):
     '''
 
     copy_attributes = ('opacity', 'scale', 'anchor_x', 'anchor_y', '_pos',
-                       '_size', 'texture', '_filename', 'color', 'texture',
+                       '_size', '_filename', 'color', '_texture', '_image',
                        '_texture_rectangle', '_texture_mipmap')
 
     def __init__(self, arg, **kwargs):
@@ -145,6 +145,7 @@ class Image(BaseObject):
         self._keep_data = kwargs.get('keep_data')
         self._image     = None
         self._filename  = None
+        self._texture   = None
         self.opacity    = 1.
         self.scale      = 1.
         self.anchor_x   = 0
@@ -155,7 +156,7 @@ class Image(BaseObject):
             for attr in Image.copy_attributes:
                 self.__setattr__(attr, arg.__getattribute__(attr))
         elif type(arg) in (Texture, TextureRegion):
-            self.texture    = arg
+            self._texture   = arg
             self.width      = self.texture.width
             self.height     = self.texture.height
         elif isinstance(arg, ImageLoaderBase):
@@ -234,7 +235,7 @@ class Image(BaseObject):
         '''Texture of the image'''
         if self.image:
             return self.image.texture
-        return self.texture
+        return self._texture
 
     def draw(self):
         '''Draw the image on screen'''

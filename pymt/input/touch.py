@@ -11,8 +11,8 @@ give you information about the button up/down etc...
 So, we call that "capabilities.". Capabilities is handle in the "profile"
 property on a Touch. It's a simple list with string that contains :
 
-    * pos (tuio/property x, y)
-    * pos3d (tuio/property x, y, z)
+    * pos (property x, y)
+    * pos3d (property x, y, z)
     * mov (tuio/property X, Y)
     * mov3d (tuio/property X, Y, Z)
     * dim (tuio/property w, h)
@@ -46,6 +46,20 @@ from inspect import isroutine
 from ..utils import SafeList
 from ..clock import getClock
 from ..vector import Vector
+from copy import copy
+
+
+class TouchMetaclass(type):  
+    def __new__(cls, name, bases, attrs):  
+        __attrs__ = []
+        for base in bases:
+            if hasattr(base, '__attrs__'):
+                __attrs__.extend(base.__attrs__)
+        if '__attrs__' in attrs:
+            __attrs__.extend(attrs['__attrs__'])
+        attrs['__attrs__'] = tuple(__attrs__)
+        return super(TouchMetaclass, cls).__new__(cls, name, bases, attrs)  
+
 
 class Touch(object):
     '''Abstract class to represent a touch, and support TUIO 1.0 definition.
@@ -57,13 +71,18 @@ class Touch(object):
             list of parameters, passed to depack() function
     '''
 
+    __metaclass__ = TouchMetaclass
     __uniq_id = 0
-    __copy_attributes__ = \
-        ('id','sx','sy','sz','a','b','c',
-         'X','Y','Z','A','B','C','m','r',
-         'profile','x','y','z','dxpos',
-         'dypos','dzpos',)
-
+    __attrs__ = \
+        ('device', 'attr', 
+         'id', 'sx', 'sy', 'sz', 'profile',
+         'x', 'y', 'z', 'shape',
+         'dxpos', 'dypos', 'dzpos',
+         'oxpos', 'oypos', 'ozpos',
+         'dsxpos', 'dsypos', 'dszpos',
+         'osxpos', 'osypos', 'oszpos',
+         'time_start', 'is_double_tap',
+         'double_tap_time', 'userdata')
 
     def __init__(self, device, id, args):
         if self.__class__ == Touch:
@@ -88,17 +107,6 @@ class Touch(object):
         self.sx = 0.0
         self.sy = 0.0
         self.sz = 0.0
-        self.a = 0.0
-        self.b = 0.0
-        self.c = 0.0
-        self.X = 0.0
-        self.Y = 0.0
-        self.Z = 0.0
-        self.A = 0.0
-        self.B = 0.0
-        self.C = 0.0
-        self.m = 0.0
-        self.r = 0.0
         self.profile = ('pos', )
 
         # new parameters
@@ -119,12 +127,8 @@ class Touch(object):
         self.osypos = None
         self.oszpos = None
         self.time_start = getClock().get_time()
-        self.is_timeout = False
-        self.have_event_down = False
-        self.do_event = None
         self.is_double_tap = False
         self.double_tap_time = 0
-        self.no_event = False
         self.userdata = {}
 
         self.depack(args)
@@ -194,7 +198,7 @@ class Touch(object):
             self.dypos = self.oypos = self.y
             self.dzpos = self.ozpos = self.z
 
-    def push(self, attrs='xyz'):
+    def push(self, attrs=['x', 'y', 'z', 'dxpos', 'dypos', 'dzpos']):
         '''Push attributes values in `attrs` in the stack'''
         values = map(lambda x: getattr(self, x), attrs)
         self.attr.append((attrs, values))
@@ -207,8 +211,8 @@ class Touch(object):
 
     def copy_to(self, to):
         '''Copy some attribute to another touch object.'''
-        for attr in self.__copy_attributes__:
-            to.__setattr__(attr, self.__getattribute__(attr))
+        for attr in self.__attrs__:
+            to.__setattr__(attr, copy(self.__getattribute__(attr)))
 
     def __str__(self):
         classname = str(self.__class__).split('.')[-1].replace('>', '').replace('\'', '')

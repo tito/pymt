@@ -70,6 +70,8 @@ class MTSidePanel(MTWidget):
             elif self.side == 'bottom':
                 label = '^'
             corner = MTButton(label=label)
+        else:
+            self.corner_size = None
         self.corner = corner
         # Don't add to front or widgets added as children of layout will be occluded
         super(MTSidePanel, self).add_widget(self.corner, front=False)
@@ -152,30 +154,38 @@ class MTSidePanel(MTWidget):
             self.need_reposition = False
 
         # adjust size + configure position
+        lw, lh = self.layout.size
+        cw, ch = self.corner.size
         if side in ('left', 'right'):
-            self.corner.size = (self.corner_size, self.layout.height)
+            if self.corner_size is not None:
+                self.corner.size = (self.corner_size, self.layout.height)
             if align in ('bottom', 'left'):
-                cy = 0
+                cy = ly = 0
             elif align in ('top', 'right'):
-                cy = w.height - self.layout.height
+                ly = w.height - self.layout.height
+                cy = w.height - ch
             elif align in ('center', 'middle'):
-                cy = w.center[1] - self.layout.height / 2.
-            self.layout.y = cy
+                ly = w.center[1] - self.layout.height / 2.
+                cy = w.center[1] - ch / 2.
+            self.layout.y = ly
         elif side in ('top', 'bottom'):
-            self.corner.size = (self.layout.width, self.corner_size)
+            if self.corner_size is not None:
+                self.corner.size = (self.layout.width, self.corner_size)
             if align in ('bottom', 'left'):
-                cx = 0
+                cx = lx = 0
             elif align in ('top', 'right'):
-                cx = w.width - self.layout.width
+                lx = w.width - self.layout.width
+                cx = w.width - cw
             elif align in ('center', 'middle'):
-                cx = w.center[0] - self.layout.width / 2.
-            self.layout.x = cx
+                lx = w.center[0] - self.layout.width / 2.
+                cx = w.center[0] - cw / 2.
+            self.layout.x = lx
         if side == 'left':
             cx = self.layout.x + self.layout.width
         elif side == 'right':
-            cx = self.layout.x - self.corner_size
+            cx = self.layout.x - self.corner.width
         elif side == 'top':
-            cy = self.layout.y - self.corner_size
+            cy = self.layout.y - self.corner.height
         elif side == 'bottom':
             cy = self.layout.y + self.layout.height
 

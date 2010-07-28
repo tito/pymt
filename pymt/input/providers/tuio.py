@@ -152,13 +152,39 @@ class TuioTouchProvider(TouchProvider):
                 dispatch_fn('up', touch)
                 del self.touches[oscpath][touch.id]
 
-class Tuio2dCurTouch(Touch):
-    '''A 2dCur tuio touch.  Multiple profiles are available:
+class TuioTouch(Touch):
+    '''Abstraction for TUIO touch.
 
-        * xy
-        * xyXYm
-        * xyXYmh
+    Depending of the tracker, the TuioTouch object support
+    multiple profiles as :
+
+        * fiducial : name markerid, property .fid
+        * position : name pos, property .x, .y
+        * angle : name angle, property .a
+        * velocity vector : name mov, property .X, .Y
+        * rotation velocity : name rot, property .A
+        * motion acceleration : name motacc, property .m
+        * rotation acceleration : name rotacc, property .r
     '''
+    __attrs__ = ('a', 'b', 'c', 'X', 'Y', 'Z', 'A', 'B', 'C', 'm', 'r')
+
+    def __init__(self, device, id, args):
+        super(TuioTouch, self).__init__(device, id, args)
+        # Default argument for TUIO touches
+        self.a = 0.0
+        self.b = 0.0
+        self.c = 0.0
+        self.X = 0.0
+        self.Y = 0.0
+        self.Z = 0.0
+        self.A = 0.0
+        self.B = 0.0
+        self.C = 0.0
+        self.m = 0.0
+        self.r = 0.0
+
+class Tuio2dCurTouch(TuioTouch):
+    '''A 2dCur TUIO touch.'''
     def __init__(self, device, id, args):
         super(Tuio2dCurTouch, self).__init__(device, id, args)
 
@@ -180,12 +206,8 @@ class Tuio2dCurTouch(Touch):
         super(Tuio2dCurTouch, self).depack(args)
 
 
-class Tuio2dObjTouch(Touch):
-    '''A 2dObj tuio touch.  Multiple profiles are available:
-
-        * xy
-        * ixyaXYAmr
-        * ixyaXYAmrh
+class Tuio2dObjTouch(TuioTouch):
+    '''A 2dObj TUIO object.
     '''
     def __init__(self, device, id, args):
         super(Tuio2dObjTouch, self).__init__(device, id, args)
@@ -196,11 +218,11 @@ class Tuio2dObjTouch(Touch):
             self.profile = ('pos', )
         elif len(args) == 9:
             self.fid, self.sx, self.sy, self.a, self.X, self.Y, self.A, self.m, self.r = args[0:9]
-            self.profile = ('markerid', 'pos', 'angle', 'mov', 'rot', 'rotacc')
+            self.profile = ('markerid', 'pos', 'angle', 'mov', 'rot', 'motacc', 'rotacc')
         else:
             self.fid, self.sx, self.sy, self.a, self.X, self.Y, self.A, self.m, self.r, width, height = args[0:11]
             self.profile = ('markerid', 'pos', 'angle', 'mov', 'rot', 'rotacc',
-                           'shape')
+                            'acc', 'shape')
             if self.shape is None:
                 self.shape = TouchShapeRect()
                 self.shape.width = width

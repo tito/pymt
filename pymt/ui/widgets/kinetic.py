@@ -14,26 +14,31 @@ from pymt.ui.widgets.widget import MTWidget
 
 class KineticTouch(Touch):
     counter = 0
-    def __init__(self, device, args):
+    __attrs__ = ('X', 'Y')
+    def __init__(self, device):
         KineticTouch.counter += 1
         id = 'kinetic%d' % KineticTouch.counter
-        super(KineticTouch, self).__init__(device, id, args)
+        self.X = 0
+        self.Y = 0
+        super(KineticTouch, self).__init__(device, id, [])
         self.mode = 'controlled'
 
     def depack(self, args):
-        self.x, self.y = args
-        if self.dxpos is None:
-            self.dxpos, self.dypos = self.pos
-        self.X += (self.x - self.dxpos)
-        self.Y += (self.y - self.dypos)
-        self.profile = ('pos', 'kinetic')
+        if not args:
+            return
         super(KineticTouch, self).depack(args)
 
-class KineticTouchXY(KineticTouch):
-    def depack(self, args):
-        self.x, self.y, self.X, self.Y = args
-        self.profile = ('pos', 'mov', 'kinetic')
-        Touch.depack(self, args)
+    def kinetic(self, touch_from):
+        # copy all attributes from touch to us
+        touch_from.copy_to(self)
+        # pop all attribute from the old touch
+        # FIXME: if we activate it, it resolve some bug, but add other.
+        #while self.attr: self.pop()
+        # then, prepare kinetic
+        self.X += (self.x - self.dxpos)
+        self.Y += (self.y - self.dypos)
+        if 'kinetic' not in self.profile:
+            self.profile = tuple(list(self.profile) + ['kinetic'])
 
 class MTKinetic(MTWidget):
     '''Kinetic container.
@@ -75,53 +80,46 @@ class MTKinetic(MTWidget):
         self.touch      = {} # internals
 
     def on_touch_down(self, touch):
-        # do a copy of the touch for kinetic
-        if 'mov' in touch.profile:
-            args            = (touch.x, touch.y, touch.X, touch.Y)
-            ktouch          = KineticTouchXY(touch.device, args)
-        else:
-            args            = (touch.x, touch.y)
-            ktouch          = KineticTouch(touch.device, args)
-        ktouch.userdata = touch.userdata
-        ktouch.is_double_tap = touch.is_double_tap
-        self.touch[touch.uid] = ktouch
+        kt  = KineticTouch(touch.device)
+        kt.kinetic(touch)
+        self.touch[touch.uid] = kt
         # grab the touch for not lost it !
         touch.grab(self)
-        getCurrentTouches().append(ktouch)
+        getCurrentTouches().append(kt)
         # and dispatch !
-        return super(MTKinetic, self).on_touch_down(ktouch)
+        return super(MTKinetic, self).on_touch_down(kt)
 
     def on_touch_move(self, touch):
         if touch.grab_current != self:
             return
         if touch.uid not in self.touch:
             return
-        ktouch = self.touch[touch.uid]
-        if isinstance(ktouch, KineticTouchXY):
-            ktouch.move([touch.x, touch.y, touch.X, touch.Y])
-        else:
-            ktouch.move([touch.x, touch.y])
-        ktouch.userdata = touch.userdata
-        ret = super(MTKinetic, self).on_touch_move(ktouch)
+        kt = self.touch[touch.uid]
+        kt.kinetic(touch)
+        ret = super(MTKinetic, self).on_touch_move(kt)
 
-        # dispatch ktouch also in grab mode
-        for _wid in ktouch.grab_list[:]:
+        # dispatch kt also in grab mode
+        for _wid in kt.grab_list[:]:
             wid = _wid()
             if wid is None:
-                ktouch.grab_list.remove(_wid)
+                kt.grab_list.remove(_wid)
                 continue
-            ktouch.push()
-            ktouch.x, ktouch.y = self.to_window(*ktouch.pos)
+            kt.push()
+            kt.x, kt.y = self.to_window(kt.x, kt.y)
+            kt.dxpos, kt.dypos = self.to_window(kt.dxpos, kt.dypos)
             if wid.parent:
-                ktouch.x, ktouch.y = wid.parent.to_widget(ktouch.x, ktouch.y)
+                kt.x, kt.y = wid.parent.to_widget(kt.x, kt.y)
+                kt.dxpos, kt.dypos = wid.parent.to_widget(kt.dxpos, kt.dypos)
             else:
-                ktouch.x, ktouch.y = wid.to_parent(*wid.to_widget(ktouch.x, ktouch.y))
-            ktouch.grab_current = wid
-            ktouch.grab_state   = True
-            wid.dispatch_event('on_touch_move', ktouch)
-            ktouch.grab_state   = False
-            ktouch.grab_current = None
-            ktouch.pop()
+                kt.x, kt.y = wid.to_parent(*wid.to_widget(kt.x, kt.y))
+                kt.dxpos, kt.dypos = wid.to_parent(*wid.to_widget(kt.dxpos,
+                                                                  kt.dypos))
+            kt.grab_current = wid
+            kt.grab_state   = True
+            wid.dispatch_event('on_touch_move', kt)
+            kt.grab_state   = False
+            kt.grab_current = None
+            kt.pop()
         return ret
 
     def on_touch_up(self, touch):

@@ -11,6 +11,7 @@ from ..shape import TouchShapeRect
 
 class WM_Touch(Touch):
     '''Touch representing the WM_Touch event. Support pos, shape and size profiles'''
+    __attrs__ = ('size', )
     def depack(self, args):
         self.shape = TouchShapeRect()
         self.sx, self.sy = args[0], args[1]

@@ -14,16 +14,16 @@ if sys.platform == 'win32' or 'PYMT_DOC' in os.environ:
         from wm_touch import *
         from wm_pen import *
     except:
-        pymt.pymt_logger.warning('Input: WM_Touch/WM_Pen is not available for your window version')
+        pymt.pymt_logger.warning('Input: WM_Touch/WM_Pen is not supported by your version of Windows')
 
 if sys.platform == 'darwin' or 'PYMT_DOC' in os.environ:
     try:
         from mactouch import *
     except:
-        pymt.pymt_logger.exception('Input: MacMultitouchSupport is not available for your version')
+        pymt.pymt_logger.exception('Input: MacMultitouchSupport is not supported by your system')
 
 if sys.platform == 'linux2' or 'PYMT_DOC' in os.environ:
     try:
         from hidinput import *
     except:
-        pymt.pymt_logger.exception('Input: HIDInput is not available for your version')
+        pymt.pymt_logger.exception('Input: HIDInput is not supported by your version of linux')

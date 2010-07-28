@@ -76,7 +76,7 @@ class LabelBase(BaseObject):
         if type(padding) in (tuple, list):
             kwargs['padding_x'] = float(padding[0])
             kwargs['padding_y'] = float(padding[1])
-        elif type is not None:
+        elif padding is not None:
             kwargs['padding_x'] = float(padding)
             kwargs['padding_y'] = float(padding)
 

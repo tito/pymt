@@ -6,6 +6,7 @@ Spelling: Provide abstracted access to a range of spellchecking backends.
 
 __all__ = ('Spelling', 'SpellingBase', 'NoSuchLangError', 'NoLanguageSelectedError' )
 
+import sys
 from pymt.core import core_select_lib
 
 
@@ -106,8 +107,9 @@ class SpellingBase(object):
                                   'spelling base class!')
 
 
-Spelling = core_select_lib('spelling', (
-    ('enchant', 'spelling_enchant', 'SpellingEnchant'),
-    ('osxappkit', 'spelling_osxappkit', 'SpellingOSXAppKit'),
-))
+_libs = (('enchant', 'spelling_enchant', 'SpellingEnchant'), )
+if sys.platform == 'darwin':
+    _libs += (('osxappkit', 'spelling_osxappkit', 'SpellingOSXAppKit'), )
+
+Spelling = core_select_lib('spelling', _libs)
 

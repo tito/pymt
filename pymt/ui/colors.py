@@ -83,7 +83,7 @@ css_keyword_convert = {
     'alpha-background':         parse_float4,
     'item-color':               parse_color,
     'item-selected':            parse_color,
-    'padding':                  parse_int,
+    'padding':                  parse_int2,
     'slider-border-radius':     parse_int,
     'slider-border-radius-precision': parse_float,
     'slider-alpha-background':  parse_float4,

@@ -71,7 +71,7 @@ def parse_int2(text):
     if len(value) < 1:
         raise Exception('Invalid format int2 for %s' % text)
     elif len(value) == 1:
-        value[1] = value[0]
+        return [value[0], value[0]]
     elif len(value) > 2:
         raise Exception('Too much value in %s : %s' % (text, str(value)))
     return value

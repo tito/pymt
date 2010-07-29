@@ -10,7 +10,26 @@ To configure HIDInput, put in your configuration ::
     # example with Stantum MTP4.3" screen
     stantum = hidinput,/dev/input/event2
 
-You must have read access to the input event.
+.. note::
+    You must have read access to the input event.
+
+You have the possibility to use custom range for some X, Y and pressure value.
+On some drivers, the range reported is invalid.
+To fix that, you can add one of theses options on the argument line :
+* min_position_x : X minimum
+* max_position_x : X maximum
+* min_position_y : Y minimum
+* max_position_y : Y maximum
+* min_pressure : pressure minimum
+* max_pressure : pressure maximum
+
+For example, on Asus T101M, the touchscreen report a range from 0-4095 for X and
+Y value, but real value are in a range from 0-32768. You can put it on
+configuration ::
+
+    [input]
+    t101m = hidinput,/dev/input/event7,max_position_x=32768,max_position_y=32768
+
 '''
 
 __all__ = ('HIDInputTouchProvider', 'HIDTouch')
@@ -110,16 +129,52 @@ else:
     sz_l = struct.calcsize('Q')
 
     class HIDInputTouchProvider(TouchProvider):
+
+        options = ('min_position_x', 'max_position_x',
+                   'min_position_y', 'max_position_y',
+                   'min_pressure', 'max_pressure')
+
         def __init__(self, device, args):
             super(HIDInputTouchProvider, self).__init__(device, args)
             self.input_fn = None
-            if args == '':
+            self.default_ranges = dict()
+
+            # split arguments
+            args = args.split(',')
+            if not args:
                 pymt_logger.error('HIDInput: No filename pass to HIDInput configuration')
                 pymt_logger.error('HIDInput: Use /dev/input/event0 for example')
                 return None
-            else:
-                pymt_logger.info('HIDInput: Read event from <%s>' % args)
-                self.input_fn = args
+
+            # read filename
+            self.input_fn = args[0]
+            pymt_logger.info('HIDInput: Read event from <%s>' % self.input_fn)
+
+            # read parameters
+            for arg in args[1:]:
+                arg = arg.split('=')
+
+                # ensure it's a key = value
+                if len(arg) != 2:
+                    pymt_logger.error('HIDInput: invalid parameter %s, not in key=value format.' % arg)
+                    continue
+
+                # ensure the key exist
+                key, value = arg
+                if key not in HIDInputTouchProvider.options:
+                    pymt_logger.error('HIDInput: unknown %s option' % key)
+                    continue
+
+                # ensure the value
+                try:
+                    self.default_ranges[key] = int(value)
+                except ValueError:
+                    pymt_logger.error('HIDInput: invalid value %s for option %s' % (key, value))
+                    continue
+
+                # all good!
+                pymt_logger.info('HIDInput: Set custom %s to %d' % (key, int(value)))
+
 
         def start(self):
             if self.input_fn is None:
@@ -127,10 +182,13 @@ else:
             self.uid = 0
             self.queue = collections.deque()
             self.thread = threading.Thread(
-                target=self._thread_run, kwargs={
-                'queue': self.queue,
-                'input_fn': self.input_fn,
-                'device': self.device})
+                target=self._thread_run,
+                kwargs=dict(
+                    queue=self.queue,
+                    input_fn=self.input_fn,
+                    device=self.device,
+                    default_ranges=self.default_ranges
+                ))
             self.thread.daemon = True
             self.thread.start()
 
@@ -138,6 +196,7 @@ else:
             input_fn = kwargs.get('input_fn')
             queue = kwargs.get('queue')
             device = kwargs.get('device')
+            drs = kwargs.get('default_ranges').get
             touches = {}
             touches_sent = []
             point = {}
@@ -208,20 +267,20 @@ else:
                     abs_value, abs_min, abs_max, abs_fuzz, \
                         abs_flat, abs_res = struct.unpack('iiiiii', absinfo)
                     if y == ABS_MT_POSITION_X:
-                        range_min_position_x = abs_min
-                        range_max_position_x = abs_max
+                        range_min_position_x = drs('min_position_x', abs_min)
+                        range_max_position_x = drs('max_position_x', abs_max)
                         pymt_logger.info('HIDTouch: ' +
                             '<%s> range position X is %d - %d' % (
                             device_name, abs_min, abs_max))
                     elif y == ABS_MT_POSITION_Y:
-                        range_min_position_y = abs_min
-                        range_max_position_y = abs_max
+                        range_min_position_y = drs('min_position_y', abs_min)
+                        range_max_position_y = drs('max_position_y', abs_max)
                         pymt_logger.info('HIDTouch: ' +
                             '<%s> range position Y is %d - %d' % (
                             device_name, abs_min, abs_max))
                     elif y == ABS_MT_PRESSURE:
-                        range_min_pressure = abs_min
-                        range_max_pressure = abs_max
+                        range_min_pressure = drs('min_pressure', abs_min)
+                        range_max_pressure = drs('max_pressure', abs_max)
                         pymt_logger.info('HIDTouch: ' +
                             '<%s> range pressure is %d - %d' % (
                             device_name, abs_min, abs_max))

@@ -113,6 +113,7 @@ css_keyword_convert = {
     'scrollbar-margin':         parse_float4,
     'scrollbar-color':          parse_color,
     'bg-image':                 parse_image,
+    'selected-color':           parse_image,
 }
 
 class CSSSheet(object):

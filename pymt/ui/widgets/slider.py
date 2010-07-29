@@ -80,24 +80,25 @@ class MTSlider(MTWidget):
     value = property(get_value, set_value, doc='Value of the slider')
 
     def draw(self):
-        p2 = self.style['padding'] / 2
+        px, py = self.style['padding']
+        px2, py2 = px / 2., py / 2.
         diff = self.max - self.min
         if self.orientation == 'vertical':
             if diff == 0:
                 length = 0
             else:
                 length = int((self._value - self.min) * \
-                             (self.height - self.style['padding']) / diff)
-            pos = self.x + p2, self.y + p2
-            size = self.width - self.style['padding'], length
+                             (self.height - py) / diff)
+            pos = self.x + px2, self.y + py2
+            size = self.width - px, length
         else:
             if diff == 0:
                 length = 0
             else:
                 length = int((self._value - self.min) * \
-                             (self.width - self.style['padding']) / diff)
-            pos = self.x + p2, self.y + p2
-            size = length, self.height - self.style['padding']
+                             (self.width - px) / diff)
+            pos = self.x + px2, self.y + py2
+            size = length, self.height - py
 
         # draw outer rectangle
         set_color(*self.style.get('bg-color'))
@@ -293,7 +294,6 @@ class MTBoundarySlider(MTWidget):
         self.orientation    = kwargs.get('orientation')
         if self.orientation not in ('horizontal', 'vertical'):
             raise Exception('Invalid orientation %s. Must be horizontal or vertical' % self.orientation)
-        self.padding        = kwargs.get('padding')
         self.min            = kwargs.get('min')
         self.max            = kwargs.get('max')
         self.showtext       = kwargs.get('showtext')
@@ -339,15 +339,15 @@ class MTBoundarySlider(MTWidget):
         return self.width / (self.max - self.min)
 
     def draw(self):
-        p = self.style['padding']
-        p2 = p / 2
+        px, py = self.style['padding']
+        px2, py2 = px / 2, py / 2
         if self.orientation == 'vertical':
-            pos = (self.x + p2, self.y + self.value_min * self.ratio + p2)
+            pos = (self.x + px, self.y + self.value_min * self.ratio + py)
             size = (self.width - p, (self.value_max - self.value_min) * self.ratio - p)
             textposmin = (self.x + self.width, self.y + self.value_min * self.ratio)
             textposmax = (self.x + self.width, self.y + self.value_max * self.ratio)
         elif self.orientation == 'horizontal':
-            pos = (self.x + self.value_min * self.ratio + p2, self.y + p2)
+            pos = (self.x + self.value_min * self.ratio + px, self.y + py)
             size = ((self.value_max - self.value_min) * self.ratio - p, self.height - p)
             textposmin = (self.x + self.value_min * self.ratio, self.y + self.height)
             textposmax = (self.x + self.value_max * self.ratio, self.y + self.height)

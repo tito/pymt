@@ -1,75 +1,77 @@
 '''
-Graphics: all low level function to draw object in OpenGL.
+Graphics: Lower level functions to draw in OpenGL.
 
-Previous version of graphx was rely on Immediate mode of Open Immediate mode
-is not anymore allowed in OpenGL 3.0, and OpenGL ES.
-This graphics module is the new and stable way to draw every elements inside
-PyMT. We hardly ask you to use theses class !
+Our previous graphx package relied on OpenGL's so-called immediate mode.
+This mode is no longer allowed in OpenGL 3.0 and OpenGL ES.
+This graphics module is the new and stable way to draw all OpenGL elements
+in PyMT.
+We seriously recommend you use these classes (the old graphx package will be deprecated)!
 
 
 User mode
 ---------
 
-For every object you want do draw on screen, you must create them before
-drawing, on a canvas object. The Canvas object is a class that will store
-all your graphics elements, and draw them. With this method, canvas can do some
-optimization and avoid repetitive colors ::
+For every object you want do draw on the screen, you must create them on a canvas
+before drawing. The canvas object is a class that will store
+all your graphics elements and draw them efficiently.
+This method allows for internal optimizations.
+Use it like this ::
 
-    canvas = Canvas()
-    canvas.color(1, 0, 0, 1)
-    canvas.line([50, 50, 100, 100])
+    >>> canvas = Canvas()
+    >>> canvas.color(1, 0, 0, 1)
+    >>> canvas.line([50, 50, 100, 100])
 
 Then, to draw the canvas ::
 
-    canvas.draw()
+    >>> canvas.draw()
 
-You can also get any object instance from canvas, for later change ::
+You can also get a handle for any element of the canvas to change it later ::
 
-    myline = canvas.line([50, 50, 100, 100])
-    myline.points += [0, 150]
+    >>> myline = canvas.line([50, 50, 100, 100])
+    >>> myline.points += [0, 150]
 
 
 Expert mode
 -----------
 
-You can create your own graphic object. However, it's not recommanded to not use
-canvas object.
+You can create your own graphical object.
+However, you should still use the canvas object.
 
 An example with a line ::
 
     # in init function
-    line = Line([50, 50, 100, 100])
+    >>> line = Line([50, 50, 100, 100])
 
     # in draw function
-    line.draw()
+    >>> line.draw()
 
-    # If you want to change point of the line later, you can do
-    line.points = [80, 80, 100, 100]
+    # If you want to change the points of the line, you can do
+    >>> line.points = [80, 80, 100, 100]
 
-    # Or even add points into the line
-    line.points += [58, 35]
+    # Or even add points to the line
+    >>> line.points += [58, 35]
 
 
 An example with a rectangle ::
 
     # in init function
-    rect = Rectangle(pos=(50, 50), size=(200, 200))
+    >>> rect = Rectangle(pos=(50, 50), size=(200, 200))
 
     # in draw function
-    rect.draw()
+    >>> rect.draw()
 
     # You can change pos, size...
-    rect.pos = (10, 10)
-    rect.size = (999, 999)
+    >>> rect.pos = (10, 10)
+    >>> rect.size = (999, 999)
 
-An example with a rectangle + texture ::
+An example with a rectangle and a texture ::
 
     # in init function
-    img = Image('test.png')
-    rect = Rectangle(size=(100, 100), texture=img.texture)
+    >>> img = Image('test.png')
+    >>> rect = Rectangle(size=(100, 100), texture=img.texture)
 
     # in draw function
-    rect.draw()
+    >>> rect.draw()
 
 '''
 
@@ -256,8 +258,8 @@ cdef class GraphicElement(GraphicInstruction):
     Vertex Buffer Object, and you can push your vertex, color, texture ... and
     draw them easily.
 
-    The format of the buffer is specified in characters code. For example,
-    'vvcccc' mean you'll have 2 vertex + 4 colors coordinates.
+    The format of the buffer is specified in character code. For example,
+    'vvcccc' means that you'll have 2 vertex + 4 colors coordinates.
     You have 6 differents components that you can use:
         * v: vertex
         * c: color
@@ -266,14 +268,14 @@ cdef class GraphicElement(GraphicInstruction):
         * i: index (not yet used)
         * e: edge (not yet used)
 
-    For each component, VBO are separated.
+    For each component, VBOs are separated.
 
     :Parameters:
         `format`: string, default to None
             The format must be specified at start, and cannot be changed once
             the graphic is created.
         `type`: string, default to None
-            Specify how the graphic will be drawed. One of: 'lines',
+            Specify how the graphic will be drawn. One of: 'lines',
             'line_loop', 'line_strip', 'triangles', 'triangle_fan',
             'triangle_strip', 'quads', 'quad_strip', 'points', 'polygon'
         `usage`: string, default to 'GL_DYNAMIC_DRAW'
@@ -569,11 +571,11 @@ cdef class Point(GraphicElement):
 
     :Parameters:
         `texture`: texture, default to None
-            Specify the texture to use for drawing point
+            Specify the texture to use to draw the points
         `radius`: float, default to 1.
             Size of the point to draw, in pixel.
         `steps`: int, default to None
-            Number of step between 2 points
+            Number of steps between 2 points
     '''
     cdef object _texture
     cdef double _radius
@@ -706,9 +708,9 @@ cdef class Point(GraphicElement):
 
 cdef class Rectangle(GraphicElement):
     '''
-    Construct a rectangle from position + size.
-    The rectangle can be use to draw shape of rectangle, filled rectangle,
-    textured rectangle, rounded rectangle...
+    Construct a rectangle from position and size.
+    This can be use to draw the shape of a rectangle, a filled rectangle,
+    a textured rectangle, a rounded rectangle...
 
     ..warning ::
         Each time you change a property of the rectangle, the vertex list is
@@ -727,7 +729,7 @@ cdef class Rectangle(GraphicElement):
             If a texture is specified, the tex_coords will be taken from the
             texture argument. Otherwise, it will be set on 0-1 range.
         `colors_coords`: list, default to None
-            Can be used to specify a color for each vertex drawed.
+            Can be used to specify a color for each vertex drawn.
     '''
     cdef tuple _pos
     cdef tuple _size
@@ -775,7 +777,7 @@ cdef class Rectangle(GraphicElement):
 
     cpdef build(self):
         '''Build all the vbos. This is automaticly called when a property
-        change (position, size, tex_coords...)'''
+        changes (position, size, tex_coords...)'''
         # build vertex
         x, y = self.pos
         w, h = self.size
@@ -918,8 +920,7 @@ cdef class Rectangle(GraphicElement):
         doc='Colors coordinates for each vertex')
 
 cdef class ImageRectangle(Rectangle):
-    '''Draw an Image rectangle, as same as border-image in CSS3.
-
+    ''' Draw an Image rectangle, similar to border-image in CSS3.
     '''
     cdef list _borders
     cdef object _mode
@@ -1056,8 +1057,9 @@ cdef class ImageRectangle(Rectangle):
 cdef class Text(Rectangle):
     '''Draw a Text/Label.
 
-    Support all the arguments from `getLabel` function.
+    Supports all the arguments from the `getLabel` function.
     '''
+    # XXX ^--- and which exactly?
     cdef str _label
     cdef object _labelobj
     cdef dict _kwargs
@@ -1089,17 +1091,17 @@ cdef class RoundedRectangle(Rectangle):
     '''Draw a rounded rectangle
 
     warning.. ::
-        Rounded rectangle support only vertex, not other things right now.
+        Rounded rectangle supports only vertex, not other things right now.
         It may change in the future.
 
     :Parameters:
         `radius` : int, default to 5
-            Radius of corner
+            Radius of the corners
         `precision` : float, default to 0.5
             Precision of corner angle
         `corners` : tuple of bool, default to (True, True, True, True)
-            Indicate if round must be draw for each corners
-            starting to bottom-left, bottom-right, top-right, top-left
+            Indicate which corners are to be rounded.
+            Bools in the order: bottom-left, bottom-right, top-right, top-left
     '''
     cdef tuple _corners
     cdef double _precision
@@ -1183,7 +1185,7 @@ cdef class RoundedRectangle(Rectangle):
         if type(x) not in (list, tuple):
             raise Exception('Invalid corner type')
         if len(x) != 4:
-            raise Exception('Must have 4 boolean inside the corners list')
+            raise Exception('Must have 4 bool inside the corners list')
         self._corners = x
         self._need_build = 1
     corners = property(_get_corners, _set_corners,
@@ -1225,7 +1227,7 @@ cdef class Circle(GraphicElement):
         `radius`: int, defaults to 5
             Radius of the circle
         `filled`: list, default to False
-            Can be used to specify a color for each vertex drawed.
+            Can be used to specify a color for each vertex drawn.
     '''
     cdef tuple _pos
     cdef double _radius
@@ -1319,27 +1321,27 @@ cdef class Circle(GraphicElement):
 
 
 cdef class Color(GraphicInstruction):
-    '''Define current color to be used (as float values between 0 and 1) ::
+    '''Define color to be used in the following (floats between 0 and 1) ::
 
-        c = Canvas()
-        c.color(1, 0, 0, 1)
-        c.rectangle(pos=(50, 50), size=(100, 100))
+        >>> c = Canvas()
+        >>> c.color(1., 0.4, 0., 1.)
+        >>> c.rectangle(pos=(50, 50), size=(100, 100))
 
-        c.draw()
+        >>> c.draw()
 
     .. Note:
         Blending is activated if alpha value != 1
 
     :Parameters:
         `*color` : list
-            Can have 3 or 4 float value (between 0 and 1)
+            Can have 3 or 4 float values (between 0 and 1)
         `sfactor` : opengl factor, default to GL_SRC_ALPHA
             Default source factor to be used if blending is activated
         `dfactor` : opengl factor, default to GL_ONE_MINUS_SRC_ALPHA
             Default destination factor to be used if blending is activated
         `blend` : boolean, default to None
             Set True if you really want to activate blending, even
-            if the alpha color is 1 (mean no blending in theory)
+            if the alpha color is 1 (which means no blending in theory)
     '''
 
     cdef int _blend
@@ -1392,14 +1394,14 @@ cdef class Color(GraphicInstruction):
 
 cdef class CSSRectangle(GraphicInstruction):
     '''
-    Construct a rectangle, that handle lot of CSS attribute.
-    A CSSRectangle can also be constructed with direct values like ::
+    Construct a rectangle that supports a lot of CSS attributes.
+    A CSSRectangle can also be constructed by giving values like ::
 
         # classical way
-        CSSRectangle(pos=(0, 0), size=(500, 500), style=self.style)
+        >>> CSSRectangle(pos=(0, 0), size=(500, 500), style=self.style)
 
         # alternative way
-        CSSRectangle(x, y, w, h, style=self.style)
+        >>> CSSRectangle(x, y, w, h, style=self.style)
 
     :Parameters:
         `style`: dict, default to {}
@@ -1656,9 +1658,9 @@ cdef class CSSRectangle(GraphicInstruction):
 
 
 cdef class Canvas:
-    '''Create a batch of graphic object.
-    Can be use to store many graphic instruction, and call them for drawing.
-    In a future, we'll do optimization on this, like merge vbo if possible.
+    '''Create a batch of graphic objects.
+    Can be used to store many graphic instructions and call them for drawing.
+    (Note: This will lead to optimizations in the near future.)
     '''
 
     cdef list _batch
@@ -1684,7 +1686,7 @@ cdef class Canvas:
             pass
 
     def clear(self):
-        '''Clear all the elements in canvas'''
+        '''Clear all the elements in the canvas'''
         self._batch = []
 
     def draw(self):
@@ -1710,46 +1712,47 @@ cdef class Canvas:
         return self.add(GraphicElement(*largs, **kwargs))
 
     def line(self, *largs, **kwargs):
-        '''Create a Line() object, and add to the list.
+        '''Create a Line() object and add it to the canvas.
         Check Line() for more information.'''
         return self.add(Line(*largs, **kwargs))
 
     def circle(self, *largs, **kwargs):
-        '''Create a Circle() object, and add to the list.
+        '''Create a Circle() object and add it to the canvas.
         Check Circle() for more information.'''
         return self.add(Circle(*largs, **kwargs))
 
     def point(self, *largs, **kwargs):
-        '''Create a Point() object, and add to the list.
+        '''Create a Point() object and add it to the canvas.
         Check Point() for more information.'''
         return self.add(Point(*largs, **kwargs))
 
     def rectangle(self, *largs, **kwargs):
-        '''Create a Rectangle() object, and add to the list.
+        '''Create a Rectangle() object and add it to the canvas.
         Check Rectangle() for more information.'''
         return self.add(Rectangle(*largs, **kwargs))
 
     def imageRectangle(self, *largs, **kwargs):
-        '''Create a ImageRectangle() object, and add to the list.
+        '''Create a ImageRectangle() object and add it to the canvas.
         Check ImageRectangle() for more information.'''
         return self.add(ImageRectangle(*largs, **kwargs))
 
     def roundedRectangle(self, *largs, **kwargs):
-        '''Create a RoundedRectangle() object, and add to the list.
+        '''Create a RoundedRectangle() object and add it to the canvas.
         Check RoundedRectangle() for more information.'''
         return self.add(RoundedRectangle(*largs, **kwargs))
 
     def cssRectangle(self, *largs, **kwargs):
-        '''Create a CSSRectangle() object, and add to the list.
+        '''Create a CSSRectangle() object and add it to the canvas.
         Check CSSRectangle() for more information.'''
         return self.add(CSSRectangle(*largs, **kwargs))
 
     def color(self, *largs, **kwargs):
-        '''Create a Color() object, and add to the list.
+        '''Create a Color() object and add it to the canvas.
         Check Color() for more information.'''
         return self.add(Color(*largs, **kwargs))
 
     def text(self, *largs, **kwargs):
-        '''Create a Text() object, and add to the list.
+        '''Create a Text() object and add it to the canvas.
         Check Text() for more information.'''
         return self.add(Text(*largs, **kwargs))
+

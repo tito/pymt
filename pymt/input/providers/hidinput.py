@@ -107,7 +107,7 @@ else:
     # sizeof(struct input_event)
     struct_input_event_sz = struct.calcsize('LLHHi')
     struct_input_absinfo_sz = struct.calcsize('iiiiii')
-    sz_l = struct.calcsize('L')
+    sz_l = struct.calcsize('Q')
 
     class HIDInputTouchProvider(TouchProvider):
         def __init__(self, device, args):
@@ -188,7 +188,7 @@ else:
 
             # get abs infos
             bit = fcntl.ioctl(fd, EVIOCGBIT + (EV_MAX << 16), ' ' * sz_l)
-            bit, = struct.unpack('L', bit)
+            bit, = struct.unpack('Q', bit)
             for x in xrange(EV_MAX):
                 # preserve this, we may want other things than EV_ABS
                 if x != EV_ABS:
@@ -198,7 +198,7 @@ else:
                     continue
                 # ask abs info keys to the devices
                 sbit = fcntl.ioctl(fd, EVIOCGBIT + x + (KEY_MAX << 16), ' ' * sz_l)
-                sbit, = struct.unpack('L', sbit)
+                sbit, = struct.unpack('Q', sbit)
                 for y in xrange(KEY_MAX):
                     if (sbit & (1 << y)) == 0:
                         continue

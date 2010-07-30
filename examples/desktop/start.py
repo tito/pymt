@@ -249,6 +249,11 @@ class MTGestureDetector(MTGestureWidget):
 
     def on_gesture(self, gesture, touch):
         #print self.gdb.gesture_to_str(gesture)
+        # Check whether gesture is to small
+        #if ((gesture.width < self.parent.width / 10) or ((gesture.height < self.parent.height / 10)):
+        if (gesture.width < self.parent.width / 10) or (gesture.height < self.parent.height / 10):
+            return
+
         try:
             score, best = self.gdb.find(gesture, minscore=.5)
         except Exception, e:

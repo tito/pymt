@@ -342,13 +342,15 @@ class MTBoundarySlider(MTWidget):
         px, py = self.style['padding']
         px2, py2 = px / 2, py / 2
         if self.orientation == 'vertical':
-            pos = (self.x + px, self.y + self.value_min * self.ratio + py)
-            size = (self.width - p, (self.value_max - self.value_min) * self.ratio - p)
+            pos = (self.x + px2, self.y + self.value_min * self.ratio + py2)
+            size = (self.width - px, (self.value_max - self.value_min) *
+                    self.ratio - py)
             textposmin = (self.x + self.width, self.y + self.value_min * self.ratio)
             textposmax = (self.x + self.width, self.y + self.value_max * self.ratio)
         elif self.orientation == 'horizontal':
-            pos = (self.x + self.value_min * self.ratio + px, self.y + py)
-            size = ((self.value_max - self.value_min) * self.ratio - p, self.height - p)
+            pos = (self.x + self.value_min * self.ratio + px2, self.y + py2)
+            size = ((self.value_max - self.value_min) * self.ratio - px,
+                    self.height - py)
             textposmin = (self.x + self.value_min * self.ratio, self.y + self.height)
             textposmax = (self.x + self.value_max * self.ratio, self.y + self.height)
 

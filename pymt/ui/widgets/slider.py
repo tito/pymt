@@ -66,6 +66,7 @@ class MTSlider(MTWidget):
         self._value         = self.min
         if kwargs.get('value'):
             self._value = kwargs.get('value')
+        self._color_down = False
 
     def on_value_change(self, value):
         pass
@@ -103,7 +104,10 @@ class MTSlider(MTWidget):
         drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
 
         # draw inner rectangle
-        set_color(*self.style.get('slider-color'))
+        if self._color_down:
+            set_color(*self.style.get('slider-color-down'))
+        else:
+            set_color(*self.style.get('slider-color'))
         drawCSSRectangle(pos=pos, size=size, style=self.style, prefix='slider')
 
         if self.value_show:
@@ -117,6 +121,8 @@ class MTSlider(MTWidget):
         if self.collide_point(touch.x, touch.y):
             self.touchstarts.append(touch.id)
             self.on_touch_move(touch)
+            if type(self.style.get('slider-color-down')).__name__ == 'tuple':
+                self._color_down = True
             return True
         return super(MTSlider, self).on_touch_down(touch)
 
@@ -139,6 +145,7 @@ class MTSlider(MTWidget):
     def on_touch_up(self, touch):
         if touch.id in self.touchstarts:
             self.touchstarts.remove(touch.id)
+            self._color_down = False
         return super(MTSlider, self).on_touch_up(touch)
 
 class MTXYSlider(MTWidget):
@@ -162,6 +169,8 @@ class MTXYSlider(MTWidget):
     :Styles:
         `slider-color` : color
             Color of the slider
+        `slider-color-down` : color
+            Color of the slider when pressed down (not used by default)
         `bg-color` : color
             Background color of the slider
 

@@ -32,6 +32,8 @@ class MTSlider(MTWidget):
     :Styles:
         `slider-color` : color
             Color of the slider
+        `slider-color-down` : color
+            Color of the slider when pressed down (not used by default)
         `bg-color` : color
             Background color of the slider
         `padding` : int
@@ -169,8 +171,6 @@ class MTXYSlider(MTWidget):
     :Styles:
         `slider-color` : color
             Color of the slider
-        `slider-color-down` : color
-            Color of the slider when pressed down (not used by default)
         `bg-color` : color
             Background color of the slider
 

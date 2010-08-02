@@ -68,7 +68,6 @@ class MTSlider(MTWidget):
         self._value         = self.min
         if kwargs.get('value'):
             self._value = kwargs.get('value')
-        self._color_down = False
 
     def on_value_change(self, value):
         pass
@@ -106,7 +105,7 @@ class MTSlider(MTWidget):
         drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
 
         # draw inner rectangle
-        if self._color_down:
+        if self.touchstarts:
             set_color(*self.style.get('slider-color-down'))
         else:
             set_color(*self.style.get('slider-color'))
@@ -123,8 +122,6 @@ class MTSlider(MTWidget):
         if self.collide_point(touch.x, touch.y):
             self.touchstarts.append(touch.id)
             self.on_touch_move(touch)
-            if type(self.style.get('slider-color-down')).__name__ == 'tuple':
-                self._color_down = True
             return True
         return super(MTSlider, self).on_touch_down(touch)
 
@@ -147,7 +144,6 @@ class MTSlider(MTWidget):
     def on_touch_up(self, touch):
         if touch.id in self.touchstarts:
             self.touchstarts.remove(touch.id)
-            self._color_down = False
         return super(MTSlider, self).on_touch_up(touch)
 
 class MTXYSlider(MTWidget):

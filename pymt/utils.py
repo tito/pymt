@@ -12,8 +12,7 @@ __all__ = ('intersection', 'difference', 'curry', 'strtotuple',
 import inspect
 import re
 import functools
-import warnings
-import logger
+from pymt.logger import pymt_logger
 
 def boundary(value, minvalue, maxvalue):
     '''Limit a value between a minvalue and maxvalue'''
@@ -34,7 +33,6 @@ def curry(fn, *cargs, **ckwargs):
         d.update(fkwargs)
         return fn(*(cargs + fargs), **d)
     return call_fn
-
 
 def interpolate(value_from, value_to, step=10):
     '''Interpolate a value to another. Can be useful to smooth some transition.
@@ -134,12 +132,17 @@ def deprecated(func):
         # We want to print deprecated warnings only once:
         if caller_id not in DEPRECATED_CALLERS:
             DEPRECATED_CALLERS.append(caller_id)
-            warning = ("Call to deprecated function %s in %s line %d. Called from %s line %d" + \
-                       " by %s().") % (func.__name__, func.func_code.co_filename,
-                                       func.func_code.co_firstlineno + 1, file, line, caller)
-            logger.pymt_logger.warn(warning)
+            warning = (
+                'Call to deprecated function %s in %s line %d.'
+                'Called from %s line %d'
+                ' by %s().') % (
+                func.__name__,
+                func.func_code.co_filename,
+                func.func_code.co_firstlineno + 1,
+                file, line, caller)
+            pymt_logger.warn(warning)
             if func.__doc__:
-                logger.pymt_logger.warn(func.__doc__)
+                pymt_logger.warn(func.__doc__)
         return func(*args, **kwargs)
     return new_func
 

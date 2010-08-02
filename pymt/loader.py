@@ -84,8 +84,8 @@ class LoaderBase(object):
 
     def __del__(self):
         try:
-            getClock().unschedule_intervale(self._update)
-        except:
+            getClock().unschedule(self._update)
+        except Exception:
             pass
 
     @abstractmethod
@@ -147,7 +147,7 @@ class LoaderBase(object):
 
             # load data
             data = self._load_local(_out_filename)
-        except:
+        except Exception:
             pymt_logger.exception('Failed to load image <%s>' % filename)
             return self.error_image
         finally:
@@ -166,7 +166,7 @@ class LoaderBase(object):
         while True:
             try:
                 filename, data = self._q_done.pop()
-            except:
+            except IndexError:
                 return
 
             # create the image
@@ -270,12 +270,12 @@ else:
 
             def stop(self):
                 super(LoaderClock, self).stop()
-                getClock().unschedule_interval(self.run)
+                getClock().unschedule(self.run)
 
             def run(self, *largs):
                 try:
                     parameters = self._q_load.pop()
-                except:
+                except IndexError:
                     return
                 self._load(parameters)
 

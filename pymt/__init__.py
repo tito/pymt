@@ -22,7 +22,7 @@ __version__ = '0.5.0b4-dev'
 import sys
 import getopt
 import os
-from logger import pymt_logger, LOG_LEVELS
+from pymt.logger import pymt_logger, LOG_LEVELS
 
 # internals for post-configuration
 __pymt_post_configuration = []
@@ -68,8 +68,9 @@ for option in options:
             else:
                 options[option] = os.environ[key].lower() in \
                     ('true', '1', 'yes', 'yup')
-        except:
-            pymt_logger.warning('Core: Wrong value for %s environment key' % key)
+        except Exception:
+            pymt_logger.warning('Core: Wrong value for %s'
+                                'environment key' % key)
             pymt_logger.exception('')
 
 # Extract all needed path in pymt
@@ -110,7 +111,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         os.mkdir(pymt_usermodules_dir)
 
     # configuration
-    from config import *
+    from pymt.config import *
 
     # Set level of logger
     level = LOG_LEVELS.get(pymt_config.get('pymt', 'log_level'))
@@ -130,39 +131,39 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     # and configuration applied to logger.
 
     # first, compile & use accelerate module
-    from accelerate import *
+    from pymt.accelerate import *
 
     # no dependices at all
-    from baseobject import *
-    from exceptions import *
-    from resources import *
-    from cache import Cache
+    from pymt.baseobject import *
+    from pymt.exceptions import *
+    from pymt.resources import *
+    from pymt.cache import Cache
 
     # system dependices
-    from utils import *
-    from event import *
-    from clock import *
-    from texture import *
-    from plugin import *
+    from pymt.utils import *
+    from pymt.event import *
+    from pymt.clock import *
+    from pymt.texture import *
+    from pymt.plugin import *
 
     # internal dependices
-    from graphx import *
-    from vector import *
-    from geometry import *
+    from pymt.graphx import *
+    from pymt.vector import *
+    from pymt.geometry import *
 
     # dependices
-    from core import *
-    from modules import *
-    from input import *
-    from base import *
+    from pymt.core import *
+    from pymt.modules import *
+    from pymt.input import *
+    from pymt.base import *
 
     # after dependices
-    from gesture import *
-    from obj import OBJ
-    from loader import *
+    from pymt.gesture import *
+    from pymt.obj import OBJ
+    from pymt.loader import *
 
     # widgets
-    from ui import *
+    from pymt.ui import *
 
     # Can be overrided in command line
     try:
@@ -180,8 +181,8 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
                 pymt_usage()
                 sys.exit(0)
             elif opt in ('-p', '--provider'):
-                id, args = arg.split(':', 1)
-                pymt_config.set('input', id, args)
+                pid, args = arg.split(':', 1)
+                pymt_config.set('input', pid, args)
             elif opt in ('-a', '--auto-fullscreen'):
                 pymt_config.set('graphics', 'fullscreen', 'auto')
             elif opt in ('-k', '--fake-fullscreen'):
@@ -218,7 +219,8 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
                 with open(pymt_config_fn, 'w') as fd:
                     pymt_config.write(fd)
             except Exception, e:
-                pymt_logger.exception('Core: error while saving default configuration file')
+                pymt_logger.exception('Core: error while saving default'
+                                      'configuration file')
             pymt_logger.info('Core: PyMT configuration saved.')
             sys.exit(0)
 

@@ -5,7 +5,8 @@ MarkupLabel: Handle drawing of text with markup
 __all__ = ('MarkupLabel', )
 
 import pymt
-import pymt.parser
+from pymt.parser import parse_color
+from pymt.logger import pymt_logger
 import re
 from . import Label, LabelBase
 
@@ -76,7 +77,7 @@ class MarkupLabel(MarkupLabelBase):
             elif item == '[/size]':
                 self._pop_style('font_size')
             elif item.startswith('[color='):
-                color = pymt.parser.parse_color(item[7:-1])
+                color = parse_color(item[7:-1])
                 self._push_style('color')
                 self.options['color'] = color
             elif item == '[/color]':

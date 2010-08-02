@@ -6,7 +6,6 @@ __all__ = ('resource_find', 'resource_add_path')
 
 from os.path import join, dirname, exists
 import sys
-import pymt
 
 resource_paths = [
     '.',

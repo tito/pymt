@@ -35,13 +35,14 @@ class MTPlugins(object):
                 if not os.path.isdir(os.path.join(path, plugin)):
                     continue
                 try:
-                    a = __import__(name='%s.%s' % (plugin, plugin), fromlist=plugin)
+                    a = __import__(name='%s.%s' % (plugin, plugin),
+                                   fromlist=plugin)
                     if not a.IS_PYMT_PLUGIN:
                         continue
                     a.__internal_path = os.path.join(path, plugin)
                     a.__internal_name = plugin
                     self.plugins[plugin] = a
-                except Exception, e:
+                except Exception:
                     pass
 
     def list(self):
@@ -67,7 +68,8 @@ class MTPlugins(object):
             'author': self.get_key(plugin, 'PLUGIN_AUTHOR'),
             'email': self.get_key(plugin, 'PLUGIN_EMAIL'),
             'description': self.get_key(plugin, 'PLUGIN_DESCRIPTION'),
-            'icon': self.get_key(plugin, 'PLUGIN_ICON', '%s.png' % plugin.__internal_name),
+            'icon': self.get_key(plugin, 'PLUGIN_ICON', '%s.png' % \
+                                 plugin.__internal_name),
             'path': plugin.__internal_path
         }
 
@@ -79,7 +81,7 @@ class MTPlugins(object):
     def deactivate(self, plugin, container):
         '''Deactivate a plugin'''
         # XXX TODO: remember each context for each plugin instance !
-        ctx = MTContext()
+        #ctx = MTContext()
         try:
             plugin.pymt_plugin_deactivate(container)
         except:

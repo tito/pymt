@@ -144,9 +144,9 @@ __all__ = ('EventDispatcher', )
 
 import inspect
 import types
-from weakmethod import WeakMethod
-from baseobject import BaseObject
-from logger import pymt_logger
+from pymt.weakmethod import WeakMethod
+from pymt.baseobject import BaseObject
+from pymt.logger import pymt_logger
 
 class EventDispatcher(BaseObject):
     '''Generic event dispatcher interface.
@@ -163,9 +163,11 @@ class EventDispatcher(BaseObject):
 
     @property
     def event_types(self):
+        '''List of event types available'''
         return self._event_types
 
     def unregister_event_type(self, event_type):
+        '''Remove an event types from the available list'''
         if event_type in self._event_types:
             self._event_types.remove(event_type)
 
@@ -273,18 +275,18 @@ class EventDispatcher(BaseObject):
         '''Implement handler matching on arguments for set_handlers and
         remove_handlers.
         '''
-        for object in args:
-            if inspect.isroutine(object):
+        for obj in args:
+            if inspect.isroutine(obj):
                 # Single magically named function
-                name = object.__name__
+                name = obj.__name__
                 if name not in self._event_types:
                     raise Exception('Unknown event "%s"' % name)
-                yield name, object
+                yield name, obj
             else:
                 # Single instance with magically named methods
-                for name in dir(object):
+                for name in dir(obj):
                     if name in self._event_types:
-                        yield name, getattr(object, name)
+                        yield name, getattr(obj, name)
         for name, handler in kwargs.iteritems():
             # Function for handling given event (no magic)
             if name not in self._event_types:
@@ -348,7 +350,7 @@ class EventDispatcher(BaseObject):
                     continue
                 handler = wkhandler()
                 if handler is None:
-                    frame.remove(wkhandler)
+                    del frame[wkhandler]
                     continue
                 try:
                     if handler(*args):
@@ -361,7 +363,7 @@ class EventDispatcher(BaseObject):
             # call event
             if getattr(self, event_type)(*args):
                 return True
-        except TypeError, e:
+        except TypeError:
             self._raise_dispatch_exception(
                 event_type, args, getattr(self, event_type))
 
@@ -459,7 +461,8 @@ class EventDispatcher(BaseObject):
         def lambda_connect(*largs):
             if type(p2) in (tuple, list):
                 if len(largs) != len(p2):
-                    pymt_logger.exception('Widget: cannot connect with different size')
+                    pymt_logger.exception('Widget: cannot connect with'
+                                          'different size')
                     raise
                 for p in p2:
                     if p is None:
@@ -473,8 +476,9 @@ class EventDispatcher(BaseObject):
                         w2.__setattr__(p2, dtype(func(*largs)))
                     else:
                         w2.__setattr__(p2, dtype(func(largs)))
-                except Exception, e:
-                    pymt_logger.exception('Widget: cannot connect with different size')
+                except Exception:
+                    pymt_logger.exception('Widget: cannot connect with'
+                                          'different size')
                     raise
         if p2 is None:
             self.push_handlers(**{p1: w2})
@@ -483,8 +487,7 @@ class EventDispatcher(BaseObject):
 
 # install acceleration
 try:
-    import types
-    from accelerate import accelerate
+    from pymt.accelerate import accelerate
     if accelerate is not None:
         EventDispatcher.dispatch_event = types.MethodType(
             accelerate.eventdispatcher_dispatch_event, None, EventDispatcher)

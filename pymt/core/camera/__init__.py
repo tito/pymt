@@ -32,7 +32,7 @@ class CameraBase(BaseObject):
 
     def __init__(self, **kwargs):
         kwargs.setdefault('stopped', False)
-        kwargs.setdefault('resolution', (640,480))
+        kwargs.setdefault('resolution', (640, 480))
         kwargs.setdefault('video_src', 0)
         kwargs.setdefault('color', (1, 1, 1, 1))
 

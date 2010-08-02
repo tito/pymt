@@ -21,7 +21,8 @@ def parse_image(filename):
         return Svg(filename)
     else:
         return Image(filename)
-    raise Exception('Error trying to load image specified in css: %s' % filename)
+    raise Exception('Error trying to load image specified in css: %s' \
+                    % filename)
 
 def parse_color(text):
     '''Parse a text color to a pymt color. Format supported are :
@@ -40,7 +41,8 @@ def parse_color(text):
         res = text[1:]
         if len(res) == 3:
             res = ''.join(map(lambda x: x+x, res))
-        value = [int(x, 16)/255. for x in re.split('([0-9a-f]{2})', res) if x != '']
+        value = [int(x, 16) / 255. for x in re.split(
+                 '([0-9a-f]{2})', res) if x != '']
         if len(value) == 3:
             value.append(1)
     return value
@@ -67,7 +69,7 @@ def parse_int2(text):
 
     '''
     texts = [x for x in text.split(' ') if x.strip() != '']
-    value = map(lambda x: parse_int(x), texts)
+    value = map(parse_int, texts)
     if len(value) < 1:
         raise Exception('Invalid format int2 for %s' % text)
     elif len(value) == 1:
@@ -84,7 +86,7 @@ def parse_float4(text):
 
     '''
     texts = [x for x in text.split(' ') if x.strip() != '']
-    value = map(lambda x: parse_float(x), texts)
+    value = map(parse_float, texts)
     if len(value) < 1:
         raise Exception('Invalid format float4 for %s' % text)
     elif len(value) == 1:

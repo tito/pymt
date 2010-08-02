@@ -32,7 +32,7 @@ Matrix: matrix implementation, used for scatter
     if numpy is not installed. Prefer to use numpy library !
 '''
 
-import random,math,operator
+import random, math
 
 stringPrecision = 3
 epsilon = 1e-8

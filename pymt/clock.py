@@ -18,7 +18,7 @@ If the callback return False, the schedule will be removed.
 __all__ =  ('Clock', 'getClock')
 
 import time
-from weakmethod import WeakMethod
+from pymt.weakmethod import WeakMethod
 
 class _Event(object):
 
@@ -134,6 +134,5 @@ _default_clock = Clock()
 # make it available
 def getClock():
     '''Return the clock instance used by PyMT'''
-    global _default_clock
     return _default_clock
 

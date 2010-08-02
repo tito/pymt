@@ -8,19 +8,28 @@ import os
 import re
 from array import array
 from pymt import pymt_logger
-from OpenGL.GL import *
-from OpenGL.GL.NV.texture_rectangle import *
-from OpenGL.GL.ARB.texture_rectangle import *
+import OpenGL
+from OpenGL.GL import GL_RGBA, GL_UNSIGNED_BYTE, GL_TEXTURE_MIN_FILTER, \
+        GL_TEXTURE_MAG_FILTER, GL_TEXTURE_WRAP_T, GL_TEXTURE_WRAP_S, \
+        GL_TEXTURE_2D, GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_RECTANGLE_ARB, \
+        GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_GENERATE_MIPMAP, \
+        GL_TRUE, GL_LINEAR, GL_UNPACK_ALIGNMENT, GL_BGR, GL_BGRA, GL_RGB, \
+        glEnable, glDisable, glBindTexture, glTexParameteri, glTexImage2D, \
+        glTexSubImage2D, glFlush, glGenTextures, glDeleteTextures, \
+        GLubyte, glPixelStorei
+from OpenGL.GL.NV.texture_rectangle import glInitTextureRectangleNV
+from OpenGL.GL.ARB.texture_rectangle import glInitTextureRectangleARB
 from OpenGL.extensions import hasGLExtension
 
 # for a specific bug in 3.0.0, about deletion of framebuffer.
 # same hack as FBO :(
-OpenGLversion = tuple(int(re.match('^(\d+)', i).groups()[0]) for i in OpenGL.__version__.split('.'))
+OpenGLversion = tuple(int(re.match('^(\d+)', i).groups()[0]) \
+                      for i in OpenGL.__version__.split('.'))
 if OpenGLversion < (3, 0, 1):
     try:
         import numpy
         have_numpy = True
-    except:
+    except Exception:
         have_numpy = False
 
 
@@ -91,9 +100,8 @@ class Texture(object):
         self._gl_mag_filter = None
 
     def __del__(self):
-        # add texture deletion outside GC call
-        global _texture_release_list
-        # XXX None case happen if some texture have been not deleted
+        # Add texture deletion outside GC call.
+        # This case happen if some texture have been not deleted
         # before application exit...
         if _texture_release_list is not None:
             _texture_release_list.append(self.id)
@@ -122,23 +130,23 @@ class Texture(object):
 
     def _get_min_filter(self):
         return self._gl_min_filter
-    def _set_min_filter(self, filter):
-        if filter == self._gl_min_filter:
+    def _set_min_filter(self, x):
+        if x == self._gl_min_filter:
             return
         self.bind()
-        glTexParameteri(self.target, GL_TEXTURE_MIN_FILTER, filter)
-        self._gl_min_filter = filter
+        glTexParameteri(self.target, GL_TEXTURE_MIN_FILTER, x)
+        self._gl_min_filter = x
     min_filter = property(_get_min_filter, _set_min_filter,
                           doc='''Get/set the GL_TEXTURE_MIN_FILTER property''')
 
     def _get_mag_filter(self):
         return self._gl_mag_filter
-    def _set_mag_filter(self, filter):
-        if filter == self._gl_mag_filter:
+    def _set_mag_filter(self, x):
+        if x == self._gl_mag_filter:
             return
         self.bind()
-        glTexParameteri(self.target, GL_TEXTURE_MAG_FILTER, filter)
-        self._gl_mag_filter = filter
+        glTexParameteri(self.target, GL_TEXTURE_MAG_FILTER, x)
+        self._gl_mag_filter = x
     mag_filter = property(_get_mag_filter, _set_mag_filter,
                           doc='''Get/set the GL_TEXTURE_MAG_FILTER property''')
 
@@ -169,7 +177,7 @@ class Texture(object):
                     if Texture._has_texture_nv:
                         target = GL_TEXTURE_RECTANGLE_NV
                         rectangle = True
-                except:
+                except Exception:
                     pass
 
                 try:
@@ -178,7 +186,7 @@ class Texture(object):
                     if not rectangle and Texture._has_texture_arb:
                         target = GL_TEXTURE_RECTANGLE_ARB
                         rectangle = True
-                except:
+                except Exception:
                     pass
 
                 if not rectangle:
@@ -196,7 +204,8 @@ class Texture(object):
             texture_height = _nearest_pow2(height)
 
         id = glGenTextures(1)
-        texture = Texture(texture_width, texture_height, target, id, mipmap=mipmap)
+        texture = Texture(texture_width, texture_height, target, id,
+                          mipmap=mipmap)
 
         texture.bind()
         texture.wrap        = GL_CLAMP_TO_EDGE
@@ -248,8 +257,8 @@ class Texture(object):
         self.blit_buffer(im.data, size=(im.width, im.height),
                          mode=im.mode, pos=pos)
 
-    def blit_buffer(self, buffer, size=None, mode='RGB', format=None, pos=(0, 0),
-                    buffertype=GL_UNSIGNED_BYTE):
+    def blit_buffer(self, buffer, size=None, mode='RGB', format=None,
+                    pos=(0, 0), buffertype=GL_UNSIGNED_BYTE):
         '''Blit a buffer into a texture.
 
         :Parameters:
@@ -270,29 +279,32 @@ class Texture(object):
             size = self.size
         if format is None:
             format = self.mode_to_gl_format(mode)
-        glBindTexture(self.target, self.id)
-        glEnable(self.target)
+        target = self.target
+        glBindTexture(target, self.id)
+        glEnable(target)
 
         # activate 1 alignement, of window failed on updating weird size
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
 
         # need conversion ?
-        buffer, format = self._convert_buffer(buffer, format)
+        pdata, format = self._convert_buffer(buffer, format)
 
         # transfer the new part of texture
-        glTexSubImage2D(self.target, 0, pos[0], pos[1],
+        glTexSubImage2D(target, 0, pos[0], pos[1],
                         size[0], size[1], format,
-                        buffertype, buffer)
+                        buffertype, pdata)
 
         glFlush()
-        glDisable(self.target)
+        glDisable(target)
 
     @staticmethod
     def has_bgr():
         if not Texture._has_bgr_tested:
-            pymt_logger.warning('Texture: BGR/BGRA format is not supported by your graphic card')
-            pymt_logger.warning('Texture: Software conversion will be done to RGB/RGBA')
-            Texture._has_bgr = extensions.hasGLExtension('GL_EXT_bgra')
+            pymt_logger.warning('Texture: BGR/BGRA format is not supported by'
+                                'your graphic card')
+            pymt_logger.warning('Texture: Software conversion will be done to'
+                                'RGB/RGBA')
+            Texture._has_bgr = hasGLExtension('GL_EXT_bgra')
             Texture._has_bgr_tested = True
         return Texture._has_bgr
 
@@ -310,26 +322,26 @@ class Texture(object):
             return GL_RGBA
         return format
 
-    def _convert_buffer(self, buffer, format):
+    def _convert_buffer(self, data, format):
         # check if format is supported by user
         ret_format = format
-        ret_buffer = buffer
+        ret_buffer = data
 
         # BGR / BGRA conversion not supported by hardware ?
         if not Texture.is_gl_format_supported(format):
             if format == GL_BGR:
                 ret_format = GL_RGB
-                a = array('b', buffer)
+                a = array('b', data)
                 a[0::3], a[2::3] = a[2::3], a[0::3]
                 ret_buffer = a.tostring()
             elif format == GL_BGRA:
                 ret_format = GL_RGBA
-                a = array('b', buffer)
+                a = array('b', data)
                 a[0::4], a[2::4] = a[2::4], a[0::4]
                 ret_buffer = a.tostring()
             else:
-                pymt_logger.critical('Texture: non implemented %s texture conversion',
-                                     str(format))
+                pymt_logger.critical('Texture: non implemented'
+                                     '%s texture conversion' % str(format))
                 raise Exception('Unimplemented texture conversion for %s' %
                                 str(format))
         return ret_buffer, ret_format

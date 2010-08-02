@@ -21,7 +21,7 @@ class ExceptionHandler:
 
     def handle_exception(self, exception):
         '''Handle one exception, default return ExceptionManager.STOP'''
-        return ExceptionManager.STOP
+        return ExceptionManager.RAISE
 
 class ExceptionManager:
     '''ExceptionManager manage exceptions handlers.'''

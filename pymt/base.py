@@ -15,19 +15,17 @@ __all__ = [
 import pymt
 import sys
 import os
-import weakref
-from logger import pymt_logger
-from exceptions import pymt_exception_manager, ExceptionManager
-from clock import getClock
-from input import *
-from utils import deprecated
+from pymt.logger import pymt_logger
+from pymt.exceptions import pymt_exception_manager, ExceptionManager
+from pymt.clock import getClock
+from pymt.input import TouchFactory, pymt_postproc_modules
 
 # private vars
 touch_list              = []
 pymt_window             = None
 pymt_providers          = []
 pymt_evloop             = None
-frame_dt                = 0.01 # init to a non-zero value, to prevent user zero division
+frame_dt                = 0.01 # non-zero value to prevent user zero division
 
 #: List of event listeners
 pymt_event_listeners    = []
@@ -38,26 +36,26 @@ touch_event_listeners   = pymt_event_listeners
 
 def getFrameDt():
     '''Return the last delta between old and new frame.'''
-    global frame_dt
     return frame_dt
 
 def getCurrentTouches():
     '''Return the list of all current touches'''
-    global touch_list
     return touch_list
 
 def getWindow():
     '''Return the MTWindow'''
-    global pymt_window
     return pymt_window
 
 def setWindow(win):
+    '''Set current PyMT window
+    .. warning::
+        Use it only if you know what you are doing !
+    '''
     global pymt_window
     pymt_window = win
 
 def getEventLoop():
     '''Return the default TouchEventLoop object'''
-    global pymt_evloop
     return pymt_evloop
 
 class TouchEventLoop(object):
@@ -74,14 +72,12 @@ class TouchEventLoop(object):
         '''Must be call only one time before run().
         This start all configured input providers.'''
         self.status = 'started'
-        global pymt_providers
         for provider in pymt_providers:
             provider.start()
 
     def close(self):
         '''Exit from the main loop, and stop all configured
         input providers.'''
-        global pymt_providers
         self.quit = True
         self.stop()
         self.status = 'closed'
@@ -105,26 +101,25 @@ class TouchEventLoop(object):
         if mod in self.postproc_modules:
             self.postproc_modules.remove(mod)
 
-    def post_dispatch_input(self, type, touch):
+    def post_dispatch_input(self, event, touch):
         '''This function is called by dispatch_input() when we want to dispatch
         a input event. The event is dispatched into all listeners, and if
         grabbed, it's dispatched through grabbed widgets'''
         # update available list
-        global touch_list
-        if type == 'down':
+        if event == 'down':
             touch_list.append(touch)
-        elif type == 'up':
+        elif event == 'up':
             if touch in touch_list:
                 touch_list.remove(touch)
 
         # dispatch to listeners
         if not touch.grab_exclusive_class:
             for listener in pymt_event_listeners:
-                if type == 'down':
+                if event == 'down':
                     listener.dispatch_event('on_touch_down', touch)
-                elif type == 'move':
+                elif event == 'move':
                     listener.dispatch_event('on_touch_move', touch)
-                elif type == 'up':
+                elif event == 'up':
                     listener.dispatch_event('on_touch_up', touch)
 
         # dispatch grabbed touch
@@ -142,14 +137,18 @@ class TouchEventLoop(object):
             if wid != root_window and root_window is not None:
                 touch.push()
                 touch.scale_for_screen(*root_window.size)
+                parent = wid.parent
                 # and do to_local until the widget
                 try:
-                    if wid.parent:
-                        touch.x, touch.y = wid.parent.to_widget(touch.x, touch.y)
-                        touch.dxpos, touch.dypos = wid.parent.to_widget(touch.dxpos, touch.dypos)
+                    if parent:
+                        touch.x, touch.y = parent.to_widget(touch.x, touch.y)
+                        touch.dxpos, touch.dypos = parent.to_widget(
+                            touch.dxpos, touch.dypos)
                     else:
-                        touch.x, touch.y = wid.to_parent(wid.to_widget(touch.x, touch.y))
-                        touch.dxpos, touch.dypos = wid.to_parent(wid.to_widget(touch.dxpos, touch.dypos))
+                        touch.x, touch.y = wid.to_parent(
+                            wid.to_widget(touch.x, touch.y))
+                        touch.dxpos, touch.dypos = wid.to_parent(
+                            wid.to_widget(touch.dxpos, touch.dypos))
                 except AttributeError:
                     # when using innerwindow, an app have grab the touch
                     # but app is removed. the touch can't access
@@ -160,14 +159,14 @@ class TouchEventLoop(object):
 
             touch.grab_current = wid
 
-            if type == 'down':
+            if event == 'down':
                 # don't dispatch again touch in on_touch_down
                 # a down event are nearly uniq here.
                 # wid.dispatch_event('on_touch_down', touch)
                 pass
-            elif type == 'move':
+            elif event == 'move':
                 wid.dispatch_event('on_touch_move', touch)
-            elif type == 'up':
+            elif event == 'up':
                 wid.dispatch_event('on_touch_up', touch)
 
             touch.grab_current = None
@@ -176,18 +175,16 @@ class TouchEventLoop(object):
                 touch.pop()
         touch.grab_state = False
 
-    def _dispatch_input(self, type, touch):
-        ev = (type, touch)
+    def _dispatch_input(self, event, touch):
+        ev = (event, touch)
         # remove the save event for the touch if exist
-        if ev in self.input_events:
+        if ev in self.input_events[:]:
             self.input_events.remove(ev)
         self.input_events.append(ev)
 
     def dispatch_input(self):
         '''Called by idle() to read events from input providers,
         pass event to postproc, and dispatch final events'''
-        global pymt_providers
-
         # first, aquire input events
         for provider in pymt_providers:
             provider.update(dispatch_fn=self._dispatch_input)
@@ -197,8 +194,8 @@ class TouchEventLoop(object):
             self.input_events = mod.process(events=self.input_events)
 
         # real dispatch input
-        for type, touch in self.input_events:
-            self.post_dispatch_input(type=type, touch=touch)
+        for event, touch in self.input_events:
+            self.post_dispatch_input(event=event, touch=touch)
 
         self.input_events = []
 
@@ -303,7 +300,6 @@ def runTouchApp(widget=None, slave=False):
     '''
 
     global pymt_evloop
-    global pymt_providers
 
     # Ok, we got one widget, and we are not in slave mode
     # so, user don't create the window, let's create it for him !
@@ -324,7 +320,8 @@ def runTouchApp(widget=None, slave=False):
         provider_id, args = args
         provider = TouchFactory.get(provider_id)
         if provider is None:
-            pymt_logger.warning('Base: Unknown <%s> provider' % str(provider_id))
+            pymt_logger.warning('Base: Unknown <%s> provider' % \
+                                str(provider_id))
             continue
 
         # create provider
@@ -371,7 +368,6 @@ def runTouchApp(widget=None, slave=False):
 
 def stopTouchApp():
     '''Stop the current application by leaving the main loop'''
-    global pymt_evloop
     if pymt_evloop is None:
         return
     if pymt_evloop.status != 'started':

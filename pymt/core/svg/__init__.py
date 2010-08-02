@@ -28,7 +28,7 @@ class SvgBase(object):
 
     def load(self, filename):
         '''Load an svg'''
-        raise NotimplementedError("abstract class SvgLoaderBase: subclass must be implemented by svg provider")
+        raise NotImplementedError("abstract class SvgLoaderBase: subclass must be implemented by svg provider")
 
     def __getattr__ (self, name):
         return self.svg_data.__getattribute__(name)
@@ -38,8 +38,8 @@ class SvgLoader(object):
     loaders = []
 
     @staticmethod
-    def register(cls):
-        SvgLoader.loaders.append(cls)
+    def register(subcls):
+        SvgLoader.loaders.append(subcls)
 
     @staticmethod
     def load(filename, **kwargs):
@@ -86,6 +86,8 @@ class Svg(BaseObject):
 
         super(Svg, self).__init__(**kwargs)
 
+        self._scale_x   = 1.
+        self._scale_y   = 1.
         self._filename  = None
         self.svg_object = None
         self.scale      = 1.

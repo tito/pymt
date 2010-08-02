@@ -16,7 +16,7 @@ __all__ = [
 ]
 
 from OpenGL.GL import *
-from statement import *
+from pymt.graphx.statement import *
 
 ### Stencil usage
 stencil_stack       = 0

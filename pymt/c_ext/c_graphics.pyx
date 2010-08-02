@@ -712,7 +712,7 @@ cdef class Rectangle(GraphicElement):
     This can be use to draw the shape of a rectangle, a filled rectangle,
     a textured rectangle, a rounded rectangle...
 
-    ..warning ::
+    .. warning::
         Each time you change a property of the rectangle, the vertex list is
         rebuilt automatically at the next draw() call.
 
@@ -1090,7 +1090,7 @@ cdef class Text(Rectangle):
 cdef class RoundedRectangle(Rectangle):
     '''Draw a rounded rectangle
 
-    warning.. ::
+    .. warning::
         Rounded rectangle supports only vertex, not other things right now.
         It may change in the future.
 
@@ -1217,7 +1217,7 @@ cdef class Circle(GraphicElement):
     Construct a circle from position and radius.
     The circle can be either filled or not.
 
-    ..warning ::
+    .. warning::
         Each time you change a property of the circle, the vertex list is
         rebuilt automatically at the next draw() call.
 

@@ -33,7 +33,7 @@ class MTTabs(MTWidget):
 		tabs.add_widget(MTButton(label="World"), tab='Tab2')
 		tabs.select('Tab2')
 
-    warning ::
+    .. warning::
         The position of this widget is the upper-left of the widget.
         The reason is if they are multiple tabs with multiple height,
         tabs will always moving when switching from one to another.

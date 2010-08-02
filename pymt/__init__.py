@@ -36,7 +36,7 @@ def pymt_configure():
 def pymt_register_post_configuration(callback):
     '''Register a function to be call when pymt_configure() will be called.
 
-    ..warning ::
+    .. warning::
         Internal use only.
     '''
     __pymt_post_configuration.append(callback)

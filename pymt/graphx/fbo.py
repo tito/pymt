@@ -86,7 +86,7 @@ class AbstractFbo(object):
     def clear(self):
         '''Clear framebuffer.
 
-        ..warning ::
+        .. warning::
             Must be called inside bind()/release() of FBO !
         '''
         assert(self._is_bind == True)

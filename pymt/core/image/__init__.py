@@ -13,7 +13,7 @@ from pymt.texture import Texture, TextureRegion
 class ImageData(object):
     '''Container for data image : width, height, mode and data.
 
-    ..warning ::
+    .. warning::
         Only RGB and RGBA mode are allowed.
     '''
 
@@ -248,7 +248,7 @@ class Image(BaseObject):
     def read_pixel(self, x, y):
         '''For a given local x/y position, return the color at that position.
 
-        ..warning ::
+        .. warning::
             This function can be used only with images loaded with
             keep_data=True keyword. For examples ::
 

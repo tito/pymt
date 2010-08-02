@@ -419,7 +419,7 @@ class BaseWindow(EventDispatcher):
     def on_keyboard(self, key, scancode=None, unicode=None):
         '''Event called when keyboard is in action
 
-        ..warning ::
+        .. warning::
             Some providers can skip `scancode` or `unicode` !!
         '''
         pass

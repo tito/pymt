@@ -18,7 +18,7 @@ class RangeException(Exception):
 class MTCircularSlider(MTWidget):
     '''MTCircularSlider is an implementation of a circular scrollbar using MTWidget.
 
-    ..warning ::
+    .. warning::
         The widget is drawed from his center. Cause of that, the size of the
         widget will be automaticly adjusted from the radius of the slider.
         Eg: if you ask for a radius=100, the widget size will be 200x200

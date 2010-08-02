@@ -147,7 +147,7 @@ def deprecated(func):
 class SafeList(list):
     '''List with clear() method
 
-    ..warning ::
+    .. warning::
         Usage of iterate() function will decrease your performance.
     '''
     def clear(self):

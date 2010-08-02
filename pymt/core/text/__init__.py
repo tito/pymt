@@ -18,7 +18,7 @@ class LabelBase(BaseObject):
     '''Core text label.
     This is the abstract class used for different backend to render text.
 
-    ..warning ::
+    .. warning::
         The core text label can't be changed at runtime, you must recreate one.
 
     :Parameters:

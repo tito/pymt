@@ -24,7 +24,7 @@ from math import sqrt, pow
 class MTListContainer(MTWidget):
     '''Container for MTList.
 
-    ..warning ::
+    .. warning::
         The size of this container is taken from the first children size.
 
     '''
@@ -48,7 +48,7 @@ class MTList(MTStencilContainer):
     '''List with kinetic. This is the replacement of old MTKineticList().
     The MTList widget are able to scroll in 2 way, and use your widgets.
 
-    ..warning ::
+    .. warning::
         The MTList have the same behavior as MTScatterWidget: coordinates of his
         children are relative to the MTList (not fixed to the screen.)
 

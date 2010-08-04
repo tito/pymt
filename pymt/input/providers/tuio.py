@@ -194,9 +194,11 @@ class Tuio2dCurTouch(TuioTouch):
             self.profile = ('pos', )
         elif len(args) == 5:
             self.sx, self.sy, self.X, self.Y, self.m = map(float, args[0:5])
+            self.Y = -self.Y
             self.profile = ('pos', 'mov', 'motacc')
         else:
             self.sx, self.sy, self.X, self.Y, self.m, width, height = map(float, args[0:7])
+            self.Y = -self.Y
             self.profile = ('pos', 'mov', 'motacc', 'shape')
             if self.shape is None:
                 self.shape = TouchShapeRect()
@@ -218,9 +220,11 @@ class Tuio2dObjTouch(TuioTouch):
             self.profile = ('pos', )
         elif len(args) == 9:
             self.fid, self.sx, self.sy, self.a, self.X, self.Y, self.A, self.m, self.r = args[0:9]
+            self.Y = -self.Y
             self.profile = ('markerid', 'pos', 'angle', 'mov', 'rot', 'motacc', 'rotacc')
         else:
             self.fid, self.sx, self.sy, self.a, self.X, self.Y, self.A, self.m, self.r, width, height = args[0:11]
+            self.Y = -self.Y
             self.profile = ('markerid', 'pos', 'angle', 'mov', 'rot', 'rotacc',
                             'acc', 'shape')
             if self.shape is None:

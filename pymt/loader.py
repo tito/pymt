@@ -68,11 +68,9 @@ class LoaderBase(object):
     __metaclass__ = ABCMeta
 
     def __init__(self):
-        loading_png_fn = os.path.join(pymt_data_dir, 'loader.png')
-        error_png_fn = os.path.join(pymt_data_dir, 'error.png')
 
-        self.loading_image = ImageLoader.load(loading_png_fn)
-        self.error_image = ImageLoader.load(error_png_fn)
+        self._loading_image = None
+        self._error_image = None
 
         self._q_load  = collections.deque()
         self._q_done  = collections.deque()
@@ -87,6 +85,20 @@ class LoaderBase(object):
             getClock().unschedule(self._update)
         except Exception:
             pass
+
+    @property
+    def loading_image(self):
+        if not self._loading_image:
+            loading_png_fn = os.path.join(pymt_data_dir, 'loader.png')
+            self._loading_image = ImageLoader.load(filename=loading_png_fn)
+        return self._loading_image
+
+    @property
+    def error_image(self):
+        if not self._error_image:
+            error_png_fn = os.path.join(pymt_data_dir, 'error.png')
+            self._error_image = ImageLoader.load(filename=error_png_fn)
+        return self._error_image
 
     @abstractmethod
     def start(self):

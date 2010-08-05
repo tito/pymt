@@ -30,7 +30,8 @@ __all__ = (
 
 from pymt.logger import pymt_logger
 from pymt.cache import Cache
-from pymt.parser import *
+from pymt.parser import parse_color, parse_image, parse_float4, \
+        parse_float, parse_bool, parse_int, parse_int2, parse_string
 from pymt import pymt_data_dir, pymt_home_dir
 import os
 import sys
@@ -98,7 +99,6 @@ css_keyword_convert = {
     'draw-key-border':          parse_bool,
     'draw-key-alpha-background': parse_bool,
     'vector-color':             parse_color,
-    'title-color':              parse_color,
     'title-color':              parse_color,
     'title-border-radius':      parse_int,
     'title-border-radius-precision': parse_float,
@@ -190,10 +190,9 @@ class CSSSheet(object):
             if name in css_keyword_convert:
                 try:
                     value = css_keyword_convert[name](value)
-                except:
+                except Exception:
                     pymt_logger.exception(
                         'Error while convert %s: %s' % (name, value))
-                    pass
             return sname.strip(), value
 
         rules = [x.strip() for x in rulestr.split(',') if x.strip() != '']
@@ -257,7 +256,6 @@ def get_truncated_classname(name):
 
 widgets_parents = {}
 def get_widget_parents(widget):
-    global widgets_parents
     parent = [widget.__class__]
     if not widget.__class__ in widgets_parents:
         widget_classes = list()
@@ -372,7 +370,7 @@ if 'PYMT_DOC' not in os.environ:
 
 
 if __name__ == '__main__':
-    from pymt import *
+    from pymt import MTWidget, css_get_style, MTWindow
     w = MTWidget()
     print w
     print css_get_style(widget=w)

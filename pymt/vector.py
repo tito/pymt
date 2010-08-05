@@ -12,7 +12,6 @@ For example, if you want to get length of a vector ::
 __all__ = ('Vector', )
 
 import math
-from pymt.logger import pymt_logger
 
 class Vector(list):
     '''Represents a 2D vector.'''
@@ -42,7 +41,7 @@ class Vector(list):
             # use the list __getslice__ method and convert
             # result to vector
             return Vector(super(Vector, self).__getslice__(i, j))
-        except:
+        except Exception:
             raise TypeError, 'vector::FAILURE in __getslice__'
 
     def __add__(self, val):
@@ -75,7 +74,7 @@ class Vector(list):
     def __mul__(self, val):
         try:
             return Vector(map(lambda x, y: x * y, self, val))
-        except:
+        except Exception:
             return Vector(map(lambda x: x * val, self))
 
     def __imul__(self, val):
@@ -93,19 +92,19 @@ class Vector(list):
     def __truediv__(self, val):
         try:
             return Vector(map(lambda x, y: x / y, self, val))
-        except:
+        except Exception:
             return Vector(map(lambda x: x / val, self))
 
     def __div__(self, val):
         try:
             return Vector(map(lambda x, y: x / y, self, val))
-        except:
+        except Exception:
             return Vector(map(lambda x: x / val, self))
 
     def __rdiv__(self, val):
         try:
             return Vector(map(lambda x, y: x / y, other, val))
-        except:
+        except Exception:
             return Vector(map(lambda x: other / x, val))
 
     def __idiv__(self, val):
@@ -138,7 +137,7 @@ class Vector(list):
         '''Returns a new vector that has the same direction as vec,
         but has a length of one.'''
         if self[0] == 0. and self[1] == 0.:
-            return Vector(0.,0.)
+            return Vector(0., 0.)
         return self / self.length()
 
     def dot(self, a):
@@ -168,8 +167,8 @@ class Vector(list):
         For math see: http://en.wikipedia.org/wiki/Line-line_intersection
         '''
         #linear algebar sucks...seriously!!
-        x1,x2,x3,x4 = float(v1[0]), float(v2[0]), float(v3[0]), float(v4[0])
-        y1,y2,y3,y4 = float(v1[1]), float(v2[1]), float(v3[1]), float(v4[1])
+        x1, x2, x3, x4 = float(v1[0]), float(v2[0]), float(v3[0]), float(v4[0])
+        y1, y2, y3, y4 = float(v1[1]), float(v2[1]), float(v3[1]), float(v4[1])
 
         u = (x1 * y2 - y1 * x2)
         v = (x3 * y4 - y3 * x4)
@@ -180,7 +179,7 @@ class Vector(list):
         px = ( u * (x3 - x4)  -  (x1 - x2) * v ) / denom
         py = ( u * (y3 - y4)  -  (y1 - y2) * v ) / denom
 
-        return Vector(px,py)
+        return Vector(px, py)
 
     @staticmethod
     def in_bbox(point, a, b):

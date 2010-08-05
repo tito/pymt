@@ -87,8 +87,8 @@ class ImageLoader(object):
     loaders = []
 
     @staticmethod
-    def register(cls):
-        ImageLoader.loaders.append(cls)
+    def register(defcls):
+        ImageLoader.loaders.append(defcls)
 
     @staticmethod
     def load(filename, **kwargs):

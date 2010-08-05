@@ -66,13 +66,13 @@ else:
                 pymt.pymt_logger.debug('', exc_info=e)
 
 
-from audio import *
-from camera import *
-from image import *
-from text import *
-from video import *
-from svg import *
-from spelling import *
+from pymt.core.audio import *
+from pymt.core.camera import *
+from pymt.core.image import *
+from pymt.core.text import *
+from pymt.core.video import *
+from pymt.core.svg import *
+from pymt.core.spelling import *
 
 # only after core loading, load extensions
 from text.markup import *

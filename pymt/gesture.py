@@ -85,7 +85,7 @@ class GesturePoint:
         return self
 
     def __repr__(self):
-        return 'Mouse_point: %f,%f' % (self.x,self.y)
+        return 'Mouse_point: %f,%f' % (self.x, self.y)
 
 class GestureStroke:
     ''' Gestures can be made up of multiple strokes '''
@@ -170,7 +170,6 @@ class GestureStroke:
                              float(sample_points)
         new_points = list()
         new_points.append(self.points[0])
-        target_index = 0
 
         # We loop on the points
         prev = self.points[0]
@@ -218,13 +217,16 @@ class Gesture:
     '''
 
     # Tolerance for evaluation using the '==' operator
-    DEFAULT_TOLERANCE= 0.1
+    DEFAULT_TOLERANCE = 0.1
 
     def __init__(self, tolerance=None):
         '''
         Gesture([tolerance=float])
         Creates a new gesture with an optional matching tolerance value
         '''
+        self.width = 0.
+        self.height = 0.
+        self.gesture_product = 0.
         self.strokes = list()
         if tolerance is None:
             self.tolerance = Gesture.DEFAULT_TOLERANCE
@@ -377,7 +379,11 @@ class Gesture:
             return result
         else:
             return not result
-    def __lt__(self, comparison_gesture): raise TypeError("Gesture cannot be evaluated with <")
-    def __gt__(self, comparison_gesture): raise TypeError("Gesture cannot be evaluated with >")
-    def __le__(self, comparison_gesture): raise TypeError("Gesture cannot be evaluated with <=")
-    def __ge__(self, comparison_gesture): raise TypeError("Gesture cannot be evaluated with >=")
+    def __lt__(self, comparison_gesture):
+        raise TypeError("Gesture cannot be evaluated with <")
+    def __gt__(self, comparison_gesture):
+        raise TypeError("Gesture cannot be evaluated with >")
+    def __le__(self, comparison_gesture):
+        raise TypeError("Gesture cannot be evaluated with <=")
+    def __ge__(self, comparison_gesture):
+        raise TypeError("Gesture cannot be evaluated with >=")

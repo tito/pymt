@@ -233,7 +233,7 @@ class MTInnerWindow(MTScatterWidget):
 
     def on_draw(self):
         with gx_matrix:
-            glMultMatrixf(self.transform_mat)
+            glMultMatrixf(self.transform_gl)
 
             self.draw()
             self.controls.dispatch_event('on_draw')

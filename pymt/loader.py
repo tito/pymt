@@ -88,6 +88,7 @@ class LoaderBase(object):
 
     @property
     def loading_image(self):
+        '''Image used for loading (readonly)'''
         if not self._loading_image:
             loading_png_fn = os.path.join(pymt_data_dir, 'loader.png')
             self._loading_image = ImageLoader.load(filename=loading_png_fn)
@@ -95,6 +96,7 @@ class LoaderBase(object):
 
     @property
     def error_image(self):
+        '''Image used for error (readonly)'''
         if not self._error_image:
             error_png_fn = os.path.join(pymt_data_dir, 'error.png')
             self._error_image = ImageLoader.load(filename=error_png_fn)
@@ -247,6 +249,10 @@ else:
         import pygame
 
         class LoaderPygame(LoaderBase):
+            def __init__(self):
+                super(LoaderPygame, self).__init__()
+                self.worker = None
+
             def start(self):
                 super(LoaderPygame, self).start()
                 self.worker = pygame.threads.WorkerQueue()

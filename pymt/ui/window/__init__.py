@@ -12,18 +12,24 @@ your system. Actually, theses libraries are handled :
 __all__ = ['BaseWindow', 'MTWindow', 'MTDisplay']
 
 import os
-from OpenGL.GL import *
+from OpenGL.GL import GL_VERSION, GL_FASTEST, GL_NICEST, GL_LINE_SMOOTH, \
+        GL_LINE_SMOOTH_HINT, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, \
+        GL_MODELVIEW, GL_PROJECTION, \
+        glGetString, glClear, glClearColor, glEnable, glHint, \
+        glViewport, glMatrixMode, glLoadIdentity, glFrustum, glScalef, \
+        glTranslatef
+
 import pymt
-from ...utils import SafeList
-from ...logger import pymt_logger
-from ...base import getCurrentTouches, setWindow, touch_event_listeners
-from ...clock import getClock
-from ...graphx import set_color, drawCircle, drawLabel, drawRectangle, drawCSSRectangle
-from ...modules import pymt_modules
-from ...event import EventDispatcher
-from ..colors import css_get_style
-from ..factory import MTWidgetFactory
-from ..widgets import MTWidget
+from pymt.utils import SafeList
+from pymt.logger import pymt_logger
+from pymt.base import getCurrentTouches, setWindow, touch_event_listeners
+from pymt.clock import getClock
+from pymt.graphx import set_color, drawCircle, drawLabel, drawRectangle, drawCSSRectangle
+from pymt.modules import pymt_modules
+from pymt.event import EventDispatcher
+from pymt.ui.colors import css_get_style
+from pymt.ui.factory import MTWidgetFactory
+from pymt.ui.widgets import MTWidget
 
 class BaseWindow(EventDispatcher):
     '''BaseWindow is a abstract window widget, for any window implementation.
@@ -63,10 +69,10 @@ class BaseWindow(EventDispatcher):
     _wallpaper = None
     _wallpaper_position = 'norepeat'
 
-    def __new__(type, **kwargs):
-        if type.__instance is None:
-            type.__instance = EventDispatcher.__new__(type)
-        return type.__instance
+    def __new__(cls, **kwargs):
+        if cls.__instance is None:
+            cls.__instance = EventDispatcher.__new__(cls)
+        return cls.__instance
 
     def __init__(self, **kwargs):
 
@@ -316,7 +322,7 @@ class BaseWindow(EventDispatcher):
         for t in [x for x in getCurrentTouches() if x.device == 'mouse']:
             drawCircle(pos=(t.x, t.y), radius=10)
 
-    def to_widget(self, x, y,initial=True, relative=False):
+    def to_widget(self, x, y, initial=True, relative=False):
         return (x, y)
 
     def to_window(self, x, y, initial=True, relative=False):
@@ -449,7 +455,7 @@ class MTDisplay(MTWidget):
     '''
 
     def __init__(self, **kwargs):
-        kwargs.setdefault('touch_color', (1,1,0))
+        kwargs.setdefault('touch_color', (1, 1, 0))
         kwargs.setdefault('radius', 20)
         super(MTDisplay, self).__init__(**kwargs)
 

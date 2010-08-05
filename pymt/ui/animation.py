@@ -73,8 +73,8 @@ __all__ = ['AnimationAlpha', 'Animation', 'Repeat', 'Delay']
 import math
 import types
 from copy import deepcopy, copy
-from ..clock import getClock
-from ..event import EventDispatcher
+from pymt.clock import getClock
+from pymt.event import EventDispatcher
 
 class AnimationBase(object):
     # This is the base animation object class. Everytime a do or animate

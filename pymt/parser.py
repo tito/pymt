@@ -31,7 +31,7 @@ def parse_color(text):
         * #aaa
         * #rrggbb
     '''
-    value = (1, 1, 1, 1)
+    value = [1, 1, 1, 1]
     if text.startswith('rgb'):
         res = re.match('rgba?\((.*)\)', text)
         value = map(lambda x: int(x) / 255., re.split(',\ ?', res.groups()[0]))

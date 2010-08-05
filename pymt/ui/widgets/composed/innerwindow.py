@@ -10,7 +10,6 @@ import pymt
 from OpenGL.GL import *
 from ....graphx import gx_matrix, drawRectangle, set_color, gx_stencil, stencilUse
 from ....graphx import drawRoundedRectangle, drawTexturedRectangle
-from ....vector import matrix_inv_mult
 from ....utils import SafeList
 from ..rectangle import MTRectangularWidget
 from ..scatter import MTScatterWidget

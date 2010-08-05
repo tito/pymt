@@ -60,10 +60,10 @@ class CameraOpenCV(CameraBase):
             frame  = hg.cvQueryFrame(self._device)
             pymt.pymt_logger.warning(
                 'OpenCV: Camera resolution %s not possible! Defaulting to %s.' %
-                (self.resolution, (w,h)))
+                (self.resolution, (w, h)))
 
             # set resolution to default one
-            self._resolution = (w,h)
+            self._resolution = (w, h)
 
         # create texture !
         self._texture = pymt.Texture.create(*self._resolution)

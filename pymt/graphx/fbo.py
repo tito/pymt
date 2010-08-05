@@ -15,9 +15,9 @@ import OpenGL
 import pymt
 from OpenGL.GL import *
 from OpenGL.GL.EXT.framebuffer_object import *
-from paint import *
-from colors import *
-from draw import *
+from pymt.graphx.paint import *
+from pymt.graphx.colors import *
+from pymt.graphx.draw import *
 
 # for a specific bug in 3.0.0, about deletion of framebuffer.
 OpenGLversion = tuple(int(re.match('^(\d+)', i).groups()[0]) for i in OpenGL.__version__.split('.'))

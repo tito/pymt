@@ -19,9 +19,9 @@ from pymt.cache import Cache
 from pymt.vector import Vector
 from OpenGL.GL import *
 from OpenGL.GLU import gluNewQuadric, gluDisk, gluPartialDisk
-from paint import *
-from statement import *
-from colors import *
+from pymt.graphx.paint import *
+from pymt.graphx.statement import *
+from pymt.graphx.colors import *
 
 try:
     import pymt.c_ext.c_graphx as c_graphx

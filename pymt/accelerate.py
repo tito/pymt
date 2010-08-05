@@ -33,7 +33,8 @@ if options.get('use_accelerate'):
         pymt_logger.info('Core: Using accelerate module')
     except ImportError, e:
         pymt_logger.warning('Core: Accelerate module not available <%s>' % e)
-        pymt_logger.warning('Core: Execute "python setup.py build_ext --inplace"')
+        pymt_logger.warning('Core: Execute "python setup.py build_ext'
+                            '--inplace"')
 else:
     pymt_logger.info('Core: Accelerate module disabled by user')
 

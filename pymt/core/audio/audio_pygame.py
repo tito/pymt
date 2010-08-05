@@ -13,7 +13,7 @@ except:
     raise
 
 # init pygame sound
-pygame.mixer.pre_init(44100,-16,2, 1024)
+pygame.mixer.pre_init(44100, -16, 2, 1024)
 pygame.mixer.init()
 pygame.mixer.set_num_channels(32)
 

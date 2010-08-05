@@ -22,12 +22,13 @@ class SvgSquirtle(SvgBase):
         try:
             svg = squirtle.SVG(filename)
         except:
-            pymt.pymt_logger.warning('SVG: Unable to load SVG file <%s>' % filename)
+            pymt.pymt_logger.warning('SVG: Unable to load SVG file <%s>' %
+                                     filename)
             raise
         return svg
 
     def draw(self):
-        self.svg_data.draw(0,0) #squirtle object requires we pass x and y
+        self.svg_data.draw(0, 0)
 
 # register
 SvgLoader.register(SvgSquirtle)

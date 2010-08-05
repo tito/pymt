@@ -46,7 +46,14 @@ __all__ = [
 ]
 
 import pymt
-from OpenGL.GL import *
+from OpenGL.GL import GL_COMPILE, GL_COMPILE_AND_EXECUTE, \
+        GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_BLEND, GL_MODELVIEW, \
+        GL_COLOR_BUFFER_BIT, GL_ENABLE_BIT, GL_TEXTURE_2D, GL_DST_COLOR, \
+        GL_ONE, GL_ZERO, \
+        glEnable, glDisable, glGenLists, glNewList, glEndList, glCallList, \
+        glBlendFunc, glMatrixMode, glPushMatrix, glLoadIdentity, glPopAttrib, \
+        glPushMatrix, glPopAttrib, glColor3f, glColor4f, glBindTexture, \
+        glPopMatrix, glBegin, glEnd, glPushAttrib
 
 gl_displaylist_generate = False
 class GlDisplayList:
@@ -75,9 +82,8 @@ class GlDisplayList:
     def __enter__(self):
         self.start()
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, extype, value, traceback):
         self.stop()
-        return False
 
     def start(self):
         '''Start recording GL operation'''
@@ -126,10 +132,9 @@ class DO:
         for item in self.args:
             item.__enter__()
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, extype, value, traceback):
         for item in reversed(self.args):
-            item.__exit__(type, value, traceback)
-        return False
+            item.__exit__(extype, value, traceback)
 
 
 class GlBlending:
@@ -147,12 +152,12 @@ class GlBlending:
         glEnable(GL_BLEND)
         glBlendFunc(self.sfactor, self.dfactor)
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, extype, value, traceback):
         glDisable(GL_BLEND)
-        return False
 
 class GlMatrix:
-    '''Statement of glPushMatrix/glPopMatrix, designed to be use with "with" keyword.
+    '''Statement of glPushMatrix/glPopMatrix, designed to be use with
+    "with" keyword.
 
     Alias: gx_matrix, gx_matrix_identity ::
 
@@ -172,10 +177,9 @@ class GlMatrix:
         if self.do_loadidentity:
             glLoadIdentity()
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, extype, value, traceback):
         glMatrixMode(self.matrixmode)
         glPopMatrix()
-        return False
 
 class GlEnable:
     '''Statement of glEnable/glDisable, designed to be use with "with" keyword.
@@ -188,9 +192,8 @@ class GlEnable:
     def __enter__(self):
         glEnable(self.flag)
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, extype, value, traceback):
         glDisable(self.flag)
-        return False
 
 gx_enable = GlEnable
 
@@ -205,12 +208,12 @@ class GlBegin:
     def __enter__(self):
         glBegin(self.flag)
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, extype, value, traceback):
         glEnd()
-        return False
 
 class GlAttrib:
-    '''Statement of glPushAttrib/glPopAttrib, designed to be use with "with" keyword
+    '''Statement of glPushAttrib/glPopAttrib, designed to be use with
+    "with" keyword
 
     Alias: gx_attrib.
     '''
@@ -220,9 +223,8 @@ class GlAttrib:
     def __enter__(self):
         glPushAttrib(self.flag)
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, extype, value, traceback):
         glPopAttrib()
-        return False
 
 class GlColor:
     '''Statement of glPushAttrib/glPopAttrib on COLOR BUFFER + color,
@@ -243,9 +245,8 @@ class GlColor:
         else:
             glColor4f(*self.color)
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, extype, value, traceback):
         glPopAttrib()
-        return False
 
 class GlTexture:
     '''Statement of setting a texture
@@ -258,21 +259,22 @@ class GlTexture:
     def __enter__(self):
         self.bind()
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, extype, value, traceback):
         self.release()
-        return False
 
     def bind(self):
+        '''Bind the texture on the current context / texture unit'''
         target = self.get_target()
         glPushAttrib(GL_ENABLE_BIT)
         glEnable(target)
         glBindTexture(target, self.get_id())
 
     def release(self):
+        '''Release the current attribute from the binded texture'''
         glPopAttrib()
 
     def get_id(self):
-        '''Return the openid of texture'''
+        '''Return the GL id of texture'''
         if isinstance(self.texture, pymt.TextureRegion):
             return self.texture.owner.id
         elif isinstance(self.texture, pymt.Texture):
@@ -281,6 +283,7 @@ class GlTexture:
             return self.texture
 
     def get_target(self):
+        '''Get the GL target of the texture'''
         if isinstance(self.texture, pymt.TextureRegion):
             return self.texture.owner.target
         elif isinstance(self.texture, pymt.Texture):
@@ -293,7 +296,8 @@ class GlTexture:
 #
 
 #: Alias to GlBlending(sfactor=GL_DST_COLOR, dfactor=GL_ONE_MINUS_SRC_ALPHA)
-gx_alphablending = GlBlending(sfactor=GL_DST_COLOR, dfactor=GL_ONE_MINUS_SRC_ALPHA)
+gx_alphablending = GlBlending(sfactor=GL_DST_COLOR,
+                              dfactor=GL_ONE_MINUS_SRC_ALPHA)
 #: Repalce the content with the source content
 gx_blending_replace = GlBlending(sfactor=GL_ONE, dfactor=GL_ZERO)
 #: Alias to GlAttrib

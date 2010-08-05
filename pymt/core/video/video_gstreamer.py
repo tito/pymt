@@ -12,7 +12,6 @@ except:
     raise
 
 import threading
-import gobject
 import pymt
 from . import VideoBase
 from pymt.graphx import drawTexturedRectangle, set_color, drawRectangle

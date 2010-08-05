@@ -53,7 +53,7 @@ class SpellingOSXAppKit(SpellingBase):
             return list(l.guessesForWord_(fragment))
         except AttributeError:
             # From 10.6 onwards you're supposed to do it like this:
-            checkrange = NSMakeRange(0, len(word))
+            checkrange = NSMakeRange(0, len(fragment))
             guesses = l.guessesForWordRange_inString_language_inSpellDocumentWithTag_(
                         checkrange, fragment, l.language(), 0)
             # Right, this was much easier, Apple! :-)

@@ -9,7 +9,6 @@ except:
     raise
 
 import pymt
-import threading
 from OpenGL.GL import glDisable, GL_BLEND
 from . import VideoBase
 
@@ -68,11 +67,11 @@ class VideoPyglet(VideoBase):
 
     def stop(self):
         self._player.pause()
-        super(VideoPyglet,self).stop()
+        super(VideoPyglet, self).stop()
 
     def play(self):
         self._player.play()
-        super(VideoPyglet,self).play()
+        super(VideoPyglet, self).play()
 
     def seek(self, percent):
         t = self._source.duration*percent

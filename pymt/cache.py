@@ -22,7 +22,7 @@ __all__ = ('Cache', )
 from pymt.logger import pymt_logger
 from pymt.clock import getClock
 
-class Cache:
+class Cache(object):
     '''Cache, a manager to cache object'''
 
     _categories = {}
@@ -67,7 +67,7 @@ class Cache:
         try:
             cat = Cache._categories[category]
         except KeyError:
-            pymt.pymt_logger.warning('Cache: category <%s> not exist' % category)
+            pymt_logger.warning('Cache: category <%s> not exist' % category)
             return
         timeout = timeout or cat['timeout']
         # FIXME: activate purge when limit is hit
@@ -96,7 +96,7 @@ class Cache:
         try:
             Cache._objects[category][key]['lastaccess'] = getClock().get_time()
             return Cache._objects[category][key]['object']
-        except:
+        except Exception:
             return default
 
     @staticmethod
@@ -113,7 +113,7 @@ class Cache:
         '''
         try:
             return Cache._objects[category][key]['timestamp']
-        except:
+        except Exception:
             return default
 
     @staticmethod
@@ -130,7 +130,7 @@ class Cache:
         '''
         try:
             return Cache._objects[category][key]['lastaccess']
-        except:
+        except Exception:
             return default
 
     @staticmethod
@@ -148,7 +148,7 @@ class Cache:
                 del Cache._objects[category][key]
             else:
                 Cache._objects[category] = {}
-        except:
+        except Exception:
             pass
 
     @staticmethod
@@ -167,7 +167,7 @@ class Cache:
             try:
                 lastaccess, key = heapq.heappop(heap_list)
                 print '=>', key, lastaccess, getClock().get_time()
-            except:
+            except Exception:
                 return
             del Cache._objects[category][key]
 
@@ -181,9 +181,9 @@ class Cache:
 
             timeout = Cache._categories[category]['timeout']
             if timeout is not None and dt > timeout:
-                # XXX got a lag ! that may be because the frame take lot of time to
-                # draw. and the timeout is not adapted to the current framerate
-                # so, increase the timeout by two.
+                # XXX got a lag ! that may be because the frame take lot of
+                # time to draw. and the timeout is not adapted to the current
+                # framerate. So, increase the timeout by two.
                 # ie: if the timeout is 1 sec, and framerate go to 0.7, newly
                 # object added will be automaticly trashed.
                 timeout *= 2
@@ -208,6 +208,7 @@ class Cache:
 
     @staticmethod
     def print_usage():
+        '''Print the cache usage on the console'''
         print 'Cache usage :'
         for category in Cache._categories:
             print ' * %s : %d / %s, timeout=%s' % (

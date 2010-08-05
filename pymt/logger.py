@@ -51,7 +51,7 @@ RESET_SEQ = "\033[0m"
 COLOR_SEQ = "\033[1;%dm"
 BOLD_SEQ = "\033[1m"
 
-def formatter_message(message, use_color = True):
+def formatter_message(message, use_color=True):
     if use_color:
         message = message.replace("$RESET", RESET_SEQ).replace("$BOLD", BOLD_SEQ)
     else:
@@ -73,10 +73,6 @@ LOG_LEVELS = {
     'error': logging.ERROR,
     'critical': logging.CRITICAL
 }
-
-use_color = True
-if os.name == 'nt':
-    use_color = False
 
 class FileHandler(logging.Handler):
     history = []
@@ -119,7 +115,6 @@ class FileHandler(logging.Handler):
 
 
     def _configure(self):
-        global pymt_logfile_activated
         import pymt, time
         log_dir = pymt.pymt_config.get('pymt', 'log_dir')
         log_name = pymt.pymt_config.get('pymt', 'log_name')
@@ -165,7 +160,7 @@ class FileHandler(logging.Handler):
         if FileHandler.fd is None:
             try:
                 self._configure()
-            except:
+            except Exception:
                 # deactivate filehandler...
                 FileHandler.fd = False
                 pymt_logger.exception('Error while activating FileHandler logger')
@@ -182,7 +177,7 @@ class HistoryHandler(logging.Handler):
         HistoryHandler.history = [message] + HistoryHandler.history[:100]
 
 class ColoredFormatter(logging.Formatter):
-    def __init__(self, msg, use_color = True):
+    def __init__(self, msg, use_color=True):
         logging.Formatter.__init__(self, msg)
         self.use_color = use_color
 
@@ -200,19 +195,23 @@ class ColoredFormatter(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 class ColoredLogger(logging.Logger):
+    use_color = True
+    if os.name == 'nt':
+        use_color = False
+
     FORMAT = '[%(levelname)-18s] %(message)s'
     COLOR_FORMAT = formatter_message(FORMAT, use_color)
 
     def __init__(self, name):
-        global use_color
         logging.Logger.__init__(self, name, logging.DEBUG)
-        color_formatter = ColoredFormatter(self.COLOR_FORMAT, use_color=use_color)
+        color_formatter = ColoredFormatter(self.COLOR_FORMAT,
+                                           use_color=self.use_color)
         console = logging.StreamHandler()
         console.setFormatter(color_formatter)
 
         # Use the custom handler instead of streaming one.
         if hasattr(sys, '_pymt_logging_handler'):
-            self.addHandler(sys._pymt_logging_handler)
+            self.addHandler(getattr(sys, '_pymt_logging_handler'))
         else:
             self.addHandler(console)
         self.addHandler(HistoryHandler())

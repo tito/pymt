@@ -35,12 +35,12 @@ else:
                 return cls
 
             except Exception as e:
-                pymt.pymt_logger.warning('%s: Unable to use <%s> as %s provider' %
-                    (category.capitalize(), option, category))
+                pymt.pymt_logger.warning('%s: Unable to use <%s> as %s'
+                     'provider' % ( category.capitalize(), option, category))
                 pymt.pymt_logger.debug('', exc_info=e)
 
-        pymt.pymt_logger.critical('%s: Unable to find any valuable %s provider at all!' %
-            (category.capitalize(),category.capitalize()))
+        pymt.pymt_logger.critical('%s: Unable to find any valuable %s provider'
+              'at all!' % (category.capitalize(),category.capitalize()))
 
 
     def core_register_libs(category, libs):
@@ -54,10 +54,11 @@ else:
                     continue
 
                 # import module
-                mod = __import__(name='%s.%s' % (category, lib),
-                                 globals=globals(),
-                                 locals=locals(),
-                                 fromlist=[lib], level=-1)
+                __import__(name='%s.%s' % (category, lib),
+                           globals=globals(),
+                           locals=locals(),
+                           fromlist=[lib],
+                           level=-1)
 
             except Exception as e:
                 pymt.pymt_logger.warning('%s: Unable to use <%s> as loader!' %

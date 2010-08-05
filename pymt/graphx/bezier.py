@@ -32,14 +32,15 @@ You can also provide a point list, and directly create a path ::
 
 __all__ = ('BezierPath', )
 
-from statement import GlDisplayList, gx_begin
-from draw import drawLine
+from pymt.graphx.statement import GlDisplayList, gx_begin
+from pymt.logger import pymt_logger
+from pymt.graphx.draw import drawLine
 from OpenGL.GL import glVertex2f
-from OpenGL.GLU import gluNewTess, gluTessNormal, gluTessProperty,\
-    gluTessBeginPolygon, gluTessBeginContour, gluTessEndContour,\
-    gluTessEndPolygon, gluTessCallback, gluErrorString, gluTessVertex,\
-    GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO, GLU_TESS_VERTEX,\
-    GLU_TESS_BEGIN, GLU_TESS_END, GLU_TESS_ERROR, GLU_TESS_COMBINE
+from OpenGL.GLU import gluNewTess, gluTessNormal, gluTessProperty, \
+    gluTessBeginPolygon, gluTessBeginContour, gluTessEndContour, \
+    gluTessEndPolygon, gluTessCallback, gluErrorString, gluTessVertex, \
+    GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO, GLU_TESS_VERTEX, \
+    GLU_TESS_BEGIN, GLU_TESS_END, GLU_TESS_ERROR
 
 
 class BezierPath(object):
@@ -154,7 +155,7 @@ class BezierPath(object):
 
         def tess_error(code):
             err = gluErrorString(code)
-            pymt.pymt_logger.warning('BezierPath: GLU Tesselation Error: %s' % str(err))
+            pymt_logger.warning('BezierPath: GLU Tesselation Error: %s' % str(err))
 
         gluTessCallback(self._tess, GLU_TESS_VERTEX, tess_vertex)
         gluTessCallback(self._tess, GLU_TESS_BEGIN, tess_begin)

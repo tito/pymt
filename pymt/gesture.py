@@ -24,7 +24,7 @@ new gesture, and compare them ! ::
 __all__ = ['Gesture', 'GestureDatabase', 'GesturePoint', 'GestureStroke']
 
 import math
-from vector import *
+from pymt.vector import Vector
 
 class GestureDatabase(object):
     '''Class to handle a gesture database.'''
@@ -85,7 +85,7 @@ class GesturePoint:
         return self
 
     def __repr__(self):
-        return "Mouse_point:%f,%f"%(self.x,self.y)
+        return 'Mouse_point: %f,%f' % (self.x,self.y)
 
 class GestureStroke:
     ''' Gestures can be made up of multiple strokes '''
@@ -148,10 +148,11 @@ class GestureStroke:
         if point_list is None:
             point_list = self.points
         gesture_length = 0.0
-        if len(point_list) <= 1: # If there is only one point, there is no length
+        if len(point_list) <= 1: # If there is only one point -> no length
             return gesture_length
         for i in xrange(len(point_list)-1):
-            gesture_length += self.points_distance(point_list[i], point_list[i+1])
+            gesture_length += self.points_distance(
+                point_list[i], point_list[i+1])
         return gesture_length
 
     def normalize_stroke(self, sample_points = 32):
@@ -165,7 +166,8 @@ class GestureStroke:
             return False
 
         # Calculate how long each point should be in the stroke
-        target_stroke_size = self.stroke_length(self.points)/float(sample_points)
+        target_stroke_size = self.stroke_length(self.points) / \
+                             float(sample_points)
         new_points = list()
         new_points.append(self.points[0])
         target_index = 0
@@ -183,26 +185,26 @@ class GestureStroke:
                 # The new point need to be inserted into the
                 # segment [prev, curr]
                 while dst_distance < src_distance:
-                     x_dir = curr.x - prev.x
-                     y_dir = curr.y - prev.y
-                     ratio = (src_distance-dst_distance)/d
-                     to_x = x_dir * ratio + prev.x
-                     to_y = y_dir * ratio + prev.y
-                     new_points.append(GesturePoint(to_x, to_y))
-                     dst_distance=self.stroke_length(self.points)/float(sample_points)*(len(new_points))
+                    x_dir = curr.x - prev.x
+                    y_dir = curr.y - prev.y
+                    ratio = (src_distance-dst_distance)/d
+                    to_x = x_dir * ratio + prev.x
+                    to_y = y_dir * ratio + prev.y
+                    new_points.append(GesturePoint(to_x, to_y))
+                    dst_distance = self.stroke_length(self.points) / \
+                            float(sample_points) * len(new_points)
 
         # If this happens, we are into troubles...
         if not len(new_points) == sample_points:
-            raise ValueError("Invalid number of strokes points; got %d while it should be %d" %(len(new_points), sample_points))
+            raise ValueError('Invalid number of strokes points; got '
+                             '%d while it should be %d' % 
+                             (len(new_points), sample_points))
 
         self.points = new_points
         return True
 
-    def center_stroke(self, offset_x,  offset_y):
-        '''
-        center_stroke(offset_x=float, offset_y=float)
-        Centers the stroke by offseting the points
-        '''
+    def center_stroke(self, offset_x, offset_y):
+        '''Centers the stroke by offseting the points'''
         for point in self.points:
             point.x -= offset_x
             point.y -= offset_y

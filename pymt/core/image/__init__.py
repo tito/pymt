@@ -174,7 +174,7 @@ class Image(BaseObject):
         if 'opacity' in kwargs:
             self.opacity    = kwargs.get('opacity')
         if 'scale' in kwargs:
-           self.scale       = kwargs.get('scale')
+            self.scale      = kwargs.get('scale')
         if 'anchor_x' in kwargs:
             self.anchor_x   = kwargs.get('anchor_x')
         if 'anchor_y' in kwargs:

@@ -13,10 +13,10 @@ __all__ = [
 ]
 
 import os
-from math import sqrt
 import pymt
+from math import sqrt
 from OpenGL.GL import *
-from statement import *
+from pymt.graphx.statement import *
 
 _brushs_cache   = {}
 _brush_filename = ''

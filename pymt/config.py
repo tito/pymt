@@ -7,9 +7,8 @@ __all__ = ('pymt_config', )
 from ConfigParser import ConfigParser
 import sys
 import os
-import logger
-from logger import pymt_logger
-from . import pymt_config_fn, logger
+from pymt.logger import pymt_logger
+from pymt import pymt_config_fn, logger
 
 # Version number of current configuration format
 PYMT_CONFIG_VERSION = 11
@@ -22,7 +21,6 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     #
     # Read, analyse configuration file
     # Support upgrade of older config file version
-    # FIXME: move configuration part in another file
     #
 
     class PyMTConfigParser(ConfigParser):
@@ -55,7 +53,8 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         try:
             pymt_config.read(pymt_config_fn)
         except Exception, e:
-            pymt_logger.exception('Core: error while reading local configuration')
+            pymt_logger.exception('Core: error while reading local'
+                                  'configuration')
 
     pymt_config_version = pymt_config.getdefault('pymt', 'config_version', 0)
 
@@ -71,7 +70,8 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     # Upgrade default configuration until having the current version
     need_save = False
     if pymt_config_version != PYMT_CONFIG_VERSION:
-        pymt_logger.warning('Config: Older configuration version detected (%d instead of %d)' % (
+        pymt_logger.warning('Config: Older configuration version detected'
+                            '(%d instead of %d)' % (
                             pymt_config_version, PYMT_CONFIG_VERSION))
         pymt_logger.warning('Config: Upgrading configuration in progress.')
         need_save = True
@@ -142,7 +142,8 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 
         elif pymt_config_version == 8:
             pymt_config.setdefault('pymt', 'jitter_distance', '0')
-            pymt_config.setdefault('pymt', 'jitter_ignore_devices', 'mouse,mactouch,')
+            pymt_config.setdefault('pymt', 'jitter_ignore_devices',
+                                   'mouse,mactouch,')
 
         elif pymt_config_version == 9:
             pymt_config.setdefault('widgets', 'keyboard_type', 'virtual')

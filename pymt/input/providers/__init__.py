@@ -7,6 +7,7 @@ import sys
 import os
 
 from tuio import *
+from tuio2 import *
 from mouse import *
 
 if sys.platform == 'win32' or 'PYMT_DOC' in os.environ:

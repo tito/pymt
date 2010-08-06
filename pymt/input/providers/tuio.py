@@ -103,12 +103,13 @@ class TuioTouchProvider(TouchProvider):
         osc.readQueue(self.oscid)
 
         # read the Queue with event
-        try:
-            while True:
+        while True:
+            try:
                 value = self.tuio_event_q.pop()
-                self._update(dispatch_fn, value)
-        except IndexError:
-            return
+            except IndexError:
+                # queue is empty, we're done for now
+                return
+            self._update(dispatch_fn, value)
 
     def _osc_tuio_cb(self, *incoming):
         message = incoming[0]

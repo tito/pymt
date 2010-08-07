@@ -1,15 +1,14 @@
 '''
 SVG widget: widget that display an svg image
 '''
-__all__ = ['MTSvg', 'MTSvgButton']
+__all__ = ('MTSvg', 'MTSvgButton')
 
 import os
 
 from pymt import pymt_data_dir
-from ...logger import pymt_logger
-from ..factory import MTWidgetFactory
-from widget import MTWidget
-from button import MTButton
+from pymt.logger import pymt_logger
+from pymt.ui.widgets.widget import MTWidget
+from pymt.ui.widgets.button import MTButton
 
 squirtle = None
 
@@ -49,13 +48,13 @@ class MTSvg(MTWidget):
             else:
                 pymt_logger.debug('SVG: loading %s from rawdata' % filename)
                 self.svg = squirtle.SVG(filename=filename, rawdata=self.rawdata)
-        except Exception, e:
+        except Exception:
             try:
                 svgpath = os.path.join(pymt_data_dir, 'icons/svg')
                 pymt_logger.exception('SVG: unable to load %s' % filename)
                 pymt_logger.warning('SVG: trying %s' % (svgpath + filename))
                 self.svg = squirtle.SVG(os.path.join(svgpath, filename))
-            except Exception, e:
+            except Exception:
                 pymt_logger.exception('SVG: unable to load file %s' % filename)
                 self._filename = filename
                 self.size = (self.svg.width, self.svg.height)
@@ -93,12 +92,11 @@ class MTSvgButton(MTButton):
             try:
                 svgpath = os.path.join(pymt_data_dir, 'icons/svg')
                 pymt_logger.exception('SVGButton: unable to load %s' % filename)
-                pymt_logger.warning('SVGButton: trying %s' % (svgpath + filename))
+                pymt_logger.warning('SVGButton: trying %s' % (
+                    svgpath + filename))
                 self.svg = squirtle.SVG(os.path.join(svgpath, filename))
             except Exception, e:
                 pymt_logger.exception('SVGButton: unable to load file %s' % filename)
         self._filename = filename
         self.size = (self.svg.width, self.svg.height)
     filename = property(_get_filename, _set_filename)
-
-MTWidgetFactory.register('MTSvg', MTSvg)

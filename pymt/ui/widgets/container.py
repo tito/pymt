@@ -4,9 +4,9 @@ Container: easy way to convert a simple BaseObject into a widget
 
 __all__ = ('MTContainer', 'MTScatterContainer')
 
-import pymt
-from widget import MTWidget
-from scatter import MTScatterWidget
+from pymt.logger import pymt_logger
+from pymt.ui.widgets.widget import MTWidget
+from pymt.ui.widgets.scatter import MTScatterWidget
 
 class MTContainer(MTWidget):
     '''Convert a BaseObject like into a MTWidget.
@@ -23,7 +23,7 @@ class MTContainer(MTWidget):
         self.size = self.child.size
 
     def add_widget(self, widget):
-        pymt.pymt_logger.warning('MTContainer: cannot add MTWidget, only take BaseObject')
+        pymt_logger.warning('MTContainer: cannot add MTWidget, only take BaseObject')
 
     def on_parent_resize(self, w, h):
         if self.fit_to_parent:

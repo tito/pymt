@@ -6,17 +6,17 @@ Circular Slider: Using this you can make circularly shaped sliders
 __all__ = ('MTCircularSlider', 'RangeException')
 
 from OpenGL.GL import glTranslatef, glRotatef
-from ...graphx import drawSemiCircle, gx_matrix, set_color, drawLine
-from ...vector import Vector
-from ..factory import MTWidgetFactory
-from widget import MTWidget
-from math import cos,sin,radians
+from pymt.graphx import drawSemiCircle, gx_matrix, set_color
+from pymt.vector import Vector
+from pymt.ui.widgets.widget import MTWidget
+from math import cos, sin, radians
 
 class RangeException(Exception):
     pass
 
 class MTCircularSlider(MTWidget):
-    '''MTCircularSlider is an implementation of a circular scrollbar using MTWidget.
+    '''MTCircularSlider is an implementation of a circular scrollbar using
+    MTWidget.
 
     .. warning::
         The widget is drawed from his center. Cause of that, the size of the
@@ -125,7 +125,8 @@ class MTCircularSlider(MTWidget):
         if angle < 0:
             angle += 360
         try:
-            self.value = angle * (self.max - self.min) / self.sweep_angle + self.min
+            self.value = angle * (self.max - self.min) / \
+                         self.sweep_angle + self.min
             self._slider_angle = angle
         except RangeException:
             pass
@@ -148,7 +149,8 @@ class MTCircularSlider(MTWidget):
             glRotatef(-self.rotation, 0, 0, 1)
             drawSemiCircle(p, r - t, r, 32, 1, 0, s)
             set_color(*self.style.get('slider-color'))
-            drawSemiCircle(p, r - t + padding, r - padding, 32, 1, 0, self._slider_angle)
+            drawSemiCircle(p, r - t + padding, r - padding,
+                           32, 1, 0, self._slider_angle)
 
     def _get_value(self):
         return self._value
@@ -158,9 +160,5 @@ class MTCircularSlider(MTWidget):
             raise RangeException('Invalid value, not in range min/max')
         self._slider_angle = value / 100. * self.sweep_angle
         self._value = value / 100. * self.max
-    value = property(
-        lambda self: self._get_value(),
-        lambda self, x: self._set_value(x),
+    value = property(_get_value, _set_value,
         doc='Sets the current value of the slider')
-
-MTWidgetFactory.register('MTCircularSlider', MTCircularSlider)

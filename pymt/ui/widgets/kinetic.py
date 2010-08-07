@@ -2,14 +2,12 @@
 Kinetic: kinetic abstraction
 '''
 
-__all__ = ['MTKinetic']
+__all__ = ('MTKinetic', )
 
-from OpenGL.GL import *
-from pymt.ui.factory import MTWidgetFactory
 from pymt.input import Touch
 from pymt.vector import Vector
 from pymt.base import getFrameDt, getCurrentTouches
-from pymt.utils import curry, boundary
+from pymt.utils import boundary
 from pymt.ui.widgets.widget import MTWidget
 
 class KineticTouch(Touch):
@@ -17,10 +15,10 @@ class KineticTouch(Touch):
     __attrs__ = ('X', 'Y')
     def __init__(self, device):
         KineticTouch.counter += 1
-        id = 'kinetic%d' % KineticTouch.counter
+        tid = 'kinetic%d' % KineticTouch.counter
         self.X = 0
         self.Y = 0
-        super(KineticTouch, self).__init__(device, id, [])
+        super(KineticTouch, self).__init__(device, tid, [])
         self.mode = 'controlled'
 
     def depack(self, args):
@@ -155,7 +153,7 @@ class MTKinetic(MTWidget):
                 continue
 
             # process kinetic
-            type        = ''
+            event        = ''
             ktouch.dxpos = ktouch.x
             ktouch.dypos = ktouch.y
             ktouch.x    += ktouch.X
@@ -164,13 +162,13 @@ class MTKinetic(MTWidget):
 
             if Vector(ktouch.X, ktouch.Y).length() < self.velstop:
                 # simulation finished
-                type = 'up'
+                event = 'up'
                 getCurrentTouches().remove(ktouch)
                 super(MTKinetic, self).on_touch_up(ktouch)
                 todelete.append(touchID)
             else:
                 # simulation in progress
-                type = 'move'
+                event = 'move'
                 super(MTKinetic, self).on_touch_move(ktouch)
 
             # dispatch ktouch also in grab mode
@@ -183,14 +181,18 @@ class MTKinetic(MTWidget):
                 ktouch.x, ktouch.y = self.to_window(*ktouch.pos)
                 ktouch.dxpos, ktouch.dypos = self.to_window(*ktouch.dpos)
                 if wid.parent:
-                    ktouch.x, ktouch.y = wid.parent.to_widget(ktouch.x, ktouch.y)
-                    ktouch.dxpos, ktouch.dypos = wid.parent.to_widget(ktouch.dxpos, ktouch.dypos)
+                    ktouch.x, ktouch.y = wid.parent.to_widget(
+                        ktouch.x, ktouch.y)
+                    ktouch.dxpos, ktouch.dypos = wid.parent.to_widget(
+                        ktouch.dxpos, ktouch.dypos)
                 else:
-                    ktouch.x, ktouch.y = wid.to_parent(*wid.to_widget(ktouch.x, ktouch.y))
-                    ktouch.dxpos, ktouch.dypos = wid.to_parent(*wid.to_widget(ktouch.dxpos, ktouch.dypos))
+                    ktouch.x, ktouch.y = wid.to_parent(
+                        *wid.to_widget(ktouch.x, ktouch.y))
+                    ktouch.dxpos, ktouch.dypos = wid.to_parent(
+                        *wid.to_widget(ktouch.dxpos, ktouch.dypos))
                 ktouch.grab_current = wid
                 ktouch.grab_state   = True
-                if type == 'move':
+                if event == 'move':
                     wid.dispatch_event('on_touch_move', ktouch)
                 else:
                     wid.dispatch_event('on_touch_up', ktouch)
@@ -205,5 +207,3 @@ class MTKinetic(MTWidget):
 
     def draw(self):
         self.process_kinetic()
-
-MTWidgetFactory.register('MTKinetic', MTKinetic)

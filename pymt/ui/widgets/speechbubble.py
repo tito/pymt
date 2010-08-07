@@ -7,7 +7,8 @@ __all__ = ('MTSpeechBubble', )
 from pymt.ui.widgets.label import MTLabel
 from pymt.graphx import drawPolygon, drawRoundedRectangle, gx_matrix
 from pymt.vector import Vector
-from OpenGL.GL import *
+from OpenGL.GL import GL_LINE_SMOOTH, GL_LINE_LOOP, \
+    glEnable, glTranslatef, glLineWidth
 
 class MTSpeechBubble(MTLabel):
     '''A little speed bubble !

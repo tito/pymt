@@ -2,36 +2,39 @@
 Widget: Base of every widget implementation.
 '''
 
-__all__ = (
-    'getWidgetById',
-    'MTWidget'
-)
+__all__ = ('getWidgetById', 'MTWidget')
 
-import sys
-import os
 import weakref
-from ...event import EventDispatcher
-from ...logger import pymt_logger
-from ...base import getCurrentTouches
-from ...input import Touch
-from ...utils import SafeList
-from ..animation import Animation, AnimationAlpha
-from ..factory import MTWidgetFactory
-from ..colors import css_get_style
-from ...graphx import set_color, drawCSSRectangle
+from pymt.event import EventDispatcher
+from pymt.logger import pymt_logger
+from pymt.utils import SafeList
+from pymt.ui.factory import MTWidgetFactory
+from pymt.ui.colors import css_get_style
+from pymt.graphx import set_color, drawCSSRectangle
 
-_id_2_widget = {}
+_id_2_widget = dict()
 
-def getWidgetById(id):
-    global _id_2_widget
-    if id not in _id_2_widget:
+def getWidgetById(widget_id):
+    '''Get a widget by ID'''
+    if widget_id not in _id_2_widget:
         return
-    ref = _id_2_widget[id]
+    ref = _id_2_widget[widget_id]
     obj = ref()
     if not obj:
-        del _id_2_widget[id]
+        del _id_2_widget[widget_id]
         return
     return obj
+
+
+class MTWidgetMetaclass(type):
+    '''Metaclass to auto register new widget into :ref:`MTWidgetFactory`
+    .. warning::
+        This metaclass is used for MTWidget. Don't use it directly !
+    '''
+    def __init__(mcs, name, bases, attrs):
+        super(MTWidgetMetaclass, mcs).__init__(name, bases, attrs)
+        # auto registration in factory
+        MTWidgetFactory.register(name, mcs)
 
 class MTWidget(EventDispatcher):
     '''Global base for any multitouch widget.
@@ -77,6 +80,8 @@ class MTWidget(EventDispatcher):
         `on_parent_resize` (float width, float height)
             Fired when parent widget is resized
     '''
+
+    __metaclass__ = MTWidgetMetaclass
 
     __slots__ = ('children', 'style', 'draw_children',
                  '_cls',
@@ -175,7 +180,6 @@ class MTWidget(EventDispatcher):
                       doc='MTWidget: parent of widget. Fired on_parent event when set')
 
     def _set_id(self, id):
-        global _id_2_widget
         ref = weakref.ref(self)
         if ref in _id_2_widget:
             del _id_2_widget[self._id]
@@ -355,10 +359,10 @@ class MTWidget(EventDispatcher):
         if front:
             self.children.append(w)
         else:
-            self.children.insert(0,w)
+            self.children.insert(0, w)
         try:
             w.parent = self
-        except:
+        except Exception:
             pass
 
     def add_widgets(self, *widgets):
@@ -467,13 +471,10 @@ class MTWidget(EventDispatcher):
 # install acceleration
 try:
     import types
-    from ...accelerate import accelerate
+    from pymt.accelerate import accelerate
     if accelerate is not None:
         MTWidget.on_update = types.MethodType(accelerate.widget_on_update, None, MTWidget)
         MTWidget.on_draw = types.MethodType(accelerate.widget_on_draw, None, MTWidget)
         MTWidget.collide_point = types.MethodType(accelerate.widget_collide_point, None, MTWidget)
 except ImportError, e:
     pymt_logger.warning('Widget: Unable to use accelerate module <%s>' % e)
-
-# Register all base widgets
-MTWidgetFactory.register('MTWidget', MTWidget)

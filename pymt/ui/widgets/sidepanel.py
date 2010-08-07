@@ -4,11 +4,9 @@ Side panel: a panel widget that attach to a side of the screen
 
 __all__ = ('MTSidePanel', )
 
-from ...graphx import drawCSSRectangle, set_color
-from ...utils import curry
-from ..factory import MTWidgetFactory
-from ..animation import Animation
-from widget import MTWidget
+from pymt.graphx import drawCSSRectangle, set_color
+from pymt.ui.animation import Animation
+from pymt.ui.widgets.widget import MTWidget
 
 class MTSidePanel(MTWidget):
     '''A panel widget that attach to a side of the screen
@@ -54,13 +52,13 @@ class MTSidePanel(MTWidget):
         assert(self.align in ('bottom', 'top', 'left', 'right', 'middle', 'center'))
 
         if layout is None:
-            from layout import MTBoxLayout
+            from pymt.ui.widgets.layout import MTBoxLayout
             layout = MTBoxLayout()
         self.layout = layout
         super(MTSidePanel, self).add_widget(layout)
 
         if corner is None:
-            from button import MTButton
+            from pymt.ui.widgets.button import MTButton
             if self.side == 'right':
                 label = '<'
             elif self.side == 'left':
@@ -154,7 +152,6 @@ class MTSidePanel(MTWidget):
             self.need_reposition = False
 
         # adjust size + configure position
-        lw, lh = self.layout.size
         cw, ch = self.corner.size
         if side in ('left', 'right'):
             if self.corner_size is not None:
@@ -219,6 +216,3 @@ class MTSidePanel(MTWidget):
         if self.corner.dispatch_event('on_touch_up', touch):
             return True
         return super(MTSidePanel, self).on_touch_up(touch)
-
-# Register all base widgets
-MTWidgetFactory.register('MTSidePanel', MTSidePanel)

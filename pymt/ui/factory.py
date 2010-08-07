@@ -4,7 +4,7 @@ Factory: all widgets are registered through this factory
 It is needed for external instance, like XMLWidget.
 '''
 
-__all__ = ['MTWidgetFactory']
+__all__ = ('MTWidgetFactory', )
 
 class MTWidgetFactory(object):
     '''Widget factory. Designed to register all the PyMT widget,

@@ -2,23 +2,16 @@
 Button package: implement different type of button
 '''
 
-
-__all__ = ['MTButton', 'MTToggleButton', 'MTImageButton']
+__all__ = ('MTButton', 'MTToggleButton', 'MTImageButton')
 
 import pymt
 import weakref
-from OpenGL.GL import *
-from ...graphx import GlDisplayList, set_color, gx_blending
-from ...graphx import drawCSSRectangle
-from ...utils import SafeList
-from ..factory import MTWidgetFactory
-from widget import MTWidget
-from label import MTLabel
+from pymt.graphx import GlDisplayList, set_color, gx_blending, drawCSSRectangle
+from pymt.utils import SafeList
+from pymt.ui.widgets.label import MTLabel
 
 class MTButton(MTLabel):
     '''MTButton is a button implementation using MTLabel
-
-    .. warnin
 
     :Parameters:
         `label` : string, default is ''
@@ -91,19 +84,13 @@ class MTButton(MTLabel):
         self.register_event_type('on_release')
         self.register_event_type('on_state_change')
 
-    def on_press(*largs):
+    def on_press(self, *largs):
         pass
 
-    def on_release(*largs):
+    def on_release(self, *largs):
         pass
 
-    def on_state_change(*largs):
-        pass
-
-    def on_press(*largs):
-        pass
-
-    def on_release(*largs):
+    def on_state_change(self, *largs):
         pass
 
     def on_touch_down(self, touch):
@@ -297,8 +284,3 @@ class MTImageButton(MTButton):
         s                   = self.image.size
         self.size           = s[0] * self.scale, s[1] * self.scale
         self.image.draw()
-
-
-MTWidgetFactory.register('MTToggleButton', MTToggleButton)
-MTWidgetFactory.register('MTButton', MTButton)
-MTWidgetFactory.register('MTImageButton', MTImageButton)

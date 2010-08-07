@@ -4,14 +4,13 @@ Coverflow: a coverflow widget
 
 __all__ = ('MTCoverFlow', )
 
-from OpenGL.GL import glRotatef, glTranslatef, GL_ZERO, GL_ONE
-from ...graphx import set_color, drawRectangle, drawTexturedRectangle, \
-        Fbo, drawLabel, gx_blending_replace
-from ...utils import boundary
-from ...vector import Vector
-from ..animation import Animation
-from ..factory import MTWidgetFactory
-from widget import MTWidget
+from OpenGL.GL import glRotatef, glTranslatef
+from pymt.graphx import set_color, drawRectangle, drawTexturedRectangle, \
+        Fbo, drawLabel
+from pymt.utils import boundary
+from pymt.vector import Vector
+from pymt.ui.animation import Animation
+from pymt.ui.widgets.widget import MTWidget
 
 class MTCoverFlow(MTWidget):
     '''A coverflow widget, that support mostly any widget in :)
@@ -273,13 +272,13 @@ class MTCoverFlow(MTWidget):
 
         # draw the cover
         if self.cover_blend:
-            set_color(1,1,1, blend=True)
+            set_color(1, blend=True)
             drawTexturedRectangle(
                 texture=self._fbo.texture,
                 size=self.thumbnail_size,
                 color_coords=self._cover_blend_coords)
         else:
-            set_color(1,1,1)
+            set_color(1)
             drawTexturedRectangle(
                 texture=self._fbo.texture,
                 size=self.thumbnail_size,
@@ -295,7 +294,7 @@ class MTCoverFlow(MTWidget):
 
         # draw reflection
         pos = (0, -self.thumbnail_size[1] * self.reflection_percent)
-        size= (self.thumbnail_size[0], self.thumbnail_size[1] * self.reflection_percent)
+        size = (self.thumbnail_size[0], self.thumbnail_size[1] * self.reflection_percent)
 
         # activate blending with background ?
         if self.reflection_blend:
@@ -342,5 +341,3 @@ class MTCoverFlow(MTWidget):
         if self.title_draw:
             child = self.children[self._selection]
             self._draw_title(child)
-
-MTWidgetFactory.register('MTCoverFlow', MTCoverFlow)

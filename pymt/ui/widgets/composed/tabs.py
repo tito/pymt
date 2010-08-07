@@ -2,12 +2,11 @@
 Tabs widget: widget that provide tabs (like tabbed notebook)
 '''
 
-__all__ = ['MTTabs']
+__all__ = ('MTTabs', )
 
-from ...factory import MTWidgetFactory
-from ..widget import MTWidget
-from ..button import MTButton
-from ..layout.boxlayout import MTBoxLayout
+from pymt.ui.widgets.widget import MTWidget
+from pymt.ui.widgets.button import MTButton
+from pymt.ui.widgets.layout.boxlayout import MTBoxLayout
 
 class MTTabs(MTWidget):
     '''Class that implement a tabbed notebook.
@@ -81,5 +80,3 @@ class MTTabs(MTWidget):
         self.layout.add_widget(widget, do_layout=False)
         self.current = widget
         self.layout.do_layout()
-
-MTWidgetFactory.register('MTTabs', MTTabs)

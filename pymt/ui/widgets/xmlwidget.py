@@ -2,13 +2,11 @@
 XML widget: parse xml and create his children
 '''
 
-__all__ = ['XMLWidget']
+__all__ = ('XMLWidget', )
 
-from ...logger import pymt_logger
-from ..factory import MTWidgetFactory
-from widget import MTWidget
-minidom = None
-Node = None
+from pymt.logger import pymt_logger
+from pymt.ui.factory import MTWidgetFactory
+from pymt.ui.widgets.widget import MTWidget
 
 class XMLWidget(MTWidget):
     '''XML widget create all his children by parsing and execute xml ::
@@ -47,9 +45,9 @@ class XMLWidget(MTWidget):
             return self.children[0]
         return None
 
-    def getById(self, id):
-        if id in self.registerdb:
-            return self.registerdb[id]
+    def getById(self, widget_id):
+        if widget_id in self.registerdb:
+            return self.registerdb[widget_id]
         return None
 
     def autoconnect(self, obj):
@@ -58,37 +56,39 @@ class XMLWidget(MTWidget):
         and you want to connect on on_press event, it will search
         the obj.on_plop_press() function.
         '''
-        for id, children in self.registerdb.items():
+        for widget_id, children in self.registerdb.items():
             for event in children.event_types:
                 eventobj = event
                 if eventobj[:3] == 'on_':
                     eventobj = eventobj[3:]
-                eventobj = 'on_%s_%s' % (id, eventobj)
+                eventobj = 'on_%s_%s' % (widget_id, eventobj)
                 if hasattr(obj, eventobj):
                     children.connect(event, getattr(obj, eventobj))
 
 
     def createNode(self, node):
-        factory = MTWidgetFactory
+        from xml.dom import Node
+        factory = MTWidgetFactory.get
         if node.nodeType == Node.ELEMENT_NODE:
             class_name = node.nodeName
 
             # parameters
             k = {}
-            id = None
+            widget_id = None
             for name, value in node.attributes.items():
                 if str(name) == 'id':
-                    id = eval(value)
+                    widget_id = eval(value)
                 else:
                     k[str(name)] = eval(value)
 
             # create widget
             try:
-                nodeWidget = MTWidgetFactory.get(class_name)(**k)
-                if id is not None:
-                    self.registerdb[id] = nodeWidget
+                nodeWidget = factory(class_name)(**k)
+                if widget_id is not None:
+                    self.registerdb[widget_id] = nodeWidget
             except:
-                pymt_logger.exception('XMLWidget: unable to create widget %s' % class_name)
+                pymt_logger.exception('XMLWidget: unable to create widget %s' \
+                                      % class_name)
                 raise
 
             # add child widgets
@@ -100,13 +100,8 @@ class XMLWidget(MTWidget):
             return nodeWidget
 
     def loadString(self, xml):
-        global minidom, Node
-        if minidom is None:
-            from xml.dom import minidom, Node
+        from xml.dom import minidom
         doc = minidom.parseString(xml)
         root = doc.documentElement
         self.add_widget(self.createNode(root))
 
-
-# Register all base widgets
-MTWidgetFactory.register('XMLWidget', XMLWidget)

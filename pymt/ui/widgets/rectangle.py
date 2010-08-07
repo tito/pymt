@@ -2,13 +2,10 @@
 Rectangle widget: draw a rectangle of his pos/size
 '''
 
+__all__ = ('MTRectangularWidget', )
 
-__all__ = ['MTRectangularWidget']
-
-from ...graphx import set_color
-from ...graphx import drawCSSRectangle
-from ..factory import MTWidgetFactory
-from widget import MTWidget
+from pymt.graphx import set_color, drawCSSRectangle
+from pymt.ui.widgets.widget import MTWidget
 
 class MTRectangularWidget(MTWidget):
     '''A rectangular widget that only propagates and handles
@@ -35,5 +32,3 @@ class MTRectangularWidget(MTWidget):
     def draw(self):
         set_color(*self.style.get('bg-color'))
         drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
-
-MTWidgetFactory.register('MTRectangularWidget', MTRectangularWidget)

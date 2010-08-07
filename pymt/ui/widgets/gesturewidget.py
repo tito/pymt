@@ -2,11 +2,10 @@
 Gesture widget: a widget with on_gesture event implementation
 '''
 
-__all__ = ['MTGestureWidget']
+__all__ = ('MTGestureWidget', )
 
-from ...gesture import Gesture
-from ..factory import MTWidgetFactory
-from widget import MTWidget
+from pymt.gesture import Gesture
+from pymt.ui.widgets.widget import MTWidget
 
 class MTGestureWidget(MTWidget):
     '''Detect a stroke, it in a Gesture and dispatch it in an event.
@@ -50,6 +49,3 @@ class MTGestureWidget(MTWidget):
 
     def on_gesture(self, gesture, touch):
         pass
-
-# Register all base widgets
-MTWidgetFactory.register('MTGestureWidget', MTGestureWidget)

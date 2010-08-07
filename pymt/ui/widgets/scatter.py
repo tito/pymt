@@ -5,22 +5,17 @@ Scatter package: provide lot of widgets based on scatter (base, svg, plane, imag
 __all__ = ('MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane',
            'MTScatterImage', 'MTScatter')
 
-import pymt
+from pymt.lib.transformations import matrix_multiply, identity_matrix, \
+        translation_matrix, rotation_matrix, scale_matrix, inverse_matrix
+from pymt.core.image import Image
 from pymt.logger import pymt_logger
-from pymt.utils import deprecated, serialize_numpy, deserialize_numpy, boundary
-
-from pymt.ui.widgets.widget import MTWidget
 from pymt.ui.widgets.svg import MTSvg
-from pymt.ui.factory import MTWidgetFactory
-from pymt.ui.animation import Animation, AnimationAlpha
-
+from pymt.ui.widgets.widget import MTWidget
+from pymt.utils import deprecated, serialize_numpy, deserialize_numpy
 from pymt.vector import Vector
-from pymt.geometry import minimum_bounding_circle
-from pymt.lib.transformations import *
-from math import atan,cos, radians, degrees
-
-from OpenGL.GL import *
-from pymt.graphx import *
+from math import radians
+from OpenGL.GL import glMultMatrixf
+from pymt.graphx import drawCSSRectangle, set_color, gx_matrix
 
 
 class MTScatter(MTWidget):
@@ -60,7 +55,12 @@ class MTScatter(MTWidget):
 
         # private properties
         self._touches = []
-        self._last_touch_pos = {} #we keep track ourselves so we dont have to recompute to local parent space
+        self._last_touch_pos = {}
+        self._do_rotation = True
+        self._do_scale = True
+        self._do_translation = True
+        self._do_translation_x = True
+        self._do_translation_y = True
 
         self._transform        = identity_matrix()
         self._transform_inv    = identity_matrix()
@@ -77,10 +77,11 @@ class MTScatter(MTWidget):
         self.do_scale       = kwargs.get('do_scale', True)
 
         #inital transformation
-        self.scale = kwargs.get('scale',1)
+        self.scale = kwargs.get('scale', 1)
         self.rotation = kwargs.get('rotation', 0)
         if kwargs.get('pos') and kwargs.get('center'):
-            pymt_logger.exception("both 'pos' and 'center' set in MTScatter constructor, only use one of the two!")
+            pymt_logger.exception('both "pos" and "center" set in MTScatter'
+                                  'constructor, only use one of the two!')
         if kwargs.get('pos'):
             self.pos = kwargs.get('pos')
         if kwargs.get('center'):
@@ -92,7 +93,7 @@ class MTScatter(MTWidget):
         self._do_rotation = flag
     do_rotation = property(_get_do_rotation, _set_do_rotation,
         doc='Determines whether user interaction can rotate the widget')
-    
+
     def _get_do_scale(self):
         return self._do_scale
     def _set_do_scale(self, flag):
@@ -124,13 +125,17 @@ class MTScatter(MTWidget):
             # x, y = lower left corner
 
         '''
-        xmin, ymin = xmax, ymax = self.to_parent(0,0)
-        for point in [(self.width,0),(0, self.height), self.size]:
-            x,y = self.to_parent(*point)
-            if x < xmin: xmin = x
-            if y < ymin: ymin = y
-            if x > xmax: xmax = x
-            if y > ymax: ymax = y
+        xmin, ymin = xmax, ymax = self.to_parent(0, 0)
+        for point in [(self.width, 0), (0, self.height), self.size]:
+            x, y = self.to_parent(*point)
+            if x < xmin:
+                xmin = x
+            if y < ymin:
+                ymin = y
+            if x > xmax:
+                xmax = x
+            if y > ymax:
+                ymax = y
         return (xmin, ymin), (xmax-xmin, ymax-ymin)
 
     def _get_center(self):
@@ -174,19 +179,19 @@ class MTScatter(MTWidget):
     y = property(_get_y, _set_y)
 
     def _get_rotation(self):
-        v1 = Vector(0,10)
-        v2 = Vector(*self.to_parent(*self.pos)) - self.to_parent(self.x, self.y+10)
+        v1 = Vector(0, 10)
+        v2 = Vector(*self.to_parent(*self.pos)) - self.to_parent(self.x, self.y + 10)
         return -1.0 *(v1.angle(v2) + 180) % 360
     def _set_rotation(self, rotation):
         angle_change = self.rotation - rotation
-        r = rotation_matrix( -radians(angle_change), (0, 0, 1) )
-        self.apply_transform(r ,post_multiply=True, anchor=self.to_local(*self.center))
+        r = rotation_matrix(-radians(angle_change), (0, 0, 1))
+        self.apply_transform(r, post_multiply=True, anchor=self.to_local(*self.center))
     rotation = property(_get_rotation, _set_rotation,
         doc='''Get/set the rotation around center of the object (in degree)''')
 
     def _get_scale(self):
-        p1 = Vector(*self.to_parent(0,0))
-        p2 = Vector(*self.to_parent(1,0))
+        p1 = Vector(*self.to_parent(0, 0))
+        p2 = Vector(*self.to_parent(1, 0))
         scale = p1.distance(p2)
         return float(scale)
     def _set_scale(self, scale):
@@ -251,17 +256,16 @@ class MTScatter(MTWidget):
             return True
         else:
             return False
-        
+
     def to_parent(self, x, y, **k):
-        p = matrix_multiply(self._transform, (x,y,0,1))
-        return (p[0],p[1])
+        p = matrix_multiply(self._transform, (x, y, 0, 1))
+        return (p[0], p[1])
 
     def to_local(self, x, y, **k):
-        p = matrix_multiply(self._transform_inv, (x,y,0,1))
-        return (p[0],p[1])
+        p = matrix_multiply(self._transform_inv, (x, y, 0, 1))
+        return (p[0], p[1])
 
-    
-    def apply_angle_scale_trans(self, angle, scale, trans, point=Vector(0,0)):
+    def apply_angle_scale_trans(self, angle, scale, trans, point=Vector(0, 0)):
         '''Update matrix transformation by adding new angle, scale and translate.
 
         :Parameters:
@@ -278,17 +282,17 @@ class MTScatter(MTWidget):
         new_scale = old_scale * scale
         if new_scale < self.scale_min or old_scale > self.scale_max:
             scale = 1
-        
+
         t = translation_matrix((trans[0]*self._do_translation_x, trans[1]*self._do_translation_y, 0))
-        t = matrix_multiply(t, translation_matrix( (point[0], point[1], 0) ))
-        t = matrix_multiply(t, rotation_matrix(angle, (0,0,1)) )
-        t = matrix_multiply(t, scale_matrix(scale) )
-        t = matrix_multiply(t, translation_matrix( (-point[0], -point[1], 0) ))
+        t = matrix_multiply(t, translation_matrix( (point[0], point[1], 0)))
+        t = matrix_multiply(t, rotation_matrix(angle, (0, 0, 1)))
+        t = matrix_multiply(t, scale_matrix(scale))
+        t = matrix_multiply(t, translation_matrix((-point[0], -point[1], 0)))
         self.apply_transform(t)
-        
+
         self.dispatch_event('on_transform', None)
 
-    def apply_transform(self, trans, post_multiply=False, anchor=(0,0)):
+    def apply_transform(self, trans, post_multiply=False, anchor=(0, 0)):
         '''
         Transforms scatter by trans (on top of its current transformation state)
 
@@ -324,7 +328,7 @@ class MTScatter(MTWidget):
         #_last_touch_pos has last pos in correct parent space, just liek incoming touch
         dx = (touch.x - self._last_touch_pos[touch][0]) * self._do_translation_x
         dy = (touch.y - self._last_touch_pos[touch][1]) * self._do_translation_y
-        self.apply_transform( translation_matrix((dx,dy,0)) )
+        self.apply_transform(translation_matrix((dx, dy, 0)))
         self.dispatch_event('on_transform', touch)
 
     def transform_with_touch(self, touch):
@@ -339,10 +343,10 @@ class MTScatter(MTWidget):
         # furthest apart! So first we find anchor, the point to transform
         # around as the touch farthest away from touch
         anchor  = max(points, key=lambda p: p.distance(touch.pos))
-                
+
         # now we find the touch farthest away from anchor, if its not the
         # same as touch. Touch is not one of the two touches used to transform
-        farthest = max(points, key=lambda p: anchor.distance(p))
+        farthest = max(points, key=anchor.distance)
         if points.index(farthest) != self._touches.index(touch):
             return
 
@@ -350,16 +354,16 @@ class MTScatter(MTWidget):
         # transformation        
         old_line = Vector(*touch.dpos) - anchor
         new_line = Vector(*touch.pos) - anchor
-        
+
         angle = radians( new_line.angle(old_line) ) * self._do_rotation
         scale = new_line.length() / old_line.length()
         new_scale = scale * self.scale
         if new_scale < self.scale_min or new_scale > self.scale_max:
             scale = 1.0
-        
-        self.apply_transform(rotation_matrix(angle,(0,0,1)), anchor=anchor)
+
+        self.apply_transform(rotation_matrix(angle, (0, 0, 1)), anchor=anchor)
         self.apply_transform(scale_matrix(scale), anchor=anchor)
-        
+
         #dispatch on_transform with th touch that caused it
         self.dispatch_event('on_transform', touch)
 
@@ -371,9 +375,9 @@ class MTScatter(MTWidget):
         # if the touch isnt on the widget we do nothing
         if not self.collide_point(x, y):
             return False
-        
+
         # let the child widgets handle the event if they want
-        touch.push(attrs=['x','y','dxpos','dypos'])
+        touch.push(attrs=['x', 'y', 'dxpos', 'dypos'])
         touch.x, touch.y = self.to_local(x, y)
         touch.dxpos, touch.dypos = self.to_local(touch.dxpos, touch.dypos)
         if super(MTScatter, self).on_touch_down(touch):
@@ -395,7 +399,7 @@ class MTScatter(MTWidget):
         x, y = touch.x, touch.y
         # let the child widgets handle the event if they want
         if self.collide_point(x, y) and not touch.grab_current == self:
-            touch.push(attrs=['x','y','dxpos','dypos'])
+            touch.push(attrs=['x', 'y', 'dxpos', 'dypos'])
             touch.x, touch.y = self.to_local(x, y)
             touch.dxpos, touch.dypos = self.to_local(touch.dxpos, touch.dypos)
             if super(MTScatter, self).on_touch_move(touch):
@@ -416,14 +420,14 @@ class MTScatter(MTWidget):
         x, y = touch.x, touch.y
         # if the touch isnt on the widget we do nothing, just try children
         if not touch.grab_current == self:
-            touch.push(attrs=['x','y','dxpos','dypos'])
+            touch.push(attrs=['x', 'y', 'dxpos', 'dypos'])
             touch.x, touch.y = self.to_local(x, y)
             touch.dxpos, touch.dypos = self.to_local(touch.dxpos, touch.dypos)
             if super(MTScatter, self).on_touch_up(touch):
                 touch.pop()
                 return True
             touch.pop()
-   
+
         # remove it from our saved touches
         if touch in self._touches and touch.grab_state:
             touch.ungrab(self)
@@ -443,7 +447,7 @@ class MTScatter(MTWidget):
 
     def draw(self):
         set_color(*self.style['bg-color'])
-        drawCSSRectangle(pos=(0,0), size=(self.width, self.height), style=self.style)
+        drawCSSRectangle(pos=(0, 0), size=(self.width, self.height), style=self.style)
 
 
 class MTScatterWidget(MTScatter):
@@ -490,6 +494,7 @@ class MTScatterImage(MTScatterWidget):
             raise Exception('No filename or image given to MTScatterImage')
 
         super(MTScatterImage, self).__init__(**kwargs)
+        self._filename      = ''
         self.image          = kwargs.get('image')
         self.scale          = kwargs.get('scale')
         self.filename       = kwargs.get('filename')
@@ -501,7 +506,7 @@ class MTScatterImage(MTScatterWidget):
     def _set_filename(self, filename):
         self._filename = filename
         if filename:
-            self.image = pymt.Image(self.filename)
+            self.image = Image(self.filename)
     filename = property(_get_filename, _set_filename)
 
     def draw(self):
@@ -530,7 +535,3 @@ class MTScatterSvg(MTScatterWidget):
     def draw(self):
         self.squirt.draw()
 
-MTWidgetFactory.register('MTScatterImage', MTScatterImage)
-MTWidgetFactory.register('MTScatterPlane', MTScatterPlane)
-MTWidgetFactory.register('MTScatterSvg', MTScatterSvg)
-MTWidgetFactory.register('MTScatterWidget', MTScatterWidget)

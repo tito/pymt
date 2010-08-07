@@ -2,10 +2,9 @@
 Dragable widget: a moveable widget over the window
 '''
 
-__all__ = ['MTDragable']
+__all__ = ('MTDragable', )
 
-from ..factory import MTWidgetFactory
-from widget import MTWidget
+from pymt.ui.widgets.widget import MTWidget
 from pymt.vector import Vector
 
 class MTDragable(MTWidget):
@@ -33,5 +32,3 @@ class MTDragable(MTWidget):
             self.state = 'normal'
             touch.ungrab(self)
             return True
-
-MTWidgetFactory.register('MTDragable', MTDragable)

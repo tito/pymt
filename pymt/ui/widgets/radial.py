@@ -2,17 +2,15 @@
 Vector slider: a radial slider that provide vector manipulation
 '''
 
-
 from __future__ import division
 
-from OpenGL.GL import *
-from math import *
-from ...graphx import drawCircle, set_color, gx_begin
-from ...vector import Vector
-from ..factory import MTWidgetFactory
-from widget import MTWidget
+__all__ = ('MTVectorSlider', )
 
-__all__ = ['MTVectorSlider']
+from OpenGL.GL import GL_POLYGON, glVertex2f
+from math import cos, sin, sqrt, degrees, atan, radians
+from pymt.graphx import drawCircle, set_color, gx_begin
+from pymt.vector import Vector
+from pymt.ui.widgets.widget import MTWidget
 
 def _get_distance(Pos1, Pos2):
     '''Get the linear distance between two points'''
@@ -97,7 +95,7 @@ class MTVectorSlider(MTWidget):
         # ignore them, we will be close enough
         try:
             self.angle = degrees(atan((int(tvec[1])/int(tvec[0]))))
-        except:
+        except Exception:
             pass
 
         # Ajdust quadrants so we have 0-360 degrees
@@ -150,15 +148,13 @@ class MTVectorSlider(MTWidget):
             glVertex2f(*h)
             glVertex2f(self.vector[0], self.vector[1])
 
-MTWidgetFactory.register('MTVectorSlider', MTVectorSlider)
-
 if __name__ == '__main__':
     def on_vector_change(amp, ang):
         print amp, ang
 
-    from pymt import *
+    from pymt import MTWindow, runTouchApp
     w = MTWindow(fullscreen=False)
-    mms = MTVectorSlider(pos=(200,200))
+    mms = MTVectorSlider(pos=(200, 200))
     mms.push_handlers('on_vector_change', on_vector_change)
     w.add_widget(mms)
     runTouchApp()

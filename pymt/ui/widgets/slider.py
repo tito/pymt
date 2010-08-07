@@ -4,14 +4,12 @@ Slider package: provide multiple slider implementation (simple, xy, boundary...)
 
 from __future__ import division
 
-import random
-__all__ = ['MTSlider', 'MTXYSlider', 'MTBoundarySlider', 'MTMultiSlider']
+__all__ = ('MTSlider', 'MTXYSlider', 'MTBoundarySlider', 'MTMultiSlider')
 
-from OpenGL.GL import *
-from ...graphx import drawRectangle, drawCircle, drawLabel, set_color, drawRoundedRectangle, drawRectangleAlpha, drawRoundedRectangleAlpha
-from ...graphx import drawCSSRectangle
-from ..factory import MTWidgetFactory
-from widget import MTWidget
+import random
+from pymt.ui.widgets.widget import MTWidget
+from pymt.graphx import drawRectangle, drawCircle, drawLabel, set_color, \
+        drawCSSRectangle
 
 class MTSlider(MTWidget):
     '''MTSlider is an implementation of a scrollbar using MTWidget.
@@ -329,7 +327,7 @@ class MTBoundarySlider(MTWidget):
             tmax = (self.value_max / self.width) * self.max
         return tmin, tmax
 
-    def on_value_change(self, min, max):
+    def on_value_change(self, vmin, vmax):
         pass
 
     @property
@@ -453,7 +451,7 @@ class MTMultiSlider(MTWidget):
     '''
     def __init__(self, **kwargs):
         kwargs.setdefault('sliders', 20)
-        kwargs.setdefault('size', (400,300))
+        kwargs.setdefault('size', (400, 300))
         kwargs.setdefault('spacing', 1)
         kwargs.setdefault('init_value', 0.5)
         super(MTMultiSlider, self).__init__(**kwargs)
@@ -472,7 +470,8 @@ class MTMultiSlider(MTWidget):
             self.slider_values = self.slider_values[0:quantity]
             self._sliders = quantity
         if quantity > self._sliders:
-            self.slider_values = self.slider_values + list([self._init_value for x in range(quantity - self._sliders)])
+            self.slider_values = self.slider_values + list(
+                [self._init_value for x in range(quantity - self._sliders)])
             self._sliders = quantity
         else:
             return
@@ -488,7 +487,7 @@ class MTMultiSlider(MTWidget):
     def draw(self):
         # Draw background
         set_color(*self.style.get('bg-color'))
-        drawRectangle(pos=(self.x,self.y), size=(self.width,self.height))
+        drawRectangle(pos=self.pos, size=self.size)
         # Draw sliders
         set_color(*self.style.get('slider-color'))
         for slider in range(self._sliders):
@@ -531,9 +530,4 @@ class MTMultiSlider(MTWidget):
 
     def return_slider(self, x):
         return int((x - self.x) / float(self.width)  * self._sliders)
-
-MTWidgetFactory.register('MTXYSlider', MTXYSlider)
-MTWidgetFactory.register('MTSlider', MTSlider)
-MTWidgetFactory.register('MTBoundarySlider', MTBoundarySlider)
-MTWidgetFactory.register('MTMultiSlider', MTMultiSlider)
 

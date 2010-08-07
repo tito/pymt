@@ -2,14 +2,10 @@
 Stencil container: clip drawing of children to his container
 '''
 
+__all__ = ('MTStencilContainer', )
 
-
-__all__ = ['MTStencilContainer']
-
-from OpenGL.GL import *
-from widget import MTWidget
-from ...graphx import drawRectangle, stencilPush, stencilPop, stencilUse
-from ..factory import MTWidgetFactory
+from pymt.ui.widgets.widget import MTWidget
+from pymt.graphx import drawRectangle, stencilPush, stencilPop, stencilUse
 
 stencil_stack = 0
 
@@ -44,6 +40,3 @@ class MTStencilContainer(MTWidget):
         for w in self.children[:]:
             w.dispatch_event('on_draw')
         self.stencil_pop()
-
-# Register all base widgets
-MTWidgetFactory.register('MTStencilContainer', MTStencilContainer)

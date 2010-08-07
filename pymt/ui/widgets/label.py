@@ -2,13 +2,10 @@
 Label: a simple text label
 '''
 
+__all__ = ('MTLabel', )
 
-__all__ = ['MTLabel']
-
-import pymt
-from ...graphx import drawLabel, set_color, drawCSSRectangle, getLabel, getLastLabel
-from ..factory import MTWidgetFactory
-from widget import MTWidget
+from pymt.graphx import drawLabel, set_color, drawCSSRectangle, getLabel, getLastLabel
+from pymt.ui.widgets.widget import MTWidget
 
 class MTLabel(MTWidget):
     '''A simple label ::
@@ -162,7 +159,7 @@ class MTLabel(MTWidget):
 
     def _get_padding_y(self):
         return self.kwargs.get('padding_x')
-    def _set_padding_y(self, y):
+    def _set_padding_y(self, x):
         self.kwargs['padding_y'] = x
     padding_y = property(_get_padding_y, _set_padding_y)
 
@@ -220,29 +217,8 @@ class MTLabel(MTWidget):
         self.kwargs['valign'] = x
     valign = property(_get_valign, _set_valign)
 
-    def _get_padding(self):
-        return self.kwargs.get('padding')
-    def _set_padding(self, x):
-        self.kwargs['padding'] = x
-    padding = property(_get_padding, _set_padding)
-
-    def _get_padding_x(self):
-        return self.kwargs.get('padding_x')
-    def _set_padding_x(self, x):
-        self.kwargs['padding_x'] = x
-    padding_x = property(_get_padding_x, _set_padding_x)
-
-    def _get_padding_y(self):
-        return self.kwargs.get('padding_y')
-    def _set_padding_y(self, x):
-        self.kwargs['padding_y'] = x
-    padding_y = property(_get_padding_y, _set_padding_y)
-
     def _get_color(self):
         return self.kwargs.get('color')
     def _set_color(self, x):
         self.kwargs['color'] = x
     color = property(_get_color, _set_color)
-
-
-MTWidgetFactory.register('MTLabel', MTLabel)

@@ -2,15 +2,12 @@
 ObjectDisplay: widget that handle fiducial object, and draw them
 '''
 
+__all__ = ('MTObjectDisplay', )
 
-__all__ = ['MTObjectDisplay']
-
-from OpenGL.GL import *
-from ...graphx import gx_matrix, gx_begin, set_color
-from ...graphx import drawCSSRectangle
-from ..factory import MTWidgetFactory
+from OpenGL.GL import glTranslatef, glRotatef, glVertex2f, GL_LINES
+from pymt.graphx import gx_matrix, gx_begin, set_color, drawCSSRectangle
+from pymt.ui.widgets.widget import MTWidget
 from math import pi
-from widget import MTWidget
 
 class MTObjectDisplay(MTWidget):
     '''MTObjectDisplay is a widget who draw objects on table'''
@@ -29,7 +26,7 @@ class MTObjectDisplay(MTWidget):
 
     def on_touch_up(self, touch):
         if touch.id in self.objects:
-           del self.objects[touch.id]
+            del self.objects[touch.id]
 
     def draw(self):
         if not self.visible:
@@ -50,7 +47,5 @@ class MTObjectDisplay(MTWidget):
 
                 set_color(*self.style['vector-color'])
                 with gx_begin(GL_LINES):
-                    glVertex2f(0.0,0.0)
-                    glVertex2f(0, -0.5 * self.height)
-
-MTWidgetFactory.register('MTObjectDisplay', MTObjectDisplay)
+                    glVertex2f(0., 0.)
+                    glVertex2f(0., -0.5 * self.height)

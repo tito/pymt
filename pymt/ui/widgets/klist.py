@@ -7,13 +7,10 @@ __all__ = ('MTList', 'MTListContainer')
 from pymt.graphx import gx_matrix
 from pymt.utils import boundary
 from pymt.base import getFrameDt
-from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.widget import MTWidget
-from pymt.ui.widgets.button import MTButton
 from pymt.ui.widgets.stencilcontainer import MTStencilContainer
 from pymt.config import pymt_config
 from OpenGL.GL import glTranslatef
-from math import sqrt, pow
 
 #
 # Split between List and ListContainer is done
@@ -250,6 +247,3 @@ class MTList(MTStencilContainer):
 
     def draw(self):
         pass
-
-# Register all base widgets
-MTWidgetFactory.register('MTList', MTList)

@@ -3,15 +3,14 @@ SpellVKeyboard: Virtual keyboard that provides spelling
                 suggestions/corrections as you type.
 '''
 
-import os
+__all__ = ('MTSpellVKeyboard', )
+
 from pymt.core.spelling import Spelling
 from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.button import MTButton
 from pymt.ui.widgets.layout import MTBoxLayout
 from pymt.ui.widgets.composed.vkeyboard import MTVKeyboard
 from pymt.utils import curry
-
-__all__ = ('MTSpellVKeyboard', )
 
 class MTSpellVKeyboardLabel(MTButton):
     def __init__(self, **kwargs):

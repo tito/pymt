@@ -4,6 +4,7 @@ Tabs widget: widget that provide tabs (like tabbed notebook)
 
 __all__ = ('MTTabs', )
 
+from pymt.utils import curry
 from pymt.ui.widgets.widget import MTWidget
 from pymt.ui.widgets.button import MTButton
 from pymt.ui.widgets.layout.boxlayout import MTBoxLayout
@@ -65,13 +66,11 @@ class MTTabs(MTWidget):
                 tab = widget.tab
         button = MTButton(label=tab, size=(120, 40))
         button.tab_container = self
-        @button.event
-        def on_release(touch):
-            self.select(tab)
+        button.connect('on_release', curry(self.select, tab))
         self.topbar.add_widget(button)
         self.tabs[tab] = (button, widget)
 
-    def select(self, tab):
+    def select(self, tab, *l):
         if tab not in self.tabs:
             return
         button, widget = self.tabs[tab]

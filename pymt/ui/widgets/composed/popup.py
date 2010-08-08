@@ -2,14 +2,14 @@
 Popup: tiny popup with customizable content
 '''
 
-from ....graphx import set_color, drawCSSRectangle
-from ....utils import curry
-from ...factory import MTWidgetFactory
-from ..widget import MTWidget
-from ..button import MTButton
-from ..label import MTLabel
-from ..scatter import MTScatterWidget
-from ..layout import MTBoxLayout
+__all__ = ('MTPopup', )
+
+from pymt.graphx import set_color, drawCSSRectangle
+from pymt.utils import curry
+from pymt.ui.widgets.button import MTButton
+from pymt.ui.widgets.label import MTLabel
+from pymt.ui.widgets.scatter import MTScatterWidget
+from pymt.ui.widgets.layout import MTBoxLayout
 
 
 class MTPopup(MTScatterWidget):
@@ -53,7 +53,8 @@ class MTPopup(MTScatterWidget):
         # Create layouts
         self.layout = MTBoxLayout(size=self.size,  orientation='vertical')
         self.l_content = MTBoxLayout(orientation='vertical')
-        self.l_buttons = MTBoxLayout(size_hint=(1,None),orientation='horizontal')
+        self.l_buttons = MTBoxLayout(size_hint=(1, None),
+                                     orientation='horizontal')
 
         # Titles
         if kwargs.get('title'):
@@ -61,14 +62,18 @@ class MTPopup(MTScatterWidget):
                                    autosize=True, cls='popup-title')
 
         # Buttons
-        self.w_submit = MTButton(label=kwargs.get('label_submit'), size_hint=(0.5,None), height=40,
-                cls='popup-button')
-        self.w_submit.push_handlers(on_release=curry(self._dispatch_event, 'on_submit'))
+        self.w_submit = MTButton(label=kwargs.get('label_submit'),
+                                 size_hint=(0.5, None), height=40,
+                                 cls='popup-button')
+        self.w_submit.push_handlers(on_release=curry(
+            self._dispatch_event, 'on_submit'))
         self.l_buttons.add_widget(self.w_submit)
         if kwargs.get('show_cancel'):
-            self.w_cancel = MTButton(label=kwargs.get('label_cancel'), size_hint=(0.5,None), height=40,
-                cls='popup-button')
-            self.w_cancel.push_handlers(on_release=curry(self._dispatch_event, 'on_cancel'))
+            self.w_cancel = MTButton(label=kwargs.get('label_cancel'),
+                                     size_hint=(0.5, None), height=40,
+                                     cls='popup-button')
+            self.w_cancel.push_handlers(on_release=curry(
+                self._dispatch_event, 'on_cancel'))
             self.l_buttons.add_widget(self.w_cancel)
 
         # Connect
@@ -111,5 +116,3 @@ class MTPopup(MTScatterWidget):
         # draw background
         set_color(*self.style['bg-color'])
         drawCSSRectangle(size=self.size, style=self.style)
-
-MTWidgetFactory.register('MTPopup', MTPopup)

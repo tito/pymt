@@ -2,21 +2,18 @@
 Inner window: a lightweight window with fullscreen and resize ability
 '''
 
-
-__all__ = ['MTInnerWindow']
+__all__ = ('MTInnerWindow', )
 
 import os
-import pymt
-from OpenGL.GL import *
-from ....graphx import gx_matrix, drawRectangle, set_color, gx_stencil, stencilUse
-from ....graphx import drawRoundedRectangle, drawTexturedRectangle
-from ....utils import SafeList
-from ..rectangle import MTRectangularWidget
-from ..scatter import MTScatterWidget
-from ..button import MTImageButton, MTButton
-from ..widget import MTWidget
-
-iconPath = os.path.join(os.path.dirname(pymt.__file__), 'data', 'icons', '')
+from OpenGL.GL import glMultMatrixf
+from pymt import pymt_icons_dir
+from pymt.graphx import gx_matrix, drawRectangle, set_color, gx_stencil, \
+        stencilUse, drawRoundedRectangle
+from pymt.utils import SafeList
+from pymt.ui.widgets.rectangle import MTRectangularWidget
+from pymt.ui.widgets.scatter import MTScatterWidget
+from pymt.ui.widgets.button import MTImageButton, MTButton
+from pymt.ui.widgets.widget import MTWidget
 
 class MTInnerWindowContainer(MTRectangularWidget):
     '''Container used to simulate a window for children of MTInnerWindow.
@@ -80,7 +77,7 @@ class MTInnerWindow(MTScatterWidget):
     def __init__(self, **kwargs):
         kwargs.setdefault('control_scale', 1.0)
         super(MTInnerWindow, self).__init__(**kwargs)
-        self.container = MTInnerWindowContainer(pos=(0,0), size=self.size)
+        self.container = MTInnerWindowContainer(pos=(0, 0), size=self.size)
         super(MTInnerWindow, self).add_widget(self.container)
         self.control_scale = kwargs.get('control_scale')
         self.setup_controls()
@@ -89,15 +86,15 @@ class MTInnerWindow(MTScatterWidget):
         self.controls = MTWidget()
         self.controls.parent = self
 
-        self.btn_fullscreen = MTImageButton(filename=iconPath+'fullscreen.png',
-                                            scale=self.control_scale,
-                                            cls='innerwindow-fullscreen')
+        self.btn_fullscreen = MTImageButton(
+            filename=pymt_icons_dir + 'fullscreen.png',
+            scale=self.control_scale, cls='innerwindow-fullscreen')
         self.btn_fullscreen.push_handlers(on_release=self.fullscreen)
         self.controls.add_widget(self.btn_fullscreen)
 
-        self.btn_close = MTImageButton(filename=iconPath+'stop.png',
-                                       scale=self.control_scale,
-                                       cls='innerwindow-close')
+        self.btn_close = MTImageButton(
+            filename=pymt_icons_dir + 'stop.png',
+            scale=self.control_scale, cls='innerwindow-close')
         self.btn_close.push_handlers(on_release=self.close)
         self.controls.add_widget(self.btn_close)
 
@@ -115,7 +112,7 @@ class MTInnerWindow(MTScatterWidget):
         root_win.add_widget(self.container)
 
         btn_unfullscreen = MTButton(pos=(root_win.width-50, root_win.height-50),
-                                    size=(50,50), label='Back')
+                                    size=(50, 50), label='Back')
         btn_unfullscreen.push_handlers(on_release=self.unfullscreen)
         root_win.add_widget(btn_unfullscreen)
         self.size = root_win.size
@@ -195,9 +192,9 @@ class MTInnerWindow(MTScatterWidget):
 
     def collide_point(self, x, y):
         scaled_border = self.get_scaled_border()
-        local_coords = super(MTInnerWindow,self).to_local(x, y)
+        local_coords = super(MTInnerWindow, self).to_local(x, y)
         left, right = -scaled_border, self.width + scaled_border
-        bottom,top = -scaled_border, self.height + scaled_border
+        bottom, top = -scaled_border, self.height + scaled_border
         if local_coords[0] > left and local_coords[0] < right \
            and local_coords[1] > bottom and local_coords[1] < top:
             return True

@@ -8,18 +8,15 @@ __all__ = (
 )
 
 import pymt
-from OpenGL.GL import *
-from ....utils import boundary
-from ....graphx import set_color, drawRectangle
-from ....graphx import drawCSSRectangle
-from ...factory import MTWidgetFactory
-from ....vector import Vector
-from ....base import getFrameDt
-from ....utils import SafeList
-from ..stencilcontainer import MTStencilContainer
-from ..widget import MTWidget
-from ..button import MTButton, MTToggleButton, MTImageButton
-from ...animation import Animation, AnimationAlpha
+from pymt.utils import boundary
+from pymt.graphx import set_color, drawRectangle, drawCSSRectangle
+from pymt.base import getFrameDt
+from pymt.utils import SafeList
+from pymt.ui.widgets.stencilcontainer import MTStencilContainer
+from pymt.ui.widgets.widget import MTWidget
+from pymt.ui.widgets.button import MTButton, MTToggleButton, MTImageButton
+from pymt.ui.animation import Animation
+from pymt.core.text import Label
 
 class MTKineticList(MTStencilContainer):
     '''This is a kinetic container widget, that allows you to make
@@ -96,6 +93,12 @@ class MTKineticList(MTStencilContainer):
 
         self.register_event_type('on_delete')
 
+        self._a_sinput_out  = None
+        self._a_sinput_in   = None
+        self.title          = Label('')
+        self.sb             = None
+        self.sinput         = None
+
         self.do_x       = kwargs.get('do_x')
         self.do_y       = kwargs.get('do_y')
         self.titletext  = kwargs.get('title')
@@ -136,7 +139,7 @@ class MTKineticList(MTStencilContainer):
     def _create_ui(self):
         # Title Text
         if self.titletext is not None:
-            self.title = pymt.Label(
+            self.title = Label(
                 font_size=18,
                 bold=True,
                 anchor_x='center',
@@ -175,10 +178,10 @@ class MTKineticList(MTStencilContainer):
             self.widgets.insert(0, self.sinput)
 
             # Animations to hide and show the search text input box
-            self.a_sinput_in = Animation(y=self.y + self.height - 40 -
+            self._a_sinput_in = Animation(y=self.y + self.height - 40 -
                                          self.sinput.size[1], duration=0.5,
                                          f='ease_out_cubic')
-            self.a_sinput_out = Animation(y=self.y + self.height -
+            self._a_sinput_out = Animation(y=self.y + self.height -
                                           self.sinput.size[1], duration=0.5,
                                          f='ease_out_cubic')
 
@@ -204,7 +207,7 @@ class MTKineticList(MTStencilContainer):
         '''Toggles the delete buttons on items
         Attached to the on_press handler of the delete button(self.db)
         '''
-        if self.db.get_state() == 'down':
+        if self.db.state == 'down':
             for child in self.children[:]:
                 child.show_delete()
         else:
@@ -215,8 +218,8 @@ class MTKineticList(MTStencilContainer):
         '''Toggles the search area
         Attached to the on_press handler of self.sb(the green search button)
         '''
-        if self.sb.get_state() == 'down':
-            self.a_sinput_in.animate(self.sinput)
+        if self.sb.state == 'down':
+            self._a_sinput_in.animate(self.sinput)
         else:
             try:
                 self.sinput.hide_keyboard()
@@ -224,7 +227,7 @@ class MTKineticList(MTStencilContainer):
                 # There isn't a keyboard, so it throws a ValueError
                 pass
             self.sinput.label = ''
-            self.a_sinput_out.animate(self.sinput)
+            self._a_sinput_out.animate(self.sinput)
 
     def apply_filter(self, text):
         '''Applies the filter to the current children set'''
@@ -285,8 +288,7 @@ class MTKineticList(MTStencilContainer):
         width_attr  = 'width'
         height_attr = 'height'
         xoffset     = self.xoffset
-        yoffset     = self.yoffset
-        sx, sy      = self.x, self.y
+        sx          = self.x
         y           = self.y + self.yoffset
         padding_x   = self.padding_x
         padding_y   = self.padding_y
@@ -297,13 +299,12 @@ class MTKineticList(MTStencilContainer):
             limit       = self.h_limit
             width_attr  = 'height'
             height_attr = 'width'
-            xoffset      = self.yoffset
-            yoffset      = self.xoffset
+            xoffset     = self.yoffset
             y           = self.x + self.xoffset
             padding_x   = self.padding_y
             padding_y   = self.padding_x
             w2, h2      = h2, w2
-            sx, sy      = self.y, self.x
+            sx          = self.y
 
         # calculate size of actual content
         size = 0
@@ -522,7 +523,7 @@ class MTKineticList(MTStencilContainer):
 
 
         # scrollbar
-        sb_size = self.style.get('scrollbar-size');
+        sb_size = self.style.get('scrollbar-size')
         if sb_size > 0:
             mtop, mright, mbottom, mleft = self.style.get('scrollbar-margin')
             if self.do_y:
@@ -655,7 +656,3 @@ class MTKineticImage(MTImageButton, MTKineticObject):
         if self.deletable and self.db.visible and self.db.on_touch_down(touch):
             return True
 
-MTWidgetFactory.register('MTKineticObject', MTKineticObject)
-MTWidgetFactory.register('MTKineticList', MTKineticList)
-MTWidgetFactory.register('MTKineticItem', MTKineticItem)
-MTWidgetFactory.register('MTKineticImage', MTKineticImage)

@@ -5,18 +5,18 @@ VKeyboard: Virtual keyboard with custom layout support
 
 import os
 import pymt
-from ....base import getFrameDt
-from ....graphx import set_color, drawCSSRectangle, drawLabel, GlDisplayList, \
-                       gx_matrix, drawRoundedRectangle, getLastLabel
-from ....clock import getClock
-from ....utils import curry
-from ....vector import Vector
-from ...factory import MTWidgetFactory
-from ..scatter import MTScatterWidget
-from kineticlist import MTKineticList, MTKineticItem
-from OpenGL.GL import *#glScalef, glTranslatef
+from pymt.base import getFrameDt
+from pymt.graphx import set_color, drawCSSRectangle, drawLabel, GlDisplayList, \
+        gx_matrix, getLastLabel
+from pymt.clock import getClock
+from pymt.utils import curry
+from pymt.vector import Vector
+from pymt.ui.widgets.scatter import MTScatterWidget
+from pymt.ui.widgets.composed.kineticlist import MTKineticList, MTKineticItem
+from OpenGL.GL import glScalef, glTranslatef
 
-__all__ = ('MTVKeyboard', 'KeyboardLayout', 'KeyboardLayoutQWERTY', 'KeyboardLayoutAZERTY')
+__all__ = ('MTVKeyboard', 'KeyboardLayout', 'KeyboardLayoutQWERTY',
+           'KeyboardLayoutAZERTY')
 
 class KeyboardLayout(object):
     '''Base for all Keyboard Layout'''
@@ -520,7 +520,7 @@ class MTVKeyboard(MTScatterWidget):
         keysize = Vector(w / kx, h / ky)
         if x < mleft or x > self.width - mright or \
            y < mbottom or y > self.height - mtop:
-               return None
+            return None
         index = ky-int((y - mbottom) /
                 (self.height - mtop - mbottom)
                 * ky)
@@ -606,6 +606,3 @@ class MTVKeyboard(MTScatterWidget):
 if not 'PYMT_DOC' in os.environ:
     MTVKeyboard.add_custom_layout(KeyboardLayoutQWERTY)
     MTVKeyboard.add_custom_layout(KeyboardLayoutAZERTY)
-
-# Register all base widgets
-MTWidgetFactory.register('MTVKeyboard', MTVKeyboard)

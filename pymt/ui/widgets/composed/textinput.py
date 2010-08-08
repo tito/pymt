@@ -2,14 +2,13 @@
 TextInput: a text input who instance vkeyboard if needed
 '''
 
-__all__ = ['MTTextInput']
+__all__ = ('MTTextInput', )
 
-from ....config import pymt_config
-from ....graphx import set_color, drawCSSRectangle, drawLine, GlDisplayList
-from ..button import MTButton
-from ...factory import MTWidgetFactory
-from ...animation import Animation, AnimationAlpha
-from vkeyboard import MTVKeyboard
+from pymt.config import pymt_config
+from pymt.graphx import set_color, drawCSSRectangle, drawLine
+from pymt.ui.widgets.button import MTButton
+from pymt.ui.animation import Animation, AnimationAlpha
+from pymt.ui.widgets.composed.vkeyboard import MTVKeyboard
 
 class MTTextInput(MTButton):
     '''
@@ -316,7 +315,3 @@ class MTTextInput(MTButton):
             return True
         return super(MTTextInput, self).on_touch_down(touch)
 
-
-
-# Register all base widgets
-MTWidgetFactory.register('MTTextInput', MTTextInput)

@@ -2,16 +2,13 @@
 Color picker: a simple color picker with 3 slider
 '''
 
+__all__ = ('MTColorPicker', )
 
-__all__ = ['MTColorPicker']
-
-from OpenGL.GL import *
-from ....graphx import set_color, drawRectangle, GlDisplayList
-from ....graphx import drawCSSRectangle
-from ...factory import MTWidgetFactory
-from ..layout import MTBoxLayout
-from ..scatter import MTScatterWidget
-from ..slider import MTSlider
+from pymt.graphx import set_color, drawRectangle, GlDisplayList, \
+        drawCSSRectangle
+from pymt.ui.widgets.layout import MTBoxLayout
+from pymt.ui.widgets.scatter import MTScatterWidget
+from pymt.ui.widgets.slider import MTSlider
 
 class MTColorPicker(MTScatterWidget):
     '''MTColorPicker is a implementation of a color picker using MTWidget
@@ -35,9 +32,17 @@ class MTColorPicker(MTScatterWidget):
         super(MTColorPicker, self).__init__(**kwargs)
         self.size = (130, 290)
         self.targets = kwargs.get('targets')
-        self.sliders = [ MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), style={'slider-color': (1,0,0,1)}, cls='colorpicker-slider'),
-                         MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), style={'slider-color': (0,1,0,1)}, cls='colorpicker-slider'),
-                         MTSlider(min=kwargs.get('min'), max=kwargs.get('max'), size=(30,200), style={'slider-color': (0,0,1,1)}, cls='colorpicker-slider')]
+        self.sliders = [
+            MTSlider(min=kwargs.get('min'), max=kwargs.get('max'),
+                     size=(30, 200),  style={'slider-color': (1, 0, 0, 1)},
+                     cls='colorpicker-slider'),
+            MTSlider(min=kwargs.get('min'),  max=kwargs.get('max'),
+                     size=(30, 200),  style={'slider-color': (0, 1, 0, 1)},
+                     cls='colorpicker-slider'),
+            MTSlider(min=kwargs.get('min'),  max=kwargs.get('max'),
+                     size=(30, 200),  style={'slider-color': (0, 0, 1, 1)},
+                     cls='colorpicker-slider')
+        ]
         vbox = MTBoxLayout(spacing=10, padding=10)
         for slider in self.sliders:
             slider.value = 77
@@ -69,5 +74,3 @@ class MTColorPicker(MTScatterWidget):
             w.color = (r, g, b, 1)
         self.current_color = (r, g, b, 1.0)
         self.dl.clear()
-
-MTWidgetFactory.register('MTColorPicker', MTColorPicker)

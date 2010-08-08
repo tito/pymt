@@ -11,16 +11,14 @@ __all__ = (
 import os
 import re
 import pymt
-from pymt.utils import is_color_transparent, curry
+from pymt.utils import curry
 from pymt.loader import Loader
-from pymt.graphx import drawCSSRectangle, set_color, drawLabel, drawRoundedRectangle,\
-                       getLabel
+from pymt.graphx import drawCSSRectangle, set_color, drawLabel, getLabel
 from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.label import MTLabel
 from pymt.ui.widgets.button import MTToggleButton
-from kineticlist import MTKineticList, MTKineticItem
-from popup import MTPopup
-
+from pymt.ui.widgets.composed.kineticlist import MTKineticList, MTKineticItem
+from pymt.ui.widgets.composed.popup import MTPopup
 
 # Search icons in data/icons/filetype
 icons_filetype_dir = os.path.join(pymt.pymt_data_dir, 'icons', 'filetype')
@@ -33,14 +31,14 @@ class FileTypeFactory:
     __filetypes__ = {}
 
     @staticmethod
-    def register(types,iconpath):
-        '''If a user wants to register a new file type or replace a existing icon,
-        he can use register method as follows ::
+    def register(types, iconpath):
+        '''If a user wants to register a new file type or replace a existing
+        icon, he can use register method as follows ::
 
             FileTypeFactory.register(['type1','type2'],"path_to_icon")
         '''
-        for type in types:
-            FileTypeFactory.__filetypes__[type] = iconpath
+        for ftype in types:
+            FileTypeFactory.__filetypes__[ftype] = iconpath
 
     @staticmethod
     def list():
@@ -48,11 +46,11 @@ class FileTypeFactory:
         return FileTypeFactory.__filetypes__
 
     @staticmethod
-    def get(type):
+    def get(ftype):
         '''Return an image for the current type. If type is not found, this
         will return the image for 'unknown' type.'''
-        if type in FileTypeFactory.__filetypes__:
-            return FileTypeFactory.__filetypes__[type]
+        if ftype in FileTypeFactory.__filetypes__:
+            return FileTypeFactory.__filetypes__[ftype]
         else:
             return FileTypeFactory.__filetypes__['unknown']
 
@@ -80,11 +78,6 @@ class MTFileEntryView(MTKineticItem):
         '''Strip a text to `number` characters, without space/tab'''
         return str(text)[:number].strip("\t ")
 
-    def draw(self):
-        if not is_color_transparent(color):
-            set_color(*color)
-            drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
-
 
 class MTFileListEntryView(MTFileEntryView):
     '''A list-view for file entries'''
@@ -107,10 +100,10 @@ class MTFileListEntryView(MTFileEntryView):
             selected_color = self.style.get('selected-color', (0.4,) * 4)
             set_color(*selected_color)
             drawCSSRectangle(pos=(0, self.y), size=self.size, style=self.style)
-        kwargs = {'pos': pos, 'anchor_x': 'left', 'anchor_y': 'bottom', 'font_size':self.style['font-size'],
-                  'color':self.style['color']}
-        drawLabel(label=self.striptext(self.label_txt, max_chars), **kwargs )
-
+        drawLabel(label=self.striptext(self.label_txt, max_chars),
+                  pos=pos, anchor_x='left', anchor_y='bottom',
+                  font_size=self.style.get('font-size'),
+                  color=self.style.get('color'))
         self.image.pos = (0, self.y)
         self.image.draw()
 
@@ -215,8 +208,8 @@ class MTFileBrowserView(MTKineticList):
             # filtering
             if len(self.filters):
                 match = False
-                for filter in self.filters:
-                    if re.match(filter, name):
+                for regex in self.filters:
+                    if re.match(regex, name):
                         match = True
                 if not match:
                     continue
@@ -329,7 +322,8 @@ class MTFileBrowserToggle(MTToggleButton):
         self.icon = kwargs.get('icon')
 
     def _set_icon(self, value):
-        self.image = pymt.Image(os.path.join(pymt.pymt_data_dir, 'icons', value))
+        self.image = pymt.Image(os.path.join(
+            pymt.pymt_data_dir, 'icons', value))
     icon = property(fset=_set_icon)
 
     def draw(self):
@@ -340,8 +334,8 @@ class MTFileBrowserToggle(MTToggleButton):
 
 
 class MTFileBrowser(MTPopup):
-    '''This Widget provides a filebrowser interface to access the files in your system.
-    you can select multiple files at a time and process them together.
+    '''This Widget provides a filebrowser interface to access the files in your
+    system. You can select multiple files at a time and process them together.
 
     :Parameters:
         `title` : str, default to 'Open a file'
@@ -378,11 +372,12 @@ class MTFileBrowser(MTPopup):
         self.register_event_type('on_select')
 
         # Title
-        self.w_path = MTLabel(label='.', autoheight=True, size=(self.width, 30), color=(.7, .7, .7, .5))
+        self.w_path = MTLabel(label='.', autoheight=True, size=(self.width, 30),
+                              color=(.7, .7, .7, .5))
         #self.add_widget(self.w_path)
 
         # File View
-        self.view = MTFileBrowserView(size_hint=(1,1), filters=kwargs.get('filters'),
+        self.view = MTFileBrowserView(size_hint=(1, 1), filters=kwargs.get('filters'),
                 multipleselection=kwargs.get('multipleselection'), view=kwargs.get('view'),
                 invert_order=kwargs.get('invert_order'))
         self.view.push_handlers(on_path_change=self._on_path_change)
@@ -454,7 +449,7 @@ class MTFileBrowser(MTPopup):
         self.view.update()
 
 # Register Default File types with their icons
-FileTypeFactory.register(['jpg','jpeg'],
+FileTypeFactory.register(['jpg', 'jpeg'],
     os.path.join(icons_filetype_dir, 'image-jpeg.png'))
 FileTypeFactory.register(['svg'],
     os.path.join(icons_filetype_dir, 'image-svg.png'))
@@ -462,7 +457,7 @@ FileTypeFactory.register(['png'],
     os.path.join(icons_filetype_dir, 'image-png.png'))
 FileTypeFactory.register(['bmp'],
     os.path.join(icons_filetype_dir, 'image-bmp.png'))
-FileTypeFactory.register(['mpg','mpeg','avi','mkv','flv'],
+FileTypeFactory.register(['mpg', 'mpeg', 'avi', 'mkv', 'flv'],
     os.path.join(icons_filetype_dir, 'video.png'))
 FileTypeFactory.register(['folder'],
     os.path.join(icons_filetype_dir, 'folder.png'))

@@ -84,6 +84,8 @@ pymt_modules_dir     = os.path.join(pymt_base_dir, 'modules')
 pymt_data_dir        = os.path.join(pymt_base_dir, 'data')
 #: PyMT input provider directory
 pymt_providers_dir   = os.path.join(pymt_base_dir, 'input', 'providers')
+#: PyMT icons config path (don't remove last '')
+pymt_icons_dir        = os.path.join(pymt_data_dir, 'icons', '')
 #: PyMT user-home storage directory
 pymt_home_dir        = None
 #: PyMT configuration filename

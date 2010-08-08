@@ -4,12 +4,11 @@ TextArea: a multiline text input, based on TextInput
 
 __all__ = ('MTTextArea', )
 
-from ...factory import MTWidgetFactory
-from ....graphx import set_color
-from ....base import getFrameDt
-from ....graphx import drawRectangle
-from ....core.text import Label
-from textinput import MTTextInput
+from pymt.graphx import set_color
+from pymt.base import getFrameDt
+from pymt.graphx import drawRectangle
+from pymt.core.text import Label
+from pymt.ui.widgets.composed.textinput import MTTextInput
 from OpenGL.GL import glPushMatrix, glPopMatrix, glTranslate
 
 class MTTextArea(MTTextInput):
@@ -97,18 +96,19 @@ class MTTextArea(MTTextInput):
         return offset
 
     def draw_cursor(self):
-        set_color(1,0,0, int(self.cursor_fade))
-        drawRectangle(size=(2, -self.line_height), pos=(self.cursor_offset(),0))
+        set_color(1, 0, 0, int(self.cursor_fade))
+        drawRectangle(size=(2, -self.line_height),
+                      pos=(self.cursor_offset(), 0))
 
     def draw(self):
         super(MTTextArea, self).draw_background()
         glPushMatrix()
-        glTranslate(self.x, self.y+self.height,0)
+        glTranslate(self.x, self.y+self.height, 0)
         for line_num in xrange(len(self.lines)):
             self.line_labels[line_num].draw()
             if self.edit_line == line_num and self.is_active_input:
                 self.draw_cursor()
-            glTranslate(0,-(self.line_height+self.line_spacing),0)
+            glTranslate(0, -(self.line_height+self.line_spacing), 0)
         glPopMatrix()
 
     def on_update(self):
@@ -138,7 +138,7 @@ class MTTextArea(MTTextInput):
         text = self.lines[self.edit_line]
         new_text = text[:self.cursor] + c + text[self.cursor:]
         self.set_line_text(self.edit_line, new_text)
-        self.cursor +=1
+        self.cursor += 1
         self.dispatch_event('on_text_change', self)
 
     def insert_line_feed(self):
@@ -169,7 +169,7 @@ class MTTextArea(MTTextInput):
             text = self.lines[self.edit_line]
             new_text = text[:self.cursor-1] + text[self.cursor:]
             self.set_line_text(self.edit_line, new_text)
-            self.cursor -=1
+            self.cursor -= 1
         self.dispatch_event('on_text_change', self)
 
     def do_cursor_movement(self, action):
@@ -219,6 +219,3 @@ class MTTextArea(MTTextInput):
             self.insert_character(unicode)
             self._recalc_size()
         return super(MTTextArea, self)._window_on_key_down(key, scancode, unicode)
-
-# Register all base widgets
-MTWidgetFactory.register('MTTextArea', MTTextArea)

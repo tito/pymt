@@ -2,19 +2,17 @@
 Video widget: provide a video container
 '''
 
-
 __all__ = ('MTVideo', 'MTSimpleVideo')
 
-import os
-import pymt
-from OpenGL.GL import *
-from ...factory import MTWidgetFactory
-from ..layout import MTBoxLayout
-from ..button import MTImageButton
-from ..slider import MTSlider
-from ..widget import MTWidget
-
-iconPath = os.path.dirname(pymt.__file__) + '/data/icons/'
+from pymt import pymt_icons_dir
+from pymt.core.image import Image
+from pymt.core.video import Video
+from pymt.clock import getClock
+from pymt.graphx import set_color, drawCSSRectangle
+from pymt.ui.widgets.layout import MTBoxLayout
+from pymt.ui.widgets.button import MTImageButton
+from pymt.ui.widgets.slider import MTSlider
+from pymt.ui.widgets.widget import MTWidget
 
 class MTSimpleVideo(MTWidget):
     def __init__(self, filename, **kwargs):
@@ -34,7 +32,7 @@ class MTSimpleVideo(MTWidget):
         super(MTSimpleVideo, self).__init__(**kwargs)
 
         # load video
-        self.player = pymt.Video(filename=filename)
+        self.player = Video(filename=filename)
 
         # autostart the video ?
         if kwargs.get('autostart'):
@@ -71,8 +69,8 @@ class MTSimpleVideo(MTWidget):
 
 class MTButtonVideo(MTImageButton):
     def draw(self):
-        pymt.set_color(*self.style['bg-color'])
-        pymt.drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
+        set_color(*self.style['bg-color'])
+        drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
         self.image.color = self.style['color']
         super(MTButtonVideo, self).draw()
 
@@ -98,10 +96,10 @@ class MTVideo(MTSimpleVideo):
         self.bordersize = kwargs.get('bordersize')
 
         # images play/pause/mute
-        self.f_play = pymt.Image(iconPath + 'video-play.png')
-        self.f_pause = pymt.Image(iconPath + 'video-pause.png')
-        self.f_vmute = pymt.Image(iconPath + 'video-volume-mute.png')
-        self.f_v100 = pymt.Image(iconPath + 'video-volume-100.png')
+        self.f_play = Image(pymt_icons_dir + 'video-play.png')
+        self.f_pause = Image(pymt_icons_dir + 'video-pause.png')
+        self.f_vmute = Image(pymt_icons_dir + 'video-volume-mute.png')
+        self.f_v100 = Image(pymt_icons_dir + 'video-volume-100.png')
 
         # create UI
         box = MTBoxLayout(orientation='horizontal', uniform_height=True,
@@ -158,8 +156,8 @@ class MTVideo(MTSimpleVideo):
     def draw(self):
         b = self.bordersize
         b2 = b * 2
-        pymt.set_color(*self.style['bg-color'])
-        pymt.drawCSSRectangle((-b, -b), (self.width + b2, self.height + b2),
+        set_color(*self.style['bg-color'])
+        drawCSSRectangle((-b, -b), (self.width + b2, self.height + b2),
                               style=self.style)
         super(MTVideo, self).draw()
 
@@ -167,7 +165,7 @@ class MTVideo(MTSimpleVideo):
         if self.collide_point(touch.x, touch.y):
             self.show_controls()
             self._count += 1
-            pymt.getClock().schedule_once(self._try_hide_controls, 5)
+            getClock().schedule_once(self._try_hide_controls, 5)
         return super(MTVideo, self).on_touch_down(touch)
 
     def _try_hide_controls(self, *largs):
@@ -186,8 +184,3 @@ class MTVideo(MTSimpleVideo):
         self._controls = False
         for w in self.children:
             w.hide()
-
-
-# Register all base widgets
-MTWidgetFactory.register('MTVideo', MTVideo)
-MTWidgetFactory.register('MTSimpleVideo', MTSimpleVideo)

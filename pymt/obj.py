@@ -94,17 +94,18 @@ class Mesh(object):
                 group.material.apply()
             if group.array is None:
                 if group.material and group.material.texture:
-                    # We do that because we don't known if the texture
-                    # is a NV|ARB_RECTANGLE. If yes, texture coordinate
-                    # must be in 0-size, instead of 0-1.
-                    group.vertices[0::8] = map(
-                        lambda x: x * group.material.texture.width,
-                        group.vertices[0::8]
-                    )
-                    group.vertices[1::8] = map(
-                        lambda x: x * group.material.texture.height,
-                        group.vertices[1::8]
-                    )
+                    if group.material.texture.rectangle:
+                        # texture is a rectangle texture
+                        # that's mean we need to adjust the range of texture
+                        # coordinate from original 0-1 to 0-width/0-height
+                        group.vertices[0::8] = map(
+                            lambda x: x * group.material.texture.width,
+                            group.vertices[0::8]
+                        )
+                        group.vertices[1::8] = map(
+                            lambda x: x * group.material.texture.height,
+                            group.vertices[1::8]
+                        )
                 group.array = (GLfloat * len(group.vertices))(*group.vertices)
                 group.triangles = len(group.vertices) / 8
             glInterleavedArrays(GL_T2F_N3F_V3F, 0, group.array)

@@ -80,24 +80,25 @@ class Texture(object):
     '''Handle a OpenGL texture. This class can be used to create simple texture
     or complex texture based on ImageData.'''
 
-    __slots__ = ('tex_coords', 'width', 'height', 'target', 'id', 'mipmap',
-                '_gl_wrap', '_gl_min_filter', '_gl_mag_filter')
+    __slots__ = ('tex_coords', '_width', '_height', '_target', '_id', '_mipmap',
+                '_gl_wrap', '_gl_min_filter', '_gl_mag_filter', '_rectangle')
 
     _has_bgr = None
     _has_bgr_tested = False
     _has_texture_nv = None
     _has_texture_arb = None
 
-    def __init__(self, width, height, target, id, mipmap=False):
-        self.tex_coords = (0., 0., 1., 0., 1., 1., 0., 1.)
-        self.width          = width
-        self.height         = height
-        self.target         = target
-        self.id             = id
-        self.mipmap         = mipmap
+    def __init__(self, width, height, target, texid, mipmap=False, rectangle=False):
+        self.tex_coords     = (0., 0., 1., 0., 1., 1., 0., 1.)
+        self._width         = width
+        self._height        = height
+        self._target        = target
+        self._id            = texid
+        self._mipmap        = mipmap
         self._gl_wrap       = None
         self._gl_min_filter = None
         self._gl_mag_filter = None
+        self._rectangle     = rectangle
 
     def __del__(self):
         # Add texture deletion outside GC call.
@@ -105,6 +106,36 @@ class Texture(object):
         # before application exit...
         if _texture_release_list is not None:
             _texture_release_list.append(self.id)
+
+    @property
+    def mipmap(self):
+        '''Return True if the texture have mipmap enabled (readonly)'''
+        return self._mipmap
+
+    @property
+    def rectangle(self):
+        '''Return True if the texture is a rectangle texture (readonly)'''
+        return self._rectangle
+
+    @property
+    def id(self):
+        '''Return the OpenGL ID of the texture (readonly)'''
+        return self._id
+
+    @property
+    def target(self):
+        '''Return the OpenGL target of the texture (readonly)'''
+        return self._target
+
+    @property
+    def width(self):
+        '''Return the width of the texture (readonly)'''
+        return self._width
+
+    @property
+    def height(self):
+        '''Return the height of the texture (readonly)'''
+        return self._height
 
     def flip_vertical(self):
         '''Flip tex_coords for vertical displaying'''
@@ -203,8 +234,8 @@ class Texture(object):
             texture_width = _nearest_pow2(width)
             texture_height = _nearest_pow2(height)
 
-        id = glGenTextures(1)
-        texture = Texture(texture_width, texture_height, target, id,
+        texid = glGenTextures(1)
+        texture = Texture(texture_width, texture_height, target, texid,
                           mipmap=mipmap)
 
         texture.bind()

@@ -83,8 +83,10 @@ class Tuio2TouchProvider(TouchProvider):
         elif command == 'ala':
             for s_id in touches.keys():
                 if s_id not in args:
-                    touches[s_id].elements = None
-                    touches[s_id].container = None
+                    touch = touches[s_id]
+                    touch.elements = None
+                    touch.container = None
+                    touch.profile = tuple([p for p in touch.profile if p != 'container'])
         else:
             # Update the existing touch, or create a new, empty touch and
             # update it (for the first time).

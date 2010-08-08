@@ -184,32 +184,32 @@ class KeyboardLayoutAZERTY(KeyboardLayout):
 
 class MTVKeyboard(MTScatterWidget):
     '''
-    MTVKeyboard is a OnBoard keyboard, with Multitouch support.
-    Layout are entirely customizable, and you can switch from layout with
-    little button in bottom-right of keyboard.
+    MTVKeyboard is an onscreen keyboard with multitouch support.
+    Its layout is entirely customizable and you can switch between available
+    layouts using a button in the bottom right of the widget.
 
     :Parameters:
         `layout` : KeyboardLayout object, default to None
-            If none, keyboard layout will be created from configuration
+            If None, keyboard layout will be created from configuration
             property.
         `time_lazy_update` : float, default to 0.2
-            Time in seconds of force a lazy update when keyboard size change
+            Time in seconds to force a lazy update when keyboard size changes
         `repeat` : float, default to 0.2
-            If 1/15., will repeat the last key 5 time per seconds
+            Key repeat rate. 1/15. will repeat the last key 5 times per seconds
         `repeat_timeout` : float, default to 0.2
-            Will start repeatition after 200ms
+            Will start to repeat the key after 200ms
 
     :Events:
         `on_key_down` : key
-            Fired when a key is down
-            The key contain: displayed_str, internal_str, internal_action, width
+            Fired when a key is down.
+            The key contains: displayed_str, internal_str, internal_action, width
         `on_key_up` : key
-            Fired when a key is up
-            The key contain: displayed_str, internal_str, internal_action, width
+            Fired when a key is up.
+            The key contains: displayed_str, internal_str, internal_action, width
         `on_text_change` : text
             Fired when the internal text is changed
 
-    List of internal action availables :
+    List of internal actions available :
 
     * backspace
     * capslock

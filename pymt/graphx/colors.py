@@ -2,11 +2,11 @@
 Colors: manipulate colors
 '''
 
+__all__ = ('set_color', )
+
 from OpenGL.GL import GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_BLEND, \
         glEnable, glDisable, glBlendFunc, glColor3f, glColor4f
 from pymt.utils import get_color_from_hex
-
-__all__ = ['set_color']
 
 def set_color(*colors, **kwargs):
     '''Define current color to be used (as float values between 0 and 1) ::

@@ -1,7 +1,8 @@
 '''
 Exception Manager: add/remove handler for exception in application
 '''
-__all__ = ['pymt_exception_manager', 'ExceptionHandler', 'ExceptionManager']
+
+__all__ = ('pymt_exception_manager', 'ExceptionHandler', 'ExceptionManager')
 
 class ExceptionHandler:
     '''Base handler that catch exception in runTouchApp().

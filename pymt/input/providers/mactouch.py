@@ -4,16 +4,14 @@ MacTouch: Native support of MultitouchSupport framework for MacBook (MaxOSX plat
 
 __all__ = ('MacTouchProvider', )
 
-import time
 import ctypes
 import threading
 import collections
 import os
-from ctypes.util import find_library
-from ..provider import TouchProvider
-from ..factory import TouchFactory
-from ..touch import Touch
-from ..shape import TouchShapeRect
+from pymt.input.provider import TouchProvider
+from pymt.input.factory import TouchFactory
+from pymt.input.touch import Touch
+from pymt.input.shape import TouchShapeRect
 
 if 'PYMT_DOC' not in os.environ:
 	CFArrayRef = ctypes.c_void_p
@@ -127,8 +125,8 @@ class MacTouchProvider(TouchProvider):
             device = CFArrayGetValueAtIndex(devices, i)
             print 'device #%d: %016x' % (i, device)
             # create touch dict for this device
-            id = str(device)
-            self.touches[id] = {}
+            data_id = str(device)
+            self.touches[data_id] = {}
             # start !
             MTRegisterContactFrameCallback(device, self._mts_callback)
             MTDeviceStart(device, 0)
@@ -168,12 +166,12 @@ class MacTouchProvider(TouchProvider):
             actives.append(data.identifier)
 
             # extract identifier
-            id = data.identifier
+            data_id = data.identifier
 
             # prepare argument position
             args = (data.normalized.position.x, data.normalized.position.y, data.size)
 
-            if not id in touches:
+            if not data_id in touches:
                 # increment uid
                 _instance.lock.acquire()
                 _instance.uid += 1
@@ -183,9 +181,9 @@ class MacTouchProvider(TouchProvider):
                 # create event
                 _instance.queue.append(('down', touch))
                 # store touch
-                touches[id] = touch
+                touches[data_id] = touch
             else:
-                touch = touches[id]
+                touch = touches[data_id]
                 # check if he really moved
                 if data.normalized.position.x == touch.sx and \
                    data.normalized.position.y == touch.sy:

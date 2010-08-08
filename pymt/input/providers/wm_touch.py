@@ -5,9 +5,13 @@ WM_TOUCH: Support of WM_TOUCH message (Window platform)
 __all__ = ('WM_TouchProvider', 'WM_Touch')
 
 import os
-from wm_common import *
-from ..touch import Touch
-from ..shape import TouchShapeRect
+from pymt.input.providers.wm_common import WM_TABLET_QUERYSYSTEMGESTURE, \
+        GWL_WNDPROC, QUERYSYSTEMGESTURE_WNDPROC, WM_TOUCH, WM_MOUSEMOVE, \
+        WM_MOUSELAST, PEN_OR_TOUCH_MASK, PEN_OR_TOUCH_SIGNATURE, \
+        PEN_EVENT_TOUCH_MASK, TOUCHEVENTF_UP, TOUCHEVENTF_DOWN, \
+        TOUCHEVENTF_MOVE
+from pymt.input.touch import Touch
+from pymt.input.shape import TouchShapeRect
 
 class WM_Touch(Touch):
     '''Touch representing the WM_Touch event. Support pos, shape and size profiles'''
@@ -30,14 +34,11 @@ if 'PYMT_DOC' in os.environ:
     WM_TouchProvider = None
 
 else:
-    from pymt import pymt_logger
-    from ctypes import *
-    from ctypes import wintypes
+    from ctypes import wintypes, windll, WINFUNCTYPE, c_long, c_int, \
+            Structure, pointer, sizeof, byref
     from collections import deque
-    from ..provider import TouchProvider
-    from ..factory import TouchFactory
-    from ...base import getWindow
-    from ...utils import curry
+    from pymt.input.provider import TouchProvider
+    from pymt.input.factory import TouchFactory
 
     # check availability of RegisterTouchWindow
     if not hasattr(windll.user32, 'RegisterTouchWindow'):
@@ -46,18 +47,18 @@ else:
     WNDPROC = WINFUNCTYPE(c_long, c_int, c_int, c_int, c_int)
 
     class TOUCHINPUT(Structure):
-        _fields_= [
-                    ('x',wintypes.LONG),
-                    ('y',wintypes.LONG),
-                    ('pSource',wintypes.HANDLE),
-                    ('id',wintypes.DWORD),
-                    ('flags',wintypes.DWORD),
-                    ('mask',wintypes.DWORD),
-                    ('time',wintypes.DWORD),
-                    ('extraInfo',wintypes.ULONG ),
-                    ('size_x',wintypes.DWORD),
-                    ('size_y',wintypes.DWORD)
-                   ]
+        _fields_ = [
+            ('x',wintypes.LONG),
+            ('y',wintypes.LONG),
+            ('pSource',wintypes.HANDLE),
+            ('id',wintypes.DWORD),
+            ('flags',wintypes.DWORD),
+            ('mask',wintypes.DWORD),
+            ('time',wintypes.DWORD),
+            ('extraInfo',wintypes.ULONG ),
+            ('size_x',wintypes.DWORD),
+            ('size_y',wintypes.DWORD)
+        ]
 
         def size(self):
             return (self.size_x, self.size_y)
@@ -80,10 +81,10 @@ else:
 
     class RECT(Structure):
         _fields_ = [
-        ('left',   wintypes.ULONG ),
-        ('top',    wintypes.ULONG ),
-        ('right',  wintypes.ULONG ),
-        ('bottom', wintypes.ULONG )
+            ('left',   wintypes.ULONG ),
+            ('top',    wintypes.ULONG ),
+            ('right',  wintypes.ULONG ),
+            ('bottom', wintypes.ULONG )
         ]
 
         x = property(lambda self: self.left)
@@ -129,15 +130,16 @@ else:
                 # actually dispatch input
                 if t.event_type == 'down':
                     self.uid += 1
-                    self.touches[t.id] = WM_Touch(self.device, self.uid, [x,y,t.size()])
+                    self.touches[t.id] = WM_Touch(self.device,
+                                                  self.uid, [x, y, t.size()])
                     dispatch_fn('down', self.touches[t.id] )
 
                 if t.event_type == 'move' and self.touches.has_key(t.id):
-                    self.touches[t.id].move([x,y, t.size()])
+                    self.touches[t.id].move([x, y, t.size()])
                     dispatch_fn('move', self.touches[t.id] )
 
                 if t.event_type == 'up'  and self.touches.has_key(t.id):
-                    self.touches[t.id].move([x,y, t.size()])
+                    self.touches[t.id].move([x, y, t.size()])
                     dispatch_fn('up', self.touches[t.id] )
                     del self.touches[t.id]
 

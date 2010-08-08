@@ -68,7 +68,7 @@ This will execute all the animations on the properties togather.
 "&" operator is used to run them parallel
 '''
 
-__all__ = ['AnimationAlpha', 'Animation', 'Repeat', 'Delay']
+__all__ = ('AnimationAlpha', 'Animation', 'Repeat', 'Delay')
 
 import math
 import types

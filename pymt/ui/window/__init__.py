@@ -9,7 +9,7 @@ your system. Actually, theses libraries are handled :
 
 '''
 
-__all__ = ['BaseWindow', 'MTWindow', 'MTDisplay']
+__all__ = ('BaseWindow', 'MTWindow', 'MTDisplay')
 
 import os
 from OpenGL.GL import GL_VERSION, GL_FASTEST, GL_NICEST, GL_LINE_SMOOTH, \

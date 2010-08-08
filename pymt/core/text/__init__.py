@@ -7,8 +7,8 @@ __all__ = ('LabelBase', 'Label')
 import pymt
 import re
 import os
-from .. import core_select_lib
-from ...baseobject import BaseObject
+from pymt.core import core_select_lib
+from pymt.baseobject import BaseObject
 
 DEFAULT_FONT = 'Liberation Sans,Bitstream Vera Sans,Free Sans,Arial, Sans'
 

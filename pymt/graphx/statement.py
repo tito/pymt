@@ -31,7 +31,7 @@ Save and restore the color after drawing ::
     # here the color is restored back to red
 '''
 
-__all__ = [
+__all__ = (
     # class for with statement
     'DO',
     'GlDisplayList', 'GlBlending',
@@ -43,7 +43,7 @@ __all__ = [
     'gx_enable', 'gx_begin',
     'gx_attrib', 'gx_color',
     'gx_texture', 'gx_blending_replace'
-]
+)
 
 import pymt
 from OpenGL.GL import GL_COMPILE, GL_COMPILE_AND_EXECUTE, \

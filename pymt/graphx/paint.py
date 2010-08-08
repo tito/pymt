@@ -2,26 +2,25 @@
 Paint: brush, texturing...
 '''
 
-
-
-__all__ = [
+__all__ = (
     # settings
     'set_brush', 'set_brush_size',
     'set_texture', 'get_texture_id', 'get_texture_target',
     # draw
     'paintLine',
-]
+)
 
-import os
 import pymt
 from math import sqrt
-from OpenGL.GL import *
-from pymt.graphx.statement import *
+from OpenGL.GL import GL_POINTS, GL_TEXTURE_2D, GL_SRC_ALPHA, \
+        GL_ONE_MINUS_SRC_ALPHA, GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, \
+        GL_TRUE, glPointSize, glVertex2f, glBindTexture, glTexEnvi
+from pymt.graphx.statement import gx_enable, gx_begin, DO, GlBlending
 
-_brushs_cache   = {}
-_brush_filename = ''
-_brush_texture  = None
-_brush_size     = 10
+__brushs_cache   = dict()
+__brush_filename = ''
+__brush_texture  = None
+__brush_size     = 10
 
 def set_brush(sprite, size=None):
     '''Define the brush to use for paint* functions
@@ -32,15 +31,15 @@ def set_brush(sprite, size=None):
         `size` : int, default to None
             Size of brush
     '''
-    global _brushs_cache, _brush_size, _brush_filename, _brush_texture
+    global __brush_size, __brush_filename, __brush_texture
     if size:
-        _brush_size = size
-    if not sprite in _brushs_cache:
+        __brush_size = size
+    if not sprite in __brushs_cache:
         point_sprite_img = pymt.Image.load(sprite)
-        _brush_texture = point_sprite_img.texture
-        _brushs_cache[sprite] = _brush_texture
-    _brush_filename = sprite
-    _brush_texture = _brushs_cache[sprite]
+        __brush_texture = point_sprite_img.texture
+        __brushs_cache[sprite] = __brush_texture
+    __brush_filename = sprite
+    __brush_texture = __brushs_cache[sprite]
 
 def set_brush_size(size):
     '''Define the size of current brush
@@ -49,8 +48,8 @@ def set_brush_size(size):
         `size` : int
             Size of brush
     '''
-    global _brush_size
-    _brush_size = size
+    global __brush_size
+    __brush_size = size
 
 
 def get_texture_id(texture):
@@ -87,21 +86,22 @@ def paintLine(points, numsteps=None, **kwargs):
         paintLine((1, 2, 1, 5, 4, 6, 8, 7))
 
     '''
-    global _brush_texture, _brush_size
-    if not _brush_texture:
+    if not __brush_texture:
         pymt.pymt_logger.warning('Graphx: No brush set to paint line, abort')
         return
     if len(points) % 2 == 1:
         raise Exception('Points list must be a pair length number (not impair)')
     kwargs.setdefault('sfactor', GL_SRC_ALPHA)
     kwargs.setdefault('dfactor', GL_ONE_MINUS_SRC_ALPHA)
-    blending = GlBlending(sfactor=kwargs.get('sfactor'), dfactor=kwargs.get('dfactor'))
-    with DO(blending, gx_enable(GL_POINT_SPRITE_ARB), gx_enable(_brush_texture.target)):
+    blending = GlBlending(sfactor=kwargs.get('sfactor'),
+                          dfactor=kwargs.get('dfactor'))
+    with DO(blending, gx_enable(GL_POINT_SPRITE_ARB),
+            gx_enable(__brush_texture.target)):
 
         # prepare env
-        set_texture(_brush_texture.id, target=_brush_texture.target)
+        set_texture(__brush_texture.id, target=__brush_texture.target)
         glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE)
-        glPointSize(_brush_size)
+        glPointSize(__brush_size)
 
         # initialize outputList
         outputList = []

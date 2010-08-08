@@ -38,18 +38,18 @@ If you're only interested in a certain kind of touches, check the profile::
 
 '''
 
-__all__ = ['Touch']
+__all__ = ('Touch', )
 
 import weakref
 from inspect import isroutine
-from ..utils import SafeList
-from ..clock import getClock
-from ..vector import Vector
 from copy import copy
+from pymt.utils import SafeList
+from pymt.clock import getClock
+from pymt.vector import Vector
 
 
 class TouchMetaclass(type):
-    def __new__(cls, name, bases, attrs):
+    def __new__(mcs, name, bases, attrs):
         __attrs__ = []
         for base in bases:
             if hasattr(base, '__attrs__'):
@@ -57,7 +57,7 @@ class TouchMetaclass(type):
         if '__attrs__' in attrs:
             __attrs__.extend(attrs['__attrs__'])
         attrs['__attrs__'] = tuple(__attrs__)
-        return super(TouchMetaclass, cls).__new__(cls, name, bases, attrs)
+        return super(TouchMetaclass, mcs).__new__(mcs, name, bases, attrs)
 
 
 class Touch(object):

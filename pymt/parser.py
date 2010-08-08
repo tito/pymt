@@ -4,9 +4,9 @@ Parser: default parser from string to special type
 Used specially for CSS
 '''
 
-__all__ = ['parse_image', 'parse_color', 'parse_int', 'parse_float',
+__all__ = ('parse_image', 'parse_color', 'parse_int', 'parse_float',
            'parse_string', 'parse_bool', 'parse_int2',
-           'parse_float4']
+           'parse_float4')
 
 import re
 from pymt.core.image import Image

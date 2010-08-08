@@ -5,8 +5,11 @@ WM_PEN: Support of WM_PEN message (Window platform)
 __all__ = ('WM_PenProvider', 'WM_Pen')
 
 import os
-from wm_common import *
-from ..touch import Touch
+from pymt.input.providers.wm_common import PEN_OR_TOUCH_SIGNATURE, \
+        PEN_OR_TOUCH_MASK, GWL_WNDPROC, WM_MOUSEMOVE, WM_LBUTTONUP, \
+        WM_LBUTTONDOWN, WM_TABLET_QUERYSYSTEMGESTURE, \
+        QUERYSYSTEMGESTURE_WNDPROC, PEN_EVENT_TOUCH_MASK
+from pymt.input.touch import Touch
 
 class WM_Pen(Touch):
     '''Touch representing the WM_Pen event. Support pos profile'''
@@ -23,10 +26,10 @@ if 'PYMT_DOC' in os.environ:
 
 else:
     from collections import deque
-    from ...base import getWindow
-    from ctypes import *
-    from ..provider import TouchProvider
-    from ..factory import TouchFactory
+    from ctypes import wintypes, Structure, windll, byref, c_int16, \
+            c_int, c_long, WINFUNCTYPE
+    from pymt.input.provider import TouchProvider
+    from pymt.input.factory import TouchFactory
 
     WNDPROC = WINFUNCTYPE(c_long, c_int, c_int, c_int, c_int)
 
@@ -108,9 +111,9 @@ else:
 
                 if  type == 'down':
                     self.uid += 1
-                    self.pen = WM_Pen(self.device,self.uid, [x,y])
+                    self.pen = WM_Pen(self.device, self.uid, [x, y])
                 if  type == 'move':
-                    self.pen.move([x,y])
+                    self.pen.move([x, y])
 
                 dispatch_fn(type, self.pen)
 

@@ -4,11 +4,10 @@ Audio: Load and play sound
 
 __all__ = ('Sound', 'SoundLoader')
 
+import sys
 from pymt.logger import pymt_logger
 from pymt.event import EventDispatcher
-import sys
-from abc import ABCMeta, abstractmethod
-from .. import core_register_libs
+from pymt.core import core_register_libs
 
 class SoundLoader:
     '''Load a sound, with usage of the best loader for a given filename.
@@ -56,7 +55,6 @@ class Sound(EventDispatcher):
             Fired when the sound is stopped
     '''
 
-    __metaclass__ = ABCMeta
     __slots__ = ('_filename', '_volume', '_status')
 
     def __init__(self, **kwargs):
@@ -118,12 +116,10 @@ class Sound(EventDispatcher):
     length = property(lambda self: self._get_length(),
             doc='Get length of the sound (in seconds)')
 
-    @abstractmethod
     def load(self):
         '''Load the file into memory'''
         pass
 
-    @abstractmethod
     def unload(self):
         '''Unload the file from memory'''
         pass
@@ -136,7 +132,6 @@ class Sound(EventDispatcher):
         '''Stop playback'''
         self._set_status('stop')
 
-    @abstractmethod
     def seek(self, position):
         '''Seek to the <position> (in seconds)'''
         pass

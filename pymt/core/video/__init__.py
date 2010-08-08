@@ -4,8 +4,8 @@ VideoBase: base for implementing a video reader
 
 __all__ = ('VideoBase', 'Video')
 
-from .. import core_select_lib
-from ...event import EventDispatcher
+from pymt.core import core_select_lib
+from pymt.event import EventDispatcher
 
 class VideoBase(EventDispatcher):
     '''VideoBase, a class to implement a video reader.

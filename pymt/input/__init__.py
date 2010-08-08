@@ -2,8 +2,8 @@
 Input: All input providers (TUIO, WiiMote, Pen...)
 '''
 
-from postproc import *
-from provider import *
-from factory import *
-from providers import *
-from touch import *
+from pymt.input.postproc import *
+from pymt.input.provider import *
+from pymt.input.factory import *
+from pymt.input.providers import *
+from pymt.input.touch import *

@@ -6,10 +6,11 @@ __all__ = ('CameraBase', 'Camera')
 
 import pymt
 from OpenGL.GL import GL_RGB
-from abc import ABCMeta, abstractmethod
-from .. import core_select_lib
-from ...baseobject import BaseObject
-from ...graphx import set_color, drawRectangle, drawTexturedRectangle, drawLabel
+from pymt.logger import pymt_logger
+from pymt.core import core_select_lib
+from pymt.baseobject import BaseObject
+from pymt.graphx import set_color, drawRectangle, drawTexturedRectangle, \
+        drawLabel
 
 class CameraBase(BaseObject):
     '''Abstract Camera Widget class.
@@ -27,8 +28,6 @@ class CameraBase(BaseObject):
             to this resolution. If the camera doesnt support the resolution
             a negotiation error might be thrown.
     '''
-
-    __metaclass__ = ABCMeta
 
     def __init__(self, **kwargs):
         kwargs.setdefault('stopped', False)
@@ -77,12 +76,10 @@ class CameraBase(BaseObject):
     texture = property(lambda self: self._get_texture(),
                 doc='Return the camera texture with the latest capture')
 
-    @abstractmethod
     def init_camera(self):
         '''Initialise the camera (internal)'''
         pass
 
-    @abstractmethod
     def update(self):
         '''Update the camera (internal)'''
         pass
@@ -98,7 +95,7 @@ class CameraBase(BaseObject):
     def _copy_to_gpu(self):
         '''Copy the the buffer into the texture'''
         if self._texture is None:
-            pymt.pymt_logger.debug('Camera: copy_to_gpu() failed, _texture is None !')
+            pymt_logger.debug('Camera: copy_to_gpu() failed, _texture is None !')
             return
         self._texture.blit_buffer(self._buffer, format=self._format)
         self._buffer = None
@@ -106,11 +103,11 @@ class CameraBase(BaseObject):
     def draw(self):
         '''Draw the current image camera'''
         if self._texture:
-            pymt.set_color(*self.color)
-            pymt.drawTexturedRectangle(self._texture, pos=self.pos, size=self.size)
+            set_color(*self.color)
+            drawTexturedRectangle(self._texture, pos=self.pos, size=self.size)
         else:
-            pymt.drawRectangle(pos=self.pos, size=self.size)
-            pymt.drawLabel('No Camera :(', pos=(self.width/2, self.height/2))
+            drawRectangle(pos=self.pos, size=self.size)
+            drawLabel('No Camera :(', pos=(self.width/2, self.height/2))
 
 # Load the appropriate provider
 Camera = core_select_lib('camera', (

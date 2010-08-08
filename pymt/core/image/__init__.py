@@ -4,7 +4,7 @@ Image: handle loading of images
 
 __all__ = ('Image', 'ImageLoader', 'ImageData')
 
-from .. import core_register_libs
+from pymt.core import core_register_libs
 from pymt.baseobject import BaseObject
 from pymt.utils import deprecated
 from pymt.graphx import DO, gx_color, gx_blending, drawTexturedRectangle, set_color

@@ -2,15 +2,15 @@
 Tuio: TUIO input provider implementation
 '''
 
-__all__ = ['TuioTouchProvider', 'Tuio2dCurTouch', 'Tuio2dObjTouch']
+__all__ = ('TuioTouchProvider', 'Tuio2dCurTouch', 'Tuio2dObjTouch')
 
 import osc
 from collections import deque
-from ..provider import TouchProvider
-from ..factory import TouchFactory
-from ..touch import Touch
-from ..shape import TouchShapeRect
-from ...logger import pymt_logger
+from pymt.input.provider import TouchProvider
+from pymt.input.factory import TouchFactory
+from pymt.input.touch import Touch
+from pymt.input.shape import TouchShapeRect
+from pymt.logger import pymt_logger
 
 class TuioTouchProvider(TouchProvider):
     '''Tuio provider listen to a socket, and handle part of OSC message

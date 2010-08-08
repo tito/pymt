@@ -2,12 +2,12 @@
 Mouse: Mouse provider implementation
 '''
 
-__all__ = ['MouseTouchProvider']
+__all__ = ('MouseTouchProvider', )
 
 from collections import deque
-from ..provider import TouchProvider
-from ..factory import TouchFactory
-from ..touch import Touch
+from pymt.input.provider import TouchProvider
+from pymt.input.factory import TouchFactory
+from pymt.input.touch import Touch
 
 class MouseTouch(Touch):
     def depack(self, args):
@@ -98,7 +98,7 @@ class MouseTouchProvider(TouchProvider):
     def update(self, dispatch_fn):
         '''Update the mouse provider (pop event from the queue)'''
         if not self.window:
-            from ...base import getWindow
+            from pymt.base import getWindow
             self.window = getWindow()
             if self.window:
                 self.window.push_handlers(

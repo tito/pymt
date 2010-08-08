@@ -2,7 +2,7 @@
 Touch Provider: Abstract class for a provider
 '''
 
-__all__ = ['TouchProvider']
+__all__ = ('TouchProvider', )
 
 class TouchProvider(object):
 

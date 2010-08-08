@@ -7,14 +7,23 @@ Example usage:
 
 '''
 
-__all__ = ['SVG', 'setup_gl']
+__all__ = ('SVG', 'setup_gl')
 
-from OpenGL.GL import *
-from OpenGL.GLU import *
+from OpenGL.GL import GL_BLEND, GL_LINE_SMOOTH, GL_SRC_ALPHA, \
+        GL_ONE_MINUS_SRC_ALPHA, GL_COMPILE, GL_TRIANGLES, GL_LINES, \
+        GL_TRIANGLE_FAN, GL_TRIANGLE_STRIP, \
+        glEnable, glGenLists, glNewList, glEndList, glPushMatrix, \
+        glPopMatrix, glTranslatef, glRotatef, glScalef, glCallList, \
+        glBegin, glEnd, glColor4ub, glVertex3f, glBlendFunc
+from OpenGL.GLU import GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO, \
+        GLU_TESS_VERTEX, GLU_TESS_BEGIN, GLU_TESS_END, GLU_TESS_ERROR, \
+        GLU_TESS_COMBINE, \
+        gluTessNormal, gluTessProperty, gluNewTess, gluTessCallback, \
+        gluTessBeginContour, gluTessEndContour, gluTessBeginPolygon, \
+        gluTessEndPolygon, gluTessVertex, gluErrorString
 from xml.etree.cElementTree import parse
 import re
 import math
-import sys, os
 try:
     # get the faster one
     from cStringIO import StringIO
@@ -224,7 +233,7 @@ def parse_color(c, default=None):
             b = int(c[2], 16) * 17
         else:
             pymt_logger.exception('Squirtle: incorrect length for color %s' % str(c))
-        return [r,g,b,255]
+        return [r, g, b, 255]
     except Exception, ex:
         pymt_logger.exception('Squirtle: exception parsing color %s' % str(c))
         return None

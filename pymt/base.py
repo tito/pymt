@@ -2,7 +2,7 @@
 Base: Main event loop, provider creation, window management...
 '''
 
-__all__ = [
+__all__ = (
     'pymt_usage',
     'runTouchApp', 'stopTouchApp',
     'getFrameDt', 'getCurrentTouches',
@@ -10,7 +10,7 @@ __all__ = [
     'pymt_event_listeners', 'touch_event_listeners',
     'pymt_providers',
     'getWindow', 'setWindow'
-]
+)
 
 import pymt
 import sys

@@ -2,22 +2,38 @@
 Fbo: abstraction to use hardware/software FrameBuffer object
 '''
 
-
-
-__all__ = [
+__all__ = (
     'Fbo', 'HardwareFbo', 'SoftwareFbo',
     'UnsupportedFboException'
-]
+)
 
 import os
 import re
 import OpenGL
 import pymt
-from OpenGL.GL import *
-from OpenGL.GL.EXT.framebuffer_object import *
-from pymt.graphx.paint import *
-from pymt.graphx.colors import *
-from pymt.graphx.draw import *
+from OpenGL.GL import GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, \
+        GL_VIEWPORT_BIT, GL_TEXTURE_2D, GL_COLOR_ATTACHMENT0_EXT, \
+        GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, GL_DEPTH_ATTACHMENT_EXT, \
+        GL_BACK, GL_RGBA, GL_UNSIGNED_BYTE, GL_STENCIL_TEST, \
+        GL_STENCIL_BUFFER_BIT, \
+        glClear, glClearColor, glPushAttrib, glPopAttrib, \
+        glViewport, glReadBuffer, glReadPixels, glCopyTexSubImage2D, \
+        glDrawPixels, glDisable
+from OpenGL.GL.EXT.framebuffer_object import GL_FRAMEBUFFER_EXT, \
+        GL_FRAMEBUFFER_COMPLETE_EXT, GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT, \
+        GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT, \
+        GL_FRAMEBUFFER_UNSUPPORTED_EXT, \
+        GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT, \
+        GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT, \
+        GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT, \
+        GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT, \
+        glGenFramebuffersEXT, glGenRenderbuffersEXT, \
+        glBindFramebufferEXT, glBindRenderbufferEXT, \
+        glDeleteRenderbuffersEXT, glDeleteFramebuffersEXT, \
+        glCheckFramebufferStatusEXT, glFramebufferRenderbufferEXT, \
+        glRenderbufferStorageEXT, glFramebufferTexture2DEXT
+from pymt.graphx.colors import set_color
+from pymt.graphx.draw import drawTexturedRectangle, set_texture, get_texture_id
 
 # for a specific bug in 3.0.0, about deletion of framebuffer.
 OpenGLversion = tuple(int(re.match('^(\d+)', i).groups()[0]) for i in OpenGL.__version__.split('.'))
@@ -145,7 +161,7 @@ class HardwareFbo(AbstractFbo):
             raise 'Failed to initialize framebuffer'
 
         if self.with_depthbuffer:
-            self.depthbuffer = glGenRenderbuffersEXT(1);
+            self.depthbuffer = glGenRenderbuffersEXT(1)
             glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, self.depthbuffer)
             glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT,
                                      self.realsize[0], self.realsize[1])
@@ -157,7 +173,7 @@ class HardwareFbo(AbstractFbo):
                 GL_TEXTURE_2D, get_texture_id(self.texture), 0)
 
         # check the fbo status
-        status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+        status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT)
         if status != GL_FRAMEBUFFER_COMPLETE_EXT:
             pymt.pymt_logger.error('Fbo: Error in framebuffer activation')
             pymt.pymt_logger.error('Fbo: Details: HardwareFbo size=%s, realsize=%s, format=GL_RGBA' % (
@@ -259,7 +275,7 @@ class SoftwareFbo(AbstractFbo):
             glPopAttrib()
 
         # Copy current buffer into fbo texture
-        set_texture(self.texture, target=GL_TEXTURE_2D);
+        set_texture(self.texture, target=GL_TEXTURE_2D)
         glReadBuffer(GL_BACK)
         glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, self.size[0], self.size[1])
 
@@ -273,7 +289,7 @@ class SoftwareFbo(AbstractFbo):
 
 class AutoselectFbo(object):
     fbo_class = None
-    def __new__(self, *largs, **kwargs):
+    def __new__(cls, *largs, **kwargs):
         return AutoselectFbo.fbo_class(*largs, **kwargs)
 
 #: Fbo wrapper to the best FBO available on system
@@ -283,7 +299,7 @@ if 'PYMT_DOC' not in os.environ:
 
     def __pymt_configure_fbo():
 
-        from .. import pymt_config
+        from pymt import pymt_config
 
         # decide what to use
         fbo_config = pymt_config.get('graphics', 'fbo')

@@ -2,7 +2,7 @@
 Modules: UI module you can plug on any running PyMT apps.
 '''
 
-__all__ = ['pymt_modules']
+__all__ = ('pymt_modules', )
 
 import pymt
 import os

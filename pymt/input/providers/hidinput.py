@@ -35,8 +35,8 @@ configuration ::
 __all__ = ('HIDInputTouchProvider', 'HIDTouch')
 
 import os
-from ..touch import Touch
-from ..shape import TouchShapeRect
+from pymt.input.touch import Touch
+from pymt.input.shape import TouchShapeRect
 
 class HIDTouch(Touch):
     def depack(self, args):
@@ -64,11 +64,10 @@ else:
     import threading
     import collections
     import struct
-    import sys
     import fcntl
-    from ..provider import TouchProvider
-    from ..factory import TouchFactory
-    from ...logger import pymt_logger
+    from pymt.input.provider import TouchProvider
+    from pymt.input.factory import TouchFactory
+    from pymt.logger import pymt_logger
 
     #
     # This part is taken from linux-source-2.6.32/include/linux/input.h

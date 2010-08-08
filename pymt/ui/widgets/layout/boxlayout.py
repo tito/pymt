@@ -4,8 +4,7 @@ Box layout: arrange widget in horizontal or vertical
 
 __all__ = ('MTBoxLayout', )
 
-from abstractlayout import MTAbstractLayout
-from ...factory import MTWidgetFactory
+from pymt.ui.widgets.layout.abstractlayout import MTAbstractLayout
 
 class MTBoxLayout(MTAbstractLayout):
     '''Box layout can arrange item in horizontal or vertical orientation.
@@ -148,7 +147,3 @@ class MTBoxLayout(MTAbstractLayout):
                 y += c_size[1] + spacing
 
         self.dispatch_event('on_layout')
-
-
-# Register all base widgets
-MTWidgetFactory.register('MTBoxLayout', MTBoxLayout)

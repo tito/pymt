@@ -2,7 +2,7 @@
 Layout: arrange widget in a layout
 '''
 
-from boxlayout import MTBoxLayout
-from gridlayout import MTGridLayout
-from anchorlayout import MTAnchorLayout
-from screenlayout import MTScreenLayout
+from pymt.ui.widgets.layout.boxlayout import MTBoxLayout
+from pymt.ui.widgets.layout.gridlayout import MTGridLayout
+from pymt.ui.widgets.layout.anchorlayout import MTAnchorLayout
+from pymt.ui.widgets.layout.screenlayout import MTScreenLayout

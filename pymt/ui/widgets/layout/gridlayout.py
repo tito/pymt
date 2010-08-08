@@ -4,8 +4,7 @@ Grid layout: arrange widget in a grid
 
 __all__ = ('MTGridLayout', 'GridLayoutException')
 
-from abstractlayout import MTAbstractLayout
-from ...factory import MTWidgetFactory
+from pymt.ui.widgets.layout.abstractlayout import MTAbstractLayout
 
 class GridLayoutException(Exception):
     pass
@@ -54,8 +53,8 @@ class MTGridLayout(MTAbstractLayout):
         return self.rows * self.cols
 
     def add_widget(self, widget, front=True, do_layout=None):
-        max = self.get_max_widgets()
-        if max and len(self.children) > max:
+        smax = self.get_max_widgets()
+        if smax and len(self.children) > smax:
             raise Exception('Too much children in MTGridLayout. Increase your rows/cols!')
         super(MTGridLayout, self).add_widget(widget, front=front, do_layout=do_layout)
 
@@ -80,9 +79,9 @@ class MTGridLayout(MTAbstractLayout):
 
                 #get needed size for that child
                 c = self.children[i]
-                w,h = c.size
+                w, h = c.size
                 if isinstance(c, MTAbstractLayout):
-                    w,h = c.minimum_size
+                    w, h = c.minimum_size
 
                 cols[col] = max(cols[col], w)
                 self.max_col_width = max(max_width, cols[col])
@@ -145,6 +144,3 @@ class MTGridLayout(MTAbstractLayout):
             y = y + row_height + spacing
 
         self.dispatch_event('on_layout')
-
-# Register all base widgets
-MTWidgetFactory.register('MTGridLayout', MTGridLayout)

@@ -4,14 +4,12 @@ ScreenLayout: display only one widget in fullscreen at time
 
 __all__ = ('MTScreenLayout', )
 
-from abstractlayout import MTAbstractLayout
-from boxlayout import MTBoxLayout
-from ....logger import pymt_logger
-from ....utils import SafeList, curry
-from ....base import getFrameDt
-from ....graphx import set_color, drawRectangle
-from ...factory import MTWidgetFactory
-from ..button import MTButton
+from pymt.ui.widgets.layout.abstractlayout import MTAbstractLayout
+from pymt.ui.widgets.layout.boxlayout import MTBoxLayout
+from pymt.utils import SafeList, curry
+from pymt.base import getFrameDt
+from pymt.graphx import set_color, drawRectangle
+from pymt.ui.widgets.button import MTButton
 
 
 class MTScreenLayout(MTAbstractLayout):
@@ -45,19 +43,19 @@ class MTScreenLayout(MTAbstractLayout):
 
     def _get_show_tabs(self):
         return self._show_tabs
-    def _set_show_tabs(self, set):
-        if self._show_tabs and set is False:
+    def _set_show_tabs(self, x):
+        if self._show_tabs and x is False:
             self.container.remove_widget(self.tabs)
-        if set and self._show_tabs is False:
+        if x and self._show_tabs is False:
             self.container.add_widget(self.tabs)
-        self._show_tabs = set
+        self._show_tabs = x
     show_tabs = property(_get_show_tabs, _set_show_tabs)
 
 
     def new_tab_layout(self):
         '''called in init, to create teh layout in which all teh tabs are put.  overwrite to create custom tab layout
         (default is box layout, vertical, height=50, with horizontal stretch.)'''
-        return MTBoxLayout(size_hint=(1.0,None), height=50)
+        return MTBoxLayout(size_hint=(1.0, None), height=50)
 
     def new_tab(self, label):
         '''fucntion that returns a new tab.  return value must be of type MTButton or derive from it (must have on_press handler) if you overwrite the method.
@@ -86,7 +84,7 @@ class MTScreenLayout(MTAbstractLayout):
         if widget in self.screens:
             self.screens.remove(widget)
 
-    def select(self, id, *args):
+    def select(self, wid, *args):
         '''
         Select which screen is to be the current one.
         pass either a widget that has been added to this layout, or its id
@@ -99,7 +97,7 @@ class MTScreenLayout(MTAbstractLayout):
             self.previous_screen = self.screen
             self._switch_t = -1.0
         for screen in self.screens:
-            if screen.id == id or screen == id:
+            if screen.id == wid or screen == wid:
                 self.screen = screen
                 self.container.add_widget(self.screen, do_layout=True)
                 self.screen.parent = self
@@ -116,17 +114,16 @@ class MTScreenLayout(MTAbstractLayout):
         '''
         set_color(*self.style['bg-color']) #from 1 to zero
         drawRectangle(pos=self.container.pos, size=self.container.size)
-        r,g,b,a = self.style['bg-color']
+        r, g, b = self.style['bg-color'][0:3]
         if t < 0:
-
             if self.previous_screen is not None:
                 self.previous_screen.dispatch_event('on_draw')
-            set_color(r,g,b,1+t) #from 1 to zero
-            drawRectangle(pos=self.container.pos,size=self.container.size)
+            set_color(r, g, b, 1+t) #from 1 to zero
+            drawRectangle(pos=self.container.pos, size=self.container.size)
         else:
             if self.previous_screen is not None:
                 self.screen.dispatch_event('on_draw')
-            set_color(r,g,b,1-t) #from 0 to one
+            set_color(r, g, b, 1-t) #from 0 to one
             drawRectangle(pos=self.container.pos, size=self.container.size)
 
     def on_update(self):
@@ -142,7 +139,3 @@ class MTScreenLayout(MTAbstractLayout):
             else:
                 self._switch_t += getFrameDt() / self.duration
             self.draw_transition(self._switch_t)
-
-
-# Register all base widgets
-MTWidgetFactory.register('MTScreenLayout', MTScreenLayout)

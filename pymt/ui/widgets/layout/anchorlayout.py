@@ -7,9 +7,7 @@ like left, top, center, rigth...
 
 __all__ = ('MTAnchorLayout', )
 
-from abstractlayout import MTAbstractLayout
-from ...factory import MTWidgetFactory
-from ....base import getWindow
+from pymt.ui.widgets.layout.abstractlayout import MTAbstractLayout
 
 class MTAnchorLayout(MTAbstractLayout):
     '''MTAnchorLayout layout: anchorts the Child Widgets to a certain place in the parent widget.
@@ -94,11 +92,7 @@ class MTAnchorLayout(MTAbstractLayout):
             if anchor_y == 'center':
                 y = y + (height / 2) - (h / 2)
 
-            reposition_child(c, pos=(x,y), size=(w,h))
+            reposition_child(c, pos=(x, y), size=(w, h))
 
         self.size = (width, height) #might have changed inside loop
         self.dispatch_event('on_layout')
-
-
-# Register all base widgets
-MTWidgetFactory.register('MTAnchorLayout', MTAnchorLayout)

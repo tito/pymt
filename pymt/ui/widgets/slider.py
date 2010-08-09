@@ -33,7 +33,7 @@ class MTSlider(MTWidget):
         `slider-color` : color
             Color of the slider
         `slider-color-down` : color
-            Color of the slider when pressed down (not used by default)
+            Color of the slider when pressed down (same as slider-color by default)
         `bg-color` : color
             Background color of the slider
         `padding` : int

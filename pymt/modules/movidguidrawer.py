@@ -19,6 +19,9 @@ class MovidGUIDrawer(MTWidget):
         self.size = getWindow().size
         self.vw = 1000
         self.vh = 1000
+        self.instructions = []
+        # XXX should depend on movid's update rate
+        getClock().schedule_interval(self.fetch_drawing_instructions, 1.)
 
     def transform_coords(self, x, y):
         ww, wh = getWindow().size
@@ -27,17 +30,19 @@ class MovidGUIDrawer(MTWidget):
         y = -((float(y) / self.vh * wh) - wh)
         return x, y
 
+    def fetch_drawing_instructions(self, dt):
+        if self.parent is not None:
+            fd = urlopen(self.url + "gui?objectname=" + self.objectname)
+            self.instructions = [s.split() for s in fd.read().split("\n")]
+
     def draw(self):
         set_color(0, 0, 0, 0.2)
         drawRectangle(self.pos, self.size)
-        fd = urlopen(self.url + "gui?objectname=" + self.objectname)
-        self.instructions = [s.split() for s in fd.read().split("\n")]
         for ins in self.instructions:
             if not ins:
                 continue
             cmd = ins[0]
             p = ins[1:]
-
             if cmd == "viewport":
                 self.vw, self.vh = float(p[0]), float(p[1])
             elif cmd == "circle":

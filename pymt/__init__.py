@@ -17,7 +17,7 @@ python libraries out there.
 You can visit http://pymt.eu/ for more informations !
 '''
 
-__version__ = '0.5.0rc2-dev'
+__version__ = '0.5'
 
 import sys
 import getopt

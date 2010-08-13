@@ -6,7 +6,7 @@ Welcome to PyMT's documentation!
 ================================
 
 PyMT is an open source library for developing multi-touch applications. It is
-completely cross platform (Linux/OSX/Win) and released under the terms of the
+completely cross-platform (Linux/OSX/Win) and released under the terms of the
 GNU LGPL.
 
 It comes with native support for many multi-touch input devices, a growing
@@ -14,22 +14,24 @@ library of multi-touch aware widgets, hardware accelerated OpenGL drawing,
 and an architecture that is designed to let you focus on building custom and
 highly interactive applications as quickly and easily as possible.
 
-Since PyMT is a pure Python library, you can take advantage of its highly
-dynamic nature and use any of the thousands of high quality and open source
-python libraries out there.
+Thanks to PyMT's pure Python interface, you can take advantage of its highly
+dynamic nature and use any of the thousands of high quality Python libraries
+out there.
+At the same time, performance-critical sections are internally implemented
+on the C-level to maximize performance.
 
-You can visit http://pymt.eu/ for more informations !
+See http://pymt.eu for more information.
 
 
 Programming Guide of PyMT
 -------------------------
 
-In order to understand PyMT, you must first understand the underlying libraries
-that have been used to create it. The programming guide contains a basic
-introduction to each of these libraries, in addition to a few unique systems
-created specifically for PyMT.
+In order to learn PyMT we suggest you start with our DevGuide and by
+looking at the examples that come with PyMT. There is also an API
+reference if you are looking for information about a specific class or
+method call.
 
-You can access to the Programming Guide on the Wiki :
+You can find the programming guide on the wiki:
 
 http://pymt.eu/wiki/DevGuide/Index
 

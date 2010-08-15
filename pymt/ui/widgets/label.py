@@ -19,6 +19,8 @@ class MTLabel(MTWidget):
             Update width information with the label content width
         `autoheight`: bool, default to False
             Update height information with the label content height
+        `multiline`: bool, default to False
+            If True, the text will be fit inside the width
 
     MTLabel support all parameters from the Core label. Check `LabelBase`
     class to known all availables parameters.
@@ -36,9 +38,11 @@ class MTLabel(MTWidget):
         kwargs.setdefault('autoheight', False)
         kwargs.setdefault('autosize', False)
         kwargs.setdefault('label', '')
+        kwargs.setdefault('multiline', False)
 
         self.kwargs = {}
 
+        self.multiline  = kwargs.get('multiline')
         self.autowidth  = kwargs.get('autowidth')
         self.autoheight = kwargs.get('autoheight')
         self.autosize   = kwargs.get('autosize')
@@ -49,6 +53,7 @@ class MTLabel(MTWidget):
         del kwargs['autoheight']
         del kwargs['autosize']
         del kwargs['label']
+        del kwargs['multiline']
 
         super(MTLabel, self).__init__(**kwargs)
 
@@ -56,6 +61,9 @@ class MTLabel(MTWidget):
         for item in ('size', 'pos'):
             if item in kwargs:
                 del kwargs[item]
+
+        if self.multiline:
+            kwargs['size'] = (self.width, None)
 
         self.kwargs = kwargs
 
@@ -128,6 +136,10 @@ class MTLabel(MTWidget):
 
         pos[0] += dx
         pos[1] += dy
+
+        # ensure multiline
+        if self.multiline:
+            self.kwargs['size'] = (self.width, None)
 
         # force autosize
         if self.autosize or self.autowidth or self.autoheight:

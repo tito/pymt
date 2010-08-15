@@ -235,7 +235,8 @@ class LabelBase(BaseObject):
                         x = int(self.width - size[0])
                     for glyph in glyphs:
                         lw, lh = cache[glyph]
-                        self._render_text(glyph, x, y)
+                        if glyph != '\n':
+                            self._render_text(glyph, x, y)
                         x += lw
                     y += size[1]
 

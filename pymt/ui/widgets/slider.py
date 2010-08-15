@@ -32,6 +32,8 @@ class MTSlider(MTWidget):
     :Styles:
         `slider-color` : color
             Color of the slider
+        `slider-color-down` : color
+            Color of the slider when pressed down (same as slider-color by default)
         `bg-color` : color
             Background color of the slider
         `padding` : int
@@ -103,7 +105,10 @@ class MTSlider(MTWidget):
         drawCSSRectangle(pos=self.pos, size=self.size, style=self.style)
 
         # draw inner rectangle
-        set_color(*self.style.get('slider-color'))
+        if self.touchstarts:
+            set_color(*self.style.get('slider-color-down'))
+        else:
+            set_color(*self.style.get('slider-color'))
         drawCSSRectangle(pos=pos, size=size, style=self.style, prefix='slider')
 
         if self.value_show:

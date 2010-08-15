@@ -38,6 +38,7 @@ class MTModalPopup(MTModalWindow):
                     anchor_y='"center"' height='40'/>
                 <MTLabel id='"popupcontent"' cls='"modalpopup-content"' label='"%s"'
                     size_hint='(1,1)' autosize='False' autowidth='False'
+                    multiline='True'
                     autoheight='False' halign='"center"' anchor_y='"center"'/>
                 <MTButton id='"popupsubmit"' cls='"modalpopup-submit"' label='"OK"'
                     size_hint='(1,None)' height='40' valign='"center"'

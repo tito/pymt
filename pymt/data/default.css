@@ -99,6 +99,7 @@ circularslider {
     draw-background: 1;
     padding: 8;
     slider-color: rgb(68, 170, 0);
+    slider-color-down: rgb(68, 170, 0);
     draw-slider-border: 0;
     slider-border-radius: 0;
     slider-border-radius-precision: 1;

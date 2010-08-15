@@ -61,38 +61,39 @@ class MTBoxLayout(MTAbstractLayout):
         is set)
         '''
         padding = self.padding
+        padding2 = padding * 2
         spacing = self.spacing
-        width = height = padding
+        width = height = padding2
 
         if self.orientation == 'horizontal':
             width += (len(self.children) - 1) * spacing
             for w in self.children:
                 shw, shh = w.size_hint
                 if shw is None:
-                    width += w.width + padding
+                    width += w.width
                 if shh is None:
-                    height = max(w.height + padding, height)
+                    height = max(w.height + padding2, height)
                 if isinstance(w, MTAbstractLayout):
                     _w, _h = w.minimum_size
                     if shw is not None:
-                        width += _w + padding
+                        width += _w
                     if shh is not None:
-                        height = max(_h + padding, height)
+                        height = max(_h + padding2, height)
 
         if self.orientation == 'vertical':
             height += (len(self.children) - 1) * spacing
             for w in self.children:
                 shw, shh = w.size_hint
                 if shw is None:
-                    width = max(w.width + padding, width)
+                    width = max(w.width + padding2, width)
                 if shh is None:
-                    height += w.height + padding
+                    height += w.height
                 if isinstance(w, MTAbstractLayout):
                     _w, _h = w.minimum_size
                     if shw is not None:
-                        width = max(_w + padding, width)
+                        width = max(_w + padding2, width)
                     if shh is not None:
-                        height += _h + padding
+                        height += _h
 
         self.minimum_size = (width, height)
 
@@ -105,6 +106,7 @@ class MTBoxLayout(MTAbstractLayout):
         padding = self.padding
         spacing = self.spacing
         orientation = self.orientation
+        padding2 = padding * 2
 
         # calculate maximum space used by size_hint
         stretch_weight_x = 0.
@@ -126,7 +128,7 @@ class MTBoxLayout(MTAbstractLayout):
                     if isinstance(c, MTAbstractLayout):
                         c_size[0] += c.minimum_size[0]
                 if shh:
-                    c_size[1] = shh * selfh
+                    c_size[1] = shh * (selfh - padding2)
                 reposition_child(c, pos=c_pos, size=c_size)
                 x += c_size[0] + spacing
 
@@ -142,7 +144,7 @@ class MTBoxLayout(MTAbstractLayout):
                     if isinstance(c, MTAbstractLayout):
                         c_size[1] += c.minimum_size[1]
                 if shw:
-                    c_size[0] = shw * selfw
+                    c_size[0] = shw * (selfw - padding2)
                 reposition_child(c, pos=c_pos, size=c_size)
                 y += c_size[1] + spacing
 

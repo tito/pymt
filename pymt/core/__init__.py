@@ -17,7 +17,7 @@ else:
         for option, modulename, classname in llist:
             try:
                 # module activated in config ?
-                if option not in pymt.options[category]:
+                if option not in pymt.pymt_options[category]:
                     pymt.pymt_logger.debug('%s: option <%s> ignored by config' %
                         (category.capitalize(), option))
                     continue
@@ -48,7 +48,7 @@ else:
         for option, lib in libs:
             try:
                 # module activated in config ?
-                if option not in pymt.options[category]:
+                if option not in pymt.pymt_options[category]:
                     pymt.pymt_logger.debug('%s: option <%s> ignored by config' %
                         (category.capitalize(), option))
                     continue

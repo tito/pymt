@@ -46,8 +46,8 @@ def pymt_register_post_configuration(callback):
 # Start !
 pymt_logger.info('PyMT v%s' % (__version__))
 
-# Global settings options for pymt
-options = {
+#: Global settings options for pymt
+pymt_options = {
     'use_accelerate': True,
     'shadow_window': True,
     'window': ('pygame', 'glut'),
@@ -61,14 +61,14 @@ options = {
 }
 
 # Read environment
-for option in options:
+for option in pymt_options:
     key = 'PYMT_%s' % option.upper()
     if key in os.environ:
         try:
-            if type(options[option]) in (list, tuple):
-                options[option] = (str(os.environ[key]),)
+            if type(pymt_options[option]) in (list, tuple):
+                pymt_options[option] = (str(os.environ[key]),)
             else:
-                options[option] = os.environ[key].lower() in \
+                pymt_options[option] = os.environ[key].lower() in \
                     ('true', '1', 'yes', 'yup')
         except Exception:
             pymt_logger.warning('Core: Wrong value for %s'
@@ -216,7 +216,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             elif opt in ('-s', '--save'):
                 need_save = True
             elif opt in ('-n', ):
-                options['shadow_window'] = False
+                pymt_options['shadow_window'] = False
 
         if need_save:
             try:
@@ -229,7 +229,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             sys.exit(0)
 
         # last initialization
-        if options['shadow_window']:
+        if pymt_options['shadow_window']:
             pymt_logger.debug('Core: Creating PyMT Window')
             shadow_window = MTWindow()
             pymt_configure()
@@ -242,4 +242,4 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 # cleanup namespace
 if not 'PYMT_DOC_INCLUDE' in os.environ:
     del level, need_save, opts, args
-del sys, getopt, os, options, key
+del sys, getopt, os, key

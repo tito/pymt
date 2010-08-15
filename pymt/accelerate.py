@@ -21,13 +21,13 @@ If the env is set to 0, the module will be deactivated.
 
 __all__ = ('accelerate', )
 
-from pymt import options, pymt_logger
+from pymt import pymt_options, pymt_logger
 
 #: Accelerate module (None mean that the module is not available)
 accelerate = None
 
 # try to use cython is available
-if options.get('use_accelerate'):
+if pymt_options.get('use_accelerate'):
     try:
         import pymt.c_ext.c_accelerate as accelerate
         pymt_logger.info('Core: Using accelerate module')

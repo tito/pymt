@@ -477,7 +477,7 @@ class MTDisplay(MTWidget):
 # Searching the best provider
 MTWindow = None
 if not 'PYMT_DOC' in os.environ:
-    if 'pygame' in pymt.options['window']:
+    if 'pygame' in pymt.pymt_options['window']:
         try:
             import win_pygame
             MTWindow = win_pygame.MTWindowPygame
@@ -485,7 +485,7 @@ if not 'PYMT_DOC' in os.environ:
         except ImportError:
             pymt_logger.debug('Window: Unable to use Pygame as provider.')
 
-    if MTWindow is None and 'glut' in pymt.options['window']:
+    if MTWindow is None and 'glut' in pymt.pymt_options['window']:
         try:
             import win_glut
             MTWindow = win_glut.MTWindowGlut
@@ -496,7 +496,7 @@ if not 'PYMT_DOC' in os.environ:
     # No window provider ?
     if MTWindow is None:
         pymt_logger.critical('Window: No provider found (configuration is %s)' %
-            str(pymt.options['window']))
+            str(pymt.pymt_options['window']))
 
 # Register all base widgets
 MTWidgetFactory.register('MTWindow', MTWindow)

@@ -111,7 +111,7 @@ for k, v in os.environ.iteritems():
     report.append('%s = %s' % (k, v))
 
 title('Options')
-for k, v in options.iteritems():
+for k, v in pymt_options.iteritems():
     report.append('%s = %s' % (k, v))
 
 

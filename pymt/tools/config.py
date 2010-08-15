@@ -4,6 +4,8 @@ from __future__ import with_statement
 from Tkinter import *
 import tkMessageBox
 import sys
+import os
+os.environ['PYMT_SHADOW_WINDOW'] = '0'
 from pymt import pymt_modules, pymt_config, pymt_config_fn, curry, TouchFactory
 
 class AutoConfig(dict):

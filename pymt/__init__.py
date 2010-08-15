@@ -240,4 +240,6 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         sys.exit(2)
 
 # cleanup namespace
-del sys, getopt, os, options, opts, args, need_save, key, level
+del sys, getopt, os, options, opts, args, key
+if not 'PYMT_DOC_INCLUDE' in os.environ:
+    del level, need_save

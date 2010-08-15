@@ -68,17 +68,25 @@ class LabelBase(BaseObject):
         kwargs.setdefault('halign', 'left')
         kwargs.setdefault('valign', 'bottom')
         kwargs.setdefault('padding', None)
-        kwargs.setdefault('padding_x', 0)
-        kwargs.setdefault('padding_y', 0)
+        kwargs.setdefault('padding_x', None)
+        kwargs.setdefault('padding_y', None)
         kwargs.setdefault('color', (1, 1, 1, 1))
 
         padding = kwargs.get('padding', None)
-        if type(padding) in (tuple, list):
-            kwargs['padding_x'] = float(padding[0])
-            kwargs['padding_y'] = float(padding[1])
-        elif padding is not None:
-            kwargs['padding_x'] = float(padding)
-            kwargs['padding_y'] = float(padding)
+        if not kwargs.get('padding_x', None):
+            if type(padding) in (tuple, list):
+                kwargs['padding_x'] = float(padding[0])
+            elif padding is not None:
+                kwargs['padding_x'] = float(padding)
+            else:
+                kwargs['padding_x'] = 0
+        if not kwargs.get('padding_y', None):
+            if type(padding) in (tuple, list):
+                kwargs['padding_y'] = float(padding[1])
+            elif padding is not None:
+                kwargs['padding_y'] = float(padding)
+            else:
+                kwargs['padding_y'] = 0
 
         uw, uh = kwargs['size']
         if uw != None:

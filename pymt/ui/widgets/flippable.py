@@ -86,7 +86,7 @@ class MTFlippableWidget(MTWidget):
         set_color(*self.style.get('bg-color'))
         drawCSSRectangle(pos=(0, 0), size=self.size, style=self.style)
 
-    def flip_children(self):
+    def _flip_children(self):
         # This has to be called exactly half way through the animation
         # so it looks like there are actually two sides'''
         if self.side == 'front':
@@ -100,13 +100,20 @@ class MTFlippableWidget(MTWidget):
             for x in self.children_front[:]:
                 super(MTFlippableWidget, self).add_widget(x)
 
+    def _set_side(self, to):
+        assert(to in ('back', 'front'))
+        if to == 'back' and self.side == 'front':
+            self._flip_children()
+        elif to == 'front' and self.side == 'back':
+            self._flip_children()
+
     def flip_to(self, to):
         '''Flip to the requested side ('front' or 'back')'''
         assert(to in ('back', 'front'))
         if to == 'back' and self.side == 'front':
-            self.flip_children()
+            self.flip()
         elif to == 'front' and self.side == 'back':
-            self.flip_children()
+            self.flip()
 
     def flip(self):
         '''Triggers a flipping animation'''
@@ -119,9 +126,9 @@ class MTFlippableWidget(MTWidget):
 
     def on_update(self):
         if self.zangle < self.flipangle:
-            self.flip_to('front')
+            self._set_side('front')
         else:
-            self.flip_to('back')
+            self._set_side('back')
         return super(MTFlippableWidget, self).on_update()
 
     def on_draw(self):

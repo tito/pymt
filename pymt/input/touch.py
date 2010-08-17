@@ -94,6 +94,10 @@ class Touch(object):
 
         # For push/pop
         self.attr = []
+        self.default_attrs = (
+            'x', 'y', 'z',
+            'dxpos', 'dypos', 'dzpos',
+            'oxpos', 'oypos', 'ozpos')
 
         # For grab
         self.grab_list = SafeList()
@@ -197,9 +201,11 @@ class Touch(object):
             self.dypos = self.oypos = self.y
             self.dzpos = self.ozpos = self.z
 
-    def push(self, attrs=['x', 'y', 'z', 'dxpos', 'dypos', 'dzpos']):
+    def push(self, attrs=None):
         '''Push attributes values in `attrs` in the stack'''
-        values = map(lambda x: getattr(self, x), attrs)
+        if attrs is None:
+            attrs = self.default_attrs
+        values = [getattr(self, x) for x in attrs]
         self.attr.append((attrs, values))
 
     def pop(self):
@@ -207,6 +213,12 @@ class Touch(object):
         attrs, values = self.attr.pop()
         for i in xrange(len(attrs)):
             setattr(self, attrs[i], values[i])
+
+    def apply_transform_2d(self, transform):
+        '''Apply a transformation on x, y, dxpos, dypos, oxpos, oypos'''
+        self.x, self.y = transform(self.x, self.y)
+        self.dxpos, self.dypos = transform(self.dxpos, self.dypos)
+        self.oxpos, self.oypos = transform(self.oxpos, self.oypos)
 
     def copy_to(self, to):
         '''Copy some attribute to another touch object.'''

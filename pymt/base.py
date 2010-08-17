@@ -141,14 +141,10 @@ class TouchEventLoop(object):
                 # and do to_local until the widget
                 try:
                     if parent:
-                        touch.x, touch.y = parent.to_widget(touch.x, touch.y)
-                        touch.dxpos, touch.dypos = parent.to_widget(
-                            touch.dxpos, touch.dypos)
+                        touch.apply_transform_2d(parent.to_widget)
                     else:
-                        touch.x, touch.y = wid.to_parent(
-                            wid.to_widget(touch.x, touch.y))
-                        touch.dxpos, touch.dypos = wid.to_parent(
-                            wid.to_widget(touch.dxpos, touch.dypos))
+                        touch.apply_transform_2d(wid.to_widget)
+                        touch.apply_transform_2d(wid.to_parent)
                 except AttributeError:
                     # when using innerwindow, an app have grab the touch
                     # but app is removed. the touch can't access

@@ -71,6 +71,7 @@ class LabelBase(BaseObject):
         kwargs.setdefault('padding_x', None)
         kwargs.setdefault('padding_y', None)
         kwargs.setdefault('color', (1, 1, 1, 1))
+        kwargs.setdefault('viewport', None)
 
         padding = kwargs.get('padding', None)
         if not kwargs.get('padding_x', None):
@@ -100,6 +101,7 @@ class LabelBase(BaseObject):
         self.usersize   = kwargs.get('size')
         self.options    = kwargs
         self.texture    = None
+        self.viewport   = kwargs.get('viewport')
 
         if 'font_name' in self.options:
             fontname = self.options['font_name']
@@ -283,6 +285,8 @@ class LabelBase(BaseObject):
             # it's a empty label, don't waste time to draw it
             return
 
+        dx = 0
+        dy = 0
         x, y = self.pos
         w, h = self.size
         anchor_x = self.options['anchor_x']
@@ -291,26 +295,48 @@ class LabelBase(BaseObject):
         padding_y = self.options['padding_y']
 
         if anchor_x == 'left':
-            x += padding_x
+            dx = padding_x
         elif anchor_x in ('center', 'middle'):
-            x -= w * 0.5
+            dx = -w * 0.5
         elif anchor_x == 'right':
-            x -= w + padding_x
+            dx = -(w + padding_x)
 
         if anchor_y == 'bottom':
-            y += padding_y
+            dy = padding_y
         elif anchor_y in ('center', 'middle'):
-            y -= h * 0.5
+            dy = -h * 0.5
         elif anchor_y == 'top':
-            y -= h - padding_y
+            dy = -(h - padding_y)
 
         alpha = 1
         if len(self.options['color']) > 3:
             alpha = self.options['color'][3]
         pymt.set_color(1, 1, 1, alpha, blend=True)
+
+        x += dx
+        y += dy
+        texture = self.texture
+        size = list(texture.size)
+        texc = texture.tex_coords[:]
+        viewport = self.viewport
+        if viewport:
+            vw, vh = map(float, viewport)
+            tw, th = map(float, size)
+            tcy, tcx = texc[1:3]
+            if vw < tw:
+                tcx = (vw / tw) * tcx
+                size[0] = vw
+            if vh < th:
+                tcy = (vh / th) * tcy
+                size[1] = vh
+            # FIXME work only with flipped texture ?
+            texc = (0, tcy, tcx, tcy, tcx, 0, 0, 0)
+
         pymt.drawTexturedRectangle(
-            texture=self.texture,
-            pos=(int(x), int(y)), size=self.texture.size)
+            texture=texture,
+            pos=(int(x), int(y)),
+            size=size,
+            tex_coords=texc)
 
     def _get_label(self):
         return self._label

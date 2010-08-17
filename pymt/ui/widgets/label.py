@@ -142,6 +142,7 @@ class MTLabel(MTWidget):
             self.kwargs['size'] = (self.width, None)
 
         # force autosize
+        self.kwargs['viewport'] = self.size
         if self.autosize or self.autowidth or self.autoheight:
             if 'size' in self.kwargs:
                 del self.kwargs['size']

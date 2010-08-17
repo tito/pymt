@@ -377,9 +377,8 @@ class MTScatter(MTWidget):
             return False
 
         # let the child widgets handle the event if they want
-        touch.push(attrs=['x', 'y', 'dxpos', 'dypos'])
-        touch.x, touch.y = self.to_local(x, y)
-        touch.dxpos, touch.dypos = self.to_local(touch.dxpos, touch.dypos)
+        touch.push()
+        touch.apply_transform_2d(self.to_local)
         if super(MTScatter, self).on_touch_down(touch):
             touch.pop()
             return True
@@ -399,9 +398,8 @@ class MTScatter(MTWidget):
         x, y = touch.x, touch.y
         # let the child widgets handle the event if they want
         if self.collide_point(x, y) and not touch.grab_current == self:
-            touch.push(attrs=['x', 'y', 'dxpos', 'dypos'])
-            touch.x, touch.y = self.to_local(x, y)
-            touch.dxpos, touch.dypos = self.to_local(touch.dxpos, touch.dypos)
+            touch.push()
+            touch.apply_transform_2d(self.to_local)
             if super(MTScatter, self).on_touch_move(touch):
                 touch.pop()
                 return True
@@ -420,9 +418,8 @@ class MTScatter(MTWidget):
         x, y = touch.x, touch.y
         # if the touch isnt on the widget we do nothing, just try children
         if not touch.grab_current == self:
-            touch.push(attrs=['x', 'y', 'dxpos', 'dypos'])
-            touch.x, touch.y = self.to_local(x, y)
-            touch.dxpos, touch.dypos = self.to_local(touch.dxpos, touch.dypos)
+            touch.push()
+            touch.apply_transform_2d(self.to_local)
             if super(MTScatter, self).on_touch_up(touch):
                 touch.pop()
                 return True

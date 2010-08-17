@@ -67,7 +67,8 @@ if __name__ == '__main__':
 
     def testrun(modname, testname):
         _set_testinfo(modname, testname)
-        mod = __import__(modname)
+        __import__(modname)
+        mod = sys.modules[modname]
         getattr(mod, testname)()
         passed = os.environ['__test_passed']
         failed = os.environ['__test_failed']

@@ -5,6 +5,7 @@ Scatter package: provide lot of widgets based on scatter (base, svg, plane, imag
 __all__ = ('MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane',
            'MTScatterImage', 'MTScatter')
 
+from numpy import ascontiguousarray
 from pymt.lib.transformations import matrix_multiply, identity_matrix, \
         translation_matrix, rotation_matrix, scale_matrix, inverse_matrix
 from pymt.core.image import Image
@@ -64,8 +65,10 @@ class MTScatter(MTWidget):
 
         self._transform        = identity_matrix()
         self._transform_inv    = identity_matrix()
-        self._transform_gl     = identity_matrix().T.tolist()  #openGL matrix
-        self._transform_inv_gl = identity_matrix().T.tolist()  #openGL matrix
+        self._transform_gl     = ascontiguousarray(identity_matrix().T,
+                                                   dtype='float32')
+        self._transform_inv_gl = ascontiguousarray(identity_matrix().T,
+                                                   dtype='float32')
         self.update_matrices()
 
         #enable/dissable features
@@ -321,8 +324,10 @@ class MTScatter(MTWidget):
         function, or the drawing will failed.
         '''
         self._transform_inv = inverse_matrix(self._transform)
-        self._transform_gl = self._transform.T.tolist() #for openGL
-        self._transform_inv_gl = self._transform.T.tolist() #for openGL
+        self._transform_gl = ascontiguousarray(self._transform.T,
+                                               dtype='float32')
+        self._transform_inv_gl = ascontiguousarray(self._transform.T,
+                                                   dtype='float32')
 
     def _apply_drag(self, touch):
         #_last_touch_pos has last pos in correct parent space, just liek incoming touch

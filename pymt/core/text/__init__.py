@@ -51,6 +51,17 @@ class LabelBase(BaseObject):
             Vertical text alignement inside bounding box
         `color`: list, default to (1, 1, 1, 1)
             Text color in (R, G, B, A)
+        `viewport_pos`: list, default to None
+            An bottom/left position of the viewport inside the label texture.
+            This property is used only if `viewport_size` is set.
+        `viewport_size`: list, default to None
+            Width/height of the viewport, if you don't want to show the whole
+            texture. This could be used to limit the drawing of the label to a
+            certain zone, and prevent to drawing outside the viewport.
+            If the label have a size of (1800, 25) with a viewport_size of (100,
+            100), the drawing will not go outside the viewport, but start from
+            (0, 0). 
+            If you want to draw another part of the texture, use `viewport_pos`.
     '''
 
     __slots__ = ('options', 'texture', '_label', 'color', 'usersize')
@@ -71,7 +82,8 @@ class LabelBase(BaseObject):
         kwargs.setdefault('padding_x', None)
         kwargs.setdefault('padding_y', None)
         kwargs.setdefault('color', (1, 1, 1, 1))
-        kwargs.setdefault('viewport', None)
+        kwargs.setdefault('viewport_size', None)
+        kwargs.setdefault('viewport_pos', None)
 
         padding = kwargs.get('padding', None)
         if not kwargs.get('padding_x', None):
@@ -101,7 +113,8 @@ class LabelBase(BaseObject):
         self.usersize   = kwargs.get('size')
         self.options    = kwargs
         self.texture    = None
-        self.viewport   = kwargs.get('viewport')
+        self.viewport_size  = kwargs.get('viewport_size')
+        self.viewport_pos   = kwargs.get('viewport_pos')
 
         if 'font_name' in self.options:
             fontname = self.options['font_name']
@@ -294,44 +307,64 @@ class LabelBase(BaseObject):
         padding_x = self.options['padding_x']
         padding_y = self.options['padding_y']
 
+        viewport_size = self.viewport_size
+        viewport_pos = self.viewport_pos
+
+        # if a viewport is given, use the size of viewport.
+        if viewport_size:
+            vw, vh = viewport_size
+            if vw < w:
+                w = vw
+            if vh < h:
+                h = vh
+
         if anchor_x == 'left':
-            dx = padding_x
+            x += padding_x
         elif anchor_x in ('center', 'middle'):
-            dx = -w * 0.5
+            x -= w * 0.5
         elif anchor_x == 'right':
-            dx = -(w + padding_x)
+            x -= w + padding_x
 
         if anchor_y == 'bottom':
-            dy = padding_y
+            y += padding_y
         elif anchor_y in ('center', 'middle'):
-            dy = -h * 0.5
+            y -= h * 0.5
         elif anchor_y == 'top':
-            dy = -(h - padding_y)
+            y -= h - padding_y
 
         alpha = 1
         if len(self.options['color']) > 3:
             alpha = self.options['color'][3]
         pymt.set_color(1, 1, 1, alpha, blend=True)
 
-        x += dx
-        y += dy
         texture = self.texture
         size = list(texture.size)
         texc = texture.tex_coords[:]
-        viewport = self.viewport
-        if viewport:
-            vw, vh = map(float, viewport)
+        if viewport_size:
+            vw, vh = map(float, viewport_size)
             tw, th = map(float, size)
-            tcy, tcx = texc[1:3]
+            oh, ow = tch, tcw = texc[1:3]
+            tcx, tcy = 0, 0
             if vw < tw:
-                tcx = (vw / tw) * tcx
+                tcw = (vw / tw) * tcw
                 size[0] = vw
             if vh < th:
-                tcy = (vh / th) * tcy
+                tch = (vh / th) * tch
                 size[1] = vh
-            # FIXME work only with flipped texture ?
-            texc = (0, tcy, tcx, tcy, tcx, 0, 0, 0)
 
+            if viewport_pos:
+                tcx, tcy = viewport_pos
+                # 100
+                tcx = tcx / tw * ow
+                tcy = tcy / th * oh
+
+            # FIXME work only with flipped texture ?
+            # GH EF
+            # AB CD
+            # usual: a, b, c, d, e, f, g, h
+            # flip: g, h, e, f, c, d, a, b
+            # usual: tcx, tcy, tcx+tcw, tcy, tcx+tcw, tcy+tch, tcx, tcy+tch
+            texc = (tcx, tcy+tch, tcx+tcw, tcy+tch, tcx+tcw, tcy, tcx, tcy)
         pymt.drawTexturedRectangle(
             texture=texture,
             pos=(int(x), int(y)),

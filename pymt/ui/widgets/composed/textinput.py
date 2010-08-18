@@ -315,10 +315,9 @@ class MTTextInput(MTButton):
             return True
         return super(MTTextInput, self).on_touch_down(touch)
 
-    '''
     def draw_label(self, dx=0, dy=0):
         if self.is_active_input:
-            print self._used_label.width
-            dx = -self._used_label.width + self.width
+            self.viewport_pos = (self._used_label.width - self.width, 0)
+        else:
+            self.viewport_pos = (0, 0)
         super(MTTextInput, self).draw_label(dx, dy)
-    '''

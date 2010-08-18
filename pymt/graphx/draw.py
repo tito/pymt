@@ -343,7 +343,8 @@ def drawTexturedRectangle(texture, pos=(0,0), size=(1.0,1.0),
     if texture:
         stmt = gx_texture(texture)
         stmt.bind()
-        if type(texture) in (pymt.Texture, pymt.TextureRegion):
+        if type(texture) in (pymt.Texture, pymt.TextureRegion) \
+            and tex_coords is None:
             tex_coords = texture.tex_coords
 
     # if tex_coords is provided, use it

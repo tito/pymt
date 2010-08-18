@@ -124,6 +124,7 @@ class MTLabel(MTWidget):
         This can be used to draw shadow for example.'''
         # because the anchor_x/anchor_y is propagated to the drawLabel,
         # we don't care about the internal label size.
+        kwargs = self.kwargs
         pos = list(self.center)
         if self.anchor_x == 'left':
             pos[0] = self.x
@@ -139,14 +140,23 @@ class MTLabel(MTWidget):
 
         # ensure multiline
         if self.multiline:
-            self.kwargs['size'] = (self.width, None)
+            kwargs['size'] = (self.width, None)
 
         # force autosize
         if self.autosize or self.autowidth or self.autoheight:
-            if 'size' in self.kwargs:
-                del self.kwargs['size']
+            if 'size' in kwargs:
+                del kwargs['size']
+        else:
+            # FIXME: found a way to cache this information
+            # and not calculate it every frame.
+            w, h = self.size
+            px = self._used_label.options['padding_x']
+            py = self._used_label.options['padding_y']
+            w -= px * 2
+            h -= py * 2
+            kwargs['viewport_size'] = (w, h)
 
-        w, h = drawLabel(label=self.label, pos=pos, **self.kwargs)
+        w, h = drawLabel(label=self.label, pos=pos, **kwargs)
         self._used_label = getLastLabel()
         self._update_size(w, h)
 
@@ -234,3 +244,13 @@ class MTLabel(MTWidget):
     def _set_color(self, x):
         self.kwargs['color'] = x
     color = property(_get_color, _set_color)
+
+    def _get_viewport_pos(self):
+        return self.kwargs.get('viewport_pos')
+    def _set_viewport_pos(self, x):
+        self.kwargs['viewport_pos'] = x
+    viewport_pos = property(_get_viewport_pos, _set_viewport_pos)
+
+    def _get_viewport_size(self):
+        return self.kwargs.get('viewport_size')
+    viewport_size = property(_get_viewport_size)

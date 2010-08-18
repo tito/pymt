@@ -147,7 +147,14 @@ class MTLabel(MTWidget):
             if 'size' in kwargs:
                 del kwargs['size']
         else:
-            kwargs['viewport_size'] = self.size
+            # FIXME: found a way to cache this information
+            # and not calculate it every frame.
+            w, h = self.size
+            px = self._used_label.options['padding_x']
+            py = self._used_label.options['padding_y']
+            w -= px * 2
+            h -= py * 2
+            kwargs['viewport_size'] = (w, h)
 
         w, h = drawLabel(label=self.label, pos=pos, **kwargs)
         self._used_label = getLastLabel()

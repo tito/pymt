@@ -23,7 +23,7 @@ class LabelPIL(LabelBase):
         fontname = self.options['font_name'].split(',')[0]
         id = '%s.%s' % (unicode(fontname), unicode(fontsize))
         if not id in self._cache:
-            filename = os.path.join(pymt.pymt_data_dir, 'LiberationSans-Regular.ttf')
+            filename = os.path.join(pymt.pymt_data_dir, 'DejaVuSans.ttf')
             font = ImageFont.truetype(filename, fontsize)
             self._cache[id] = font
 

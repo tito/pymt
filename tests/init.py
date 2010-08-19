@@ -5,6 +5,12 @@ def import_pymt_no_window():
     os.environ['PYMT_SHADOW_WINDOW'] = '0'
     import pymt
 
+def import_pymt_window():
+    import os
+    os.environ['PYMT_WINDOW'] = 'glut'
+    os.environ['PYMT_GLUT_UNITTEST'] = '1'
+    import pymt
+
 def test_image():
     pass
 

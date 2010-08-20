@@ -4,61 +4,65 @@ import shutil
 from distutils.core import setup
 from distutils.extension import Extension
 
+#check for numpy, which is absolutely required!
+try:
+    import numpy
+except:
+    print '#' * 80
+    print 'PyMT require numpy now. Please install it before running PyMT setup'
+    print '#' * 80
+    sys.exit(1)
+
+
+
+
+# extract version (simulate doc generation, pymt will be not imported)
+os.environ['PYMT_DOC_INCLUDE'] = '1'
+import pymt
+
+#extra build commands go in the cmdclass dict {'command-name': CommandClass}
+#see tools.packaging.{platform}.build.py for custom build commands for portable packages
+#also e.g. we use build_ext command from cython if its installed for c extensions
+cmdclass = {}
+
+#add build rules for portable packages to cmdclass
+if sys.platform == 'win32':
+    from pymt.tools.packaging.win32.build import WindowsPortableBuild
+    cmdclass['build_portable'] = WindowsPortableBuild
+#TODO: add build rules for portable OSX package
+#elif sys.platform == 'darwin':
+#   from pymt.tools.packaging.osx.build import OSXPortableBuild
+#   cmdclass['build_portable'] = OSXPortableBuild
+
+
+
+# extension modules
+ext_modules = []
+
+#accelerated matrix transformation module written in C for numpy
+ext_modules.append( Extension(
+    'pymt.c_ext._transformations',
+    ['pymt/c_ext/transformations.c'],
+    include_dirs=[numpy.get_include()])
+)
+
+#check for cython
 try:
     have_cython = True
     from Cython.Distutils import build_ext
 except:
     have_cython = False
 
-try:
-    import numpy
-except:
-    print '#' * 80
-    print
-    print 'PyMT require numpy now. Please install it before running PyMT setup'
-    print
-    print '#' * 80
-    sys.exit(1)
-
 # create .c for every module in c_ext
-if 'sdist' in sys.argv:
-    print >>sys.stderr, 'Generate C files...',
-    import subprocess
-    files = os.path.join(os.path.dirname(__file__), 'pymt', 'c_ext', '*.pyx')
-    subprocess.Popen('cython %s' % files, shell=True).communicate()
-    print >>sys.stderr, 'Done !'
+if 'sdist' in sys.argv and have_cython:
+    from glob import glob
+    from Cython.Compiler.Main import compile
+    print 'Generating C files...',
+    files = glob(os.path.join(os.path.dirname(__file__), 'pymt', 'c_ext', '*.pyx'))
+    compile(files)
+    print 'Done !'
 
-# extract version (simulate doc generation, pymt will be not imported)
-os.environ['PYMT_DOC_INCLUDE'] = '1'
-import pymt
-
-# extracts all examples files except sandbox
-data_file_prefix = 'share/pymt-'
-examples = {}
-examples_allowed_ext = ('readme', 'py', 'wav', 'png', 'jpg', 'svg',
-                        'avi', 'gif', 'txt', 'ttf', 'obj', 'mtl')
-for root, subFolders, files in os.walk('examples'):
-    if 'sandbox' in root:
-        continue
-    for file in files:
-        ext = file.split('.')[-1].lower()
-        if ext not in examples_allowed_ext:
-            continue
-        filename = os.path.join(root, file)
-        directory = '%s%s' % (data_file_prefix, os.path.dirname(filename))
-        if not directory in examples:
-            examples[directory] = []
-        examples[directory].append(filename)
-
-# modules
-numpy_transform_ext = Extension(
-    'pymt.c_ext._transformations',
-    ['pymt/c_ext/transformations.c'],
-    include_dirs=[numpy.get_include()],
-    extra_compile_args=[])
-
-ext_modules = [numpy_transform_ext]
-cmdclass = {}
+#add cython core extension modules if cython is available
 if have_cython:
     cmdclass['build_ext'] = build_ext
     libraries = []
@@ -100,6 +104,28 @@ if have_cython:
     ext_modules.append(Extension('pymt.c_ext.c_accelerate',
         ['pymt/c_ext/c_accelerate.pyx']))
 
+
+#setup datafiles to be included in the disytibution, liek examples...
+#extracts all examples files except sandbox
+data_file_prefix = 'share/pymt-'
+examples = {}
+examples_allowed_ext = ('readme', 'py', 'wav', 'png', 'jpg', 'svg',
+                        'avi', 'gif', 'txt', 'ttf', 'obj', 'mtl')
+for root, subFolders, files in os.walk('examples'):
+    if 'sandbox' in root:
+        continue
+    for file in files:
+        ext = file.split('.')[-1].lower()
+        if ext not in examples_allowed_ext:
+            continue
+        filename = os.path.join(root, file)
+        directory = '%s%s' % (data_file_prefix, os.path.dirname(filename))
+        if not directory in examples:
+            examples[directory] = []
+        examples[directory].append(filename)
+
+
+
 # setup !
 setup(
     name='PyMT',
@@ -133,6 +159,8 @@ setup(
         'pymt.tools',
         'pymt.tools.calibration',
         'pymt.tools.designerapp',
+        'pymt.tools.packaging',
+        'pymt.tools.packaging.win32',
         'pymt.ui',
         'pymt.ui.widgets',
         'pymt.ui.widgets.composed',
@@ -147,7 +175,10 @@ setup(
         'data/*.css',
         'data/*.png',
         'data/*.ttf',
-        'tools/designerapp/icons/*.png']
+        'tools/designerapp/icons/*.png',
+        'tools/packaging/README.txt',
+        'tools/packaging/win32/pymt.bat',
+        'tools/packaging/win32/README.txt']
     },
     data_files=examples.items(),
     classifiers=[

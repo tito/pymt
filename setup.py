@@ -29,10 +29,9 @@ cmdclass = {}
 if sys.platform == 'win32':
     from pymt.tools.packaging.win32.build import WindowsPortableBuild
     cmdclass['build_portable'] = WindowsPortableBuild
-#TODO: add build rules for portable OSX package
-#elif sys.platform == 'darwin':
-#   from pymt.tools.packaging.osx.build import OSXPortableBuild
-#   cmdclass['build_portable'] = OSXPortableBuild
+elif sys.platform == 'darwin':
+   from pymt.tools.packaging.osx.build import OSXPortableBuild
+   cmdclass['build_portable'] = OSXPortableBuild
 
 
 
@@ -161,6 +160,7 @@ setup(
         'pymt.tools.designerapp',
         'pymt.tools.packaging',
         'pymt.tools.packaging.win32',
+        'pymt.tools.packaging.osx',
         'pymt.ui',
         'pymt.ui.widgets',
         'pymt.ui.widgets.composed',
@@ -178,7 +178,8 @@ setup(
         'tools/designerapp/icons/*.png',
         'tools/packaging/README.txt',
         'tools/packaging/win32/pymt.bat',
-        'tools/packaging/win32/README.txt']
+        'tools/packaging/win32/README.txt',
+        'tools/packaging/osx/pymt.sh',]
     },
     data_files=examples.items(),
     classifiers=[

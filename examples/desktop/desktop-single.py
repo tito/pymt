@@ -7,7 +7,7 @@ Feature coverflow widget, xml widget and css styling.
 Mathieu
 '''
 
-from os.path import join, dirname
+from os.path import join, dirname, exists
 from pymt import *
 
 current_dir = dirname(__file__)
@@ -33,7 +33,7 @@ class Desktop(MTBoxLayout):
     layout_def = '''
     <MTBoxLayout orientation='"vertical"' cls='"desktop-background"'>
         <MTCoverFlow size_hint='(1, .7)' cls='"desktop-coverflow"'
-            thumbnail_size='(24, 24)' cover_distance='150' id='"coverflow"'/>
+            thumbnail_size='(256, 256)' cover_distance='150' id='"coverflow"'/>
         <MTAnchorLayout size_hint='(1, .3)'>
             <MTBoxLayout cls='"form"' padding='20' orientation='"vertical"'>
                 <MTLabel id='"title"' label='"Unknown Title"' autosize='True'
@@ -71,7 +71,19 @@ class Desktop(MTBoxLayout):
         for key in plugins.list():
             plugin = plugins.get_plugin(key)
             infos = plugins.get_infos(plugin)
-            icon = join(infos['path'], infos['icon'])
+
+            icon = None
+            for icon_filename in ('icon-large.png', 'icon-large.jpg',
+                                  infos['icon'], 'icon.png'):
+                icon = join(infos['path'], icon_filename)
+                if exists(icon):
+                    break
+                icon = None
+
+            # no icon ?
+            if icon is None:
+                print 'No icon found for', infos['title']
+                continue
 
             # create an image button for every plugin
             button = MTImageButton(filename=icon)

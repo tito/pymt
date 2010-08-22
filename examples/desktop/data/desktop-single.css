@@ -6,11 +6,11 @@
 
 .desktop-author,
 .desktop-description {
-    font-name: 'data/stonsans.ttf';
+    font-name: '%(path)s/data/stonsans.ttf';
     color: #999999;
 }
 
 .desktop-title {
-    font-name: 'data/BRI293.TTF'
+    font-name: '%(path)s/data/BRI293.TTF'
     font-size: 54;
 }

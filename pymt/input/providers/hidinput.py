@@ -16,6 +16,7 @@ To configure HIDInput, put in your configuration ::
 You have the possibility to use custom range for some X, Y and pressure value.
 On some drivers, the range reported is invalid.
 To fix that, you can add one of theses options on the argument line :
+
 * min_position_x : X minimum
 * max_position_x : X maximum
 * min_position_y : Y minimum

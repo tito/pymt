@@ -76,10 +76,13 @@ class XMLWidget(MTWidget):
             k = {}
             widget_id = None
             for name, value in node.attributes.items():
-                if str(name) == 'id':
+                name = str(name)
+                if name == 'id':
                     widget_id = eval(value)
                 else:
-                    k[str(name)] = eval(value)
+                    if name == 'xid':
+                        name = 'id'
+                    k[name] = eval(value)
 
             # create widget
             try:

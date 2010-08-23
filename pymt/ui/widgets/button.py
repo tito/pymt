@@ -76,6 +76,7 @@ class MTButton(MTLabel):
         # FIXME, would be nice to suppress it !
         kwargs.setdefault('size', (100, 100))
         self._state         = 'normal'
+        self._state_color   = 'color'
         self._current_touch = None
 
         super(MTButton, self).__init__(**kwargs)
@@ -126,6 +127,9 @@ class MTButton(MTLabel):
         if self._state == state:
             return False
         self._state = state
+        self._state_color = 'color-%s' % state
+        if not self._state_color in self.style:
+            self.style[self._state_color] = self.style['color']
         self.dispatch_event('on_state_change', state)
         return True
     state = property(_get_state, _set_state,
@@ -140,17 +144,17 @@ class MTButton(MTLabel):
                          state=self.state)
 
     def draw_label(self, dx=0, dy=0):
-        if self.style['draw-text-shadow']:
-            tsp = self.style['text-shadow-position']
-            tsp_old = tsp[:]
-            tsp[0] += dx
-            tsp[1] += dy
-            old_color = self.kwargs.get('color')
-            self.kwargs['color'] = self.style['text-shadow-color']
+        style = self.style
+        kwargs = self.kwargs
 
-            super(MTButton, self).draw_label(*tsp)
-            self.kwargs['color'] = old_color
-            self.style['text-shadow-position'] = tsp_old
+        if style['draw-text-shadow']:
+            tx, ty = style['text-shadow-position']
+            kwargs['color'] = style['text-shadow-color']
+            super(MTButton, self).draw_label(dx + tx, dy + ty)
+            kwargs['color'] = style['color']
+
+        # set color to state color if exist
+        kwargs['color'] = style[self._state_color]
         super(MTButton, self).draw_label(dx, dy)
 
 

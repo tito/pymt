@@ -36,7 +36,7 @@ def parse_color(text):
         res = re.match('rgba?\((.*)\)', text)
         value = map(lambda x: int(x) / 255., re.split(',\ ?', res.groups()[0]))
         if len(value) == 3:
-            value.append(1)
+            value.append(1.)
     elif text.startswith('#'):
         res = text[1:]
         if len(res) == 3:
@@ -44,7 +44,7 @@ def parse_color(text):
         value = [int(x, 16) / 255. for x in re.split(
                  '([0-9a-f]{2})', res) if x != '']
         if len(value) == 3:
-            value.append(1)
+            value.append(1.)
     return value
 
 def parse_bool(text):

@@ -8,7 +8,13 @@ All examples are made to show you how powerfull PyMT are.
 
 If you want to play fast, just run (it will launch desktop app.) :
 
-  python launcher.py
+  python launcher-multi.py
+  # or
+  python launcher-single.py
+
+
+Multi mean you'll launch the multi user desktop.
+Single mean you'll launch the single user desktop.
 
 Directories
 -----------

@@ -6,6 +6,7 @@ MTImage: MTImage displays an image on the screen that can be repositioned.
 __all__ = ('MTImage', )
 
 from pymt.core.image import Image
+from pymt.ui.factory import MTWidgetFactory
 from pymt.ui.widgets.container import MTContainer
 
 
@@ -19,4 +20,5 @@ def MTImage(arg, **kwargs):
     return MTContainer(Image(arg, **kwargs))
 
 MTImage.__doc__ += Image.__doc__
+MTWidgetFactory.register('MTImage', MTImage)
 

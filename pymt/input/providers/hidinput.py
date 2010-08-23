@@ -151,6 +151,8 @@ else:
 
             # read parameters
             for arg in args[1:]:
+                if arg == '':
+                    continue
                 arg = arg.split('=')
 
                 # ensure it's a key = value

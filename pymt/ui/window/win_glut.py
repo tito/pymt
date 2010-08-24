@@ -5,6 +5,7 @@ Window GLUT: windowing provider based on GLUT
 __all__ = ('MTWindowGlut', )
 
 import sys
+import os
 from pymt.ui.window import BaseWindow
 from pymt.logger import pymt_logger
 from pymt.base import stopTouchApp, getEventLoop
@@ -26,9 +27,12 @@ class MTWindowGlut(BaseWindow):
             # init GLUT !
             pymt_logger.debug('WinGlut: GLUT initialization')
             glutInit('')
-            glutInitDisplayMode(
-                GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH |
-                GLUT_MULTISAMPLE | GLUT_STENCIL | GLUT_ACCUM)
+            if 'PYMT_GLUT_UNITTEST' in os.environ:
+                glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE)
+            else:
+                glutInitDisplayMode(
+                    GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH |
+                    GLUT_MULTISAMPLE | GLUT_STENCIL | GLUT_ACCUM)
 
             # create the window
             self.__glut_window = glutCreateWindow('pymt')

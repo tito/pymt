@@ -1,7 +1,8 @@
 from pymt import *
 
 class Painter(MTWidget):
-    def init(self):
+    def __init__(self, **kwargs):
+        super(Painter, self).__init__(**kwargs)
         self.lines = []
 
     def on_touch_down(self, touch):

@@ -1,6 +1,7 @@
+include *AUTHORS *COPYING
 recursive-include doc *
 recursive-include examples *
 recursive-include pymt/data *.png *.svg *.css *.ttf
-recursive-include pymt/tools *.png
+recursive-include pymt/tools *.png *.txt *.bat *.sh
 recursive-include pymt *.pyd *.pyx *.c
 recursive-include tests *

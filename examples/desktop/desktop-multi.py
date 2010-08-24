@@ -71,8 +71,14 @@ class MTMenuItem(MTKineticItem):
                              color=self.style.get('color'))
         self._icon = None
         try:
-            if icon != '':
-                self._icon = Loader.image(os.path.join(path, icon))
+            ficon = None
+            for icon_filename in (icon, 'icon.png'):
+                ficon = os.path.join(path, icon_filename)
+                if os.path.exists(ficon):
+                    break
+                ficon = None
+            if ficon is not None:
+                self._icon = Loader.image(ficon)
         except:
             pass
 
@@ -278,7 +284,7 @@ if __name__ == '__main__':
 
     # Create background window
     w = getWindow()
-    w.wallpaper = os.path.join(os.path.dirname(__file__), 'wallpaper.jpg')
+    w.wallpaper = os.path.join(os.path.dirname(__file__), 'data', 'wallpaper.jpg')
     w.wallpaper_position = 'strech'
 
     g = MTGestureDetector(gdb)

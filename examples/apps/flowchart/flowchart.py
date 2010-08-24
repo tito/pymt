@@ -22,6 +22,7 @@ css_add_sheet(flowcss)
 
 class FlowText(MTTextInput):
     def __init__(self, **kwargs):
+        kwargs.setdefault('padding_x', 10)
         kwargs.setdefault('autosize', True)
         super(FlowText, self).__init__(**kwargs)
         self.orig = (0, 0)

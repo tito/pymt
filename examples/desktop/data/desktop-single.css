@@ -1,0 +1,16 @@
+.desktop-background,
+.desktop-coverflow {
+    draw-background: 1;
+    bg-color: #000000;
+}
+
+.desktop-author,
+.desktop-description {
+    font-name: '%(fontpath)sstonsans.ttf';
+    color: #999999;
+}
+
+.desktop-title {
+    font-name: '%(fontpath)sBRI293.TTF'
+    font-size: 54;
+}

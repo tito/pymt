@@ -77,7 +77,7 @@ class MTTextArea(MTTextInput):
                 self.glyph_size(g) #just populating cache
 
     def line_at_pos(self, pos):
-        line = int((self.y+self.height)-pos[1])/(self.line_height+self.line_spacing)
+        line = int(((self.y+self.height)-pos[1])/(self.line_height+self.line_spacing))
         return max(0, min(line, len(self.lines)-1))
 
     def place_cursor(self, pos):

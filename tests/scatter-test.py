@@ -1,6 +1,6 @@
 from pymt import *
 
-scatter_test_xml = """
+scatter_test_xml = '''
 <MTBoxLayout>
 <MTGridLayout cols='2'>
         <MTLabel label='"Scale:"' color='(1,1,1)' />
@@ -12,13 +12,11 @@ scatter_test_xml = """
 <MTButton id='"center"' label='"center=(500,200)"' size_hint='(1,1)' />
 <MTToggleButton id='"transform"' label='"Save Transform"' size_hint='(1,1)' />
 </MTBoxLayout>
-"""
-
-
+'''
 
 class ScatterTest(MTWidget):
-
-    def init(self):
+    def __init__(self, **kwargs):
+        super(ScatterTest, self).__init__(**kwargs)
         self.xml = XMLWidget(xml=scatter_test_xml)
         self.xml.root.width=getWindow().width
         self.xml.autoconnect(self)

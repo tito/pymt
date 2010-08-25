@@ -27,8 +27,7 @@ class MTTextArea(MTTextInput):
         if num:
             if self.autosize or self.autoheight:
                 self.height = num * self.line_height + self.line_spacing * (num - 1)
-#            if self.lines[0] and (self.autosize or self.autowidth):
-            if (self.autosize or self.autowidth):                
+            if (self.autosize or self.autowidth):
                 self.width = max(label.content_width for label in self.line_labels)
 
     def _get_value(self):
@@ -77,7 +76,7 @@ class MTTextArea(MTTextInput):
                 self.glyph_size(g) #just populating cache
 
     def line_at_pos(self, pos):
-        line = int((self.y+self.height)-pos[1])/(self.line_height+self.line_spacing)
+        line = int(((self.y+self.height)-pos[1])/(self.line_height+self.line_spacing))
         return max(0, min(line, len(self.lines)-1))
 
     def place_cursor(self, pos):
@@ -129,6 +128,11 @@ class MTTextArea(MTTextInput):
         if touch.userdata.get(str(self.id)+'cursor'):
             self.place_cursor(touch.pos)
         return super(MTTextArea, self).on_touch_move(touch)
+
+    def on_touch_up(self, touch):
+        self._can_deactive = False
+        if super(MTTextArea, self).on_touch_up(touch):
+            return True
 
     def _kbd_on_text_change(self, value):
         pass

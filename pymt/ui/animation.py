@@ -708,7 +708,8 @@ class Delay(Animation):
             Number of seconds you want delay.
 
     '''
-    def init(self,**kwargs):
+    def __init__(self, **kwargs):
+        super(Delay, self).__init__(**kwargs)
         self._duration = kwargs.get('duration')
 
 

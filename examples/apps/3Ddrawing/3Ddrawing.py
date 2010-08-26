@@ -65,7 +65,9 @@ class ModelPainter(MTWidget):
         self.perspective = GL3DPerspective()
 
         #load the obj model file
-        self.model = OBJ(os.path.join(current_dir, 'cow.obj'))
+        #set compat=False, mneans we have to setup lighting etc ourselves
+        #but since we need to disable ligthing during picking, we need this here
+        self.model = OBJ(os.path.join(current_dir, 'cow.obj'), compat=False)
 
         #texture and FBO used for picking
         self.picking_image = Image.load(os.path.join(current_dir, 'picking.png'))
@@ -172,6 +174,15 @@ class ModelPainter(MTWidget):
 
     def on_touch_down(self, touch):
         self.touch_position[touch.id] = (touch.x, touch.y)
+
+        #check if this touch should eb used to draw
+        pick = self.pick(touch.x, touch.y)
+        if pick[0] != 0 or pick[1] != 1024:
+            touch.userdata['drawing'] = True
+            return
+
+        #if not, its going to be a touch that turns/scales the object
+        touch.userdata['drawing'] = False
         if len(self.touch_position) == 1:
             self.touch1 = touch.id
         elif len(self.touch_position) == 2:
@@ -184,11 +195,18 @@ class ModelPainter(MTWidget):
 
 
     def on_touch_move(self, touch):
-        pick = self.pick(touch.x, touch.y)
-        if pick[0] != 0 or pick[1] != 1024:
-            self.paint(touch.x, touch.y)
+
+
+        #if its one used to draw, but its now away from teh model
+        #just dont do anything, until its back on teh model, or gone
+        if touch.userdata.get('drawing'):
+            pick = self.pick(touch.x, touch.y)
+            #if its still on the model, draw on it
+            if pick[0] != 0 or pick[1] != 1024:
+                self.paint(touch.x, touch.y)
             return
 
+        #if we got here, its a touch to turn/scale the model
         dx, dy, angle = 0,0,0
         #two touches:  scale and rotate around Z
         if  self.touch_position.has_key(self.touch1) and self.touch_position.has_key(self.touch2):

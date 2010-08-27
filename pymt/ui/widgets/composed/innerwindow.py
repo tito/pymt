@@ -186,6 +186,7 @@ class MTInnerWindow(MTScatterWidget):
             touch.apply_transform_2d(super(MTInnerWindow, self).to_local)
             if self.controls.dispatch_event('on_touch_up', touch):
                 touch.pop()
+                touch.ungrab(self)
                 return True
             touch.pop()
         return super(MTInnerWindow, self).on_touch_up(touch)

@@ -122,13 +122,22 @@ class MTWidget(EventDispatcher):
         for ev in MTWidget.visible_events:
             self.register_event_type(ev)
 
+        # privates
         self.__animationcache__   = set()
         self._parent              = None
-        self.children             = SafeList()
         self._visible             = None
         self._size_hint           = kwargs.get('size_hint')
-        self.visible              = kwargs.get('visible')
+
+
+        #: List of children (SafeList)
+        self.children             = SafeList()
+        #: If False, childrens are not drawed. (deprecated)
         self.draw_children        = kwargs.get('draw_children')
+        #: Dictionnary that contains the widget style
+        self.style = {}
+
+        # apply visibility
+        self.visible              = kwargs.get('visible')
 
         # cache for get_parent_window()
         self._parent_layout         = None
@@ -138,12 +147,11 @@ class MTWidget(EventDispatcher):
         self._root_window           = None
         self._root_window_source    = None
 
-        self.register_event_type('on_update')
-        self.register_event_type('on_animation_complete')
-        self.register_event_type('on_resize')
-        self.register_event_type('on_parent_resize')
-        self.register_event_type('on_move')
-        self.register_event_type('on_parent')
+        # register events
+        register_event_type = self.register_event_type
+        for event in ('on_update', 'on_animation_complete', 'on_resize',
+                      'on_parent_resize', 'on_move', 'on_parent'):
+            register_event_type(event)
 
         if kwargs.get('x'):
             self._pos = (kwargs.get('x'), self.y)
@@ -154,14 +162,12 @@ class MTWidget(EventDispatcher):
         if kwargs.get('height'):
             self._size = (self.width, kwargs.get('height'))
 
-        # apply css
-        self.style = {}
+        # apply style
         self._cls = ''
-        self._inline_style = kwargs.get('style')
+        self._inline_style = kwargs['style']
+
         # loading is done here automaticly
         self.cls = kwargs.get('cls')
-
-        self.init()
 
     def _set_cls(self, cls):
         self._cls = cls
@@ -169,7 +175,8 @@ class MTWidget(EventDispatcher):
     def _get_cls(self):
         return self._cls
     cls = property(_get_cls, _set_cls,
-        doc='Get/Set the class of the widget (used for CSS)')
+        doc='Get/Set the class of the widget (used for CSS, can be a string '
+            'or a list of string')
 
     def _set_parent(self, parent):
         self._parent = parent
@@ -204,11 +211,11 @@ class MTWidget(EventDispatcher):
         else:
             for ev in MTWidget.visible_events:
                 self.unregister_event_type(ev)
-
     def _get_visible(self):
         return self._visible
-    visible = property(_get_visible, _set_visible,
-                       doc='bool: visibility of widget')
+    visible = property(_get_visible, _set_visible, doc=''
+        'True if the widget is visible. If False, the events on_draw,'
+        'on_touch_down, on_touch_move, on_touch_up are not dispatched.')
 
     def _set_size_hint(self, size_hint):
         if self._size_hint == size_hint:
@@ -277,9 +284,6 @@ class MTWidget(EventDispatcher):
         if x > self.x  and x < self.x + self.width and \
            y > self.y and y < self.y + self.height:
             return True
-
-    def init(self):
-        pass
 
     def get_root_window(self):
         '''Return the root window of widget'''

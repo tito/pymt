@@ -130,5 +130,8 @@ class Desktop(MTBoxLayout):
         self.description.label = widget.infos['description']
 
 if __name__ == '__main__':
-    css_add_file(join(current_dir, 'data', 'desktop-single.css'))
+    # manual add cause of font path
+    with open(join(current_dir, 'data', 'desktop-single.css')) as fd:
+        css_data = fd.read() % dict(fontpath=join(current_dir, 'data', ''))
+    css_add_sheet(css_data)
     runTouchApp(Desktop())

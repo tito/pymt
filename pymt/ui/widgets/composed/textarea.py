@@ -9,7 +9,6 @@ from pymt.base import getFrameDt
 from pymt.graphx import drawRectangle
 from pymt.core.text import Label
 from pymt.ui.widgets.composed.textinput import MTTextInput
-from OpenGL.GL import glPushMatrix, glPopMatrix, glTranslate
 
 class MTTextArea(MTTextInput):
     '''A multi line text input widget'''
@@ -17,6 +16,26 @@ class MTTextArea(MTTextInput):
         super(MTTextArea, self).__init__(**kwargs)
         self.value = kwargs.get('label') or ''
         self.buffer_size = kwargs.get('buffer_size') or 128000
+
+        padding = kwargs.get('padding', None)
+        padding_x = kwargs.get('padding_x', None)
+        padding_y = kwargs.get('padding_y', None)
+        if not padding_x:
+            if type(padding) in (tuple, list):
+                padding_x = float(padding[0])
+            elif padding is not None:
+                padding_x = float(padding)
+            else:
+                padding_x = 0
+        if not padding_y:
+            if type(padding) in (tuple, list):
+                padding_y = float(padding[1])
+            elif padding is not None:
+                padding_y = float(padding)
+            else:
+                padding_y = 0
+        self.__padding_x = padding_x 
+        self.__padding_y = padding_y 
 
     def _recalc_size(self):
         # We could do this as .size property I suppose, but then we'd
@@ -27,8 +46,7 @@ class MTTextArea(MTTextInput):
         if num:
             if self.autosize or self.autoheight:
                 self.height = num * self.line_height + self.line_spacing * (num - 1)
-#            if self.lines[0] and (self.autosize or self.autowidth):
-            if (self.autosize or self.autowidth):                
+            if (self.autosize or self.autowidth):
                 self.width = max(label.content_width for label in self.line_labels)
 
     def _get_value(self):
@@ -62,6 +80,12 @@ class MTTextArea(MTTextInput):
         kw = self.kwargs.copy()
         kw['anchor_x'] = 'left'
         kw['anchor_y'] = 'top'
+        # force padding to 0, otherwise, the content width will take padding in
+        # account, and the cursor display will be completly messed up
+        # FIXME: handle padding ourself !
+        kw['padding_x'] = 0
+        kw['padding_y'] = 0
+        kw['padding'] = (0, 0)
         return Label(text, **kw)
 
     def glyph_size(self, g):
@@ -77,7 +101,7 @@ class MTTextArea(MTTextInput):
                 self.glyph_size(g) #just populating cache
 
     def line_at_pos(self, pos):
-        line = int((self.y+self.height)-pos[1])/(self.line_height+self.line_spacing)
+        line = int(((self.y+self.height)-pos[1])/(self.line_height+self.line_spacing))
         return max(0, min(line, len(self.lines)-1))
 
     def place_cursor(self, pos):
@@ -96,21 +120,23 @@ class MTTextArea(MTTextInput):
             offset += self.glyph_size(self.lines[self.edit_line][i])
         return offset
 
-    def draw_cursor(self):
+    def draw_cursor(self, x, y):
         set_color(1, 0, 0, int(self.cursor_fade))
         drawRectangle(size=(2, -self.line_height),
-                      pos=(self.cursor_offset(), 0))
+                      pos=(x + self.cursor_offset(), y))
 
-    def draw(self):
-        super(MTTextArea, self).draw_background()
-        glPushMatrix()
-        glTranslate(self.x, self.y+self.height, 0)
+    def draw_label(self):
+        labels = self.line_labels
+        x = self.x + self.__padding_x
+        y = self.top - self.__padding_y
+        dy = self.line_height + self.line_spacing
         for line_num in xrange(len(self.lines)):
-            self.line_labels[line_num].draw()
+            label = labels[line_num]
+            label.pos = x, y
+            label.draw()
             if self.edit_line == line_num and self.is_active_input:
-                self.draw_cursor()
-            glTranslate(0, -(self.line_height+self.line_spacing), 0)
-        glPopMatrix()
+                self.draw_cursor(x, y)
+            y -= dy
 
     def on_update(self):
         self.cursor_fade = (self.cursor_fade+getFrameDt()*2)%2
@@ -129,6 +155,11 @@ class MTTextArea(MTTextInput):
         if touch.userdata.get(str(self.id)+'cursor'):
             self.place_cursor(touch.pos)
         return super(MTTextArea, self).on_touch_move(touch)
+
+    def on_touch_up(self, touch):
+        self._can_deactive = False
+        if super(MTTextArea, self).on_touch_up(touch):
+            return True
 
     def _kbd_on_text_change(self, value):
         pass

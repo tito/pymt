@@ -28,6 +28,10 @@ if sys.platform == 'linux2' or 'PYMT_DOC' in os.environ:
     except:
         pymt.pymt_logger.exception('Input: ProbeSysfs is not supported by your version of linux')
     try:
+        from pymt.input.providers.mtdev import *
+    except:
+        pymt.pymt_logger.exception('Input: MTDev is not supported by your version of linux')
+    try:
         from pymt.input.providers.hidinput import *
     except:
         pymt.pymt_logger.exception('Input: HIDInput is not supported by your version of linux')

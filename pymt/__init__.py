@@ -24,6 +24,7 @@ __version__ = '0.5.1-dev'
 import sys
 import getopt
 import os
+import shutil
 from pymt.logger import pymt_logger, LOG_LEVELS
 
 # internals for post-configuration
@@ -106,13 +107,17 @@ if os.path.basename(sys.argv[0]) in ('sphinx-build', ):
 if not 'PYMT_DOC_INCLUDE' in os.environ:
 
     # Configuration management
-    pymt_home_dir = os.path.expanduser('~/.pymt/')
+    user_home_dir = os.path.expanduser('~')
+    pymt_home_dir = os.path.join(user_home_dir, '.pymt')
     pymt_config_fn = os.path.join(pymt_home_dir, 'config')
     if not os.path.exists(pymt_home_dir):
         os.mkdir(pymt_home_dir)
-    pymt_usermodules_dir = os.path.expanduser('~/.pymt/mods/')
+    pymt_usermodules_dir = os.path.join(pymt_home_dir, 'mods')
     if not os.path.exists(pymt_usermodules_dir):
         os.mkdir(pymt_usermodules_dir)
+    icon_dir = os.path.join(pymt_home_dir, 'icon')
+    if not os.path.exists(icon_dir):
+        shutil.copytree(os.path.join(pymt_data_dir, 'logo'), icon_dir)
 
     # configuration
     from pymt.config import *

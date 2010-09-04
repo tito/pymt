@@ -8,10 +8,10 @@ from ConfigParser import ConfigParser
 import sys
 import os
 from pymt.logger import pymt_logger
-from pymt import pymt_config_fn, logger
+from pymt import pymt_home_dir, pymt_config_fn, logger
 
 # Version number of current configuration format
-PYMT_CONFIG_VERSION = 11
+PYMT_CONFIG_VERSION = 12
 
 #: PyMT configuration object
 pymt_config = None
@@ -153,6 +153,8 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             pymt_config.setdefault('widgets', 'list_friction_bound', '20')
             pymt_config.setdefault('widgets', 'list_trigger_distance', '5')
 
+        elif pymt_config_version == 11:
+            pymt_config.setdefault('graphics', 'window_icon', os.path.join(pymt_home_dir, 'icon', 'pymt32.png') )
         else:
             # for future.
             break
@@ -173,4 +175,3 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             pymt_config.write()
         except Exception, e:
             pymt_logger.exception('Core: error while saving default configuration file')
-

@@ -172,6 +172,7 @@ setup(
         'data/icons/filetype/*.png',
         'data/icons/svg/*.svg',
         'data/icons/*.png',
+        'data/logo/*.png',
         'data/*.css',
         'data/*.png',
         'data/*.ttf',

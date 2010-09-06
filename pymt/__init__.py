@@ -19,7 +19,7 @@ on the C-level to maximize performance.
 See http://pymt.eu for more information.
 '''
 
-__version__ = '0.5.1-dev'
+__version__ = '0.5.1'
 
 import sys
 import getopt

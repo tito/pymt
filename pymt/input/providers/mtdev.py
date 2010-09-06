@@ -169,6 +169,7 @@ else:
                     if 'delete' in args:
                         action = 'up'
                         del args['delete']
+                        del touches[touch.id]
                         touches_sent.remove(tid)
                     queue.append((action, touch))
 

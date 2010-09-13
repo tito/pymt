@@ -119,14 +119,14 @@ class BaseObject(object):
                           doc='coordinate of centerleft (x, y + height / 2)')
 
     def _get_topcenter(self):
-        return (self.top+self.width/2., self.y+self.height)
+        return (self.x+self.width/2., self.y+self.height)
     def _set_topcenter(self, topcenter):
         self.pos = (topcenter[0] - self.width / 2., topcenter[1] - self.height)
     topcenter = property(_get_topcenter, _set_topcenter,
                          doc='coordinate of topcenter (x+width/2, y+height)')
 
     def _get_bottomcenter(self):
-        return (self.top+self.width/2., self.y)
+        return (self.x+self.width/2., self.y)
     def _set_bottomcenter(self, bottomcenter):
         self.pos = (bottomcenter[0]-self.width/2., bottomcenter[1])
     bottomcenter = property(_get_bottomcenter, _set_bottomcenter,

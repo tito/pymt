@@ -184,6 +184,13 @@ class TuioTouch(Touch):
         self.m = 0.0
         self.r = 0.0
 
+    angle = property(lambda self: self.a)
+    mot_accel = property(lambda self: self.m)
+    rot_accel = property(lambda self: self.r)
+    xmot = property(lambda self: self.X)
+    ymot = property(lambda self: self.Y)
+    zmot = property(lambda self: self.Z)
+
 class Tuio2dCurTouch(TuioTouch):
     '''A 2dCur TUIO touch.'''
     def __init__(self, device, id, args):

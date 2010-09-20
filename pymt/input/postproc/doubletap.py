@@ -29,7 +29,7 @@ class InputPostprocDoubleTap(object):
         The touch must be not a previous double tap, and the distance must be
         ok'''
         for touchid in self.touches:
-            if ref.id == touchid:
+            if ref.uid == touchid:
                 continue
             type, touch = self.touches[touchid]
             if type != 'up':
@@ -57,7 +57,7 @@ class InputPostprocDoubleTap(object):
                     touch.double_tap_distance = touch_double_tap.double_tap_distance
 
             # add the touch internaly
-            self.touches[touch.id] = (type, touch)
+            self.touches[touch.uid] = (type, touch)
 
         # second, check if up-touch is timeout for double tap
         time_current = getClock().get_time()

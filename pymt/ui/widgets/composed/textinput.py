@@ -4,6 +4,8 @@ TextInput: a text input who instance vkeyboard if needed
 
 __all__ = ('MTTextInput', )
 
+from pymt.logger import pymt_logger
+from pymt.base import getWindow
 from pymt.config import pymt_config
 from pymt.graphx import set_color, drawCSSRectangle, drawLine
 from pymt.ui.widgets.button import MTButton
@@ -253,6 +255,20 @@ class MTTextInput(MTButton):
             )
 
     def _window_on_key_down(self, key, scancode=None, unicode=None):
+        try:
+            # XXX Experimental, and work only with pygame.
+            modifiers = getWindow().modifiers
+            if scancode == 55 and 'ctrl' in modifiers:
+                from pygame import SCRAP_TEXT
+                from pygame import scrap
+                scrap.init()
+                text = scrap.get(SCRAP_TEXT)
+                if text:
+                    self.keyboard.text += text
+                return True
+        except Exception, e:
+            pymt_logger.warning('Unable to use scrap module: %s' % str(e)) 
+
         if key == 27: # escape
             self.hide_keyboard()
             return True

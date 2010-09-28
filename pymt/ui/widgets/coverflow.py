@@ -341,3 +341,12 @@ class MTCoverFlow(MTWidget):
         if self.title_draw:
             child = self.children[self._selection]
             self._draw_title(child)
+    def remove_widget(self, widget):
+        super(MTCoverFlow,self).remove_widget(widget)
+        _len = len(self.children)
+        if self._selection >=  _len:
+            self._selection = _len -1
+        if self._selection < 0:
+            #No more children
+            #Do something appropriate (maybe hide, maybe nothing)            
+            pass

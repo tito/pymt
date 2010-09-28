@@ -255,6 +255,7 @@ class MTTextArea(MTTextInput):
         pass
 
     def insert_character(self, c):
+        ##print '>> insert_character()', self.cursor, self.edit_line, c
         if len(self.value) >= self.buffer_size:
             return
         text = self.lines[self.edit_line]
@@ -262,13 +263,16 @@ class MTTextArea(MTTextInput):
         self.set_line_text(self.edit_line, new_text)
         self._refresh_lines()
         self.cursor += 1
-        if self.cursor > len(self.lines[self.edit_line]):
-            self.cursor = 0
+        ##print self.cursor, self.edit_line, self.lines
+        if self.lines[self.edit_line] == text:
+            self.cursor = 1
             self.edit_line += 1
         self.dispatch_event('on_text_change', self)
 
     def do_backspace(self):
+        ##print '>> do_backspace()', self.cursor, self.edit_line, self.lines
         if self.cursor == 0:
+            ##print 'call case 0'
             if self.edit_line == 0:
                 return #nothign to do, we all teh way at the top
             text_last_line = self.lines[self.edit_line-1]
@@ -280,10 +284,19 @@ class MTTextArea(MTTextInput):
             self.cursor = len(text_last_line)
         else:
             text = self.lines[self.edit_line]
+            if len(text) == 0:
+                return
+            ch = text[self.cursor-1]
             new_text = text[:self.cursor-1] + text[self.cursor:]
             self.set_line_text(self.edit_line, new_text)
-            self.cursor -= 1
+            if ch == '\n':
+                self.edit_line = max(0, self.edit_line - 1)
+                self.cursor = len(self.lines[self.edit_line])
+            else:
+                self.cursor -= 1
+
         self._refresh_lines()
+        ##print '<< do_backspace()', self.cursor, self.edit_line, self.lines
         self.dispatch_event('on_text_change', self)
 
     def do_cursor_movement(self, action):
@@ -317,8 +330,7 @@ class MTTextArea(MTTextInput):
         elif internal_action.startswith('cursor_'):
             self.do_cursor_movement(internal_action)
         elif internal_action == 'del':
-            self.cursor += 1
-            self.do_backspace()
+            pass
         elif internal_action == 'backspace':
             self.do_backspace()
         elif internal_action == 'enter':

@@ -11,7 +11,7 @@ from pymt.logger import pymt_logger
 from pymt import pymt_home_dir, pymt_config_fn, logger
 
 # Version number of current configuration format
-PYMT_CONFIG_VERSION = 12
+PYMT_CONFIG_VERSION = 13
 
 #: PyMT configuration object
 pymt_config = None
@@ -155,6 +155,12 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 
         elif pymt_config_version == 11:
             pymt_config.setdefault('graphics', 'window_icon', os.path.join(pymt_home_dir, 'icon', 'pymt32.png') )
+
+        elif pymt_config_version == 12:
+            # default configuration for keyboard repeatition
+            pymt_config.setdefault('keyboard', 'repeat_delay', 300)
+            pymt_config.setdefault('keyboard', 'repeat_rate', 30)
+
         else:
             # for future.
             break

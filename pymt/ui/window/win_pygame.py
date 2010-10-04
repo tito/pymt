@@ -51,10 +51,14 @@ class MTWindowPygame(BaseWindow):
             pymt_logger.debug('WinPygame: Set window to fullscreen mode')
             self.flags |= pygame.FULLSCREEN
 
-        #set window icon before calling set_mode
+        # prepare keyboard
+        repeat_delay = pymt.pymt_config.get('keyboard', 'repeat_delay')
+        repeat_rate = pymt.pymt_config.get('keyboard', 'repeat_rate')
+        pygame.key.set_repeat(int(repeat_delay), 1000. / float(repeat_rate))
+
+        # set window icon before calling set_mode
         icon = pygame.image.load(pymt.pymt_config.get('graphics', 'window_icon'))
         pygame.display.set_icon(icon)
-
 
         # init ourself size + setmode
         # before calling on_resize

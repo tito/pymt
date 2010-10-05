@@ -360,7 +360,9 @@ class MTTextArea(MTTextInput):
     def draw_cursor(self, x, y):
         '''Draw the cursor on the widget
         '''
-        set_color(1, 0, 0, int(self.cursor_fade))
+        if not int(self.cursor_fade):
+            return
+        set_color(*self.style.get('cursor-color'))
         drawRectangle(size=(2, -self.line_height),
                       pos=(x + self.cursor_offset() - self._scroll_x, y))
 
@@ -432,7 +434,7 @@ class MTTextArea(MTTextInput):
         if line_num == s2r:
             lines = self.lines[line_num]
             x2 = label.x + sum([g(x) for x in lines[:s2c]])
-        set_color(0, 0, 1, .4)
+        set_color(*self.style.get('selection-color'))
         drawRectangle(pos=(x1, y1), size=(x2-x1, self.line_height))
 
 

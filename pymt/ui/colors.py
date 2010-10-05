@@ -51,7 +51,7 @@ pymt_css_states = ['-down', '-move', '-dragging', '-active', '-error',
                    '-validated', '-syskey']
 
 #: Prefix allowed to CSS rules
-pymt_css_prefix = ['key-', 'slider-', 'title-']
+pymt_css_prefix = ['key-', 'slider-', 'title-', 'cursor-', 'selection-']
 
 # Privates vars for reload features
 _css_sources = []

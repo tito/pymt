@@ -73,6 +73,7 @@ from pymt.core.text import *
 from pymt.core.video import *
 from pymt.core.svg import *
 from pymt.core.spelling import *
+from pymt.core.clipboard import *
 
 # only after core loading, load extensions
 from text.markup import *

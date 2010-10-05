@@ -59,6 +59,7 @@ pymt_options = {
     'camera': ('opencv', 'gstreamer', 'videocapture'),
     'svg': ('squirtle',),
     'spelling': ('enchant', 'osxappkit',),
+    'clipboard': ('pygame', 'dummy'),
 }
 
 # Read environment

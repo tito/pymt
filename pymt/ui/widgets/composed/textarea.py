@@ -12,6 +12,7 @@ TextArea keystrokes :
 __all__ = ('MTTextArea', )
 
 import re
+from pymt.cache import Cache
 from pymt.graphx import set_color, drawLine
 from pymt.base import getFrameDt, getWindow
 from pymt.graphx import drawRectangle
@@ -22,9 +23,17 @@ from pymt.ui.widgets.composed.textinput import MTTextInput
 
 FL_IS_NEWLINE = 0x01
 
-class MTTextArea(MTTextInput):
+# add a cache, really not sure about the usage right now.
+Cache.register('textarea.label', timeout=60.)
 
-    '''A multi line text input widget'''
+class MTTextArea(MTTextInput):
+    '''A multi line text input widget
+
+    :Parameters:
+        `tab_width`: int, default to 4
+            Indicate how much space should take a tabulation. 1 = size of one
+            space.
+    '''
     def __init__(self, **kwargs):
         self._glyph_size = {}
         self._scroll_x = 0
@@ -34,6 +43,9 @@ class MTTextArea(MTTextInput):
         self._selection_from = None
         self._selection_to = None
         super(MTTextArea, self).__init__(**kwargs)
+
+        self.tab_width = kwargs.get('tab_width', 4)
+
 
         padding = kwargs.get('padding', None)
         padding_x = kwargs.get('padding_x', None)
@@ -231,7 +243,7 @@ class MTTextArea(MTTextInput):
         '''Set current line with other text than the default one.
         '''
         self.lines[line_num] = text
-        self.line_labels[line_num].label = text
+        self.line_labels[line_num] = self.create_line_label(text)
 
     def get_line_options(self):
         '''Get or create line options, to be used for Label creation
@@ -258,8 +270,13 @@ class MTTextArea(MTTextInput):
     def create_line_label(self, text):
         '''Create a label from a text, using line options
         '''
+        ntext = text.replace('\n', '').replace('\t', ' ' * self.tab_width)
         kw = self.get_line_options()
-        label = Label(text.replace('\n', ''), **kw)
+        cid = '%s\0%s' % (ntext, str(kw))
+        label = Cache.get('textarea.label', cid)
+        if not label:
+            label = Label(ntext, **kw)
+            Cache.append('textarea.label', cid, label)
         return label
 
     def glyph_size(self, g):
@@ -561,7 +578,7 @@ class MTTextArea(MTTextInput):
             self._update_selection(True)
 
     def _window_on_key_down(self, key, scancode=None, unicode=None):
-        if unicode and not key in self.interesting_keys.keys() + [9, 27]:
+        if unicode and not key in self.interesting_keys.keys() + [27]:
             modifiers = getWindow().modifiers
             if 'ctrl' in modifiers:
                 if key == ord('x'): # cut selection

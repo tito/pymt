@@ -52,9 +52,9 @@ class MTWindowPygame(BaseWindow):
             self.flags |= pygame.FULLSCREEN
 
         # prepare keyboard
-        repeat_delay = pymt.pymt_config.get('keyboard', 'repeat_delay')
-        repeat_rate = pymt.pymt_config.get('keyboard', 'repeat_rate')
-        pygame.key.set_repeat(int(repeat_delay), 1000. / float(repeat_rate))
+        repeat_delay = int(pymt.pymt_config.get('keyboard', 'repeat_delay'))
+        repeat_rate = float(pymt.pymt_config.get('keyboard', 'repeat_rate'))
+        pygame.key.set_repeat(repeat_delay, int(1000. / repeat_rate))
 
         # set window icon before calling set_mode
         icon = pygame.image.load(pymt.pymt_config.get('graphics', 'window_icon'))

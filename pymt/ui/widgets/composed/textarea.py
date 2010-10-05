@@ -132,7 +132,8 @@ class MTTextArea(MTTextInput):
         for index, char in enumerate(text):
             if char not in delimiters:
                 continue
-            yield text[oldindex:index]
+            if oldindex != index:
+                yield text[oldindex:index]
             yield text[index:index+1]
             oldindex = index+1
         yield text[oldindex:]
@@ -154,7 +155,7 @@ class MTTextArea(MTTextInput):
         line = []
         lines = []
         lines_flags = []
-        width = self.width
+        width = self.width - self.__padding_x * 2
         glyph_size = self.glyph_size
 
         # try to add each word on current line.
@@ -169,10 +170,10 @@ class MTTextArea(MTTextInput):
                 flags = 0
                 line = []
                 x = 0
-            x += w
             if is_newline:
                 flags |= FL_IS_NEWLINE
             else:
+                x += w
                 line.append(word)
         if line or flags & FL_IS_NEWLINE:
             lines.append(''.join(line))

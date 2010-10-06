@@ -6,15 +6,27 @@ Used specially for CSS
 
 __all__ = ('parse_image', 'parse_color', 'parse_int', 'parse_float',
            'parse_string', 'parse_bool', 'parse_int2',
-           'parse_float4')
+           'parse_float4', 'parse_filename')
 
 import re
+from pymt.logger import pymt_logger
+from pymt.resources import resource_find
 from pymt.core.image import Image
 from pymt.core.svg import Svg
 
+def parse_filename(filename):
+    '''Parse a filename, and search inside resource if exist.
+    If we haven't found it, just return the name.
+    '''
+    filename = parse_string(filename)
+    result = resource_find(filename)
+    if result is None:
+        pymt_logger.error('Resource: unable to found <%s>' % filename)
+    return result or filename
+
 def parse_image(filename):
     '''Parse a filename to load an image ro svg'''
-    filename = parse_string(filename)
+    filename = parse_filename(filename)
     if filename in (None, 'None', u'None'):
         return None
     if filename.endswith('.svg'):

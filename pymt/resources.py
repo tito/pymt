@@ -5,6 +5,7 @@ Resources: Search a file inside a list of paths
 __all__ = ('resource_find', 'resource_add_path')
 
 from os.path import join, dirname, exists
+from pymt.logger import pymt_logger
 import sys
 
 resource_paths = [
@@ -27,5 +28,8 @@ def resource_find(filename):
 def resource_add_path(path):
     '''Add a custom path to search in
     '''
+    if path in resource_paths:
+        return
+    pymt_logger.debug('Resource: add <%s> in path list' % path)
     resource_paths.append(path)
 

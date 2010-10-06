@@ -30,8 +30,10 @@ __all__ = (
 
 from pymt.logger import pymt_logger
 from pymt.cache import Cache
+from pymt.resources import resource_add_path
 from pymt.parser import parse_color, parse_image, parse_float4, \
-        parse_float, parse_bool, parse_int, parse_int2, parse_string
+        parse_float, parse_bool, parse_int, parse_int2, parse_string, \
+        parse_filename
 from pymt import pymt_data_dir, pymt_home_dir
 import os
 import sys
@@ -63,10 +65,10 @@ css_keyword_convert = {
     'bg-color':                 parse_color,
     'bg-color-full':            parse_color,
     'font-size':                parse_int,
-    'font-name':                parse_string,
+    'font-name':                parse_filename,
     'font-weight':              parse_string,
     'font-color':               parse_color,
-    'border-image':             parse_string,
+    'border-image':             parse_filename,
     'border-image-width':       parse_float4,
     'border-width':             parse_float,
     'border-radius':            parse_int,
@@ -325,6 +327,7 @@ def css_add_file(cssfile, _reload=False):
         css_add_sheet(cssfile)
 
     '''
+    resource_add_path(os.path.dirname(cssfile))
     with open(cssfile, 'r') as fd:
         pymt_sheet.parse_text(fd.read())
     if not _reload:

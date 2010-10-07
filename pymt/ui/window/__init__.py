@@ -159,13 +159,13 @@ class BaseWindow(EventDispatcher):
         params['position'] = pymt.pymt_config.get(
             'graphics', 'position', 'auto')
         if 'top' in kwargs:
-            params['position'] = 'user'
+            params['position'] = 'custom'
             params['top'] = kwargs.get('top')
         else:
             params['top'] = pymt.pymt_config.getint('graphics', 'top')
 
         if 'left' in kwargs:
-            params['position'] = 'user'
+            params['position'] = 'custom'
             params['left'] = kwargs.get('left')
         else:
             params['left'] = pymt.pymt_config.getint('graphics', 'left')

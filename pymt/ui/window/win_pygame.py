@@ -43,11 +43,11 @@ class MTWindowPygame(BaseWindow):
 
         if params['position'] == 'auto':
             self._pos = None
-        elif params['position'] == 'user':
+        elif params['position'] == 'custom':
             self._pos = params['left'], params['top']
         else:
             raise ValueError('position token in configuration accept only '
-                             '"auto" or "user"')
+                             '"auto" or "custom"')
 
         self._fullscreenmode = params['fullscreen']
         if self._fullscreenmode == 'fake':

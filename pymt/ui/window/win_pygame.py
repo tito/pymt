@@ -41,14 +41,13 @@ class MTWindowPygame(BaseWindow):
         pygame.display.gl_set_attribute(pygame.GL_ALPHA_SIZE, 8)
         pygame.display.set_caption('pymt')
 
-        if params['left'] < 0 and params['top'] < 0:
-            # both are not valid, don't set position.
+        if params['position'] == 'auto':
             self._pos = None
-        else:
-            # ensure to have a positive value
-            params['left'] = params['left'] if params['left'] >= 0 else 0
-            params['top'] = params['top'] if params['top'] >= 0 else 0
+        elif params['position'] == 'user':
             self._pos = params['left'], params['top']
+        else:
+            raise ValueError('position token in configuration accept only '
+                             '"auto" or "user"')
 
         self._fullscreenmode = params['fullscreen']
         if self._fullscreenmode == 'fake':

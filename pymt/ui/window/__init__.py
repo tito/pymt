@@ -155,12 +155,17 @@ class BaseWindow(EventDispatcher):
         else:
             params['vsync'] = pymt.pymt_config.getint('graphics', 'vsync')
 
+
+        params['position'] = pymt.pymt_config.get(
+            'graphics', 'position', 'auto')
         if 'top' in kwargs:
+            params['position'] = 'user'
             params['top'] = kwargs.get('top')
         else:
             params['top'] = pymt.pymt_config.getint('graphics', 'top')
 
         if 'left' in kwargs:
+            params['position'] = 'user'
             params['left'] = kwargs.get('left')
         else:
             params['left'] = pymt.pymt_config.getint('graphics', 'left')

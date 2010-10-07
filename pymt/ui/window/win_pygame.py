@@ -41,18 +41,30 @@ class MTWindowPygame(BaseWindow):
         pygame.display.gl_set_attribute(pygame.GL_ALPHA_SIZE, 8)
         pygame.display.set_caption('pymt')
 
-        self._pos = params['left'], params['top']
+        if params['left'] < 0 and params['top'] < 0:
+            # both are not valid, don't set position.
+            self._pos = None
+        else:
+            # ensure to have a positive value
+            params['left'] = params['left'] if params['left'] >= 0 else 0
+            params['top'] = params['top'] if params['top'] >= 0 else 0
+            self._pos = params['left'], params['top']
+
         self._fullscreenmode = params['fullscreen']
         if self._fullscreenmode == 'fake':
             pymt_logger.debug('WinPygame: Set window to fake fullscreen mode')
             self.flags |= pygame.NOFRAME
+            # if no position set, in fake mode, we always need to set the
+            # position. so replace 0, 0.
+            if self._pos is None:
+                self._pos = (0, 0)
             os.environ['SDL_VIDEO_WINDOW_POS'] = '%d,%d' % self._pos
 
         elif self._fullscreenmode:
             pymt_logger.debug('WinPygame: Set window to fullscreen mode')
             self.flags |= pygame.FULLSCREEN
 
-        else:
+        elif self._pos is not None:
             os.environ['SDL_VIDEO_WINDOW_POS'] = '%d,%d' % self._pos
 
         # prepare keyboard

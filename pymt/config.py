@@ -11,7 +11,7 @@ from pymt.logger import pymt_logger
 from pymt import pymt_home_dir, pymt_config_fn, logger
 
 # Version number of current configuration format
-PYMT_CONFIG_VERSION = 13
+PYMT_CONFIG_VERSION = 14
 
 #: PyMT configuration object
 pymt_config = None
@@ -160,6 +160,11 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             # default configuration for keyboard repeatition
             pymt_config.setdefault('keyboard', 'repeat_delay', 300)
             pymt_config.setdefault('keyboard', 'repeat_rate', 30)
+
+        elif pymt_config_version == 13:
+            # add possibility to set the position of windows
+            pymt_config.setdefault('graphics', 'top', -1)
+            pymt_config.setdefault('graphics', 'left', -1)
 
         else:
             # for future.

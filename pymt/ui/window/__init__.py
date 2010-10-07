@@ -155,6 +155,16 @@ class BaseWindow(EventDispatcher):
         else:
             params['vsync'] = pymt.pymt_config.getint('graphics', 'vsync')
 
+        if 'top' in kwargs:
+            params['top'] = kwargs.get('top')
+        else:
+            params['top'] = pymt.pymt_config.getint('graphics', 'top')
+
+        if 'left' in kwargs:
+            params['left'] = kwargs.get('left')
+        else:
+            params['left'] = pymt.pymt_config.getint('graphics', 'left')
+
         # show fps if asked
         self.show_fps = kwargs.get('show_fps')
         if pymt.pymt_config.getboolean('pymt', 'show_fps'):

@@ -142,6 +142,7 @@ setup(
         'pymt.core',
         'pymt.core.audio',
         'pymt.core.camera',
+        'pymt.core.clipboard',
         'pymt.core.image',
         'pymt.core.spelling',
         'pymt.core.svg',

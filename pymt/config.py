@@ -158,14 +158,14 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 
         elif pymt_config_version == 12:
             # default configuration for keyboard repeatition
-            pymt_config.setdefault('keyboard', 'repeat_delay', 300)
-            pymt_config.setdefault('keyboard', 'repeat_rate', 30)
+            pymt_config.setdefault('keyboard', 'repeat_delay', '300')
+            pymt_config.setdefault('keyboard', 'repeat_rate', '30')
 
         elif pymt_config_version == 13:
             # add possibility to set the position of windows
             pymt_config.setdefault('graphics', 'position', 'auto')
-            pymt_config.setdefault('graphics', 'top', 0)
-            pymt_config.setdefault('graphics', 'left', 0)
+            pymt_config.setdefault('graphics', 'top', '0')
+            pymt_config.setdefault('graphics', 'left', '0')
 
         else:
             # for future.

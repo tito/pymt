@@ -1,10 +1,24 @@
 '''
 Mouse: Mouse provider implementation
+
+On linux system, mouse provider can be annoying when used with another
+multitouch provider (hidinput or mtdev.). Mouse can conflict with them: a single
+touch can generate one event from mouse provider and from multitouch provider.
+
+To avoid this behavior, you can activate the "disable_on_activity" token in
+mouse. Then, if they are any touch active from another provider, the mouse will
+be discarded. Put in your configuration ::
+
+    [input]
+    mouse = mouse,disable_on_activity
+
 '''
 
 __all__ = ('MouseTouchProvider', )
 
 from collections import deque
+from pymt.logger import pymt_logger
+from pymt.base import getCurrentTouches
 from pymt.input.provider import TouchProvider
 from pymt.input.factory import TouchFactory
 from pymt.input.touch import Touch
@@ -25,6 +39,15 @@ class MouseTouchProvider(TouchProvider):
         self.counter = 0
         self.current_drag = None
         self.alt_touch = None
+        self.disable_on_activity = False
+
+        # split arguments
+        args = args.split(',')
+        for arg in args:
+            if arg == 'disable_on_activity':
+                self.disable_on_activity = True
+            else:
+                pymt_logger.error('Mouse: unknown parameter <%s>' % arg)
 
     def start(self):
         '''Start the mouse provider'''
@@ -33,6 +56,21 @@ class MouseTouchProvider(TouchProvider):
     def stop(self):
         '''Stop the mouse provider'''
         pass
+
+    def test_activity(self):
+        if not self.disable_on_activity:
+            return False
+        # trying to get if we currently have other touch than us
+        # discard touches generated from kinetic
+        touches = getCurrentTouches()
+        for touch in touches:
+            # discard all kinetic touch
+            if touch.__class__.__name__ == 'KineticTouch':
+                continue
+            # not our instance, stop mouse
+            if touch.__class__ != self.__class__:
+                return True
+        return False
 
     def find_touch(self, x, y):
         factor = 10. / self.window.width
@@ -70,6 +108,8 @@ class MouseTouchProvider(TouchProvider):
         return True
 
     def on_mouse_press(self, x, y, button, modifiers):
+        if self.test_activity():
+            return
         rx = x / float(self.window.width)
         ry = 1. - y / float(self.window.height)
         newTouch = self.find_touch(rx, ry)

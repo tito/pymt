@@ -20,6 +20,8 @@ You have the possibility to use custom range for some X, Y and pressure value.
 On some drivers, the range reported is invalid.
 To fix that, you can add one of theses options on the argument line :
 
+* invert_x : 1 to invert X axis
+* invert_y : 1 to invert Y axis
 * min_position_x : X minimum
 * max_position_x : X maximum
 * min_position_y : Y minimum
@@ -81,7 +83,8 @@ else:
                    'min_position_y', 'max_position_y',
                    'min_pressure', 'max_pressure',
                    'min_touch_major', 'max_touch_major',
-                   'min_touch_minor', 'min_touch_major')
+                   'min_touch_minor', 'min_touch_major',
+                   'invert_x', 'invert_y')
 
         def __init__(self, device, args):
             super(MTDTouchProvider, self).__init__(device, args)
@@ -212,6 +215,11 @@ else:
             pymt_logger.info('MTD: <%s> range pressure is %d - %d' %
                              (_fn, range_min_pressure, range_max_pressure))
 
+            invert_x                = int(bool(drs('invert_x', 0)))
+            invert_y                = int(bool(drs('invert_y', 0)))
+            pymt_logger.info('MTD: <%s> axes invertion: X is %d, Y is %d' %
+                             (_fn, invert_x, invert_y))
+
             while _device:
                 # idle as much as we can.
                 while _device.idle(1000):
@@ -236,11 +244,17 @@ else:
                     ev_value = data.value
                     ev_code = data.code
                     if ev_code == MTDEV_CODE_POSITION_X:
-                        point['x'] = normalize(ev_value,
+                        val = normalize(ev_value,
                             range_min_position_x, range_max_position_x)
+                        if invert_x:
+                            val = 1. - val
+                        point['x'] = val
                     elif ev_code == MTDEV_CODE_POSITION_Y:
-                        point['y'] = 1. - normalize(ev_value,
+                        val = 1. - normalize(ev_value,
                             range_min_position_y, range_max_position_y)
+                        if invert_y:
+                            val = 1. - val
+                        point['y'] = val
                     elif ev_code == MTDEV_CODE_PRESSURE:
                         point['pressure'] = normalize(ev_value,
                             range_min_pressure, range_max_pressure)

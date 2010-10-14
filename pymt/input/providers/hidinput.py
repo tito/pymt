@@ -17,6 +17,8 @@ You have the possibility to use custom range for some X, Y and pressure value.
 On some drivers, the range reported is invalid.
 To fix that, you can add one of theses options on the argument line :
 
+* invert_x : 1 to invert X axis
+* invert_y : 1 to invert Y axis
 * min_position_x : X minimum
 * max_position_x : X maximum
 * min_position_y : Y minimum
@@ -132,7 +134,8 @@ else:
 
         options = ('min_position_x', 'max_position_x',
                    'min_position_y', 'max_position_y',
-                   'min_pressure', 'max_pressure')
+                   'min_pressure', 'max_pressure',
+                   'invert_x', 'invert_y')
 
         def __init__(self, device, args):
             super(HIDInputTouchProvider, self).__init__(device, args)
@@ -211,6 +214,8 @@ else:
             range_max_position_y    = 2048
             range_min_pressure      = 0
             range_max_pressure      = 255
+            invert_x                = int(bool(drs('invert_x', 0)))
+            invert_y                = int(bool(drs('invert_y', 0)))
 
             def process(points):
                 actives = [args['id'] for args in points]
@@ -321,11 +326,17 @@ else:
                             point = {}
                             point['id'] = ev_value
                         elif ev_code == ABS_MT_POSITION_X:
-                            point['x'] = normalize(ev_value,
+                            val = normalize(ev_value,
                                 range_min_position_x, range_max_position_x)
+                            if invert_x:
+                                val = 1. - val
+                            point['x'] = val
                         elif ev_code == ABS_MT_POSITION_Y:
-                            point['y'] = 1. - normalize(ev_value,
+                            val = 1. - normalize(ev_value,
                                 range_min_position_y, range_max_position_y)
+                            if invert_y:
+                                val = 1. - val
+                            point['y'] = val
                         elif ev_code == ABS_MT_ORIENTATION:
                             point['orientation'] = ev_value
                         elif ev_code == ABS_MT_BLOB_ID:

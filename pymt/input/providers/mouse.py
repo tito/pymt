@@ -68,7 +68,7 @@ class MouseTouchProvider(TouchProvider):
             if touch.__class__.__name__ == 'KineticTouch':
                 continue
             # not our instance, stop mouse
-            if touch.__class__ != self.__class__:
+            if touch.__class__ != MouseTouch:
                 return True
         return False
 

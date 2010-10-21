@@ -1,5 +1,10 @@
-#!/bin/sh
-export PYMT_PORTABLE_ROOT=`dirname $0`
+export PYMT_PORTABLE_ROOT=$1
+
+if [ ! -d $PYMT_PORTABLE_ROOT ]; then
+	echo "Usage: pymtenv.sh <root directory of portable package>"
+	exit 1
+fi
+
 echo bootstrapping PyMT @ $PYMT_PORTABLE_ROOT
 
 if [ "X$PYMT_PATHS_INITIALIZED" != "X1" ]; then
@@ -19,7 +24,7 @@ export PATH=$PYMT_PORTABLE_ROOT:$PYMT_PORTABLE_ROOT/Python:$PYMT_PORTABLE_ROOT/g
 echo PATH is $PATH
 echo ----------------------------------
 
-set PYTHONPATH=$PYMT_PORTABLE_ROOT/pymt:$PYTHONPATH
+export PYTHONPATH=$PYMT_PORTABLE_ROOT/pymt:$PYTHONPATH
 echo PYTHONPATH is $PYTHONPATH
 
 export PYMT_PATHS_INITIALIZED=1

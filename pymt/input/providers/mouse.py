@@ -44,7 +44,9 @@ class MouseTouchProvider(TouchProvider):
         # split arguments
         args = args.split(',')
         for arg in args:
-            if arg == 'disable_on_activity':
+            if arg == '':
+                continue
+            elif arg == 'disable_on_activity':
                 self.disable_on_activity = True
             else:
                 pymt_logger.error('Mouse: unknown parameter <%s>' % arg)

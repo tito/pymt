@@ -244,10 +244,12 @@ class MTGestureDetector(MTGestureWidget):
 
     def on_gesture(self, gesture, touch):
         #print self.gdb.gesture_to_str(gesture)
+        # NOT WORKING WITH BIG SETUP.
+        # 1/10 is really too big.
         # Check whether gesture is to small
         #if ((gesture.width < self.parent.width / 10) or ((gesture.height < self.parent.height / 10)):
-        if (gesture.width < self.parent.width / 10) or (gesture.height < self.parent.height / 10):
-            return
+        #if (gesture.width < self.parent.width / 10) or (gesture.height < self.parent.height / 10):
+        #    return
 
         try:
             score, best = self.gdb.find(gesture, minscore=.5)

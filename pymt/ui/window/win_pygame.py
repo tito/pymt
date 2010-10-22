@@ -66,6 +66,9 @@ class MTWindowPygame(BaseWindow):
         elif self._pos is not None:
             os.environ['SDL_VIDEO_WINDOW_POS'] = '%d,%d' % self._pos
 
+        # never stay with a None pos, application using w.center will be fired.
+        self._pos = (0, 0)
+
         # prepare keyboard
         repeat_delay = int(pymt.pymt_config.get('keyboard', 'repeat_delay'))
         repeat_rate = float(pymt.pymt_config.get('keyboard', 'repeat_rate'))

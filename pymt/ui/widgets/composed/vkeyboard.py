@@ -344,6 +344,13 @@ class MTVKeyboard(MTScatterWidget):
         '''Clear the text'''
         self.text = u''
 
+    def reset_repeat(self):
+        '''Reset key repeat
+        '''
+        self._last_key_down     = []
+        self._last_key_repeat   = 0
+        self._last_key_repeat_timeout  = 0
+
 
     #
     # Private methods
@@ -537,7 +544,8 @@ class MTVKeyboard(MTScatterWidget):
 
     def on_key_down(self, key, repeat=False):
         if repeat is False:
-            self._last_key_down.append(key)
+            if not key in self._last_key_down:
+                self._last_key_down.append(key)
             self._last_key_repeat_timeout = self.repeat_timeout
             self._last_key_repeat = self.repeat
         displayed_str, internal_str, internal_action, scale = key

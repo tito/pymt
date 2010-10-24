@@ -74,7 +74,8 @@ def _on_draw():
         w2 = win.width / 2.
         h2 = win.height / 2.
         y = 0
-        k = {'font_size': 24}
+        k = {'font_size': 20}
+        ydiff = 25
 
         # draw help
         drawLabel('PyMT Keybinding',
@@ -85,23 +86,32 @@ def _on_draw():
                   pos=(w2, win.height - 180), font_size=12)
         drawLabel('F1 - Show Help',
                   pos=(w2, h2), **k)
-        y += 35
+        y += ydiff
         drawLabel('F2 - Show FPS (%s)' % str(win.show_fps),
                   pos=(w2, h2 - y), **k)
-        y += 35
+        y += ydiff
         drawLabel('F3 - Show Cache state',
                   pos=(w2, h2 - y), **k)
-        y += 35
+        y += ydiff
         drawLabel('F4 - Show Calibration screen',
                   pos=(w2, h2 - y), **k)
         if _can_fullscreen():
-            y += 35
+            y += ydiff
             drawLabel('F5 - Toggle fullscreen',
                       pos=(w2, h2 - y), **k)
-        y += 35
+        y += ydiff
         drawLabel('F6 - Show log',
                   pos=(w2, h2 - y), **k)
-        y += 35
+        y += ydiff
+        drawLabel('F7 - Reload CSS',
+                  pos=(w2, h2 - y), **k)
+        y += ydiff
+        drawLabel('F8 - Show widget tree',
+                  pos=(w2, h2 - y), **k)
+        y += ydiff
+        drawLabel('F9 - Rotate the screen (%d)' % win.rotation,
+                  pos=(w2, h2 - y), **k)
+        y += ydiff
         drawLabel('F12 - Screenshot',
                   pos=(w2, h2 - y), **k)
 
@@ -349,6 +359,8 @@ def _on_keyboard_handler(key, scancode, unicode):
         css_reload()
     elif key == 289: # F8
         toggle_scene_graph()
+    elif key == 290: # F9
+        win.rotation = win.rotation + 90
     elif key == 293:
         _screenshot()
 

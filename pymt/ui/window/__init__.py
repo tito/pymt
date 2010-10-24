@@ -17,7 +17,7 @@ from OpenGL.GL import GL_VERSION, GL_FASTEST, GL_NICEST, GL_LINE_SMOOTH, \
         GL_MODELVIEW, GL_PROJECTION, \
         glGetString, glClear, glClearColor, glEnable, glHint, \
         glViewport, glMatrixMode, glLoadIdentity, glFrustum, glScalef, \
-        glTranslatef
+        glTranslatef, glRotatef
 
 import pymt
 from pymt.utils import SafeList
@@ -93,9 +93,11 @@ class BaseWindow(EventDispatcher):
         # init privates
         self._modifiers = []
         self._size = (0, 0)
+        self._rotation = 0
 
         # event subsystem
         self.register_event_type('on_flip')
+        self.register_event_type('on_rotate')
         self.register_event_type('on_draw')
         self.register_event_type('on_update')
         self.register_event_type('on_resize')
@@ -235,18 +237,36 @@ class BaseWindow(EventDispatcher):
         return self._modifiers
     modifiers = property(_get_modifiers)
 
+    def _get_size(self):
+        r = self._rotation
+        w, h = self._size
+        if r == 0 or r == 180:
+            return w, h
+        return h, w
     def _set_size(self, size):
         if super(BaseWindow, self)._set_size(size):
             pymt_logger.debug('Window: Resize window to %s' % str(self.size))
             self.dispatch_event('on_resize', *size)
             return True
         return False
-    size = property(EventDispatcher._get_size, _set_size)
+    size = property(_get_size, _set_size)
 
     # make some property read-only
-    width = property(EventDispatcher._get_width)
-    height = property(EventDispatcher._get_height)
-    center = property(EventDispatcher._get_center)
+    @property
+    def width(self):
+        r = self._rotation
+        if r == 0 or r == 180:
+            return self._size[0]
+        return self._size[1]
+    @property
+    def height(self):
+        r = self._rotation
+        if r == 0 or r == 180:
+            return self._size[1]
+        return self._size[0]
+    @property
+    def center(self):
+        return self.width / 2., self.height / 2.
 
     def _get_wallpaper(self):
         return self._wallpaper
@@ -387,35 +407,60 @@ class BaseWindow(EventDispatcher):
 
     def on_touch_down(self, touch):
         '''Event called when a touch is down'''
-        touch.scale_for_screen(*self.size)
+        w, h = self.system_size
+        touch.scale_for_screen(w, h, rotation=self._rotation)
         for w in reversed(self.children[:]):
             if w.dispatch_event('on_touch_down', touch):
                 return True
 
     def on_touch_move(self, touch):
         '''Event called when a touch move'''
-        touch.scale_for_screen(*self.size)
+        w, h = self.system_size
+        touch.scale_for_screen(w, h, rotation=self._rotation)
         for w in reversed(self.children[:]):
             if w.dispatch_event('on_touch_move', touch):
                 return True
 
     def on_touch_up(self, touch):
         '''Event called when a touch up'''
-        touch.scale_for_screen(*self.size)
+        w, h = self.system_size
+        touch.scale_for_screen(w, h, rotation=self._rotation)
         for w in reversed(self.children[:]):
             if w.dispatch_event('on_touch_up', touch):
                 return True
 
     def on_resize(self, width, height):
         '''Event called when the window is resized'''
+        self.update_viewport()
+
+    def update_viewport(self):
+        width, height = self.system_size
+        w2 = width / 2.
+        h2 = height / 2.
+
+        # prepare the viewport
         glViewport(0, 0, width, height)
+
+        # set the projection
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        glFrustum(-width / 2, width / 2, -height / 2, height / 2, .1, 1000)
+        glFrustum(-w2, w2, -h2, h2, .1, 1000)
         glScalef(5000, 5000, 1)
-        glTranslatef(-width / 2, -height / 2, -500)
-        glMatrixMode(GL_MODELVIEW)
 
+        # use the rotated size.
+        width, height = self.size
+        w2 = width / 2.
+        h2 = height / 2.
+        glTranslatef(-w2, -h2, -500)
+
+        # set the model view
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        glTranslatef(w2, h2, 0)
+        glRotatef(self._rotation, 0, 0, 1)
+        glTranslatef(-w2, -h2, 0)
+
+        # update window size
         for w in self.children:
             shw, shh = w.size_hint
             if shw and shh:
@@ -424,6 +469,30 @@ class BaseWindow(EventDispatcher):
                 w.width = shw * width
             elif shh:
                 w.height = shh * height
+
+    def _get_rotation(self):
+        return self._rotation
+    def _set_rotation(self, x):
+        x = int(x % 360)
+        if x == self._rotation:
+            return
+        if x not in (0, 90, 180, 270):
+            raise ValueError('can rotate only 0,90,180,270 degrees')
+        self._rotation = x
+        self.dispatch_event('on_resize', *self.size)
+        self.dispatch_event('on_rotate', x)
+    rotation = property(_get_rotation, _set_rotation,
+            'Get/set the window content rotation. Can be one of '
+            '0, 90, 180, 270 degrees.')
+
+    @property
+    def system_size(self):
+        return self._size
+
+    def on_rotate(self, rotation):
+        '''Event called when the screen have been rotated
+        '''
+        pass
 
     def on_close(self, *largs):
         '''Event called when the window is closed'''

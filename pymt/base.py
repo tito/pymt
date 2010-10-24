@@ -136,7 +136,8 @@ class TouchEventLoop(object):
             root_window = wid.get_root_window()
             if wid != root_window and root_window is not None:
                 touch.push()
-                touch.scale_for_screen(*root_window.size)
+                w, h = root_window.system_size
+                touch.scale_for_screen(w, h, rotation=root_window.rotation)
                 parent = wid.parent
                 # and do to_local until the widget
                 try:

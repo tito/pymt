@@ -75,7 +75,7 @@ class MouseTouchProvider(TouchProvider):
         return False
 
     def find_touch(self, x, y):
-        factor = 10. / self.window.width
+        factor = 10. / self.window.system_size[0]
         for t in self.touches.itervalues():
             if abs(x-t.sx) < factor and abs(y-t.sy) < factor:
                 return t
@@ -97,8 +97,9 @@ class MouseTouchProvider(TouchProvider):
         self.waiting_event.append(('up', cur))
 
     def on_mouse_motion(self, x, y, modifiers):
-        rx = x / float(self.window.width)
-        ry = 1. - y / float(self.window.height)
+        width, height = self.window.system_size
+        rx = x / float(width)
+        ry = 1. - y / float(height)
         if self.current_drag:
             cur = self.current_drag
             cur.move([rx, ry])
@@ -112,8 +113,9 @@ class MouseTouchProvider(TouchProvider):
     def on_mouse_press(self, x, y, button, modifiers):
         if self.test_activity():
             return
-        rx = x / float(self.window.width)
-        ry = 1. - y / float(self.window.height)
+        width, height = self.window.system_size
+        rx = x / float(width)
+        ry = 1. - y / float(height)
         newTouch = self.find_touch(rx, ry)
         if newTouch:
             self.current_drag = newTouch
@@ -126,8 +128,9 @@ class MouseTouchProvider(TouchProvider):
         return True
 
     def on_mouse_release(self, x, y, button, modifiers):
-        rx = x / float(self.window.width)
-        ry = 1. - y / float(self.window.height)
+        width, height = self.window.system_size
+        rx = x / float(width)
+        ry = 1. - y / float(height)
         cur = self.find_touch(rx, ry)
         if button == 'left' and cur and not ('ctrl' in modifiers):
             self.remove_touch(cur)

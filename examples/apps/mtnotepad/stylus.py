@@ -19,7 +19,7 @@ class Painter(MTWidget):
 
     def draw(self):
         for line in self.lines:
-            set_color(0,0,0,0.6)
+            set_color(1,1,1,.9)
             drawLine(line, width=5)
 
 scatter = MTScatterPlane()

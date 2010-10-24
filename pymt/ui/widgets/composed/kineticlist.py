@@ -8,6 +8,7 @@ __all__ = (
 )
 
 import pymt
+from pymt.config import pymt_config
 from pymt.utils import boundary
 from pymt.graphx import set_color, drawRectangle, drawCSSRectangle
 from pymt.base import getFrameDt
@@ -21,6 +22,12 @@ from pymt.core.text import Label
 class MTKineticList(MTStencilContainer):
     '''This is a kinetic container widget, that allows you to make
     a kinetic list scrolling in either direction.
+
+    Some parameters are customizable in global configuration ::
+
+        [widgets]
+        list_friction = 10
+        list_trigger_distance = 5
 
     :Parameters:
         `align` : string, default to 'center'
@@ -76,7 +83,6 @@ class MTKineticList(MTStencilContainer):
             Fired when an item gets deleted.
     '''
     def __init__(self, **kwargs):
-        kwargs.setdefault('friction', 10)
         kwargs.setdefault('padding_x', 4)
         kwargs.setdefault('padding_y', 4)
         kwargs.setdefault('w_limit', 1)
@@ -86,7 +92,6 @@ class MTKineticList(MTStencilContainer):
         kwargs.setdefault('title', 'No title')
         kwargs.setdefault('deletable', True)
         kwargs.setdefault('searchable', True)
-        kwargs.setdefault('trigger_distance', 3)
         kwargs.setdefault('align', 'center')
 
         super(MTKineticList, self).__init__(**kwargs)
@@ -104,13 +109,15 @@ class MTKineticList(MTStencilContainer):
         self.titletext  = kwargs.get('title')
         self.deletable  = kwargs.get('deletable')
         self.searchable = kwargs.get('searchable')
-        self.friction   = kwargs.get('friction')
         self.padding_x  = kwargs.get('padding_x')
         self.padding_y  = kwargs.get('padding_y')
         self.w_limit    = kwargs.get('w_limit')
         self.h_limit    = kwargs.get('h_limit')
         self.align      = kwargs.get('align')
-        self.trigger_distance = kwargs.get('trigger_distance')
+        self.trigger_distance = kwargs.get('trigger_distance',
+            pymt_config.getint('widgets', 'list_trigger_distance'))
+        self.friction = kwargs.get('friction',
+            pymt_config.getint('widgets', 'list_friction'))
 
         if self.w_limit and self.h_limit:
             raise Exception('You cannot limit both axes')

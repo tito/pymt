@@ -177,10 +177,10 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 
     # Can be overrided in command line
     try:
-        opts, args = getopt.getopt(sys_argv[1:], 'hp:fkawFem:sn',
+        opts, args = getopt.getopt(sys_argv[1:], 'hp:fkawFem:snr:',
             ['help', 'fullscreen', 'windowed', 'fps', 'event',
              'module=', 'save', 'fake-fullscreen', 'auto-fullscreen',
-             'display=', 'size='])
+             'display=', 'size=', 'rotate='])
 
         # set argv to the non-read args
         sys.argv = sys_argv[0:1] + args
@@ -221,6 +221,8 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
                 pymt_config.set('modules', args[0], args[1])
             elif opt in ('-s', '--save'):
                 need_save = True
+            elif opt in ('-r', '--rotation'):
+                pymt_config.set('graphics', 'rotation', arg)
             elif opt in ('-n', ):
                 pymt_options['shadow_window'] = False
 

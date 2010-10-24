@@ -188,6 +188,9 @@ Configuration
   # path to the window icon (for replacing the default pygame icon.)
   window_icon = <path>
 
+  # rotation of the window
+  rotation = (0|90|180|270)
+
 
   [input]
 

@@ -246,6 +246,7 @@ def pymt_usage():
         -p, --provider id:provider[,options] add a provider (eg: ccvtable1:tuio,192.168.0.1:3333)
         -F, --fps                   show fps in window
         -m mod, --module=mod        activate a module (use "list" to get available module)
+        -r, --rotation              rotate the window (0, 90, 180, 270)
         -s, --save                  save current PyMT configuration
         --size=640x480              size of window
 

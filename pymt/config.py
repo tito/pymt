@@ -11,7 +11,7 @@ from pymt.logger import pymt_logger
 from pymt import pymt_home_dir, pymt_config_fn, logger
 
 # Version number of current configuration format
-PYMT_CONFIG_VERSION = 15
+PYMT_CONFIG_VERSION = 16
 
 #: PyMT configuration object
 pymt_config = None
@@ -170,6 +170,10 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         elif pymt_config_version == 14:
             # ability to change maximum FPS
             pymt_config.setdefault('graphics', 'fps', '0')
+
+        elif pymt_config_version == 15:
+            # ability to rotate the window
+            pymt_config.setdefault('graphics', 'rotation', '0')
 
         else:
             # for future.

@@ -164,6 +164,11 @@ class BaseWindow(EventDispatcher):
         else:
             params['fps'] = pymt.pymt_config.getint('graphics', 'fps')
 
+        if 'rotation' in kwargs:
+            params['rotation'] = kwargs.get('rotation')
+        else:
+            params['rotation'] = pymt.pymt_config.getint('graphics', 'rotation')
+
         params['position'] = pymt.pymt_config.get(
             'graphics', 'position', 'auto')
         if 'top' in kwargs:
@@ -249,23 +254,27 @@ class BaseWindow(EventDispatcher):
             self.dispatch_event('on_resize', *size)
             return True
         return False
-    size = property(_get_size, _set_size)
+    size = property(_get_size, _set_size,
+        doc='''Rotated size of the window''')
 
     # make some property read-only
     @property
     def width(self):
+        '''Rotated window width'''
         r = self._rotation
         if r == 0 or r == 180:
             return self._size[0]
         return self._size[1]
     @property
     def height(self):
+        '''Rotated window height'''
         r = self._rotation
         if r == 0 or r == 180:
             return self._size[1]
         return self._size[0]
     @property
     def center(self):
+        '''Rotated window center'''
         return self.width / 2., self.height / 2.
 
     def _get_wallpaper(self):
@@ -487,6 +496,8 @@ class BaseWindow(EventDispatcher):
 
     @property
     def system_size(self):
+        '''Real size of the window, without taking care of the rotation
+        '''
         return self._size
 
     def on_rotate(self, rotation):

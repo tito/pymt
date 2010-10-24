@@ -119,6 +119,9 @@ class MTWindowPygame(BaseWindow):
         pygame.mouse.set_visible(
             pymt.pymt_config.getboolean('graphics', 'show_cursor'))
 
+        # set rotation
+        self.rotation = params['rotation']
+
     def close(self):
         pygame.display.quit()
 

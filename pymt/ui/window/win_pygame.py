@@ -6,6 +6,8 @@ __all__ = ('MTWindowPygame', )
 
 import os
 import pymt
+from time import sleep, time
+from pymt.clock import getClock
 from pymt.ui.window import BaseWindow
 from pymt.exceptions import pymt_exception_manager, ExceptionManager
 from pymt.logger import pymt_logger
@@ -82,6 +84,12 @@ class MTWindowPygame(BaseWindow):
         # before calling on_resize
         self._size = params['width'], params['height']
         self._vsync = params['vsync']
+        self._fps = float(params['fps'])
+
+        # ensure the default fps will be 60 if vsync is actived
+        # and if user didn't set any maximum fps.
+        if self._vsync and self._fps <= 0:
+            self._fps = 60.
 
         # try to use mode with multisamples
         try:
@@ -130,12 +138,11 @@ class MTWindowPygame(BaseWindow):
         # this is not a real vsync. this must be done by driver...
         # but pygame can't do vsync on X11, and some people
         # use hack to make it work under darwin...
-        if self._vsync:
-            from pymt.clock import getClock
-            import time
-            s = 1/60. - (time.time() - getClock().get_time())
+        fps = self._fps
+        if fps > 0:
+            s = 1 / fps - (time() - getClock().get_time())
             if s > 0:
-                time.sleep(s)
+                sleep(s)
 
     def toggle_fullscreen(self):
         if self.flags & pygame.FULLSCREEN:

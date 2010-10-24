@@ -11,7 +11,7 @@ from pymt.logger import pymt_logger
 from pymt import pymt_home_dir, pymt_config_fn, logger
 
 # Version number of current configuration format
-PYMT_CONFIG_VERSION = 14
+PYMT_CONFIG_VERSION = 15
 
 #: PyMT configuration object
 pymt_config = None
@@ -166,6 +166,10 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             pymt_config.setdefault('graphics', 'position', 'auto')
             pymt_config.setdefault('graphics', 'top', '0')
             pymt_config.setdefault('graphics', 'left', '0')
+
+        elif pymt_config_version == 14:
+            # ability to change maximum FPS
+            pymt_config.setdefault('graphics', 'fps', '0')
 
         else:
             # for future.

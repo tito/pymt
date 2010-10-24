@@ -50,6 +50,8 @@ class BaseWindow(EventDispatcher):
 
 
     :Parameters:
+        `fps`: int, default to 0
+            Maximum FPS allowed. If 0, fps will be not limited
         `fullscreen`: bool
             Make window as fullscreen
         `width`: int
@@ -155,6 +157,10 @@ class BaseWindow(EventDispatcher):
         else:
             params['vsync'] = pymt.pymt_config.getint('graphics', 'vsync')
 
+        if 'fps' in kwargs:
+            params['fps'] = kwargs.get('fps')
+        else:
+            params['fps'] = pymt.pymt_config.getint('graphics', 'fps')
 
         params['position'] = pymt.pymt_config.get(
             'graphics', 'position', 'auto')

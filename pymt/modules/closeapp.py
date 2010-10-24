@@ -45,7 +45,7 @@ class CloseApp(MTWidget):
             if 'closeapp.invalid_for_close' in touch.userdata:
                 continue
             # distance < 20
-            if Vector(*touch.opos).distance(Vector(touch.sx, touch.sy)) > 0.015:
+            if Vector(touch.osxpos, touch.osypos).distance(Vector(touch.sx, touch.sy)) > 0.015:
                 # flag
                 touch.userdata['closeapp.invalid_for_close'] = True
                 if touch.id in self.closetouches:

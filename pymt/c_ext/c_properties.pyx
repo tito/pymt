@@ -156,7 +156,7 @@ cdef class OptionProperty(Property):
         if x not in self.options:
             raise ValueError('Value is not in available options')
 
-cdef class AliasListProperty(Property):
+cdef class ReferenceListProperty(Property):
     cdef list properties
     cdef int stop_event
 
@@ -207,3 +207,31 @@ cdef class AliasListProperty(Property):
         '''Return the value of the property
         '''
         return self.value
+
+cdef class AliasProperty(Property):
+    cdef object getter
+    cdef object setter
+
+    def __cinit__(self):
+        self.getter = None
+        self.setter = None
+
+    def __init__(self, getter, setter, **kwargs):
+        Property.__init__(self, None, **kwargs)
+        self.getter = getter
+        self.setter = setter
+        for prop in kwargs.get('bind', []):
+            prop.bind(self.trigger_change)
+
+    cpdef trigger_change(self, value):
+        self.dispatch()
+
+    cdef check(self, value):
+        return True
+
+    cpdef get(self):
+        return self.getter()
+
+    cpdef bool set(self, value):
+        return self.setter(value)
+

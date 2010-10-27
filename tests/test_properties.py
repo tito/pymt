@@ -84,4 +84,52 @@ def unittest_property_propertynone():
     a.set(1)
     test(a.get() == 1)
 
+def unittest_property_alias():
+    import_pymt_no_window()
+    from pymt.c_ext.c_properties import NumericProperty, AliasProperty
+
+    x = NumericProperty(0)
+    width = NumericProperty(100)
+
+    def get_right():
+        return x.get() + width.get()
+    def set_right(value):
+        return x.set(value - width.get())
+    right = AliasProperty(get_right, set_right, bind=(x, width))
+
+    test(right.get() == 100)
+    x.set(500)
+    test(right.get() == 600)
+    width.set(50)
+    test(right.get() == 550)
+
+    right.set(100)
+    test(width.get() == 50)
+    test(x.get() == 50)
+
+    # test observer
+    global observe_called
+    observe_called = 0
+    def observe(value):
+        global observe_called
+        observe_called = 1
+    right.bind(observe)
+
+    x.set(100)
+    test(observe_called == 1)
+    observe_called = 0
+
+    x.set(100)
+    test(observe_called == 0)
+
+    width.set(900)
+    test(observe_called == 1)
+    observe_called = 0
+
+    right.set(700)
+    test(observe_called == 1)
+    observe_called = 0
+
+    right.set(700)
+    test(observe_called == 0)
 

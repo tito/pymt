@@ -1,57 +1,70 @@
+from copy import deepcopy, copy
+
 cdef class Property:
     '''Base class for build more complex property. This handle all the basics
     setter and getter, None handling, and observers.
     '''
 
+    cdef str name, bound_name
     cdef readonly int allownone
-    cdef object value
-    cdef list observers
+    cdef object defaultvalue
 
     def __cinit__(self):
-        self.value = None
+        self.name = ''
         self.allownone = 0
-        self.observers = list()
+        self.defaultvalue = None
 
     def __init__(self, defaultvalue, **kw):
-        self.value = defaultvalue
+        self.defaultvalue = defaultvalue
         self.allownone = <int>kw.get('allownone', 0)
-
         # ensure that the default value fit to the check.
-        self.check(self.value)
+        self.check(self.defaultvalue)
 
-    cpdef bind(self, observer):
+    cpdef link(self, obj, name):
+        self.name = name
+        self.bound_name = '___%s' % name
+        obj.__dict__['___%s' % name] = dict(
+            value = self.defaultvalue,
+            observers = []
+        ))
+
+    cpdef bind(self, obj, observer):
         '''Add a new observer to be called only when the value is changed
         '''
-        if not observer in self.observers:
-            self.observers.append(observer)
+        observers = obj.__dict__[self.bound_name]['observers']
+        if not observer in observers:
+            observers.append(observer)
 
-    cpdef unbind(self, observer):
+    cpdef unbind(self, obj, observer):
         '''Remove a observer from the observer list
         '''
-        if observer in self.observers:
-            self.observers.remove(observer)
+        observers = obj.__dict__[self.bound_name]['observers']
+        if observer in observers:
+            observers.remove(observer)
 
-    cpdef bool set(self, x):
+    def __set__(self, obj, val):
+        self.pset(obj, val)
+
+    def __get__(self, obj, objtype):
+        return self.pget(obj, objtype)
+
+    cpdef pset(self, obj, value):
         '''Set a new value for the property
         '''
-        x = self.convert(x)
-        if self.value == x:
+        value = self.convert(value)
+        d = obj.__dict__[self.bound_name]
+        realvalue = d['value']
+        if realvalue == value:
             return False
-        self.check(x)
-        self.value = x
-        self.dispatch()
+        self.check(value)
+        d['value'] = value
+        self.dispatch(obj)
         return True
 
-    cpdef get(self):
+    cpdef pget(self, obj, objtype):
         '''Return the value of the property
         '''
-        return self.value
-
-    cpdef pset(self, cls, x):
-        return self.set(x)
-
-    cpdef pget(self, cls):
-        return self.get()
+        return obj.__dict__[self.bound_name]['value']
 
     cpdef doc(self):
         '''Return the generated doc from the property.
@@ -78,20 +91,14 @@ cdef class Property:
         '''
         return x
 
-    cdef dispatch(self):
+    cdef dispatch(self, obj):
         '''Dispatch the value change to all observers
         '''
         cdef object observer
-        for observer in self.observers:
-            observer(self.value)
-
-
-cdef class StringProperty(Property):
-    cdef check(self, object x):
-        if Property.check(self, x):
-            return True
-        if not isinstance(x, basestring):
-            raise ValueError('Value of the property is not a string')
+        observers = obj.__dict__[self.bound_name]['observers']
+        value = obj.__dict__[self.bound_name]['value']
+        for observer in observers:
+            observer(value)
 
 cdef class NumericProperty(Property):
     cdef check(self, object x):
@@ -99,6 +106,14 @@ cdef class NumericProperty(Property):
             return True
         if type(x) not in (int, float):
             raise ValueError('Value of the property is not a numeric (int/float)')
+
+"""
+cdef class StringProperty(Property):
+    cdef check(self, object x):
+        if Property.check(self, x):
+            return True
+        if not isinstance(x, basestring):
+            raise ValueError('Value of the property is not a string')
 
 cdef class BoundedNumericProperty(Property):
     cdef int _use_min
@@ -235,3 +250,4 @@ cdef class AliasProperty(Property):
     cpdef bool set(self, value):
         return self.setter(value)
 
+"""

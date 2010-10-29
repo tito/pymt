@@ -1,78 +1,5 @@
 '''
-Graphics: Lower level functions to draw in OpenGL.
-
-Our previous graphx package relied on OpenGL's so-called immediate mode.
-This mode is no longer allowed in OpenGL 3.0 and OpenGL ES.
-This graphics module is the new and stable way to draw all OpenGL elements
-in PyMT.
-We seriously recommend you use these classes (the old graphx package will be deprecated)!
-
-
-User mode
----------
-
-For every object you want do draw on the screen, you must create them on a canvas
-before drawing. The canvas object is a class that will store
-all your graphics elements and draw them efficiently.
-This method allows for internal optimizations.
-Use it like this ::
-
-    >>> canvas = Canvas()
-    >>> canvas.color(1, 0, 0, 1)
-    >>> canvas.line([50, 50, 100, 100])
-
-Then, to draw the canvas ::
-
-    >>> canvas.draw()
-
-You can also get a handle for any element of the canvas to change it later ::
-
-    >>> myline = canvas.line([50, 50, 100, 100])
-    >>> myline.points += [0, 150]
-
-
-Expert mode
------------
-
-You can create your own graphical object.
-However, you should still use the canvas object.
-
-An example with a line ::
-
-    # in init function
-    >>> line = Line([50, 50, 100, 100])
-
-    # in draw function
-    >>> line.draw()
-
-    # If you want to change the points of the line, you can do
-    >>> line.points = [80, 80, 100, 100]
-
-    # Or even add points to the line
-    >>> line.points += [58, 35]
-
-
-An example with a rectangle ::
-
-    # in init function
-    >>> rect = Rectangle(pos=(50, 50), size=(200, 200))
-
-    # in draw function
-    >>> rect.draw()
-
-    # You can change pos, size...
-    >>> rect.pos = (10, 10)
-    >>> rect.size = (999, 999)
-
-An example with a rectangle and a texture ::
-
-    # in init function
-    >>> img = Image('test.png')
-    >>> rect = Rectangle(size=(100, 100), texture=img.texture)
-
-    # in draw function
-    >>> rect.draw()
-
+Graphics ES: Lower level functions to draw in OpenGL ES.
 '''
 
 #
@@ -83,24 +10,31 @@ An example with a rectangle and a texture ::
 # 1. use our own VBO
 # 2. handle ourself texture
 # 3. handle all in a shader (aka opengl es)
-#
+# 4. dont use any non ES functions
 
-
+import os
+from pymt import pymt_shader_dir
 from pymt.baseobject import BaseObject
 from pymt.texture import Texture, TextureRegion
-from pymt.graphx import getLabel, gx_texture
+from pymt.graphx import getLabel, gx_texture, Shader
 from pymt.resources import resource_find
 from pymt.core.image import Image
 from array import array
 from OpenGL.arrays import vbo
 
+from pymt.lib.transformations import matrix_multiply, identity_matrix, rotation_matrix, translation_matrix, scale_matrix, clip_matrix
+
 from c_opengl cimport *
+
 
 cdef extern from "math.h":
     double cos(double)
     double sin(double)
     double sqrt(double)
-#
+
+
+
+
 # Documentation:
 #  http://www.openorg/wiki/Vertex_Buffer_Object
 #
@@ -111,7 +45,16 @@ cdef extern from "math.h":
 #  n = Normal (nn = xy, nnn = xyz)
 #  i = Index (color index)
 #  e = Edge
-#
+
+
+
+
+_default_vertex_shader = open(os.path.join(pymt_shader_dir, 'default.vs')).read()
+_default_fragment_shader = open(os.path.join(pymt_shader_dir, 'default.fs')).read()
+_default_shader = Shader(_default_vertex_shader, _default_fragment_shader)
+
+
+
 
 cdef double pi = 3.1415926535897931
 cdef dict texture_map = {}
@@ -141,12 +84,7 @@ cdef int gl_type_from_str(str typ):
         return GL_TRIANGLE_FAN
     elif typ == 'triangle_strip':
         return GL_TRIANGLE_STRIP
-    elif typ == 'quads':
-        return GL_QUADS
-    elif typ == 'quad_strip':
-        return GL_QUAD_STRIP
-    elif typ == 'polygon':
-        return GL_POLYGON
+   
 
 cdef class GraphicContext:
     '''Handle the saving/restore of the context
@@ -157,6 +95,10 @@ cdef class GraphicContext:
     cdef list stack
     cdef set journal
     cdef readonly int need_flush
+
+    property default_shader:
+        def __get__(self):
+            return _default_shader
 
     def __cinit__(self):
         self.state = {}
@@ -178,11 +120,18 @@ cdef class GraphicContext:
         return self.state[key]
 
     cpdef reset(self):
-        self.set('color', (1, 1, 1, 1))
+        self.set('shader', self.default_shader)
         self.set('blend', 0)
         self.set('blend_sfactor', GL_SRC_ALPHA)
         self.set('blend_dfactor', GL_ONE_MINUS_SRC_ALPHA)
         self.set('linewidth', 1)
+        self.set('projection_mat', identity_matrix())
+        self.set('modelview_mat', identity_matrix())
+        self.set('texture0', 0)
+
+        
+        correctFilename = resource_find("standard.vs")
+        correctFilename = resource_find("standard.fs")
 
     cpdef save(self):
         self.stack.append(self.state.copy())
@@ -193,6 +142,21 @@ cdef class GraphicContext:
         for k, v in newstate.iteritems():
             if state[k] != v:
                 self.set(k, v)
+                
+    cpdef translate(self, double x, double y, double z):
+        t = translation_matrix(x, y, z)
+        mat = matrix_multiply(self.get('modelview_mat'), t)
+        self.set('modelview_mat', mat)
+
+    cpdef scale(self, double s):
+        t = scale_matrix(s)
+        mat = matrix_multiply(self.get('modelview_mat'), t)
+        self.set('modelview_mat', mat)
+        
+    cpdef rotate(self, double angle, double x, double y, double z):
+        t = rotation_matrix(angle, [x, y, z])
+        mat = matrix_multiply(self.get('modelview_mat'), t)
+        self.set('modelview_mat', mat)
 
     cpdef flush(self):
         # activate all the last changes done on context
@@ -209,7 +173,8 @@ cdef class GraphicContext:
         for x in journal:
             value = state[x]
             if x == 'color':
-                glColor4f(value[0], value[1], value[2], value[3])
+                color_attrib = self.state['shader'].attributes["vColor"]
+                glVertexAttrib4f(color_attrib, value[0], value[1], value[2], value[3])
             elif x == 'blend':
                 if value:
                     glEnable(GL_BLEND)
@@ -219,6 +184,8 @@ cdef class GraphicContext:
                 glBlendFunc(state['blend_sfactor'], state['blend_dfactor'])
             elif x == 'linewidth':
                 glLineWidth(value)
+            elif x != 'shader': #set uniform variable
+                self.state['shader'][x] = value
 
         journal.clear()
         self.need_flush = 0
@@ -346,31 +313,33 @@ cdef class GraphicElement(GraphicInstruction):
                 vbo.delete()
 
     cpdef draw(self):
+        shader = self.context.get('shader')
+        shader.use()
+        attribs = shader.attributes
         if self._use_v:
             self._vbo_v.bind()
-            glVertexPointer(self._size_v, GL_FLOAT, 0, NULL)
-            glEnableClientState(GL_VERTEX_ARRAY)
-        if self._use_c:
+            glVertexAttribPointer (attribs['vPosition'], self._size_v, GL_FLOAT, GL_FALSE, 0, NULL)
+            glEnableVertexAttribArray(attribs['vPosition'])
+        if self._use_c and attribs['vColor'] != -1:
             self._vbo_c.bind()
-            glColorPointer(self._size_c, GL_FLOAT, 0, NULL)
-            glEnableClientState(GL_COLOR_ARRAY)
-        if self._use_t:
+            glVertexAttribPointer (attribs['vColor'], self._size_c, GL_FLOAT, GL_FALSE, 0, NULL)
+            glEnableVertexAttribArray(attribs['vColor'])
+        if self._use_t and attribs['vTexCoords0'] != -1:
+            #print "enablgin texture attrib"
             self._vbo_t.bind()
-            glTexCoordPointer(self._size_t, GL_FLOAT, 0, NULL)
-            glEnableClientState(GL_TEXTURE_COORD_ARRAY)
+            glVertexAttribPointer (attribs['vTexCoords0'], self._size_t, GL_FLOAT, GL_FALSE, 0, NULL)
+            glEnableVertexAttribArray(attribs['vTexCoords0'])
         if self._use_n:
             self._vbo_n.bind()
-            glNormalPointer(GL_FLOAT, 0, NULL)
-            glEnableClientState(GL_NORMAL_ARRAY)
+            glVertexAttribPointer (attribs['vNormal'], self._size_n, GL_FLOAT, GL_FALSE, 0, NULL)
+            glEnableVertexAttribArray(attribs['vNormal'])
         if self._use_e:
-            self._vbo_e.bind()
-            glEdgeFlagPointer(0, NULL)
-            glEnableClientState(GL_EDGE_FLAG_ARRAY)
+            glVertexAttribPointer (attribs['vEdge'], self._size_e, GL_FLOAT, GL_FALSE, 0, NULL)
+            glEnableVertexAttribArray(attribs['vEdge'])
         if self._use_i:
             self._vbo_i.bind()
-            glIndexPointer(GL_FLOAT, 0, NULL)
-            glEnableClientState(GL_INDEX_ARRAY)
-
+            
+            
         # activate at the very last moment all changes done on context
         if self.context.need_flush:
             self.context.flush()
@@ -384,22 +353,22 @@ cdef class GraphicElement(GraphicInstruction):
         # unbind all
         if self._use_v:
             self._vbo_v.unbind()
-            glDisableClientState(GL_VERTEX_ARRAY)
-        if self._use_c:
+            glEnableVertexAttribArray(attribs['vPosition'])
+        if self._use_c and attribs['vColor'] != -1:
             self._vbo_c.unbind()
-            glDisableClientState(GL_COLOR_ARRAY)
-        if self._use_t:
+            glEnableVertexAttribArray(attribs['vColor'])
+        if self._use_t and attribs['vTexCoords0'] != -1:
             self._vbo_t.unbind()
-            glDisableClientState(GL_TEXTURE_COORD_ARRAY)
+            glEnableVertexAttribArray(attribs['vTexCoords0'])
         if self._use_n:
             self._vbo_n.unbind()
-            glDisableClientState(GL_NORMAL_ARRAY)
+            glEnableVertexAttribArray(attribs['vNormal'])
         if self._use_e:
             self._vbo_e.unbind()
-            glDisableClientState(GL_EDGE_FLAG_ARRAY)
+            glEnableVertexAttribArray(attribs['vEdge'])
         if self._use_i:
             self._vbo_i.unbind()
-            glDisableClientState(GL_INDEX_ARRAY)
+        shader.stop()
 
     cdef _reset_format(self):
         self._use_v = 0
@@ -524,7 +493,7 @@ cdef class GraphicElement(GraphicInstruction):
         doc='''
             Specify how the graphic will be drawed. One of: 'lines',
             'line_loop', 'line_strip', 'triangles', 'triangle_fan',
-            'triangle_strip', 'quads', 'quad_strip', 'points', 'polygon'
+            'triangle_strip'
         ''')
 
 
@@ -650,11 +619,8 @@ cdef class Point(GraphicElement):
         if self._use_stmt:
             stmt = self._stmt
             stmt.bind()
-            glEnable(0x8861) # GL_POINT_SPRITE_ARB
-            glTexEnvi(0x8861, 0x8862, GL_TRUE) # GL_COORD_REPLACE_ARB
-            glPointSize(self._radius)
+            #glPointSize(self._radius)
             GraphicElement.draw(self)
-            glDisable(0x8861)
             stmt.release()
         else:
             GraphicElement.draw(self)
@@ -688,18 +654,6 @@ cdef class Point(GraphicElement):
         return True
     radius = property(_get_radius, _set_radius,
         doc='Object radius (float)')
-
-    def _get_texture(self):
-        return self._texture
-    def _set_texture(self, x):
-        if self._texture == x:
-            return
-        self._texture = x
-        if self._texture:
-            self._stmt = gx_texture(self._texture)
-    texture = property(_get_texture, _set_texture,
-        doc='Texture to use on the object (Texture)'
-    )
 
     def _set_type(self, x):
         GraphicElement._set_type(self, x)
@@ -741,7 +695,7 @@ cdef class Rectangle(GraphicElement):
     cdef int _use_stmt
 
     def __init__(self, *values, **kwargs):
-        kwargs.setdefault('type', 'quads')
+        kwargs.setdefault('type', 'triangle_strip')
         kwargs.setdefault('pos', (0, 0))
         kwargs.setdefault('size', (1, 1))
         kwargs.setdefault('texture', None)
@@ -781,9 +735,10 @@ cdef class Rectangle(GraphicElement):
         # build vertex
         x, y = self.pos
         w, h = self.size
-        self.data_v = (x, y, x + w, y, x + w, y + h, x, y + h)
+        self.data_v = (x,y,  x+w, y,  x, y+h,  x+w,y+h)
         # if texture is provided, use it
         texture = self.texture
+        print "build", texture
         if texture:
             tex_coords = self.tex_coords
             if type(texture) in (Texture, TextureRegion):
@@ -791,15 +746,20 @@ cdef class Rectangle(GraphicElement):
             # if tex_coords is provided, use it
             if tex_coords is None:
                 tex_coords = (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0)
+            else:
+                tex_coords = [c for c in tex_coords]
+                tex_coords[4],  tex_coords[6] = tex_coords[6],  tex_coords[4]
 
             # assign tex_coords
             self.data_t = tex_coords
+        print "data texture coords", self.data_t
 
         # assign colors coords
         if self.colors_coords:
             self.data_c = self.colors_coords
 
     cpdef draw(self):
+        #print self.data_t
         if self._need_build:
             self.build()
             self._need_build = 0
@@ -927,21 +887,21 @@ cdef class ImageRectangle(Rectangle):
     cdef object _mode
 
     def __init__(self, *largs, **kwargs):
-        kwargs.setdefault('type', 'quads')
+        kwargs.setdefault('type', 'triangle_strip')
         kwargs.setdefault('format', 'vvtt')
         Rectangle.__init__(self, *largs, **kwargs)
         self._borders = self.convert_border(kwargs.get('borders', [0]))
         self._mode = 'strech'
         self.indices = [
-            0, 4, 5, 1,
-            1, 2, 6, 5,
-            2, 3, 7, 6,
-            4, 5, 9, 8,
-            5, 6, 10, 9,
-            6, 7, 11, 10,
-            8, 9, 13, 12,
-            9, 10, 14, 13,
-            10, 11, 15, 14
+            0, 4, 1, 5,  
+            1, 2, 5, 6, 
+            2, 3, 6, 7,
+            4, 5, 8, 9,
+            5, 6, 9, 10,
+            6, 7, 10, 11,
+            8, 9, 12, 13,
+            9, 10, 13, 14,
+            10, 11, 14, 15
         ]
 
     cpdef build(self):
@@ -1248,6 +1208,9 @@ cdef class Circle(GraphicElement):
 
     cpdef build(self):
         p = array('f')
+        if self.filled:
+            p.append(self.x)
+            p.append(self.y)
         for angle_deg in xrange(361):
             # rad = deg * (pi / 180), where pi/180 = 0.0174...
             angle_rad = angle_deg * 0.017453292519943295
@@ -1276,9 +1239,9 @@ cdef class Circle(GraphicElement):
         doc='Radius of the circle (double)')
 
     def _determine_type(self, f):
-        return 'polygon' if f else 'line_strip'
+        return 'triangle_fan' if f else 'line_strip'
     def _get_filled(self):
-        return True if self._type == GL_POLYGON else False
+        return True if self._type == GL_TRIANGLE_FAN else False
     def _set_filled(self, f):
         t = self._determine_type(f)
         if self.type == t:
@@ -1553,6 +1516,7 @@ cdef class CSSRectangle(GraphicInstruction):
             self.build()
             self._need_build = 0
         for x in self._objects:
+            print self.data_t
             x.draw()
 
     def _get_size(self):
@@ -1672,6 +1636,9 @@ cdef class Canvas:
     def __init__(self, **kwargs):
         self._batch = []
         self._context = default_context
+        
+    def get_context(self):
+        return self._context
 
     def add(self, graphic):
         '''Add a graphic element to draw'''
@@ -1691,6 +1658,9 @@ cdef class Canvas:
     def clear(self):
         '''Clear all the elements in the canvas'''
         self._batch = []
+        
+    def len(self):
+        return len(self._batch)
 
     def draw(self):
         '''Draw all the canvas elements'''

@@ -86,6 +86,8 @@ pymt_libs_dir        = os.path.join(pymt_base_dir, 'lib')
 pymt_modules_dir     = os.path.join(pymt_base_dir, 'modules')
 #: PyMT data directory
 pymt_data_dir        = os.path.join(pymt_base_dir, 'data')
+#: PyMT glsl shader directory
+pymt_shader_dir        = os.path.join(pymt_data_dir, 'glsl')
 #: PyMT input provider directory
 pymt_providers_dir   = os.path.join(pymt_base_dir, 'input', 'providers')
 #: PyMT icons config path (don't remove last '')

@@ -1,569 +1,529 @@
-# -*- indent-tabs-mode: t -*-
+cdef extern from "gl.h":
 
-# Soya 3D
-# Copyright (C) 2003-2004 Jean-Baptiste LAMY -- jiba@tuxfamily.org
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+	ctypedef  void     GLvoid
+	ctypedef  char             GLchar
+	ctypedef  unsigned int     GLenum
+	ctypedef  unsigned char    GLboolean
+	ctypedef  unsigned int     GLbitfield
+	ctypedef  short            GLshort
+	ctypedef  int              GLint
+	ctypedef  int              GLsizei
+	ctypedef  unsigned short   GLushort
+	ctypedef  unsigned int     GLuint
+	
+	#FIXME: figure out correct cross platform tydefs
+	#ctypedef  khronos_float_t  GLfloat
+	#ctypedef  khronos_float_t  GLclampf
+	#ctypedef  khronos_int32_t  GLfixed
+	#ctypedef khronos_intptr_t GLintptr
+	#ctypedef khronos_ssize_t  GLsizeiptr
+	ctypedef  signed   char   GLbyte
+	ctypedef  unsigned   char  GLubyte
+	ctypedef float GLfloat
+	ctypedef float GLclampf
+	ctypedef int GLfixed
+	ctypedef signed long int GLintptr
+	ctypedef signed long int GLsizeiptr
+	
 
-cdef extern from "GL/gl.h":
-    ctypedef unsigned int        GLenum
-    ctypedef unsigned char  GLboolean
-    ctypedef unsigned int        GLbitfield
-    ctypedef void                        GLvoid
-    ctypedef signed char    GLbyte
-    ctypedef short                    GLshort
-    ctypedef int                        GLint
-    ctypedef unsigned char  GLubyte
-    ctypedef unsigned short    GLushort
-    ctypedef unsigned int        GLuint
-    ctypedef int                        GLsizei
-    ctypedef float                    GLfloat
-    ctypedef float                    GLclampf
-    ctypedef double                    GLdouble
-    ctypedef double                    GLclampd
-    ctypedef char                     GLchar
-    ctypedef unsigned int   GLhandleARB
+	int GL_ES_VERSION_2_0
 
-    cdef void glClearIndex(GLfloat c)
-    cdef void glClearColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
-    cdef void glClear(GLbitfield mask)
-    cdef void glIndexMask(GLuint mask)
-    cdef void glColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
-    cdef void glAlphaFunc(GLenum func, GLclampf ref)
-    cdef void glBlendFunc(GLenum sfactor, GLenum dfactor)
-    cdef void glLogicOp(GLenum opcode)
-    cdef void glCullFace(GLenum mode)
-    cdef void glFrontFace(GLenum mode)
-    cdef void glPointSize(GLfloat size)
-    cdef void glLineWidth(GLfloat width)
-    cdef void glLineStipple(GLint factor, GLushort pattern)
-    cdef void glPolygonMode(GLenum face, GLenum mode)
-    cdef void glPolygonOffset(GLfloat factor, GLfloat units)
-    cdef void glPolygonStipple(GLubyte *mask)
-    cdef void glGetPolygonStipple(GLubyte *mask)
-    cdef void glEdgeFlag(GLboolean flag)
-    cdef void glEdgeFlagv(GLboolean *flag)
-    cdef void glScissor(GLint x, GLint y, GLsizei width, GLsizei height)
-    cdef void glClipPlane(GLenum plane, GLdouble *equation)
-    cdef void glGetClipPlane(GLenum plane, GLdouble *equation)
-    cdef void glDrawBuffer(GLenum mode)
-    cdef void glReadBuffer(GLenum mode)
-    cdef void glEnable(GLenum cap)
-    cdef void glDisable(GLenum cap)
-    cdef GLboolean glIsEnabled(GLenum cap)
-    cdef void glEnableClientState(GLenum cap)
-    cdef void glDisableClientState(GLenum cap)
-    cdef void glGetBooleanv(GLenum pname, GLboolean *params)
-    cdef void glGetDoublev(GLenum pname, GLdouble *params)
-    cdef void glGetFloatv(GLenum pname, GLfloat *params)
-    cdef void glGetIntegerv(GLenum pname, GLint *params)
-    cdef void glPushAttrib(GLbitfield mask)
-    cdef void glPopAttrib()
-    cdef void glPushClientAttrib(GLbitfield mask)
-    cdef void glPopClientAttrib()
-    cdef GLint glRenderMode(GLenum mode)
-    cdef GLenum glGetError()
-    cdef GLubyte* glGetString(GLenum name)
-    cdef void glFinish()
-    cdef void glFlush()
-    cdef void glHint(GLenum target, GLenum mode)
-    cdef void glClearDepth(GLclampd depth)
-    cdef void glDepthFunc(GLenum func)
-    cdef void glDepthMask(GLboolean flag)
-    cdef void glDepthRange(GLclampd near_val, GLclampd far_val)
-    cdef void glClearAccum(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
-    cdef void glAccum(GLenum op, GLfloat value)
-    cdef void glMatrixMode(GLenum mode)
-    cdef void glOrtho(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble near_val, GLdouble far_val)
-    cdef void glFrustum(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble near_val, GLdouble far_val)
-    cdef void glViewport(GLint x, GLint y, GLsizei width, GLsizei height)
-    cdef void glPushMatrix()
-    cdef void glPopMatrix()
-    cdef void glLoadIdentity()
-    cdef void glLoadMatrixd(GLdouble *m)
-    cdef void glLoadMatrixf(GLfloat *m)
-    cdef void glMultMatrixd(GLdouble *m)
-    cdef void glMultMatrixf(GLfloat *m)
-    cdef void glRotated(GLdouble angle, GLdouble x, GLdouble y, GLdouble z)
-    cdef void glRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
-    cdef void glScaled(GLdouble x, GLdouble y, GLdouble z)
-    cdef void glScalef(GLfloat x, GLfloat y, GLfloat z)
-    cdef void glTranslated(GLdouble x, GLdouble y, GLdouble z)
-    cdef void glTranslatef(GLfloat x, GLfloat y, GLfloat z)
-    cdef GLboolean glIsList(GLuint list)
-    cdef void glDeleteLists(GLuint list, GLsizei range)
-    cdef GLuint glGenLists(GLsizei range)
-    cdef void glNewList(GLuint list, GLenum mode)
-    cdef void glEndList()
-    cdef void glCallList(GLuint list)
-    cdef void glCallLists(GLsizei n, GLenum type, GLvoid *lists)
-    cdef void glListBase(GLuint base)
-    cdef void glBegin(GLenum mode)
-    cdef void glEnd()
-    cdef void glVertex2d(GLdouble x, GLdouble y)
-    cdef void glVertex2f(GLfloat x, GLfloat y)
-    cdef void glVertex2i(GLint x, GLint y)
-    cdef void glVertex2s(GLshort x, GLshort y)
-    cdef void glVertex3d(GLdouble x, GLdouble y, GLdouble z)
-    cdef void glVertex3f(GLfloat x, GLfloat y, GLfloat z)
-    cdef void glVertex3i(GLint x, GLint y, GLint z)
-    cdef void glVertex3s(GLshort x, GLshort y, GLshort z)
-    cdef void glVertex4d(GLdouble x, GLdouble y, GLdouble z, GLdouble w)
-    cdef void glVertex4f(GLfloat x, GLfloat y, GLfloat z, GLfloat w)
-    cdef void glVertex4i(GLint x, GLint y, GLint z, GLint w)
-    cdef void glVertex4s(GLshort x, GLshort y, GLshort z, GLshort w)
-    cdef void glVertex2dv(GLdouble *v)
-    cdef void glVertex2fv(GLfloat *v)
-    cdef void glVertex2iv(GLint *v)
-    cdef void glVertex2sv(GLshort *v)
-    cdef void glVertex3dv(GLdouble *v)
-    cdef void glVertex3fv(GLfloat *v)
-    cdef void glVertex3iv(GLint *v)
-    cdef void glVertex3sv(GLshort *v)
-    cdef void glVertex4dv(GLdouble *v)
-    cdef void glVertex4fv(GLfloat *v)
-    cdef void glVertex4iv(GLint *v)
-    cdef void glVertex4sv(GLshort *v)
-    cdef void glNormal3b(GLbyte nx, GLbyte ny, GLbyte nz)
-    cdef void glNormal3d(GLdouble nx, GLdouble ny, GLdouble nz)
-    cdef void glNormal3f(GLfloat nx, GLfloat ny, GLfloat nz)
-    cdef void glNormal3i(GLint nx, GLint ny, GLint nz)
-    cdef void glNormal3s(GLshort nx, GLshort ny, GLshort nz)
-    cdef void glNormal3bv(GLbyte *v)
-    cdef void glNormal3dv(GLdouble *v)
-    cdef void glNormal3fv(GLfloat *v)
-    cdef void glNormal3iv(GLint *v)
-    cdef void glNormal3sv(GLshort *v)
-    cdef void glIndexd(GLdouble c)
-    cdef void glIndexf(GLfloat c)
-    cdef void glIndexi(GLint c)
-    cdef void glIndexs(GLshort c)
-    cdef void glIndexub(GLubyte c)
-    cdef void glIndexdv(GLdouble *c)
-    cdef void glIndexfv(GLfloat *c)
-    cdef void glIndexiv(GLint *c)
-    cdef void glIndexsv(GLshort *c)
-    cdef void glIndexubv(GLubyte *c)
-    cdef void glColor3b(GLbyte red, GLbyte green, GLbyte blue)
-    cdef void glColor3d(GLdouble red, GLdouble green, GLdouble blue)
-    cdef void glColor3f(GLfloat red, GLfloat green, GLfloat blue)
-    cdef void glColor3i(GLint red, GLint green, GLint blue)
-    cdef void glColor3s(GLshort red, GLshort green, GLshort blue)
-    cdef void glColor3ub(GLubyte red, GLubyte green, GLubyte blue)
-    cdef void glColor3ui(GLuint red, GLuint green, GLuint blue)
-    cdef void glColor3us(GLushort red, GLushort green, GLushort blue)
-    cdef void glColor4b(GLbyte red, GLbyte green, GLbyte blue, GLbyte alpha)
-    cdef void glColor4d(GLdouble red, GLdouble green, GLdouble blue, GLdouble alpha)
-    cdef void glColor4f(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
-    cdef void glColor4i(GLint red, GLint green, GLint blue, GLint alpha)
-    cdef void glColor4s(GLshort red, GLshort green, GLshort blue, GLshort alpha)
-    cdef void glColor4ub(GLubyte red, GLubyte green, GLubyte blue, GLubyte alpha)
-    cdef void glColor4ui(GLuint red, GLuint green, GLuint blue, GLuint alpha)
-    cdef void glColor4us(GLushort red, GLushort green, GLushort blue, GLushort alpha)
-    cdef void glColor3bv(GLbyte *v)
-    cdef void glColor3dv(GLdouble *v)
-    cdef void glColor3fv(GLfloat *v)
-    cdef void glColor3iv(GLint *v)
-    cdef void glColor3sv(GLshort *v)
-    cdef void glColor3ubv(GLubyte *v)
-    cdef void glColor3uiv(GLuint *v)
-    cdef void glColor3usv(GLushort *v)
-    cdef void glColor4bv(GLbyte *v)
-    cdef void glColor4dv(GLdouble *v)
-    cdef void glColor4fv(GLfloat *v)
-    cdef void glColor4iv(GLint *v)
-    cdef void glColor4sv(GLshort *v)
-    cdef void glColor4ubv(GLubyte *v)
-    cdef void glColor4uiv(GLuint *v)
-    cdef void glColor4usv(GLushort *v)
-    cdef void glTexCoord1d(GLdouble s)
-    cdef void glTexCoord1f(GLfloat s)
-    cdef void glTexCoord1i(GLint s)
-    cdef void glTexCoord1s(GLshort s)
-    cdef void glTexCoord2d(GLdouble s, GLdouble t)
-    cdef void glTexCoord2f(GLfloat s, GLfloat t)
-    cdef void glTexCoord2i(GLint s, GLint t)
-    cdef void glTexCoord2s(GLshort s, GLshort t)
-    cdef void glTexCoord3d(GLdouble s, GLdouble t, GLdouble r)
-    cdef void glTexCoord3f(GLfloat s, GLfloat t, GLfloat r)
-    cdef void glTexCoord3i(GLint s, GLint t, GLint r)
-    cdef void glTexCoord3s(GLshort s, GLshort t, GLshort r)
-    cdef void glTexCoord4d(GLdouble s, GLdouble t, GLdouble r, GLdouble q)
-    cdef void glTexCoord4f(GLfloat s, GLfloat t, GLfloat r, GLfloat q)
-    cdef void glTexCoord4i(GLint s, GLint t, GLint r, GLint q)
-    cdef void glTexCoord4s(GLshort s, GLshort t, GLshort r, GLshort q)
-    cdef void glTexCoord1dv(GLdouble *v)
-    cdef void glTexCoord1fv(GLfloat *v)
-    cdef void glTexCoord1iv(GLint *v)
-    cdef void glTexCoord1sv(GLshort *v)
-    cdef void glTexCoord2dv(GLdouble *v)
-    cdef void glTexCoord2fv(GLfloat *v)
-    cdef void glTexCoord2iv(GLint *v)
-    cdef void glTexCoord2sv(GLshort *v)
-    cdef void glTexCoord3dv(GLdouble *v)
-    cdef void glTexCoord3fv(GLfloat *v)
-    cdef void glTexCoord3iv(GLint *v)
-    cdef void glTexCoord3sv(GLshort *v)
-    cdef void glTexCoord4dv(GLdouble *v)
-    cdef void glTexCoord4fv(GLfloat *v)
-    cdef void glTexCoord4iv(GLint *v)
-    cdef void glTexCoord4sv(GLshort *v)
-    cdef void glRasterPos2d(GLdouble x, GLdouble y)
-    cdef void glRasterPos2f(GLfloat x, GLfloat y)
-    cdef void glRasterPos2i(GLint x, GLint y)
-    cdef void glRasterPos2s(GLshort x, GLshort y)
-    cdef void glRasterPos3d(GLdouble x, GLdouble y, GLdouble z)
-    cdef void glRasterPos3f(GLfloat x, GLfloat y, GLfloat z)
-    cdef void glRasterPos3i(GLint x, GLint y, GLint z)
-    cdef void glRasterPos3s(GLshort x, GLshort y, GLshort z)
-    cdef void glRasterPos4d(GLdouble x, GLdouble y, GLdouble z, GLdouble w)
-    cdef void glRasterPos4f(GLfloat x, GLfloat y, GLfloat z, GLfloat w)
-    cdef void glRasterPos4i(GLint x, GLint y, GLint z, GLint w)
-    cdef void glRasterPos4s(GLshort x, GLshort y, GLshort z, GLshort w)
-    cdef void glRasterPos2dv(GLdouble *v)
-    cdef void glRasterPos2fv(GLfloat *v)
-    cdef void glRasterPos2iv(GLint *v)
-    cdef void glRasterPos2sv(GLshort *v)
-    cdef void glRasterPos3dv(GLdouble *v)
-    cdef void glRasterPos3fv(GLfloat *v)
-    cdef void glRasterPos3iv(GLint *v)
-    cdef void glRasterPos3sv(GLshort *v)
-    cdef void glRasterPos4dv(GLdouble *v)
-    cdef void glRasterPos4fv(GLfloat *v)
-    cdef void glRasterPos4iv(GLint *v)
-    cdef void glRasterPos4sv(GLshort *v)
-    cdef void glRectd(GLdouble x1, GLdouble y1, GLdouble x2, GLdouble y2)
-    cdef void glRectf(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2)
-    cdef void glRecti(GLint x1, GLint y1, GLint x2, GLint y2)
-    cdef void glRects(GLshort x1, GLshort y1, GLshort x2, GLshort y2)
-    cdef void glRectdv(GLdouble *v1, GLdouble *v2)
-    cdef void glRectfv(GLfloat *v1, GLfloat *v2)
-    cdef void glRectiv(GLint *v1, GLint *v2)
-    cdef void glRectsv(GLshort *v1, GLshort *v2)
-    cdef void glVertexPointer(GLint size, GLenum type, GLsizei stride, GLvoid *ptr)
-    cdef void glNormalPointer(GLenum type, GLsizei stride, GLvoid *ptr)
-    cdef void glColorPointer(GLint size, GLenum type, GLsizei stride, GLvoid *ptr)
-    cdef void glIndexPointer(GLenum type, GLsizei stride, GLvoid *ptr)
-    cdef void glTexCoordPointer(GLint size, GLenum type, GLsizei stride, GLvoid *ptr)
-    cdef void glEdgeFlagPointer(GLsizei stride, GLvoid *ptr)
-    cdef void glGetPointerv(GLenum pname, GLvoid **params)
-    cdef void glArrayElement(GLint i)
-    cdef void glDrawArrays(GLenum mode, GLint first, GLsizei count)
-    cdef void glDrawElements(GLenum mode, GLsizei count, GLenum type, GLvoid *indices)
-    cdef void glInterleavedArrays(GLenum format, GLsizei stride, GLvoid *pointer)
-    cdef void glShadeModel(GLenum mode)
-    cdef void glLightf(GLenum light, GLenum pname, GLfloat param)
-    cdef void glLighti(GLenum light, GLenum pname, GLint param)
-    cdef void glLightfv(GLenum light, GLenum pname, GLfloat *params)
-    cdef void glLightiv(GLenum light, GLenum pname, GLint *params)
-    cdef void glGetLightfv(GLenum light, GLenum pname, GLfloat *params)
-    cdef void glGetLightiv(GLenum light, GLenum pname, GLint *params)
-    cdef void glLightModelf(GLenum pname, GLfloat param)
-    cdef void glLightModeli(GLenum pname, GLint param)
-    cdef void glLightModelfv(GLenum pname, GLfloat *params)
-    cdef void glLightModeliv(GLenum pname, GLint *params)
-    cdef void glMaterialf(GLenum face, GLenum pname, GLfloat param)
-    cdef void glMateriali(GLenum face, GLenum pname, GLint param)
-    cdef void glMaterialfv(GLenum face, GLenum pname, GLfloat *params)
-    cdef void glMaterialiv(GLenum face, GLenum pname, GLint *params)
-    cdef void glGetMaterialfv(GLenum face, GLenum pname, GLfloat *params)
-    cdef void glGetMaterialiv(GLenum face, GLenum pname, GLint *params)
-    cdef void glColorMaterial(GLenum face, GLenum mode)
-    cdef void glPixelZoom(GLfloat xfactor, GLfloat yfactor)
-    cdef void glPixelStoref(GLenum pname, GLfloat param)
-    cdef void glPixelStorei(GLenum pname, GLint param)
-    cdef void glPixelTransferf(GLenum pname, GLfloat param)
-    cdef void glPixelTransferi(GLenum pname, GLint param)
-    cdef void glPixelMapfv(GLenum map, GLint mapsize, GLfloat *values)
-    cdef void glPixelMapuiv(GLenum map, GLint mapsize, GLuint *values)
-    cdef void glPixelMapusv(GLenum map, GLint mapsize, GLushort *values)
-    cdef void glGetPixelMapfv(GLenum map, GLfloat *values)
-    cdef void glGetPixelMapuiv(GLenum map, GLuint *values)
-    cdef void glGetPixelMapusv(GLenum map, GLushort *values)
-    cdef void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig, GLfloat xmove, GLfloat ymove, GLubyte *bitmap)
-    cdef void glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *pixels)
-    cdef void glDrawPixels(GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *pixels)
-    cdef void glCopyPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum type)
-    cdef void glStencilFunc(GLenum func, GLint ref, GLuint mask)
-    cdef void glStencilMask(GLuint mask)
-    cdef void glStencilOp(GLenum fail, GLenum zfail, GLenum zpass)
-    cdef void glClearStencil(GLint s)
-    cdef void glTexGend(GLenum coord, GLenum pname, GLdouble param)
-    cdef void glTexGenf(GLenum coord, GLenum pname, GLfloat param)
-    cdef void glTexGeni(GLenum coord, GLenum pname, GLint param)
-    cdef void glTexGendv(GLenum coord, GLenum pname, GLdouble *params)
-    cdef void glTexGenfv(GLenum coord, GLenum pname, GLfloat *params)
-    cdef void glTexGeniv(GLenum coord, GLenum pname, GLint *params)
-    cdef void glGetTexGendv(GLenum coord, GLenum pname, GLdouble *params)
-    cdef void glGetTexGenfv(GLenum coord, GLenum pname, GLfloat *params)
-    cdef void glGetTexGeniv(GLenum coord, GLenum pname, GLint *params)
-    cdef void glTexEnvf(GLenum target, GLenum pname, GLfloat param)
-    cdef void glTexEnvi(GLenum target, GLenum pname, GLint param)
-    cdef void glTexEnvfv(GLenum target, GLenum pname, GLfloat *params)
-    cdef void glTexEnviv(GLenum target, GLenum pname, GLint *params)
-    cdef void glGetTexEnvfv(GLenum target, GLenum pname, GLfloat *params)
-    cdef void glGetTexEnviv(GLenum target, GLenum pname, GLint *params)
-    cdef void glTexParameterf(GLenum target, GLenum pname, GLfloat param)
-    cdef void glTexParameteri(GLenum target, GLenum pname, GLint param)
-    cdef void glTexParameterfv(GLenum target, GLenum pname, GLfloat *params)
-    cdef void glTexParameteriv(GLenum target, GLenum pname, GLint *params)
-    cdef void glGetTexParameterfv(GLenum target, GLenum pname, GLfloat *params)
-    cdef void glGetTexParameteriv(GLenum target, GLenum pname, GLint *params)
-    cdef void glGetTexLevelParameterfv(GLenum target, GLint level, GLenum pname, GLfloat *params)
-    cdef void glGetTexLevelParameteriv(GLenum target, GLint level, GLenum pname, GLint *params)
-    cdef void glTexImage1D(GLenum target, GLint level, GLint internalFormat, GLsizei width, GLint border, GLenum format, GLenum type, GLvoid *pixels)
-    cdef void glTexImage2D(GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, GLvoid *pixels)
-    cdef void glGetTexImage(GLenum target, GLint level, GLenum format, GLenum type, GLvoid *pixels)
-    cdef void glGenTextures(GLsizei n, GLuint *textures)
-    cdef void glDeleteTextures(GLsizei n, GLuint *textures)
-    cdef void glBindTexture(GLenum target, GLuint texture)
-    cdef void glPrioritizeTextures(GLsizei n, GLuint *textures, GLclampf *priorities)
-    cdef GLboolean glAreTexturesResident(GLsizei n, GLuint *textures, GLboolean *residences)
-    cdef GLboolean glIsTexture(GLuint texture)
-    cdef void glTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, GLvoid *pixels)
-    cdef void glTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *pixels)
-    cdef void glCopyTexImage1D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLint border)
-    cdef void glCopyTexImage2D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border)
-    cdef void glCopyTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width)
-    cdef void glCopyTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height)
-    cdef void glMap1d(GLenum target, GLdouble u1, GLdouble u2, GLint stride, GLint order, GLdouble *points)
-    cdef void glMap1f(GLenum target, GLfloat u1, GLfloat u2, GLint stride, GLint order, GLfloat *points)
-    cdef void glMap2d(GLenum target, GLdouble u1, GLdouble u2, GLint ustride, GLint uorder, GLdouble v1, GLdouble v2, GLint vstride, GLint vorder, GLdouble *points)
-    cdef void glMap2f(GLenum target, GLfloat u1, GLfloat u2, GLint ustride, GLint uorder, GLfloat v1, GLfloat v2, GLint vstride, GLint vorder, GLfloat *points)
-    cdef void glGetMapdv(GLenum target, GLenum query, GLdouble *v)
-    cdef void glGetMapfv(GLenum target, GLenum query, GLfloat *v)
-    cdef void glGetMapiv(GLenum target, GLenum query, GLint *v)
-    cdef void glEvalCoord1d(GLdouble u)
-    cdef void glEvalCoord1f(GLfloat u)
-    cdef void glEvalCoord1dv(GLdouble *u)
-    cdef void glEvalCoord1fv(GLfloat *u)
-    cdef void glEvalCoord2d(GLdouble u, GLdouble v)
-    cdef void glEvalCoord2f(GLfloat u, GLfloat v)
-    cdef void glEvalCoord2dv(GLdouble *u)
-    cdef void glEvalCoord2fv(GLfloat *u)
-    cdef void glMapGrid1d(GLint un, GLdouble u1, GLdouble u2)
-    cdef void glMapGrid1f(GLint un, GLfloat u1, GLfloat u2)
-    cdef void glMapGrid2d(GLint un, GLdouble u1, GLdouble u2, GLint vn, GLdouble v1, GLdouble v2)
-    cdef void glMapGrid2f(GLint un, GLfloat u1, GLfloat u2, GLint vn, GLfloat v1, GLfloat v2)
-    cdef void glEvalPoint1(GLint i)
-    cdef void glEvalPoint2(GLint i, GLint j)
-    cdef void glEvalMesh1(GLenum mode, GLint i1, GLint i2)
-    cdef void glEvalMesh2(GLenum mode, GLint i1, GLint i2, GLint j1, GLint j2)
-    cdef void glFogf(GLenum pname, GLfloat param)
-    cdef void glFogi(GLenum pname, GLint param)
-    cdef void glFogfv(GLenum pname, GLfloat *params)
-    cdef void glFogiv(GLenum pname, GLint *params)
-    cdef void glFeedbackBuffer(GLsizei size, GLenum type, GLfloat *buffer)
-    cdef void glPassThrough(GLfloat token)
-    cdef void glSelectBuffer(GLsizei size, GLuint *buffer)
-    cdef void glInitNames()
-    cdef void glLoadName(GLuint name)
-    cdef void glPushName(GLuint name)
-    cdef void glPopName()
-    cdef void glDrawRangeElements(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, GLvoid *indices)
-    cdef void glTexImage3D(GLenum target, GLint level, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, GLvoid *pixels)
-    cdef void glTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLvoid *pixels)
-    cdef void glCopyTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height)
-    cdef void glColorTable(GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid *table)
-    cdef void glColorSubTable(GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum type, GLvoid *data)
-    cdef void glColorTableParameteriv(GLenum target, GLenum pname, GLint *params)
-    cdef void glColorTableParameterfv(GLenum target, GLenum pname, GLfloat *params)
-    cdef void glCopyColorSubTable(GLenum target, GLsizei start, GLint x, GLint y, GLsizei width)
-    cdef void glCopyColorTable(GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width)
-    cdef void glGetColorTable(GLenum target, GLenum format, GLenum type, GLvoid *table)
-    cdef void glGetColorTableParameterfv(GLenum target, GLenum pname, GLfloat *params)
-    cdef void glGetColorTableParameteriv(GLenum target, GLenum pname, GLint *params)
-    cdef void glBlendEquation(GLenum mode)
-    cdef void glBlendColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
-    cdef void glHistogram(GLenum target, GLsizei width, GLenum internalformat, GLboolean sink)
-    cdef void glResetHistogram(GLenum target)
-    cdef void glGetHistogram(GLenum target, GLboolean reset, GLenum format, GLenum type, GLvoid *values)
-    cdef void glGetHistogramParameterfv(GLenum target, GLenum pname, GLfloat *params)
-    cdef void glGetHistogramParameteriv(GLenum target, GLenum pname, GLint *params)
-    cdef void glMinmax(GLenum target, GLenum internalformat, GLboolean sink)
-    cdef void glResetMinmax(GLenum target)
-    cdef void glGetMinmax(GLenum target, GLboolean reset, GLenum format, GLenum types, GLvoid *values)
-    cdef void glGetMinmaxParameterfv(GLenum target, GLenum pname, GLfloat *params)
-    cdef void glGetMinmaxParameteriv(GLenum target, GLenum pname, GLint *params)
-    cdef void glConvolutionFilter1D(GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid *image)
-    cdef void glConvolutionFilter2D(GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *image)
-    cdef void glConvolutionParameterf(GLenum target, GLenum pname, GLfloat params)
-    cdef void glConvolutionParameterfv(GLenum target, GLenum pname, GLfloat *params)
-    cdef void glConvolutionParameteri(GLenum target, GLenum pname, GLint params)
-    cdef void glConvolutionParameteriv(GLenum target, GLenum pname, GLint *params)
-    cdef void glCopyConvolutionFilter1D(GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width)
-    cdef void glCopyConvolutionFilter2D(GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height)
-    cdef void glGetConvolutionFilter(GLenum target, GLenum format, GLenum type, GLvoid *image)
-    cdef void glGetConvolutionParameterfv(GLenum target, GLenum pname, GLfloat *params)
-    cdef void glGetConvolutionParameteriv(GLenum target, GLenum pname, GLint *params)
-    cdef void glSeparableFilter2D(GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *row, GLvoid *column)
-    cdef void glGetSeparableFilter(GLenum target, GLenum format, GLenum type, GLvoid *row, GLvoid *column, GLvoid *span)
-    cdef void glActiveTextureARB(GLenum texture)
-    cdef void glClientActiveTexture(GLenum texture)
-    cdef void glCompressedTexImage1D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint border, GLsizei imageSize, GLvoid *data)
-    cdef void glCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, GLvoid *data)
-    cdef void glCompressedTexImage3D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLsizei imageSize, GLvoid *data)
-    cdef void glCompressedTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLsizei imageSize, GLvoid *data)
-    cdef void glCompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, GLvoid *data)
-    cdef void glCompressedTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, GLvoid *data)
-    cdef void glGetCompressedTexImage(GLenum target, GLint lod, GLvoid *img)
-    cdef void glMultiTexCoord1dARB(GLenum target, GLdouble s)
-    cdef void glMultiTexCoord1dvARB(GLenum target, GLdouble *v)
-    cdef void glMultiTexCoord1fARB(GLenum target, GLfloat s)
-    cdef void glMultiTexCoord1fvARB(GLenum target, GLfloat *v)
-    cdef void glMultiTexCoord1iARB(GLenum target, GLint s)
-    cdef void glMultiTexCoord1ivARB(GLenum target, GLint *v)
-    cdef void glMultiTexCoord1sARB(GLenum target, GLshort s)
-    cdef void glMultiTexCoord1svARB(GLenum target, GLshort *v)
-    cdef void glMultiTexCoord2dARB(GLenum target, GLdouble s, GLdouble t)
-    cdef void glMultiTexCoord2dvARB(GLenum target, GLdouble *v)
-    cdef void glMultiTexCoord2fARB(GLenum target, GLfloat s, GLfloat t)
-    cdef void glMultiTexCoord2fvARB(GLenum target, GLfloat *v)
-    cdef void glMultiTexCoord2iARB(GLenum target, GLint s, GLint t)
-    cdef void glMultiTexCoord2ivARB(GLenum target, GLint *v)
-    cdef void glMultiTexCoord2sARB(GLenum target, GLshort s, GLshort t)
-    cdef void glMultiTexCoord2svARB(GLenum target, GLshort *v)
-    cdef void glMultiTexCoord3dARB(GLenum target, GLdouble s, GLdouble t, GLdouble r)
-    cdef void glMultiTexCoord3dvARB(GLenum target, GLdouble *v)
-    cdef void glMultiTexCoord3fARB(GLenum target, GLfloat s, GLfloat t, GLfloat r)
-    cdef void glMultiTexCoord3fvARB(GLenum target, GLfloat *v)
-    cdef void glMultiTexCoord3iARB(GLenum target, GLint s, GLint t, GLint r)
-    cdef void glMultiTexCoord3ivARB(GLenum target, GLint *v)
-    cdef void glMultiTexCoord3sARB(GLenum target, GLshort s, GLshort t, GLshort r)
-    cdef void glMultiTexCoord3svARB(GLenum target, GLshort *v)
-    cdef void glMultiTexCoord4dARB(GLenum target, GLdouble s, GLdouble t, GLdouble r, GLdouble q)
-    cdef void glMultiTexCoord4dvARB(GLenum target, GLdouble *v)
-    cdef void glMultiTexCoord4fARB(GLenum target, GLfloat s, GLfloat t, GLfloat r, GLfloat q)
-    cdef void glMultiTexCoord4fvARB(GLenum target, GLfloat *v)
-    cdef void glMultiTexCoord4iARB(GLenum target, GLint s, GLint t, GLint r, GLint q)
-    cdef void glMultiTexCoord4ivARB(GLenum target, GLint *v)
-    cdef void glMultiTexCoord4sARB(GLenum target, GLshort s, GLshort t, GLshort r, GLshort q)
-    cdef void glMultiTexCoord4svARB(GLenum target, GLshort *v)
-    cdef void glLoadTransposeMatrixd(GLdouble m[16])
-    cdef void glLoadTransposeMatrixf(GLfloat m[16])
-    cdef void glMultTransposeMatrixd(GLdouble m[16])
-    cdef void glMultTransposeMatrixf(GLfloat m[16])
-    cdef void glSampleCoverage(GLclampf value, GLboolean invert)
-
-    # Shaders
-
-    int GL_PROGRAM_OBJECT_ARB
-    int GL_SHADER_OBJECT_ARB
-    int GL_OBJECT_TYPE_ARB
-    int GL_OBJECT_SUBTYPE_ARB
-    int GL_FLOAT_VEC2_ARB
-    int GL_FLOAT_VEC3_ARB
-    int GL_FLOAT_VEC4_ARB
-    int GL_INT_VEC2_ARB
-    int GL_INT_VEC3_ARB
-    int GL_INT_VEC4_ARB
-    int GL_BOOL_ARB
-    int GL_BOOL_VEC2_ARB
-    int GL_BOOL_VEC3_ARB
-    int GL_BOOL_VEC4_ARB
-    int GL_FLOAT_MAT2_ARB
-    int GL_FLOAT_MAT3_ARB
-    int GL_FLOAT_MAT4_ARB
-    int GL_SAMPLER_1D_ARB
-    int GL_SAMPLER_2D_ARB
-    int GL_SAMPLER_3D_ARB
-    int GL_SAMPLER_CUBE_ARB
-    int GL_SAMPLER_1D_SHADOW_ARB
-    int GL_SAMPLER_2D_SHADOW_ARB
-    int GL_SAMPLER_2D_RECT_ARB
-    int GL_SAMPLER_2D_RECT_SHADOW_ARB
-    int GL_OBJECT_DELETE_STATUS_ARB
-    int GL_OBJECT_COMPILE_STATUS_ARB
-    int GL_OBJECT_LINK_STATUS_ARB
-    int GL_OBJECT_VALIDATE_STATUS_ARB
-    int GL_OBJECT_INFO_LOG_LENGTH_ARB
-    int GL_OBJECT_ATTACHED_OBJECTS_ARB
-    int GL_OBJECT_ACTIVE_UNIFORMS_ARB
-    int GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB
-    int GL_OBJECT_SHADER_SOURCE_LENGTH_ARB
-    int GL_VERTEX_SHADER_ARB
-    int GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB
-    int GL_MAX_VARYING_FLOATS_ARB
-    int GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB
-    int GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB
-    int GL_OBJECT_ACTIVE_ATTRIBUTES_ARB
-    int GL_OBJECT_ACTIVE_ATTRIBUTE_MAX_LENGTH_ARB
-    int GL_FRAGMENT_PROGRAM_ARB
-    int GL_PROGRAM_ALU_INSTRUCTIONS_ARB
-    int GL_PROGRAM_TEX_INSTRUCTIONS_ARB
-    int GL_PROGRAM_TEX_INDIRECTIONS_ARB
-    int GL_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB
-    int GL_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB
-    int GL_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB
-    int GL_MAX_PROGRAM_ALU_INSTRUCTIONS_ARB
-    int GL_MAX_PROGRAM_TEX_INSTRUCTIONS_ARB
-    int GL_MAX_PROGRAM_TEX_INDIRECTIONS_ARB
-    int GL_MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB
-    int GL_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB
-    int GL_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB
-    int GL_MAX_TEXTURE_COORDS_ARB
-    int GL_MAX_TEXTURE_IMAGE_UNITS_ARB
-    int GL_VERTEX_ARRAY
-    int GL_NORMAL_ARRAY
-    int GL_COLOR_ARRAY
-    int GL_INDEX_ARRAY
-    int GL_TEXTURE_COORD_ARRAY
-    int GL_EDGE_FLAG_ARRAY
-    # BeginMode
-    int GL_POINTS
-    int GL_LINES
-    int GL_LINE_LOOP
-    int GL_LINE_STRIP
-    int GL_TRIANGLES
-    int GL_TRIANGLE_STRIP
-    int GL_TRIANGLE_FAN
-    int GL_QUADS
-    int GL_QUAD_STRIP
-    int GL_POLYGON
-    # BlendingFactorDest
-    int GL_ZERO
-    int GL_ONE
-    int GL_SRC_COLOR
-    int GL_ONE_MINUS_SRC_COLOR
-    int GL_SRC_ALPHA
-    int GL_ONE_MINUS_SRC_ALPHA
-    int GL_DST_ALPHA
-    int GL_ONE_MINUS_DST_ALPHA
-    int GL_BLEND_DST
-    int GL_BLEND_SRC
-    int GL_BLEND
-    # DataType
-    int GL_BYTE
-    int GL_UNSIGNED_BYTE
-    int GL_SHORT
-    int GL_UNSIGNED_SHORT
-    int GL_INT
-    int GL_UNSIGNED_INT
-    int GL_FLOAT
-    # Boolean
-    int GL_FALSE
-    int GL_TRUE
-
-    cdef void glGetObjectParameterivARB(GLhandleARB object, GLenum pname, GLint *params)
-    cdef void glGetInfoLogARB(GLhandleARB object, GLsizei maxLength, GLsizei *length, GLchar *infoLog)
-    cdef void glShaderSourceARB(GLhandleARB shader, GLsizei nstrings, GLchar** strings, GLint *lengths)
-    cdef void glCompileShaderARB(GLhandleARB shader)
-    cdef GLhandleARB glCreateShaderObjectARB(GLenum shaderType)
-    cdef void glAttachObjectARB(GLhandleARB program, GLhandleARB shader)
-    cdef void glDetachObjectARB(GLhandleARB program, GLhandleARB shader)
-    cdef void glLinkProgramARB(GLhandleARB program)
-    cdef void glDeleteObjectARB(GLhandleARB object)
-
-    cdef void glVertexPointer (GLint size, GLenum type, GLsizei stride, GLvoid *pointer)
+	int GL_DEPTH_BUFFER_BIT
+	int GL_STENCIL_BUFFER_BIT
+	int GL_COLOR_BUFFER_BIT
+	
+	int GL_FALSE
+	int GL_TRUE
+	
+	int GL_POINTS
+	int GL_LINES
+	int GL_LINE_LOOP
+	int GL_LINE_STRIP
+	int GL_TRIANGLES
+	int GL_TRIANGLE_STRIP
+	int GL_TRIANGLE_FAN
+	
+	int GL_ZERO
+	int GL_ONE
+	int GL_SRC_COLOR
+	int GL_ONE_MINUS_SRC_COLOR
+	int GL_SRC_ALPHA
+	int GL_ONE_MINUS_SRC_ALPHA
+	int GL_DST_ALPHA
+	int GL_ONE_MINUS_DST_ALPHA
+	
+	int GL_DST_COLOR
+	int GL_ONE_MINUS_DST_COLOR
+	int GL_SRC_ALPHA_SATURATE
+	
+	int GL_FUNC_ADD
+	int GL_BLEND_EQUATION
+	int GL_BLEND_EQUATION_RGB
+	int GL_BLEND_EQUATION_ALPHA
+	
+	int GL_FUNC_SUBTRACT
+	int GL_FUNC_REVERSE_SUBTRACT
+	
+	int GL_BLEND_DST_RGB
+	int GL_BLEND_SRC_RGB
+	int GL_BLEND_DST_ALPHA
+	int GL_BLEND_SRC_ALPHA
+	int GL_ANT_COLOR
+	int GL_ONE_MINUS_ANT_COLOR
+	int GL_ANT_ALPHA
+	int GL_ONE_MINUS_ANT_ALPHA
+	int GL_BLEND_COLOR
+	
+	int GL_ARRAY_BUFFER
+	int GL_ELEMENT_ARRAY_BUFFER
+	int GL_ARRAY_BUFFER_BINDING
+	int GL_ELEMENT_ARRAY_BUFFER_BINDING
+	
+	int GL_STREAM_DRAW
+	int GL_STATIC_DRAW
+	int GL_DYNAMIC_DRAW
+	
+	int GL_BUFFER_SIZE
+	int GL_BUFFER_USAGE
+	
+	int GL_CURRENT_VERTEX_ATTRIB
+	
+	int GL_FRONT
+	int GL_BACK
+	int GL_FRONT_AND_BACK
+	
+	int GL_TEXTURE_2D
+	int GL_CULL_FACE
+	int GL_BLEND
+	int GL_DITHER
+	int GL_STENCIL_TEST
+	int GL_DEPTH_TEST
+	int GL_SCISSOR_TEST
+	int GL_POLYGON_OFFSET_FILL
+	int GL_SAMPLE_ALPHA_TO_COVERAGE
+	int GL_SAMPLE_COVERAGE
+	
+	int GL_NO_ERROR
+	int GL_INVALID_ENUM
+	int GL_INVALID_VALUE
+	int GL_INVALID_OPERATION
+	int GL_OUT_OF_MEMORY
+	
+	int GL_CW
+	int GL_CCW
+	
+	int GL_LINE_WIDTH
+	int GL_ALIASED_POINT_SIZE_RANGE
+	int GL_ALIASED_LINE_WIDTH_RANGE
+	int GL_CULL_FACE_MODE
+	int GL_FRONT_FACE
+	int GL_DEPTH_RANGE
+	int GL_DEPTH_WRITEMASK
+	int GL_DEPTH_CLEAR_VALUE
+	int GL_DEPTH_FUNC
+	int GL_STENCIL_CLEAR_VALUE
+	int GL_STENCIL_FUNC
+	int GL_STENCIL_FAIL
+	int GL_STENCIL_PASS_DEPTH_FAIL
+	int GL_STENCIL_PASS_DEPTH_PASS
+	int GL_STENCIL_REF
+	int GL_STENCIL_VALUE_MASK
+	int GL_STENCIL_WRITEMASK
+	int GL_STENCIL_BACK_FUNC
+	int GL_STENCIL_BACK_FAIL
+	int GL_STENCIL_BACK_PASS_DEPTH_FAIL
+	int GL_STENCIL_BACK_PASS_DEPTH_PASS
+	int GL_STENCIL_BACK_REF
+	int GL_STENCIL_BACK_VALUE_MASK
+	int GL_STENCIL_BACK_WRITEMASK
+	int GL_VIEWPORT
+	int GL_SCISSOR_BOX
+	
+	int GL_COLOR_CLEAR_VALUE
+	int GL_COLOR_WRITEMASK
+	int GL_UNPACK_ALIGNMENT
+	int GL_PACK_ALIGNMENT
+	int GL_MAX_TEXTURE_SIZE
+	int GL_MAX_VIEWPORT_DIMS
+	int GL_SUBPIXEL_BITS
+	int GL_RED_BITS
+	int GL_GREEN_BITS
+	int GL_BLUE_BITS
+	int GL_ALPHA_BITS
+	int GL_DEPTH_BITS
+	int GL_STENCIL_BITS
+	int GL_POLYGON_OFFSET_UNITS
+	
+	int GL_POLYGON_OFFSET_FACTOR
+	int GL_TEXTURE_BINDING_2D
+	int GL_SAMPLE_BUFFERS
+	int GL_SAMPLES
+	int GL_SAMPLE_COVERAGE_VALUE
+	int GL_SAMPLE_COVERAGE_INVERT
+	
+	int GL_NUM_COMPRESSED_TEXTURE_FORMATS
+	int GL_COMPRESSED_TEXTURE_FORMATS
+	
+	int GL_DONT_CARE
+	int GL_FASTEST
+	int GL_NICEST
+	
+	int GL_GENERATE_MIPMAP_HINT
+	
+	int GL_BYTE
+	int GL_UNSIGNED_BYTE
+	int GL_SHORT
+	int GL_UNSIGNED_SHORT
+	int GL_INT
+	int GL_UNSIGNED_INT
+	int GL_FLOAT
+	int GL_FIXED
+	
+	int GL_DEPTH_COMPONENT
+	int GL_ALPHA
+	int GL_RGB
+	int GL_RGBA
+	int GL_LUMINANCE
+	int GL_LUMINANCE_ALPHA
+	
+	int GL_UNSIGNED_SHORT_4_4_4_4
+	int GL_UNSIGNED_SHORT_5_5_5_1
+	int GL_UNSIGNED_SHORT_5_6_5
+	
+	int GL_FRAGMENT_SHADER
+	int GL_VERTEX_SHADER
+	int GL_MAX_VERTEX_ATTRIBS
+	int GL_MAX_VERTEX_UNIFORM_VECTORS
+	int GL_MAX_VARYING_VECTORS
+	int GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS
+	int GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS
+	int GL_MAX_TEXTURE_IMAGE_UNITS
+	int GL_MAX_FRAGMENT_UNIFORM_VECTORS
+	int GL_SHADER_TYPE
+	int GL_DELETE_STATUS
+	int GL_LINK_STATUS
+	int GL_VALIDATE_STATUS
+	int GL_ATTACHED_SHADERS
+	int GL_ACTIVE_UNIFORMS
+	int GL_ACTIVE_UNIFORM_MAX_LENGTH
+	int GL_ACTIVE_ATTRIBUTES
+	int GL_ACTIVE_ATTRIBUTE_MAX_LENGTH
+	int GL_SHADING_LANGUAGE_VERSION
+	int GL_CURRENT_PROGRAM
+	
+	int GL_NEVER
+	int GL_LESS
+	int GL_EQUAL
+	int GL_LEQUAL
+	int GL_GREATER
+	int GL_NOTEQUAL
+	int GL_GEQUAL
+	int GL_ALWAYS
+	
+	int GL_KEEP
+	int GL_REPLACE
+	int GL_INCR
+	int GL_DECR
+	int GL_INVERT
+	int GL_INCR_WRAP
+	int GL_DECR_WRAP
+	
+	int GL_VENDOR
+	int GL_RENDERER
+	int GL_VERSION
+	int GL_EXTENSIONS
+	
+	int GL_NEAREST
+	int GL_LINEAR
+	
+	int GL_NEAREST_MIPMAP_NEAREST
+	int GL_LINEAR_MIPMAP_NEAREST
+	int GL_NEAREST_MIPMAP_LINEAR
+	int GL_LINEAR_MIPMAP_LINEAR
+	
+	int GL_TEXTURE_MAG_FILTER
+	int GL_TEXTURE_MIN_FILTER
+	int GL_TEXTURE_WRAP_S
+	int GL_TEXTURE_WRAP_T
+	
+	int GL_TEXTURE
+	
+	int GL_TEXTURE_CUBE_MAP
+	int GL_TEXTURE_BINDING_CUBE_MAP
+	int GL_TEXTURE_CUBE_MAP_POSITIVE_X
+	int GL_TEXTURE_CUBE_MAP_NEGATIVE_X
+	int GL_TEXTURE_CUBE_MAP_POSITIVE_Y
+	int GL_TEXTURE_CUBE_MAP_NEGATIVE_Y
+	int GL_TEXTURE_CUBE_MAP_POSITIVE_Z
+	int GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+	int GL_MAX_CUBE_MAP_TEXTURE_SIZE
+	
+	int GL_TEXTURE0
+	int GL_TEXTURE1
+	int GL_TEXTURE2
+	int GL_TEXTURE3
+	int GL_TEXTURE4
+	int GL_TEXTURE5
+	int GL_TEXTURE6
+	int GL_TEXTURE7
+	int GL_TEXTURE8
+	int GL_TEXTURE9
+	int GL_TEXTURE10
+	int GL_TEXTURE11
+	int GL_TEXTURE12
+	int GL_TEXTURE13
+	int GL_TEXTURE14
+	int GL_TEXTURE15
+	int GL_TEXTURE16
+	int GL_TEXTURE17
+	int GL_TEXTURE18
+	int GL_TEXTURE19
+	int GL_TEXTURE20
+	int GL_TEXTURE21
+	int GL_TEXTURE22
+	int GL_TEXTURE23
+	int GL_TEXTURE24
+	int GL_TEXTURE25
+	int GL_TEXTURE26
+	int GL_TEXTURE27
+	int GL_TEXTURE28
+	int GL_TEXTURE29
+	int GL_TEXTURE30
+	int GL_TEXTURE31
+	int GL_ACTIVE_TEXTURE
+	
+	
+	int GL_REPEAT
+	int GL_CLAMP_TO_EDGE
+	int GL_MIRRORED_REPEAT
+	
+	int GL_FLOAT_VEC2
+	int GL_FLOAT_VEC3
+	int GL_FLOAT_VEC4
+	int GL_INT_VEC2
+	int GL_INT_VEC3
+	int GL_INT_VEC4
+	int GL_BOOL
+	int GL_BOOL_VEC2
+	int GL_BOOL_VEC3
+	int GL_BOOL_VEC4
+	int GL_FLOAT_MAT2
+	int GL_FLOAT_MAT3
+	int GL_FLOAT_MAT4
+	int GL_SAMPLER_2D
+	int GL_SAMPLER_CUBE
+	
+	int GL_VERTEX_ATTRIB_ARRAY_ENABLED
+	int GL_VERTEX_ATTRIB_ARRAY_SIZE
+	int GL_VERTEX_ATTRIB_ARRAY_STRIDE
+	int GL_VERTEX_ATTRIB_ARRAY_TYPE
+	int GL_VERTEX_ATTRIB_ARRAY_NORMALIZED
+	int GL_VERTEX_ATTRIB_ARRAY_POINTER
+	int GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING
+	
+	int GL_IMPLEMENTATION_COLOR_READ_TYPE
+	int GL_IMPLEMENTATION_COLOR_READ_FORMAT
+	
+	int GL_COMPILE_STATUS
+	int GL_INFO_LOG_LENGTH
+	int GL_SHADER_SOURCE_LENGTH
+	int GL_SHADER_COMPILER
+	
+	int GL_SHADER_BINARY_FORMATS
+	int GL_NUM_SHADER_BINARY_FORMATS
+	
+	int GL_LOW_FLOAT
+	int GL_MEDIUM_FLOAT
+	int GL_HIGH_FLOAT
+	int GL_LOW_INT
+	int GL_MEDIUM_INT
+	int GL_HIGH_INT
+	
+	int GL_FRAMEBUFFER
+	int GL_RENDERBUFFER
+	
+	int GL_RGBA4
+	int GL_RGB5_A1
+	int GL_RGB565
+	int GL_DEPTH_COMPONENT16
+	int GL_STENCIL_INDEX
+	int GL_STENCIL_INDEX8
+	
+	int GL_RENDERBUFFER_WIDTH
+	int GL_RENDERBUFFER_HEIGHT
+	int GL_RENDERBUFFER_INTERNAL_FORMAT
+	int GL_RENDERBUFFER_RED_SIZE
+	int GL_RENDERBUFFER_GREEN_SIZE
+	int GL_RENDERBUFFER_BLUE_SIZE
+	int GL_RENDERBUFFER_ALPHA_SIZE
+	int GL_RENDERBUFFER_DEPTH_SIZE
+	int GL_RENDERBUFFER_STENCIL_SIZE
+	
+	int GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE
+	int GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME
+	int GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL
+	int GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE
+	
+	int GL_COLOR_ATTACHMENT0
+	int GL_DEPTH_ATTACHMENT
+	int GL_STENCIL_ATTACHMENT
+	
+	int GL_NONE
+	
+	int GL_FRAMEBUFFER_COMPLETE
+	int GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT
+	int GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT
+	int GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS
+	int GL_FRAMEBUFFER_UNSUPPORTED
+	
+	int GL_FRAMEBUFFER_BINDING
+	int GL_RENDERBUFFER_BINDING
+	int GL_MAX_RENDERBUFFER_SIZE
+	
+	int GL_INVALID_FRAMEBUFFER_OPERATION
+	
+	
+	
+	
+	cdef void   glActiveTexture (GLenum texture)
+	cdef void   glAttachShader (GLuint program, GLuint shader)
+	cdef void   glBindAttribLocation (GLuint program, GLuint index,  GLchar* name)
+	cdef void   glBindBuffer (GLenum target, GLuint buffer)
+	cdef void   glBindFramebuffer (GLenum target, GLuint framebuffer)
+	cdef void   glBindRenderbuffer (GLenum target, GLuint renderbuffer)
+	cdef void   glBindTexture (GLenum target, GLuint texture)
+	cdef void   glBlendColor (GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
+	cdef void   glBlendEquation ( GLenum mode )
+	cdef void   glBlendEquationSeparate (GLenum modeRGB, GLenum modeAlpha)
+	cdef void   glBlendFunc (GLenum sfactor, GLenum dfactor)
+	cdef void   glBlendFuncSeparate (GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha)
+	cdef void   glBufferData (GLenum target, GLsizeiptr size,  GLvoid* data, GLenum usage)
+	cdef void   glBufferSubData (GLenum target, GLintptr offset, GLsizeiptr size,  GLvoid* data)
+	cdef GLenum glCheckFramebufferStatus (GLenum target)
+	cdef void   glClear (GLbitfield mask)
+	cdef void   glClearColor (GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
+	cdef void   glClearDepthf (GLclampf depth)
+	cdef void   glClearStencil (GLint s)
+	cdef void   glColorMask (GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
+	cdef void   glCompileShader (GLuint shader)
+	cdef void   glCompressedTexImage2D (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize,  GLvoid* data)
+	cdef void   glCompressedTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize,  GLvoid* data)
+	cdef void   glCopyTexImage2D (GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border)
+	cdef void   glCopyTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height)
+	cdef GLuint glCreateProgram ()
+	cdef GLuint glCreateShader (GLenum type)
+	cdef void   glCullFace (GLenum mode)
+	cdef void   glDeleteBuffers (GLsizei n,  GLuint* buffers)
+	cdef void   glDeleteFramebuffers (GLsizei n,  GLuint* framebuffers)
+	cdef void   glDeleteProgram (GLuint program)
+	cdef void   glDeleteRenderbuffers (GLsizei n,  GLuint* renderbuffers)
+	cdef void   glDeleteShader (GLuint shader)
+	cdef void   glDeleteTextures (GLsizei n,  GLuint* textures)
+	cdef void   glDepthFunc (GLenum func)
+	cdef void   glDepthMask (GLboolean flag)
+	cdef void   glDepthRangef (GLclampf zNear, GLclampf zFar)
+	cdef void   glDetachShader (GLuint program, GLuint shader)
+	cdef void   glDisable (GLenum cap)
+	cdef void   glDisableVertexAttribArray (GLuint index)
+	cdef void   glDrawArrays (GLenum mode, GLint first, GLsizei count)
+	cdef void   glDrawElements (GLenum mode, GLsizei count, GLenum type,  GLvoid* indices)
+	cdef void   glEnable (GLenum cap)
+	cdef void   glEnableVertexAttribArray (GLuint index)
+	cdef void   glFinish ()
+	cdef void   glFlush ()
+	cdef void   glFramebufferRenderbuffer (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
+	cdef void   glFramebufferTexture2D (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
+	cdef void   glFrontFace (GLenum mode)
+	cdef void   glGenBuffers (GLsizei n, GLuint* buffers)
+	cdef void   glGenerateMipmap (GLenum target)
+	cdef void   glGenFramebuffers (GLsizei n, GLuint* framebuffers)
+	cdef void   glGenRenderbuffers (GLsizei n, GLuint* renderbuffers)
+	cdef void   glGenTextures (GLsizei n, GLuint* textures)
+	cdef void   glGetActiveAttrib (GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name)
+	cdef void   glGetActiveUniform (GLuint program, GLuint index, GLsizei bufsize, GLsizei* length, GLint* size, GLenum* type, GLchar* name)
+	cdef void   glGetAttachedShaders (GLuint program, GLsizei maxcount, GLsizei* count, GLuint* shaders)
+	cdef int    glGetAttribLocation (GLuint program,  GLchar* name)
+	cdef void   glGetBooleanv (GLenum pname, GLboolean* params)
+	cdef void   glGetBufferParameteriv (GLenum target, GLenum pname, GLint* params)
+	cdef GLenum glGetError ()
+	cdef void   glGetFloatv (GLenum pname, GLfloat* params)
+	cdef void   glGetFramebufferAttachmentParameteriv (GLenum target, GLenum attachment, GLenum pname, GLint* params)
+	cdef void   glGetIntegerv (GLenum pname, GLint* params)
+	cdef void   glGetProgramiv (GLuint program, GLenum pname, GLint* params)
+	cdef void   glGetProgramInfoLog (GLuint program, GLsizei bufsize, GLsizei* length, GLchar* infolog)
+	cdef void   glGetRenderbufferParameteriv (GLenum target, GLenum pname, GLint* params)
+	cdef void   glGetShaderiv (GLuint shader, GLenum pname, GLint* params)
+	cdef void   glGetShaderInfoLog (GLuint shader, GLsizei bufsize, GLsizei* length, GLchar* infolog)
+	cdef void   glGetShaderPrecisionFormat (GLenum shadertype, GLenum precisiontype, GLint* range, GLint* precision)
+	cdef void   glGetShaderSource (GLuint shader, GLsizei bufsize, GLsizei* length, GLchar* source)
+	cdef   GLubyte*  glGetString (GLenum name)
+	cdef void   glGetTexParameterfv (GLenum target, GLenum pname, GLfloat* params)
+	cdef void   glGetTexParameteriv (GLenum target, GLenum pname, GLint* params)
+	cdef void   glGetUniformfv (GLuint program, GLint location, GLfloat* params)
+	cdef void   glGetUniformiv (GLuint program, GLint location, GLint* params)
+	cdef int    glGetUniformLocation (GLuint program,  GLchar* name)
+	cdef void   glGetVertexAttribfv (GLuint index, GLenum pname, GLfloat* params)
+	cdef void   glGetVertexAttribiv (GLuint index, GLenum pname, GLint* params)
+	cdef void   glGetVertexAttribPointerv (GLuint index, GLenum pname, GLvoid** pointer)
+	cdef void   glHint (GLenum target, GLenum mode)
+	cdef GLboolean  glIsBuffer (GLuint buffer)
+	cdef GLboolean  glIsEnabled (GLenum cap)
+	cdef GLboolean  glIsFramebuffer (GLuint framebuffer)
+	cdef GLboolean  glIsProgram (GLuint program)
+	cdef GLboolean  glIsRenderbuffer (GLuint renderbuffer)
+	cdef GLboolean  glIsShader (GLuint shader)
+	cdef GLboolean  glIsTexture (GLuint texture)
+	cdef void  glLineWidth (GLfloat width)
+	cdef void  glLinkProgram (GLuint program)
+	cdef void  glPixelStorei (GLenum pname, GLint param)
+	cdef void  glPolygonOffset (GLfloat factor, GLfloat units)
+	cdef void  glReadPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels)
+	cdef void  glReleaseShaderCompiler ()
+	cdef void  glRenderbufferStorage (GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
+	cdef void  glSampleCoverage (GLclampf value, GLboolean invert)
+	cdef void  glScissor (GLint x, GLint y, GLsizei width, GLsizei height)
+	cdef void  glShaderBinary (GLsizei n,  GLuint* shaders, GLenum binaryformat,  GLvoid* binary, GLsizei length)
+	cdef void  glShaderSource (GLuint shader, GLsizei count,  GLchar** string,  GLint* length)
+	cdef void  glStencilFunc (GLenum func, GLint ref, GLuint mask)
+	cdef void  glStencilFuncSeparate (GLenum face, GLenum func, GLint ref, GLuint mask)
+	cdef void  glStencilMask (GLuint mask)
+	cdef void  glStencilMaskSeparate (GLenum face, GLuint mask)
+	cdef void  glStencilOp (GLenum fail, GLenum zfail, GLenum zpass)
+	cdef void  glStencilOpSeparate (GLenum face, GLenum fail, GLenum zfail, GLenum zpass)
+	cdef void  glTexImage2D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type,  GLvoid* pixels)
+	cdef void  glTexParameterf (GLenum target, GLenum pname, GLfloat param)
+	cdef void  glTexParameterfv (GLenum target, GLenum pname,  GLfloat* params)
+	cdef void  glTexParameteri (GLenum target, GLenum pname, GLint param)
+	cdef void  glTexParameteriv (GLenum target, GLenum pname,  GLint* params)
+	cdef void  glTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type,  GLvoid* pixels)
+	cdef void  glUniform1f (GLint location, GLfloat x)
+	cdef void  glUniform1fv (GLint location, GLsizei count,  GLfloat* v)
+	cdef void  glUniform1i (GLint location, GLint x)
+	cdef void  glUniform1iv (GLint location, GLsizei count,  GLint* v)
+	cdef void  glUniform2f (GLint location, GLfloat x, GLfloat y)
+	cdef void  glUniform2fv (GLint location, GLsizei count,  GLfloat* v)
+	cdef void  glUniform2i (GLint location, GLint x, GLint y)
+	cdef void  glUniform2iv (GLint location, GLsizei count,  GLint* v)
+	cdef void  glUniform3f (GLint location, GLfloat x, GLfloat y, GLfloat z)
+	cdef void  glUniform3fv (GLint location, GLsizei count,  GLfloat* v)
+	cdef void  glUniform3i (GLint location, GLint x, GLint y, GLint z)
+	cdef void  glUniform3iv (GLint location, GLsizei count,  GLint* v)
+	cdef void  glUniform4f (GLint location, GLfloat x, GLfloat y, GLfloat z, GLfloat w)
+	cdef void  glUniform4fv (GLint location, GLsizei count,  GLfloat* v)
+	cdef void  glUniform4i (GLint location, GLint x, GLint y, GLint z, GLint w)
+	cdef void  glUniform4iv (GLint location, GLsizei count,  GLint* v)
+	cdef void  glUniformMatrix2fv (GLint location, GLsizei count, GLboolean transpose,  GLfloat* value)
+	cdef void  glUniformMatrix3fv (GLint location, GLsizei count, GLboolean transpose,  GLfloat* value)
+	cdef void  glUniformMatrix4fv (GLint location, GLsizei count, GLboolean transpose,  GLfloat* value)
+	cdef void  glUseProgram (GLuint program)
+	cdef void  glValidateProgram (GLuint program)
+	cdef void  glVertexAttrib1f (GLuint indx, GLfloat x)
+	cdef void  glVertexAttrib1fv (GLuint indx,  GLfloat* values)
+	cdef void  glVertexAttrib2f (GLuint indx, GLfloat x, GLfloat y)
+	cdef void  glVertexAttrib2fv (GLuint indx,  GLfloat* values)
+	cdef void  glVertexAttrib3f (GLuint indx, GLfloat x, GLfloat y, GLfloat z)
+	cdef void  glVertexAttrib3fv (GLuint indx,  GLfloat* values)
+	cdef void  glVertexAttrib4f (GLuint indx, GLfloat x, GLfloat y, GLfloat z, GLfloat w)
+	cdef void  glVertexAttrib4fv (GLuint indx,  GLfloat* values)
+	cdef void  glVertexAttribPointer (GLuint indx, GLint size, GLenum type, GLboolean normalized, GLsizei stride,  GLvoid* ptr)
+	cdef void  glViewport (GLint x, GLint y, GLsizei width, GLsizei height)

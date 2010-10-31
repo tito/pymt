@@ -56,6 +56,8 @@ cdef class Property:
         self.set(obj, val)
 
     def __get__(self, obj, objtype):
+        if obj is None:
+            return self
         return self.get(obj)
 
     cpdef set(self, obj, value):
@@ -75,11 +77,6 @@ cdef class Property:
         '''Return the value of the property
         '''
         return self.storage[obj.__uid]['value']
-
-    cpdef doc(self):
-        '''Return the generated doc from the property.
-        '''
-        return self.__class__.__name__
 
     #
     # Private part
@@ -216,6 +213,7 @@ cdef class ReferenceListProperty(Property):
         Property.link_deps(self, obj, name)
         for prop in self.properties:
             prop.bind(obj, self.trigger_change)
+        self.trigger_change(obj, None)
 
     cpdef unlink(self, obj):
         for prop in self.properties:
@@ -223,10 +221,12 @@ cdef class ReferenceListProperty(Property):
         Property.unlink(self, obj)
 
     cpdef trigger_change(self, obj, value):
-        if self.storage[obj.__uid]['stop_event']:
+        s = self.storage[obj.__uid]
+        p = s['properties']
+        if s['stop_event']:
             return
-        self.storage[obj.__uid]['value'] = [
-            x.get(obj) for x in self.storage[obj.__uid]['properties']]
+        s['value'] = [p[x].get(obj) for x in xrange(len(p))]
+        self.dispatch(obj)
 
     cdef convert(self, obj, value):
         if type(value) not in (list, tuple):
@@ -238,8 +238,6 @@ cdef class ReferenceListProperty(Property):
             raise ValueError('Value must have the same size as beginning')
 
     cpdef set(self, obj, value):
-        '''Set a new value for the property
-        '''
         cdef int idx
         storage = self.storage[obj.__uid]
         value = self.convert(obj, value)
@@ -257,6 +255,7 @@ cdef class ReferenceListProperty(Property):
         storage['value'] = value
         self.dispatch(obj)
         return True
+
 
 
 cdef class AliasProperty(Property):

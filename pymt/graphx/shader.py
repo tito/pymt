@@ -5,12 +5,17 @@ Shader: abstract compilation and usage
 __all__ = ('ShaderException', 'Shader')
 
 from pymt.logger import pymt_logger
+import numpy
+import sys
 #from ctypes import *
 from OpenGL.GL import GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, \
         glCreateProgram, glGetUniformLocation, glUniform1i, \
         glUniform1f, glLinkProgram, glCreateShader, glUseProgram, \
         glAttachShader, glCompileShader, glShaderSource, \
-        glGetProgramInfoLog, glGetShaderInfoLog
+        glGetProgramInfoLog, glGetShaderInfoLog, \
+        glUniformMatrix4fv, glUniform1f, glUniform2f, glUniform3f, glUniform4f, \
+        glGetAttribLocation
+        
 
 
 class ShaderException(Exception):
@@ -40,9 +45,15 @@ class Shader(object):
             glAttachShader(self.program, self.fragment_shader)
 
         glLinkProgram(self.program)
+        
         message = self.get_program_log(self.program)
         if message:
-            pymt_logger.debug('Shader: shader program message: %s' % message)
+            pymt_logger.error('Shader: shader program message: %s' % message)
+        else:
+            pymt_logger.debug('Shader compiled sucessfully')
+        sys.stdout.flush()
+        self.set_default_attr_locations()
+
 
     def create_shader(self, source, shadertype):
         shader = glCreateShader(shadertype)
@@ -52,32 +63,41 @@ class Shader(object):
             source = [source]
         glShaderSource(shader, source)
         glCompileShader(shader)
-        message = self.get_shader_log(shader)
-        if message:
-            pymt_logger.debug('Shader: shader message: %s' % message)
+
         return shader
 
-    def set_uniform_f(self, name, value):
-        location = glGetUniformLocation(self.program, name)
-        glUniform1f(location, value)
 
-    def set_uniform_i(self, name, value):
-        location = glGetUniformLocation(self.program, name)
-        glUniform1i(location, value)
 
     def __setitem__(self, name, value):
         """pass a variable to the shader"""
-        if isinstance(value, float):
-            self.set_uniform_f(name, value)
-        elif isinstance(value, int):
-            self.set_uniform_i(name, value)
-        else:
-            raise TypeError('Only single floats and ints are supported so far')
+        location = glGetUniformLocation(self.program, name)
+        #pymt_logger.debug('setting uniform %s (%d):\n '%(name, location) + str(value) + "  " +str(type(value)))
+        sys.stdout.flush()
+        
+        if type(value) == numpy.ndarray:
+            mat_gl = numpy.ascontiguousarray(value.T, dtype='float32').flatten()
+            glUniformMatrix4fv(location, 1, False, mat_gl)        
+            return
+        
+        if type(value) == int:
+            glUniform1i(location, value)
+            return
+        
+        value = map(float, value)
+        if len(value) == 1:
+            glUniform1f(location, float(value))
+        elif len(value) == 2:
+            glUniform2f(location, *value)
+        elif len(value) == 3:
+            glUniform3f(location, *value)
+        elif len(value) == 4:
+            glUniform4f(location, *value)
+        
 
     def use(self):
         '''Use the shader'''
         glUseProgram(self.program)
-
+        
     def stop(self):
         '''Stop using the shader'''
         glUseProgram(0)
@@ -93,4 +113,12 @@ class Shader(object):
     def get_log(self, obj, func):
         value = func(obj)
         return value
+    
+    def set_default_attr_locations(self):
+        self.attributes = {}
+        self.use()
+        for name in ['vPosition', 'vColor', 'vNormal', 'vTexCoords0', 'vTexCoords1', 'vTexCoords2', 'vTexCoords3']:
+            self.attributes[name] = glGetAttribLocation(self.program, name)
+            #print "attribute %s = %d" % (name, self.attributes[name])
+        self.stop()
 

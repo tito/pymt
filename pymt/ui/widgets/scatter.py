@@ -2,6 +2,8 @@
 Scatter package: provide lot of widgets based on scatter (base, svg, plane, image...)
 '''
 
+
+
 __all__ = ('MTScatterWidget', 'MTScatterSvg', 'MTScatterPlane',
            'MTScatterImage', 'MTScatter')
 

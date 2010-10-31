@@ -1,5 +1,3 @@
-from python cimport Py_DECREF
-
 cdef class Property:
     '''Base class for build more complex property. This handle all the basics
     setter and getter, None handling, and observers.
@@ -20,7 +18,7 @@ cdef class Property:
         self.defaultvalue = defaultvalue
         self.allownone = <int>kw.get('allownone', 0)
 
-    cdef init_storage(self, storage):
+    cdef init_storage(self, dict storage):
         storage['value'] = self.defaultvalue
         storage['allownone'] = self.allownone
         storage['observers'] = []
@@ -29,35 +27,28 @@ cdef class Property:
         d = dict()
         self.name = name
         self.init_storage(d)
-        self.storage[obj] = d
-
-        # XXX God. Let's pray that python people don't see that.
-        # The issue with dictionnary is if we use the object (obj) directly, we
-        # are referencing it. And it will be never deleted. Weakref would
-        # introduce a lot of overhead for nothing. Looking on a uniq id
-        # attribute introduce the dot looking overhead (obj.something). So, to
-        # prevent any more looking, we just unref our reference, and in the
-        # __del__ of the object, we unlink the ourself from the object.
-        Py_DECREF(obj)
+        self.storage[obj.__uid] = d
 
     cpdef link_deps(self, object obj, str name):
         pass
 
     cpdef unlink(self, obj):
         if obj in self.storage:
-            del self.storage[obj]
+            del self.storage[obj.__uid]
 
     cpdef bind(self, obj, observer):
         '''Add a new observer to be called only when the value is changed
         '''
-        observers = self.storage[obj]['observers']
+        observers = self.storage[obj.__uid]['observers']
         if not observer in observers:
             observers.append(observer)
 
     cpdef unbind(self, obj, observer):
         '''Remove a observer from the observer list
         '''
-        observers = self.storage[obj]['observers']
+        if obj not in self.storage:
+            return
+        observers = self.storage[obj.__uid]['observers']
         if observer in observers:
             observers.remove(observer)
 
@@ -71,7 +62,7 @@ cdef class Property:
         '''Set a new value for the property
         '''
         value = self.convert(obj, value)
-        d = self.storage[obj]
+        d = self.storage[obj.__uid]
         realvalue = d['value']
         if realvalue == value:
             return False
@@ -83,7 +74,7 @@ cdef class Property:
     cpdef get(self, obj):
         '''Return the value of the property
         '''
-        return self.storage[obj]['value']
+        return self.storage[obj.__uid]['value']
 
     cpdef doc(self):
         '''Return the generated doc from the property.
@@ -99,7 +90,7 @@ cdef class Property:
         property class.
         '''
         if x is None:
-            if not self.storage[obj]['allownone']:
+            if not self.storage[obj.__uid]['allownone']:
                 raise ValueError('None is not allowed')
             else:
                 return True
@@ -113,8 +104,8 @@ cdef class Property:
     cdef dispatch(self, obj):
         '''Dispatch the value change to all observers
         '''
-        observers = self.storage[obj]['observers']
-        value = self.storage[obj]['value']
+        observers = self.storage[obj.__uid]['observers']
+        value = self.storage[obj.__uid]['value']
         for observer in observers:
             observer(obj, value)
 
@@ -162,7 +153,7 @@ cdef class BoundedNumericProperty(Property):
             self.max = value
         Property.__init__(self, *largs, **kw)
 
-    cdef init_storage(self, storage):
+    cdef init_storage(self, dict storage):
         Property.init_storage(self, storage)
         storage['min'] = self.min
         storage['max'] = self.max
@@ -194,14 +185,14 @@ cdef class OptionProperty(Property):
         self.options = <list>(kw.get('options', []))
         Property.__init__(self, *largs, **kw)
 
-    cdef init_storage(self, storage):
+    cdef init_storage(self, dict storage):
         Property.init_storage(self, storage)
         storage['options'] = self.options[:]
 
     cdef check(self, obj, value):
         if Property.check(self, obj, value):
             return True
-        if value not in self.storage[obj]['options']:
+        if value not in self.storage[obj.__uid]['options']:
             raise ValueError('Value is not in available options')
 
 
@@ -216,7 +207,7 @@ cdef class ReferenceListProperty(Property):
             self.properties.append(prop)
         Property.__init__(self, largs, **kw)
 
-    cdef init_storage(self, storage):
+    cdef init_storage(self, dict storage):
         Property.init_storage(self, storage)
         storage['properties'] = self.properties
         storage['stop_event'] = 0
@@ -226,11 +217,16 @@ cdef class ReferenceListProperty(Property):
         for prop in self.properties:
             prop.bind(obj, self.trigger_change)
 
+    cpdef unlink(self, obj):
+        for prop in self.properties:
+            prop.unbind(obj, self.trigger_change)
+        Property.unlink(self, obj)
+
     cpdef trigger_change(self, obj, value):
-        if self.storage[obj]['stop_event']:
+        if self.storage[obj.__uid]['stop_event']:
             return
-        self.storage[obj]['value'] = [
-            x.get(obj) for x in self.storage[obj]['properties']]
+        self.storage[obj.__uid]['value'] = [
+            x.get(obj) for x in self.storage[obj.__uid]['properties']]
 
     cdef convert(self, obj, value):
         if type(value) not in (list, tuple):
@@ -238,22 +234,22 @@ cdef class ReferenceListProperty(Property):
         return <list>value
 
     cdef check(self, obj, value):
-        if len(value) != len(self.storage[obj]['properties']):
+        if len(value) != len(self.storage[obj.__uid]['properties']):
             raise ValueError('Value must have the same size as beginning')
 
     cpdef set(self, obj, value):
         '''Set a new value for the property
         '''
         cdef int idx
-        storage = self.storage[obj]
+        storage = self.storage[obj.__uid]
         value = self.convert(obj, value)
         if storage['value'] == value:
             return False
-        self.check(obj, x)
+        self.check(obj, value)
         # prevent dependice loop
         storage['stop_event'] = 1
         props = storage['properties']
-        for idx in xrange(len(x)):
+        for idx in xrange(len(props)):
             prop = props[idx]
             x = value[idx]
             prop.set(obj, x)
@@ -263,32 +259,45 @@ cdef class ReferenceListProperty(Property):
         return True
 
 
-'''
 cdef class AliasProperty(Property):
     cdef object getter
     cdef object setter
+    cdef list bind_objects
 
     def __cinit__(self):
         self.getter = None
         self.setter = None
+        self.bind_objects = list()
 
     def __init__(self, getter, setter, **kwargs):
         Property.__init__(self, None, **kwargs)
         self.getter = getter
         self.setter = setter
-        for prop in kwargs.get('bind', []):
-            prop.bind(self.trigger_change)
+        self.bind_objects = list(kwargs.get('bind', []))
 
-    cpdef trigger_change(self, value):
-        self.dispatch()
+    cdef init_storage(self, dict storage):
+        Property.init_storage(self, storage)
+        storage['getter'] = self.getter
+        storage['setter'] = self.setter
 
-    cdef check(self, value):
+    cpdef link_deps(self, object obj, str name):
+        for prop in self.bind_objects:
+            prop.bind(obj, self.trigger_change)
+
+    cpdef unlink(self, obj):
+        for prop in self.bind_objects:
+            prop.unbind(obj, self.trigger_change)
+        Property.unlink(self, obj)
+
+    cpdef trigger_change(self, obj, value):
+        self.dispatch(obj)
+
+    cdef check(self, obj, value):
         return True
 
-    cpdef get(self):
-        return self.getter()
+    cpdef get(self, obj):
+        return self.storage[obj.__uid]['getter'](obj)
 
-    cpdef bool set(self, value):
-        return self.setter(value)
+    cpdef set(self, obj, value):
+        self.storage[obj.__uid]['setter'](obj, value)
 
-'''

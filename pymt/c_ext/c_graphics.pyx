@@ -26,13 +26,10 @@ from pymt.lib.transformations import matrix_multiply, identity_matrix, rotation_
 
 from c_opengl cimport *
 
-
 cdef extern from "math.h":
     double cos(double)
     double sin(double)
     double sqrt(double)
-
-
 
 
 # Documentation:
@@ -47,8 +44,8 @@ cdef extern from "math.h":
 #  e = Edge
 
 
-
-
+    
+    
 _default_vertex_shader = open(os.path.join(pymt_shader_dir, 'default.vs')).read()
 _default_fragment_shader = open(os.path.join(pymt_shader_dir, 'default.fs')).read()
 _default_shader = Shader(_default_vertex_shader, _default_fragment_shader)
@@ -128,10 +125,6 @@ cdef class GraphicContext:
         self.set('projection_mat', identity_matrix())
         self.set('modelview_mat', identity_matrix())
         self.set('texture0', 0)
-
-        
-        correctFilename = resource_find("standard.vs")
-        correctFilename = resource_find("standard.fs")
 
     cpdef save(self):
         self.stack.append(self.state.copy())
@@ -1679,53 +1672,4 @@ cdef class Canvas:
     property objects:
         def __get__(self):
             return self._batch
-
-    # facilities to create object
-    def graphicElement(self, *largs, **kwargs):
-        return self.add(GraphicElement(*largs, **kwargs))
-
-    def line(self, *largs, **kwargs):
-        '''Create a Line() object and add it to the canvas.
-        Check Line() for more information.'''
-        return self.add(Line(*largs, **kwargs))
-
-    def circle(self, *largs, **kwargs):
-        '''Create a Circle() object and add it to the canvas.
-        Check Circle() for more information.'''
-        return self.add(Circle(*largs, **kwargs))
-
-    def point(self, *largs, **kwargs):
-        '''Create a Point() object and add it to the canvas.
-        Check Point() for more information.'''
-        return self.add(Point(*largs, **kwargs))
-
-    def rectangle(self, *largs, **kwargs):
-        '''Create a Rectangle() object and add it to the canvas.
-        Check Rectangle() for more information.'''
-        return self.add(Rectangle(*largs, **kwargs))
-
-    def imageRectangle(self, *largs, **kwargs):
-        '''Create a ImageRectangle() object and add it to the canvas.
-        Check ImageRectangle() for more information.'''
-        return self.add(ImageRectangle(*largs, **kwargs))
-
-    def roundedRectangle(self, *largs, **kwargs):
-        '''Create a RoundedRectangle() object and add it to the canvas.
-        Check RoundedRectangle() for more information.'''
-        return self.add(RoundedRectangle(*largs, **kwargs))
-
-    def cssRectangle(self, *largs, **kwargs):
-        '''Create a CSSRectangle() object and add it to the canvas.
-        Check CSSRectangle() for more information.'''
-        return self.add(CSSRectangle(*largs, **kwargs))
-
-    def color(self, *largs, **kwargs):
-        '''Create a Color() object and add it to the canvas.
-        Check Color() for more information.'''
-        return self.add(Color(*largs, **kwargs))
-
-    def text(self, *largs, **kwargs):
-        '''Create a Text() object and add it to the canvas.
-        Check Text() for more information.'''
-        return self.add(Text(*largs, **kwargs))
 

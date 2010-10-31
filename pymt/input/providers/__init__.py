@@ -35,3 +35,7 @@ if sys.platform == 'linux2' or 'PYMT_DOC' in os.environ:
         from pymt.input.providers.hidinput import *
     except:
         pymt.pymt_logger.exception('Input: HIDInput is not supported by your version of linux')
+    try:
+        from pymt.input.providers.linuxwacom import *
+    except:
+        pymt.pymt_logger.exception('Input: LinuxWacom is not supported by your version of linux')

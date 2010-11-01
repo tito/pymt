@@ -1,6 +1,6 @@
 cdef extern from "gl.h":
 
-	ctypedef  void     GLvoid
+	ctypedef  void     	   GLvoid
 	ctypedef  char             GLchar
 	ctypedef  unsigned int     GLenum
 	ctypedef  unsigned char    GLboolean

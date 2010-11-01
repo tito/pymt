@@ -90,6 +90,8 @@ if have_cython:
     else:
         libraries.append('GL')
 
+    ext_modules.append(Extension('pymt.c_ext.c_buffer',
+        ['pymt/c_ext/c_buffer.pyx']))
     ext_modules.append(Extension('pymt.c_ext.c_properties',
         ['pymt/c_ext/c_properties.pyx']))
     ext_modules.append(Extension('pymt.c_ext.c_graphics',

@@ -109,9 +109,9 @@ cdef class Buffer:
 
 
     cdef int size(self):
-        '''Return the size/length of the whole data
+        '''Return the size of the allocated buffer
         '''
-        return self.blocksize * self.count()
+        return self.blocksize * self.blockcount
 
 
     cdef void *pointer(self):

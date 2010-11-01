@@ -11,12 +11,6 @@ cdef class Buffer:
     '''Buffer class is designed to manage very fast a list of fixed size block.
     You can easily add and remove data from the buffer.
     '''
-    cdef void *data
-    cdef list l_free
-    cdef int blocksize
-    cdef int blockcount
-
-
     def __cinit__(self):
         self.data = NULL
         self.blocksize = 0

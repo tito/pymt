@@ -18,7 +18,7 @@ class Widget(object):
     # UID counter
     __widget_uid = 0
 
-    def __new__(cls):
+    def __new__(cls, *largs, **kwargs):
         self = super(Widget, cls).__new__(cls)
 
         # XXX for the moment, we need to create a uniq id for properties.
@@ -134,3 +134,8 @@ class Widget(object):
     #: Center position of the widget (x + width / 2, y + height / 2)
     center = AliasProperty(get_center, set_center, bind=(x, y, width, height))
 
+    #: Class of the widget, used for style
+    cls = ListProperty([])
+
+    #: User id of the widget
+    id = StringProperty(None, allownone=True)

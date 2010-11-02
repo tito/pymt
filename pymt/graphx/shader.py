@@ -51,7 +51,7 @@ class Shader(object):
             pymt_logger.error('Shader: shader program message: %s' % message)
         else:
             pymt_logger.debug('Shader compiled sucessfully')
-        sys.stdout.flush()
+
         self.set_default_attr_locations()
 
 
@@ -71,8 +71,6 @@ class Shader(object):
     def __setitem__(self, name, value):
         """pass a variable to the shader"""
         location = glGetUniformLocation(self.program, name)
-        #pymt_logger.debug('setting uniform %s (%d):\n '%(name, location) + str(value) + "  " +str(type(value)))
-        sys.stdout.flush()
         
         if type(value) == numpy.ndarray:
             mat_gl = numpy.ascontiguousarray(value.T, dtype='float32').flatten()

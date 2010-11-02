@@ -12,3 +12,6 @@ cdef class Buffer:
     cdef int count(self)
     cdef int size(self)
     cdef void *pointer(self)
+    cdef void *offset_pointer(self, int offset)
+    cdef void update(self, int index, void* blocks, int count)
+    

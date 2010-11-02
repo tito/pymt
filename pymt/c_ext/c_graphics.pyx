@@ -24,7 +24,7 @@ from OpenGL.arrays import vbo
 
 from pymt.lib.transformations import matrix_multiply, identity_matrix, rotation_matrix, translation_matrix, scale_matrix, clip_matrix
 
-from c_opengl cimport *
+from c_opengl_es cimport *
 
 cdef extern from "math.h":
     double cos(double)

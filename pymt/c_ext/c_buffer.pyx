@@ -7,6 +7,9 @@ cdef extern from "stdlib.h":
 cdef extern from "string.h":
     void *memcpy(void *dest, void *src, size_t n)
 
+cdef extern from "strings.h":
+    void bcopy(void *src, void *dst, size_t n)
+
 
 cdef class Buffer:
     '''Buffer class is designed to manage very fast a list of fixed size block.
@@ -47,7 +50,7 @@ cdef class Buffer:
             return
 
         # Try to realloc
-        newptr = realloc(self.data, self.block_size * self.block_count)
+        newptr = realloc(self.data, self.block_size * block_count)
         if newptr == NULL:
             raise SystemError('Unable to realloc memory for buffer')
 
@@ -80,7 +83,8 @@ cdef class Buffer:
             block = self.l_free.pop(0)
 
             # Copy content
-            memcpy(p, self.data + (block * self.block_size), self.block_size)
+            memcpy(self.data + (block * self.block_size), p, self.block_size)
+            #bcopy(p, self.data + (block * self.block_size), self.block_size)
 
             # Push the current block as indices
             if indices != NULL:
@@ -103,11 +107,16 @@ cdef class Buffer:
             # Append the new indice as free block
             self.l_free.append(value)
 
+    cdef void update(self, int index, void* blocks, int count):
+        '''Update count number of blocks starting at index with the data in blocks
+        ''' 
+        memcpy(self.data + (index * self.block_size), blocks, self.block_size * count)
+
 
     cdef void pack(self):
         '''Ensure the memory is packed
         '''
-        if not self._need_pack:
+        if not self.need_pack:
             return
 
         # Allocate a memory block that can contain the whole list
@@ -151,6 +160,10 @@ cdef class Buffer:
         '''Return the data pointer
         '''
         return self.data
+
+    cdef void *offset_pointer(self, int offset):
+        return self.data + (offset * self.block_size)
+
 
 '''
 def run():

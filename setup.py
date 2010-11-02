@@ -98,8 +98,8 @@ if have_cython:
         ['pymt/c_ext/c_properties.pyx']))
     ext_modules.append(Extension('pymt.c_ext.opengl',
         ['pymt/c_ext/opengl.pyx']))
-    ext_modules.append(Extension('pymt.c_ext.c_graphics',
-        ['pymt/c_ext/c_graphics.pyx'],
+    ext_modules.append(Extension('pymt.c_ext.graphics',
+        ['pymt/c_ext/graphics.pyx'],
         libraries=libraries,
         include_dirs=include_dirs,
         extra_link_args=extra_link_args))

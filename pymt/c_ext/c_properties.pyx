@@ -122,6 +122,12 @@ cdef class StringProperty(Property):
         if not isinstance(value, basestring):
             raise ValueError('Value of the property is not a string')
 
+cdef class ListProperty(Property):
+    cdef check(self, obj, value):
+        if Property.check(self, obj, value):
+            return True
+        if type(value) is not list:
+            raise ValueError('Value of the property is not a list')
 
 cdef class BoundedNumericProperty(Property):
     cdef int use_min

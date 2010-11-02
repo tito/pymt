@@ -70,6 +70,7 @@ if have_cython:
     if sys.platform == 'win32':
         libraries.append('opengl32')
     elif sys.platform == 'darwin':
+        '''
         # On OSX, gl.h is not in GL/gl.h but OpenGL/gl.h. Cython has no
         # such thing as #ifdef, hence we just copy the file here.
         source = '/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h'
@@ -82,6 +83,7 @@ if have_cython:
             pass
         shutil.copy(source, dest)
         include_dirs = [incl]
+        '''
         # On OSX, it's not -lGL, but -framework OpenGL...
         extra_link_args = ['-framework', 'OpenGL']
     elif sys.platform.startswith('freebsd'):
@@ -94,6 +96,8 @@ if have_cython:
         ['pymt/c_ext/c_buffer.pyx']))
     ext_modules.append(Extension('pymt.c_ext.c_properties',
         ['pymt/c_ext/c_properties.pyx']))
+    ext_modules.append(Extension('pymt.c_ext.opengl',
+        ['pymt/c_ext/opengl.pyx']))
     ext_modules.append(Extension('pymt.c_ext.c_graphics',
         ['pymt/c_ext/c_graphics.pyx'],
         libraries=libraries,

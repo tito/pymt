@@ -548,7 +548,7 @@ cdef class GraphicElement:
     #canvas, vbo and texture to use with this element
     cdef Canvas canvas     
     cdef VBO vbo           
-    cdef object texture    
+    cdef object _texture    
    
     #indices to draw.  e.g. [1,2,3], will draw triangle:
     #  self.v_data[0], self.v_data[1], self.v_data[2]
@@ -619,6 +619,12 @@ cdef class GraphicElement:
         for i in range(self.v_count): 
             self.vbo.update_vertices(idx[i], &vtx[1], 1)     
 
+    property texture:
+        def __get__(self):
+            return self._texture
+        def __set__(self, tex):
+            self._texture = tex
+
  
 
 cdef class Triangle(GraphicElement):
@@ -629,7 +635,7 @@ cdef class Triangle(GraphicElement):
         GraphicElement.__init__(self, **kwargs)
         self.allocate_vertex_buffers(3)
                
-        self.points  = kwargs.get('points', (0.0,0.0, 1.0,0.0, 0.5,1.0))
+        self.points  = kwargs.get('points')
         self.tex_coords  = kwargs.get('tex_coords', self.points)
 
     cdef build(self):
@@ -671,8 +677,8 @@ cdef class Rectangle(GraphicElement):
         self.allocate_vertex_buffers(4)
 
         #get keyword args for configuring rectangle
+        self.size = kwargs.get('size')
         self.pos  = kwargs.get('pos', (0,0))
-        self.size = kwargs.get('size', (1,1))
         self.tex_coords  = kwargs.get('tex_coords', (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0))
        
         #tell VBO which triangles to draw using our vertices 
@@ -712,4 +718,162 @@ cdef class Rectangle(GraphicElement):
             for i in range(6):
                 self._tex_coords[i] = <float> coords[i]
             self.build()
-      
+
+
+
+cdef class BorderRectangle(GraphicElement):
+    cdef float x, y
+    cdef float w, h
+    cdef float _border[4]
+    cdef float _tex_coords[8]
+
+    def __init__(self, **kwargs):       
+        GraphicElement.__init__(self, **kwargs)
+        if not self.texture:
+            raise AttributeError("BorderRectangle must have a texture!")
+
+        #we have eight vertices in BorderRectangle
+        self.allocate_vertex_buffers(12)
+
+        #get keyword args for configuring rectangle
+        s = kwargs.get('size')
+        p = kwargs.get('pos', (0,0))
+        self.x = p[0]; self.y = p[1]
+        self.h = s[0]; self.h = s[1]
+        self.build()      
+
+
+        #tell VBO which triangles to draw using our vertices 
+        #two triangles per quad       
+        '''
+            v9---v8------v7----v6 
+            |        b2        |
+           v10  v15------v14   v5
+            |    |        |    |
+            |-b4-|        |-b1-|
+            |    |        |    |
+           v11  v12------v13   v4
+            |        b0        |
+            v0---v1------v2----v3
+        '''
+        self.indices = (
+             0,  1, 12,    12, 11,  0,  #bottom left 
+             1,  2, 13,    13, 12,  1,  #bottom middle 
+             2,  3,  4,     4, 13,  2,  #bottom right 
+            13,  4,  5,     5, 14, 13,   #center right 
+            14,  5,  6,     6,  7, 14,   #top right 
+            15, 14,  7,     7,  8, 15,   #top middle 
+            10, 15,  8,     8,  9, 10,   #top left 
+            11, 12, 15,    15, 10, 11,   #center left 
+            12, 13, 14,    14, 15, 12)   #center middel 
+        self.canvas.add(self, self.indices)
+
+    cdef build(self):
+        #pos and size of border rectangle
+        cdef float x,y,w,h
+        x=self.x;  y=self.y; w=self.w;  h=self.h
+        
+        #width and heigth of texture in pixels, and tex coord space 
+        cdef float tw, th, tcw, tch
+        cdef float* tc = self._tex_coords
+        tsize  = self.texture.size
+        tw  = tsize[0]
+        th  = tsize[1]
+        tcw = tc[2] - tc[0]  #right - left
+        tch = tc[7] - tc[1]  #top - bottom
+        
+        #calculate border offset in texture coord space 
+        # border width(px)/texture width(px) *  tcoord width
+        cdef float *b = self._border
+        cdef float tb[4] #border offset in texture coordinate space
+        tb[0] = b[0] / th*tch  
+        tb[1] = b[1] / tw*tcw 
+        tb[2] = b[2] / th*tch
+        tb[3] = b[3] / tw*tcw
+
+        #horizontal and vertical sections
+        cdef float hs[4]
+        cdef float vs[4]
+        hs[0] = x;            vs[0] = y
+        hs[1] = x + b[4];     vs[1] = y + b[0]
+        hs[2] = x + w - b[1]; vs[2] = y + h - b[2]
+        hs[3] = x + w;        vs[3] = y + h
+        
+        cdef float ths[4]
+        cdef float tvs[4] 
+        ths[0] = tc[0];              tvs[0] = tc[1]
+        ths[1] = tc[0] + tb[4];      tvs[1] = tc[1] + tb[0]
+        ths[2] = tc[0] + tcw-tb[1];  tvs[2] = tc[1] + tch - tb[2]
+        ths[3] = tc[0] + tcw;        tvs[3] = tc[1] + tch
+
+        #set the vertex data
+        cdef vertex* v = self.v_data
+        #bottom row
+        v[0] = vertex4f(hs[0], vs[0], ths[0], tvs[0])
+        v[1] = vertex4f(hs[1], vs[0], ths[1], tvs[0])
+        v[2] = vertex4f(hs[2], vs[0], ths[2], tvs[0])
+        v[3] = vertex4f(hs[3], vs[0], ths[3], tvs[0])
+
+        #bottom inner border row
+        v[11] = vertex4f(hs[0], vs[1], ths[0], tvs[1])
+        v[12] = vertex4f(hs[1], vs[1], ths[1], tvs[1])
+        v[13] = vertex4f(hs[2], vs[1], ths[2], tvs[1])
+        v[4]  = vertex4f(hs[3], vs[1], ths[3], tvs[1])
+
+        #top inner border row
+        v[10] = vertex4f(hs[0], vs[2], ths[0], tvs[2])
+        v[15] = vertex4f(hs[1], vs[2], ths[1], tvs[2])
+        v[14] = vertex4f(hs[2], vs[2], ths[2], tvs[2])
+        v[5]  = vertex4f(hs[3], vs[2], ths[3], tvs[2])
+
+        #top row
+        v[9] = vertex4f(hs[0], vs[3], ths[0], tvs[3])
+        v[8] = vertex4f(hs[1], vs[3], ths[1], tvs[3])
+        v[7] = vertex4f(hs[2], vs[3], ths[2], tvs[3])
+        v[6] = vertex4f(hs[3], vs[3], ths[3], tvs[3])
+        
+        #phew....all done
+        self.update_vbo_data()
+
+
+
+    property pos:
+        def __get__(self):
+            return (self.x, self.y)
+        def __set__(self, pos):
+            self.x = pos[0]
+            self.y = pos[1]
+            self.build()
+        
+    property size:
+        def __get__(self):
+            return (self.w, self.h)
+        def __set__(self, size):
+            self.w = size[0]
+            self.h = size[1]
+            self.build()
+
+    property border:
+        def __get__(self):
+            cdef float* b = self._border
+            return (b[0], b[1], b[2], b[3])
+        def __set__(self, b):
+            cdef int i
+            for i in xrange(4):
+                self._border[i] = b[0] 
+            self.build()
+
+    property texture:
+        def __get__(self):
+            return self._texture
+        def __set__(self, tex):
+            self._texture = tex
+            tcords = self.texture.tex_coords
+            for i in range(8):
+                self._tex_coords[i] = tcords[i] 
+            self.build()
+
+
+
+
+

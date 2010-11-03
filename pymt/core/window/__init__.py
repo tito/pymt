@@ -12,7 +12,6 @@ your system. Actually, theses libraries are handled :
 __all__ = ('WindowBase', 'Window')
 
 from pymt.core import core_select_lib
-
 from pymt.config import pymt_config
 from pymt.logger import Logger
 from pymt.base import setWindow, touch_event_listeners

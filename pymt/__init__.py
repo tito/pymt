@@ -230,12 +230,6 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             Logger.info('Core: PyMT configuration saved.')
             sys.exit(0)
 
-        # last initialization
-        #if pymt_options['shadow_window']:
-        #    Logger.debug('Core: Creating PyMT Window')
-        #    shadow_window = MTWindow()
-        #    pymt_configure()
-
     except getopt.GetoptError, err:
         Logger.error('Core: %s' % str(err))
         pymt_usage()

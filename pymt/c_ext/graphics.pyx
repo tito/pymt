@@ -1,9 +1,9 @@
 import os
 from pymt import pymt_shader_dir
-from pymt.logger import pymt_logger
+from pymt.logger import Logger
 from pymt.resources import resource_find
 
-from c_buffer cimport Buffer
+from buffer cimport Buffer
 from c_opengl cimport *
 
 #TODO, see which ones we have to write in cython directlym e.g. transformations, texture etc.
@@ -11,9 +11,6 @@ from pymt.core.image import Image
 import numpy
 from pymt.lib.transformations import matrix_multiply, identity_matrix, \
              rotation_matrix, translation_matrix, scale_matrix
-
-
-
 
 
 '''
@@ -200,10 +197,10 @@ cdef class Shader:
     cdef process_build_log(self):
         message = self.get_program_log(self.program)
         if message:
-            pymt_logger.error('Shader: shader program message: %s' % message)
+            Logger.error('Shader: shader program message: %s' % message)
             raise Exception(message)
         else:
-            pymt_logger.debug('Shader compiled sucessfully')
+            Logger.debug('Shader compiled sucessfully')
     
 _default_vertex_shader = open(os.path.join(pymt_shader_dir, 'default.vs')).read()
 _default_fragment_shader = open(os.path.join(pymt_shader_dir, 'default.fs')).read()

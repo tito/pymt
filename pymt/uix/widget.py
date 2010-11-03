@@ -8,7 +8,7 @@ TODO: write how the base class are working
 
 __all__ = ('Widget', )
 
-from pymt.c_ext.c_properties import *
+from pymt.c_ext.properties import *
 
 class Widget(object):
     '''

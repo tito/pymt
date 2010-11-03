@@ -93,10 +93,10 @@ if have_cython:
     else:
         libraries.append('GL')
 
-    ext_modules.append(Extension('pymt.c_ext.c_buffer',
-        ['pymt/c_ext/c_buffer.pyx']))
-    ext_modules.append(Extension('pymt.c_ext.c_properties',
-        ['pymt/c_ext/c_properties.pyx']))
+    ext_modules.append(Extension('pymt.c_ext.buffer',
+        ['pymt/c_ext/buffer.pyx']))
+    ext_modules.append(Extension('pymt.c_ext.properties',
+        ['pymt/c_ext/properties.pyx']))
     ext_modules.append(Extension('pymt.c_ext.opengl',
         ['pymt/c_ext/opengl.pyx']))
     ext_modules.append(Extension('pymt.c_ext.graphics',
@@ -104,8 +104,8 @@ if have_cython:
         libraries=libraries,
         include_dirs=include_dirs,
         extra_link_args=extra_link_args))
-    ext_modules.append(Extension('pymt.c_ext.c_accelerate',
-        ['pymt/c_ext/c_accelerate.pyx']))
+    ext_modules.append(Extension('pymt.c_ext.accelerate',
+        ['pymt/c_ext/accelerate.pyx']))
 
 
 #setup datafiles to be included in the disytibution, liek examples...

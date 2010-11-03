@@ -300,7 +300,7 @@ cdef class GraphicContext:
                 if value:   glEnable(GL_BLEND)
                 else:       glDisable(GL_BLEND)
             
-            elif x in ('blend_tem.texture:sfactor', 'blend_dfactor'):
+            elif x in ('blend_sfactor', 'blend_dfactor'):
                 glBlendFunc(state['blend_sfactor'], state['blend_dfactor'])
          
             elif x != 'shader': #set uniform variable
@@ -357,10 +357,6 @@ cdef class VBO:
     cdef bind(self):
         self.update_buffer()
         glBindBuffer(GL_ARRAY_BUFFER, self.id)
-        #glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), <GLvoid*>0) #vPosition
-        #glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), <GLvoid*>(2*sizeof(GLfloat))) #vTexCoord0
-        #glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), <GLvoid*>(4*sizeof(GLfloat))) #vTexCoord1
-        #glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), <GLvoid*>(6*sizeof(GLfloat))) #vTexCoord2
         cdef int offset = 0
         for attr in self.format:
             if not attr['per_vertex']:
@@ -491,24 +487,18 @@ cdef class Canvas:
                 b = item
                 glDrawElements(GL_TRIANGLES, b.count(), GL_UNSIGNED_INT, b.pointer())
             elif command == 'instruction':
-                (<GraphicInstruction>item).apply(self)
+                (<GraphicInstruction>item).apply()
                 
         glUseProgram(0)
 
-        # XXX FIXME Maybe reset ?
-
-cdef class GraphicElement:
-    cdef Canvas canvas       #canvas in which to draw
-    cdef VBO vbo             #vertex buffer
-    cdef int v_count         #vertex cound
-    cdef object texture
-
-    def __cinit__(self):
-        self.texture = None
-
 
 cdef class GraphicInstruction:
-    cdef apply(self, Canvas c):
+    cdef int ignore
+
+    def __cinit__(self):
+        self.ignore = 0
+
+    cdef apply(self):
         pass
 
 
@@ -516,94 +506,335 @@ cdef class BindTexture(GraphicInstruction):
     cdef object texture
 
     def __cinit__(self, texture):
+        '''
+        BindTexture Graphic instruction:
+            The BindTexture Instruction will bind a texture and enable
+            GL_TEXTURE_2D for subsequent drawing.
+
+        :Parameters:
+            `tetxture`, Texture:  specifies teh texture to bind        
+        '''
+        GraphicInstruction.__cinit__(self)
         self.texture = texture
 
-    cdef apply(self, Canvas c): 
+    cdef apply(self): 
+        global canvas_instruction
         texture = self.texture
         glActiveTexture(GL_TEXTURE0)
-        #print "enable texture"
         glEnable(texture.target)
         glBindTexture(texture.target, texture.id)
-        c.context.set('texture0', 0)
+        #need to also set the texture index on teh shader
+        canvas_instruction.context.set('texture0', 0)
 
 
 
 cdef class UnbindTexture(GraphicInstruction):
-    cdef apply(self, Canvas c): 
+
+    def __cinit__(self, texture):
+        '''
+        UnbindTexture Graphic instruction:
+            The UnbindTexture Instruction will unbind any texture and
+            disable GL_TEXTURE_2D for subsequent drawing.
+        '''
+        GraphicInstruction.__cinit__(self)
+
+    cdef apply(self): 
         glBindTexture(GL_TEXTURE_2D, 0)
         glDisable(GL_TEXTURE_2D)
 
 
 
-cdef class Rectangle(GraphicElement):
-    cdef vertex v_data[4]    #vertex data
-    cdef int v_indices[4]    #indices in vbo for this rect
-    cdef float v_tcoords[8] #texture coordinates
-    cdef float x, y      #position
-    cdef float w, h      #size
- 
-    def __init__(self, **kwargs):       
-        GraphicElement.__init__(self, **kwargs)
+cdef class GraphicElement:
+    #canvas, vbo and texture to use with this element
+    cdef Canvas canvas     
+    cdef VBO vbo           
+    cdef object _texture    
+   
+    #indices to draw.  e.g. [1,2,3], will draw triangle:
+    #  self.v_data[0], self.v_data[1], self.v_data[2]
+    cdef list indices
+    
+    #local vertex buffers and vbo index storage 
+    cdef int     v_count   #vertex count
+    cdef Buffer  v_buffer
+    cdef Buffer  i_buffer
+    cdef vertex* v_data
+    cdef int*    i_data
+
+
+    def __cinit__(self):
         if canvas_statement is None:
             raise ValueError('Canvas must be bound')
         self.canvas = canvas_statement
         self.vbo = self.canvas.vertex_buffer
-        pos  = kwargs.get('pos', (0,0))
-        size = kwargs.get('size', (1,1))
-        txc  = kwargs.get('tex_coords', (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0))
-        self.texture = kwargs.get('texture', None)
-        
-        #initialize rectangle data
-        self.x = pos[0];  self.y = pos[1]
-        self.w = size[0]; self.h = size[1]
-        for i in range(8):
-            self.v_tcoords[i] = txc[i]
+        self.texture = None
+        self.v_count = 0 #no vertices to draw until initialized
 
-        #build vertices, allocate in vbo, and remeber indices
-        self.v_count = 4
-        self.build_rectangle()
-        self.vbo.add_vertices(self.v_data, self.v_indices, 4)
+    cdef allocate_vertex_buffers(self, int num_verts):
+        ''' For allocating and initializing vertes data buffers
+            of this GraphicElement both locally and on VBO
 
-        cdef list indices
-        indices = [
-            self.v_indices[0],
-            self.v_indices[1],
-            self.v_indices[2],
-            self.v_indices[2],
-            self.v_indices[3],
-            self.v_indices[0],
-        ]
-        self.canvas.add(self, indices)
+            Allocates local vertex and index buffers to be able to 
+            hold num_verts vertices.  adds teh vertices to the vbo
+            associated with the elements canvas and sets vbo indices
+            in i_data.  
+
+            After calling the follwoing buffers will have enough room
+            for num_verts: 
+
+            self.vbo:  num_verts are added to teh canvas' VBO
+
+            self.v_data : `vertex*`, vertex array with enough room for num_verts.
+                           pointing to start of v_buffer, so you can set data
+                           using indexing.  liek:  self.v_data[i] = <vertex> v
+
+            self.i_data : 'int*', int array of size num_verts.  has vbo index of
+                          vertex in v_data.  so self.i_data[i] is vbo index of 
+                          self.v_buffer[i]  
+        '''
+        #create vertex and index buffers
+        self.v_buffer = Buffer(sizeof(vertex))
+        self.i_buffer = Buffer(sizeof(GLint))
+
+        #allocate enough room for vertex and index data
+        self.v_count = num_verts
+        self.v_buffer.grow(num_verts)
+        self.i_buffer.grow(num_verts)
+
+        #allocte on vbo and update indices with 
+        self.vbo.add_vertices(self.v_data, self.i_data, self.v_count)
+
+        #set data pointers to be able to index vertices and indices
+        self.v_data = <vertex*> self.v_buffer.pointer()
+        self.i_data =    <int*> self.i_buffer.pointer()
+
+
+    cdef update_vbo_data(self):
+        '''
+            updates teh vertex data stored on vbo to be same as local 
+            needs to be called if you change v_data inside this element
+        '''
+        cdef vertex* vtx = self.v_data
+        cdef int* idx    = self.i_data
+        for i in range(self.v_count): 
+            self.vbo.update_vertices(idx[i], &vtx[1], 1)     
+
+    property texture:
+        def __get__(self):
+            return self._texture
+        def __set__(self, tex):
+            self._texture = tex
+
+ 
+
+cdef class Triangle(GraphicElement):
+    cdef float _points[6]
+    cdef float _tex_coords[6]
+
+    def __init__(self, **kwargs):
+        GraphicElement.__init__(self, **kwargs)
+        self.allocate_vertex_buffers(3)
+               
+        self.points  = kwargs.get('points')
+        self.tex_coords  = kwargs.get('tex_coords', self.points)
+
+    cdef build(self):
+        cdef float *vc, *tc
+        vc = self._points;  tc = self._tex_coords
+        self.v_data[0] = vertex4f(vc[0], vc[1], tc[0], tc[1])
+        self.v_data[1] = vertex4f(vc[2], vc[3], tc[2], tc[3])
+        self.v_data[2] = vertex4f(vc[4], vc[5], tc[4], tc[5])
+        self.update_vbo_data()
+
+    property points:
+        def __set__(self, points):
+            for i in range(6):
+                self._points[i] = points[i]
+            self.build()
+
+        def __get__(self):
+            cdef float *p = self._points
+            return (p[0],p[1],p[2],p[3],p[4],p[5]) 
+
+    property tex_coords:
+        def __set__(self, coords):
+            for i in range(6):
+                self._tex_coords[i] = coords[i]
+            self.build()
+
+        def __get__(self):
+            cdef float *p = self._tex_coords
+            return (p[0],p[1],p[2],p[3],p[4],p[5]) 
+
+
+cdef class Rectangle(GraphicElement):
+    cdef float x, y      #position
+    cdef float w, h      #size
+    cdef float _tex_coords[8] 
+
+    def __init__(self, **kwargs):       
+        GraphicElement.__init__(self, **kwargs)
+        self.allocate_vertex_buffers(4)
+
+        #get keyword args for configuring rectangle
+        self.size = kwargs.get('size')
+        self.pos  = kwargs.get('pos', (0,0))
+        self.tex_coords  = kwargs.get('tex_coords', (0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0,1.0))
+       
+        #tell VBO which triangles to draw using our vertices 
+        self.indices = (0,1,2, 2,3,0) 
+        self.canvas.add(self, self.indices)
 
     cdef build_rectangle(self):
+        cdef float* tc = self._tex_coords
+        self.v_data[0] = vertex4f(self.x, self.y, tc[0], tc[1])
+        self.v_data[1] = vertex4f(self.x, self.y, tc[2], tc[3])
+        self.v_data[2] = vertex4f(self.x, self.y, tc[4], tc[5])
+        self.v_data[3] = vertex4f(self.x, self.y, tc[6], tc[7])
+        self.update_vbo_data()
+
+    property pos:
+        def __get__(self):
+            return (self.x, self.y)
+        def __set__(self, pos):
+            self.x = pos[0]
+            self.y = pos[1]
+            self.build()
+        
+    property size:
+        def __get__(self):
+            return (self.w, self.h)
+        def __set__(self, size):
+            self.w = size[0]
+            self.h = size[1]
+            self.build()
+ 
+    property tex_coords:
+        def __get__(self):
+            cdef float *p = self._tex_coords
+            return (p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7]) 
+
+        def __set__(self, coords):
+            for i in range(6):
+                self._tex_coords[i] = <float> coords[i]
+            self.build()
+
+
+
+cdef class BorderRectangle(GraphicElement):
+    cdef float x, y
+    cdef float w, h
+    cdef float _border[4]
+    cdef float _tex_coords[8]
+
+    def __init__(self, **kwargs):       
+        GraphicElement.__init__(self, **kwargs)
+        if not self.texture:
+            raise AttributeError("BorderRectangle must have a texture!")
+
+        #we have eight vertices in BorderRectangle
+        self.allocate_vertex_buffers(12)
+
+        #get keyword args for configuring rectangle
+        s = kwargs.get('size')
+        p = kwargs.get('pos', (0,0))
+        self.x = p[0]; self.y = p[1]
+        self.h = s[0]; self.h = s[1]
+        self.build()      
+
+
+        #tell VBO which triangles to draw using our vertices 
+        #two triangles per quad       
         '''
-        Sets the vertex data, based on pos/size and tex_coords
+            v9---v8------v7----v6 
+            |        b2        |
+           v10  v15------v14   v5
+            |    |        |    |
+            |-b4-|        |-b1-|
+            |    |        |    |
+           v11  v12------v13   v4
+            |        b0        |
+            v0---v1------v2----v3
         '''
+        self.indices = (
+             0,  1, 12,    12, 11,  0,  #bottom left 
+             1,  2, 13,    13, 12,  1,  #bottom middle 
+             2,  3,  4,     4, 13,  2,  #bottom right 
+            13,  4,  5,     5, 14, 13,   #center right 
+            14,  5,  6,     6,  7, 14,   #top right 
+            15, 14,  7,     7,  8, 15,   #top middle 
+            10, 15,  8,     8,  9, 10,   #top left 
+            11, 12, 15,    15, 10, 11,   #center left 
+            12, 13, 14,    14, 15, 12)   #center middel 
+        self.canvas.add(self, self.indices)
+
+    cdef build(self):
+        #pos and size of border rectangle
         cdef float x,y,w,h
-        cdef float* tc = self.v_tcoords
-        cdef vertex *v
-        x = self.x; y = self.y; w = self.w; h = self.h; 
-        v = &self.v_data[0]
-        v.x = x; v.y = y; v.s0 = tc[0]; v.t0 = tc[1]
-        v = &self.v_data[1]
-        v.x = x + w; v.y = y; v.s0 = tc[2]; v.t0 = tc[3]
-        v = &self.v_data[2]
-        v.x = x+ w; v.y = y + h; v.s0 = tc[4]; v.t0 = tc[5]
-        v = &self.v_data[3]
-        v.x = x; v.y = y+ h; v.s0 = tc[6]; v.t0 = tc[7]
+        x=self.x;  y=self.y; w=self.w;  h=self.h
+        
+        #width and heigth of texture in pixels, and tex coord space 
+        cdef float tw, th, tcw, tch
+        cdef float* tc = self._tex_coords
+        tsize  = self.texture.size
+        tw  = tsize[0]
+        th  = tsize[1]
+        tcw = tc[2] - tc[0]  #right - left
+        tch = tc[7] - tc[1]  #top - bottom
+        
+        #calculate border offset in texture coord space 
+        # border width(px)/texture width(px) *  tcoord width
+        cdef float *b = self._border
+        cdef float tb[4] #border offset in texture coordinate space
+        tb[0] = b[0] / th*tch  
+        tb[1] = b[1] / tw*tcw 
+        tb[2] = b[2] / th*tch
+        tb[3] = b[3] / tw*tcw
 
+        #horizontal and vertical sections
+        cdef float hs[4]
+        cdef float vs[4]
+        hs[0] = x;            vs[0] = y
+        hs[1] = x + b[4];     vs[1] = y + b[0]
+        hs[2] = x + w - b[1]; vs[2] = y + h - b[2]
+        hs[3] = x + w;        vs[3] = y + h
+        
+        cdef float ths[4]
+        cdef float tvs[4] 
+        ths[0] = tc[0];              tvs[0] = tc[1]
+        ths[1] = tc[0] + tb[4];      tvs[1] = tc[1] + tb[0]
+        ths[2] = tc[0] + tcw-tb[1];  tvs[2] = tc[1] + tch - tb[2]
+        ths[3] = tc[0] + tcw;        tvs[3] = tc[1] + tch
 
-    cdef update_vertex_data(self):
-        '''
-        Updates the vertex data in the vbo of the associated canvas
-        '''
-        cdef vertex* v_data = self.v_data
-        cdef int* v_index = self.v_indices
-        self.build_rectangle()
-        self.vbo.update_vertices(v_index[0], &v_data[0], 1)     
-        self.vbo.update_vertices(v_index[1], &v_data[1], 1) 
-        self.vbo.update_vertices(v_index[2], &v_data[2], 1) 
-        self.vbo.update_vertices(v_index[3], &v_data[3], 1)
+        #set the vertex data
+        cdef vertex* v = self.v_data
+        #bottom row
+        v[0] = vertex4f(hs[0], vs[0], ths[0], tvs[0])
+        v[1] = vertex4f(hs[1], vs[0], ths[1], tvs[0])
+        v[2] = vertex4f(hs[2], vs[0], ths[2], tvs[0])
+        v[3] = vertex4f(hs[3], vs[0], ths[3], tvs[0])
+
+        #bottom inner border row
+        v[11] = vertex4f(hs[0], vs[1], ths[0], tvs[1])
+        v[12] = vertex4f(hs[1], vs[1], ths[1], tvs[1])
+        v[13] = vertex4f(hs[2], vs[1], ths[2], tvs[1])
+        v[4]  = vertex4f(hs[3], vs[1], ths[3], tvs[1])
+
+        #top inner border row
+        v[10] = vertex4f(hs[0], vs[2], ths[0], tvs[2])
+        v[15] = vertex4f(hs[1], vs[2], ths[1], tvs[2])
+        v[14] = vertex4f(hs[2], vs[2], ths[2], tvs[2])
+        v[5]  = vertex4f(hs[3], vs[2], ths[3], tvs[2])
+
+        #top row
+        v[9] = vertex4f(hs[0], vs[3], ths[0], tvs[3])
+        v[8] = vertex4f(hs[1], vs[3], ths[1], tvs[3])
+        v[7] = vertex4f(hs[2], vs[3], ths[2], tvs[3])
+        v[6] = vertex4f(hs[3], vs[3], ths[3], tvs[3])
+        
+        #phew....all done
+        self.update_vbo_data()
+
 
 
     property pos:
@@ -612,7 +843,7 @@ cdef class Rectangle(GraphicElement):
         def __set__(self, pos):
             self.x = pos[0]
             self.y = pos[1]
-            self.update_vertex_data()
+            self.build()
         
     property size:
         def __get__(self):
@@ -620,15 +851,29 @@ cdef class Rectangle(GraphicElement):
         def __set__(self, size):
             self.w = size[0]
             self.h = size[1]
-            self.update_vertex_data()
- 
-    property tex_coords:
-        def __get__(self):
-            cdef float* t = self.v_tcoords
-            return (t[0],t[1],t[2],t[3],t[4],t[5],t[6],t[7])
-        def __set__(self, txc):
-            for i in range(8):
-                self.v_tcoords[i] = txc[i]
-            self.update_vertex_data()   
+            self.build()
 
-      
+    property border:
+        def __get__(self):
+            cdef float* b = self._border
+            return (b[0], b[1], b[2], b[3])
+        def __set__(self, b):
+            cdef int i
+            for i in xrange(4):
+                self._border[i] = b[0] 
+            self.build()
+
+    property texture:
+        def __get__(self):
+            return self._texture
+        def __set__(self, tex):
+            self._texture = tex
+            tcords = self.texture.tex_coords
+            for i in range(8):
+                self._tex_coords[i] = tcords[i] 
+            self.build()
+
+
+
+
+

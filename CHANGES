@@ -1,0 +1,7 @@
+Current code changes
+====================
+
+* removed pymt.ui and pymt.graphx
+* rename pymt_logger to Logger
+* move MTWindow* -> core.window WindowBase + WindowPygame
+* create Window on pymt.core.gl call

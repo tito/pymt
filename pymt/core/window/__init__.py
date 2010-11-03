@@ -14,7 +14,7 @@ __all__ = ('WindowBase', 'Window')
 from pymt.core import core_select_lib
 from pymt.config import pymt_config
 from pymt.logger import Logger
-from pymt.base import setWindow, touch_event_listeners
+from pymt.base import setWindow, pymt_event_listeners
 from pymt.modules import pymt_modules
 from pymt.event import EventDispatcher
 
@@ -163,7 +163,7 @@ class WindowBase(EventDispatcher):
 
         # attach modules + listener event
         pymt_modules.register_window(self)
-        touch_event_listeners.append(self)
+        pymt_event_listeners.append(self)
 
         # mark as initialized
         self.__initialized = True
@@ -380,8 +380,8 @@ class WindowBase(EventDispatcher):
     def on_close(self, *largs):
         '''Event called when the window is closed'''
         pymt_modules.unregister_window(self)
-        if self in touch_event_listeners[:]:
-            touch_event_listeners.remove(self)
+        if self in pymt_event_listeners[:]:
+            pymt_event_listeners.remove(self)
 
     def on_mouse_down(self, x, y, button, modifiers):
         '''Event called when mouse is in action (press/release)'''

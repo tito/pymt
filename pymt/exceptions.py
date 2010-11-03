@@ -2,7 +2,7 @@
 Exception Manager: add/remove handler for exception in application
 '''
 
-__all__ = ('pymt_exception_manager', 'ExceptionHandler', 'ExceptionManager')
+__all__ = ('ExceptionHandler', 'ExceptionManager')
 
 class ExceptionHandler:
     '''Base handler that catch exception in runTouchApp().
@@ -13,7 +13,7 @@ class ExceptionHandler:
                 Logger.exception(inst)
                 return ExceptionManager.PASS
 
-        pymt_exception_manager.add_handler(E())
+        ExceptionManager.add_handler(E())
 
     All exceptions will be set to PASS, and loggued to console !
     '''
@@ -24,7 +24,7 @@ class ExceptionHandler:
         '''Handle one exception, default return ExceptionManager.STOP'''
         return ExceptionManager.RAISE
 
-class ExceptionManager:
+class ExceptionManagerBase:
     '''ExceptionManager manage exceptions handlers.'''
 
     RAISE   = 0
@@ -32,7 +32,7 @@ class ExceptionManager:
 
     def __init__(self):
         self.handlers = []
-        self.policy = ExceptionManager.RAISE
+        self.policy = ExceptionManagerBase.RAISE
 
     def add_handler(self, cls):
         '''Add a new exception handler in the stack'''
@@ -49,9 +49,9 @@ class ExceptionManager:
         ret = self.policy
         for handler in self.handlers:
             r = handler.handle_exception(inst)
-            if r == ExceptionManager.PASS:
+            if r == ExceptionManagerBase.PASS:
                 ret = r
         return ret
 
 #: PyMT Exception Manager instance
-pymt_exception_manager = ExceptionManager()
+ExceptionManager = ExceptionManagerBase()

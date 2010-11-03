@@ -3,7 +3,6 @@ Base: Main event loop, provider creation, window management...
 '''
 
 __all__ = (
-    'pymt_usage',
     'runTouchApp', 'stopTouchApp',
     'getFrameDt', 'getCurrentTouches',
     'getEventLoop',
@@ -16,7 +15,7 @@ import pymt
 import sys
 import os
 from pymt.logger import Logger
-from pymt.exceptions import pymt_exception_manager, ExceptionManager
+from pymt.exceptions import ExceptionManager
 from pymt.clock import Clock
 from pymt.input import TouchFactory, pymt_postproc_modules
 
@@ -29,10 +28,6 @@ frame_dt                = 0.01 # non-zero value to prevent user zero division
 
 #: List of event listeners
 pymt_event_listeners    = []
-
-#: .. deprecated:: 0.5
-#:      This symbol have been renamed to pymt_event_listeners 
-touch_event_listeners   = pymt_event_listeners
 
 def getFrameDt():
     '''Return the last delta between old and new frame.'''
@@ -234,26 +229,6 @@ class TouchEventLoop(object):
         if pymt_window:
             pymt_window.close()
 
-
-def pymt_usage():
-    '''PyMT Usage: %s [OPTION...] ::
-
-        -h, --help                  prints this mesage
-        -f, --fullscreen            force run in fullscreen
-        -k, --fake-fullscreen       force run in 'fake' fullscreen (no border mode)
-        -a, --auto-fullscreen       force run in 'auto' fullscreen (no resolution change)
-        -w, --windowed              force run in window
-        -p, --provider id:provider[,options] add a provider (eg: ccvtable1:tuio,192.168.0.1:3333)
-        -F, --fps                   show fps in window
-        -m mod, --module=mod        activate a module (use "list" to get available module)
-        -r, --rotation              rotate the window (0, 90, 180, 270)
-        -s, --save                  save current PyMT configuration
-        --size=640x480              size of window
-
-    '''
-    print pymt_usage.__doc__ % (os.path.basename(sys.argv[0]))
-
-
 def _run_mainloop():
     '''If user haven't create a window, this is the executed mainloop'''
     while True:
@@ -263,7 +238,7 @@ def _run_mainloop():
             break
         except BaseException, inst:
             # use exception manager first
-            r = pymt_exception_manager.handle_exception(inst)
+            r = ExceptionManager.handle_exception(inst)
             if r == ExceptionManager.RAISE:
                 stopTouchApp()
                 raise

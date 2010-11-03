@@ -44,6 +44,25 @@ def pymt_register_post_configuration(callback):
     '''
     __pymt_post_configuration.append(callback)
 
+def pymt_usage():
+    '''PyMT Usage: %s [OPTION...] ::
+
+        -h, --help                  prints this mesage
+        -f, --fullscreen            force run in fullscreen
+        -k, --fake-fullscreen       force run in 'fake' fullscreen (no border mode)
+        -a, --auto-fullscreen       force run in 'auto' fullscreen (no resolution change)
+        -w, --windowed              force run in window
+        -p, --provider id:provider[,options] add a provider (eg: ccvtable1:tuio,192.168.0.1:3333)
+        -F, --fps                   show fps in window
+        -m mod, --module=mod        activate a module (use "list" to get available module)
+        -r, --rotation              rotate the window (0, 90, 180, 270)
+        -s, --save                  save current PyMT configuration
+        --size=640x480              size of window
+
+    '''
+    print pymt_usage.__doc__ % (os.path.basename(sys.argv[0]))
+
+
 # Start !
 Logger.info('PyMT v%s' % (__version__))
 
@@ -132,42 +151,6 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     # save sys argv, otherwize, gstreamer use it and display help..
     sys_argv = sys.argv
     sys.argv = sys.argv[:1]
-
-    # Note: import are done after logger module initialization,
-    # and configuration applied to logger.
-
-    '''XXX FIXME normally, it's replaced with Factory
-    # no dependices at all
-    from pymt.baseobject import *
-    from pymt.exceptions import *
-    from pymt.resources import *
-    from pymt.cache import Cache
-
-    # system dependices
-    from pymt.utils import *
-    from pymt.event import *
-    from pymt.clock import *
-    from pymt.texture import *
-    from pymt.plugin import *
-
-    # internal dependices
-    from pymt.vector import *
-    from pymt.geometry import *
-
-    # dependices
-    from pymt.core import *
-    from pymt.modules import *
-    from pymt.input import *
-    from pymt.base import *
-
-    # after dependices
-    from pymt.gesture import *
-    from pymt.obj import OBJ
-    from pymt.loader import *
-
-    # widgets
-    #from pymt.ui import *
-    '''
 
     # Can be overrided in command line
     try:

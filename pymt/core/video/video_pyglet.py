@@ -9,7 +9,6 @@ except:
     raise
 
 import pymt
-from pymt.core.gl import glDisable, GL_BLEND
 from . import VideoBase
 
 
@@ -25,10 +24,6 @@ import pyglet.gl
 class FakePygletContext:
     _workaround_unpack_row_length = False
 pyglet.gl.current_context = FakePygletContext()
-
-
-
-
 
 class VideoPyglet(VideoBase):
     '''VideoBase implementation using Pyglet
@@ -95,10 +90,5 @@ class VideoPyglet(VideoBase):
     def _set_volume(self, volume):
         if self._player:
             self._player.volume = volume
-
-    def draw(self):
-        if self._player.get_texture():
-            glDisable(GL_BLEND) #dont know why this is needed...but it gets very dark otherwise, even if i set color
-            self._player.get_texture().blit(*self.pos)
 
 

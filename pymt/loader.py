@@ -26,7 +26,6 @@ from pymt.clock import Clock
 from pymt.cache import Cache
 from pymt.utils import SafeList
 from pymt.core.image import ImageLoader, Image
-from pymt.event import EventDispatcher
 from abc import ABCMeta, abstractmethod
 
 import time
@@ -36,7 +35,7 @@ import os
 # Register a cache for loader
 Cache.register('pymt.loader', limit=500, timeout=60)
 
-class ProxyImage(Image, EventDispatcher):
+class ProxyImage(Image):
     '''Image returned by the Loader.image() function.
 
     :Properties:

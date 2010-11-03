@@ -7,14 +7,14 @@ __all__ = ('LabelBase', 'Label')
 import pymt
 import re
 import os
+from pymt.texture import Texture
 from pymt.core import core_select_lib
-from pymt.baseobject import BaseObject
 
 DEFAULT_FONT = 'Liberation Sans,Bitstream Vera Sans,Free Sans,Arial, Sans'
 
 label_font_cache = {}
 
-class LabelBase(BaseObject):
+class LabelBase(object):
     '''Core text label.
     This is the abstract class used for different backend to render text.
 
@@ -33,12 +33,6 @@ class LabelBase(BaseObject):
         `size`: list, default to (None, None)
             Add constraint to render the text (inside a bounding box)
             If no size is given, the label size will be adapted from the text size.
-        `anchor_x`: str, default to "left"
-            Indicate what represent the X position inside the bounding box.
-            Can be one of "left", "center", "right".
-        `anchor_y`: str, default to "bottom"
-            Indicate what represent the Y position inside the bounding box.
-            Can be one of "top", "middle", "bottom".
         `padding`: int, default to None
             If it's a integer, it will set padding_x and padding_y
         `padding_x`: int, default to 0
@@ -51,17 +45,6 @@ class LabelBase(BaseObject):
             Vertical text alignement inside bounding box
         `color`: list, default to (1, 1, 1, 1)
             Text color in (R, G, B, A)
-        `viewport_pos`: list, default to None
-            An bottom/left position of the viewport inside the label texture.
-            This property is used only if `viewport_size` is set.
-        `viewport_size`: list, default to None
-            Width/height of the viewport, if you don't want to show the whole
-            texture. This could be used to limit the drawing of the label to a
-            certain zone, and prevent to drawing outside the viewport.
-            If the label have a size of (1800, 25) with a viewport_size of (100,
-            100), the drawing will not go outside the viewport, but start from
-            (0, 0). 
-            If you want to draw another part of the texture, use `viewport_pos`.
     '''
 
     __slots__ = ('options', 'texture', '_label', 'color', 'usersize')
@@ -74,8 +57,6 @@ class LabelBase(BaseObject):
         kwargs.setdefault('bold', False)
         kwargs.setdefault('italic', False)
         kwargs.setdefault('size', (None, None))
-        kwargs.setdefault('anchor_x', 'left')
-        kwargs.setdefault('anchor_y', 'bottom')
         kwargs.setdefault('halign', 'left')
         kwargs.setdefault('valign', 'bottom')
         kwargs.setdefault('padding', None)
@@ -268,10 +249,10 @@ class LabelBase(BaseObject):
 
         # create texture is necessary
         if self.texture is None:
-            self.texture = pymt.Texture.create(*self.size)
+            self.texture = Texture.create(*self.size)
             self.texture.flip_vertical()
         elif self.width > self.texture.width or self.height > self.texture.height:
-            self.texture = pymt.Texture.create(*self.size)
+            self.texture = Texture.create(*self.size)
             self.texture.flip_vertical()
         else:
             self.texture = self.texture.get_region(0, 0, self.width, self.height)
@@ -289,87 +270,6 @@ class LabelBase(BaseObject):
         self.render(real=True)
         self._size = sz[0] + self.options['padding_x'] * 2, \
                      sz[1] + self.options['padding_y'] * 2
-
-    def draw(self):
-        '''Draw the label'''
-        if self.texture is None:
-            return
-        if not len(self.label):
-            # it's a empty label, don't waste time to draw it
-            return
-
-        dx = 0
-        dy = 0
-        x, y = self.pos
-        w, h = self.size
-        anchor_x = self.options['anchor_x']
-        anchor_y = self.options['anchor_y']
-        padding_x = self.options['padding_x']
-        padding_y = self.options['padding_y']
-
-        viewport_size = self.viewport_size
-        viewport_pos = self.viewport_pos
-
-        # if a viewport is given, use the size of viewport.
-        if viewport_size:
-            vw, vh = viewport_size
-            if vw < w:
-                w = vw
-            if vh < h:
-                h = vh
-
-        if anchor_x == 'left':
-            x += padding_x
-        elif anchor_x in ('center', 'middle'):
-            x -= w * 0.5
-        elif anchor_x == 'right':
-            x -= w + padding_x
-
-        if anchor_y == 'bottom':
-            y += padding_y
-        elif anchor_y in ('center', 'middle'):
-            y -= h * 0.5
-        elif anchor_y == 'top':
-            y -= h - padding_y
-
-        alpha = 1
-        if len(self.options['color']) > 3:
-            alpha = self.options['color'][3]
-        pymt.set_color(1, 1, 1, alpha, blend=True)
-
-        texture = self.texture
-        size = list(texture.size)
-        texc = texture.tex_coords[:]
-        if viewport_size:
-            vw, vh = map(float, viewport_size)
-            tw, th = map(float, size)
-            oh, ow = tch, tcw = texc[1:3]
-            tcx, tcy = 0, 0
-            if vw < tw:
-                tcw = (vw / tw) * tcw
-                size[0] = vw
-            if vh < th:
-                tch = (vh / th) * tch
-                size[1] = vh
-
-            if viewport_pos:
-                tcx, tcy = viewport_pos
-                # 100
-                tcx = tcx / tw * ow
-                tcy = tcy / th * oh
-
-            # FIXME work only with flipped texture ?
-            # GH EF
-            # AB CD
-            # usual: a, b, c, d, e, f, g, h
-            # flip: g, h, e, f, c, d, a, b
-            # usual: tcx, tcy, tcx+tcw, tcy, tcx+tcw, tcy+tch, tcx, tcy+tch
-            texc = (tcx, tcy+tch, tcx+tcw, tcy+tch, tcx+tcw, tcy, tcx, tcy)
-        pymt.drawTexturedRectangle(
-            texture=texture,
-            pos=(int(x), int(y)),
-            size=size,
-            tex_coords=texc)
 
     def _get_label(self):
         return self._label

@@ -4,13 +4,16 @@ Widget: base widget of PyMT.
 TODO: write how the base class are working
 + add example about how to create your own widget
 + add example about how to bind from properties
++ do we need to use WeakMethod for properties ?
 '''
 
 __all__ = ('Widget', )
 
+from pymt.weakmethod import WeakMethod
+from pymt.c_ext.event import EventDispatcher
 from pymt.c_ext.properties import *
 
-class Widget(object):
+class Widget(EventDispatcher):
     '''
     Widget is the very basic class for implementing any PyMT Widget.
     '''
@@ -52,7 +55,7 @@ class Widget(object):
                 attr.unlink(self)
 
     def bind(self, **kwargs):
-        '''Bind properties to callback functions.
+        '''Bind properties or event to handler
 
         Usage ::
             def my_x_callback(obj, value):
@@ -61,15 +64,22 @@ class Widget(object):
                 print 'on object', obj, 'width changed to', value
             self.bind(x=my_x_callback, width=my_width_callback)
         '''
+        super(Widget, self).bind(**kwargs)
         for key, value in kwargs.iteritems():
+            if key.startswith('on_'):
+                continue
             self.__class__.__dict__[key].bind(self, value)
 
     def unbind(self, **kwargs):
-        '''Unbind properties from callback functions.
+        '''Unbind properties or event from handler
 
         Same usage as bind().
         '''
+        super(Widget, self).unbind(**kwargs)
         for key, value in kwargs.iteritems():
+            if key.startswith('on_'):
+                continue
+
             self.__class__.__dict__[key].unbind(self, value)
 
     def setter(self, name):

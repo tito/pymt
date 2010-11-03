@@ -14,7 +14,6 @@ except:
 import threading
 import pymt
 from . import VideoBase
-from pymt.graphx import drawTexturedRectangle, set_color, drawRectangle
 from pymt.core.gl import GL_RGB
 from gst.extend import discoverer
 
@@ -253,11 +252,3 @@ class VideoGStreamer(VideoBase):
                                           size=self._videosize,
                                           format=GL_RGB)
                 self._buffer = None
-
-    def draw(self):
-        if self._texture:
-            set_color(*self.color)
-            drawTexturedRectangle(texture=self._texture, pos=self.pos, size=self.size)
-        else:
-            set_color(0, 0, 0)
-            drawRectangle(pos=self.pos, size=self.size)

@@ -11,7 +11,7 @@ __all__ = ('CameraOpenCV', )
 from pymt.logger import Logger
 from pymt.texture import Texture
 from . import CameraBase
-from OpenGL.GL import GL_BGR_EXT
+from pymt.core.gl import GL_BGR_EXT
 
 try:
     import opencv as cv

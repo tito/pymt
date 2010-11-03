@@ -108,8 +108,7 @@ class WindowPygame(WindowBase):
 
         if multisamples:
             # XXX FIXME
-            from OpenGL.GL import glEnable
-            from OpenGL.GL.ARB.multisample import GL_MULTISAMPLE_ARB
+            from pymt.core.gl import glEnable, GL_MULTISAMPLE_ARB
             try:
                 glEnable(GL_MULTISAMPLE_ARB)
             except Exception:

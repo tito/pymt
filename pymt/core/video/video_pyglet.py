@@ -9,7 +9,7 @@ except:
     raise
 
 import pymt
-from OpenGL.GL import glDisable, GL_BLEND
+from pymt.core.gl import glDisable, GL_BLEND
 from . import VideoBase
 
 

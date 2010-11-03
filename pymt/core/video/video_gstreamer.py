@@ -15,7 +15,7 @@ import threading
 import pymt
 from . import VideoBase
 from pymt.graphx import drawTexturedRectangle, set_color, drawRectangle
-from OpenGL.GL import GL_RGB
+from pymt.core.gl import GL_RGB
 from gst.extend import discoverer
 
 # install the gobject iteration

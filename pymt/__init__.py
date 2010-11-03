@@ -129,14 +129,6 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     level = LOG_LEVELS.get(pymt_config.get('pymt', 'log_level'))
     Logger.setLevel(level=level)
 
-    # Disable pyOpenGL auto GL Error Check?
-    '''XXX FIXME
-    gl_check = pymt_config.get('pymt', 'gl_error_check')
-    if gl_check.lower() in ['0', 'false', 'no']:
-        import OpenGL
-        OpenGL.ERROR_CHECKING = False
-    '''
-
     # save sys argv, otherwize, gstreamer use it and display help..
     sys_argv = sys.argv
     sys.argv = sys.argv[:1]

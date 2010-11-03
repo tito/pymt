@@ -8,9 +8,8 @@ import gc
 import pymt
 import sys
 import os
-import OpenGL
 import time
-from OpenGL.GL import *
+from pymt.core.gl import *
 from random import randint, random
 from pymt import *
 from pymt.graphics import *
@@ -236,7 +235,6 @@ if __name__ == '__main__':
     log('OpenGL informations')
     log('-------------------')
 
-    log('PyOpenGL Version: %s' % OpenGL.__version__)
     log('GL Vendor: %s' % glGetString(GL_VENDOR))
     log('GL Renderer: %s' % glGetString(GL_RENDERER))
     log('GL Version: %s' % glGetString(GL_VERSION))

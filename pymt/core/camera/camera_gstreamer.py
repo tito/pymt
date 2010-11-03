@@ -6,7 +6,7 @@ __all__ = ('CameraGStreamer', )
 
 import pymt
 from . import CameraBase
-from OpenGL.GL import GL_RGB
+from pymt.core.gl import GL_RGB
 
 try:
     import pygst

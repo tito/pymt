@@ -29,7 +29,7 @@ import time
 import StringIO
 import random
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
-from OpenGL.GL import glReadBuffer, glReadPixels, GL_RGB, GL_UNSIGNED_BYTE, GL_FRONT
+from pymt.core.gl import glReadBuffer, glReadPixels, GL_RGB, GL_UNSIGNED_BYTE, GL_FRONT
 from pymt.utils import curry
 
 if 'PYMT_DOC' not in os.environ:

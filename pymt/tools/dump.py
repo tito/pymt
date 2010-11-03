@@ -13,12 +13,11 @@ import time
 from ConfigParser import ConfigParser
 from StringIO import StringIO
 from xmlrpclib import ServerProxy
-import OpenGL
-from OpenGL.GL import *
 
 os.environ['PYMT_SHADOW_WINDOW'] = '0'
 import pymt
 from pymt import *
+from pymt.core.gl import *
 from pymt.logger import pymt_logger_history
 
 report = []
@@ -45,7 +44,6 @@ report.append('Install date    : %s' % time.ctime(os.path.getctime(pymt.__file__
 
 title('OpenGL')
 w = MTWindow()
-report.append('PyOpenGL Version: %s' % OpenGL.__version__)
 report.append('GL Vendor: %s' % glGetString(GL_VENDOR))
 report.append('GL Renderer: %s' % glGetString(GL_RENDERER))
 report.append('GL Version: %s' % glGetString(GL_VERSION))

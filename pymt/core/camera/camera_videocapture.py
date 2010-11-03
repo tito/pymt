@@ -10,7 +10,7 @@ __all__ = ('CameraVideoCapture', )
 
 import pymt
 from . import CameraBase
-from OpenGL.GL import GL_BGR
+from pymt.core.gl import GL_BGR
 
 try:
     from VideoCapture import Device

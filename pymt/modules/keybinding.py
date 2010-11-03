@@ -31,7 +31,7 @@ def _can_fullscreen():
 def _screenshot():
     import os
     import pygame
-    from OpenGL.GL import glReadBuffer, glReadPixels, GL_RGB, GL_UNSIGNED_BYTE, GL_FRONT
+    from pymt.core.gl import glReadBuffer, glReadPixels, GL_RGB, GL_UNSIGNED_BYTE, GL_FRONT
     win = getWindow()
     glReadBuffer(GL_FRONT)
     data = glReadPixels(0, 0, win.width, win.height, GL_RGB, GL_UNSIGNED_BYTE)

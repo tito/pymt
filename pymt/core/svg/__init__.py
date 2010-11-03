@@ -5,7 +5,6 @@ SVG: handle loading of svg data
 __all__ = ('Svg',)
 
 from pymt.core import core_register_libs
-from pymt.baseobject import BaseObject
 from pymt.cache import Cache
 
 Cache.register('pymt.svg', limit=50)
@@ -53,7 +52,7 @@ class SvgLoader(object):
             raise Exception('Unsupported extension <%s>, no loader found.' % ext)
         return im
 
-class Svg(BaseObject):
+class Svg(object):
     '''Load and draw an SVG file.
 
     :Parameters:
@@ -164,15 +163,6 @@ class Svg(BaseObject):
         self._scale_y = s
     scale = property(_get_scale, _set_scale)
 
-    def draw(self):
-        '''Draw the svg on screen'''
-        '''XXX FIXME
-        with gx_matrix:
-            glTranslate(self.x, self.y, 0)
-            glScale(self._scale_x, self._scale_y, 1)
-            glTranslate(self.anchor_x, self.anchor_y, 0)
-            self.svg_object.draw()
-        '''
 
 def load(filename):
     '''Load an image'''

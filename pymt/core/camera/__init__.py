@@ -5,12 +5,11 @@ Camera: Backend for acquiring camera image
 __all__ = ('CameraBase', 'Camera')
 
 import pymt
-from OpenGL.GL import GL_RGB
+from pymt.core.gl import GL_RGB
 from pymt.logger import Logger
 from pymt.core import core_select_lib
-from pymt.baseobject import BaseObject
 
-class CameraBase(BaseObject):
+class CameraBase(object):
     '''Abstract Camera Widget class.
 
     Concrete camera classes must implement initialization and
@@ -31,9 +30,7 @@ class CameraBase(BaseObject):
         kwargs.setdefault('stopped', False)
         kwargs.setdefault('resolution', (640, 480))
         kwargs.setdefault('video_src', 0)
-        kwargs.setdefault('color', (1, 1, 1, 1))
 
-        self.color          = kwargs.get('color')
         self.stopped        = kwargs.get('stopped')
         self._resolution    = kwargs.get('resolution')
         self._video_src     = kwargs.get('video_src')
@@ -49,7 +46,6 @@ class CameraBase(BaseObject):
 
         if not self.stopped:
             self.start()
-
 
     def _set_resolution(self, res):
         self._resolution = res
@@ -97,17 +93,6 @@ class CameraBase(BaseObject):
             return
         self._texture.blit_buffer(self._buffer, format=self._format)
         self._buffer = None
-
-    def draw(self):
-        '''Draw the current image camera'''
-        '''XXX FIXME
-        if self._texture:
-            set_color(*self.color)
-            drawTexturedRectangle(self._texture, pos=self.pos, size=self.size)
-        else:
-            drawRectangle(pos=self.pos, size=self.size)
-            drawLabel('No Camera :(', pos=(self.width/2, self.height/2))
-        '''
 
 # Load the appropriate provider
 Camera = core_select_lib('camera', (

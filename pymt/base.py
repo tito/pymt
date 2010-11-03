@@ -6,7 +6,7 @@ __all__ = (
     'runTouchApp', 'stopTouchApp',
     'getFrameDt', 'getCurrentTouches',
     'getEventLoop',
-    'pymt_event_listeners', 'touch_event_listeners',
+    'pymt_event_listeners',
     'pymt_providers',
     'getWindow', 'setWindow'
 )

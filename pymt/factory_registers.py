@@ -2,13 +2,10 @@
 
 from pymt.factory import Factory
 
-Factory.register('EventDispatcher', module='pymt.event')
 Factory.register('SafeList', module='pymt.utils')
 Factory.register('MTContext', module='pymt.plugin')
 Factory.register('MTPlugins', module='pymt.plugin')
-Factory.register('BaseObject', module='pymt.baseobject')
 Factory.register('ExceptionHandler', module='pymt.exceptions')
-Factory.register('ExceptionManager', module='pymt.exceptions')
 Factory.register('OBJ', module='pymt.obj')
 Factory.register('Material', module='pymt.obj')
 Factory.register('MaterialGroup', module='pymt.obj')

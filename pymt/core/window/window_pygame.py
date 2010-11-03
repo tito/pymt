@@ -10,7 +10,7 @@ import os
 from time import sleep, time
 from pymt.config import pymt_config
 from pymt.clock import Clock
-from pymt.exceptions import pymt_exception_manager, ExceptionManager
+from pymt.exceptions import ExceptionManager
 from pymt.logger import Logger
 from pymt.base import stopTouchApp, getEventLoop
 
@@ -230,7 +230,7 @@ class WindowPygame(WindowBase):
                     pygame.time.wait(100)
             except BaseException, inst:
                 # use exception manager first
-                r = pymt_exception_manager.handle_exception(inst)
+                r = ExceptionManager.handle_exception(inst)
                 if r == ExceptionManager.RAISE:
                     stopTouchApp()
                     raise

@@ -4,9 +4,8 @@ Image: handle loading of images
 
 __all__ = ('Image', 'ImageLoader', 'ImageData')
 
+from pymt.event import EventDispatcher
 from pymt.core import core_register_libs
-from pymt.baseobject import BaseObject
-from pymt.utils import deprecated
 from pymt.texture import Texture, TextureRegion
 
 class ImageData(object):
@@ -48,37 +47,37 @@ class ImageLoaderBase(object):
         '''Load an image'''
         return None
 
-    def _get_width(self):
+    @property
+    def width(self):
+        '''Image width
+        '''
         return self._data.width
-    width = property(_get_width, doc='Image width')
 
-    def _get_height(self):
+    @property
+    def height(self):
+        '''Image height
+        '''
         return self._data.height
-    height = property(_get_height, doc='Image height')
 
-    def _get_size(self):
+    @property
+    def size(self):
+        '''Image size (width, height)
+        '''
         return (self._data.width, self._data.height)
-    size = property(_get_size,
-                   doc='Image size (width, height)')
 
-    def _get_texture(self):
+    @property
+    def texture(self):
+        '''Get the image texture (created on the first call)
+        '''
         if self._texture is None:
             if self._data is None:
                 return None
-            self._texture = Texture.create_from_data( self._data,
-                                rectangle=self._texture_rectangle,
-                                mipmap=self._texture_mipmap)
+            self._texture = Texture.create_from_data(
+                self._data, rectangle=self._texture_rectangle,
+                mipmap=self._texture_mipmap)
             if not self.keep_data:
                 self._data.release_data()
         return self._texture
-    texture = property(_get_texture,
-                      doc='Get the image texture (created on the first call)')
-
-    @deprecated
-    def get_texture(self):
-        '''Retreive the texture of image
-        @deprecated: use self.texture instead.'''
-        return self.texture
 
 
 class ImageLoader(object):
@@ -104,7 +103,7 @@ class ImageLoader(object):
         return im
 
 
-class Image(BaseObject):
+class Image(EventDispatcher):
     '''Load an image, and store the size and texture.
 
     :Parameters:
@@ -119,10 +118,6 @@ class Image(BaseObject):
             Opacity of the image
         `scale` : float, default to 1.0
             Scale of the image
-        `anchor_x` : float, default to 0
-            X anchor
-        `anchor_y` : float, default to 0
-            Y anchor
         `texture_rectangle` : bool, default to True
             Use rectangle texture is available (if false, will use the nearest
             power of 2 size for texture)
@@ -130,8 +125,7 @@ class Image(BaseObject):
             Create mipmap for the texture
     '''
 
-    copy_attributes = ('opacity', 'scale', 'anchor_x', 'anchor_y', '_pos',
-                       '_size', '_filename', 'color', '_texture', '_image',
+    copy_attributes = ('_size', '_filename', '_texture', '_image',
                        '_texture_rectangle', '_texture_mipmap')
 
     def __init__(self, arg, **kwargs):
@@ -142,48 +136,23 @@ class Image(BaseObject):
         self._texture_rectangle = kwargs.get('texture_rectangle', True)
         self._texture_mipmap    = kwargs.get('texture_mipmap', False)
         self._keep_data = kwargs.get('keep_data')
+        self._size      = [0, 0]
         self._image     = None
         self._filename  = None
         self._texture   = None
-        self.opacity    = 1.
-        self.scale      = 1.
-        self.anchor_x   = 0
-        self.anchor_y   = 0
-        self.color      = [1, 1, 1, 1]
 
         if isinstance(arg, Image):
             for attr in Image.copy_attributes:
                 self.__setattr__(attr, arg.__getattribute__(attr))
         elif type(arg) in (Texture, TextureRegion):
             self._texture   = arg
-            self.width      = self.texture.width
-            self.height     = self.texture.height
+            self._size      = self.texture.size
         elif isinstance(arg, ImageLoaderBase):
             self.image      = arg
         elif isinstance(arg, basestring):
             self.filename   = arg
         else:
             raise Exception('Unable to load image with type %s' % str(type(arg)))
-
-        # after loading, let the user take the place
-        if 'color' in kwargs:
-            self.color      = list(kwargs.get('color'))
-            if len(self.color) > 3:
-                self.opacity    = self.color[3]
-        if 'opacity' in kwargs:
-            self.opacity    = kwargs.get('opacity')
-        if 'scale' in kwargs:
-            self.scale      = kwargs.get('scale')
-        if 'anchor_x' in kwargs:
-            self.anchor_x   = kwargs.get('anchor_x')
-        if 'anchor_y' in kwargs:
-            self.anchor_y   = kwargs.get('anchor_y')
-        if 'pos' in kwargs:
-            self.x, self.y  = kwargs.get('pos')
-        if 'x' in kwargs:
-            self.x = kwargs.get('x')
-        if 'y' in kwargs:
-            self.y = kwargs.get('y')
 
     @staticmethod
     def load(filename, **kwargs):
@@ -223,11 +192,23 @@ class Image(BaseObject):
     filename = property(_get_filename, _set_filename,
             doc='Get/set the filename of image')
 
-    @deprecated
-    def get_texture(self):
-        '''Retreive the texture of image
-        @deprecated: use self.texture instead.'''
-        return self.texture
+    @property
+    def size(self):
+        '''Image size (width, height)
+        '''
+        return self._size
+
+    @property
+    def width(self):
+        '''Image width
+        '''
+        return self._size[0]
+
+    @property
+    def height(self):
+        '''Image height
+        '''
+        return self._size[1]
 
     @property
     def texture(self):
@@ -235,16 +216,6 @@ class Image(BaseObject):
         if self.image:
             return self.image.texture
         return self._texture
-
-    def draw(self):
-        '''Draw the image on screen'''
-        imgpos = (int(self.x - self.anchor_x * self.scale),
-                  int(self.y - self.anchor_y * self.scale))
-        r, g, b = self.color[:3]
-        '''XXX FIXME
-        with DO(gx_color(r, g, b, self.opacity), gx_blending):
-            drawTexturedRectangle(texture=self.texture, pos=imgpos, size=(self.size[0] * self.scale, self.size[1] * self.scale))
-        '''
 
     def read_pixel(self, x, y):
         '''For a given local x/y position, return the color at that position.

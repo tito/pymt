@@ -35,6 +35,9 @@ class FactoryBase(object):
         self.classes = {}
 
     def register(self, classname, cls=None, module=None):
+        '''Register a new classname refering to a real class or class definition
+        in a module.
+        '''
         if cls is None and module is None:
             raise ValueError('You need a cls= or module=')
         self.classes[classname] = {
@@ -60,6 +63,8 @@ class FactoryBase(object):
 
         return cls
 
+
+#: Factory instance to use for getting new classes
 Factory = FactoryBase()
 
 # Now import the file with all registers

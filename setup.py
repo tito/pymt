@@ -95,6 +95,8 @@ if have_cython:
 
     ext_modules.append(Extension('pymt.c_ext.buffer',
         ['pymt/c_ext/buffer.pyx']))
+    ext_modules.append(Extension('pymt.c_ext.event',
+        ['pymt/c_ext/event.pyx']))
     ext_modules.append(Extension('pymt.c_ext.properties',
         ['pymt/c_ext/properties.pyx']))
     ext_modules.append(Extension('pymt.c_ext.opengl',

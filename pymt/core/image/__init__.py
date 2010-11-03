@@ -7,7 +7,6 @@ __all__ = ('Image', 'ImageLoader', 'ImageData')
 from pymt.core import core_register_libs
 from pymt.baseobject import BaseObject
 from pymt.utils import deprecated
-from pymt.graphx import DO, gx_color, gx_blending, drawTexturedRectangle, set_color
 from pymt.texture import Texture, TextureRegion
 
 class ImageData(object):
@@ -242,8 +241,10 @@ class Image(BaseObject):
         imgpos = (int(self.x - self.anchor_x * self.scale),
                   int(self.y - self.anchor_y * self.scale))
         r, g, b = self.color[:3]
+        '''XXX FIXME
         with DO(gx_color(r, g, b, self.opacity), gx_blending):
             drawTexturedRectangle(texture=self.texture, pos=imgpos, size=(self.size[0] * self.scale, self.size[1] * self.scale))
+        '''
 
     def read_pixel(self, x, y):
         '''For a given local x/y position, return the color at that position.

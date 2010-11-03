@@ -8,7 +8,8 @@ OpenCV Camera: Implement CameraBase with OpenCV
 
 __all__ = ('CameraOpenCV', )
 
-import pymt
+from pymt.logger import Logger
+from pymt.texture import Texture
 from . import CameraBase
 from OpenGL.GL import GL_BGR_EXT
 
@@ -58,7 +59,7 @@ class CameraOpenCV(CameraBase):
             h = int(hg.cvGetCaptureProperty(self._device,
                     hg.CV_CAP_PROP_FRAME_HEIGHT))
             frame  = hg.cvQueryFrame(self._device)
-            pymt.pymt_logger.warning(
+            Logger.warning(
                 'OpenCV: Camera resolution %s not possible! Defaulting to %s.' %
                 (self.resolution, (w, h)))
 
@@ -66,7 +67,7 @@ class CameraOpenCV(CameraBase):
             self._resolution = (w, h)
 
         # create texture !
-        self._texture = pymt.Texture.create(*self._resolution)
+        self._texture = Texture.create(*self._resolution)
         self._texture.flip_vertical()
 
         if not self.stopped:
@@ -81,5 +82,5 @@ class CameraOpenCV(CameraBase):
             self._buffer = frame.imageData
             self._copy_to_gpu()
         except:
-            pymt.pymt_logger.exception('OpenCV: Couldn\'t get image from Camera')
+            Logger.exception('OpenCV: Couldn\'t get image from Camera')
 

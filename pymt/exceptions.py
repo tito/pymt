@@ -10,7 +10,7 @@ class ExceptionHandler:
 
         class E(ExceptionHandler):
             def handle_exception(self, inst):
-                pymt_logger.exception(inst)
+                Logger.exception(inst)
                 return ExceptionManager.PASS
 
         pymt_exception_manager.add_handler(E())

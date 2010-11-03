@@ -16,9 +16,9 @@ be discarded. Put in your configuration ::
 
 __all__ = ('MouseTouchProvider', )
 
+import pymt.base
 from collections import deque
-from pymt.logger import pymt_logger
-from pymt.base import getCurrentTouches
+from pymt.logger import Logger
 from pymt.input.provider import TouchProvider
 from pymt.input.factory import TouchFactory
 from pymt.input.touch import Touch
@@ -49,7 +49,7 @@ class MouseTouchProvider(TouchProvider):
             elif arg == 'disable_on_activity':
                 self.disable_on_activity = True
             else:
-                pymt_logger.error('Mouse: unknown parameter <%s>' % arg)
+                Logger.error('Mouse: unknown parameter <%s>' % arg)
 
     def start(self):
         '''Start the mouse provider'''
@@ -64,7 +64,7 @@ class MouseTouchProvider(TouchProvider):
             return False
         # trying to get if we currently have other touch than us
         # discard touches generated from kinetic
-        touches = getCurrentTouches()
+        touches = pymt.base.getCurrentTouches()
         for touch in touches:
             # discard all kinetic touch
             if touch.__class__.__name__ == 'KineticTouch':

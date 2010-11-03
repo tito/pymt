@@ -24,6 +24,8 @@ Example of using the Factory ::
 
 __all__ = ('Factory', 'FactoryException')
 
+from pymt.logger import Logger
+
 class FactoryException(Exception):
     pass
 
@@ -58,8 +60,14 @@ class FactoryBase(object):
 
         return cls
 
+Factory = FactoryBase()
+
+# Now import the file with all registers
+# automaticly generated from build_factory
+import pymt.factory_registers
+Logger.info('Factory: %d symbols loaded' % len(Factory.classes))
+
 if __name__ == '__main__':
-    Factory = FactoryBase()
     Factory.register('Vector', module='pymt.vector')
     Factory.register('Widget', module='pymt.uix.widget')
 

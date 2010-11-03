@@ -10,7 +10,7 @@ from pymt.input.provider import TouchProvider
 from pymt.input.factory import TouchFactory
 from pymt.input.touch import Touch
 from pymt.input.shape import TouchShapeRect
-from pymt.logger import pymt_logger
+from pymt.logger import Logger
 
 class TuioTouchProvider(TouchProvider):
     '''Tuio provider listen to a socket, and handle part of OSC message
@@ -50,15 +50,15 @@ class TuioTouchProvider(TouchProvider):
         super(TuioTouchProvider, self).__init__(device, args)
         args = args.split(',')
         if len(args) <= 0:
-            pymt_logger.error('Tuio: Invalid configuration for TUIO provider')
-            pymt_logger.error('Tuio: Format must be ip:port (eg. 127.0.0.1:3333)')
-            pymt_logger.error('Tuio: Actual TUIO configuration is <%s>' % (str(','.join(args))))
+            Logger.error('Tuio: Invalid configuration for TUIO provider')
+            Logger.error('Tuio: Format must be ip:port (eg. 127.0.0.1:3333)')
+            Logger.error('Tuio: Actual TUIO configuration is <%s>' % (str(','.join(args))))
             return None
         ipport = args[0].split(':')
         if len(ipport) != 2:
-            pymt_logger.error('Tuio: Invalid configuration for TUIO provider')
-            pymt_logger.error('Tuio: Format must be ip:port (eg. 127.0.0.1:3333)')
-            pymt_logger.error('Tuio: Actual TUIO configuration is <%s>' % (str(','.join(args))))
+            Logger.error('Tuio: Invalid configuration for TUIO provider')
+            Logger.error('Tuio: Format must be ip:port (eg. 127.0.0.1:3333)')
+            Logger.error('Tuio: Actual TUIO configuration is <%s>' % (str(','.join(args))))
             return None
         self.ip, self.port = args[0].split(':')
         self.port = int(self.port)

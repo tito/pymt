@@ -30,7 +30,7 @@ try:
 except ImportError:
     # fallback to the default one
     from StringIO import StringIO
-from pymt.logger import pymt_logger
+from pymt.logger import Logger
 
 BEZIER_POINTS = 10
 CIRCLE_POINTS = 24
@@ -232,10 +232,10 @@ def parse_color(c, default=None):
             g = int(c[1], 16) * 17
             b = int(c[2], 16) * 17
         else:
-            pymt_logger.exception('Squirtle: incorrect length for color %s' % str(c))
+            Logger.exception('Squirtle: incorrect length for color %s' % str(c))
         return [r, g, b, 255]
     except Exception, ex:
-        pymt_logger.exception('Squirtle: exception parsing color %s' % str(c))
+        Logger.exception('Squirtle: exception parsing color %s' % str(c))
         return None
 
 class Matrix(object):
@@ -563,7 +563,7 @@ class SVG(object):
             try:
                 self.parse_element(e)
             except Exception, ex:
-                pymt_logger.exception('Squirtle: exception while parsing element %s' % e)
+                Logger.exception('Squirtle: exception while parsing element %s' % e)
                 raise
 
     def parse_element(self, e):
@@ -725,7 +725,7 @@ class SVG(object):
             try:
                 self.parse_element(c)
             except Exception, ex:
-                pymt_logger.exception('Squirtle: exception while parsing element %s' % c)
+                Logger.exception('Squirtle: exception while parsing element %s' % c)
                 raise
         self.transform = oldtransform
         self.opacity = oldopacity
@@ -853,13 +853,13 @@ class SVG(object):
             elif self.tess_style == GL_TRIANGLES:
                 tlist.extend(self.curr_shape)
             else:
-                pymt_logger.warning('Squirtle: Unrecognised tesselation style: %d' % (self.tess_style,))
+                Logger.warning('Squirtle: Unrecognised tesselation style: %d' % (self.tess_style,))
             self.tess_style = None
             self.curr_shape = []
 
         def errorCallback(code):
             err = gluErrorString(code)
-            pymt_logger.warning('Squirtle: GLU Tesselation Error: ' + err)
+            Logger.warning('Squirtle: GLU Tesselation Error: ' + err)
 
         def combineCallback(coords, vertex_data, weights):
             return (coords[0], coords[1], coords[2])
@@ -900,4 +900,4 @@ class SVG(object):
         return tlist
 
     def warn(self, message):
-        pymt_logger.warning('Squirtle: svg parser on %s: %s' % (self.filename, message))
+        Logger.warning('Squirtle: svg parser on %s: %s' % (self.filename, message))

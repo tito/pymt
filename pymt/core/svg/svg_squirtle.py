@@ -4,7 +4,7 @@ SVG: Squirtle SVG image loader
 
 __all__ = ('SvgLoaderSquirtle', )
 
-import pymt
+from pymt.logger import Logger
 from pymt.core.svg import SvgBase, SvgLoader
 from pymt.lib import squirtle
 
@@ -18,11 +18,11 @@ class SvgSquirtle(SvgBase):
 
     def load(self, filename):
         '''loads a squirtle svg object from teh filename'''
-        pymt.pymt_logger.debug('SVG: Load <%s>' % filename)
+        Logger.debug('SVG: Load <%s>' % filename)
         try:
             svg = squirtle.SVG(filename)
         except:
-            pymt.pymt_logger.warning('SVG: Unable to load SVG file <%s>' %
+            Logger.warning('SVG: Unable to load SVG file <%s>' %
                                      filename)
             raise
         return svg

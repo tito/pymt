@@ -9,7 +9,7 @@ __all__ = ('parse_image', 'parse_color', 'parse_int', 'parse_float',
            'parse_float4', 'parse_filename')
 
 import re
-from pymt.logger import pymt_logger
+from pymt.logger import Logger
 from pymt.resources import resource_find
 from pymt.core.image import Image
 from pymt.core.svg import Svg
@@ -21,7 +21,7 @@ def parse_filename(filename):
     filename = parse_string(filename)
     result = resource_find(filename)
     if result is None:
-        pymt_logger.error('Resource: unable to found <%s>' % filename)
+        Logger.error('Resource: unable to found <%s>' % filename)
     return result or filename
 
 def parse_image(filename):

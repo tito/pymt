@@ -12,7 +12,7 @@ __all__ = ('intersection', 'difference', 'curry', 'strtotuple',
 import inspect
 import re
 import functools
-from pymt.logger import pymt_logger
+from pymt.logger import Logger
 
 def boundary(value, minvalue, maxvalue):
     '''Limit a value between a minvalue and maxvalue'''
@@ -140,9 +140,9 @@ def deprecated(func):
                 func.func_code.co_filename,
                 func.func_code.co_firstlineno + 1,
                 file, line, caller)
-            pymt_logger.warn(warning)
+            Logger.warn(warning)
             if func.__doc__:
-                pymt_logger.warn(func.__doc__)
+                Logger.warn(func.__doc__)
         return func(*args, **kwargs)
     return new_func
 

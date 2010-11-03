@@ -7,7 +7,7 @@ __all__ = ('Texture', 'TextureRegion')
 import os
 import re
 from array import array
-from pymt import pymt_logger
+from pymt import Logger
 import OpenGL
 from OpenGL.GL import GL_RGBA, GL_UNSIGNED_BYTE, GL_TEXTURE_MIN_FILTER, \
         GL_TEXTURE_MAG_FILTER, GL_TEXTURE_WRAP_T, GL_TEXTURE_WRAP_S, \
@@ -221,7 +221,7 @@ class Texture(object):
                     pass
 
                 if not rectangle:
-                    pymt_logger.debug(
+                    Logger.debug(
                         'Texture: Missing support for rectangular texture')
                 else:
                     # Can't do mipmap with rectangle texture
@@ -331,10 +331,10 @@ class Texture(object):
     @staticmethod
     def has_bgr():
         if not Texture._has_bgr_tested:
-            pymt_logger.warning('Texture: BGR/BGRA format is not supported by'
-                                'your graphic card')
-            pymt_logger.warning('Texture: Software conversion will be done to'
-                                'RGB/RGBA')
+            Logger.warning('Texture: BGR/BGRA format is not supported by'
+                           'your graphic card')
+            Logger.warning('Texture: Software conversion will be done to'
+                           'RGB/RGBA')
             Texture._has_bgr = hasGLExtension('GL_EXT_bgra')
             Texture._has_bgr_tested = True
         return Texture._has_bgr
@@ -371,8 +371,8 @@ class Texture(object):
                 a[0::4], a[2::4] = a[2::4], a[0::4]
                 ret_buffer = a.tostring()
             else:
-                pymt_logger.critical('Texture: non implemented'
-                                     '%s texture conversion' % str(format))
+                Logger.critical('Texture: non implemented'
+                                '%s texture conversion' % str(format))
                 raise Exception('Unimplemented texture conversion for %s' %
                                 str(format))
         return ret_buffer, ret_format
@@ -437,8 +437,8 @@ class TextureRegion(Texture):
         pass
 
 if 'PYMT_DOC' not in os.environ:
-    from pymt.clock import getClock
+    from pymt.clock import Clock
 
     # install tick to release texture every 200ms
-    getClock().schedule_interval(_texture_release, 0.2)
+    Clock.schedule_interval(_texture_release, 0.2)
 

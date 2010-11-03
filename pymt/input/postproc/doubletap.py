@@ -6,7 +6,7 @@ __all__ = ('InputPostprocDoubleTap', )
 
 from pymt.config import pymt_config
 from pymt.vector import Vector
-from pymt.clock import getClock
+from pymt.clock import Clock
 
 class InputPostprocDoubleTap(object):
     '''
@@ -60,7 +60,7 @@ class InputPostprocDoubleTap(object):
             self.touches[touch.uid] = (type, touch)
 
         # second, check if up-touch is timeout for double tap
-        time_current = getClock().get_time()
+        time_current = Clock.get_time()
         for touchid in self.touches.keys()[:]:
             type, touch = self.touches[touchid]
             if type != 'up':

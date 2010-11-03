@@ -10,14 +10,14 @@ Fifferents level are available :
 
 Examples of usage ::
 
-    from pymt.logger import pymt_logger
-    pymt_logger.notice('This is a notice')
-    pymt_logger.debug('This is a notice')
+    from pymt.logger import Logger
+    Logger.notice('This is a notice')
+    Logger.debug('This is a notice')
 
     try:
         raise Exception('bleh')
     except Exception, e
-        pymt_logger.exception(e)
+        Logger.exception(e)
 
 
 By default, logger log also in a file, with the according configuration token ::
@@ -38,11 +38,13 @@ import logging
 import os
 import sys
 import random
+import pymt
 
-__all__ = ('pymt_logger', 'LOG_LEVELS', 'COLORS', 'pymt_logger_history',
+__all__ = ('Logger', 'LOG_LEVELS', 'COLORS', 'LoggerHistory',
            'pymt_logfile_activated')
 
 pymt_logfile_activated = False
+Logger = None
 
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 
@@ -115,9 +117,10 @@ class FileHandler(logging.Handler):
 
 
     def _configure(self):
-        import pymt, time
-        log_dir = pymt.pymt_config.get('pymt', 'log_dir')
-        log_name = pymt.pymt_config.get('pymt', 'log_name')
+        from time import strftime
+        from pymt.config import pymt_config
+        log_dir = pymt_config.get('pymt', 'log_dir')
+        log_name = pymt_config.get('pymt', 'log_name')
 
         _dir = pymt.pymt_home_dir
         if len(log_dir) and log_dir[0] == '/':
@@ -130,7 +133,7 @@ class FileHandler(logging.Handler):
         self.purge_logs(_dir)
 
         pattern = log_name.replace('%_', '@@NUMBER@@')
-        pattern = os.path.join(_dir, time.strftime(pattern))
+        pattern = os.path.join(_dir, strftime(pattern))
         n = 0
         while True:
             filename = pattern.replace('@@NUMBER@@', str(n))
@@ -143,7 +146,7 @@ class FileHandler(logging.Handler):
         FileHandler.filename = filename
         FileHandler.fd = open(filename, 'w')
 
-        pymt.pymt_logger.info('Logger: Record log in %s' % filename)
+        Logger.info('Logger: Record log in %s' % filename)
 
     def _write_message(self, record):
         if FileHandler.fd in (None, False):
@@ -163,7 +166,7 @@ class FileHandler(logging.Handler):
             except Exception:
                 # deactivate filehandler...
                 FileHandler.fd = False
-                pymt_logger.exception('Error while activating FileHandler logger')
+                Logger.exception('Error while activating FileHandler logger')
                 return
             for _message in FileHandler.history:
                 self._write_message(_message)
@@ -226,8 +229,8 @@ class ColoredLogger(logging.Logger):
 logging.setLoggerClass(ColoredLogger)
 
 #: PyMT default logger instance
-pymt_logger = logging.getLogger('PyMT')
+Logger = logging.getLogger('PyMT')
 
 #: PyMT history handler
-pymt_logger_history = HistoryHandler
+LoggerHistory = HistoryHandler
 

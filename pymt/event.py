@@ -146,7 +146,7 @@ import inspect
 import types
 from pymt.weakmethod import WeakMethod
 from pymt.baseobject import BaseObject
-from pymt.logger import pymt_logger
+from pymt.logger import Logger
 
 class EventDispatcher(BaseObject):
     '''Generic event dispatcher interface.
@@ -461,7 +461,7 @@ class EventDispatcher(BaseObject):
         def lambda_connect(*largs):
             if type(p2) in (tuple, list):
                 if len(largs) != len(p2):
-                    pymt_logger.exception('Widget: cannot connect with'
+                    Logger.exception('Widget: cannot connect with'
                                           'different size')
                     raise
                 for p in p2:
@@ -477,7 +477,7 @@ class EventDispatcher(BaseObject):
                     else:
                         w2.__setattr__(p2, dtype(func(largs)))
                 except Exception:
-                    pymt_logger.exception('Widget: cannot connect with'
+                    Logger.exception('Widget: cannot connect with'
                                           'different size')
                     raise
         if p2 is None:
@@ -492,4 +492,4 @@ try:
         EventDispatcher.dispatch_event = types.MethodType(
             accelerate.eventdispatcher_dispatch_event, None, EventDispatcher)
 except ImportError, e:
-    pymt_logger.warning('Event: Unable to use accelerate module <%s>' % e)
+    Logger.warning('Event: Unable to use accelerate module <%s>' % e)

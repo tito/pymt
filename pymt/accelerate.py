@@ -21,7 +21,7 @@ If the env is set to 0, the module will be deactivated.
 
 __all__ = ('accelerate', )
 
-from pymt import pymt_options, pymt_logger
+from pymt import pymt_options, Logger
 
 #: Accelerate module (None mean that the module is not available)
 accelerate = None
@@ -30,11 +30,11 @@ accelerate = None
 if pymt_options.get('use_accelerate'):
     try:
         import pymt.c_ext.c_accelerate as accelerate
-        pymt_logger.info('Core: Using accelerate module')
+        Logger.info('Core: Using accelerate module')
     except ImportError, e:
-        pymt_logger.warning('Core: Accelerate module not available <%s>' % e)
-        pymt_logger.warning('Core: Execute "python setup.py build_ext '
+        Logger.warning('Core: Accelerate module not available <%s>' % e)
+        Logger.warning('Core: Execute "python setup.py build_ext '
                             '--inplace"')
 else:
-    pymt_logger.info('Core: Accelerate module disabled by user')
+    Logger.info('Core: Accelerate module disabled by user')
 

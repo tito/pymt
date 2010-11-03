@@ -7,8 +7,6 @@ __all__ = ('Svg',)
 from pymt.core import core_register_libs
 from pymt.baseobject import BaseObject
 from pymt.cache import Cache
-from pymt.graphx.statement import gx_matrix
-from OpenGL.GL import glTranslate, glScale
 
 Cache.register('pymt.svg', limit=50)
 
@@ -168,11 +166,13 @@ class Svg(BaseObject):
 
     def draw(self):
         '''Draw the svg on screen'''
+        '''XXX FIXME
         with gx_matrix:
             glTranslate(self.x, self.y, 0)
             glScale(self._scale_x, self._scale_y, 1)
             glTranslate(self.anchor_x, self.anchor_y, 0)
             self.svg_object.draw()
+        '''
 
 def load(filename):
     '''Load an image'''

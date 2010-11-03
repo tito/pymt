@@ -12,7 +12,7 @@ import logging.handlers
 os.environ['PYMT_SHADOW_WINDOW'] = 'False'
 sys._pymt_logging_handler = logging.handlers.MemoryHandler(0)
 import pymt
-from pymt import pymt_logger
+from pymt import Logger
 
 # don't import qtmt before pymt, otherwise, initialization will fail.
 from qtmtwindow import *
@@ -209,7 +209,7 @@ class MainWindow(QtGui.QMainWindow):
             exec str(self.editor.toPlainText()) in d
             #pymt.stopTouchApp()
         except Exception as e:
-            #pymt.pymt_logger.exception("Error Running PyMT Code:")
+            #pymt.Logger.exception("Error Running PyMT Code:")
             traceback.print_exc()
         pymt.runTouchApp = oldRunApp
 

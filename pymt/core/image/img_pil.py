@@ -9,7 +9,7 @@ try:
 except:
     raise
 
-import pymt
+from pymt.logger import Logger
 from . import ImageLoaderBase, ImageData, ImageLoader
 
 # Use PIL to load image.
@@ -27,11 +27,11 @@ class ImageLoaderPIL(ImageLoaderBase):
                 'wal', 'wmf', 'xbm', 'xpm', 'xv')
 
     def load(self, filename):
-        pymt.pymt_logger.debug('Image: Load <%s>' % filename)
+        Logger.debug('Image: Load <%s>' % filename)
         try:
             im = Image.open(filename)
         except:
-            pymt.pymt_logger.warning('Image: Unable to load image <%s>' % filename)
+            Logger.warning('Image: Unable to load image <%s>' % filename)
             raise
 
         # image loader work only with rgb/rgba image
@@ -39,7 +39,7 @@ class ImageLoaderPIL(ImageLoaderBase):
             try:
                 imc = im.convert('RGBA')
             except:
-                pymt.pymt_logger.warning(
+                Logger.warning(
                     'Image: Unable to convert image <%s> to RGBA (was %s)' %
                     (filename, im.mode))
                 raise

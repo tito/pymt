@@ -6,16 +6,14 @@ __all__ = ('CameraBase', 'Camera')
 
 import pymt
 from OpenGL.GL import GL_RGB
-from pymt.logger import pymt_logger
+from pymt.logger import Logger
 from pymt.core import core_select_lib
 from pymt.baseobject import BaseObject
-from pymt.graphx import set_color, drawRectangle, drawTexturedRectangle, \
-        drawLabel
 
 class CameraBase(BaseObject):
     '''Abstract Camera Widget class.
 
-    Concrete camera classes must implement initializaation and
+    Concrete camera classes must implement initialization and
     frame capturing to buffer that can be uploaded to gpu.
 
     :Parameters:
@@ -95,19 +93,21 @@ class CameraBase(BaseObject):
     def _copy_to_gpu(self):
         '''Copy the the buffer into the texture'''
         if self._texture is None:
-            pymt_logger.debug('Camera: copy_to_gpu() failed, _texture is None !')
+            Logger.debug('Camera: copy_to_gpu() failed, _texture is None !')
             return
         self._texture.blit_buffer(self._buffer, format=self._format)
         self._buffer = None
 
     def draw(self):
         '''Draw the current image camera'''
+        '''XXX FIXME
         if self._texture:
             set_color(*self.color)
             drawTexturedRectangle(self._texture, pos=self.pos, size=self.size)
         else:
             drawRectangle(pos=self.pos, size=self.size)
             drawLabel('No Camera :(', pos=(self.width/2, self.height/2))
+        '''
 
 # Load the appropriate provider
 Camera = core_select_lib('camera', (

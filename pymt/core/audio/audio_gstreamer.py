@@ -14,7 +14,7 @@ except:
 from . import Sound, SoundLoader
 import os
 import sys
-from pymt.logger import pymt_logger
+from pymt.logger import Logger
 
 # install the gobject iteration
 from pymt.support import install_gobject_iteration
@@ -41,8 +41,8 @@ class SoundGstreamer(Sound):
         elif t == gst.MESSAGE_ERROR:
             self._data.set_state(gst.STATE_NULL)
             err, debug = message.parse_error()
-            pymt_logger.error('AudioGstreamer: %s' % err)
-            pymt_logger.debug(str(debug))
+            Logger.error('AudioGstreamer: %s' % err)
+            Logger.debug(str(debug))
             self.stop()
 
     def play(self):

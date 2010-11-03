@@ -4,7 +4,7 @@ AudioPygame: implementation of Sound with Pygame
 
 __all__ = ('SoundPygame', )
 
-import pymt
+from pymt.clock import Clock
 from . import Sound, SoundLoader
 
 try:
@@ -48,7 +48,7 @@ class SoundPygame(Sound):
             return
         self._channel = self._data.play()
         # schedule event to check if the sound is still playing or not
-        pymt.getClock().schedule_interval(self._check_play, 0.1)
+        Clock.schedule_interval(self._check_play, 0.1)
         super(SoundPygame, self).play()
 
     def stop(self):
@@ -56,7 +56,7 @@ class SoundPygame(Sound):
             return
         self._data.stop()
         # ensure we don't have anymore the callback
-        pymt.getClock().unschedule(self._check_play)
+        Clock.unschedule(self._check_play)
         self._channel = None
         super(SoundPygame, self).stop()
 

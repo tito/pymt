@@ -6,7 +6,7 @@ __all__ = ('MarkupLabel', )
 
 import pymt
 from pymt.parser import parse_color
-from pymt.logger import pymt_logger
+from pymt.logger import Logger
 import re
 from . import Label, LabelBase
 
@@ -46,7 +46,7 @@ class MarkupLabel(MarkupLabelBase):
 
     def _pop_style(self, k):
         if len(self._style_stack[k]) == 0:
-            pymt_logger.warning('Label: pop style stack without push')
+            Logger.warning('Label: pop style stack without push')
             return
         v = self._style_stack[k].pop()
         self.options[k] = v

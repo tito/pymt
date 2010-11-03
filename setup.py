@@ -17,15 +17,14 @@ except:
 
 
 # extract version (simulate doc generation, pymt will be not imported)
-os.environ['PYMT_DOC_INCLUDE'] = '1'
 import pymt
 
-#extra build commands go in the cmdclass dict {'command-name': CommandClass}
-#see tools.packaging.{platform}.build.py for custom build commands for portable packages
-#also e.g. we use build_ext command from cython if its installed for c extensions
+# extra build commands go in the cmdclass dict {'command-name': CommandClass}
+# see tools.packaging.{platform}.build.py for custom build commands for portable packages
+# also e.g. we use build_ext command from cython if its installed for c extensions
 cmdclass = {}
 
-#add build rules for portable packages to cmdclass
+# add build rules for portable packages to cmdclass
 if sys.platform == 'win32':
     from pymt.tools.packaging.win32.build import WindowsPortableBuild
     cmdclass['build_portable'] = WindowsPortableBuild
@@ -33,6 +32,8 @@ elif sys.platform == 'darwin':
    from pymt.tools.packaging.osx.build import OSXPortableBuild
    cmdclass['build_portable'] = OSXPortableBuild
 
+from pymt.tools.packaging.factory import FactoryBuild
+cmdclass['build_factory'] = FactoryBuild
 
 
 # extension modules
@@ -100,11 +101,6 @@ if have_cython:
         ['pymt/c_ext/opengl.pyx']))
     ext_modules.append(Extension('pymt.c_ext.graphics',
         ['pymt/c_ext/graphics.pyx'],
-        libraries=libraries,
-        include_dirs=include_dirs,
-        extra_link_args=extra_link_args))
-    ext_modules.append(Extension('pymt.c_ext.c_graphx',
-        ['pymt/c_ext/c_graphx.pyx'],
         libraries=libraries,
         include_dirs=include_dirs,
         extra_link_args=extra_link_args))

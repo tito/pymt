@@ -2,7 +2,7 @@
 Create/fill an heatmap in database
 '''
 
-from pymt import MTWidget, pymt_logger
+from pymt import MTWidget, Logger
 import sys
 import os
 import sqlite3
@@ -26,9 +26,9 @@ class HeatMap(MTWidget):
                 )
             ''')
             self.db.commit()
-            pymt_logger.info('Heatmap: Create new database for heatmap in %s' % self.filename)
+            Logger.info('Heatmap: Create new database for heatmap in %s' % self.filename)
         except sqlite3.OperationalError:
-            pymt_logger.info('Heatmap: Fill heatmap database in %s' % self.filename)
+            Logger.info('Heatmap: Fill heatmap database in %s' % self.filename)
 
     def on_touch_down(self, touch):
         self.db.execute('''

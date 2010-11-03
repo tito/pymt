@@ -7,10 +7,10 @@ __all__ = ('start', 'stop')
 import sys
 import logging
 from pymt.cache import Cache
-from pymt.clock import getClock
+from pymt.clock import Clock
 from pymt.base import getWindow
 from pymt.graphx import drawRectangle, drawLabel, set_color, drawLine, drawCircle
-from pymt.logger import pymt_logger_history, pymt_logger
+from pymt.logger import pymt_logger_history, Logger
 from pymt.ui.colors import css_reload
 from pymt.ui.widgets import *
 
@@ -45,11 +45,11 @@ def _screenshot():
     if filename:
         try:
             pygame.image.save(surface, filename)
-            pymt_logger.info('KeyBinding: Screenshot saved at %s' % filename)
+            Logger.info('KeyBinding: Screenshot saved at %s' % filename)
         except:
-            pymt_logger.exception('KeyBinding: Unable to take a screenshot')
+            Logger.exception('KeyBinding: Unable to take a screenshot')
     else:
-        pymt_logger.warning('KeyBinding: Unable to take screenshot, no more slot available')
+        Logger.warning('KeyBinding: Unable to take screenshot, no more slot available')
 
 def _on_draw():
     global _toggle_state
@@ -82,7 +82,7 @@ def _on_draw():
                   pos=(w2, win.height - 100), font_size=40)
         drawLabel('Press F1 to leave help',
                   pos=(w2, win.height - 160), font_size=12)
-        drawLabel('FPS is %.3f' % getClock().get_fps(),
+        drawLabel('FPS is %.3f' % Clock.get_fps(),
                   pos=(w2, win.height - 180), font_size=12)
         drawLabel('F1 - Show Help',
                   pos=(w2, h2), **k)

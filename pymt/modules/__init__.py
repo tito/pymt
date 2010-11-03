@@ -4,6 +4,8 @@ Modules: UI module you can plug on any running PyMT apps.
 
 __all__ = ('pymt_modules', )
 
+from pymt.config import pymt_config
+from pymt.logger import Logger
 import pymt
 import os
 import sys
@@ -44,17 +46,17 @@ class Modules:
         module = __import__(name=id, fromlist='.')
         # basic check on module
         if not hasattr(module, 'start'):
-            pymt.pymt_logger.warning('Modules: Module <%s> missing start() function' % id)
+            Logger.warning('Modules: Module <%s> missing start() function' % id)
             return
         if not hasattr(module, 'stop'):
-            pymt.pymt_logger.warning('Modules: Module <%s> missing stop() function' % id)
+            Logger.warning('Modules: Module <%s> missing stop() function' % id)
             return
         self.mods[id]['module'] = module
 
     def activate_module(self, id, win):
         '''Activate a module on a window'''
         if not id in self.mods:
-            pymt.pymt_logger.warning('Modules: Module <%s> not found' % id)
+            Logger.warning('Modules: Module <%s> not found' % id)
             return
 
         if not 'module' in self.mods[id]:
@@ -68,9 +70,9 @@ class Modules:
             # and pass it in context.config token
             config = dict()
 
-            args = pymt.pymt_config.get('modules', id)
+            args = pymt_config.get('modules', id)
             if args != '':
-                values = pymt.pymt_config.get('modules', id).split(',')
+                values = pymt_config.get('modules', id).split(',')
                 for value in values:
                     x = value.split('=', 1)
                     if len(x) == 1:
@@ -78,14 +80,14 @@ class Modules:
                     else:
                         config[x[0]] = x[1]
 
-            pymt.pymt_logger.debug('Modules: Start <%s> with config %s' % (id, str(config)))
+            Logger.debug('Modules: Start <%s> with config %s' % (id, str(config)))
             self.mods[id]['context'].config = config
             module.start(win, self.mods[id]['context'])
 
     def deactivate_module(self, id, win):
         '''Deactivate a module from a window'''
         if not id in self.mods:
-            pymt.pymt_logger.warning('Modules: Module <%s> not found' % id)
+            Logger.warning('Modules: Module <%s> not found' % id)
             return
         if not hasattr(self.mods[id], 'module'):
             return
@@ -105,7 +107,7 @@ class Modules:
 
     def update(self):
         '''Update status of module for each windows'''
-        modules_to_activate = map(lambda x: x[0], pymt.pymt_config.items('modules'))
+        modules_to_activate = map(lambda x: x[0], pymt_config.items('modules'))
         for win in self.wins:
             for id in self.mods:
                 if not id in modules_to_activate:

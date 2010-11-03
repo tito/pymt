@@ -3,7 +3,7 @@ CloseApp: Close an application with one finger
 '''
 
 from pymt import MTWidget, getFrameDt, getCurrentTouches, Vector, set_color
-from pymt import stopTouchApp, gx_matrix, drawSemiCircle, getClock
+from pymt import stopTouchApp, gx_matrix, drawSemiCircle, Clock
 
 class CloseApp(MTWidget):
     def __init__(self, **kwargs):
@@ -18,7 +18,7 @@ class CloseApp(MTWidget):
         self.bring_to_front()
 
     def draw(self):
-        t = getClock().get_time()
+        t = Clock.get_time()
         touches = getCurrentTouches()
 
         # draw closed touches

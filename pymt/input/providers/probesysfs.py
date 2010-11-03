@@ -39,7 +39,7 @@ else:
     import re
     from glob import glob
     from subprocess import Popen, PIPE
-    from pymt.logger import pymt_logger
+    from pymt.logger import Logger
     from pymt.input.provider import TouchProvider
     from pymt.input.factory import TouchFactory
 
@@ -116,8 +116,8 @@ else:
                 arg = arg.split('=', 1)
                 # ensure it's a key = value
                 if len(arg) != 2:
-                    pymt_logger.error('ProbeSysfs: invalid parameters %s, not'
-                                      ' key=value format' % arg)
+                    Logger.error('ProbeSysfs: invalid parameters %s, not'
+                                 ' key=value format' % arg)
                     continue
 
                 key, value = arg
@@ -128,7 +128,7 @@ else:
                 elif key == 'param':
                     self.args.append(value)
                 else:
-                    pymt_logger.error('ProbeSysfs: unknown %s option' % key)
+                    Logger.error('ProbeSysfs: unknown %s option' % key)
                     continue
 
             self.probe()
@@ -137,27 +137,27 @@ else:
             inputs = get_inputs(self.input_path)
             inputs = [x for x in inputs if x.has_capability(ABS_MT_POSITION_X)]
             for device in inputs:
-                pymt_logger.info('ProbeSysfs: found device: %s at %s' % (
+                Logger.info('ProbeSysfs: found device: %s at %s' % (
                                  device.name, device.device))
 
                 # must ignore ?
                 if self.match:
                     if not re.match(self.match, device.name, re.IGNORECASE):
-                        pymt_logger.warning('ProbeSysfs: device not match the'
-                                            ' rule in config, ignoring.')
+                        Logger.warning('ProbeSysfs: device not match the'
+                                       ' rule in config, ignoring.')
                         continue
 
                 devicename = self.device % dict(name=device.device.split(os.path.sep)[-1])
 
                 provider = TouchFactory.get(self.provider)
                 if provider is None:
-                    pymt_logger.info('ProbeSysfs: unable to found provider %s' %
+                    Logger.info('ProbeSysfs: unable to found provider %s' %
                                      self.provider)
-                    pymt_logger.info('ProbeSysfs: fallback on hidinput')
+                    Logger.info('ProbeSysfs: fallback on hidinput')
                     provider = TouchFactory.get('hidinput')
                 if provider is None:
-                    pymt_logger.critical('ProbeSysfs: no input provider found'
-                                         ' to handle this device !')
+                    Logger.critical('ProbeSysfs: no input provider found'
+                                    ' to handle this device !')
                     continue
 
                 instance = provider(devicename, '%s,%s' % (device.device,

@@ -7,7 +7,7 @@ __all__ = ('pymt_config', )
 from ConfigParser import ConfigParser
 import sys
 import os
-from pymt.logger import pymt_logger
+from pymt.logger import Logger
 from pymt import pymt_home_dir, pymt_config_fn, logger
 
 # Version number of current configuration format
@@ -53,8 +53,8 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         try:
             pymt_config.read(pymt_config_fn)
         except Exception, e:
-            pymt_logger.exception('Core: error while reading local'
-                                  'configuration')
+            Logger.exception('Core: error while reading local'
+                             'configuration')
 
     pymt_config_version = pymt_config.getdefault('pymt', 'config_version', 0)
 
@@ -70,14 +70,14 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     # Upgrade default configuration until having the current version
     need_save = False
     if pymt_config_version != PYMT_CONFIG_VERSION:
-        pymt_logger.warning('Config: Older configuration version detected'
-                            '(%d instead of %d)' % (
+        Logger.warning('Config: Older configuration version detected'
+                       '(%d instead of %d)' % (
                             pymt_config_version, PYMT_CONFIG_VERSION))
-        pymt_logger.warning('Config: Upgrading configuration in progress.')
+        Logger.warning('Config: Upgrading configuration in progress.')
         need_save = True
 
     while pymt_config_version < PYMT_CONFIG_VERSION:
-        pymt_logger.debug('Config: Upgrading from %d' % pymt_config_version)
+        Logger.debug('Config: Upgrading from %d' % pymt_config_version)
 
         # Versionning introduced in version 0.4.
         if pymt_config_version == 0:
@@ -194,4 +194,4 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         try:
             pymt_config.write()
         except Exception, e:
-            pymt_logger.exception('Core: error while saving default configuration file')
+            Logger.exception('Core: error while saving default configuration file')

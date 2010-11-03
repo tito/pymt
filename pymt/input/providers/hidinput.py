@@ -70,7 +70,7 @@ else:
     import fcntl
     from pymt.input.provider import TouchProvider
     from pymt.input.factory import TouchFactory
-    from pymt.logger import pymt_logger
+    from pymt.logger import Logger
 
     #
     # This part is taken from linux-source-2.6.32/include/linux/input.h
@@ -145,13 +145,13 @@ else:
             # split arguments
             args = args.split(',')
             if not args:
-                pymt_logger.error('HIDInput: No filename pass to HIDInput configuration')
-                pymt_logger.error('HIDInput: Use /dev/input/event0 for example')
+                Logger.error('HIDInput: No filename pass to HIDInput configuration')
+                Logger.error('HIDInput: Use /dev/input/event0 for example')
                 return None
 
             # read filename
             self.input_fn = args[0]
-            pymt_logger.info('HIDInput: Read event from <%s>' % self.input_fn)
+            Logger.info('HIDInput: Read event from <%s>' % self.input_fn)
 
             # read parameters
             for arg in args[1:]:
@@ -161,24 +161,24 @@ else:
 
                 # ensure it's a key = value
                 if len(arg) != 2:
-                    pymt_logger.error('HIDInput: invalid parameter %s, not in key=value format.' % arg)
+                    Logger.error('HIDInput: invalid parameter %s, not in key=value format.' % arg)
                     continue
 
                 # ensure the key exist
                 key, value = arg
                 if key not in HIDInputTouchProvider.options:
-                    pymt_logger.error('HIDInput: unknown %s option' % key)
+                    Logger.error('HIDInput: unknown %s option' % key)
                     continue
 
                 # ensure the value
                 try:
                     self.default_ranges[key] = int(value)
                 except ValueError:
-                    pymt_logger.error('HIDInput: invalid value %s for option %s' % (key, value))
+                    Logger.error('HIDInput: invalid value %s for option %s' % (key, value))
                     continue
 
                 # all good!
-                pymt_logger.info('HIDInput: Set custom %s to %d' % (key, int(value)))
+                Logger.info('HIDInput: Set custom %s to %d' % (key, int(value)))
 
 
         def start(self):
@@ -250,7 +250,7 @@ else:
 
             # get the controler name (EVIOCGNAME)
             device_name = fcntl.ioctl(fd, EVIOCGNAME + (256 << 16), " " * 256).split('\x00')[0]
-            pymt_logger.info('HIDTouch: using <%s>' % device_name)
+            Logger.info('HIDTouch: using <%s>' % device_name)
 
             # get abs infos
             bit = fcntl.ioctl(fd, EVIOCGBIT + (EV_MAX << 16), ' ' * sz_l)
@@ -276,19 +276,19 @@ else:
                     if y == ABS_MT_POSITION_X:
                         range_min_position_x = drs('min_position_x', abs_min)
                         range_max_position_x = drs('max_position_x', abs_max)
-                        pymt_logger.info('HIDTouch: ' +
+                        Logger.info('HIDTouch: ' +
                             '<%s> range position X is %d - %d' % (
                             device_name, abs_min, abs_max))
                     elif y == ABS_MT_POSITION_Y:
                         range_min_position_y = drs('min_position_y', abs_min)
                         range_max_position_y = drs('max_position_y', abs_max)
-                        pymt_logger.info('HIDTouch: ' +
+                        Logger.info('HIDTouch: ' +
                             '<%s> range position Y is %d - %d' % (
                             device_name, abs_min, abs_max))
                     elif y == ABS_MT_PRESSURE:
                         range_min_pressure = drs('min_pressure', abs_min)
                         range_max_pressure = drs('max_pressure', abs_max)
-                        pymt_logger.info('HIDTouch: ' +
+                        Logger.info('HIDTouch: ' +
                             '<%s> range pressure is %d - %d' % (
                             device_name, abs_min, abs_max))
 

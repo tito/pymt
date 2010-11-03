@@ -7,15 +7,15 @@ You can add new event like this ::
         pass
 
     # call my_callback every 0.5 seconds
-    getClock().schedule_interval(my_callback, 0.5)
+    Clock.schedule_interval(my_callback, 0.5)
 
     # call my_callback in 5 seconds
-    getClock().schedule_once(my_callback, 5)
+    Clock.schedule_once(my_callback, 5)
 
 If the callback return False, the schedule will be removed.
 '''
 
-__all__ =  ('Clock', 'getClock')
+__all__ =  ('Clock', )
 
 import time
 from pymt.weakmethod import WeakMethod
@@ -61,7 +61,7 @@ class _Event(object):
         return True
 
 
-class Clock(object):
+class ClockBase(object):
     '''A clock object, that support events'''
     __slots__ = ('_dt', '_last_fps_tick', '_last_tick', '_fps',
             '_fps_counter', '_events')
@@ -128,11 +128,6 @@ class Clock(object):
                     self._events.remove(event)
 
 
-# create a default clock
-_default_clock = Clock()
-
-# make it available
-def getClock():
-    '''Return the clock instance used by PyMT'''
-    return _default_clock
+#: Instance of the ClockBase, available for everybody
+Clock = ClockBase()
 

@@ -54,7 +54,7 @@ class MjpegHttpRequestHandler(BaseHTTPRequestHandler):
             connected = False
             # to prevent that app hang
             sem_next.release()
-            pymt.pymt_logger.info(
+            Logger.info(
                 'MjpegServer: Client %s:%d disconnect' % self.client_address)
 
     def _stream_video(self):
@@ -77,7 +77,7 @@ class MjpegHttpRequestHandler(BaseHTTPRequestHandler):
         else:
             size = map(int, size.split('x'))
 
-        pymt.pymt_logger.info(
+        Logger.info(
             'MjpegServer: Client %s:%d connected' % self.client_address)
 
         self.send_response(200, 'OK')
@@ -129,7 +129,7 @@ class MjpegHttpRequestHandler(BaseHTTPRequestHandler):
                 fps = frames / (dt_current - dt)
                 lfps.append(fps)
                 x = sum(lfps) / len(lfps)
-                pymt.pymt_logger.debug('MjpegServer: current FPS is %.1f, average is %.1f' % (fps, x))
+                Logger.debug('MjpegServer: current FPS is %.1f, average is %.1f' % (fps, x))
                 dt = dt_current
                 frames = 0
 
@@ -142,7 +142,7 @@ class MjpegServerThread(threading.Thread):
         server_address = (self.config.get('ip'), int(self.config.get('port')))
         httpd = HTTPServer(server_address, MjpegHttpRequestHandler)
         httpd.config = self.config
-        pymt.pymt_logger.info('MjpegServer: Listen to %s:%d' % server_address)
+        Logger.info('MjpegServer: Listen to %s:%d' % server_address)
         while keep_running():
             httpd.handle_request()
 

@@ -19,13 +19,13 @@ on the C-level to maximize performance.
 See http://pymt.eu for more information.
 '''
 
-__version__ = '0.5.2-dev'
+__version__ = '0.6-dev'
 
 import sys
 import getopt
 import os
 import shutil
-from pymt.logger import pymt_logger, LOG_LEVELS
+from pymt.logger import Logger, LOG_LEVELS
 
 # internals for post-configuration
 __pymt_post_configuration = []
@@ -45,7 +45,7 @@ def pymt_register_post_configuration(callback):
     __pymt_post_configuration.append(callback)
 
 # Start !
-pymt_logger.info('PyMT v%s' % (__version__))
+Logger.info('PyMT v%s' % (__version__))
 
 #: Global settings options for pymt
 pymt_options = {
@@ -73,9 +73,9 @@ for option in pymt_options:
                 pymt_options[option] = os.environ[key].lower() in \
                     ('true', '1', 'yes', 'yup')
         except Exception:
-            pymt_logger.warning('Core: Wrong value for %s'
-                                'environment key' % key)
-            pymt_logger.exception('')
+            Logger.warning('Core: Wrong value for %s'
+                           'environment key' % key)
+            Logger.exception('')
 
 # Extract all needed path in pymt
 #: PyMT directory
@@ -127,13 +127,15 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 
     # Set level of logger
     level = LOG_LEVELS.get(pymt_config.get('pymt', 'log_level'))
-    pymt_logger.setLevel(level=level)
+    Logger.setLevel(level=level)
 
     # Disable pyOpenGL auto GL Error Check?
+    '''XXX FIXME
     gl_check = pymt_config.get('pymt', 'gl_error_check')
     if gl_check.lower() in ['0', 'false', 'no']:
         import OpenGL
         OpenGL.ERROR_CHECKING = False
+    '''
 
     # save sys argv, otherwize, gstreamer use it and display help..
     sys_argv = sys.argv
@@ -142,9 +144,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     # Note: import are done after logger module initialization,
     # and configuration applied to logger.
 
-    # first, compile & use accelerate module
-    from pymt.accelerate import *
-
+    '''XXX FIXME normally, it's replaced with Factory
     # no dependices at all
     from pymt.baseobject import *
     from pymt.exceptions import *
@@ -159,7 +159,6 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     from pymt.plugin import *
 
     # internal dependices
-    from pymt.graphx import *
     from pymt.vector import *
     from pymt.geometry import *
 
@@ -175,7 +174,8 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     from pymt.loader import *
 
     # widgets
-    from pymt.ui import *
+    #from pymt.ui import *
+    '''
 
     # Can be overrided in command line
     try:
@@ -233,19 +233,19 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
                 with open(pymt_config_fn, 'w') as fd:
                     pymt_config.write(fd)
             except Exception, e:
-                pymt_logger.exception('Core: error while saving default'
-                                      'configuration file')
-            pymt_logger.info('Core: PyMT configuration saved.')
+                Logger.exception('Core: error while saving default'
+                                 'configuration file')
+            Logger.info('Core: PyMT configuration saved.')
             sys.exit(0)
 
         # last initialization
-        if pymt_options['shadow_window']:
-            pymt_logger.debug('Core: Creating PyMT Window')
-            shadow_window = MTWindow()
-            pymt_configure()
+        #if pymt_options['shadow_window']:
+        #    Logger.debug('Core: Creating PyMT Window')
+        #    shadow_window = MTWindow()
+        #    pymt_configure()
 
     except getopt.GetoptError, err:
-        pymt_logger.error('Core: %s' % str(err))
+        Logger.error('Core: %s' % str(err))
         pymt_usage()
         sys.exit(2)
 

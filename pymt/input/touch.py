@@ -44,7 +44,7 @@ import weakref
 from inspect import isroutine
 from copy import copy
 from pymt.utils import SafeList
-from pymt.clock import getClock
+from pymt.clock import Clock
 from pymt.vector import Vector
 
 
@@ -129,7 +129,7 @@ class Touch(object):
         self.osxpos = None
         self.osypos = None
         self.oszpos = None
-        self.time_start = getClock().get_time()
+        self.time_start = Clock.get_time()
         self.is_double_tap = False
         self.double_tap_time = 0
         self.userdata = {}

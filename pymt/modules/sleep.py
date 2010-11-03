@@ -24,7 +24,7 @@ During the sleep phase, touch cannot wake up the module. But the module will be
 reseted.
 '''
 
-from pymt.logger import pymt_logger
+from pymt.logger import Logger
 from time import time, sleep
 
 class Sleep(object):
@@ -41,8 +41,8 @@ class Sleep(object):
             raise ValueError('Sleep: Invalid ramp/sleep: list size is not the same')
         self.ramp = map(float, ramp)
         self.sleep = map(float, sleep)
-        pymt_logger.debug('Sleep: ramp is %s' % str(self.ramp))
-        pymt_logger.debug('Sleep: sleep is %s' % str(self.sleep))
+        Logger.debug('Sleep: ramp is %s' % str(self.ramp))
+        Logger.debug('Sleep: sleep is %s' % str(self.sleep))
 
     def start(self):
         win = self.win
@@ -69,10 +69,10 @@ class Sleep(object):
                 step += 1
         if self.step != step:
             if step == -1:
-                pymt_logger.info('Sleep: activity detected, wake up.')
+                Logger.info('Sleep: activity detected, wake up.')
             else:
-                pymt_logger.info('Sleep: %ds inactivity detected. Reduce FPS to '
-                                 '%.4f' % (self.ramp[step], 1. / float(self.sleep[step])))
+                Logger.info('Sleep: %ds inactivity detected. Reduce FPS to '
+                            '%.4f' % (self.ramp[step], 1. / float(self.sleep[step])))
             self.step = step
         if step >= 0:
             sleep(self.sleep[step])

@@ -21,8 +21,8 @@ If you want to change the default loading image, you can do ::
 __all__ = ('Loader', 'LoaderBase', 'ProxyImage')
 
 from pymt import pymt_data_dir
-from pymt.logger import pymt_logger
-from pymt.clock import getClock
+from pymt.logger import Logger
+from pymt.clock import Clock
 from pymt.cache import Cache
 from pymt.utils import SafeList
 from pymt.core.image import ImageLoader, Image
@@ -78,11 +78,11 @@ class LoaderBase(object):
         self._running = False
         self._start_wanted = False
 
-        getClock().schedule_interval(self._update, 1 / 25.)
+        Clock.schedule_interval(self._update, 1 / 25.)
 
     def __del__(self):
         try:
-            getClock().unschedule(self._update)
+            Clock.unschedule(self._update)
         except Exception:
             pass
 
@@ -162,7 +162,7 @@ class LoaderBase(object):
             # load data
             data = self._load_local(_out_filename)
         except Exception:
-            pymt_logger.exception('Failed to load image <%s>' % filename)
+            Logger.exception('Failed to load image <%s>' % filename)
             return self.error_image
         finally:
             os.unlink(_out_filename)
@@ -272,7 +272,7 @@ else:
                     self.worker.do(self._load, parameters)
 
         Loader = LoaderPygame()
-        pymt_logger.info('Loader: using <pygame> as thread loader')
+        Logger.info('Loader: using <pygame> as thread loader')
 
     except:
 
@@ -284,11 +284,11 @@ else:
             '''Loader implementation using a simple Clock()'''
             def start(self):
                 super(LoaderClock, self).start()
-                getClock().schedule_interval(self.run, 0.0001)
+                Clock.schedule_interval(self.run, 0.0001)
 
             def stop(self):
                 super(LoaderClock, self).stop()
-                getClock().unschedule(self.run)
+                Clock.unschedule(self.run)
 
             def run(self, *largs):
                 try:
@@ -298,5 +298,5 @@ else:
                 self._load(parameters)
 
         Loader = LoaderClock()
-        pymt_logger.info('Loader: using <clock> as thread loader')
+        Logger.info('Loader: using <clock> as thread loader')
 

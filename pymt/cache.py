@@ -19,8 +19,8 @@ not used the label since 5 seconds, and you've reach the limit.
 
 __all__ = ('Cache', )
 
-from pymt.logger import pymt_logger
-from pymt.clock import getClock
+from pymt.logger import Logger
+from pymt.clock import Clock
 
 class Cache(object):
     '''Cache, a manager to cache object'''
@@ -47,7 +47,7 @@ class Cache(object):
             'timeout': timeout
         }
         Cache._objects[category] = {}
-        pymt_logger.debug('Cache: register <%s> with limit=%s, timeout=%ss' %
+        Logger.debug('Cache: register <%s> with limit=%s, timeout=%ss' %
             (category, str(limit), str(timeout)))
 
     @staticmethod
@@ -67,7 +67,7 @@ class Cache(object):
         try:
             cat = Cache._categories[category]
         except KeyError:
-            pymt_logger.warning('Cache: category <%s> not exist' % category)
+            Logger.warning('Cache: category <%s> not exist' % category)
             return
         timeout = timeout or cat['timeout']
         # FIXME: activate purge when limit is hit
@@ -77,8 +77,8 @@ class Cache(object):
         Cache._objects[category][key] = {
             'object': obj,
             'timeout': timeout,
-            'lastaccess': getClock().get_time(),
-            'timestamp': getClock().get_time()
+            'lastaccess': Clock.get_time(),
+            'timestamp': Clock.get_time()
         }
 
     @staticmethod
@@ -94,7 +94,7 @@ class Cache(object):
                 Default value to be returned if key is not found
         '''
         try:
-            Cache._objects[category][key]['lastaccess'] = getClock().get_time()
+            Cache._objects[category][key]['lastaccess'] = Clock.get_time()
             return Cache._objects[category][key]['object']
         except Exception:
             return default
@@ -166,7 +166,7 @@ class Cache(object):
         while n < maxpurge:
             try:
                 lastaccess, key = heapq.heappop(heap_list)
-                print '=>', key, lastaccess, getClock().get_time()
+                print '=>', key, lastaccess, Clock.get_time()
             except Exception:
                 return
             del Cache._objects[category][key]
@@ -175,7 +175,7 @@ class Cache(object):
     @staticmethod
     def _purge_by_timeout(dt):
 
-        curtime = getClock().get_time()
+        curtime = Clock.get_time()
 
         for category in Cache._objects:
 
@@ -219,4 +219,4 @@ class Cache(object):
             )
 
 # install the schedule clock for purging
-getClock().schedule_interval(Cache._purge_by_timeout, 1)
+Clock.schedule_interval(Cache._purge_by_timeout, 1)

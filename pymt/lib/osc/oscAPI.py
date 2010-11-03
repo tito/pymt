@@ -31,7 +31,7 @@
 import OSC
 import socket, os, time, errno, sys
 from threading import Lock
-from pymt.logger import pymt_logger
+from pymt.logger import Logger
 try:
     # multiprocessing support is not good on window
     if sys.platform in ('win32', 'cygwin'):
@@ -39,11 +39,11 @@ try:
     use_multiprocessing = True
     from multiprocessing import Process, Queue, Value
     import multiprocessing.synchronize
-    pymt_logger.info('OSC: using <multiprocessing> for socket')
+    Logger.info('OSC: using <multiprocessing> for socket')
 except:
     use_multiprocessing = False
     from threading import Thread
-    pymt_logger.info('OSC: using <thread> for socket')
+    Logger.info('OSC: using <thread> for socket')
 
 # globals
 outSocket      = 0
@@ -207,15 +207,15 @@ class OSCServer(_OSCServer):
 
                 # special handle for EADDRINUSE
                 if error == errno.EADDRINUSE:
-                    pymt_logger.error('OSC: Address %s:%i already in use, retry in 2 second' % (self.ipAddr, self.port))
+                    Logger.error('OSC: Address %s:%i already in use, retry in 2 second' % (self.ipAddr, self.port))
                 else:
-                    pymt_logger.exception(e)
+                    Logger.exception(e)
                 self.haveSocket = False
 
                 # sleep 2 second before retry
                 time.sleep(2)
 
-        pymt_logger.info('OSC: listening for Tuio on %s:%i' % (self.ipAddr, self.port))
+        Logger.info('OSC: listening for Tuio on %s:%i' % (self.ipAddr, self.port))
 
         while self.isRunning:
             try:
@@ -224,8 +224,8 @@ class OSCServer(_OSCServer):
             except Exception, e:
                 if type(e) == socket.timeout:
                     continue
-                pymt_logger.error('OSC: Error in Tuio recv()')
-                pymt_logger.exception(e)
+                Logger.error('OSC: Error in Tuio recv()')
+                Logger.exception(e)
                 return 'no data arrived'
 
 def listen(ipAddr='127.0.0.1', port=9001):
@@ -236,7 +236,7 @@ def listen(ipAddr='127.0.0.1', port=9001):
     id = '%s:%d' % (ipAddr, port)
     if id in oscThreads:
         return
-    pymt_logger.debug('OSC: Start thread <%s>' % id)
+    Logger.debug('OSC: Start thread <%s>' % id)
     oscThreads[id] = OSCServer(ipAddr=ipAddr, port=port)
     oscThreads[id].start()
     return id
@@ -252,10 +252,10 @@ def dontListen(id = None):
         ids = oscThreads.keys()
     for id in ids:
         #oscThreads[id].socket.close()
-        pymt_logger.debug('OSC: Stop thread <%s>' % id)
+        Logger.debug('OSC: Stop thread <%s>' % id)
         oscThreads[id].isRunning = False
         oscThreads[id].join()
-        pymt_logger.debug('OSC: Stop thread <%s> finished' % id)
+        Logger.debug('OSC: Stop thread <%s> finished' % id)
         del oscThreads[id]
 
 if __name__ == '__main__':

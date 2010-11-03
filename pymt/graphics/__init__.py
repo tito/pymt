@@ -9,8 +9,8 @@ PyMT. We hardly ask you to use theses class !
 .. seealso:: Read the full documentation at :mod:`pymt.c_ext.c_graphics`
 '''
 
-from pymt.core.opengl import *
-from pymt.c_ext.c_graphics import canvas
+#from pymt.core.opengl import *
+from pymt.c_ext.graphics import Canvas
 
 _pymt_active_canvas = None
 

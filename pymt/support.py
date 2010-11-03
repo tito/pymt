@@ -9,7 +9,7 @@ def install_gobject_iteration():
     This is used as soon as gobject is used (like gstreamer)
     '''
 
-    from pymt.clock import getClock
+    from pymt.clock import Clock
     import gobject
     if hasattr(gobject, '_gobject_already_installed'):
         # already installed, don't do it twice.
@@ -25,4 +25,4 @@ def install_gobject_iteration():
     # schedule the iteration each frame
     def _gobject_iteration(*largs):
         context.iteration(False)
-    getClock().schedule_interval(_gobject_iteration, 0)
+    Clock.schedule_interval(_gobject_iteration, 0)

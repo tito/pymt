@@ -191,7 +191,7 @@ cdef class Shader:
     """
 _default_vertex_shader = open(os.path.join(pymt_shader_dir, 'default.vs')).read()
 _default_fragment_shader = open(os.path.join(pymt_shader_dir, 'default.fs')).read()
-_default_shader = Shader(_default_vertex_shader, _default_fragment_shader)
+_default_shader = None#Shader(_default_vertex_shader, _default_fragment_shader)
 
 
 

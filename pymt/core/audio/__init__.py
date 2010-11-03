@@ -5,7 +5,7 @@ Audio: Load and play sound
 __all__ = ('Sound', 'SoundLoader')
 
 import sys
-from pymt.logger import pymt_logger
+from pymt.logger import Logger
 from pymt.event import EventDispatcher
 from pymt.core import core_register_libs
 
@@ -28,7 +28,7 @@ class SoundLoader:
     @staticmethod
     def register(classobj):
         '''Register a new class to load sound'''
-        pymt_logger.debug('Audio: register %s' % classobj.__name__)
+        Logger.debug('Audio: register %s' % classobj.__name__)
         SoundLoader._classes.append(classobj)
 
     @staticmethod
@@ -38,8 +38,8 @@ class SoundLoader:
         for classobj in SoundLoader._classes:
             if ext in classobj.extensions():
                 return classobj(filename=filename)
-        pymt_logger.warning('Audio: Unable to found a loader for <%s>' %
-                                 filename)
+        Logger.warning('Audio: Unable to found a loader for <%s>' %
+                       filename)
         return None
 
 

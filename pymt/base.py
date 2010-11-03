@@ -15,9 +15,9 @@ __all__ = (
 import pymt
 import sys
 import os
-from pymt.logger import pymt_logger
+from pymt.logger import Logger
 from pymt.exceptions import pymt_exception_manager, ExceptionManager
-from pymt.clock import getClock
+from pymt.clock import Clock
 from pymt.input import TouchFactory, pymt_postproc_modules
 
 # private vars
@@ -204,7 +204,7 @@ class TouchEventLoop(object):
         '''
         # update dt
         global frame_dt
-        frame_dt = getClock().tick()
+        frame_dt = Clock.tick()
 
         # read and dispatch input from providers
         self.dispatch_input()
@@ -309,7 +309,7 @@ def runTouchApp(widget=None, slave=False):
 
     # Instance all configured input
     for key, value in pymt.pymt_config.items('input'):
-        pymt_logger.debug('Base: Create provider from %s' % (str(value)))
+        Logger.debug('Base: Create provider from %s' % (str(value)))
 
         # split value
         args = str(value).split(',', 1)
@@ -318,7 +318,7 @@ def runTouchApp(widget=None, slave=False):
         provider_id, args = args
         provider = TouchFactory.get(provider_id)
         if provider is None:
-            pymt_logger.warning('Base: Unknown <%s> provider' % \
+            Logger.warning('Base: Unknown <%s> provider' % \
                                 str(provider_id))
             continue
 
@@ -338,7 +338,7 @@ def runTouchApp(widget=None, slave=False):
         getWindow().add_widget(widget)
 
     # start event loop
-    pymt_logger.info('Base: Start application main loop')
+    Logger.info('Base: Start application main loop')
     pymt_evloop.start()
 
     # we are in a slave mode, don't do dispatching.
@@ -370,5 +370,5 @@ def stopTouchApp():
         return
     if pymt_evloop.status != 'started':
         return
-    pymt_logger.info('Base: Leaving application in progress...')
+    Logger.info('Base: Leaving application in progress...')
     pymt_evloop.close()

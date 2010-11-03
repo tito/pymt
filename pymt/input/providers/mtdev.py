@@ -75,7 +75,7 @@ else:
             MTDEV_ABS_TOUCH_MAJOR
     from pymt.input.provider import TouchProvider
     from pymt.input.factory import TouchFactory
-    from pymt.logger import pymt_logger
+    from pymt.logger import Logger
 
     class MTDTouchProvider(TouchProvider):
 
@@ -95,13 +95,13 @@ else:
             # split arguments
             args = args.split(',')
             if not args:
-                pymt_logger.error('MTD: No filename pass to MTD configuration')
-                pymt_logger.error('MTD: Use /dev/input/event0 for example')
+                Logger.error('MTD: No filename pass to MTD configuration')
+                Logger.error('MTD: Use /dev/input/event0 for example')
                 return None
 
             # read filename
             self.input_fn = args[0]
-            pymt_logger.info('MTD: Read event from <%s>' % self.input_fn)
+            Logger.info('MTD: Read event from <%s>' % self.input_fn)
 
             # read parameters
             for arg in args[1:]:
@@ -111,24 +111,24 @@ else:
 
                 # ensure it's a key = value
                 if len(arg) != 2:
-                    pymt_logger.error('MTD: invalid parameter %s, not in key=value format.' % arg)
+                    Logger.error('MTD: invalid parameter %s, not in key=value format.' % arg)
                     continue
 
                 # ensure the key exist
                 key, value = arg
                 if key not in MTDTouchProvider.options:
-                    pymt_logger.error('MTD: unknown %s option' % key)
+                    Logger.error('MTD: unknown %s option' % key)
                     continue
 
                 # ensure the value
                 try:
                     self.default_ranges[key] = int(value)
                 except ValueError:
-                    pymt_logger.error('MTD: invalid value %s for option %s' % (key, value))
+                    Logger.error('MTD: invalid value %s for option %s' % (key, value))
                     continue
 
                 # all good!
-                pymt_logger.info('MTD: Set custom %s to %d' % (key, int(value)))
+                Logger.info('MTD: Set custom %s to %d' % (key, int(value)))
 
         def start(self):
             if self.input_fn is None:
@@ -189,36 +189,36 @@ else:
             ab = _device.get_abs(MTDEV_ABS_POSITION_X)
             range_min_position_x    = drs('min_position_x', ab.minimum)
             range_max_position_x    = drs('max_position_x', ab.maximum)
-            pymt_logger.info('MTD: <%s> range position X is %d - %d' %
-                             (_fn, range_min_position_x, range_max_position_x))
+            Logger.info('MTD: <%s> range position X is %d - %d' %
+                        (_fn, range_min_position_x, range_max_position_x))
 
             ab = _device.get_abs(MTDEV_ABS_POSITION_Y)
             range_min_position_y    = drs('min_position_y', ab.minimum)
             range_max_position_y    = drs('max_position_y', ab.maximum)
-            pymt_logger.info('MTD: <%s> range position Y is %d - %d' %
-                             (_fn, range_min_position_y, range_max_position_y))
+            Logger.info('MTD: <%s> range position Y is %d - %d' %
+                        (_fn, range_min_position_y, range_max_position_y))
 
             ab = _device.get_abs(MTDEV_ABS_TOUCH_MAJOR)
             range_min_major         = drs('min_touch_major', ab.minimum)
             range_max_major         = drs('max_touch_major', ab.maximum)
-            pymt_logger.info('MTD: <%s> range touch major is %d - %d' %
-                             (_fn, range_min_major, range_max_major))
+            Logger.info('MTD: <%s> range touch major is %d - %d' %
+                        (_fn, range_min_major, range_max_major))
 
             ab = _device.get_abs(MTDEV_ABS_TOUCH_MINOR)
             range_min_minor         = drs('min_touch_minor', ab.minimum)
             range_max_minor         = drs('max_touch_minor', ab.maximum)
-            pymt_logger.info('MTD: <%s> range touch minor is %d - %d' %
-                             (_fn, range_min_minor, range_max_minor))
+            Logger.info('MTD: <%s> range touch minor is %d - %d' %
+                        (_fn, range_min_minor, range_max_minor))
 
             range_min_pressure      = drs('min_pressure', 0)
             range_max_pressure      = drs('max_pressure', 255)
-            pymt_logger.info('MTD: <%s> range pressure is %d - %d' %
-                             (_fn, range_min_pressure, range_max_pressure))
+            Logger.info('MTD: <%s> range pressure is %d - %d' %
+                        (_fn, range_min_pressure, range_max_pressure))
 
             invert_x                = int(bool(drs('invert_x', 0)))
             invert_y                = int(bool(drs('invert_y', 0)))
-            pymt_logger.info('MTD: <%s> axes invertion: X is %d, Y is %d' %
-                             (_fn, invert_x, invert_y))
+            Logger.info('MTD: <%s> axes invertion: X is %d, Y is %d' %
+                        (_fn, invert_x, invert_y))
 
             while _device:
                 # idle as much as we can.

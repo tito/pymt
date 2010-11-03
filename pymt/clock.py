@@ -67,12 +67,18 @@ class ClockBase(object):
             '_fps_counter', '_events')
 
     def __init__(self):
-        self._dt = 0
+        self._dt = 0.0001
         self._last_tick = time.time()
         self._fps = 0
         self._fps_counter = 0
         self._last_fps_tick = None
         self._events = []
+
+    @property
+    def frametime(self):
+        '''Time spended between last frame and current frame (in seconds)
+        '''
+        return self._dt
 
     def tick(self):
         '''Advance clock to the next step. Must be called every frame.

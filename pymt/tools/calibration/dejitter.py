@@ -75,8 +75,8 @@ class JitterSensor(MTWidget):
             getClock().unschedule(self.done)
             maxmean = self.calculate_derivation()
             if maxmean:
-                pymt_config.set('pymt', 'jitter_distance', maxmean)
-                pymt_config.write()
+                Config.set('pymt', 'jitter_distance', maxmean)
+                Config.write()
                 content = ('%f is a good jitter_distance value for you. It was '
                            'changed in your config file for you.') % (maxmean,)
             else:

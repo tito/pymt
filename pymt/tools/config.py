@@ -6,13 +6,13 @@ import tkMessageBox
 import sys
 import os
 os.environ['PYMT_SHADOW_WINDOW'] = '0'
-from pymt import pymt_modules, pymt_config, pymt_config_fn, curry, TouchFactory
+from pymt import pymt_modules, Config, Config_fn, curry, TouchFactory
 
 class AutoConfig(dict):
     def __getitem__(self, name):
         if not self.__contains__(name):
             section, id = name.split('.', 1)
-            value = pymt_config.get(section, id)
+            value = Config.get(section, id)
             var = StringVar()
             var.set(value)
             self.__setitem__(name, var)
@@ -31,7 +31,7 @@ c_input_provider = StringVar()
 c_input_devicename = StringVar()
 
 try:
-    provider = pymt_config.get('input', 'default')
+    provider = Config.get('input', 'default')
     name, args = provider.split(',', 1)
     host, port = args.split(':', 1)
     c_tuio_host.set(host)
@@ -40,8 +40,8 @@ except:
     c_tuio_host.set('0.0.0.0')
     c_tuio_port.set('3333')
 
-c_screen.set('%dx%d' % (pymt_config.getint('graphics', 'width'),
-                        pymt_config.getint('graphics', 'height')))
+c_screen.set('%dx%d' % (Config.getint('graphics', 'width'),
+                        Config.getint('graphics', 'height')))
 
 # Get infos
 opt_input = TouchFactory.list()
@@ -79,32 +79,32 @@ def configuration_save():
         value = c.get(key).get()
         if name in ('double_tap_time', 'double_tap_distance'):
             value = int(float(value))
-        pymt_config.set(section, name, value)
+        Config.set(section, name, value)
 
     # modules
-    if pymt_config.has_section('modules'):
-        pymt_config.remove_section('modules')
-    pymt_config.add_section('modules')
+    if Config.has_section('modules'):
+        Config.remove_section('modules')
+    Config.add_section('modules')
     modlist = eval(c_modules.get())
     for index in map(int, e_modules_list.curselection()):
-        pymt_config.set('modules', modlist[index], '')
+        Config.set('modules', modlist[index], '')
 
     # screen
     width, height = c_screen.get().split('x')
-    pymt_config.set('graphics', 'width', width)
-    pymt_config.set('graphics', 'height', height)
+    Config.set('graphics', 'width', width)
+    Config.set('graphics', 'height', height)
 
     # input
-    if pymt_config.has_section('input'):
-        pymt_config.remove_section('input')
-    pymt_config.add_section('input')
+    if Config.has_section('input'):
+        Config.remove_section('input')
+    Config.add_section('input')
     inputlist = eval(c_input.get())
     for index in map(int, e_input_list.curselection()):
         device_id, option = inputlist[index].split('=', 1)
-        pymt_config.set('input', device_id, option)
+        Config.set('input', device_id, option)
 
     try:
-        pymt_config.write()
+        Config.write()
         tkMessageBox.showinfo('PyMT', 'Configuration saved !')
     except Exception, e:
         tkMessageBox.showwarning('PyMT', 'Unable to save default configuration : ' + str(e))
@@ -257,11 +257,11 @@ btn_quit.grid(row=2, column=1, sticky=W+E+N+S)
 # ================================================================
 for mod in pymt_modules.list():
     e_modules_list.insert(END, mod)
-for opt in pymt_config.options('modules'):
+for opt in Config.options('modules'):
     index = eval(c_modules.get()).index(opt)
     e_modules_list.selection_set(index)
-for device_id in pymt_config.options('input'):
-    line = pymt_config.get('input', device_id)
+for device_id in Config.options('input'):
+    line = Config.get('input', device_id)
     t = '%s=%s' % (str(device_id), str(line))
     e_input_list.insert(END, t)
     e_input_list.selection_set(eval(c_input.get()).index(t))

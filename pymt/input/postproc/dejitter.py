@@ -11,7 +11,7 @@ movements caused by jitter and will be discarded.
 
 __all__ = ('InputPostprocDejitter', )
 
-from pymt.config import pymt_config
+from pymt.config import Config
 
 class InputPostprocDejitter(object):
     '''
@@ -31,8 +31,8 @@ class InputPostprocDejitter(object):
             very precise already).
     '''
     def __init__(self):
-        self.jitterdist = pymt_config.getfloat('pymt', 'jitter_distance')
-        ignore_devices = pymt_config.get('pymt', 'jitter_ignore_devices')
+        self.jitterdist = Config.getfloat('pymt', 'jitter_distance')
+        ignore_devices = Config.get('pymt', 'jitter_ignore_devices')
         self.ignore_devices = ignore_devices.split(',')
         self.last_touches = {}
 

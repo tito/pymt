@@ -42,7 +42,7 @@ class GlobalFeedbackTouch(MTWidget):
 
     def draw(self):
         # advance nomove timer
-        self.timer += getFrameDt()
+        self.timer += Clock.frametime
 
         # nomove timeout, show it !
         if self.timer > self.mintimenomove:
@@ -65,7 +65,7 @@ class GlobalFeedbackTouch(MTWidget):
         for idx in xrange(0, len(self.moves)):
 
             # decrease timeout
-            self.moves[idx][2] -= getFrameDt()
+            self.moves[idx][2] -= Clock.frametime()
             x, y, timer = self.moves[idx]
 
             # move timeout, delete it
@@ -129,8 +129,8 @@ class GlobalFeedback(MTWidget):
         for i in xrange(0, len(self.rings)):
             ring = self.rings[i]
             ring.draw()
-            ring.opacity -= getFrameDt() * 1.5
-            ring.scale += getFrameDt() * 2
+            ring.opacity -= Clock.frametime * 1.5
+            ring.scale += Clock.frametime * 2
             if ring.opacity <= 0:
                 rings_to_delete.append(ring)
         for ring in rings_to_delete:

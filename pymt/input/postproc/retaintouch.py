@@ -4,7 +4,7 @@ Retain Touch: reuse touch to counter finger lost behavior
 
 __all__ = ('InputPostprocRetainTouch', )
 
-from pymt.config import pymt_config
+from pymt.config import Config
 from pymt.vector import Vector
 import time
 
@@ -23,8 +23,8 @@ class InputPostprocRetainTouch(object):
     Distance parameter is in 0-1000, and time is in millisecond.
     '''
     def __init__(self):
-        self.timeout = pymt_config.getint('pymt', 'retain_time') / 1000.0
-        self.distance = pymt_config.getint('pymt', 'retain_distance') / 1000.0
+        self.timeout = Config.getint('pymt', 'retain_time') / 1000.0
+        self.distance = Config.getint('pymt', 'retain_distance') / 1000.0
         self._available = []
         self._links = {}
 

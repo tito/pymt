@@ -40,10 +40,8 @@ import sys
 import random
 import pymt
 
-__all__ = ('Logger', 'LOG_LEVELS', 'COLORS', 'LoggerHistory',
-           'pymt_logfile_activated')
+__all__ = ('Logger', 'LOG_LEVELS', 'COLORS', 'LoggerHistory')
 
-pymt_logfile_activated = False
 Logger = None
 
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
@@ -118,9 +116,9 @@ class FileHandler(logging.Handler):
 
     def _configure(self):
         from time import strftime
-        from pymt.config import pymt_config
-        log_dir = pymt_config.get('pymt', 'log_dir')
-        log_name = pymt_config.get('pymt', 'log_name')
+        from pymt.config import Config
+        log_dir = Config.get('pymt', 'log_dir')
+        log_name = Config.get('pymt', 'log_name')
 
         _dir = pymt.pymt_home_dir
         if len(log_dir) and log_dir[0] == '/':
@@ -156,7 +154,7 @@ class FileHandler(logging.Handler):
         FileHandler.fd.flush()
 
     def emit(self, message):
-        if not pymt_logfile_activated:
+        if not Logger.logfile_activated:
             FileHandler.history += [message]
             return
 
@@ -230,6 +228,7 @@ logging.setLoggerClass(ColoredLogger)
 
 #: PyMT default logger instance
 Logger = logging.getLogger('PyMT')
+Logger.logfile_activated = False
 
 #: PyMT history handler
 LoggerHistory = HistoryHandler

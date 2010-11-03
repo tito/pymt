@@ -4,7 +4,7 @@ Double Tap: search touch for a double tap
 
 __all__ = ('InputPostprocDoubleTap', )
 
-from pymt.config import pymt_config
+from pymt.config import Config
 from pymt.vector import Vector
 from pymt.clock import Clock
 
@@ -20,8 +20,8 @@ class InputPostprocDoubleTap(object):
     Distance parameter is in 0-1000, and time is in millisecond.
     '''
     def __init__(self):
-        self.double_tap_distance = pymt_config.getint('pymt', 'double_tap_distance') / 1000.0
-        self.double_tap_time = pymt_config.getint('pymt', 'double_tap_time') / 1000.0
+        self.double_tap_distance = Config.getint('pymt', 'double_tap_distance') / 1000.0
+        self.double_tap_time = Config.getint('pymt', 'double_tap_time') / 1000.0
         self.touches = {}
 
     def find_double_tap(self, ref):

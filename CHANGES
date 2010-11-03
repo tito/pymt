@@ -5,3 +5,6 @@ Current code changes
 * rename pymt_logger to Logger
 * move MTWindow* -> core.window WindowBase + WindowPygame
 * create Window on pymt.core.gl call
+* remove BaseObject and EventDispatcher
+* rewrite EventDispatcher to cython, with bind()/unbind()/dispatch()
+* getFrameDt() -> Clock.frametime

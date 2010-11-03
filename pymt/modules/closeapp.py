@@ -2,7 +2,7 @@
 CloseApp: Close an application with one finger
 '''
 
-from pymt import MTWidget, getFrameDt, getCurrentTouches, Vector, set_color
+from pymt import MTWidget, getCurrentTouches, Vector, set_color
 from pymt import stopTouchApp, gx_matrix, drawSemiCircle, Clock
 
 class CloseApp(MTWidget):

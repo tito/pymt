@@ -145,7 +145,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     from pymt.config import *
 
     # Set level of logger
-    level = LOG_LEVELS.get(pymt_config.get('pymt', 'log_level'))
+    level = LOG_LEVELS.get(Config.get('pymt', 'log_level'))
     Logger.setLevel(level=level)
 
     # save sys argv, otherwize, gstreamer use it and display help..
@@ -169,25 +169,25 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
                 sys.exit(0)
             elif opt in ('-p', '--provider'):
                 pid, args = arg.split(':', 1)
-                pymt_config.set('input', pid, args)
+                Config.set('input', pid, args)
             elif opt in ('-a', '--auto-fullscreen'):
-                pymt_config.set('graphics', 'fullscreen', 'auto')
+                Config.set('graphics', 'fullscreen', 'auto')
             elif opt in ('-k', '--fake-fullscreen'):
-                pymt_config.set('graphics', 'fullscreen', 'fake')
+                Config.set('graphics', 'fullscreen', 'fake')
             elif opt in ('-f', '--fullscreen'):
-                pymt_config.set('graphics', 'fullscreen', '1')
+                Config.set('graphics', 'fullscreen', '1')
             elif opt in ('-w', '--windowed'):
-                pymt_config.set('graphics', 'fullscreen', '0')
+                Config.set('graphics', 'fullscreen', '0')
             elif opt in ('-F', '--fps'):
-                pymt_config.set('pymt', 'show_fps', '1')
+                Config.set('pymt', 'show_fps', '1')
             elif opt in ('-e', '--eventstats'):
-                pymt_config.set('pymt', 'show_eventstats', '1')
+                Config.set('pymt', 'show_eventstats', '1')
             elif opt in ('--size', ):
                 w, h = str(arg).split('x')
-                pymt_config.set('graphics', 'width', w)
-                pymt_config.set('graphics', 'height', h)
+                Config.set('graphics', 'width', w)
+                Config.set('graphics', 'height', h)
             elif opt in ('--display', ):
-                pymt_config.set('graphics', 'display', str(arg))
+                Config.set('graphics', 'display', str(arg))
             elif opt in ('-m', '--module'):
                 if str(arg) == 'list':
                     pymt_modules.usage_list()
@@ -195,18 +195,18 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
                 args = arg.split(':', 1)
                 if len(args) == 1:
                     args += ['']
-                pymt_config.set('modules', args[0], args[1])
+                Config.set('modules', args[0], args[1])
             elif opt in ('-s', '--save'):
                 need_save = True
             elif opt in ('-r', '--rotation'):
-                pymt_config.set('graphics', 'rotation', arg)
+                Config.set('graphics', 'rotation', arg)
             elif opt in ('-n', ):
                 pymt_options['shadow_window'] = False
 
         if need_save:
             try:
                 with open(pymt_config_fn, 'w') as fd:
-                    pymt_config.write(fd)
+                    Config.write(fd)
             except Exception, e:
                 Logger.exception('Core: error while saving default'
                                  'configuration file')

@@ -2,9 +2,9 @@
 Modules: UI module you can plug on any running PyMT apps.
 '''
 
-__all__ = ('pymt_modules', )
+__all__ = ('Modules', )
 
-from pymt.config import pymt_config
+from pymt.config import Config
 from pymt.logger import Logger
 import pymt
 import os
@@ -18,7 +18,7 @@ class ModuleContext:
     def __init__(self):
         self.config = {}
 
-class Modules:
+class ModuleBase:
     '''Handle modules of PyMT. Automaticly load and instance
     module for the general window'''
     def __init__(self, **kwargs):
@@ -78,9 +78,9 @@ class Modules:
             # and pass it in context.config token
             config = dict()
 
-            args = pymt_config.get('modules', name)
+            args = Config.get('modules', name)
             if args != '':
-                values = pymt_config.get('modules', name).split(',')
+                values = Config.get('modules', name).split(',')
                 for value in values:
                     x = value.split('=', 1)
                     if len(x) == 1:
@@ -115,7 +115,7 @@ class Modules:
 
     def update(self):
         '''Update status of module for each windows'''
-        modules_to_activate = map(lambda x: x[0], pymt_config.items('modules'))
+        modules_to_activate = map(lambda x: x[0], Config.items('modules'))
         for win in self.wins:
             for name in self.mods:
                 if not name in modules_to_activate:
@@ -134,10 +134,10 @@ class Modules:
             print '%-12s: %s' % (module, text)
         print
 
-pymt_modules = Modules()
-pymt_modules.add_path(pymt.pymt_modules_dir)
+Modules = ModuleBase()
+Modules.add_path(pymt.pymt_modules_dir)
 if not 'PYMT_DOC' in os.environ:
-    pymt_modules.add_path(pymt.pymt_usermodules_dir)
+    Modules.add_path(pymt.pymt_usermodules_dir)
 
 if __name__ == '__main__':
-    print pymt_modules.list()
+    print Module.list()

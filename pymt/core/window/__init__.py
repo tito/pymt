@@ -12,10 +12,10 @@ your system. Actually, theses libraries are handled :
 __all__ = ('WindowBase', 'Window')
 
 from pymt.core import core_select_lib
-from pymt.config import pymt_config
+from pymt.config import Config
 from pymt.logger import Logger
-from pymt.base import setWindow, pymt_event_listeners
-from pymt.modules import pymt_modules
+from pymt.base import EventLoop
+from pymt.modules import Modules
 from pymt.event import EventDispatcher
 
 class WindowBase(EventDispatcher):
@@ -92,9 +92,6 @@ class WindowBase(EventDispatcher):
         self.register_event_type('on_key_down')
         self.register_event_type('on_key_up')
 
-        # set out window as the main pymt window
-        setWindow(self)
-
         #self.children = SafeList()
         #self.parent = self
         #self.visible = True
@@ -109,7 +106,7 @@ class WindowBase(EventDispatcher):
         if 'fullscreen' in kwargs:
             params['fullscreen'] = kwargs.get('fullscreen')
         else:
-            params['fullscreen'] = pymt_config.get('graphics', 'fullscreen')
+            params['fullscreen'] = Config.get('graphics', 'fullscreen')
             if params['fullscreen'] not in ('auto', 'fake'):
                 params['fullscreen'] = params['fullscreen'].lower() in \
                     ('true', '1', 'yes', 'yup')
@@ -117,53 +114,53 @@ class WindowBase(EventDispatcher):
         if 'width' in kwargs:
             params['width'] = kwargs.get('width')
         else:
-            params['width'] = pymt_config.getint('graphics', 'width')
+            params['width'] = Config.getint('graphics', 'width')
 
         if 'height' in kwargs:
             params['height'] = kwargs.get('height')
         else:
-            params['height'] = pymt_config.getint('graphics', 'height')
+            params['height'] = Config.getint('graphics', 'height')
 
         if 'vsync' in kwargs:
             params['vsync'] = kwargs.get('vsync')
         else:
-            params['vsync'] = pymt_config.getint('graphics', 'vsync')
+            params['vsync'] = Config.getint('graphics', 'vsync')
 
         if 'fps' in kwargs:
             params['fps'] = kwargs.get('fps')
         else:
-            params['fps'] = pymt_config.getint('graphics', 'fps')
+            params['fps'] = Config.getint('graphics', 'fps')
 
         if 'rotation' in kwargs:
             params['rotation'] = kwargs.get('rotation')
         else:
-            params['rotation'] = pymt_config.getint('graphics', 'rotation')
+            params['rotation'] = Config.getint('graphics', 'rotation')
 
-        params['position'] = pymt_config.get(
+        params['position'] = Config.get(
             'graphics', 'position', 'auto')
         if 'top' in kwargs:
             params['position'] = 'custom'
             params['top'] = kwargs.get('top')
         else:
-            params['top'] = pymt_config.getint('graphics', 'top')
+            params['top'] = Config.getint('graphics', 'top')
 
         if 'left' in kwargs:
             params['position'] = 'custom'
             params['left'] = kwargs.get('left')
         else:
-            params['left'] = pymt_config.getint('graphics', 'left')
+            params['left'] = Config.getint('graphics', 'left')
 
         # show fps if asked
         self.show_fps = kwargs.get('show_fps')
-        if pymt_config.getboolean('pymt', 'show_fps'):
+        if Config.getboolean('pymt', 'show_fps'):
             self.show_fps = True
 
         # configure the window
         self.create_window(params)
 
         # attach modules + listener event
-        pymt_modules.register_window(self)
-        pymt_event_listeners.append(self)
+        Modules.register_window(self)
+        EventLoop.add_event_listener(self)
 
         # mark as initialized
         self.__initialized = True
@@ -379,9 +376,8 @@ class WindowBase(EventDispatcher):
 
     def on_close(self, *largs):
         '''Event called when the window is closed'''
-        pymt_modules.unregister_window(self)
-        if self in pymt_event_listeners[:]:
-            pymt_event_listeners.remove(self)
+        Modules.unregister_window(self)
+        EventLoop.remove_event_listener(self)
 
     def on_mouse_down(self, x, y, button, modifiers):
         '''Event called when mouse is in action (press/release)'''

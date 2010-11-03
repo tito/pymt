@@ -93,7 +93,7 @@ report.append('Window = %s' % MTWindow)
 
 title('Configuration')
 s = StringIO()
-ConfigParser.write(pymt_config, s)
+ConfigParser.write(Config, s)
 report.extend(s.getvalue().split('\n'))
 
 title('Input availability')

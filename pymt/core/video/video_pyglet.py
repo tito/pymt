@@ -9,6 +9,7 @@ except:
     raise
 
 import pymt
+from pymt.clock import Clock
 from . import VideoBase
 
 
@@ -57,8 +58,8 @@ class VideoPyglet(VideoBase):
         if self._source.duration  - self.time < 0.1 : #we are at the end
             self.seek(0)
         if self.state == 'playing':
-            self.time += pymt.getFrameDt() #keep track of time into video
-            self._player.dispatch_events(pymt.getFrameDt()) #required by pyglet video if not in pyglet window
+            self.time += Clock.frametime #keep track of time into video
+            self._player.dispatch_events(Clock.frametime) #required by pyglet video if not in pyglet window
 
     def stop(self):
         self._player.pause()

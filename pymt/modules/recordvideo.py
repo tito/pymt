@@ -9,8 +9,8 @@ if 'PYMT_DOC' not in os.environ:
 	from pymt.core.gl import glReadBuffer, glReadPixels, GL_RGB, GL_UNSIGNED_BYTE, GL_FRONT
 	from pymt.utils import curry
 
-	dump_prefix    = pymt.pymt_config.get('dump', 'prefix')
-	dump_format    = pymt.pymt_config.get('dump', 'format')
+	dump_prefix    = pymt.Config.get('dump', 'prefix')
+	dump_format    = pymt.Config.get('dump', 'format')
 	dump_idx       = 0
 
 def window_flip_and_save():

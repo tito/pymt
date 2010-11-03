@@ -83,9 +83,9 @@ class DoubleTapSettingsAdjuster(MTWidget):
         self.module.touches = {}
 
     def set_values(self, time, dist):
-        pymt_config.set('pymt', 'double_tap_time', int(time * 1000))
-        pymt_config.set('pymt', 'double_tap_distance', int(dist * 1000))
-        pymt_config.write()
+        Config.set('pymt', 'double_tap_time', int(time * 1000))
+        Config.set('pymt', 'double_tap_distance', int(dist * 1000))
+        Config.write()
 
     def save_settings(self, touch):
         self.set_values(self.module.double_tap_time, self.module.double_tap_distance)

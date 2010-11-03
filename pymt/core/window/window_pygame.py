@@ -8,11 +8,11 @@ from . import WindowBase
 
 import os
 from time import sleep, time
-from pymt.config import pymt_config
+from pymt.config import Config
 from pymt.clock import Clock
 from pymt.exceptions import ExceptionManager
 from pymt.logger import Logger
-from pymt.base import stopTouchApp, getEventLoop
+from pymt.base import stopTouchApp, EventLoop
 
 try:
     import pygame
@@ -23,7 +23,7 @@ except:
 class WindowPygame(WindowBase):
     def create_window(self, params):
         # force display to show (available only for fullscreen)
-        displayidx = pymt_config.getint('graphics', 'display')
+        displayidx = Config.getint('graphics', 'display')
         if not 'SDL_VIDEO_FULLSCREEN_HEAD' in os.environ and displayidx != -1:
             os.environ['SDL_VIDEO_FULLSCREEN_HEAD'] = '%d' % displayidx
 
@@ -32,7 +32,7 @@ class WindowPygame(WindowBase):
 
         pygame.display.init()
 
-        multisamples = pymt_config.getint('graphics', 'multisamples')
+        multisamples = Config.getint('graphics', 'multisamples')
 
         if multisamples > 0:
             pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 1)
@@ -71,12 +71,12 @@ class WindowPygame(WindowBase):
         self._pos = (0, 0)
 
         # prepare keyboard
-        repeat_delay = int(pymt_config.get('keyboard', 'repeat_delay'))
-        repeat_rate = float(pymt_config.get('keyboard', 'repeat_rate'))
+        repeat_delay = int(Config.get('keyboard', 'repeat_delay'))
+        repeat_rate = float(Config.get('keyboard', 'repeat_rate'))
         pygame.key.set_repeat(repeat_delay, int(1000. / repeat_rate))
 
         # set window icon before calling set_mode
-        icon = pygame.image.load(pymt_config.get('graphics', 'window_icon'))
+        icon = pygame.image.load(Config.get('graphics', 'window_icon'))
         pygame.display.set_icon(icon)
 
         # init ourself size + setmode
@@ -118,7 +118,7 @@ class WindowPygame(WindowBase):
 
         # set mouse visibility
         pygame.mouse.set_visible(
-            pymt_config.getboolean('graphics', 'show_cursor'))
+            Config.getboolean('graphics', 'show_cursor'))
 
         # set rotation
         self.rotation = params['rotation']
@@ -156,8 +156,7 @@ class WindowPygame(WindowBase):
         self._pygame_set_mode()
 
     def _mainloop(self):
-        evloop = getEventLoop()
-        evloop.idle()
+        EventLoop.idle()
 
         for event in pygame.event.get():
 
@@ -222,8 +221,7 @@ class WindowPygame(WindowBase):
         # for opengl, before mainloop... window reinit ?
         self.dispatch_event('on_resize', *self.size)
 
-        evloop = getEventLoop()
-        while not evloop.quit:
+        while not EventLoop.quit:
             try:
                 self._mainloop()
                 if not pygame.display.get_active():

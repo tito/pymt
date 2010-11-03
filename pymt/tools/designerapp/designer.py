@@ -115,7 +115,7 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def setupMTWindow(self):
-        pymt.pymt_config.set('modules', 'touchring', '')
+        pymt.Config.set('modules', 'touchring', '')
         self.glWidget = QTMTWindow()
 
 

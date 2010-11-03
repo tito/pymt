@@ -4,7 +4,7 @@ Ignore list: ignore touch in some part on screen
 
 __all__ = ('InputPostprocIgnoreList', )
 
-from pymt.config import pymt_config
+from pymt.config import Config
 from pymt.utils import strtotuple
 
 class InputPostprocIgnoreList(object):
@@ -19,7 +19,7 @@ class InputPostprocIgnoreList(object):
     Ignore list coordinate are in 0-1, not in the screen width/height.
     '''
     def __init__(self):
-        self.ignore_list = strtotuple(pymt_config.get('pymt', 'ignore'))
+        self.ignore_list = strtotuple(Config.get('pymt', 'ignore'))
 
     def collide_ignore(self, touch):
         x, y = touch.sx, touch.sy

@@ -36,43 +36,51 @@ class Modules:
             if module[-3:] != '.py' or module == '__init__.py':
                 continue
             module = module[:-3]
-            self.mods[module] = {'id': module, 'activated': False, 'context': ModuleContext()}
+            self.mods[module] = {'name': module, 'activated': False, 'context': ModuleContext()}
 
     def list(self):
         '''Return the list of available modules'''
         return self.mods
 
-    def import_module(self, id):
-        module = __import__(name=id, fromlist='.')
+    def import_module(self, name):
+        try:
+            module = __import__(name=name, fromlist='.')
+        except ImportError:
+            Logger.exception('Modules: unable to import <%s>' % name)
+            raise
         # basic check on module
         if not hasattr(module, 'start'):
-            Logger.warning('Modules: Module <%s> missing start() function' % id)
+            Logger.warning('Modules: Module <%s> missing start() function' %
+                           name)
             return
         if not hasattr(module, 'stop'):
-            Logger.warning('Modules: Module <%s> missing stop() function' % id)
+            Logger.warning('Modules: Module <%s> missing stop() function' % name)
             return
-        self.mods[id]['module'] = module
+        self.mods[name]['module'] = module
 
-    def activate_module(self, id, win):
+    def activate_module(self, name, win):
         '''Activate a module on a window'''
-        if not id in self.mods:
-            Logger.warning('Modules: Module <%s> not found' % id)
+        if not name in self.mods:
+            Logger.warning('Modules: Module <%s> not found' % name)
             return
 
-        if not 'module' in self.mods[id]:
-            self.import_module(id)
+        if not 'module' in self.mods[name]:
+            try:
+                self.import_module(name)
+            except ImportError:
+                return
 
-        module = self.mods[id]['module']
-        if not self.mods[id]['activated']:
+        module = self.mods[name]['module']
+        if not self.mods[name]['activated']:
 
             # convert configuration like:
             # -m mjpegserver:port=8080,fps=8
             # and pass it in context.config token
             config = dict()
 
-            args = pymt_config.get('modules', id)
+            args = pymt_config.get('modules', name)
             if args != '':
-                values = pymt_config.get('modules', id).split(',')
+                values = pymt_config.get('modules', name).split(',')
                 for value in values:
                     x = value.split('=', 1)
                     if len(x) == 1:
@@ -80,20 +88,20 @@ class Modules:
                     else:
                         config[x[0]] = x[1]
 
-            Logger.debug('Modules: Start <%s> with config %s' % (id, str(config)))
-            self.mods[id]['context'].config = config
-            module.start(win, self.mods[id]['context'])
+            Logger.debug('Modules: Start <%s> with config %s' % (name, str(config)))
+            self.mods[name]['context'].config = config
+            module.start(win, self.mods[name]['context'])
 
-    def deactivate_module(self, id, win):
+    def deactivate_module(self, name, win):
         '''Deactivate a module from a window'''
-        if not id in self.mods:
-            Logger.warning('Modules: Module <%s> not found' % id)
+        if not name in self.mods:
+            Logger.warning('Modules: Module <%s> not found' % name)
             return
-        if not hasattr(self.mods[id], 'module'):
+        if not hasattr(self.mods[name], 'module'):
             return
-        module = self.mods[id]['module']
-        if self.mods[id]['activated']:
-            module.stop(win, self.mods[id]['context'])
+        module = self.mods[name]['module']
+        if self.mods[name]['activated']:
+            module.stop(win, self.mods[name]['context'])
 
     def register_window(self, win):
         '''Add window in window list'''
@@ -109,11 +117,11 @@ class Modules:
         '''Update status of module for each windows'''
         modules_to_activate = map(lambda x: x[0], pymt_config.items('modules'))
         for win in self.wins:
-            for id in self.mods:
-                if not id in modules_to_activate:
-                    self.deactivate_module(id, win)
-            for id in modules_to_activate:
-                self.activate_module(id, win)
+            for name in self.mods:
+                if not name in modules_to_activate:
+                    self.deactivate_module(name, win)
+            for name in modules_to_activate:
+                self.activate_module(name, win)
 
     def usage_list(self):
         print

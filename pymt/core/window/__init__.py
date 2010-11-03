@@ -162,9 +162,6 @@ class WindowBase(EventDispatcher):
         # configure the window
         self.create_window(params)
 
-        # init some gl
-        self.init_gl()
-
         # attach modules + listener event
         pymt_modules.register_window(self)
         touch_event_listeners.append(self)

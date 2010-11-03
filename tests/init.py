@@ -1,8 +1,6 @@
 __all__ = ('test', 'test_runpymt', 'test_image')
 
 def import_pymt_no_window():
-    import os
-    os.environ['PYMT_SHADOW_WINDOW'] = '0'
     import pymt
 
 def import_pymt_window():

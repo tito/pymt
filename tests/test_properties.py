@@ -13,7 +13,7 @@ wid = Widget()
 
 def unittest_property():
     import_pymt_no_window()
-    from pymt.c_ext.c_properties import Property
+    from pymt.c_ext.properties import Property
 
     a = Property(-1)
     a.link(wid, 'a')
@@ -26,7 +26,7 @@ def unittest_property():
 
 def unittest_property_observer():
     import_pymt_no_window()
-    from pymt.c_ext.c_properties import Property
+    from pymt.c_ext.properties import Property
 
     a = Property(-1)
     a.link(wid, 'a')
@@ -52,7 +52,7 @@ def unittest_property_observer():
 
 def unittest_property_stringcheck():
     import_pymt_no_window()
-    from pymt.c_ext.c_properties import StringProperty
+    from pymt.c_ext.properties import StringProperty
 
     a = StringProperty('')
     a.link(wid, 'a')
@@ -69,7 +69,7 @@ def unittest_property_stringcheck():
 
 def unittest_property_numericcheck():
     import_pymt_no_window()
-    from pymt.c_ext.c_properties import NumericProperty
+    from pymt.c_ext.properties import NumericProperty
 
     a = NumericProperty(0)
     a.link(wid, 'a')
@@ -86,7 +86,7 @@ def unittest_property_numericcheck():
 
 def unittest_property_propertynone():
     import_pymt_no_window()
-    from pymt.c_ext.c_properties import NumericProperty
+    from pymt.c_ext.properties import NumericProperty
 
     a = NumericProperty(0, allownone=True)
     a.link(wid, 'a')
@@ -103,7 +103,7 @@ def unittest_property_propertynone():
 
 def unittest_property_alias():
     import_pymt_no_window()
-    from pymt.c_ext.c_properties import NumericProperty, AliasProperty
+    from pymt.c_ext.properties import NumericProperty, AliasProperty
 
     x = NumericProperty(0)
     x.link(wid, 'x')
@@ -159,7 +159,7 @@ def unittest_property_alias():
 
 def unittest_property_reference():
     import_pymt_no_window()
-    from pymt.c_ext.c_properties import NumericProperty, ReferenceListProperty
+    from pymt.c_ext.properties import NumericProperty, ReferenceListProperty
 
     x = NumericProperty(0)
     x.link(wid, 'x')

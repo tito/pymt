@@ -7,9 +7,9 @@ __all__ = ('MTCoverFlow', )
 from OpenGL.GL import glRotatef, glTranslatef
 from pymt.graphx import set_color, drawRectangle, drawTexturedRectangle, \
         Fbo, drawLabel
-from pymt.utils import boundary
+from pymt.utils import boundary, interpolate
 from pymt.vector import Vector
-from pymt.ui.animation import Animation
+from pymt.config import pymt_config
 from pymt.ui.widgets.widget import MTWidget
 
 class MTCoverFlow(MTWidget):
@@ -48,8 +48,12 @@ class MTCoverFlow(MTWidget):
             Size of a thumbnail
         `trigger_cover_distance` : int, default to 30
             Distance in pixels to trigger the switch of cover
-        `trigger_distance` : int, default to 3
-            Distance within a click is considered and fired
+        `trigger_distance`: int, default to 5 (list_trigger_distance in config)
+            If the distance between the position of the first touch contact to
+            the second position is less than the trigger_distance, a event
+            'down' and 'up' are dispatched on the childrens.
+            Otherwise, no event are dispatched.
+            (If you move the list to much, no event will be dispatched.)
         `title_attributes` : dict, default to {}
             Attributes to pass to drawLabel
         `title_draw` : bool, default to True
@@ -80,7 +84,6 @@ class MTCoverFlow(MTWidget):
         kwargs.setdefault('title_draw', True)
         kwargs.setdefault('title_position', -50)
         kwargs.setdefault('trigger_cover_distance', 30)
-        kwargs.setdefault('trigger_distance', 3)
 
         super(MTCoverFlow, self).__init__(**kwargs)
 
@@ -93,7 +96,7 @@ class MTCoverFlow(MTWidget):
         self.cover_blend            = kwargs.get('cover_blend')
         self.cover_blend_start      = kwargs.get('cover_blend_start')
         self.cover_blend_stop       = kwargs.get('cover_blend_stop')
-        self.reflection_blend    = kwargs.get('reflection_blend')
+        self.reflection_blend       = kwargs.get('reflection_blend')
         self.reflection_percent     = kwargs.get('reflection_percent')
         self.reflection_start       = kwargs.get('reflection_start')
         self.reflection_stop        = kwargs.get('reflection_stop')
@@ -102,7 +105,8 @@ class MTCoverFlow(MTWidget):
         self.title_draw             = kwargs.get('title_draw')
         self.title_position         = kwargs.get('title_position')
         self.trigger_cover_distance = kwargs.get('trigger_cover_distance')
-        self.trigger_distance       = kwargs.get('trigger_distance')
+        self.trigger_distance = kwargs.get('trigger_distance',
+            pymt_config.getint('widgets', 'list_trigger_distance'))
 
         self._animation             = None
         self._fbo                   = Fbo(size=self.thumbnail_size)
@@ -111,6 +115,7 @@ class MTCoverFlow(MTWidget):
         self._selection             = 0
         self._touch                 = None
         self._transition            = 0
+        self._internal_position     = 0
 
     def on_touch_down(self, touch):
         if not len(self.children) or \
@@ -130,10 +135,7 @@ class MTCoverFlow(MTWidget):
         if touch.grab_current != self:
             return
 
-        # stop transition animation if exist
-        if self._animation:
-            self._animation.stop()
-            self._animation = None
+        self._animation = False
 
         # calculate the distance between the touch and the old position
         d = touch.userdata['coverflow.pos'][0] - touch.xpos
@@ -142,33 +144,22 @@ class MTCoverFlow(MTWidget):
         if abs(d) > self.trigger_distance:
             touch.userdata['coverflow.noclick'] = True
 
-        # and calculate transition: the delta movement between
-        # old and new cover position
-        self._transition = d / self.trigger_cover_distance
+        # calculate new cover selected
+        cover_distance = self.cover_distance
+        len_children = len(self.children) - 1
+        ipos = self._internal_position - (touch.xpos - touch.dxpos)
+        ipos = boundary(ipos, 0, len_children * cover_distance)
+        self._internal_position = ipos
 
-        # don't make transition go farther than possible
-        if self._transition < 0 and self._selection == 0:
-            self._transition = 0
-        if self._transition > 0 and self._selection == len(self.children) - 1:
-            self._transition = 0
+        # calculate selection
+        selection = int(round(ipos / cover_distance))
+        selection = boundary(selection, 0, len_children)
 
-        # are we able to switch cover ?
-        if abs(self._transition) < 1.:
-            return
+        # update transition and selection
+        # (will fire an event if selection have changed.)
+        self._transition = ipos / cover_distance - selection
+        self.selection = selection
 
-        # cover switch !
-        self._selection += int(self._transition)
-        self._selection = boundary(self._selection, 0, len(self.children) - 1)
-
-        # adjust transition
-        self._transition -= int(self._transition)
-
-        # save the position of the touch
-        # to restart a switch from this position
-        touch.userdata['coverflow.pos'] = touch.pos
-
-        # fire on_change
-        self.dispatch_event('on_change', self.children[self._selection])
         return True
 
     def on_touch_up(self, touch):
@@ -180,7 +171,7 @@ class MTCoverFlow(MTWidget):
 
         # animate the transition to back to 0
         # cover will back to position in nicer way
-        self._animation = self.do(Animation(f='ease_out_expo', _transition=0))
+        self._animation = True
 
         # launch on_select ?
         if not touch.userdata['coverflow.noclick']:
@@ -194,6 +185,17 @@ class MTCoverFlow(MTWidget):
 
     def on_change(self, widget):
         pass
+
+    def _get_selection(self):
+        return self._selection
+    def _set_selection(self, x):
+        if x == self._selection:
+            return
+        self._selection = x
+        self.dispatch_event('on_change', self.children[self._selection])
+        return True
+    selection = property(_get_selection, _set_selection,
+            doc='''Get/set the selected children index''')
 
     def _get_cover_position(self, index, alpha=0):
         x2 = self.center[0]
@@ -315,6 +317,15 @@ class MTCoverFlow(MTWidget):
         glTranslatef(-x, -y2, 0)
 
     def on_update(self):
+        if self._animation:
+            # animate transition to the nearest cover.
+            # XXX fix that same as kinetic. But kinetic algo suck right now.
+            self._transition = interpolate(self._transition,
+                    round(self._transition), 5)
+
+            # update also internal position, otherwise, we have a bug when
+            # selecting again a cover
+            self._internal_position = (self.selection + self._transition) * self.cover_distance
         self._calculate_coords()
         super(MTCoverFlow, self).on_update()
 
@@ -341,3 +352,12 @@ class MTCoverFlow(MTWidget):
         if self.title_draw:
             child = self.children[self._selection]
             self._draw_title(child)
+    def remove_widget(self, widget):
+        super(MTCoverFlow,self).remove_widget(widget)
+        _len = len(self.children)
+        if self._selection >=  _len:
+            self._selection = _len -1
+        if self._selection < 0:
+            #No more children
+            #Do something appropriate (maybe hide, maybe nothing)            
+            pass

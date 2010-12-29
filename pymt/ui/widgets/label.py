@@ -146,7 +146,10 @@ class MTLabel(MTWidget):
         # force autosize
         if self.autosize or self.autowidth or self.autoheight:
             if 'size' in kwargs:
-                del kwargs['size']
+                if self.autoheight:
+                    kwargs['size'] = (kwargs['size'][0], None)
+                else:
+                    del kwargs['size']
         else:
             # FIXME: found a way to cache this information
             # and not calculate it every frame.

@@ -37,7 +37,7 @@ class FlowText(MTTextInput):
         if self.orig.distance(final) <= 4:
             if not self.is_active_input:
                 self.parent.disable_all()
-            super(FlowText, self).on_press(touch)
+            super(FlowText, self).on_release(touch)
 
     def on_touch_down(self, touch):
         super(FlowText, self).on_touch_down(touch)

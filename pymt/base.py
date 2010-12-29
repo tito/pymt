@@ -136,7 +136,8 @@ class TouchEventLoop(object):
             root_window = wid.get_root_window()
             if wid != root_window and root_window is not None:
                 touch.push()
-                touch.scale_for_screen(*root_window.size)
+                w, h = root_window.system_size
+                touch.scale_for_screen(w, h, rotation=root_window.rotation)
                 parent = wid.parent
                 # and do to_local until the widget
                 try:
@@ -245,6 +246,7 @@ def pymt_usage():
         -p, --provider id:provider[,options] add a provider (eg: ccvtable1:tuio,192.168.0.1:3333)
         -F, --fps                   show fps in window
         -m mod, --module=mod        activate a module (use "list" to get available module)
+        -r, --rotation              rotate the window (0, 90, 180, 270)
         -s, --save                  save current PyMT configuration
         --size=640x480              size of window
 

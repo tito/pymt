@@ -11,7 +11,7 @@ from pymt.logger import pymt_logger
 from pymt import pymt_home_dir, pymt_config_fn, logger
 
 # Version number of current configuration format
-PYMT_CONFIG_VERSION = 12
+PYMT_CONFIG_VERSION = 16
 
 #: PyMT configuration object
 pymt_config = None
@@ -155,6 +155,26 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
 
         elif pymt_config_version == 11:
             pymt_config.setdefault('graphics', 'window_icon', os.path.join(pymt_home_dir, 'icon', 'pymt32.png') )
+
+        elif pymt_config_version == 12:
+            # default configuration for keyboard repeatition
+            pymt_config.setdefault('keyboard', 'repeat_delay', '300')
+            pymt_config.setdefault('keyboard', 'repeat_rate', '30')
+
+        elif pymt_config_version == 13:
+            # add possibility to set the position of windows
+            pymt_config.setdefault('graphics', 'position', 'auto')
+            pymt_config.setdefault('graphics', 'top', '0')
+            pymt_config.setdefault('graphics', 'left', '0')
+
+        elif pymt_config_version == 14:
+            # ability to change maximum FPS
+            pymt_config.setdefault('graphics', 'fps', '0')
+
+        elif pymt_config_version == 15:
+            # ability to rotate the window
+            pymt_config.setdefault('graphics', 'rotation', '0')
+
         else:
             # for future.
             break

@@ -16,7 +16,7 @@ from OpenGL.GL import GL_RGBA, GL_UNSIGNED_BYTE, GL_TEXTURE_MIN_FILTER, \
         GL_TRUE, GL_LINEAR, GL_UNPACK_ALIGNMENT, GL_BGR, GL_BGRA, GL_RGB, \
         glEnable, glDisable, glBindTexture, glTexParameteri, glTexImage2D, \
         glTexSubImage2D, glFlush, glGenTextures, glDeleteTextures, \
-        GLubyte, glPixelStorei
+        GLubyte, glPixelStorei, GL_LUMINANCE
 from OpenGL.GL.NV.texture_rectangle import glInitTextureRectangleNV
 from OpenGL.GL.ARB.texture_rectangle import glInitTextureRectangleARB
 from OpenGL.extensions import hasGLExtension
@@ -398,6 +398,8 @@ class Texture(object):
             return 3
         elif format in (GL_RGBA, GL_BGRA):
             return 4
+        elif format in (GL_LUMINANCE, ):
+            return 1
         raise Exception('Unsupported format size <%s>' % str(format))
 
     def __str__(self):

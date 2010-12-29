@@ -6,6 +6,8 @@ __all__ = ('MTWindowPygame', )
 
 import os
 import pymt
+from time import sleep, time
+from pymt.clock import getClock
 from pymt.ui.window import BaseWindow
 from pymt.exceptions import pymt_exception_manager, ExceptionManager
 from pymt.logger import pymt_logger
@@ -41,25 +43,53 @@ class MTWindowPygame(BaseWindow):
         pygame.display.gl_set_attribute(pygame.GL_ALPHA_SIZE, 8)
         pygame.display.set_caption('pymt')
 
+        if params['position'] == 'auto':
+            self._pos = None
+        elif params['position'] == 'custom':
+            self._pos = params['left'], params['top']
+        else:
+            raise ValueError('position token in configuration accept only '
+                             '"auto" or "custom"')
+
         self._fullscreenmode = params['fullscreen']
         if self._fullscreenmode == 'fake':
             pymt_logger.debug('WinPygame: Set window to fake fullscreen mode')
             self.flags |= pygame.NOFRAME
-            os.environ['SDL_VIDEO_WINDOW_POS'] = '0,0'
+            # if no position set, in fake mode, we always need to set the
+            # position. so replace 0, 0.
+            if self._pos is None:
+                self._pos = (0, 0)
+            os.environ['SDL_VIDEO_WINDOW_POS'] = '%d,%d' % self._pos
 
         elif self._fullscreenmode:
             pymt_logger.debug('WinPygame: Set window to fullscreen mode')
             self.flags |= pygame.FULLSCREEN
 
-        #set window icon before calling set_mode
+        elif self._pos is not None:
+            os.environ['SDL_VIDEO_WINDOW_POS'] = '%d,%d' % self._pos
+
+        # never stay with a None pos, application using w.center will be fired.
+        self._pos = (0, 0)
+
+        # prepare keyboard
+        repeat_delay = int(pymt.pymt_config.get('keyboard', 'repeat_delay'))
+        repeat_rate = float(pymt.pymt_config.get('keyboard', 'repeat_rate'))
+        pygame.key.set_repeat(repeat_delay, int(1000. / repeat_rate))
+
+        # set window icon before calling set_mode
         icon = pygame.image.load(pymt.pymt_config.get('graphics', 'window_icon'))
         pygame.display.set_icon(icon)
-
 
         # init ourself size + setmode
         # before calling on_resize
         self._size = params['width'], params['height']
         self._vsync = params['vsync']
+        self._fps = float(params['fps'])
+
+        # ensure the default fps will be 60 if vsync is actived
+        # and if user didn't set any maximum fps.
+        if self._vsync and self._fps <= 0:
+            self._fps = 60.
 
         # try to use mode with multisamples
         try:
@@ -89,6 +119,9 @@ class MTWindowPygame(BaseWindow):
         pygame.mouse.set_visible(
             pymt.pymt_config.getboolean('graphics', 'show_cursor'))
 
+        # set rotation
+        self.rotation = params['rotation']
+
     def close(self):
         pygame.display.quit()
 
@@ -108,12 +141,11 @@ class MTWindowPygame(BaseWindow):
         # this is not a real vsync. this must be done by driver...
         # but pygame can't do vsync on X11, and some people
         # use hack to make it work under darwin...
-        if self._vsync:
-            from pymt.clock import getClock
-            import time
-            s = 1/60. - (time.time() - getClock().get_time())
+        fps = self._fps
+        if fps > 0:
+            s = 1 / fps - (time() - getClock().get_time())
             if s > 0:
-                time.sleep(s)
+                sleep(s)
 
     def toggle_fullscreen(self):
         if self.flags & pygame.FULLSCREEN:

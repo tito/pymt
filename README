@@ -139,7 +139,19 @@ Configuration
   # default layout of keyboard
   layout = (azerty|qwerty)
 
+  # repeat delay of the on-screen keyboard
+  repeat_delay = <integer>
+
+  # repeat rate of the on-screen keyboard
+  repeat_rate = <integer>
+
+
   [graphics]
+
+  # maximum fps allowed
+  # if fps is <= 0, and vsync activated, the default maximum
+  # fps will be set to 60.
+  fps = <integer>
 
   # activate fullscreen
   fullscreen = (0|1)
@@ -162,6 +174,24 @@ Configuration
   # show cursor on fullscreen
   show_cursor = (0|1)
 
+  # position of the window on the screen
+  # "auto" mean you have no control about the initial position
+  # "custom" mean the position is controled with "top" and "left" attribute
+  position = (auto|custom)
+
+  # top position of the window (if position is custom)
+  top = <integer>
+
+  # left position of the window (if position is custom)
+  left = <integer>
+
+  # path to the window icon (for replacing the default pygame icon.)
+  window_icon = <path>
+
+  # rotation of the window
+  rotation = (0|90|180|270)
+
+
   [input]
 
   # example of input provider instance
@@ -170,6 +200,7 @@ Configuration
   # example for tuio provider
   default = tuio,127.0.0.1:3333
   mytable = tuio,192.168.0.1:3334
+
 
   [dump]
 
@@ -181,6 +212,7 @@ Configuration
 
   # format of dump image
   format = <jpeg|png>
+
 
   [widgets]
 
@@ -197,6 +229,7 @@ Configuration
 
   # keyboard type
   keyboard_type = <real|virtual>
+
 
   [modules]
 

@@ -4,10 +4,11 @@ Obj: handle 3D mesh from the OBJ format file.
 OBJ is a geometry definition file, adopted by many vendor graphics.
 To known more about the format, check http://en.wikipedia.org/wiki/Obj
 '''
+
 __all__ = ('OBJ', 'Material', 'MaterialGroup', 'Mesh')
 
 import os
-import warnings
+from pymt.logger import pymt_logger
 from pymt.core.image import Image
 from OpenGL.GL import GL_FRONT_AND_BACK, GL_DIFFUSE, GL_AMBIENT, GL_SPECULAR, \
         GL_SHININESS, GL_AMBIENT_AND_DIFFUSE, GL_COLOR_MATERIAL, GLfloat, \
@@ -179,7 +180,7 @@ class OBJ:
             elif values[0] in ('usemtl', 'usemat'):
                 material = self.materials.get(values[1], None)
                 if material is None:
-                    warnings.warn('Unknown material: %s' % values[1])
+                    pymt_logger.warning('OBJ: Unknown material: %s' % values[1])
                 if mesh is not None:
                     group = MaterialGroup(material)
                     mesh.groups.append(group)
@@ -242,7 +243,7 @@ class OBJ:
                 material = Material(values[1])
                 self.materials[material.name] = material
             elif material is None:
-                warnings.warn('Expected "newmtl" in %s' % filename)
+                pymt_logger.warning('OBJ: Expected "newmtl" in %s' % filename)
                 continue
 
             try:
@@ -264,10 +265,10 @@ class OBJ:
                         material.texture = Image(filename).texture
                         material.texture.wrap = GL_REPEAT
                     except:
-                        warnings.warn('Could not load texture %s' % values[1])
+                        pymt_logger.warning('OBJ: Could not load texture %s' % values[1])
                         raise
             except:
-                warnings.warn('Parse error in %s.' % filename)
+                pymt_logger.warning('OBJ: Parse error in %s.' % filename)
                 raise
 
     def enter(self):

@@ -1,14 +1,11 @@
 '''
-HIDInput: Native support of HID input from linux kernel
+LinuxWacom: Native support of Wacom tablet from linuxwacom driver
 
-Support start from 2.6.32-ubuntu, or 2.6.34.
-
-To configure HIDInput, put in your configuration ::
+To configure LinuxWacom, put in your configuration ::
 
     [input]
-    # devicename = hidinput,/dev/input/eventXX
-    # example with Stantum MTP4.3" screen
-    stantum = hidinput,/dev/input/event2
+    pen = linuxwacom,/dev/input/event2,mode=pen
+    finger = linuxwacom,/dev/input/event3,mode=touch
 
 .. note::
     You must have read access to the input event.
@@ -25,23 +22,15 @@ To fix that, you can add one of theses options on the argument line :
 * max_position_y : Y maximum
 * min_pressure : pressure minimum
 * max_pressure : pressure maximum
-
-For example, on Asus T101M, the touchscreen report a range from 0-4095 for X and
-Y value, but real value are in a range from 0-32768. You can put it on
-configuration ::
-
-    [input]
-    t101m = hidinput,/dev/input/event7,max_position_x=32768,max_position_y=32768
-
 '''
 
-__all__ = ('HIDInputTouchProvider', 'HIDTouch')
+__all__ = ('LinuxWacomTouchProvider', 'LinuxWacomTouch')
 
 import os
 from pymt.input.touch import Touch
 from pymt.input.shape import TouchShapeRect
 
-class HIDTouch(Touch):
+class LinuxWacomTouch(Touch):
     def depack(self, args):
         self.sx = args['x']
         self.sy = args['y']
@@ -54,14 +43,14 @@ class HIDTouch(Touch):
         if 'pressure' in args:
             self.pressure = args['pressure']
             self.profile.append('pressure')
-        super(HIDTouch, self).depack(args)
+        super(LinuxWacomTouch, self).depack(args)
 
     def __str__(self):
-        return '<HIDTouch id=%d pos=(%f, %f) device=%s>' % (self.id, self.sx, self.sy, self.device)
+        return '<LinuxWacomTouch id=%d pos=(%f, %f) device=%s>' % (self.id, self.sx, self.sy, self.device)
 
 if 'PYMT_DOC' in os.environ:
     # documentation hack
-    HIDInputTouchProvider = None
+    LinuxWacomTouchProvider = None
 
 else:
     import threading
@@ -108,6 +97,10 @@ else:
     MSC_MAX		    = 0x07
     MSC_CNT		    = (MSC_MAX+1)
 
+    ABS_X               = 0x00
+    ABS_Y               = 0x01
+    ABS_PRESSURE        = 0x18
+    ABS_MISC            = 0x28  # if 0, it's touch up
     ABS_MT_TOUCH_MAJOR  = 0x30	# Major axis of touching ellipse
     ABS_MT_TOUCH_MINOR  = 0x31	# Minor axis (omit if circular)
     ABS_MT_WIDTH_MAJOR  = 0x32	# Major axis of approaching ellipse
@@ -130,7 +123,7 @@ else:
     struct_input_absinfo_sz = struct.calcsize('iiiiii')
     sz_l = struct.calcsize('Q')
 
-    class HIDInputTouchProvider(TouchProvider):
+    class LinuxWacomTouchProvider(TouchProvider):
 
         options = ('min_position_x', 'max_position_x',
                    'min_position_y', 'max_position_y',
@@ -138,20 +131,21 @@ else:
                    'invert_x', 'invert_y')
 
         def __init__(self, device, args):
-            super(HIDInputTouchProvider, self).__init__(device, args)
+            super(LinuxWacomTouchProvider, self).__init__(device, args)
             self.input_fn = None
             self.default_ranges = dict()
+            self.mode = 'touch'
 
             # split arguments
             args = args.split(',')
             if not args:
-                pymt_logger.error('HIDInput: No filename pass to HIDInput configuration')
-                pymt_logger.error('HIDInput: Use /dev/input/event0 for example')
+                pymt_logger.error('LinuxWacom: No filename pass to LinuxWacom configuration')
+                pymt_logger.error('LinuxWacom: Use /dev/input/event0 for example')
                 return None
 
             # read filename
             self.input_fn = args[0]
-            pymt_logger.info('HIDInput: Read event from <%s>' % self.input_fn)
+            pymt_logger.info('LinuxWacom: Read event from <%s>' % self.input_fn)
 
             # read parameters
             for arg in args[1:]:
@@ -161,24 +155,29 @@ else:
 
                 # ensure it's a key = value
                 if len(arg) != 2:
-                    pymt_logger.error('HIDInput: invalid parameter %s, not in key=value format.' % arg)
+                    pymt_logger.error('LinuxWacom: invalid parameter %s, not in key=value format.' % arg)
                     continue
 
                 # ensure the key exist
                 key, value = arg
-                if key not in HIDInputTouchProvider.options:
-                    pymt_logger.error('HIDInput: unknown %s option' % key)
+                if key == 'mode':
+                    self.mode = value
+                    continue
+
+                if key not in LinuxWacomTouchProvider.options:
+                    pymt_logger.error('LinuxWacom: unknown %s option' % key)
                     continue
 
                 # ensure the value
                 try:
                     self.default_ranges[key] = int(value)
                 except ValueError:
-                    pymt_logger.error('HIDInput: invalid value %s for option %s' % (key, value))
+                    pymt_logger.error('LinuxWacom: invalid value %s for option %s' % (key, value))
                     continue
 
                 # all good!
-                pymt_logger.info('HIDInput: Set custom %s to %d' % (key, int(value)))
+                pymt_logger.info('LinuxWacom: Set custom %s to %d' % (key, int(value)))
+            pymt_logger.info('LinuxWacom: mode is <%s>' % self.mode)
 
 
         def start(self):
@@ -205,7 +204,7 @@ else:
             touches = {}
             touches_sent = []
             point = {}
-            l_points = []
+            l_points = {}
 
             # prepare some vars to get limit of some component
             range_min_position_x    = 0
@@ -216,23 +215,24 @@ else:
             range_max_pressure      = 255
             invert_x                = int(bool(drs('invert_x', 0)))
             invert_y                = int(bool(drs('invert_y', 0)))
+            reset_touch             = False
 
             def process(points):
-                actives = [args['id'] for args in points]
-                for args in points:
+                actives = points.keys()
+                for args in points.itervalues():
                     tid = args['id']
                     try:
                         touch = touches[tid]
-                        if touch.sx == args['x'] and touch.sy == args['y']:
-                            continue
-                        touch.move(args)
-                        if tid not in touches_sent:
-                            queue.append(('down', touch))
-                            touches_sent.append(tid)
-                        queue.append(('move', touch))
                     except KeyError:
-                        touch = HIDTouch(device, tid, args)
+                        touch = LinuxWacomTouch(device, tid, args)
                         touches[touch.id] = touch
+                    if touch.sx == args['x'] and touch.sy == args['y'] and tid in touches_sent:
+                        continue
+                    touch.move(args)
+                    if tid not in touches_sent:
+                        queue.append(('down', touch))
+                        touches_sent.append(tid)
+                    queue.append(('move', touch))
 
                 for tid in touches.keys()[:]:
                     if tid not in actives:
@@ -250,7 +250,7 @@ else:
 
             # get the controler name (EVIOCGNAME)
             device_name = fcntl.ioctl(fd, EVIOCGNAME + (256 << 16), " " * 256).split('\x00')[0]
-            pymt_logger.info('HIDTouch: using <%s>' % device_name)
+            pymt_logger.info('LinuxWacomTouch: using <%s>' % device_name)
 
             # get abs infos
             bit = fcntl.ioctl(fd, EVIOCGBIT + (EV_MAX << 16), ' ' * sz_l)
@@ -273,26 +273,32 @@ else:
                                           ' ' * struct_input_absinfo_sz)
                     abs_value, abs_min, abs_max, abs_fuzz, \
                         abs_flat, abs_res = struct.unpack('iiiiii', absinfo)
-                    if y == ABS_MT_POSITION_X:
+                    if y == ABS_X:
                         range_min_position_x = drs('min_position_x', abs_min)
                         range_max_position_x = drs('max_position_x', abs_max)
-                        pymt_logger.info('HIDTouch: ' +
+                        pymt_logger.info('LinuxWacomTouch: ' +
                             '<%s> range position X is %d - %d' % (
                             device_name, abs_min, abs_max))
-                    elif y == ABS_MT_POSITION_Y:
+                    elif y == ABS_Y:
                         range_min_position_y = drs('min_position_y', abs_min)
                         range_max_position_y = drs('max_position_y', abs_max)
-                        pymt_logger.info('HIDTouch: ' +
+                        pymt_logger.info('LinuxWacomTouch: ' +
                             '<%s> range position Y is %d - %d' % (
                             device_name, abs_min, abs_max))
-                    elif y == ABS_MT_PRESSURE:
+                    elif y == ABS_PRESSURE:
                         range_min_pressure = drs('min_pressure', abs_min)
                         range_max_pressure = drs('max_pressure', abs_max)
-                        pymt_logger.info('HIDTouch: ' +
+                        pymt_logger.info('LinuxWacomTouch: ' +
                             '<%s> range pressure is %d - %d' % (
                             device_name, abs_min, abs_max))
 
             # read until the end
+            point = {}
+            changed = False
+            touch_id = 0
+            touch_x = 0
+            touch_y = 0
+            touch_pressure = 0
             while fd:
 
                 data = fd.read(struct_input_event_sz)
@@ -307,47 +313,53 @@ else:
                     tv_sec, tv_usec, ev_type, ev_code, ev_value = \
                             struct.unpack('LLHHi', ev[:struct_input_event_sz])
 
-                    # sync event
-                    if ev_type == EV_SYN:
-                        if ev_code == SYN_MT_REPORT:
-                            if 'id' not in point:
+                    if ev_type == EV_SYN and ev_code == SYN_REPORT:
+                        if touch_id in l_points:
+                            p = l_points[touch_id]
+                        else:
+                            p = dict()
+                            l_points[touch_id] = p
+                        p['id'] = touch_id
+                        if reset_touch is False:
+                            p['x'] = touch_x
+                            p['y'] = touch_y
+                            p['pressure'] = touch_pressure
+                        if self.mode == 'pen' and touch_pressure == 0 and not reset_touch:
+                            del l_points[touch_id]
+                        if changed:
+                            if not 'x' in p:
+                                reset_touch = False
                                 continue
-                            l_points.append(point)
-                        elif ev_code == SYN_REPORT:
                             process(l_points)
-                            l_points = []
-
-                    elif ev_type == EV_MSC and ev_code in (MSC_RAW, MSC_SCAN):
-                        pass
-
-                    else:
-                        # compute multitouch track
-                        if ev_code == ABS_MT_TRACKING_ID:
-                            point = {}
-                            point['id'] = ev_value
-                        elif ev_code == ABS_MT_POSITION_X:
-                            val = normalize(ev_value,
-                                range_min_position_x, range_max_position_x)
-                            if invert_x:
-                                val = 1. - val
-                            point['x'] = val
-                        elif ev_code == ABS_MT_POSITION_Y:
-                            val = 1. - normalize(ev_value,
-                                range_min_position_y, range_max_position_y)
-                            if invert_y:
-                                val = 1. - val
-                            point['y'] = val
-                        elif ev_code == ABS_MT_ORIENTATION:
-                            point['orientation'] = ev_value
-                        elif ev_code == ABS_MT_BLOB_ID:
-                            point['blobid'] = ev_value
-                        elif ev_code == ABS_MT_PRESSURE:
-                            point['pressure'] = normalize(ev_value,
-                                range_min_pressure, range_max_pressure)
-                        elif ev_code == ABS_MT_TOUCH_MAJOR:
-                            point['size_w'] = ev_value
-                        elif ev_code == ABS_MT_TOUCH_MINOR:
-                            point['size_h'] = ev_value
+                            changed = False
+                        if reset_touch:
+                            l_points.clear()
+                            reset_touch = False
+                            process(l_points)
+                        point = {}
+                    elif ev_type == EV_MSC and ev_code == MSC_SERIAL:
+                        touch_id = ev_value
+                    elif ev_type == EV_ABS and ev_code == ABS_X:
+                        val = normalize(ev_value,
+                            range_min_position_x, range_max_position_x)
+                        if invert_x:
+                            val = 1. - val
+                        touch_x = val
+                        changed = True
+                    elif ev_type == EV_ABS and ev_code == ABS_Y:
+                        val = 1. - normalize(ev_value,
+                            range_min_position_y, range_max_position_y)
+                        if invert_y:
+                            val = 1. - val
+                        touch_y = val
+                        changed = True
+                    elif ev_type == EV_ABS and ev_code == ABS_PRESSURE:
+                        touch_pressure = normalize(ev_value,
+                            range_min_pressure, range_max_pressure)
+                        changed = True
+                    elif ev_type == EV_ABS and ev_code == ABS_MISC:
+                        if ev_value == 0:
+                            reset_touch = True
 
         def update(self, dispatch_fn):
             # dispatch all event from threads
@@ -359,4 +371,4 @@ else:
                 pass
 
 
-    TouchFactory.register('hidinput', HIDInputTouchProvider)
+    TouchFactory.register('linuxwacom', LinuxWacomTouchProvider)

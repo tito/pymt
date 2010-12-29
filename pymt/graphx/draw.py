@@ -401,9 +401,9 @@ def drawLine(points, width=None, colors=[]):
         `width`: float, defaults to 5.0
             Default width of line
         `colors`: list of tuples, defaults to []
-            If you want to draw colors between the points of the line, this
-            list has to be populated with a tuple for each point representing
-            that point's color. Hence, len(colors) == len(points) / 2 holds.
+            If you want to draw colors between the points of the line (with blending),
+            this list has to be populated with r,g,b values for each point.
+            E.g.: drawLine([0, 0, 200, 200], colors=[1., 0, 0, 0, 1., 0])
             Turned off by default.
     '''
     style = GL_LINES
@@ -420,7 +420,6 @@ def drawLine(points, width=None, colors=[]):
 
     with DO(gx_attrib(GL_COLOR_BUFFER_BIT), gx_begin(style)):
         if colors:
-            colors = colors[:]
             for x, y, r, g, b in zip(points[::2], points[1::2],
                                      colors[::3], colors[1::3], colors[2::3]):
                 glColor3f(r, g, b)

@@ -4,8 +4,11 @@ TextInput: a text input who instance vkeyboard if needed
 
 __all__ = ('MTTextInput', )
 
+from pymt.logger import pymt_logger
+from pymt.base import getWindow
 from pymt.config import pymt_config
 from pymt.graphx import set_color, drawCSSRectangle, drawLine
+from pymt.core.clipboard import Clipboard
 from pymt.ui.widgets.button import MTButton
 from pymt.ui.animation import Animation, AnimationAlpha
 from pymt.ui.widgets.composed.vkeyboard import MTVKeyboard
@@ -118,7 +121,8 @@ class MTTextInput(MTButton):
                                  271: 'enter', 273: 'cursor_up', 274: 'cursor_down',
                                  275: 'cursor_right', 276: 'cursor_left',
                                  278: 'cursor_home', 279: 'cursor_end',
-                                 280: 'cursor_pgup', 281: 'cursor_pgdown'}
+                                 280: 'cursor_pgup', 281: 'cursor_pgdown',
+                                 303: 'shift_L', 304: 'shift_R'}
 
     def on_resize(self, *largs):
         if hasattr(self, '_switch'):
@@ -136,7 +140,8 @@ class MTTextInput(MTButton):
         if self._keyboard is not None:
             self._keyboard.remove_handlers(
                 on_text_change=self._kbd_on_text_change,
-                on_key_up=self._kbd_on_key_up
+                on_key_up=self._kbd_on_key_up,
+                on_key_down=self._kbd_on_key_down
             )
         self._keyboard = value
     keyboard = property(_get_keyboard, _set_keyboard)
@@ -155,7 +160,7 @@ class MTTextInput(MTButton):
         self.label = value
         self.dispatch_event('on_text_change', value)
 
-    def _kbd_on_key_up(self, key, repeat=False):
+    def _kbd_on_key_down(self, key, repeat=False):
         displayed_str, internal_str, internal_action, scale = key
         if internal_action is None:
             return
@@ -164,6 +169,9 @@ class MTTextInput(MTButton):
             self.dispatch_event('on_text_validate')
         elif internal_action == 'escape':
             self.hide_keyboard()
+
+    def _kbd_on_key_up(self, key, repeat=False):
+        pass
 
     def on_text_validate(self):
         pass
@@ -225,9 +233,11 @@ class MTTextInput(MTButton):
             w = self.get_root_window() if to_root else self.get_parent_window()
             w.add_widget(self.keyboard)
         if self.keyboard is not None:
+            self._keyboard.reset_repeat()
             self._keyboard.push_handlers(
                 on_text_change=self._kbd_on_text_change,
-                on_key_up=self._kbd_on_key_up
+                on_key_up=self._kbd_on_key_up,
+                on_key_down=self._kbd_on_key_down
             )
             self._keyboard.text = self.label
 
@@ -247,12 +257,21 @@ class MTTextInput(MTButton):
                           on_key_up=self._window_on_key_up)
         self._is_active_input = False
         if self._keyboard is not None:
+            self._keyboard.reset_repeat()
             self._keyboard.remove_handlers(
                 on_text_change=self._kbd_on_text_change,
-                on_key_up=self._kbd_on_key_up
+                on_key_up=self._kbd_on_key_up,
+                on_key_down=self._kbd_on_key_down
             )
 
     def _window_on_key_down(self, key, scancode=None, unicode=None):
+        modifiers = getWindow().modifiers
+        if key == ord('v') and 'ctrl' in modifiers:
+            text = Clipboard.get('text/plain')
+            if text:
+                self.keyboard.text += text
+            return True
+
         if key == 27: # escape
             self.hide_keyboard()
             return True

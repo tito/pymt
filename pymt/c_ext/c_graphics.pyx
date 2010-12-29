@@ -893,6 +893,7 @@ cdef class Rectangle(GraphicElement):
         self._texture = x
         if self._texture:
             self._stmt = gx_texture(self._texture)
+            self._use_stmt = 1
     texture = property(_get_texture, _set_texture,
         doc='Texture to use on the object')
 
@@ -1058,9 +1059,11 @@ cdef class Text(Rectangle):
     '''Draw a Text/Label.
 
     Supports all the arguments from the `getLabel` function.
+
+    TODO: support drawing as Core Label draw(): include padding / view.
     '''
     # XXX ^--- and which exactly?
-    cdef str _label
+    cdef unicode _label
     cdef object _labelobj
     cdef dict _kwargs
 
@@ -1068,7 +1071,7 @@ cdef class Text(Rectangle):
         kwargs.setdefault('type', 'quads')
         kwargs.setdefault('format', 'vvtt')
         Rectangle.__init__(self, **kwargs)
-        self._label = ''
+        self._label = u''
         self._labelobj = None
         self._kwargs = kwargs
         self.label = label

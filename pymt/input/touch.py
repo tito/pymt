@@ -190,10 +190,25 @@ class Touch(object):
         self.dszpos = self.sz
         self.depack(args)
 
-    def scale_for_screen(self, w, h, p=None):
+    def scale_for_screen(self, w, h, p=None, rotation=0):
         '''Scale position for the screen'''
-        self.x = self.sx * float(w)
-        self.y = self.sy * float(h)
+        sx, sy = self.sx, self.sy
+        if rotation == 0:
+            self.x = sx * float(w)
+            self.y = sy * float(h)
+        elif rotation == 90:
+            sx, sy = sy, 1-sx
+            self.x = sx * float(h)
+            self.y = sy * float(w)
+        elif rotation == 180:
+            sx, sy = 1-sx, 1-sy
+            self.x = sx * float(w)
+            self.y = sy * float(h)
+        elif rotation == 270:
+            sx, sy = 1-sy, sx
+            self.x = sx * float(h)
+            self.y = sy * float(w)
+
         if p:
             self.z = self.sz * float(p)
         if self.oxpos is None:
@@ -275,9 +290,3 @@ class Touch(object):
     xpos = property(lambda self: self.x)
     ypos = property(lambda self: self.y)
     blobID = property(lambda self: self.id)
-    xmot = property(lambda self: self.X)
-    ymot = property(lambda self: self.Y)
-    zmot = property(lambda self: self.Z)
-    mot_accel = property(lambda self: self.m)
-    rot_accel = property(lambda self: self.r)
-    angle = property(lambda self: self.a)

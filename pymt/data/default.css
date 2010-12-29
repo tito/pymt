@@ -88,6 +88,11 @@ textinput {
 
 }
 
+textarea {
+	selection-color: rgb(255, 142, 33);
+	cursor-color: rgb(215, 15, 15);
+}
+
 formslider,
 slider,
 xyslider,
@@ -254,7 +259,7 @@ video {
 }
 
 coverflow {
-    bg-color: rgba(255,255,255,255);
+    bg-color: rgb(0, 0, 0);
 }
 
 touchring {

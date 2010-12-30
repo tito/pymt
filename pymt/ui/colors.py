@@ -175,7 +175,7 @@ class CSSSheet(object):
     def _push(self, rulestr, contentstr):
         '''Push a rules/contents into our sheet'''
         def extract(v):
-            sname, svalue = v.split(':')
+            sname, svalue = v.split(':', 1)
             name = sname.strip()
             value = svalue.strip()
             if name not in css_keyword_convert:

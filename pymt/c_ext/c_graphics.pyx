@@ -323,7 +323,7 @@ cdef class GraphicElement(GraphicInstruction):
         self._vbo_n = None
         self._vbo_e = None
         self._vbo_i = None
-        self._indices = ''
+        self._indices = <bytes>''
         self._indices_count = 0
 
     def __init__(self, **kwargs):

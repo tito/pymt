@@ -195,6 +195,9 @@ class MTKinetic(MTWidget):
                 if event == 'move':
                     wid.dispatch_event('on_touch_move', ktouch)
                 else:
+                    # if the widget is not visible, the on_touch_up may have
+                    # disabled
+                    wid.register_event_type('on_touch_up')
                     wid.dispatch_event('on_touch_up', ktouch)
                 ktouch.grab_state   = False
                 ktouch.grab_current = None

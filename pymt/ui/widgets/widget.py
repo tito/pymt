@@ -166,7 +166,7 @@ class MTWidget(EventDispatcher):
         self._cls = ''
         self._inline_style = kwargs['style']
 
-        # loading is done here automaticly
+        # loading is done here automatically
         self.cls = kwargs.get('cls')
 
     def _set_cls(self, cls):

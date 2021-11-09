@@ -387,7 +387,7 @@ class MTVKeyboard(MTScatterWidget):
             self._need_update = None
 
     def _do_update(self, mode=None):
-        # we absolutly want mode to update displaylist.
+        # we absolutely want mode to update displaylist.
         if mode not in ('background', 'keys'):
             return
 

@@ -18,7 +18,7 @@ set_brush(particle_fn, 10)
 class GL3DPerspective:
     """
     Handy Class for use with python 'with' statement.
-    on enter: sets the openGL pojection matrix to a standart perspective projection, enables, lighting, normalizing fo normals and depth test
+    on enter: sets the openGL projection matrix to a standart perspective projection, enables, lighting, normalizing fo normals and depth test
     on exit: restores matrices and states to what they were before
     """
     def __init__(self, angle=60.0, aspect=4.0/3.0, near=1.0, far=100.0):

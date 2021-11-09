@@ -415,7 +415,7 @@ class MTScatter(MTWidget):
             self.transform_with_touch (touch)
             self._last_touch_pos[touch] = touch.pos
 
-        # stop porpagating if its within our bounds
+        # stop propagating if its within our bounds
         if self.collide_point(x, y):
             return True
 
@@ -436,7 +436,7 @@ class MTScatter(MTWidget):
             del self._last_touch_pos[touch]
             self._touches.remove(touch)
 
-        # stop porpagating if its within our bounds
+        # stop propagating if its within our bounds
         if self.collide_point(x, y):
             return True
 

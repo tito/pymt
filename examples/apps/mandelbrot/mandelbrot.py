@@ -111,7 +111,7 @@ def pymt_plugin_activate(w, ctx):
     slider = MTSlider(orientation='horizontal', min=25, max=250, value=100, size=(w.width-20, 30), pos=(10,10))
 
     # attach the event handler to the slider
-    # uses curry to save the firt two arguments, since this is where we have the refernce to them
+    # uses curry to save the firt two arguments, since this is where we have the reference to them
     # and the on_value_changed event only provides on argument ('value')
     callback = curry(update_iterations, mbviewer, label)
     slider.push_handlers(on_value_change=callback)

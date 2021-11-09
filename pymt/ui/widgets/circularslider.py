@@ -20,7 +20,7 @@ class MTCircularSlider(MTWidget):
 
     .. warning::
         The widget is drawed from his center. Cause of that, the size of the
-        widget will be automaticly adjusted from the radius of the slider.
+        widget will be automatically adjusted from the radius of the slider.
         Eg: if you ask for a radius=100, the widget size will be 200x200
 
     :Parameters:

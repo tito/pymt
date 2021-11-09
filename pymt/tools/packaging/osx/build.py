@@ -58,7 +58,7 @@ class OSXPortableBuild(Command):
             p = block_count*block_size*100.0/total_size
             print "\b\b\b\b\b\b\b\b\b", "%06.2f"%p +"%",
         print " Progress: 000.00%",
-        urlretrieve(self.deps_url, #location of binary dependencioes needed for portable pymt
+        urlretrieve(self.deps_url, #location of binary dependencies needed for portable pymt
                     os.path.join(self.build_dir,'deps.zip'), #tmp file to store teh archive
                     reporthook=report_hook)
         print " [Done]"

@@ -144,7 +144,7 @@ class Touch(object):
             self.dszpos = self.oszpos = self.sz
 
     def grab(self, class_instance, exclusive=False):
-        '''Grab a touch. You can grab a touch if you absolutly want to receive
+        '''Grab a touch. You can grab a touch if you absolutely want to receive
         on_touch_move() and on_touch_up(), even if the touch is not dispatched
         by your parent ::
 

@@ -108,7 +108,7 @@ class MTGridLayout(MTAbstractLayout):
         for i in rows:
             height += rows[i]
 
-        #remeber for layout
+        #remember for layout
         self.col_widths  = cols
         self.row_heights = rows
 

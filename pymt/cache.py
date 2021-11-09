@@ -1,5 +1,5 @@
 '''
-Cache Manager: cache object and delete them automaticly
+Cache Manager: cache object and delete them automatically
 
 How to use the cache ::
     # register a new Cache
@@ -10,7 +10,7 @@ How to use the cache ::
     instance = MTLabel(label=label)
     Cache.append('mycache', label, instance)
 
-    # retreive the object later
+    # retrieve the object later
     instance = Cache.get('mycache', label)
 
 If the instance is NULL, the cache may have trash it, because you've
@@ -185,7 +185,7 @@ class Cache(object):
                 # time to draw. and the timeout is not adapted to the current
                 # framerate. So, increase the timeout by two.
                 # ie: if the timeout is 1 sec, and framerate go to 0.7, newly
-                # object added will be automaticly trashed.
+                # object added will be automatically trashed.
                 timeout *= 2
                 Cache._categories[category]['timeout'] = timeout
                 continue

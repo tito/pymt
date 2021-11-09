@@ -325,7 +325,7 @@ class EventDispatcher(BaseObject):
     def dispatch_event(self, event_type, *args):
         '''Dispatch a single event to the attached handlers.
 
-        The event is propogated to all handlers from from the top of the stack
+        The event is propagated to all handlers from from the top of the stack
         until one returns `EVENT_HANDLED`.  This method should be used only by
         `EventDispatcher` implementors; applications should call
         the ``dispatch_events`` method.

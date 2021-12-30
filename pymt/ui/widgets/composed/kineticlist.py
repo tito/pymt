@@ -247,7 +247,7 @@ class MTKineticList(MTStencilContainer):
         '''Given an attribute of the children, and a pattern, return
         a list of the children with which pattern is in attr
         '''
-        return filter(lambda c: pattern in str(getattr(c, attr)), self.pchildren)
+        return [c for c in self.pchildren if pattern in str(getattr(c, attr))]
 
     def search(self, pattern, attr):
         '''Apply a search pattern to the current set of children'''
@@ -315,7 +315,7 @@ class MTKineticList(MTStencilContainer):
 
         # calculate size of actual content
         size = 0
-        for i in xrange(len(self.children)):
+        for i in range(len(self.children)):
             if i % limit == 0:
                 maxrange = min(i + limit, len(self.children))
                 childrens = [self.children[z] for z in range(i, maxrange)]

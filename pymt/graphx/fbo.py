@@ -89,7 +89,7 @@ class AbstractFbo(object):
         elif isinstance(self.texture, pymt.Texture):
             self.realsize = self.texture.width, self.texture.height
         else:
-            raise 'Unknown type(self.texture). Please send a bug report on pymt dev.'
+            raise Exception('Unknown type(self.texture). Please send a bug report on pymt dev.')
 
     def bind(self):
         '''Activate writing on Framebuffer. All next call will be done on it.'''
@@ -158,7 +158,7 @@ class HardwareFbo(AbstractFbo):
         self.framebuffer = glGenFramebuffersEXT(1)
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
         if self.framebuffer == 0:
-            raise 'Failed to initialize framebuffer'
+            raise Exception('Failed to initialize framebuffer')
 
         if self.with_depthbuffer:
             self.depthbuffer = glGenRenderbuffersEXT(1)

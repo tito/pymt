@@ -56,7 +56,7 @@ class XMLWidget(MTWidget):
         and you want to connect on on_press event, it will search
         the obj.on_plop_press() function.
         '''
-        for widget_id, children in self.registerdb.items():
+        for widget_id, children in list(self.registerdb.items()):
             for event in children.event_types:
                 eventobj = event
                 if eventobj[:3] == 'on_':
@@ -75,7 +75,7 @@ class XMLWidget(MTWidget):
             # parameters
             k = {}
             widget_id = None
-            for name, value in node.attributes.items():
+            for name, value in list(node.attributes.items()):
                 name = str(name)
                 if name == 'id':
                     widget_id = eval(value)

@@ -105,7 +105,7 @@ class Modules:
 
     def update(self):
         '''Update status of module for each windows'''
-        modules_to_activate = map(lambda x: x[0], pymt.pymt_config.items('modules'))
+        modules_to_activate = [x[0] for x in pymt.pymt_config.items('modules')]
         for win in self.wins:
             for id in self.mods:
                 if not id in modules_to_activate:
@@ -114,15 +114,15 @@ class Modules:
                 self.activate_module(id, win)
 
     def usage_list(self):
-        print
-        print 'Available modules'
-        print '================='
+        print()
+        print('Available modules')
+        print('=================')
         for module in self.list():
             if not 'module' in self.mods[module]:
                 self.import_module(module)
             text = self.mods[module]['module'].__doc__.strip("\n ")
-            print '%-12s: %s' % (module, text)
-        print
+            print('%-12s: %s' % (module, text))
+        print()
 
 pymt_modules = Modules()
 pymt_modules.add_path(pymt.pymt_modules_dir)
@@ -130,4 +130,4 @@ if not 'PYMT_DOC' in os.environ:
     pymt_modules.add_path(pymt.pymt_usermodules_dir)
 
 if __name__ == '__main__':
-    print pymt_modules.list()
+    print(pymt_modules.list())

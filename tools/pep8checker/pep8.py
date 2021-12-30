@@ -497,7 +497,7 @@ def message(text):
     """Print a message."""
     # print >> sys.stderr, options.prog + ': ' + text
     # print >> sys.stderr, text
-    print text
+    print(text)
 
 
 def find_checks(argument_name):
@@ -507,7 +507,7 @@ def find_checks(argument_name):
     """
     checks = []
     function_type = type(find_checks)
-    for name, function in globals().iteritems():
+    for name, function in globals().items():
         if type(function) is function_type:
             args = inspect.getargspec(function)[0]
             if len(args) >= 1 and args[0].startswith(argument_name):
@@ -642,10 +642,10 @@ class Checker:
         self.previous_indent_level = self.indent_level
         self.indent_level = expand_indent(indent)
         if options.verbose >= 2:
-            print self.logical_line[:80].rstrip()
+            print(self.logical_line[:80].rstrip())
         for name, check, argument_names in self.logical_checks:
             if options.verbose >= 3:
-                print '   ', name
+                print('   ', name)
             result = self.run_check(check, argument_names)
             if result is not None:
                 offset, text = result
@@ -810,7 +810,7 @@ def get_statistics(prefix=''):
     prefix='E4' matches all errors that have to do with imports
     """
     stats = []
-    keys = options.messages.keys()
+    keys = list(options.messages.keys())
     keys.sort()
     for key in keys:
         if key.startswith(prefix):
@@ -822,21 +822,21 @@ def get_statistics(prefix=''):
 def print_statistics(prefix=''):
     """Print overall statistics (number of errors and warnings)."""
     for line in get_statistics(prefix):
-        print line
+        print(line)
 
 
 def print_benchmark(elapsed):
     """
     Print benchmark numbers.
     """
-    print '%-7.2f %s' % (elapsed, 'seconds elapsed')
+    print('%-7.2f %s' % (elapsed, 'seconds elapsed'))
     keys = ['directories', 'files',
             'logical lines', 'physical lines']
     for key in keys:
         if key in options.counters:
-            print '%-7d %s per second (%d total)' % (
+            print('%-7d %s per second (%d total)' % (
                 options.counters[key] / elapsed, key,
-                options.counters[key])
+                options.counters[key]))
 
 
 def process_options(arglist=None):

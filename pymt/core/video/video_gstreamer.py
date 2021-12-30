@@ -230,7 +230,7 @@ class VideoGStreamer(VideoBase):
             for i in self._decoder.src_pads():
                 cap = i.get_caps()[0]
                 structure_name = cap.get_name()
-                if structure_name.startswith('video') and cap.has_key('width'):
+                if structure_name.startswith('video') and 'width' in cap:
                     self._videosize = self.size = (cap['width'], cap['height'])
                     self._texture = pymt.Texture.create(
                         self._videosize[0], self._videosize[1], format=GL_RGB)

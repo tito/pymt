@@ -52,12 +52,12 @@ class FridgeLetter(MTWidget):
 
     def createletters(self, *largs):
         w = self.get_parent_window()
-        for c in xrange(65, 91): # A-Z
+        for c in range(65, 91): # A-Z
             count = 1
             if chr(c) in 'AEUIO':
                 count = 4
-            for i in xrange(0, count):
-                color = map(lambda x: x/255., (randint(100,255), randint(100,255), randint(100,255), 255))
+            for i in range(0, count):
+                color = [x/255. for x in (randint(100,255), randint(100,255), randint(100,255), 255)]
                 l = FridgeLetterAtomic(letter=chr(c), color=color)
                 if w:
                     l.pos = randint(0, w.width), randint(0, w.height)
@@ -73,7 +73,7 @@ class FridgeLetter(MTWidget):
         for letter in self.children:
             if letter == self.buttons:
                 continue
-            letter.do(Animation(pos=map(lambda x: x * random(), w.size),
+            letter.do(Animation(pos=[x * random() for x in w.size],
                                 f='ease_out_cubic', duration=.5))
 
     def draw(self):

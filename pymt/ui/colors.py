@@ -220,13 +220,13 @@ class CSSSheet(object):
 
         # match <objectname>
         for cls in reversed(widget_classes):
-            for r, v in self._css.iteritems():
+            for r, v in self._css.items():
                 if r == cls:
                     styles.update(v)
 
         # match .<classname>
         widget_cls = widget.cls
-        if type(widget_cls) in (unicode, str):
+        if type(widget_cls) in (str, str):
             widget_cls = [widget.cls]
         if type(widget_cls) in (list, tuple):
             for kcls in widget_cls:
@@ -237,7 +237,7 @@ class CSSSheet(object):
                 # match <objectname>.<classname>
                 for name in reversed(widget_classes):
                     lcls = '%s%s' % (name, cls)
-                    for r, v in self._css.iteritems():
+                    for r, v in self._css.items():
                         if r == lcls:
                             styles.update(v)
 
@@ -375,8 +375,8 @@ if 'PYMT_DOC' not in os.environ:
 if __name__ == '__main__':
     from pymt import MTWidget, css_get_style, MTWindow
     w = MTWidget()
-    print w
-    print css_get_style(widget=w)
+    print(w)
+    print(css_get_style(widget=w))
     w = MTWindow()
-    print w
-    print css_get_style(widget=w)
+    print(w)
+    print(css_get_style(widget=w))

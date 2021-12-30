@@ -82,7 +82,7 @@ class Desktop(MTBoxLayout):
 
             # no icon ?
             if icon is None:
-                print 'No icon found for', infos['title']
+                print('No icon found for', infos['title'])
                 continue
 
             # create an image button for every plugin

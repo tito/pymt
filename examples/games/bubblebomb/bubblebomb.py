@@ -18,7 +18,7 @@ class Bomb(MTWidget):
         self.moved = False
         self.speed = 200
         self.level = kwargs.get('level')
-        self.dx, self.dy = map(lambda x: randint(-self.speed, self.speed), xrange(2))
+        self.dx, self.dy = [randint(-self.speed, self.speed) for x in range(2)]
         self.lifetime = 8
         self.initial_lifetime = self.lifetime
         self.life = 1

@@ -26,7 +26,7 @@ from pymt.graphx.colors import *
 try:
     import pymt.c_ext.c_graphx as c_graphx
     pymt.pymt_logger.info('Graphx: Using accelerate graphx module')
-except ImportError, e:
+except ImportError as e:
     c_graphx = None
     pymt.pymt_logger.warning('Extensions: c_graphx not available: <%s>' % e)
 
@@ -247,7 +247,7 @@ def drawPolygon(points, style=GL_POLYGON, linewidth=0):
         `linewidth`: int, defaults to current OpenGL state. 
             Sets the linewidth if drawign style is a line based one
     '''
-    if isinstance(style, basestring):
+    if isinstance(style, str):
         if style in ('fill', 'GL_POLYGON'):
             style = GL_POLYGON
         if style in ('line', 'GL_LINE_LOOP'):

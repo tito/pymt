@@ -57,15 +57,13 @@ class ProxyImage(Image, EventDispatcher):
         pass
 
 
-class LoaderBase(object):
+class LoaderBase(object, metaclass=ABCMeta):
     '''Common base for Loader and specific implementation.
     By default, Loader will be the best available loader implementation.
 
     The _update() function is called every 1 / 25.s or each frame if we have
     less than 25 FPS.
     '''
-
-    __metaclass__ = ABCMeta
 
     def __init__(self):
 
@@ -143,7 +141,7 @@ class LoaderBase(object):
     def _load_urllib(self, filename):
         '''(internal) Loading a network file. First download it, save it to a
         temporary file, and pass it to _load_local()'''
-        import urllib2, tempfile
+        import urllib.request, urllib.error, urllib.parse, tempfile
         data = None
         try:
             suffix = '.%s'  % (filename.split('.')[-1])
@@ -151,7 +149,7 @@ class LoaderBase(object):
                     prefix='pymtloader', suffix=suffix)
 
             # read from internet
-            fd = urllib2.urlopen(filename)
+            fd = urllib.request.urlopen(filename)
             idata = fd.read()
             fd.close()
 

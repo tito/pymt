@@ -287,7 +287,7 @@ class EventDispatcher(BaseObject):
                 for name in dir(obj):
                     if name in self._event_types:
                         yield name, getattr(obj, name)
-        for name, handler in kwargs.iteritems():
+        for name, handler in kwargs.items():
             # Function for handling given event (no magic)
             if name not in self._event_types:
                 raise Exception('Unknown event "%s"' % name)
@@ -379,7 +379,7 @@ class EventDispatcher(BaseObject):
 
         if not hasattr(handler, 'im_func'):
             raise
-        if not isinstance(handler.im_func, types.FunctionType):
+        if not isinstance(handler.__func__, types.FunctionType):
             raise
 
         n_args = len(args)
@@ -390,7 +390,7 @@ class EventDispatcher(BaseObject):
         n_handler_args = len(handler_args)
 
         # Remove "self" arg from handler if it's a bound method
-        if inspect.ismethod(handler) and handler.im_self:
+        if inspect.ismethod(handler) and handler.__self__:
             n_handler_args -= 1
 
         # Allow *args varargs to overspecify arguments
@@ -406,9 +406,9 @@ class EventDispatcher(BaseObject):
         if n_handler_args != n_args:
             if inspect.isfunction(handler) or inspect.ismethod(handler):
                 descr = '%s at %s:%d' % (
-                    handler.func_name,
-                    handler.func_code.co_filename,
-                    handler.func_code.co_firstlineno)
+                    handler.__name__,
+                    handler.__code__.co_filename,
+                    handler.__code__.co_firstlineno)
             else:
                 descr = repr(handler)
 
@@ -449,7 +449,7 @@ class EventDispatcher(BaseObject):
             name = func.__name__
             self.set_handler(name, func)
             return args[0]
-        elif isinstance(args[0], basestring): # @a.event('on_event')
+        elif isinstance(args[0], str): # @a.event('on_event')
             name = args[0]
             def decorator(func):
                 self.set_handler(name, func)
@@ -491,5 +491,5 @@ try:
     if accelerate is not None:
         EventDispatcher.dispatch_event = types.MethodType(
             accelerate.eventdispatcher_dispatch_event, None, EventDispatcher)
-except ImportError, e:
+except ImportError as e:
     pymt_logger.warning('Event: Unable to use accelerate module <%s>' % e)

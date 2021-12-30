@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-from __future__ import with_statement
-from Tkinter import *
-import tkMessageBox
+
+from tkinter import *
+import tkinter.messagebox
 import sys
 import os
 os.environ['PYMT_SHADOW_WINDOW'] = '0'
@@ -71,7 +71,7 @@ opt_screen = (
 
 def configuration_debug():
     for key in c:
-        print key, '=', c.get(key).get()
+        print(key, '=', c.get(key).get())
 
 def configuration_save():
     for key in c:
@@ -105,9 +105,9 @@ def configuration_save():
 
     try:
         pymt_config.write()
-        tkMessageBox.showinfo('PyMT', 'Configuration saved !')
-    except Exception, e:
-        tkMessageBox.showwarning('PyMT', 'Unable to save default configuration : ' + str(e))
+        tkinter.messagebox.showinfo('PyMT', 'Configuration saved !')
+    except Exception as e:
+        tkinter.messagebox.showwarning('PyMT', 'Unable to save default configuration : ' + str(e))
 
 
 # ================================================================
@@ -225,11 +225,11 @@ e_input_option.grid(row=3, column=1)
 def _input_add(*largs):
     device_id = c_input_devicename.get()
     if device_id == '':
-        tkMessageBox.showerror('PyMT', 'No device name setted')
+        tkinter.messagebox.showerror('PyMT', 'No device name setted')
         return
     provider_name = c_input_provider.get()
     if provider_name == '':
-        tkMessageBox.showerror('PyMT', 'No provider selected')
+        tkinter.messagebox.showerror('PyMT', 'No provider selected')
         return
     options = c_input_option.get()
     t = '%s=%s,%s' % (str(device_id), str(provider_name), str(options))

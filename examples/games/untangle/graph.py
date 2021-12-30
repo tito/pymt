@@ -1,4 +1,4 @@
-from __future__ import with_statement
+
 from random import randint
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -94,4 +94,4 @@ class Graph:
 
 
 if __name__ == "__main__":
-	print "this is an implementation file only used by untabgle.py"
+	print("this is an implementation file only used by untabgle.py")

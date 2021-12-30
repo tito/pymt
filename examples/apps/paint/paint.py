@@ -147,14 +147,14 @@ class Canvas(MTWidget):
         self.touch_positions[touch.id] = (touch.x, touch.y)
 
     def on_touch_move(self, touch):
-        if self.touch_positions.has_key(touch.id):
+        if touch.id in self.touch_positions:
             ox,oy = self.touch_positions[touch.id]
             self.paint_queue.appendleft((self.color, (ox,oy,touch.x,touch.y)))
             self.do_paint_queue = True
             self.touch_positions[touch.id] = (touch.x, touch.y)
 
     def on_touch_up(self, touch):
-        if self.touch_positions.has_key(touch.id):
+        if touch.id in self.touch_positions:
             del self.touch_positions[touch.id]
 
 def update_brush(brush, size, *largs):

@@ -58,12 +58,12 @@ class MTWindowGlut(BaseWindow):
             self.__glut_window = None
         super(MTWindowGlut, self).close()
 
-    def on_keyboard(self, key, scancode=None, unicode=None):
+    def on_keyboard(self, key, scancode=None, str=None):
         self._glut_update_modifiers()
         if ord(key) == 27:
             stopTouchApp()
             return True
-        super(MTWindowGlut, self).on_keyboard(key, scancode, unicode)
+        super(MTWindowGlut, self).on_keyboard(key, scancode, str)
 
     def _set_size(self, size):
         if super(MTWindowGlut, self)._set_size(size):

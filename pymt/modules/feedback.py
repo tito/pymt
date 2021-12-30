@@ -62,7 +62,7 @@ class GlobalFeedbackTouch(MTWidget):
         set_brush(particle_fn, size=5)
 
         # show all moves
-        for idx in xrange(0, len(self.moves)):
+        for idx in range(0, len(self.moves)):
 
             # decrease timeout
             self.moves[idx][2] -= getFrameDt()
@@ -126,7 +126,7 @@ class GlobalFeedback(MTWidget):
 
     def draw(self):
         rings_to_delete = []
-        for i in xrange(0, len(self.rings)):
+        for i in range(0, len(self.rings)):
             ring = self.rings[i]
             ring.draw()
             ring.opacity -= getFrameDt() * 1.5

@@ -83,7 +83,7 @@ def stencilPop():
     glColorMask(0, 0, 0, 0)
 
     # replay all gl operation
-    for idx in xrange(__stencil_stack):
+    for idx in range(__stencil_stack):
         dl = __stencil_stack_dl[idx]
         view = __stencil_stack_view[idx]
         with gx_matrix_identity:

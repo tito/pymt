@@ -99,14 +99,8 @@ class Mesh(object):
                         # texture is a rectangle texture
                         # that's mean we need to adjust the range of texture
                         # coordinate from original 0-1 to 0-width/0-height
-                        group.vertices[0::8] = map(
-                            lambda x: x * group.material.texture.width,
-                            group.vertices[0::8]
-                        )
-                        group.vertices[1::8] = map(
-                            lambda x: x * group.material.texture.height,
-                            group.vertices[1::8]
-                        )
+                        group.vertices[0::8] = [x * group.material.texture.width for x in group.vertices[0::8]]
+                        group.vertices[1::8] = [x * group.material.texture.height for x in group.vertices[1::8]]
                 group.array = (GLfloat * len(group.vertices))(*group.vertices)
                 group.triangles = len(group.vertices) / 8
             glInterleavedArrays(GL_T2F_N3F_V3F, 0, group.array)
@@ -170,11 +164,11 @@ class OBJ:
                 continue
 
             if values[0] == 'v':
-                vertices.append(map(float, values[1:4]))
+                vertices.append(list(map(float, values[1:4])))
             elif values[0] == 'vn':
-                normals.append(map(float, values[1:4]))
+                normals.append(list(map(float, values[1:4])))
             elif values[0] == 'vt':
-                tex_coords.append(map(float, values[1:3]))
+                tex_coords.append(list(map(float, values[1:3])))
             elif values[0] == 'mtllib':
                 self.load_material_library(values[1])
             elif values[0] in ('usemtl', 'usemat'):
@@ -204,7 +198,7 @@ class OBJ:
                 vlast = None
                 for i, v in enumerate(values[1:]):
                     v_index, t_index, n_index = \
-                        (map(int, [j or 0 for j in v.split('/')]) + [0, 0])[:3]
+                        (list(map(int, [j or 0 for j in v.split('/')])) + [0, 0])[:3]
                     if v_index < 0:
                         v_index += len(vertices) - 1
                     if t_index < 0:
@@ -248,13 +242,13 @@ class OBJ:
 
             try:
                 if values[0] == 'Kd':
-                    material.diffuse = map(float, values[1:])
+                    material.diffuse = list(map(float, values[1:]))
                 elif values[0] == 'Ka':
-                    material.ambient = map(float, values[1:])
+                    material.ambient = list(map(float, values[1:]))
                 elif values[0] == 'Ks':
-                    material.specular = map(float, values[1:])
+                    material.specular = list(map(float, values[1:]))
                 elif values[0] == 'Ke':
-                    material.emission = map(float, values[1:])
+                    material.emission = list(map(float, values[1:]))
                 elif values[0] == 'Ns':
                     material.shininess = float(values[1])
                 elif values[0] == 'd':

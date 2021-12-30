@@ -342,8 +342,8 @@ class BaseWindow(EventDispatcher):
                 r_x = int(r_x) + 1
             if int(r_y) != r_y:
                 r_y = int(r_y) + 1
-            for x in xrange(int(r_x)):
-                for y in xrange(int(r_y)):
+            for x in range(int(r_x)):
+                for y in range(int(r_y)):
                     wallpaper.x = x * wallpaper.width
                     wallpaper.y = y * wallpaper.height
                     wallpaper.draw()
@@ -523,7 +523,7 @@ class BaseWindow(EventDispatcher):
         '''Event called when mouse is moving, with buttons pressed'''
         pass
 
-    def on_keyboard(self, key, scancode=None, unicode=None):
+    def on_keyboard(self, key, scancode=None, str=None):
         '''Event called when keyboard is in action
 
         .. warning::
@@ -531,11 +531,11 @@ class BaseWindow(EventDispatcher):
         '''
         pass
 
-    def on_key_down(self, key, scancode=None, unicode=None):
+    def on_key_down(self, key, scancode=None, str=None):
         '''Event called when a key is down (same arguments as on_keyboard)'''
         pass
 
-    def on_key_up(self, key, scancode=None, unicode=None):
+    def on_key_up(self, key, scancode=None, str=None):
         '''Event called when a key is up (same arguments as on_keyboard)'''
         pass
 
@@ -580,7 +580,7 @@ MTWindow = None
 if not 'PYMT_DOC' in os.environ:
     if 'pygame' in pymt.pymt_options['window']:
         try:
-            import win_pygame
+            from . import win_pygame
             MTWindow = win_pygame.MTWindowPygame
             pymt_logger.info('Window: use Pygame as window provider.')
         except ImportError:
@@ -588,7 +588,7 @@ if not 'PYMT_DOC' in os.environ:
 
     if MTWindow is None and 'glut' in pymt.pymt_options['window']:
         try:
-            import win_glut
+            from . import win_glut
             MTWindow = win_glut.MTWindowGlut
             pymt_logger.info('Window: use GLUT as window provider.')
         except ImportError:

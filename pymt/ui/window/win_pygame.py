@@ -125,12 +125,12 @@ class MTWindowPygame(BaseWindow):
     def close(self):
         pygame.display.quit()
 
-    def on_keyboard(self, key, scancode=None, unicode=None):
+    def on_keyboard(self, key, scancode=None, str=None):
         if key == 27:
             stopTouchApp()
             self.close()  #not sure what to do here
             return True
-        super(MTWindowPygame, self).on_keyboard(key, scancode, unicode)
+        super(MTWindowPygame, self).on_keyboard(key, scancode, str)
 
     def flip(self):
         pygame.display.flip()
@@ -199,10 +199,10 @@ class MTWindowPygame(BaseWindow):
 
                 # don't dispatch more key if down event is accepted
                 if self.dispatch_event('on_key_down', event.key,
-                                       event.scancode, event.unicode):
+                                       event.scancode, event.str):
                     continue
                 self.dispatch_event('on_keyboard', event.key,
-                                    event.scancode, event.unicode)
+                                    event.scancode, event.str)
 
             # video resize
             elif event.type == pygame.VIDEORESIZE:
@@ -227,7 +227,7 @@ class MTWindowPygame(BaseWindow):
                 self._mainloop()
                 if not pygame.display.get_active():
                     pygame.time.wait(100)
-            except BaseException, inst:
+            except BaseException as inst:
                 # use exception manager first
                 r = pymt_exception_manager.handle_exception(inst)
                 if r == ExceptionManager.RAISE:

@@ -76,4 +76,4 @@ from pymt.core.spelling import *
 from pymt.core.clipboard import *
 
 # only after core loading, load extensions
-from text.markup import *
+from .text.markup import *

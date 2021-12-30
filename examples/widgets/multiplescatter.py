@@ -22,8 +22,8 @@ s2 = MTScatterWidget(style={'bg-color': (1, 1, 0, 1)})
 s1.add_widget(s2)
 root.add_widget(s1)
 w.add_widget(root)
-print ''
-print 'Blue line represent the (0, 0) -> scatter.pos (invalid in this case)'
-print 'Green line represent the (0, 0) -> scatter position for window (valid)'
-print ''
+print('')
+print('Blue line represent the (0, 0) -> scatter.pos (invalid in this case)')
+print('Green line represent the (0, 0) -> scatter position for window (valid)')
+print('')
 runTouchApp()

@@ -44,7 +44,7 @@ copyright = '2009, pymt-dev'
 import os
 os.environ['PYMT_DOC_INCLUDE'] = '1'
 import pymt
-print pymt.__file__
+print(pymt.__file__)
 
 version = pymt.__version__
 release = pymt.__version__

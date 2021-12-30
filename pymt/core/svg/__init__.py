@@ -95,7 +95,7 @@ class Svg(BaseObject):
         self.anchor_y   = 0
 
         #this actually loads the svg
-        if isinstance(arg, basestring):
+        if isinstance(arg, str):
             self.filename   = arg
         else:
             raise Exception('Unable to load image with type %s' % str(type(arg)))

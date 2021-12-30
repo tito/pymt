@@ -1,4 +1,4 @@
-from __future__ import with_statement
+
 from pymt import *
 from OpenGL.GL import *
 import random
@@ -29,9 +29,9 @@ class ParticleObject:
         self.random_color()
 
     def random_color(self):
-        r_min, r_max = map(lambda x: x/255., self.settings.color_r)
-        g_min, g_max = map(lambda x: x/255., self.settings.color_g)
-        b_min, b_max = map(lambda x: x/255., self.settings.color_b)
+        r_min, r_max = [x/255. for x in self.settings.color_r]
+        g_min, g_max = [x/255. for x in self.settings.color_g]
+        b_min, b_max = [x/255. for x in self.settings.color_b]
         self.color      = [random.uniform(r_min, r_max),
                            random.uniform(g_min, g_max),
                            random.uniform(b_min, b_max),

@@ -280,7 +280,7 @@ class World(MTWidget):
         # enemies + bariers
         for e in reversed(self.enemies):
             e.draw()
-        for bid in reversed(self.bariers.keys()):
+        for bid in reversed(list(self.bariers.keys())):
             self.bariers[bid].draw()
 
         # ui score

@@ -34,7 +34,7 @@ class DataViewer(MTWidget):
             ends_at = self.data['touch_event_log'][touchID][-1]['t']
 
             if not (starts_at > time_frame[0] and ends_at < time_frame[1]):
-                print touchID, starts_at, ends_at, time_frame
+                print(touchID, starts_at, ends_at, time_frame)
                 continue
             for e in self.data['touch_event_log'][touchID]:
                 t = (e['t'] - first_t)/(last_t -first_t)

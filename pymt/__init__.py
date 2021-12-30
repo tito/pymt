@@ -230,7 +230,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             try:
                 with open(pymt_config_fn, 'w') as fd:
                     pymt_config.write(fd)
-            except Exception, e:
+            except Exception as e:
                 pymt_logger.exception('Core: error while saving default'
                                       'configuration file')
             pymt_logger.info('Core: PyMT configuration saved.')
@@ -242,7 +242,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             shadow_window = MTWindow()
             pymt_configure()
 
-    except getopt.GetoptError, err:
+    except getopt.GetoptError as err:
         pymt_logger.error('Core: %s' % str(err))
         pymt_usage()
         sys.exit(2)

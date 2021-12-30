@@ -66,8 +66,8 @@ class MTGridLayout(MTAbstractLayout):
         elif current_rows is None:
             current_rows = 1 + (len(self.children) / current_cols)
 
-        cols = dict(zip(xrange(current_cols), [0] * current_cols))
-        rows = dict(zip(xrange(current_rows), [0] * current_rows))
+        cols = dict(list(zip(list(range(current_cols)), [0] * current_cols)))
+        rows = dict(list(zip(list(range(current_rows)), [0] * current_rows)))
 
         # calculate maximum size for each columns and rows
         i = 0
@@ -125,9 +125,9 @@ class MTGridLayout(MTAbstractLayout):
         # reposition every child
         i = 0
         y = _y + spacing
-        for row_height in self.row_heights.itervalues():
+        for row_height in self.row_heights.values():
             x = _x + spacing
-            for col_width in self.col_widths.itervalues():
+            for col_width in self.col_widths.values():
                 if i >= len(self.children):
                     break
                 c = self.children[i]

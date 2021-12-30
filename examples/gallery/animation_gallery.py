@@ -16,7 +16,7 @@ class MTGraph(MTKineticItem):
         self.func = getattr(AnimationAlpha, self.funcname)
         # get all points for curve with the selected alpha function
         self.points = []
-        for x in xrange(0, self.precision):
+        for x in range(0, self.precision):
             progress = x / float(self.precision)
             self.points += [progress, self.func(progress)]
         # add the last one

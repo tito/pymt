@@ -338,11 +338,11 @@ class MTCoverFlow(MTWidget):
             return
 
         # draw left side
-        for i in xrange(0, self._selection):
+        for i in range(0, self._selection):
             self._render_cover(i)
 
         # draw right side in reverse order
-        for i in xrange(len(self.children) - 1, self._selection, - 1):
+        for i in range(len(self.children) - 1, self._selection, - 1):
             self._render_cover(i)
 
         # draw cover

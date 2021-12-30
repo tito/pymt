@@ -37,7 +37,7 @@ def _screenshot():
     data = glReadPixels(0, 0, win.width, win.height, GL_RGB, GL_UNSIGNED_BYTE)
     surface = pygame.image.fromstring(str(buffer(data)), win.size, 'RGB', True)
     filename = None
-    for i in xrange(9999):
+    for i in range(9999):
         path = os.path.join(os.getcwd(), 'screenshot%04d.jpg' % i)
         if not os.path.exists(path):
             filename = path
@@ -165,9 +165,9 @@ def _on_draw():
 
         # draw lines
         set_color(1, 1, 1)
-        for x in xrange(0, win.width, stepx):
+        for x in range(0, win.width, stepx):
             drawLine((x, 0, x, win.height))
-        for y in xrange(0, win.height, stepy):
+        for y in range(0, win.height, stepy):
             drawLine((0, y, win.width, y))
 
         # draw circles
@@ -198,7 +198,7 @@ def _on_draw():
         sizeh = stepy * step
         w2 = win.width / 2.
         h2 = win.height / 2.
-        for _x in xrange(step):
+        for _x in range(step):
             x = w2 - sizew / 2. + _x * stepx
             drawLabel(chr(65+_x), pos=(x + stepx / 2., h2 + 190))
             c = _x / float(step)
@@ -311,7 +311,7 @@ class SceneGraphNode(MTBoxLayout):
     def print_props(self, *args):
         for prop in self.widget.__dict__:
             if not prop.startswith("_"):
-                print prop, ":", getattr(self.widget, prop)
+                print(prop, ":", getattr(self.widget, prop))
 
 
 
@@ -333,7 +333,7 @@ def toggle_scene_graph():
 
 
 
-def _on_keyboard_handler(key, scancode, unicode):
+def _on_keyboard_handler(key, scancode, str):
     if key is None:
         return
     win = getWindow()

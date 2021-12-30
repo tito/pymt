@@ -2,7 +2,7 @@
 test usage of MTTextInput widget
 '''
 
-from init import test, import_pymt_window
+from .init import test, import_pymt_window
 
 def instance():
     import_pymt_window()

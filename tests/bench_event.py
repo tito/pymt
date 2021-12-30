@@ -76,6 +76,6 @@ frames = 1000
 
 for x in ('MTWidget', 'MTLabel', 'MTScatterWidget',):
     t = timeit.Timer(stmt_on_update, stmt_setup % x).timeit(number=frames)
-    print '%s: on_update : Time=%.3f, FPS=%.3f' % (x, t, frames / t)
+    print('%s: on_update : Time=%.3f, FPS=%.3f' % (x, t, frames / t))
     t = timeit.Timer(stmt_on_touch_all, stmt_setup % x).timeit(number=frames)
-    print '%s: on_touch_*: Time=%.3f, FPS=%.3f' % (x, t, frames / t)
+    print('%s: on_touch_*: Time=%.3f, FPS=%.3f' % (x, t, frames / t))

@@ -26,9 +26,9 @@ import os
 import pymt
 import threading
 import time
-import StringIO
+import io
 import random
-from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
+from http.server import HTTPServer, BaseHTTPRequestHandler
 from OpenGL.GL import glReadBuffer, glReadPixels, GL_RGB, GL_UNSIGNED_BYTE, GL_FRONT
 from pymt.utils import curry
 
@@ -75,7 +75,7 @@ class MjpegHttpRequestHandler(BaseHTTPRequestHandler):
         if size == '':
             size = None
         else:
-            size = map(int, size.split('x'))
+            size = list(map(int, size.split('x')))
 
         pymt.pymt_logger.info(
             'MjpegServer: Client %s:%d connected' % self.client_address)
@@ -105,7 +105,7 @@ class MjpegHttpRequestHandler(BaseHTTPRequestHandler):
             sem_next.release()
             # SYNC END
 
-            buf = StringIO.StringIO()
+            buf = io.StringIO()
             if size:
                 im = im.resize(size)
             im = im.transpose(Image.FLIP_TOP_BOTTOM)

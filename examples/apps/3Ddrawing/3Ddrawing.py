@@ -1,4 +1,4 @@
-from __future__ import with_statement
+
 
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
@@ -157,7 +157,7 @@ class ModelPainter(MTWidget):
                     self.draw_picking()
                 self.has_moved = False
             pick = glReadPixels(int(x), int(y), 1, 1, GL_RGB, GL_UNSIGNED_BYTE)
-            pick = map(ord, pick)
+            pick = list(map(ord, pick))
         return pick[0]*4, 1024 - pick[1]*4
 
     def paint(self, x, y):
@@ -186,7 +186,7 @@ class ModelPainter(MTWidget):
         if len(self.touch_position) == 1:
             self.touch1 = touch.id
         elif len(self.touch_position) == 2:
-            self.touch1, self.touch2 = self.touch_position.keys()
+            self.touch1, self.touch2 = list(self.touch_position.keys())
             v1 = Vector(*self.touch_position[self.touch1])
             v2 = Vector(*self.touch_position[self.touch2])
             self.scale_dist = v1.distance(v2)
@@ -209,7 +209,7 @@ class ModelPainter(MTWidget):
         #if we got here, its a touch to turn/scale the model
         dx, dy, angle = 0,0,0
         #two touches:  scale and rotate around Z
-        if  self.touch_position.has_key(self.touch1) and self.touch_position.has_key(self.touch2):
+        if  self.touch1 in self.touch_position and self.touch2 in self.touch_position:
             v1 = Vector(*self.touch_position[self.touch1])
             v2 = Vector(*self.touch_position[self.touch2])
 

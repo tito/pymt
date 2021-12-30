@@ -20,11 +20,11 @@ def boundary(value, minvalue, maxvalue):
 
 def intersection(set1, set2):
     '''Return intersection between 2 list'''
-    return filter(lambda s:s in set2, set1)
+    return [s for s in set1 if s in set2]
 
 def difference(set1, set2):
     '''Return difference between 2 list'''
-    return filter(lambda s:s not in set2, set1)
+    return [s for s in set1 if s not in set2]
 
 def curry(fn, *cargs, **ckwargs):
     '''Change the function signature to pass new variable.'''
@@ -105,7 +105,7 @@ def get_random_color(alpha=1.0):
 
 def get_color_for_pyglet(c):
     '''Transform from pymt color to pyglet color'''
-    return map(lambda x: int(255 * x), c)
+    return [int(255 * x) for x in c]
 
 def is_color_transparent(c):
     '''Return true if alpha channel is 0'''
@@ -137,8 +137,8 @@ def deprecated(func):
                 'Called from %s line %d'
                 ' by %s().') % (
                 func.__name__,
-                func.func_code.co_filename,
-                func.func_code.co_firstlineno + 1,
+                func.__code__.co_filename,
+                func.__code__.co_firstlineno + 1,
                 file, line, caller)
             pymt_logger.warn(warning)
             if func.__doc__:
@@ -165,7 +165,7 @@ class SafeList(list):
 
 def serialize_numpy(obj):
     import numpy
-    from StringIO import StringIO
+    from io import StringIO
     from base64 import b64encode
     io = StringIO()
     numpy.save(io, obj)
@@ -174,7 +174,7 @@ def serialize_numpy(obj):
 
 def deserialize_numpy(s):
     import numpy
-    from StringIO import StringIO
+    from io import StringIO
     from base64 import b64decode
     io = StringIO(b64decode(s))
     return numpy.load(io)

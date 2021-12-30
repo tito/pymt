@@ -2,7 +2,7 @@
 Widgets
 '''
 
-from init import test, import_pymt_no_window
+from .init import test, import_pymt_no_window
 
 def unittest_defaults():
     import_pymt_no_window()

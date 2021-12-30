@@ -120,7 +120,7 @@ def paintLine(points, numsteps=None, **kwargs):
                 steps = max(1, int(dist) / 4)
 
             # construct pointList
-            for i in xrange(steps):
+            for i in range(steps):
                 outputList.extend([x1 + dx * (float(i) / steps),
                                    y1 + dy * (float(i) / steps)])
 

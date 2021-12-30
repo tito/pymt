@@ -4,7 +4,7 @@ Config: base for PyMT configuration file
 
 __all__ = ('pymt_config', )
 
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 import sys
 import os
 from pymt.logger import pymt_logger
@@ -52,7 +52,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     if os.path.exists(pymt_config_fn):
         try:
             pymt_config.read(pymt_config_fn)
-        except Exception, e:
+        except Exception as e:
             pymt_logger.exception('Core: error while reading local'
                                   'configuration')
 
@@ -193,5 +193,5 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     if not os.path.exists(pymt_config_fn) or need_save:
         try:
             pymt_config.write()
-        except Exception, e:
+        except Exception as e:
             pymt_logger.exception('Core: error while saving default configuration file')

@@ -467,7 +467,7 @@ class Wang(MTWidget):
 
         # middle line
         set_color(1, 1, 1)
-        for x in xrange(0, w.height, int(s * 2)):
+        for x in range(0, w.height, int(s * 2)):
             drawLine([w2, x, w2, x + s], width=5)
 
         # top / bottom line

@@ -36,7 +36,7 @@ class MTWidgetMetaclass(type):
         # auto registration in factory
         MTWidgetFactory.register(name, mcs)
 
-class MTWidget(EventDispatcher):
+class MTWidget(EventDispatcher, metaclass=MTWidgetMetaclass):
     '''Global base for any multitouch widget.
     Implement event for mouse, object, touch and animation.
 
@@ -80,8 +80,6 @@ class MTWidget(EventDispatcher):
         `on_parent_resize` (float width, float height)
             Fired when parent widget is resized
     '''
-
-    __metaclass__ = MTWidgetMetaclass
 
     __slots__ = ('children', 'style', 'draw_children',
                  '_cls',
@@ -480,5 +478,5 @@ try:
         MTWidget.on_update = types.MethodType(accelerate.widget_on_update, None, MTWidget)
         MTWidget.on_draw = types.MethodType(accelerate.widget_on_draw, None, MTWidget)
         MTWidget.collide_point = types.MethodType(accelerate.widget_collide_point, None, MTWidget)
-except ImportError, e:
+except ImportError as e:
     pymt_logger.warning('Widget: Unable to use accelerate module <%s>' % e)

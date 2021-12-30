@@ -19,13 +19,13 @@ for root, dirs, files in os.walk('.'):
             content = fd.read()
         lines = content.split('\r\n')
         changes = 0
-        for idx in xrange(len(lines)):
+        for idx in range(len(lines)):
             line = endspacestab.split(lines[idx], maxsplit=1)[0]
             if lines[idx] != line:
                 changes += 1
                 lines[idx] = line
         modified = '\r\n'.join(lines)
         if changes:
-            print filename, ',', changes, 'removals'
+            print(filename, ',', changes, 'removals')
             with open(filename, 'w') as fd:
                 fd.write(modified)

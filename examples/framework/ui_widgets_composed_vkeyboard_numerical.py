@@ -7,19 +7,19 @@ class NumericKeyboardLayout(KeyboardLayout):
     DESCRIPTION     = ''
     SIZE            = (4, 4)
     NORMAL_1 = [
-        ('7', '7', None, 1),    ('8', '8', None, 1),    (u'9', u'9', None, 1),
-        (u'\u2a2f', None, 'escape', 1),
+        ('7', '7', None, 1),    ('8', '8', None, 1),    ('9', '9', None, 1),
+        ('\u2a2f', None, 'escape', 1),
     ]
     NORMAL_2 = [
-        ('4', '4', None, 1),    ('5', '5', None, 1),    (u'6', u'6', None, 1),
+        ('4', '4', None, 1),    ('5', '5', None, 1),    ('6', '6', None, 1),
     ]
     NORMAL_3 = [
-        ('1', '1', None, 1),    ('2', '2', None, 1),    (u'3', u'3', None, 1),
-        (u'\u232b', None, 'backspace', 1),
+        ('1', '1', None, 1),    ('2', '2', None, 1),    ('3', '3', None, 1),
+        ('\u232b', None, 'backspace', 1),
     ]
     NORMAL_4 = [
         ('0', '0', None, 1),    (',', ',', None, 2),
-        (u'\u23ce', None, 'enter', 1)
+        ('\u23ce', None, 'enter', 1)
     ]
 
 # create a keyboard, with our custom layout

@@ -60,7 +60,7 @@ class TouchMetaclass(type):
         return super(TouchMetaclass, mcs).__new__(mcs, name, bases, attrs)
 
 
-class Touch(object):
+class Touch(object, metaclass=TouchMetaclass):
     '''Abstract class to represent a touch, and support TUIO 1.0 definition.
 
     :Parameters:
@@ -69,8 +69,6 @@ class Touch(object):
         `args` : list
             list of parameters, passed to depack() function
     '''
-
-    __metaclass__ = TouchMetaclass
     __uniq_id = 0
     __attrs__ = \
         ('device', 'attr',
@@ -85,7 +83,7 @@ class Touch(object):
 
     def __init__(self, device, id, args):
         if self.__class__ == Touch:
-            raise NotImplementedError, 'class Touch is abstract'
+            raise NotImplementedError('class Touch is abstract')
 
         # Uniq ID
         Touch.__uniq_id += 1
@@ -226,7 +224,7 @@ class Touch(object):
     def pop(self):
         '''Pop attributes values from the stack'''
         attrs, values = self.attr.pop()
-        for i in xrange(len(attrs)):
+        for i in range(len(attrs)):
             setattr(self, attrs[i], values[i])
 
     def apply_transform_2d(self, transform):

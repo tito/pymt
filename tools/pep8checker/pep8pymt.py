@@ -15,12 +15,12 @@ class PymtChecker(pep8.Checker):
                 self, line_number, offset, text, check)
 
         # html generation
-        print '<tr><td>%d</td><td>%s</td></tr>' % (line_number, text)
+        print('<tr><td>%d</td><td>%s</td></tr>' % (line_number, text))
 
 if __name__ == '__main__':
 
     def usage():
-        print 'Usage: python pep8pymt.py [-html] <directory_of_pymt>'
+        print('Usage: python pep8pymt.py [-html] <directory_of_pymt>')
         sys.exit(1)
 
     if len(sys.argv) < 2:
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     pep8.process_options([''])
 
     if htmlmode:
-        print '''<html>
+        print('''<html>
         <head>
             <title>PyMT Pep8 checker</title>
             <style type="text/css">
@@ -109,7 +109,7 @@ if __name__ == '__main__':
         <h1>PyMT Pep8 checker</h1>
         <div class="page-content">
         <p>Generated on %s</p>
-        <table>''' % (time.strftime('%c'))
+        <table>''' % (time.strftime('%c')))
 
     for dirpath, dirnames, filenames in os.walk(basedir):
         # exclude libs
@@ -121,9 +121,9 @@ if __name__ == '__main__':
             complete_filename = os.path.join(dirpath, filename)
 
             if htmlmode:
-                print '<tr><th colspan="2">%s</td></tr>' % complete_filename
+                print('<tr><th colspan="2">%s</td></tr>' % complete_filename)
             checker = PymtChecker(complete_filename)
             checker.check_all()
 
     if htmlmode:
-        print '</div></div></table></body></html>'
+        print('</div></div></table></body></html>')

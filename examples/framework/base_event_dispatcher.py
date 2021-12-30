@@ -12,7 +12,7 @@ from pymt import *
 # create a class to catch all events
 class TouchEventListener:
     def dispatch_event(self, event_name, *arguments):
-        print 'Event dispatched', event_name, 'with', arguments
+        print('Event dispatched', event_name, 'with', arguments)
 
 # append the class to event listeners
 pymt_event_listeners.append(TouchEventListener())

@@ -72,7 +72,7 @@ if have_cython:
     elif sys.platform == 'darwin':
         # On OSX, gl.h is not in GL/gl.h but OpenGL/gl.h. Cython has no
         # such thing as #ifdef, hence we just copy the file here.
-        source = '/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h'
+        source = '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers/gl.h'
         incl = 'build/include/'
         dest = os.path.join(incl, 'GL/')
         try:

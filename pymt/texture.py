@@ -11,14 +11,16 @@ from pymt import pymt_logger
 import OpenGL
 from OpenGL.GL import GL_RGBA, GL_UNSIGNED_BYTE, GL_TEXTURE_MIN_FILTER, \
         GL_TEXTURE_MAG_FILTER, GL_TEXTURE_WRAP_T, GL_TEXTURE_WRAP_S, \
-        GL_TEXTURE_2D, GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_RECTANGLE_ARB, \
+        GL_TEXTURE_2D,\
         GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_GENERATE_MIPMAP, \
         GL_TRUE, GL_LINEAR, GL_UNPACK_ALIGNMENT, GL_BGR, GL_BGRA, GL_RGB, \
         glEnable, glDisable, glBindTexture, glTexParameteri, glTexImage2D, \
         glTexSubImage2D, glFlush, glGenTextures, glDeleteTextures, \
         GLubyte, glPixelStorei, GL_LUMINANCE
 from OpenGL.GL.NV.texture_rectangle import glInitTextureRectangleNV
+from OpenGL.GL.NV.texture_rectangle import GL_TEXTURE_RECTANGLE_NV
 from OpenGL.GL.ARB.texture_rectangle import glInitTextureRectangleARB
+from OpenGL.GL.ARB.texture_rectangle import GL_TEXTURE_RECTANGLE_ARB
 from OpenGL.extensions import hasGLExtension
 
 # for a specific bug in 3.0.0, about deletion of framebuffer.

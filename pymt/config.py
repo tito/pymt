@@ -134,7 +134,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             # add log_file format
             pymt_config.setdefault('pymt', 'log_enable', '1')
             pymt_config.setdefault('pymt', 'log_dir', 'logs')
-            pymt_config.setdefault('pymt', 'log_name', 'pymt_%y-%m-%d_%_.txt')
+            pymt_config.setdefault('pymt', 'log_name', 'pymt_%%y-%%m-%%d_%%_.txt')
 
         elif pymt_config_version == 7:
             # add option to turn off pyOpenGL Error Checking
@@ -183,7 +183,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         pymt_config_version += 1
 
 # Said to pymt_config that we've upgrade to latest version.
-    pymt_config.set('pymt', 'config_version', PYMT_CONFIG_VERSION)
+    pymt_config.set('pymt', 'config_version', str(PYMT_CONFIG_VERSION))
 
 # Now, activate log file
     if pymt_config.getint('pymt', 'log_enable'):

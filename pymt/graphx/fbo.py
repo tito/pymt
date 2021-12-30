@@ -12,8 +12,8 @@ import re
 import OpenGL
 import pymt
 from OpenGL.GL import GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, \
-        GL_VIEWPORT_BIT, GL_TEXTURE_2D, GL_COLOR_ATTACHMENT0_EXT, \
-        GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, GL_DEPTH_ATTACHMENT_EXT, \
+        GL_VIEWPORT_BIT, GL_TEXTURE_2D, \
+        GL_DEPTH_COMPONENT, \
         GL_BACK, GL_RGBA, GL_UNSIGNED_BYTE, GL_STENCIL_TEST, \
         GL_STENCIL_BUFFER_BIT, \
         glClear, glClearColor, glPushAttrib, glPopAttrib, \
@@ -31,7 +31,7 @@ from OpenGL.GL.EXT.framebuffer_object import GL_FRAMEBUFFER_EXT, \
         glBindFramebufferEXT, glBindRenderbufferEXT, \
         glDeleteRenderbuffersEXT, glDeleteFramebuffersEXT, \
         glCheckFramebufferStatusEXT, glFramebufferRenderbufferEXT, \
-        glRenderbufferStorageEXT, glFramebufferTexture2DEXT
+        glRenderbufferStorageEXT, glFramebufferTexture2DEXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT
 from pymt.graphx.colors import set_color
 from pymt.graphx.draw import drawTexturedRectangle, set_texture, get_texture_id
 

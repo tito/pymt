@@ -10,7 +10,7 @@ based on the nicodemus version. (thanks to him !)
 '''
 
 import weakref
-import new
+from types import MethodType as instancemethod
 
 class WeakMethod(object):
     def __init__(self, method):
@@ -39,7 +39,7 @@ class WeakMethod(object):
             return None
         if self._obj is not None:
             # we have an instance: return a bound method
-            return new.instancemethod(self._func, self._obj(), self._class)
+            return instancemethod(self._func, self._obj(), self._class)
         else:
             # we don't have an instance: return just the function
             return self._func

@@ -13,8 +13,10 @@ __all__ = (
 import pymt
 from math import sqrt
 from OpenGL.GL import GL_POINTS, GL_TEXTURE_2D, GL_SRC_ALPHA, \
-        GL_ONE_MINUS_SRC_ALPHA, GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, \
+        GL_ONE_MINUS_SRC_ALPHA, \
         GL_TRUE, glPointSize, glVertex2f, glBindTexture, glTexEnvi
+from OpenGL.GL.ARB.point_sprite import GL_POINT_SPRITE_ARB
+from OpenGL.GL.ARB.point_sprite import GL_COORD_REPLACE_ARB
 from pymt.graphx.statement import gx_enable, gx_begin, DO, GlBlending
 
 __brushs_cache   = dict()

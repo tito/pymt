@@ -35,10 +35,11 @@ class SvgBase(object):
 
 class SvgLoader(object):
     __slots__ = ('loaders')
-    loaders = []
 
     @staticmethod
     def register(subcls):
+        if not subcls.loaders:
+            subcls.loaders = []
         SvgLoader.loaders.append(subcls)
 
     @staticmethod

@@ -84,10 +84,11 @@ class ImageLoaderBase(object):
 
 class ImageLoader(object):
     __slots__ = ('loaders')
-    loaders = []
 
     @staticmethod
     def register(defcls):
+        if not subcls.loaders:
+            subcls.loaders = []
         ImageLoader.loaders.append(defcls)
 
     @staticmethod

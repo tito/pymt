@@ -134,11 +134,11 @@ else:
                                                   self.uid, [x, y, t.size()])
                     dispatch_fn('down', self.touches[t.id] )
 
-                if t.event_type == 'move' and self.touches.has_key(t.id):
+                if t.event_type == 'move' and t.id in self.touches:
                     self.touches[t.id].move([x, y, t.size()])
                     dispatch_fn('move', self.touches[t.id] )
 
-                if t.event_type == 'up'  and self.touches.has_key(t.id):
+                if t.event_type == 'up'  and t.id in self.touches:
                     self.touches[t.id].move([x, y, t.size()])
                     dispatch_fn('up', self.touches[t.id] )
                     del self.touches[t.id]
@@ -178,7 +178,7 @@ else:
                                             wParam,
                                             pointer(touches),
                                             sizeof(TOUCHINPUT))
-            for i in xrange(wParam):
+            for i in range(wParam):
                 self.touch_events.appendleft(touches[i])
             return True
 

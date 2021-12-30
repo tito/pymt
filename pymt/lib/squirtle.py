@@ -26,10 +26,10 @@ import re
 import math
 try:
     # get the faster one
-    from cStringIO import StringIO
+    from io import StringIO
 except ImportError:
     # fallback to the default one
-    from StringIO import StringIO
+    from io import StringIO
 from pymt.logger import pymt_logger
 
 BEZIER_POINTS = 10
@@ -234,7 +234,7 @@ def parse_color(c, default=None):
         else:
             pymt_logger.exception('Squirtle: incorrect length for color %s' % str(c))
         return [r, g, b, 255]
-    except Exception, ex:
+    except Exception as ex:
         pymt_logger.exception('Squirtle: exception parsing color %s' % str(c))
         return None
 
@@ -524,7 +524,7 @@ class SVG(object):
                 for loop in path:
                     self.n_lines += len(loop) - 1
                     loop_plus = []
-                    for i in xrange(len(loop) - 1):
+                    for i in range(len(loop) - 1):
                         loop_plus += [loop[i], loop[i+1]]
                     if isinstance(stroke, str):
                         g = self.gradients[stroke]
@@ -562,7 +562,7 @@ class SVG(object):
         for e in self.tree._root.getchildren():
             try:
                 self.parse_element(e)
-            except Exception, ex:
+            except Exception as ex:
                 pymt_logger.exception('Squirtle: exception while parsing element %s' % e)
                 raise
 
@@ -663,9 +663,9 @@ class SVG(object):
         elif e.tag.endswith('rect'):
             x = 0
             y = 0
-            if 'x' in e.keys():
+            if 'x' in list(e.keys()):
                 x = float(e.get('x'))
-            if 'y' in e.keys():
+            if 'y' in list(e.keys()):
                 y = float(e.get('y'))
             h = float(e.get('height'))
             w = float(e.get('width'))
@@ -701,7 +701,7 @@ class SVG(object):
             cy = float(e.get('cy'))
             r = float(e.get('r'))
             self.new_path()
-            for i in xrange(self.circle_points):
+            for i in range(self.circle_points):
                 theta = 2 * i * math.pi / self.circle_points
                 self.line_to(cx + r * math.cos(theta), cy + r * math.sin(theta))
             self.close_path()
@@ -712,7 +712,7 @@ class SVG(object):
             rx = float(e.get('rx'))
             ry = float(e.get('ry'))
             self.new_path()
-            for i in xrange(self.circle_points):
+            for i in range(self.circle_points):
                 theta = 2 * i * math.pi / self.circle_points
                 self.line_to(cx + rx * math.cos(theta), cy + ry * math.sin(theta))
             self.close_path()
@@ -724,7 +724,7 @@ class SVG(object):
         for c in e.getchildren():
             try:
                 self.parse_element(c)
-            except Exception, ex:
+            except Exception as ex:
                 pymt_logger.exception('Squirtle: exception while parsing element %s' % c)
                 raise
         self.transform = oldtransform
@@ -780,7 +780,7 @@ class SVG(object):
         if not sweep and delta > 0: delta -= math.pi * 2
         n_points = max(int(abs(self.circle_points * delta / (2 * math.pi))), 1)
 
-        for i in xrange(n_points + 1):
+        for i in range(n_points + 1):
             theta = psi + i * delta / n_points
             ct = math.cos(theta)
             st = math.sin(theta)
@@ -789,7 +789,7 @@ class SVG(object):
 
     def curve_to(self, x1, y1, x2, y2, x, y):
         if not self.bezier_coefficients:
-            for i in xrange(self.bezier_points+1):
+            for i in range(self.bezier_points+1):
                 t = float(i)/self.bezier_points
                 t0 = (1 - t) ** 3
                 t1 = 3 * t * (1 - t) ** 2

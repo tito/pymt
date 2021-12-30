@@ -117,18 +117,18 @@ def screen_speechbubble(w):
 @registerscreen('Kinetic List')
 def screen_kineticlist(w):
     m = MTKineticList(size=(210, 200))
-    for x in xrange(20):
+    for x in range(20):
         m.add_widget(MTKineticItem(label=str(x)))
     w.add_widget(m)
 
     m = MTKineticList(size=(210, 200), searchable=False, deletable=False)
-    for x in xrange(20):
+    for x in range(20):
         m.add_widget(MTKineticItem(label=str(x)))
     w.add_widget(m)
 
     m = MTKineticList(size=(230, 200), searchable=False, deletable=False,
                       title=None, w_limit=2)
-    for x in xrange(20):
+    for x in range(20):
         m.add_widget(MTKineticItem(label=str(x)))
     w.add_widget(m)
 
@@ -146,22 +146,22 @@ def screen_sidepanel(w):
     w = getWindow()
 
     panel = MTSidePanel(side='left', size=(500, 100))
-    for x in xrange(5):
+    for x in range(5):
         panel.add_widget(MTButton(label=str(x)))
     w.add_widget(panel)
 
     panel = MTSidePanel(side='right', size=(500, 100))
-    for x in xrange(5):
+    for x in range(5):
         panel.add_widget(MTButton(label=str(x)))
     w.add_widget(panel)
 
     panel = MTSidePanel(side='top', size=(500, 100))
-    for x in xrange(5):
+    for x in range(5):
         panel.add_widget(MTButton(label=str(x)))
     w.add_widget(panel)
 
     panel = MTSidePanel(side='bottom', size=(500, 100))
-    for x in xrange(5):
+    for x in range(5):
         panel.add_widget(MTButton(label=str(x)))
     w.add_widget(panel)
 

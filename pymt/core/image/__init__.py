@@ -84,10 +84,11 @@ class ImageLoaderBase(object):
 
 class ImageLoader(object):
     __slots__ = ('loaders')
-    loaders = []
 
     @staticmethod
     def register(defcls):
+        if not subcls.loaders:
+            subcls.loaders = []
         ImageLoader.loaders.append(defcls)
 
     @staticmethod
@@ -161,7 +162,7 @@ class Image(BaseObject):
             self.height     = self.texture.height
         elif isinstance(arg, ImageLoaderBase):
             self.image      = arg
-        elif isinstance(arg, basestring):
+        elif isinstance(arg, str):
             self.filename   = arg
         else:
             raise Exception('Unable to load image with type %s' % str(type(arg)))
@@ -277,7 +278,7 @@ class Image(BaseObject):
         size = 3 if data.mode in ('RGB', 'BGR') else 4
         index = y * data.width * size + x * size
         raw = data.data[index:index+size]
-        color = map(lambda c: ord(c) / 255.0, raw)
+        color = [ord(c) / 255.0 for c in raw]
 
         # conversion for BGR->RGB, BGR->RGBA format
         if data.mode in ('BGR', 'BGRA'):

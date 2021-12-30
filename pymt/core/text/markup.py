@@ -188,7 +188,7 @@ class MarkupLabel(MarkupLabelBase):
         else:
             # really render now.
             x, y = _x, _y
-            for i in xrange(len(lines)):
+            for i in range(len(lines)):
                 size, glyphs = lines[i]
                 for glyph in glyphs:
                     lw, lh = cache[glyph]

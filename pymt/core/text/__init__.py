@@ -341,8 +341,8 @@ class LabelBase(BaseObject):
         size = list(texture.size)
         texc = texture.tex_coords[:]
         if viewport_size:
-            vw, vh = map(float, viewport_size)
-            tw, th = map(float, size)
+            vw, vh = list(map(float, viewport_size))
+            tw, th = list(map(float, size))
             oh, ow = tch, tcw = texc[1:3]
             tcx, tcy = 0, 0
             if vw < tw:

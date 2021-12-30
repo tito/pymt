@@ -91,4 +91,4 @@ class MTPlugins(object):
 if __name__ == '__main__':
     a = MTPlugins()
     for plugin in a.list():
-        print a.get_infos(a.get_plugin(plugin))
+        print(a.get_infos(a.get_plugin(plugin)))

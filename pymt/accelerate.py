@@ -31,7 +31,7 @@ if pymt_options.get('use_accelerate'):
     try:
         import pymt.c_ext.c_accelerate as accelerate
         pymt_logger.info('Core: Using accelerate module')
-    except ImportError, e:
+    except ImportError as e:
         pymt_logger.warning('Core: Accelerate module not available <%s>' % e)
         pymt_logger.warning('Core: Execute "python setup.py build_ext '
                             '--inplace"')

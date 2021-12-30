@@ -9,7 +9,7 @@ wlist.add_widget(wlayout)
 
 # create a lot of button. you should be able to click on it, and
 # move the list in X axis
-for x in xrange(100):
+for x in range(100):
     wlayout.add_widget(MTToggleButton(label=str(x)))
 
 runTouchApp(wlist)

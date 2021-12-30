@@ -204,8 +204,8 @@ class FlowChart(MTScatterPlane):
         step = 200 * scale
         a = int(a[0] / step - 1) * step, int(a[1] / step - 1) * step
         b = int(b[0] / step + 1) * step, int(b[1] / step + 1) * step
-        for x in xrange(a[0], b[0], step):
-            for y in xrange(a[1], b[1], step):
+        for x in range(a[0], b[0], step):
+            for y in range(a[1], b[1], step):
                 set_color(.9, .9, .9)
                 drawLine((a[0], y, b[0], y), width=1)
                 drawLine((x, a[1], x, b[1]), width=1)

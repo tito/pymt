@@ -27,7 +27,7 @@ def parse_filename(filename):
 def parse_image(filename):
     '''Parse a filename to load an image ro svg'''
     filename = parse_filename(filename)
-    if filename in (None, 'None', u'None'):
+    if filename in (None, 'None', 'None'):
         return None
     if filename.endswith('.svg'):
         return Svg(filename)
@@ -46,13 +46,13 @@ def parse_color(text):
     value = [1, 1, 1, 1]
     if text.startswith('rgb'):
         res = re.match('rgba?\((.*)\)', text)
-        value = map(lambda x: int(x) / 255., re.split(',\ ?', res.groups()[0]))
+        value = [int(x) / 255. for x in re.split(',\ ?', res.groups()[0])]
         if len(value) == 3:
             value.append(1.)
     elif text.startswith('#'):
         res = text[1:]
         if len(res) == 3:
-            res = ''.join(map(lambda x: x+x, res))
+            res = ''.join([x+x for x in res])
         value = [int(x, 16) / 255. for x in re.split(
                  '([0-9a-f]{2})', res) if x != '']
         if len(value) == 3:
@@ -81,7 +81,7 @@ def parse_int2(text):
 
     '''
     texts = [x for x in text.split(' ') if x.strip() != '']
-    value = map(parse_int, texts)
+    value = list(map(parse_int, texts))
     if len(value) < 1:
         raise Exception('Invalid format int2 for %s' % text)
     elif len(value) == 1:
@@ -98,11 +98,11 @@ def parse_float4(text):
 
     '''
     texts = [x for x in text.split(' ') if x.strip() != '']
-    value = map(parse_float, texts)
+    value = list(map(parse_float, texts))
     if len(value) < 1:
         raise Exception('Invalid format float4 for %s' % text)
     elif len(value) == 1:
-        return map(lambda x: value[0], range(4))
+        return [value[0] for x in range(4)]
     elif len(value) == 2:
         return [value[0], value[1], value[0], value[1]]
     elif len(value) == 3:

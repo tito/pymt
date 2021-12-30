@@ -251,7 +251,7 @@ def pymt_usage():
         --size=640x480              size of window
 
     '''
-    print pymt_usage.__doc__ % (os.path.basename(sys.argv[0]))
+    print(pymt_usage.__doc__ % (os.path.basename(sys.argv[0])))
 
 
 def _run_mainloop():
@@ -261,7 +261,7 @@ def _run_mainloop():
             pymt_evloop.run()
             stopTouchApp()
             break
-        except BaseException, inst:
+        except BaseException as inst:
             # use exception manager first
             r = pymt_exception_manager.handle_exception(inst)
             if r == ExceptionManager.RAISE:
@@ -330,7 +330,7 @@ def runTouchApp(widget=None, slave=False):
     pymt_evloop = TouchEventLoop()
 
     # add postproc modules
-    for mod in pymt_postproc_modules.values():
+    for mod in list(pymt_postproc_modules.values()):
         pymt_evloop.add_postproc_module(mod)
 
     # add main widget

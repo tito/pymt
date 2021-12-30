@@ -25,6 +25,7 @@ __all__ = ('Gesture', 'GestureDatabase', 'GesturePoint', 'GestureStroke')
 
 import math
 from pymt.vector import Vector
+from functools import reduce
 
 class GestureDatabase(object):
     '''Class to handle a gesture database.'''
@@ -54,7 +55,7 @@ class GestureDatabase(object):
 
     def gesture_to_str(self, gesture):
         '''Convert a gesture into a unique string'''
-        from cStringIO import StringIO
+        from io import StringIO
         import pickle, base64, zlib
         io = StringIO()
         p = pickle.Pickler(io)
@@ -64,7 +65,7 @@ class GestureDatabase(object):
 
     def str_to_gesture(self, data):
         '''Convert a unique string to a gesture'''
-        from cStringIO import StringIO
+        from io import StringIO
         import pickle, base64, zlib
         io = StringIO(zlib.decompress(base64.b64decode(data)))
         p = pickle.Unpickler(io)
@@ -129,7 +130,7 @@ class GestureStroke:
         scale_stroke(scale_factor=float)
         Scales the stroke down by scale_factor
         '''
-        self.points = map(lambda pt: pt.scale(scale_factor), self.points)
+        self.points = [pt.scale(scale_factor) for pt in self.points]
 
     def points_distance(self, point1, point2):
         '''
@@ -150,7 +151,7 @@ class GestureStroke:
         gesture_length = 0.0
         if len(point_list) <= 1: # If there is only one point -> no length
             return gesture_length
-        for i in xrange(len(point_list)-1):
+        for i in range(len(point_list)-1):
             gesture_length += self.points_distance(
                 point_list[i], point_list[i+1])
         return gesture_length
@@ -237,10 +238,10 @@ class Gesture:
         ''' Scales down the gesture to a unit of 1 '''
         # map() creates a list of min/max coordinates of the strokes
         # in the gesture and min()/max() pulls the lowest/highest value
-        min_x = min(map(lambda stroke: stroke.min_x, self.strokes))
-        max_x = max(map(lambda stroke: stroke.max_x, self.strokes))
-        min_y = min(map(lambda stroke: stroke.min_y, self.strokes))
-        max_y = max(map(lambda stroke: stroke.max_y, self.strokes))
+        min_x = min([stroke.min_x for stroke in self.strokes])
+        max_x = max([stroke.max_x for stroke in self.strokes])
+        min_y = min([stroke.min_y for stroke in self.strokes])
+        max_y = max([stroke.max_y for stroke in self.strokes])
         x_len = max_x - min_x
         self.width = x_len
         y_len = max_y - min_y

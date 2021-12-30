@@ -1,5 +1,5 @@
 
-from init import test, import_pymt_no_window
+from .init import test, import_pymt_no_window
 
 def unittest_basics():
     import_pymt_no_window()

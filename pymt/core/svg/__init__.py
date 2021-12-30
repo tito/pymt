@@ -35,10 +35,11 @@ class SvgBase(object):
 
 class SvgLoader(object):
     __slots__ = ('loaders')
-    loaders = []
 
     @staticmethod
     def register(subcls):
+        if not subcls.loaders:
+            subcls.loaders = []
         SvgLoader.loaders.append(subcls)
 
     @staticmethod
@@ -95,7 +96,7 @@ class Svg(BaseObject):
         self.anchor_y   = 0
 
         #this actually loads the svg
-        if isinstance(arg, basestring):
+        if isinstance(arg, str):
             self.filename   = arg
         else:
             raise Exception('Unable to load image with type %s' % str(type(arg)))

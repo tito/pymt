@@ -27,7 +27,7 @@ class MTAbstractLayout(MTWidget):
 
     def __init__(self, **kwargs):
         if self.__class__ == MTAbstractLayout:
-            raise NotImplementedError, 'class MTAbstractLayout is abstract'
+            raise NotImplementedError('class MTAbstractLayout is abstract')
 
         # if standard size is bigger, then stretching does work, if other
         # things are smaller than the default (100, 100)

@@ -2,7 +2,7 @@
 Layout
 '''
 
-from init import test, import_pymt_no_window
+from .init import test, import_pymt_no_window
 
 def unittest_boxlayout_horizontal():
     _test_boxlayout('horizontal')
@@ -30,7 +30,7 @@ def _test_boxlayout(orientation):
 
     # default add
     m = MTBoxLayout(orientation=orientation)
-    for x in xrange(10):
+    for x in range(10):
         m.add_widget(MTWidget(size=(10,10)))
     test(sw(m.size) == (109, 10))
 
@@ -38,7 +38,7 @@ def _test_boxlayout(orientation):
     # spacing to 10
     #
     m = MTBoxLayout(orientation=orientation, spacing=10)
-    for x in xrange(10):
+    for x in range(10):
         m.add_widget(MTWidget(size=(10,10)))
     test(sw(m.size) == (190, 10))
 
@@ -46,13 +46,13 @@ def _test_boxlayout(orientation):
     # padding to 10
     #
     m = MTBoxLayout(orientation=orientation, padding=10, spacing=0)
-    for x in xrange(10):
+    for x in range(10):
         m.add_widget(MTWidget(size=(10,10)))
     m.do_layout()
 
     # size should be 10 (number of widget) * width (10) + 2 * padding
     test(sw(m.size) == (120, 30))
-    for x in xrange(10):
+    for x in range(10):
         if orientation == 'vertical':
             test(sw(m.children[x].pos) == (10 + x * 10, 10))
         else:
@@ -95,12 +95,12 @@ def _test_boxlayout(orientation):
     # testing with padding + spacing
     #
     m = MTBoxLayout(orientation=orientation, spacing=10, padding=10)
-    for x in xrange(10):
+    for x in range(10):
         m.add_widget(MTWidget(size=(10,10)))
     m.do_layout()
 
     test(sw(m.size) == (210, 30))
-    for x in xrange(10):
+    for x in range(10):
         if orientation == 'vertical':
             test(sw(m.children[x].pos) == (10 + x * 20, 10))
         else:

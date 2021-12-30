@@ -39,8 +39,8 @@ class Sleep(object):
         sleep = config.get('sleep').split(':')
         if len(ramp) != len(sleep):
             raise ValueError('Sleep: Invalid ramp/sleep: list size is not the same')
-        self.ramp = map(float, ramp)
-        self.sleep = map(float, sleep)
+        self.ramp = list(map(float, ramp))
+        self.sleep = list(map(float, sleep))
         pymt_logger.debug('Sleep: ramp is %s' % str(self.ramp))
         pymt_logger.debug('Sleep: sleep is %s' % str(self.sleep))
 

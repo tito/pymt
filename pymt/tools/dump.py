@@ -10,9 +10,9 @@ Missing:
 import os
 import sys
 import time
-from ConfigParser import ConfigParser
-from StringIO import StringIO
-from xmlrpclib import ServerProxy
+from configparser import ConfigParser
+from io import StringIO
+from xmlrpc.client import ServerProxy
 import OpenGL
 from OpenGL.GL import *
 
@@ -63,7 +63,7 @@ def testimport(libname):
     try:
         l = __import__(libname)
         report.append('%-20s exist' % libname)
-    except ImportError, e:
+    except ImportError as e:
         report.append('%-20s is missing' % libname)
 for x in (
     'gst',
@@ -107,39 +107,39 @@ for x in pymt_logger_history.history:
     report.append(x.message)
 
 title('Environ')
-for k, v in os.environ.iteritems():
+for k, v in os.environ.items():
     report.append('%s = %s' % (k, v))
 
 title('Options')
-for k, v in pymt_options.iteritems():
+for k, v in pymt_options.items():
     report.append('%s = %s' % (k, v))
 
 
 report = '\n'.join(report)
 
-print report
-print
-print
+print(report)
+print()
+print()
 
 try:
-    reply = raw_input('Do you accept to send report to paste.pocoo.org (Y/n) : ')
+    reply = input('Do you accept to send report to paste.pocoo.org (Y/n) : ')
 except EOFError:
     sys.exit(0)
 
 if reply.lower().strip() in ('', 'y'):
-    print 'Please wait while sending the report...'
+    print('Please wait while sending the report...')
 
     s = ServerProxy('http://paste.pocoo.org/xmlrpc/')
     r = s.pastes.newPaste('text', report)
 
-    print
-    print
-    print 'REPORT posted at http://paste.pocoo.org/show/%s/' % r
-    print
-    print
+    print()
+    print()
+    print('REPORT posted at http://paste.pocoo.org/show/%s/' % r)
+    print()
+    print()
 else:
-    print 'No report posted.'
+    print('No report posted.')
 
 # On windows system, the console leave directly after the end
 # of the dump. That's not cool if we want get report url
-raw_input('Enter any key to leave.')
+input('Enter any key to leave.')

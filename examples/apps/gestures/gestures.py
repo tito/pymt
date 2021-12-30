@@ -33,9 +33,9 @@ class CaptureGesture(MTGestureWidget):
         # try to find gesture from database
         best = self.gdb.find(gesture, minscore=0.5)
         if not best:
-            print 'No gesture found\nString version of your last gesture :\n', self.gdb.gesture_to_str(gesture)
+            print('No gesture found\nString version of your last gesture :\n', self.gdb.gesture_to_str(gesture))
         else:
-            print 'Gesture found, score', best[0], ':', best[1].label
+            print('Gesture found, score', best[0], ':', best[1].label)
         self.lastgesture = gesture
         self.lastbest = best
 

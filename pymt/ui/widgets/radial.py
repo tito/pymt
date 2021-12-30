@@ -2,7 +2,7 @@
 Vector slider: a radial slider that provide vector manipulation
 '''
 
-from __future__ import division
+
 
 __all__ = ('MTVectorSlider', )
 
@@ -150,7 +150,7 @@ class MTVectorSlider(MTWidget):
 
 if __name__ == '__main__':
     def on_vector_change(amp, ang):
-        print amp, ang
+        print(amp, ang)
 
     from pymt import MTWindow, runTouchApp
     w = MTWindow(fullscreen=False)

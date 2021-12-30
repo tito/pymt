@@ -5,10 +5,10 @@ Input Postproc: analyse and process input (double tap, ignore list...)
 __all__ = ('pymt_postproc_modules', )
 
 import os
-import doubletap
-import ignorelist
-import retaintouch
-import dejitter
+from . import doubletap
+from . import ignorelist
+from . import retaintouch
+from . import dejitter
 
 # Mapping of ID to module
 pymt_postproc_modules = {}

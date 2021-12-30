@@ -36,7 +36,7 @@ def set_color(*colors, **kwargs):
     kwargs.setdefault('blend', None)
     force_blend = kwargs['blend'] == True
     if len(colors) == 1:
-        if type(colors[0]) in (unicode, str):
+        if type(colors[0]) in (str, str):
             colors = get_color_from_hex(colors[0])
         else:
             colors = (colors[0], colors[0], colors[0])

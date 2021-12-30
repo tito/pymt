@@ -2,11 +2,11 @@ from pymt import *
 
 # callback for the buttons
 def test_button(btn, *largs):
-    print 'button pressed', btn.label
+    print('button pressed', btn.label)
 
 # create a grid layout with 2 rows
 layout = MTGridLayout(rows=2)
-for x in xrange(22):
+for x in range(22):
     btn = MTToggleButton(label='label%d' % x)
     btn.connect('on_press', curry(test_button, btn))
     layout.add_widget(btn)

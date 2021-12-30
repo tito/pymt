@@ -34,7 +34,7 @@ def test(cond):
     import sys
     import inspect
     import os
-    frame = sys._current_frames().values()[0]
+    frame = list(sys._current_frames().values())[0]
     callers = inspect.getouterframes(frame)
     caller = callers[1]
     info = inspect.getframeinfo(caller[0])
@@ -51,12 +51,12 @@ def testresult(code, ret):
     import os, sys
     if '__verbose' not in os.environ:
         return
-    print '%-35s %-35s %4s' % (
+    print('%-35s %-35s %4s' % (
         '%s:%s' % (os.environ['__modname'][5:],
                    os.environ['__testname'][9:]),
         code,
         ret
-    )
+    ))
 
 def _set_testinfo(a, b):
     import os
@@ -78,10 +78,10 @@ if __name__ == '__main__':
         getattr(mod, testname)()
         passed = os.environ['__test_passed']
         failed = os.environ['__test_failed']
-        print '%-35s %3s passed, %3s failed' % (
+        print('%-35s %3s passed, %3s failed' % (
             '%s:%s' % (os.environ['__modname'][5:],
                        os.environ['__testname'][9:]),
-            passed, failed)
+            passed, failed))
 
     def testrun_launch(modname, testname):
         import subprocess
@@ -107,10 +107,10 @@ if __name__ == '__main__':
         elif x in ('--debug'):
             os.environ['__debug'] = '1'
         elif x in ('--help'):
-            print 'Usage: python init.py [options] <filter>'
-            print '  --debug              show debug'
-            print '  --verbose            show verbose'
-            print '  --help               show this help'
+            print('Usage: python init.py [options] <filter>')
+            print('  --debug              show debug')
+            print('  --verbose            show verbose')
+            print('  --help               show this help')
             sys.exit(0)
 
     if len(sys.argv) == 3:
@@ -144,6 +144,6 @@ if __name__ == '__main__':
                     testrun_launch(modname, testname)
 
         elasped = time.time() - start
-        print '>> Finished in %.3fs' % (
+        print('>> Finished in %.3fs' % (
             elasped,
-        )
+        ))

@@ -12,11 +12,11 @@ sound = SoundLoader.load(filename)
 # install callack for on_play/on_stop event
 @sound.event
 def on_play():
-    print '-> sound started, status is', sound.status
+    print('-> sound started, status is', sound.status)
 
 @sound.event
 def on_stop():
-    print '-> sound finished, status is', sound.status
+    print('-> sound finished, status is', sound.status)
     stopTouchApp()
 
 # start to play the sound

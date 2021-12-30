@@ -15,10 +15,10 @@ if __name__ == '__main__':
 
     @coverflow.event
     def on_change(cover):
-        print 'cover changed', cover.title
+        print('cover changed', cover.title)
 
     @coverflow.event
     def on_select(cover):
-        print 'cover selected', cover.title
+        print('cover selected', cover.title)
 
     runTouchApp(coverflow)

@@ -62,9 +62,9 @@ def on_text_validate():
     global count
     count = -1
     try:
-        exec keyb.label
-    except Exception, e:
-        print 'Error', e
+        exec(keyb.label)
+    except Exception as e:
+        print('Error', e)
         p = MTModalPopup(title='Exception occured', content=str(e))
         w.add_widget(p)
     history.append(keyb.label)

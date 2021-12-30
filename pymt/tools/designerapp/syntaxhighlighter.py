@@ -20,7 +20,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                     'continue', 'exec', 'import', 'pass', 'yield',
                     'finally', 'print', 'eval']
 
-        keywordPatterns = map(lambda x: "\\b"+x+"\\b", keywords)
+        keywordPatterns = ["\\b"+x+"\\b" for x in keywords]
 
         self.highlightingRules = [(QtCore.QRegExp(pattern), keywordFormat) for pattern in keywordPatterns]
 

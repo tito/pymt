@@ -42,7 +42,7 @@ class TouchInfos(MTWidget):
             bubble.dispatch_event('on_draw')
 
         alive = [x.uid for x in current]
-        for uid in bubbles.keys()[:]:
+        for uid in list(bubbles.keys())[:]:
             if uid not in alive:
                 del bubbles[uid]
 

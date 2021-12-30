@@ -6,7 +6,7 @@ system_lib_find = ['cssutils', 'pyglet', 'encutils', 'squirtle', 'factory']
 
 def f9(seq):
     # Not order preserving
-    return {}.fromkeys(seq).keys()
+    return list({}.fromkeys(seq).keys())
 
 cmd = "find pymt -iname '*.py' -exec grep -H 'import' {} \;"
 output = Popen(cmd, shell=True, stdout=PIPE).communicate()[0]
@@ -19,7 +19,7 @@ for line in output.split("\n"):
 		continue
 	if line.find('=') > 0:
 		continue
-	filename, line = map(lambda x: x.strip(), line.split(':', 1))
+	filename, line = [x.strip() for x in line.split(':', 1)]
 	line = line.rsplit('#', 1)[0]
 	filename = filename[:-3]
 	if line.startswith('import'):
@@ -53,7 +53,7 @@ cmps = cmps2
 
 # resolve path in b
 cmps2 = []
-kcmp = f9(map(lambda x: x[0], cmps))
+kcmp = f9([x[0] for x in cmps])
 for a, b in cmps:
 	nb = b.lstrip('.')
 	nbp = len(b) - len(nb)
@@ -78,7 +78,7 @@ for a, b in cmps:
 	cmps2.append((a, b))
 cmps = cmps2
 
-print 'digraph {'
+print('digraph {')
 for a, b in cmps:
-	print '"%s" -> "%s"' % (b, a)
-print '}'
+	print('"%s" -> "%s"' % (b, a))
+print('}')

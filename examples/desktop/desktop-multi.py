@@ -1,4 +1,4 @@
-from __future__ import with_statement
+
 import os
 import math
 from pymt import *
@@ -253,7 +253,7 @@ class MTGestureDetector(MTGestureWidget):
 
         try:
             score, best = self.gdb.find(gesture, minscore=.5)
-        except Exception, e:
+        except Exception as e:
             return
 
         if best.id == 'circle':

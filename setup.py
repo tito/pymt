@@ -8,9 +8,9 @@ from distutils.extension import Extension
 try:
     import numpy
 except:
-    print '#' * 80
-    print 'PyMT require numpy now. Please install it before running PyMT setup'
-    print '#' * 80
+    print('#' * 80)
+    print('PyMT require numpy now. Please install it before running PyMT setup')
+    print('#' * 80)
     sys.exit(1)
 
 
@@ -56,10 +56,10 @@ except:
 if 'sdist' in sys.argv and have_cython:
     from glob import glob
     from Cython.Compiler.Main import compile
-    print 'Generating C files...',
+    print('Generating C files...', end=' ')
     files = glob(os.path.join(os.path.dirname(__file__), 'pymt', 'c_ext', '*.pyx'))
     compile(files)
-    print 'Done !'
+    print('Done !')
 
 #add cython core extension modules if cython is available
 if have_cython:
@@ -72,7 +72,7 @@ if have_cython:
     elif sys.platform == 'darwin':
         # On OSX, gl.h is not in GL/gl.h but OpenGL/gl.h. Cython has no
         # such thing as #ifdef, hence we just copy the file here.
-        source = '/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h'
+        source = '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/OpenGL.framework/Headers/gl.h'
         incl = 'build/include/'
         dest = os.path.join(incl, 'GL/')
         try:
@@ -183,7 +183,7 @@ setup(
         'tools/packaging/win32/README.txt',
         'tools/packaging/osx/pymt.sh',]
     },
-    data_files=examples.items(),
+    data_files=list(examples.items()),
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: MacOS X',

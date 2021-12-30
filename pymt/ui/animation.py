@@ -95,7 +95,7 @@ class AnimationBase(object):
             f = AnimationAlpha.linear
         self.alpha_function = f
 
-        if 'generate_event' in self.params.keys():
+        if 'generate_event' in list(self.params.keys()):
             self.generate_event = self.params['generate_event']
         else:
             self.generate_event = True
@@ -115,7 +115,7 @@ class AnimationBase(object):
             attr = getattr(self.widget, prop)
             try:
                 if type(attr) == dict and type(value) == dict:
-                    for k, v in value.iteritems():
+                    for k, v in value.items():
                         attr[k] = v
                 else:
                     self.widget.__setattr__(prop, value, **kwargs)
@@ -323,7 +323,7 @@ class DeltaAnimationBase(AnimationBase):
     def _update_dict(self, ip_dict, op_dict):
         '''Used by reset function to update a dict type data'''
         temp_dict = {}
-        for key in ip_dict.iterkeys():
+        for key in ip_dict.keys():
             if type(ip_dict[key]) in (tuple, list):
                 temp_dict[key] = self._update_list(ip_dict[key], op_dict[key])
             else:
@@ -422,7 +422,7 @@ class Animation(EventDispatcher):
                 Indicates which widget is to be set.
 
         '''
-        if widgetx in self.children.keys():
+        if widgetx in list(self.children.keys()):
             return False
         else:
             if self._animation_type == 'absolute':
@@ -539,7 +539,7 @@ class SequenceAnimation(ComplexAnimation):
     def stop(self, widget = None):
         '''Stops the sequential animation'''
         if widget == None:
-            widget = self.animations[self.anim_counter].children.keys()[0]
+            widget = list(self.animations[self.anim_counter].children.keys())[0]
         if self.animations[self.anim_counter].children[widget].generate_event and not self.single_event:
             widget.dispatch_event('on_animation_complete', self)
         #self.animations[self.anim_counter]._del_child(widget)
@@ -576,7 +576,7 @@ class ParallelAnimation(ComplexAnimation):
     def stop(self, widget = None, animobj = None):
         '''Stops the parallel animation'''
         if widget == None:
-            widget = self.animations[self.dispatch_counter].children.keys()[0]
+            widget = list(self.animations[self.dispatch_counter].children.keys())[0]
 
         if animobj == None:
             animobj = self.animations[self.dispatch_counter].children[widget]

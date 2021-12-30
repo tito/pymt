@@ -4,8 +4,8 @@ import traceback
 import os
 from PyQt4 import QtCore, QtGui, QtOpenGL
 from OpenGL import GL
-from syntaxhighlighter import Highlighter
-from cStringIO import StringIO
+from .syntaxhighlighter import Highlighter
+from io import StringIO
 import logging.handlers
 
 # Configure pymt BEFORE instance
@@ -15,7 +15,7 @@ import pymt
 from pymt import pymt_logger
 
 # don't import qtmt before pymt, otherwise, initialization will fail.
-from qtmtwindow import *
+from .qtmtwindow import *
 
 class LoggerHandler:
     __slots__ = ('output', 'colors')
@@ -206,7 +206,7 @@ class MainWindow(QtGui.QMainWindow):
         try:
             self.glWidget.create_new_pymt_window()
             d = {}
-            exec str(self.editor.toPlainText()) in d
+            exec(str(self.editor.toPlainText()), d)
             #pymt.stopTouchApp()
         except Exception as e:
             #pymt.pymt_logger.exception("Error Running PyMT Code:")

@@ -15,6 +15,6 @@ m = MTWindow()
 t = MTButton()
 @t.event
 def on_press(*largs):
-    print a
+    print(a)
 m.add_widget(t)
 runTouchApp()

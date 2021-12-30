@@ -29,8 +29,8 @@ class bench_core_label:
     '''Core: label creation (10000 * 10 a-z)'''
     def __init__(self):
         labels = []
-        for x in xrange(10000):
-            label = map(lambda x: chr(randint(ord('a'), ord('z'))), xrange(10))
+        for x in range(10000):
+            label = [chr(randint(ord('a'), ord('z'))) for x in range(10)]
             labels.append(''.join(label))
         self.labels = labels
     def run(self):
@@ -43,22 +43,22 @@ class bench_widget_creation:
     '''Widget: creation (10000 MTWidget)'''
     def run(self):
         o = []
-        for x in xrange(10000):
+        for x in range(10000):
             o.append(MTWidget())
 
 class bench_widget_dispatch:
     '''Widget: event dispatch (1000 on_update in 10*1000 MTWidget)'''
     def __init__(self):
         root = MTWidget()
-        for x in xrange(10):
+        for x in range(10):
             parent = MTWidget()
-            for y in xrange(1000):
+            for y in range(1000):
                 parent.add_widget(MTWidget())
             root.add_widget(parent)
         self.root = root
     def run(self):
         root = self.root
-        for x in xrange(1000):
+        for x in range(1000):
             root.dispatch_event('on_update')
 
 class bench_graphx_line:
@@ -66,12 +66,12 @@ class bench_graphx_line:
     def __init__(self):
         lines = []
         w, h = window_size
-        for x in xrange(5000):
+        for x in range(5000):
             lines.extend([random() * w, random() * h])
         self.lines = lines
     def run(self):
         lines = self.lines
-        for x in xrange(1000):
+        for x in range(1000):
             drawLine(lines)
 
 class bench_graphics_line:
@@ -80,11 +80,11 @@ class bench_graphics_line:
         w, h = window_size
         self.canvas = Canvas()
         line = self.canvas.line()
-        for x in xrange(5000):
+        for x in range(5000):
             line.points += [random() * w, random() * h]
     def run(self):
         canvas = self.canvas
-        for x in xrange(1000):
+        for x in range(1000):
             canvas.draw()
 
 
@@ -93,12 +93,12 @@ class bench_graphx_rectangle:
     def __init__(self):
         rects = []
         w, h = window_size
-        for x in xrange(5000):
+        for x in range(5000):
             rects.append(((random() * w, random() * h), (random() * w, random() * h)))
         self.rects = rects
     def run(self):
         rects = self.rects
-        for x in xrange(1000):
+        for x in range(1000):
             for pos, size in rects:
                 drawRectangle(pos=pos, size=size)
 
@@ -108,12 +108,12 @@ class bench_graphics_rectangle:
         rects = []
         w, h = window_size
         canvas = Canvas()
-        for x in xrange(5000):
+        for x in range(5000):
             canvas.rectangle(random() * w, random() * h, random() * w, random() * h)
         self.canvas = canvas
     def run(self):
         canvas = self.canvas
-        for x in xrange(1000):
+        for x in range(1000):
             canvas.draw()
 
 class bench_graphics_rectanglemesh:
@@ -124,13 +124,13 @@ class bench_graphics_rectanglemesh:
         canvas = Canvas()
         mesh = canvas.graphicElement(format='vv', type='quads')
         vertex = []
-        for x in xrange(50000):
+        for x in range(50000):
             vertex.extend([random() * w, random() * h, random() * w, random() * h])
         mesh.data_v = vertex
         self.canvas = canvas
     def run(self):
         canvas = self.canvas
-        for x in xrange(1000):
+        for x in range(1000):
             canvas.draw()
 
 class bench_graphx_roundedrectangle:
@@ -138,12 +138,12 @@ class bench_graphx_roundedrectangle:
     def __init__(self):
         rects = []
         w, h = window_size
-        for x in xrange(5000):
+        for x in range(5000):
             rects.append(((random() * w, random() * h), (random() * w, random() * h)))
         self.rects = rects
     def run(self):
         rects = self.rects
-        for x in xrange(1000):
+        for x in range(1000):
             for pos, size in rects:
                 drawRoundedRectangle(pos=pos, size=size)
 
@@ -154,12 +154,12 @@ class bench_graphics_roundedrectangle:
         rects = []
         w, h = window_size
         canvas = Canvas()
-        for x in xrange(5000):
+        for x in range(5000):
             canvas.roundedRectangle(random() * w, random() * h, random() * w, random() * h)
         self.canvas = canvas
     def run(self):
         canvas = self.canvas
-        for x in xrange(1000):
+        for x in range(1000):
             canvas.draw()
 
 class bench_graphx_paintline:
@@ -167,13 +167,13 @@ class bench_graphx_paintline:
     def __init__(self):
         lines = []
         w, h = window_size
-        for x in xrange(500):
+        for x in range(500):
             lines.extend([random() * w, random() * h])
         self.lines = lines
         set_brush(os.path.join(pymt_data_dir, 'particle.png'))
     def run(self):
         lines = self.lines
-        for x in xrange(100):
+        for x in range(100):
             paintLine(lines)
 
 class bench_graphics_paintline:
@@ -183,11 +183,11 @@ class bench_graphics_paintline:
         self.canvas = Canvas()
         texture = Image(os.path.join(pymt_data_dir, 'particle.png')).texture
         line = self.canvas.point(type='line_strip', texture=texture)
-        for x in xrange(500):
+        for x in range(500):
             line.points += [random() * w, random() * h]
     def run(self):
         canvas = self.canvas
-        for x in xrange(100):
+        for x in range(100):
             canvas.draw()
 
 
@@ -201,15 +201,15 @@ if __name__ == '__main__':
         else:
             report.append(s)
         if newline:
-            print s
+            print(s)
             report_newline = True
         else:
-            print s,
+            print(s, end=' ')
             report_newline = False
         sys.stdout.flush()
 
     clock_total = 0
-    benchs = locals().keys()
+    benchs = list(locals().keys())
     benchs.sort()
     benchs = [locals()[x] for x in benchs if x.startswith('bench_')]
 
@@ -257,7 +257,7 @@ if __name__ == '__main__':
         try:
             sys.stderr.write('.')
             test = x()
-        except Exception, e:
+        except Exception as e:
             log('failed %s' % str(e))
             import traceback
             traceback.print_exc()
@@ -270,7 +270,7 @@ if __name__ == '__main__':
             test.run()
             clock_end = clockfn() - clock_start
             log('%.6f' % clock_end)
-        except Exception, e:
+        except Exception as e:
             log('failed %s' % str(e))
             continue
 
@@ -286,21 +286,21 @@ except:
     pass
 
 try:
-    reply = raw_input('Do you want to send benchmark to paste.pocoo.org (Y/n) : ')
+    reply = input('Do you want to send benchmark to paste.pocoo.org (Y/n) : ')
 except EOFError:
     sys.exit(0)
 
 if reply.lower().strip() in ('', 'y'):
-    print 'Please wait while sending the benchmark...'
+    print('Please wait while sending the benchmark...')
 
-    from xmlrpclib import ServerProxy
+    from xmlrpc.client import ServerProxy
     s = ServerProxy('http://paste.pocoo.org/xmlrpc/')
     r = s.pastes.newPaste('text', '\n'.join(report))
 
-    print
-    print
-    print 'REPORT posted at http://paste.pocoo.org/show/%s/' % r
-    print
-    print
+    print()
+    print()
+    print('REPORT posted at http://paste.pocoo.org/show/%s/' % r)
+    print()
+    print()
 else:
-    print 'No benchmark posted.'
+    print('No benchmark posted.')

@@ -86,7 +86,7 @@ class BezierPath(object):
     def path_curve_to(self, x1, y1, x2, y2, x, y):
         '''Add a control point into bezier path'''
         if not self._bezier_coefficients:
-            for i in xrange(self._bezier_points + 1):
+            for i in range(self._bezier_points + 1):
                 t = float(i) / self._bezier_points
                 t0 = (1 - t) ** 3
                 t1 = 3 * t * (1 - t) ** 2
@@ -103,7 +103,7 @@ class BezierPath(object):
     def calculate_from_bezier_path(self, points):
         '''Create a new path from a list of control points'''
         self.path_begin(points[0], points[1])
-        for i in xrange(2, len(points), 6):
+        for i in range(2, len(points), 6):
             x1, y1, x2, y2, x, y = points[i:i+6]
             self.path_curve_to(x1, y1, x2, y2, x, y)
         self.path_end()

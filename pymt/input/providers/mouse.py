@@ -76,7 +76,7 @@ class MouseTouchProvider(TouchProvider):
 
     def find_touch(self, x, y):
         factor = 10. / self.window.system_size[0]
-        for t in self.touches.itervalues():
+        for t in self.touches.values():
             if abs(x-t.sx) < factor and abs(y-t.sy) < factor:
                 return t
         return False
@@ -157,7 +157,7 @@ class MouseTouchProvider(TouchProvider):
             while True:
                 event = self.waiting_event.popleft()
                 dispatch_fn(*event)
-        except Exception, e:
+        except Exception as e:
             pass
 
 # registers

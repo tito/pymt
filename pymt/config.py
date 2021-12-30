@@ -4,7 +4,7 @@ Config: base for PyMT configuration file
 
 __all__ = ('pymt_config', )
 
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 import sys
 import os
 from pymt.logger import pymt_logger
@@ -52,7 +52,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     if os.path.exists(pymt_config_fn):
         try:
             pymt_config.read(pymt_config_fn)
-        except Exception, e:
+        except Exception as e:
             pymt_logger.exception('Core: error while reading local'
                                   'configuration')
 
@@ -134,7 +134,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
             # add log_file format
             pymt_config.setdefault('pymt', 'log_enable', '1')
             pymt_config.setdefault('pymt', 'log_dir', 'logs')
-            pymt_config.setdefault('pymt', 'log_name', 'pymt_%y-%m-%d_%_.txt')
+            pymt_config.setdefault('pymt', 'log_name', 'pymt_%%y-%%m-%%d_%%_.txt')
 
         elif pymt_config_version == 7:
             # add option to turn off pyOpenGL Error Checking
@@ -183,7 +183,7 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
         pymt_config_version += 1
 
 # Said to pymt_config that we've upgrade to latest version.
-    pymt_config.set('pymt', 'config_version', PYMT_CONFIG_VERSION)
+    pymt_config.set('pymt', 'config_version', str(PYMT_CONFIG_VERSION))
 
 # Now, activate log file
     if pymt_config.getint('pymt', 'log_enable'):
@@ -193,5 +193,5 @@ if not 'PYMT_DOC_INCLUDE' in os.environ:
     if not os.path.exists(pymt_config_fn) or need_save:
         try:
             pymt_config.write()
-        except Exception, e:
+        except Exception as e:
             pymt_logger.exception('Core: error while saving default configuration file')

@@ -10,19 +10,19 @@ based on the nicodemus version. (thanks to him !)
 '''
 
 import weakref
-import new
+from types import MethodType as instancemethod
 
 class WeakMethod(object):
     def __init__(self, method):
         try:
-            if method.im_self is not None:
+            if method.__self__ is not None:
                 # bound method
-                self._obj = weakref.ref(method.im_self)
+                self._obj = weakref.ref(method.__self__)
             else:
                 # unbound method
                 self._obj = None
-            self._func = method.im_func
-            self._class = method.im_class
+            self._func = method.__func__
+            self._class = method.__self__.__class__
         except AttributeError:
             # not a method
             self._obj = None
@@ -39,7 +39,7 @@ class WeakMethod(object):
             return None
         if self._obj is not None:
             # we have an instance: return a bound method
-            return new.instancemethod(self._func, self._obj(), self._class)
+            return instancemethod(self._func, self._obj(), self._class)
         else:
             # we don't have an instance: return just the function
             return self._func

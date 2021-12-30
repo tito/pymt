@@ -2,7 +2,7 @@
 Test usage of MTTextArea widget
 '''
 
-from init import test, import_pymt_window
+from .init import test, import_pymt_window
 
 def instance(**kwargs):
     ''' Individual test framework'''
@@ -71,7 +71,7 @@ def unittest_mttextarea_cursor():
     # test bounds
     test(t.get_cursor_from_index(-1) == (0, 0))
     test(t.get_cursor_from_index(-100) == (0, 0))
-    print t.get_cursor_from_index(12)
+    print(t.get_cursor_from_index(12))
     test(t.get_cursor_from_index(12) == (3, 2))
     test(t.get_cursor_from_index(100) == (3, 2))
 

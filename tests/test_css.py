@@ -2,7 +2,7 @@
 Css styling basic tests
 '''
 
-from init import test, import_pymt_no_window
+from .init import test, import_pymt_no_window
 
 def unittest_css():
     import_pymt_no_window()

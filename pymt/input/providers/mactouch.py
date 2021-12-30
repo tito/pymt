@@ -120,10 +120,10 @@ class MacTouchProvider(TouchProvider):
         # ok, listing devices, and attach !
         devices = MultitouchSupport.MTDeviceCreateList()
         num_devices = CFArrayGetCount(devices)
-        print 'num_devices =', num_devices
-        for i in xrange(num_devices):
+        print('num_devices =', num_devices)
+        for i in range(num_devices):
             device = CFArrayGetValueAtIndex(devices, i)
-            print 'device #%d: %016x' % (i, device)
+            print('device #%d: %016x' % (i, device))
             # create touch dict for this device
             data_id = str(device)
             self.touches[data_id] = {}
@@ -158,7 +158,7 @@ class MacTouchProvider(TouchProvider):
         touches = _instance.touches[devid]
         actives = []
 
-        for i in xrange(n_fingers):
+        for i in range(n_fingers):
             # get pointer on data
             data = data_ptr[i]
 
@@ -192,7 +192,7 @@ class MacTouchProvider(TouchProvider):
                 _instance.queue.append(('move', touch))
 
         # delete old touchs
-        for tid in touches.keys()[:]:
+        for tid in list(touches.keys())[:]:
             if tid not in actives:
                 touch = touches[tid]
                 _instance.queue.append(('up', touch))

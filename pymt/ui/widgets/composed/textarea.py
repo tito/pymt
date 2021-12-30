@@ -99,7 +99,7 @@ class MTTextArea(MTTextInput):
         # return ''.join(out)
         # optimized version
         return ''.join([('\n' if (lf[i] & FL_IS_NEWLINE) else '') + l[i] \
-                        for i in xrange(len(l))])
+                        for i in range(len(l))])
     def _set_value(self, text):
         old_value = self.value
         self._refresh_lines(text)
@@ -126,9 +126,9 @@ class MTTextArea(MTTextInput):
         '''Recreate all lines / flags / labels from current value
         '''
         cursor_index = self.cursor_index
-        text = text if type(text) in (str, unicode) else self.value
+        text = text if type(text) in (str, str) else self.value
         self.lines, self.lines_flags = self._split_smart(text)
-        self.line_labels = map(self.create_line_label, self.lines)
+        self.line_labels = list(map(self.create_line_label, self.lines))
         self.line_height = self.line_labels[0].content_height
         self.line_spacing = 2
         self._recalc_size()
@@ -282,7 +282,7 @@ class MTTextArea(MTTextInput):
     def glyph_size(self, g):
         '''Get or add size of a glyph
         '''
-        if not self._glyph_size.has_key(g):
+        if g not in self._glyph_size:
             l = self.create_line_label(g)
             self._glyph_size[g] = l.content_width
         return self._glyph_size[g]
@@ -323,7 +323,7 @@ class MTTextArea(MTTextInput):
             return 0
         lf = self.lines_flags
         index, cr = self.cursor
-        for row in xrange(cr):
+        for row in range(cr):
             index += len(l[row])
             if lf[row] & FL_IS_NEWLINE:
                 index += 1
@@ -335,7 +335,7 @@ class MTTextArea(MTTextInput):
         '''Get the cursor x offset on the current line
         '''
         offset = 0
-        for i in xrange(self.cursor_col):
+        for i in range(self.cursor_col):
             offset += self.glyph_size(self.lines[self.cursor_row][i])
         return offset
 
@@ -347,7 +347,7 @@ class MTTextArea(MTTextInput):
         lf = self.lines_flags
         l = self.lines
         i = 0
-        for row in xrange(len(l)):
+        for row in range(len(l)):
             ni = i + len(l[row])
             if lf[row] & FL_IS_NEWLINE:
                 ni += 1
@@ -579,8 +579,8 @@ class MTTextArea(MTTextInput):
         if internal_action in ('shift', 'shift_L', 'shift_R'):
             self._update_selection(True)
 
-    def _window_on_key_down(self, key, scancode=None, unicode=None):
-        if unicode and not key in self.interesting_keys.keys() + [27]:
+    def _window_on_key_down(self, key, scancode=None, str=None):
+        if str and not key in list(self.interesting_keys.keys()) + [27]:
             modifiers = getWindow().modifiers
             if 'ctrl' in modifiers:
                 if key == ord('x'): # cut selection
@@ -600,6 +600,6 @@ class MTTextArea(MTTextInput):
             else:
                 if self._selection:
                     self.delete_selection()
-                self.insert_text(unicode)
+                self.insert_text(str)
             self._recalc_size()
-        return super(MTTextArea, self)._window_on_key_down(key, scancode, unicode)
+        return super(MTTextArea, self)._window_on_key_down(key, scancode, str)

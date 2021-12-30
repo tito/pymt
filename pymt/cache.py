@@ -153,7 +153,7 @@ class Cache(object):
 
     @staticmethod
     def _purge_oldest(category, maxpurge=1):
-        print 'PURGE', category
+        print('PURGE', category)
         import heapq
         heap_list = []
         for key in Cache._objects[category]:
@@ -161,12 +161,12 @@ class Cache(object):
             if obj['lastaccess'] == obj['timestamp']:
                 continue
             heapq.heappush(heap_list, (obj['lastaccess'], key))
-            print '<<<', obj['lastaccess']
+            print('<<<', obj['lastaccess'])
         n = 0
         while n < maxpurge:
             try:
                 lastaccess, key = heapq.heappop(heap_list)
-                print '=>', key, lastaccess, getClock().get_time()
+                print('=>', key, lastaccess, getClock().get_time())
             except Exception:
                 return
             del Cache._objects[category][key]
@@ -190,7 +190,7 @@ class Cache(object):
                 Cache._categories[category]['timeout'] = timeout
                 continue
 
-            for key in Cache._objects[category].keys()[:]:
+            for key in list(Cache._objects[category].keys())[:]:
 
                 lastaccess  = Cache._objects[category][key]['lastaccess']
                 objtimeout  = Cache._objects[category][key]['timeout']
@@ -209,14 +209,14 @@ class Cache(object):
     @staticmethod
     def print_usage():
         '''Print the cache usage on the console'''
-        print 'Cache usage :'
+        print('Cache usage :')
         for category in Cache._categories:
-            print ' * %s : %d / %s, timeout=%s' % (
+            print(' * %s : %d / %s, timeout=%s' % (
                 category.capitalize(),
                 len(Cache._objects[category]),
                 str(Cache._categories[category]['limit']),
                 str(Cache._categories[category]['timeout'])
-            )
+            ))
 
 # install the schedule clock for purging
 getClock().schedule_interval(Cache._purge_by_timeout, 1)

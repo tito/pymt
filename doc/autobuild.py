@@ -23,7 +23,7 @@ examples_framework_dir = os.path.join(base_dir, '..', 'examples', 'framework')
 
 def writefile(filename, data):
     global dest_dir
-    print 'write', filename
+    print('write', filename)
     f = os.path.join(dest_dir, filename)
     h = open(f, 'w')
     h.write(data)
@@ -31,7 +31,7 @@ def writefile(filename, data):
 
 
 # Activate PyMT modules
-for k in pymt.pymt_modules.list().keys():
+for k in list(pymt.pymt_modules.list().keys()):
     pymt.pymt_modules.import_module(k)
 
 # Search all pymt module
@@ -117,7 +117,7 @@ for package in packages:
         t += "    api-%s.rst\n" % subpackage
 
     # search modules
-    m = modules.keys()
+    m = list(modules.keys())
     m.sort()
     for module in m:
         packagemodule = module.rsplit('.', 1)[0]
@@ -129,7 +129,7 @@ for package in packages:
 
 
 # Create index for all module
-m = modules.keys()
+m = list(modules.keys())
 m.sort()
 refid = 0
 for module in m:
@@ -180,4 +180,4 @@ for module in m:
 
 
 # Generation finished
-print 'Generation finished, do make html'
+print('Generation finished, do make html')

@@ -2,7 +2,7 @@
 Events
 '''
 
-from init import test, import_pymt_no_window
+from .init import test, import_pymt_no_window
 
 def unittest_dispatcher():
     import_pymt_no_window()

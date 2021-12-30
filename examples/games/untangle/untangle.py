@@ -1,4 +1,4 @@
-from __future__ import with_statement
+
 
 # PYMT Plugin integration
 IS_PYMT_PLUGIN = True
@@ -8,7 +8,7 @@ PLUGIN_EMAIL = 'thomas.hansen@gmail.com'
 PLUGIN_DESCRIPTION = 'Untangle game !'
 
 from pymt import *
-from graph import *
+from .graph import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
@@ -170,7 +170,7 @@ class GraphUI(MTWidget):
         if self.done:
             return
         self.num_moves +=1
-        if self.touch2vertex.has_key(touch.id):
+        if touch.id in self.touch2vertex:
             del self.touch2vertex[touch.id]
         if self.g.is_solved():
             #self.g = Graph(15,displaySize=w.size)
@@ -184,7 +184,7 @@ class GraphUI(MTWidget):
     def on_touch_move(self, touch):
         if self.done:
             return
-        if self.touch2vertex.has_key(touch.id):
+        if touch.id in self.touch2vertex:
                     self.touch2vertex[touch.id][0] = touch.x
                     self.touch2vertex[touch.id][1] = touch.y
         self.num_moves_since_check += 1

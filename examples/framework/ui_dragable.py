@@ -5,7 +5,7 @@ window = getWindow()
 
 # create 100 dragable object with random position and color
 w, h = window.size
-for i in xrange(100):
+for i in range(100):
     x = random() * w
     y = random() * h
     window.add_widget(MTDragable(pos=(x, y),

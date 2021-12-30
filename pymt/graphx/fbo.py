@@ -12,8 +12,8 @@ import re
 import OpenGL
 import pymt
 from OpenGL.GL import GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, \
-        GL_VIEWPORT_BIT, GL_TEXTURE_2D, GL_COLOR_ATTACHMENT0_EXT, \
-        GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, GL_DEPTH_ATTACHMENT_EXT, \
+        GL_VIEWPORT_BIT, GL_TEXTURE_2D, \
+        GL_DEPTH_COMPONENT, \
         GL_BACK, GL_RGBA, GL_UNSIGNED_BYTE, GL_STENCIL_TEST, \
         GL_STENCIL_BUFFER_BIT, \
         glClear, glClearColor, glPushAttrib, glPopAttrib, \
@@ -31,7 +31,7 @@ from OpenGL.GL.EXT.framebuffer_object import GL_FRAMEBUFFER_EXT, \
         glBindFramebufferEXT, glBindRenderbufferEXT, \
         glDeleteRenderbuffersEXT, glDeleteFramebuffersEXT, \
         glCheckFramebufferStatusEXT, glFramebufferRenderbufferEXT, \
-        glRenderbufferStorageEXT, glFramebufferTexture2DEXT
+        glRenderbufferStorageEXT, glFramebufferTexture2DEXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT
 from pymt.graphx.colors import set_color
 from pymt.graphx.draw import drawTexturedRectangle, set_texture, get_texture_id
 
@@ -89,7 +89,7 @@ class AbstractFbo(object):
         elif isinstance(self.texture, pymt.Texture):
             self.realsize = self.texture.width, self.texture.height
         else:
-            raise 'Unknown type(self.texture). Please send a bug report on pymt dev.'
+            raise Exception('Unknown type(self.texture). Please send a bug report on pymt dev.')
 
     def bind(self):
         '''Activate writing on Framebuffer. All next call will be done on it.'''
@@ -158,7 +158,7 @@ class HardwareFbo(AbstractFbo):
         self.framebuffer = glGenFramebuffersEXT(1)
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, self.framebuffer)
         if self.framebuffer == 0:
-            raise 'Failed to initialize framebuffer'
+            raise Exception('Failed to initialize framebuffer')
 
         if self.with_depthbuffer:
             self.depthbuffer = glGenRenderbuffersEXT(1)

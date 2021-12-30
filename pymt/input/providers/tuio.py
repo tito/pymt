@@ -198,14 +198,14 @@ class Tuio2dCurTouch(TuioTouch):
 
     def depack(self, args):
         if len(args) < 5:
-            self.sx, self.sy = map(float, args[0:2])
+            self.sx, self.sy = list(map(float, args[0:2]))
             self.profile = ('pos', )
         elif len(args) == 5:
-            self.sx, self.sy, self.X, self.Y, self.m = map(float, args[0:5])
+            self.sx, self.sy, self.X, self.Y, self.m = list(map(float, args[0:5]))
             self.Y = -self.Y
             self.profile = ('pos', 'mov', 'motacc')
         else:
-            self.sx, self.sy, self.X, self.Y, self.m, width, height = map(float, args[0:7])
+            self.sx, self.sy, self.X, self.Y, self.m, width, height = list(map(float, args[0:7]))
             self.Y = -self.Y
             self.profile = ('pos', 'mov', 'motacc', 'shape')
             if self.shape is None:

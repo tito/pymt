@@ -264,7 +264,7 @@ class MTTextInput(MTButton):
                 on_key_down=self._kbd_on_key_down
             )
 
-    def _window_on_key_down(self, key, scancode=None, unicode=None):
+    def _window_on_key_down(self, key, scancode=None, str=None):
         modifiers = getWindow().modifiers
         if key == ord('v') and 'ctrl' in modifiers:
             text = Clipboard.get('text/plain')
@@ -285,12 +285,12 @@ class MTTextInput(MTButton):
             key = (None, None, k, 1)
             self.keyboard.dispatch_event('on_key_down', key)
         else:
-            if unicode is not None:
-                self.keyboard.text += unicode
+            if str is not None:
+                self.keyboard.text += str
             else:
                 self.keyboard.text += chr(key)
 
-    def _window_on_key_up(self, key, scancode=None, unicode=None):
+    def _window_on_key_up(self, key, scancode=None, str=None):
         k = self.interesting_keys.get(key)
         if k and self.keyboard:
             key = (None, None, k, 1)
